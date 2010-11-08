@@ -140,11 +140,19 @@ class ProductController {
 		log.info "dto.hasDecimals=" + dto.getHasDecimals()
 		log.info "dto.priceManual=" + dto.getPriceManual()
         Integer languageId= params.languageId?.toInteger()
-		if (null != dto.getId() && 0 != dto.getId()) {			
-			webServicesSession.updateItem(dto)
-		} else {
-			webServicesSession.createItem(dto)
+
+		try{
+			if (null != dto.getId() && 0 != dto.getId()) {			
+				webServicesSession.updateItem(dto)
+				flash.messsage = message (code: 'item.update.success')
+			} else {
+				webServicesSession.createItem(dto)
+				flash.messsage = message (code: 'item.create.success')
+			}
+		} catch (Exception e) {
+			flash.errorMessages = message (code: 'item.create.update.failed')
 		}
+		flash.args= dto.getId()
 		redirect (controller: "item")
 	}
 	

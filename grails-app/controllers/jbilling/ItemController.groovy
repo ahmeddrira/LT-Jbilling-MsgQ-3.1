@@ -57,14 +57,20 @@ class ItemController {
 		List listItemTypes= bindDTOs(params);
 		for (ItemTypeWS dto : listItemTypes) {
 			log.info "dto.id=" + dto.getId() + " dto.description=" + dto.getDescription() + " dto.orderLineTypeId=" + dto.getOrderLineTypeId()
-			
-			if (dto.getId() == 0 || !(dto.getId()) ){
-				webServicesSession.createItemCategory(dto)
-			} else {
-				webServicesSession.updateItemCategory(dto)
+			try {
+				if (dto.getId() == 0 || !(dto.getId()) ){
+					webServicesSession.createItemCategory(dto)
+				} else {
+					webServicesSession.updateItemCategory(dto)
+				}
+			} catch (Exception e) {
+				log.error "Error Updating/Creating Item Category " + dto.getId()
+				flash.errorMessages = message(code: 'item.category.create.update.failed')
+				flash.args= dto.getId()
 			}
 		}
 		
+		flash.message = message(code: 'item.category.saved')
 		redirect (action: index)
 	}
 	

@@ -34,7 +34,10 @@
 	});
 	</script>
 <body>
-<jB:renderErrorMessages />
+<p>
+	<g:message code="${flash.message}" args="${flash.args}" default="${flash.defaultMsg}" />
+	<jB:renderErrorMessages />
+</p>
 <g:form>
 	<g:hiddenField name="selectedId" value="0" />
 	<div>

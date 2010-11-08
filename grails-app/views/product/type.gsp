@@ -92,6 +92,10 @@ function add() {
 </script>
 <body onload="nLoad()">
 <h2><g:message code="prompt.products" /></h2>
+<p>
+	<g:message code="${flash.message}" args="${flash.args}" default="${flash.defaultMsg}" />
+	<jB:renderErrorMessages />
+</p>
 <g:form>
 	<g:hiddenField name="recCnt" value="0" />
 	<g:hiddenField name="selectedId" value="0" />

@@ -9,7 +9,6 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.util.PreferenceTypeWS
 import com.sapienter.jbilling.server.util.PreferenceWS
-import com.sapienter.jbilling.server.util.db.JbillingTable
 import com.sapienter.jbilling.server.util.db.LanguageDTO
 import com.sapienter.jbilling.server.util.db.NotificationCategoryDTO
 import com.sapienter.jbilling.server.util.db.PreferenceDTO
@@ -76,7 +75,7 @@ class NotificationsController {
         log.info "Calling: webServicesSession.saveNotificationPreferences(prefDTOs); List Size: " + prefDTOs.size()
         webServicesSession.saveNotificationPreferences((PreferenceWS[]) prefDTOs.toArray(new PreferenceWS[0]));
         log.info "Finished: webServicesSession.saveNotificationPreferences(prefDTOs);"
-        
+        flash.message = message (code: 'preference.saved.success')
         redirect (action:listCategories)
     }
     
@@ -88,7 +87,7 @@ class NotificationsController {
             log.info "loop=" + params.get("pref["+i+"].id")
             PreferenceWS dto = new PreferenceWS()
             dto.setPreferenceType(new PreferenceTypeWS())
-            dto.setJbillingTable(new JbillingTable())
+            //dto.setJbillingTable(new JbillingTable())
             dto.setForeignId(webServicesSession.getCallerCompanyId())
             bindData(dto, params["pref["+i+"]"])
             
@@ -189,6 +188,7 @@ class NotificationsController {
         log.info "msgDTO.use.flag=" + messageDTO.getUseFlag()
         log.info "entityId= " + entityId
         webServicesSession.createUpdateNofications(entityId, messageId, messageDTO);
+		flash.message = message (code: 'notification.save.success')
     }
     
     def MessageSection[] bindSections (params) {   

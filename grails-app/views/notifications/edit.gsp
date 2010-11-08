@@ -77,6 +77,9 @@ function testfunc(testval) {
 </script>
 <body>
 <h2><g:message code="prompt.edit.notification" /></h2>
+<p>
+	<jB:renderErrorMessages />
+</p>
 <g:form action="saveNotification">
 	<g:hiddenField name="_id" value="${params.id}" />
 	<g:hiddenField name="msgDTOId" value="${dto?.getId()}" />

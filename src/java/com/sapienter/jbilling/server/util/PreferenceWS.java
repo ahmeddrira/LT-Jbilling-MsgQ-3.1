@@ -23,7 +23,9 @@ package com.sapienter.jbilling.server.util;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import com.sapienter.jbilling.server.util.db.JbillingTable;
+import javax.validation.constraints.Min;
+
+import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
 import com.sapienter.jbilling.server.util.db.PreferenceDTO;
 
 public class PreferenceWS implements Serializable {
@@ -32,6 +34,7 @@ public class PreferenceWS implements Serializable {
     private PreferenceTypeWS preferenceType;
     private Integer tableId;
     private Integer foreignId;
+    @Min(value=0, message="validation.error.min,0", groups=UpdateValidationGroup.class)
     private Integer intValue;
     private String strValue;
     private BigDecimal floatValue;

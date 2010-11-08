@@ -12,7 +12,7 @@
 		    <jB:renderErrorMessages />
 		</td>
 
-		<p class="title"><g:message code"prompt.create.user"/></p>
+		<p class="title"><g:message code="prompt.create.user"/></p>
 
 
 		<g:form action="create">

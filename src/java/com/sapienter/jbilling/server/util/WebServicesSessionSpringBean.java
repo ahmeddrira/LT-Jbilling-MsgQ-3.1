@@ -2241,20 +2241,18 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
        Notifications
      */
     public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto) {
-        NotificationBL notificationBl = null;
         if (null == messageId) {
-            notificationBl = new NotificationBL();
+            new NotificationBL().createUpdate(entityId, dto);
         } else {
-            notificationBl = new NotificationBL(messageId);
+            new NotificationBL(messageId).createUpdate(entityId, dto);
         }
-        notificationBl.createUpdate(entityId, dto);
     }
     
     public void saveNotificationPreferences(PreferenceWS[] prefList) {
-        PreferenceBL prefBl= new PreferenceBL();
-        for (PreferenceWS dto: prefList) {            
-            LOG.debug("Saving Preference ID=" + dto.getPreferenceType().getId());
-            prefBl.createUpdateForEntity(dto.getForeignId(), dto.getPreferenceType().getId(), dto.getIntValue(), dto.getStrValue(), dto.getFloatValue());
+        PreferenceBL bl = new PreferenceBL();        
+        for (PreferenceWS pref : prefList) {
+            bl.createUpdateForEntity(pref.getForeignId(), pref.getPreferenceType().getId(),
+                                     pref.getIntValue(), pref.getStrValue(), pref.getFloatValue());
         }
     }
     

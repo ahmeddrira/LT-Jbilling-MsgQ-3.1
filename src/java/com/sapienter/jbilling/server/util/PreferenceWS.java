@@ -20,16 +20,18 @@
  */
 package com.sapienter.jbilling.server.util;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import com.sapienter.jbilling.server.util.db.JbillingTable;
+import com.sapienter.jbilling.server.util.db.PreferenceDTO;
 
-public class PreferenceWS implements java.io.Serializable {
+public class PreferenceWS implements Serializable {
 
-    private int id;
-    private JbillingTable jbillingTable;
+    private Integer id;
     private PreferenceTypeWS preferenceType;
-    private int foreignId;
+    private Integer tableId;
+    private Integer foreignId;
     private Integer intValue;
     private String strValue;
     private BigDecimal floatValue;
@@ -37,38 +39,22 @@ public class PreferenceWS implements java.io.Serializable {
     public PreferenceWS() {
     }
 
-    public PreferenceWS(int id, JbillingTable jbillingTable, int foreignId) {
+    public PreferenceWS(PreferenceDTO dto) {
+        this.id = dto.getId();
+        this.preferenceType = dto.getPreferenceType() != null ? new PreferenceTypeWS(dto.getPreferenceType()) : null;
+        this.tableId = dto.getJbillingTable() != null ? dto.getJbillingTable().getId() : null;
+        this.foreignId = dto.getForeignId();
+        this.intValue = dto.getIntValue();
+        this.strValue = dto.getStrValue();
+        this.floatValue = dto.getFloatValue();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
         this.id = id;
-        this.jbillingTable = jbillingTable;
-        this.foreignId = foreignId;
-    }
-
-    public PreferenceWS(int id, JbillingTable jbillingTable,
-            PreferenceTypeWS preferenceType, int foreignId, Integer intValue,
-            String strValue, BigDecimal floatValue) {
-        this.id = id;
-        this.jbillingTable = jbillingTable;
-        this.preferenceType = preferenceType;
-        this.foreignId = foreignId;
-        this.intValue = intValue;
-        this.strValue = strValue;
-        this.floatValue = floatValue;
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public JbillingTable getJbillingTable() {
-        return this.jbillingTable;
-    }
-
-    public void setJbillingTable(JbillingTable jbillingTable) {
-        this.jbillingTable = jbillingTable;
     }
 
     public PreferenceTypeWS getPreferenceType() {
@@ -79,11 +65,19 @@ public class PreferenceWS implements java.io.Serializable {
         this.preferenceType = preferenceType;
     }
 
-    public int getForeignId() {
+    public Integer getTableId() {
+        return tableId;
+    }
+
+    public void setTableId(Integer tableId) {
+        this.tableId = tableId;
+    }
+    
+    public Integer getForeignId() {
         return this.foreignId;
     }
 
-    public void setForeignId(int foreignId) {
+    public void setForeignId(Integer foreignId) {
         this.foreignId = foreignId;
     }
 
@@ -109,5 +103,18 @@ public class PreferenceWS implements java.io.Serializable {
 
     public void setFloatValue(BigDecimal floatValue) {
         this.floatValue = floatValue;
+    }
+
+    @Override
+    public String toString() {
+        return "PreferenceWS{"
+               + "id=" + id
+               + ", preferenceType=" + preferenceType
+               + ", tableId=" + tableId
+               + ", foreignId=" + foreignId
+               + ", intValue=" + intValue
+               + ", strValue='" + strValue + '\''
+               + ", floatValue=" + floatValue
+               + '}';
     }
 }

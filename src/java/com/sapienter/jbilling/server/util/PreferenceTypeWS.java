@@ -19,36 +19,32 @@
  */
 package com.sapienter.jbilling.server.util;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
+import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
 
-public class PreferenceTypeWS extends AbstractDescription implements
-        java.io.Serializable {
+public class PreferenceTypeWS implements Serializable {
 
     private int id;
+    private String description;
     private Integer intDefValue;
     private String strDefValue;
     private BigDecimal floatDefValue;
-    private Set<PreferenceWS> preferences = new HashSet<PreferenceWS>(0);
 
     public PreferenceTypeWS() {
     }
 
-    public PreferenceTypeWS(int id) {
-        this.id = id;
+    public PreferenceTypeWS(PreferenceTypeDTO dto) {
+        this.id = dto.getId();
+        this.description = dto.getDescription();
+        this.intDefValue = dto.getIntDefValue();
+        this.strDefValue = dto.getStrDefValue();
+        this.floatDefValue = dto.getFloatDefValue();
     }
-
-//    public PreferenceTypeWS(int id, Integer intDefValue, String strDefValue,
-//            BigDecimal floatDefValue, Set<PreferenceWS> preferences) {
-//        this.id = id;
-//        this.intDefValue = intDefValue;
-//        this.strDefValue = strDefValue;
-//        this.floatDefValue = floatDefValue;
-//        this.preferences = preferences;
-//    }
 
     public int getId() {
         return this.id;
@@ -56,6 +52,14 @@ public class PreferenceTypeWS extends AbstractDescription implements
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Integer getIntDefValue() {
@@ -82,15 +86,14 @@ public class PreferenceTypeWS extends AbstractDescription implements
         this.floatDefValue = floatDefValue;
     }
 
-    public Set<PreferenceWS> getPreferences() {
-        return this.preferences;
-    }
-
-    public void setPreferences(Set<PreferenceWS> preferences) {
-        this.preferences = preferences;
-    }
-
-    protected String getTable() {
-        return Constants.TABLE_PREFERENCE_TYPE;
+    @Override
+    public String toString() {
+        return "PreferenceTypeWS{"
+               + "id=" + id
+               + ", description='" + description + '\''
+               + ", intDefValue=" + intDefValue
+               + ", strDefValue='" + strDefValue + '\''
+               + ", floatDefValue=" + floatDefValue
+               + '}';
     }
 }

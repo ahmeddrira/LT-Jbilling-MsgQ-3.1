@@ -178,14 +178,14 @@ public class WSSecurityMethodMapper {
         GET_LATEST_ORDER                ("getLatestOrder", 0, Type.USER),
         GET_LAST_ORDERS                 ("getLastOrders", 0, Type.USER),
         
-        GET_INVOICE                     ("getInvoice", 0, Type.INVOICE),
+        GET_INVOICE                     ("getInvoiceWS", 0, Type.INVOICE),
         CREATE_INVOICE                  ("createInvoice", 0, Type.USER),
         CREATE_INVOICE_FROM_ORDER       ("createInvoiceFromOrder", 0, Type.ORDER),
         DELETE_INVOICE                  ("deleteInvoice", 0, Type.INVOICE),
         GET_ALL_INVOICES                ("getAllInvoices", 0, Type.USER),
         GET_LATEST_INVOICES             ("getLatestInvoice", 0, Type.USER),
         GET_LAST_INVOICES               ("getLastInvoices", 0, Type.USER),
-        GET_USER_INVOICES_BY_DATE       ("getUserInvoicesbyDate", 0, Type.USER),
+        GET_USER_INVOICES_BY_DATE       ("getUserInvoicesByDate", 0, Type.USER),
         GET_PAPER_INVOICE_PDF           ("getPaperInvoicePDF", 0, Type.INVOICE),
 
         GET_PAYMENT                     ("getPayment", 0, Type.PAYMENT),
@@ -216,13 +216,13 @@ public class WSSecurityMethodMapper {
          */
         private WSSecureMethod(String methodName, Integer idArgIndex, Type type) {
             // find method in the web-service interface by name. web-services don't allow overloaded
-            // method names so we don't have to worry about duplicates or providing method parameters
+            // method names so we don't have to worry about duplicate names or providing method parameters
             for (Method method : WS_INTERFACE.getDeclaredMethods())
                 if (method.getName().equals(methodName))
                     this.method = method;
 
             if (method == null)
-                throw new IllegalArgumentException("Method does not exist on web-service interface " + WS_INTERFACE);
+                throw new IllegalArgumentException("Method '" + methodName + "' does not exist on " + WS_INTERFACE);
 
             this.IdArgIndex = idArgIndex;
             this.type = type;

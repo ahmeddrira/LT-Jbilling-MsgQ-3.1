@@ -81,7 +81,7 @@ public class WSTest extends TestCase {
 
             System.out.println("Getting balance of user 2");
             UserWS ret = api.getUserWS(new Integer(2));
-            assertEquals("Balance of Gandlaf starts at 1376784.98", "1376784.98", ret.getOwingBalance());
+            assertEquals("Balance of Gandlaf starts at 1376784.98", new BigDecimal("1376784.98"), ret.getOwingBalanceAsDecimal());
             System.out.println("Gandalf's balance: " + ret.getOwingBalance());
 
         } catch (Exception e) {
@@ -195,8 +195,8 @@ public class WSTest extends TestCase {
             // get the invoice
             InvoiceWS retInvoice = api.getInvoiceWS(mcRet.getInvoiceId());
             assertNotNull("New invoice not present", retInvoice);
-            assertEquals("Balance of invoice should be zero, is paid", "0.00", retInvoice.getBalance());
-            assertEquals("Total of invoice should be total of order", "20.00", retInvoice.getTotal());
+            assertEquals("Balance of invoice should be zero, is paid", new BigDecimal("0.00"), retInvoice.getBalanceAsDecimal());
+            assertEquals("Total of invoice should be total of order", new BigDecimal("20.00"), retInvoice.getTotalAsDecimal());
             assertEquals("New invoice paid", retInvoice.getToProcess(), new Integer(0));
             
             // TO-DO test that the invoice total is equal to the order total
@@ -223,7 +223,7 @@ public class WSTest extends TestCase {
             assertEquals("Contact name", retUser.getContact().getFirstName(), newUser.getContact().getFirstName());
             assertEquals("Credit card updated", "4111111111111152", retUser.getCreditCard().getNumber());
             assertEquals("Balance type updated", Constants.BALANCE_CREDIT_LIMIT, retUser.getBalanceType());
-            assertEquals("credit limit updated", "112233.00", retUser.getCreditLimit());
+            assertEquals("credit limit updated", new BigDecimal("112233.00"), retUser.getCreditLimitAsDecimal());
 
             System.out.println("Updating user - Pass 2 - Should fail due to invalid password");
             retUser.setPassword("newPassword");
@@ -829,13 +829,13 @@ Ch8: no applicable orders
             assertNotNull("invoices cant be null", invoices);
             assertEquals("there should be one invoice", 1, invoices.length);
             InvoiceWS invoice = api.getInvoiceWS(invoices[0]);
-            assertEquals("invoice should be 80$", "80.00", invoice.getTotal());
+            assertEquals("invoice should be 80$", new BigDecimal("80.00"), invoice.getTotalAsDecimal());
             // child1
             invoices = api.createInvoice(child1Id, false);
             assertNotNull("invoices cant be null", invoices);
             assertEquals("there should be one invoice", 1, invoices.length);
             invoice = api.getInvoiceWS(invoices[0]);
-            assertEquals("invoice should be 40$", "40.00", invoice.getTotal());
+            assertEquals("invoice should be 40$", new BigDecimal("40.00"), invoice.getTotalAsDecimal());
             // child2
             invoices = api.createInvoice(child2Id, false);
             // CXF returns null for empty arrays
@@ -852,7 +852,7 @@ Ch8: no applicable orders
             assertNotNull("invoices cant be null", invoices);
             assertEquals("there should be one invoice", 1, invoices.length);
             invoice = api.getInvoiceWS(invoices[0]);
-            assertEquals("invoice should be 20$", "20.00", invoice.getTotal());
+            assertEquals("invoice should be 20$", new BigDecimal("20.00"), invoice.getTotalAsDecimal());
             // child5
             invoices = api.createInvoice(child5Id, false);
             if (invoices != null) {
@@ -869,7 +869,7 @@ Ch8: no applicable orders
             assertNotNull("invoices cant be null", invoices);
             assertEquals("there should be one invoice", 1, invoices.length);
             invoice = api.getInvoiceWS(invoices[0]);
-            assertEquals("invoice should be 20$", "20.00", invoice.getTotal());
+            assertEquals("invoice should be 20$", new BigDecimal("20.00"), invoice.getTotalAsDecimal());
      
             // clean up
             api.deleteUser(parentId);

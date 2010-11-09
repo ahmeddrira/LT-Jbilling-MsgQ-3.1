@@ -34,7 +34,7 @@ public class PreferenceWS implements Serializable {
     private PreferenceTypeWS preferenceType;
     private Integer tableId;
     private Integer foreignId;
-    @Min(value=0, message="validation.error.min,0", groups=UpdateValidationGroup.class)
+    @Min(value = 0, message="validation.error.min,0")
     private Integer intValue;
     private String strValue;
     private BigDecimal floatValue;

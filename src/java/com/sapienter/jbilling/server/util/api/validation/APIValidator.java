@@ -60,7 +60,10 @@ public class APIValidator implements MethodBeforeAdvice {
 		
         for (Object arg: args) {
             if (arg != null) {
-                String objectname = arg.getClass().getName();
+            	String objectname = arg.getClass().getName();
+            	if (arg.getClass().isArray() && ((Object[])arg).length > 0) {
+            		objectname= (((Object[])arg)[0]).getClass().getName();
+            	}
                 boolean testThisObject = false;
                 for (String test: objectsToTest) {
                     if (objectname.endsWith(test)) {
@@ -69,25 +72,15 @@ public class APIValidator implements MethodBeforeAdvice {
                     }
                 }
                 if (testThisObject) {
-                    // it always does the default
-                    Set<ConstraintViolation<Object>> constraintViolations =
-                            validator.validate(arg);
-
-                    if (method.getName().startsWith("create")) {
-                        constraintViolations.addAll(validator.validate(arg, CreateValidationGroup.class));
-                    } else if (method.getName().startsWith("update")) {
-                        constraintViolations.addAll(validator.validate(arg, UpdateValidationGroup.class));
-                    }
-
-                    if (constraintViolations.size() > 0) {
-                        for (ConstraintViolation<Object> violation: constraintViolations) {
-                            // compose the error message
-                            String shortObjectName = objectname.substring(objectname.lastIndexOf('.') + 1);
-                            errors.add(shortObjectName + "," + violation.getPropertyPath().toString() + "," +
-                                       violation.getMessage());
-                        }
-                        LOG.debug("Calling " + method.getName() + " found an error in " + objectname);
-                    }
+                	if (arg.getClass().isArray()) { 
+                		Object[] objArr= (Object[]) arg;
+                		for (Object o: objArr) {
+                			errors.addAll(validateObject(method, objectname, o));
+                		}
+                		
+                	} else {
+                		errors.addAll(validateObject(method, objectname, arg));
+                	}
                 }
             }
         }
@@ -100,6 +93,29 @@ public class APIValidator implements MethodBeforeAdvice {
         }
     }
 
+	private ArrayList<String> validateObject(Method method, String objectname, Object arg) {
+		ArrayList<String> errors = new ArrayList<String>(0);
+		// it always does the default
+        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(arg);
+
+        if (method.getName().startsWith("create")) {
+            constraintViolations.addAll(validator.validate(arg, CreateValidationGroup.class));
+        } else if (method.getName().startsWith("update")) {
+            constraintViolations.addAll(validator.validate(arg, UpdateValidationGroup.class));
+        }
+
+        if (constraintViolations.size() > 0) {
+            for (ConstraintViolation<Object> violation: constraintViolations) {
+                // compose the error message
+                String shortObjectName = objectname.substring(objectname.lastIndexOf('.') + 1);
+                errors.add(shortObjectName + "," + violation.getPropertyPath().toString() + "," +
+                           violation.getMessage());
+            }
+            LOG.debug("Calling " + method.getName() + " found an error in " + objectname);
+        }
+        return errors;
+	}
+	
 	public void setObjectsToTest(Set<String> objectsToTest) {
 		this.objectsToTest = objectsToTest;
 	}

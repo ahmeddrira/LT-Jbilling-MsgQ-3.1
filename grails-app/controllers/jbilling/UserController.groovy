@@ -39,8 +39,7 @@ class UserController {
 	
 	def index = {
 		UserBL userbl = new UserBL(webServicesSession.getCallerId());
-		languageId = String.valueOf(userbl.getEntity().getLanguageIdField());		
-		//languageId= "1"
+		languageId = String.valueOf(userbl.getEntity().getLanguageIdField());
 		render( view:"user")
 	}
 	
@@ -69,8 +68,7 @@ class UserController {
 	
 	def edit = {
 		UserBL userbl = new UserBL(webServicesSession.getCallerId());
-		languageId = String.valueOf(userbl.getEntity().getLanguageIdField());		
-//		languageId = "1"
+		languageId = String.valueOf(userbl.getEntity().getLanguageIdField());
 		UserWS user = null;
 		def notes= null;
 		def expMnth, expYr;
@@ -179,9 +177,7 @@ class UserController {
 			}
 			log.info  params.isAutomaticPaymentCC
 			log.info  params.isAutomaticPaymentAch
-			//CustomerDTO dto= CustomerDTO.findByBaseUser(new UserDTO(user.getUserId()));			
-			//dto.setNotes(params.notes)			
-			//dto.save() // Code review. Updating, creating, deleting a row? Use the API.
+
 		} catch (SessionInternalError e) {
 		    // TODO: the locale like this is not working, and it is messy. Once we have
 		    // the one resolved by jBilling in the session, add that here.

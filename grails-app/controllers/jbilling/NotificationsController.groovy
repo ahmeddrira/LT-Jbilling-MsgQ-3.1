@@ -13,11 +13,14 @@ import com.sapienter.jbilling.server.util.db.LanguageDTO
 import com.sapienter.jbilling.server.util.db.NotificationCategoryDTO
 import com.sapienter.jbilling.server.util.db.PreferenceDTO
 import grails.plugins.springsecurity.Secured
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.client.ViewUtils
 
 @Secured(['isAuthenticated()'])
 class NotificationsController {
     
     def webServicesSession
+	ViewUtils viewUtils
     
     def index = { 
         redirect (action:listCategories)
@@ -73,10 +76,23 @@ class NotificationsController {
         log.info "pref[5].value=" + params.get("pref[5].value")
         List<PreferenceWS> prefDTOs=bindDTOs(params)
         log.info "Calling: webServicesSession.saveNotificationPreferences(prefDTOs); List Size: " + prefDTOs.size()
-        webServicesSession.saveNotificationPreferences((PreferenceWS[]) prefDTOs.toArray(new PreferenceWS[0]));
+		PreferenceWS[] array= new PreferenceWS[prefDTOs.size()]
+		array= prefDTOs.toArray(array)
+        try {
+			webServicesSession.saveNotificationPreferences(array)
+        } catch (SessionInternalError e) {
+			log.error "Error: " + e.getMessage()
+			flash.errorMessages= e.getErrorMessages()
+			//boolean retValue = viewUtils.resolveExceptionForValidation(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);			
+		}
         log.info "Finished: webServicesSession.saveNotificationPreferences(prefDTOs);"
-        flash.message = message (code: 'preference.saved.success')
-        redirect (action:listCategories)
+		if (flash.errorMessages?.size() > 0 )
+		{
+			redirect (action:preferences)
+		} else {
+	        flash.message = message (code: 'preference.saved.success')
+	        redirect (action:listCategories)
+		}
     }
     
     

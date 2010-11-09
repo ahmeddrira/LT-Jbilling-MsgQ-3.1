@@ -2249,7 +2249,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
     }
     
-    public void saveNotificationPreferences(PreferenceWS[] prefList) {
+    public void saveNotificationPreferences(PreferenceWS[] prefList) {    	
         PreferenceBL bl = new PreferenceBL();        
         for (PreferenceWS pref : prefList) {
             bl.createUpdateForEntity(pref.getForeignId(), pref.getPreferenceType().getId(),

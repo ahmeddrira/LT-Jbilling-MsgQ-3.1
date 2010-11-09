@@ -416,7 +416,7 @@ public class ItemBL {
 
         retValue.setEntity(new CompanyDAS().find(other.getEntityId()));
         retValue.setNumber(other.getNumber());
-        retValue.setPercentage(other.getPercentage());
+        retValue.setPercentage(other.getPercentageAsDecimal());
         retValue.setPriceManual(other.getPriceManual());
         retValue.setDeleted(other.getDeleted());
         retValue.setHasDecimals(other.getHasDecimals());
@@ -424,7 +424,7 @@ public class ItemBL {
         retValue.setTypes(other.getTypes());
         retValue.setPromoCode(other.getPromoCode());
         retValue.setCurrencyId(other.getCurrencyId());
-        retValue.setPrice(other.getPrice());
+        retValue.setPrice(other.getPriceAsDecimal());
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
 
         // convert prices between DTO and DTOEx (WS)
@@ -437,7 +437,7 @@ public class ItemBL {
                 itemPrice.setId(otherPrice.getId());
                 itemPrice.setCurrency(new CurrencyDAS().find(
                         otherPrice.getCurrencyId()));
-                itemPrice.setPrice(otherPrice.getPrice());
+                itemPrice.setPrice(otherPrice.getPriceAsDecimal());
                 itemPrice.setName(otherPrice.getName());
                 itemPrice.setPriceForm(otherPrice.getPriceForm());
                 prices.add(itemPrice);

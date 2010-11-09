@@ -1806,9 +1806,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return order.getListIdsByItemType(userId, itemTypeId, number);
     }
 
-    public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) {
+    public String isUserSubscribedTo(Integer userId, Integer itemId) {
         OrderDAS das = new OrderDAS();
-        return das.findIsUserSubscribedTo(userId, itemId);
+        BigDecimal quantity = das.findIsUserSubscribedTo(userId, itemId);
+        return quantity != null ? quantity.toString() : null;
     }
 
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) {
@@ -2228,7 +2229,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     getCallerCompanyId(),
                     Constants.PLUGGABLE_TASK_RULES_GENERATOR);
             IRulesGenerator rulesGenerator = tm.getNextClass();
-
+            
             rulesGenerator.unmarshal(rulesData);
             rulesGenerator.process();
 

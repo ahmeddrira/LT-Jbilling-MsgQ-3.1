@@ -87,11 +87,7 @@ public class UserWS implements WSSecured, Serializable {
     private String dynamicBalance = null;
     private String autoRecharge = null;
     private String creditLimit = null;
-    private BigDecimal autoRechargeAsDecimal;
-    private BigDecimal owingBalanceAsDecimal;
-    private BigDecimal creditLimitAsDecimal;
-    private BigDecimal dynamicBalanceAsDecimal;
-    
+
     private String notes;
     private Integer automaticPaymentType;
 
@@ -397,24 +393,15 @@ public class UserWS implements WSSecured, Serializable {
     }
 
     public BigDecimal getOwingBalanceAsDecimal() {
-        if(owingBalanceAsDecimal != null)
-            return owingBalanceAsDecimal;
-        return (owingBalance == null ? null : new BigDecimal(owingBalance));
+        return owingBalance == null ? null : new BigDecimal(owingBalance);
     }
 
     public void setOwingBalance(String owingBalance) {
         this.owingBalance = owingBalance;
     }
 
-    /**
-     * <strong>Note:</strong> Subsequent call to getOwingBalance returns value rounded to 2 decimals.
-     * Use getOwingBalanceAsDecimal if precision is important, i.e. for calculations
-     * @param quantity
-     */
     public void setOwingBalance(BigDecimal owingBalance) {
-        this.owingBalanceAsDecimal = owingBalance;
-        if (owingBalance != null)
-            this.owingBalance = owingBalance.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
+        this.owingBalance = (owingBalance != null ? owingBalance.toString() : null);
     }
 
     public Integer getBalanceType() {
@@ -430,24 +417,15 @@ public class UserWS implements WSSecured, Serializable {
     }
 
     public BigDecimal getCreditLimitAsDecimal() {
-        if(creditLimitAsDecimal != null)
-            return creditLimitAsDecimal;
-        return (creditLimit == null ? null : new BigDecimal(creditLimit));
+        return creditLimit == null ? null : new BigDecimal(creditLimit);
     }
 
     public void setCreditLimit(String creditLimit) {
         this.creditLimit = creditLimit;
     }
 
-    /**
-     * <strong>Note:</strong> Subsequent call to getCreditLimit returns value rounded to 2 decimals.
-     * Use getCreditLimitAsDecimal if precision is important, i.e. for calculations
-     * @param quantity
-     */
     public void setCreditLimit(BigDecimal creditLimit) {
-        this.creditLimitAsDecimal = creditLimit;
-        if (creditLimit != null)
-            this.creditLimit = creditLimit.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
+        this.creditLimit = (creditLimit != null ? creditLimit.toString() : null);
     }
 
     public String getDynamicBalance() {
@@ -455,24 +433,15 @@ public class UserWS implements WSSecured, Serializable {
     }
 
     public BigDecimal getDynamicBalanceAsDecimal() {
-        if(dynamicBalanceAsDecimal != null)
-            return dynamicBalanceAsDecimal;
-        return (dynamicBalance == null ? null : new BigDecimal(dynamicBalance));
+        return dynamicBalance == null ? null : new BigDecimal(dynamicBalance);
     }
     
     public void setDynamicBalance(String dynamicBalance) {
         this.dynamicBalance = dynamicBalance;
     }
 
-    /**
-     * <strong>Note:</strong> Subsequent call to getBalance returns value rounded to 2 decimals.
-     * Use getBalanceAsDecimal if precision is important, i.e. for calculations
-     * @param quantity
-     */
     public void setDynamicBalance(BigDecimal dynamicBalance) {
-        this.dynamicBalanceAsDecimal = dynamicBalance;
-        if (dynamicBalance != null)
-            this.dynamicBalance = dynamicBalance.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
+        this.dynamicBalance = (dynamicBalance != null ? dynamicBalance.toString() : null);
     }
 
     public String getAutoRecharge() {
@@ -480,24 +449,15 @@ public class UserWS implements WSSecured, Serializable {
     }
 
     public BigDecimal getAutoRechargeAsDecimal() {
-        if (autoRecharge == null) return null;
-        return new BigDecimal(autoRecharge);
+        return autoRecharge != null ? new BigDecimal(autoRecharge) : null;
     }
 
     public void setAutoRecharge(String autoRecharge) {
         this.autoRecharge = autoRecharge;
     }
 
-    /**
-     * <strong>Note:</strong> Subsequent call to getAutoRecharge returns value rounded to 2 decimals.
-     * Use getAutoRechargeAsDecimal if precision is important, i.e. for calculations
-     * @param autoRecharge
-     */
     public void setAutoRecharge(BigDecimal autoRecharge) {
-        if (autoRecharge != null) {
-            this.autoRecharge = autoRecharge.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
-            this.autoRechargeAsDecimal = autoRecharge.setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
-        }
+        this.autoRecharge = (autoRecharge != null ? autoRecharge.toString() : null);
     }
 
     /**

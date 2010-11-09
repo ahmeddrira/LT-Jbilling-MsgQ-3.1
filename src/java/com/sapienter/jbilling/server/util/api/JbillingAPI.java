@@ -105,7 +105,7 @@ public interface JbillingAPI {
     public void updateItemCategory(ItemTypeWS itemType) ;
     public void deleteItemCategory(Integer itemCategoryId) ;
 
-    public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) ;
+    public String isUserSubscribedTo(Integer userId, Integer itemId) ;
 
     public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId) ;
     public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number) ;

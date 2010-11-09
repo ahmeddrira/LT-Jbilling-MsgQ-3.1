@@ -475,6 +475,12 @@
         </javac>
 
         <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
+        <copy todir="${build.resources.dir}/rules">
+            <fileset dir="${source.rules.descriptor.dir}">
+                <include name="rules-generator-config.xml"/>
+                <include name="*.vm"/>
+            </fileset>
+        </copy>
 
         <!-- run web service tests -->
         <mkdir dir="${build.test-results.dir}/ws/xml"/>

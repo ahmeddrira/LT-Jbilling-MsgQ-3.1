@@ -108,7 +108,7 @@ public class InvoiceWS implements WSSecured, Serializable {
     }
 
     public BigDecimal getTotalAsDecimal() {
-        return (total == null ? null : new BigDecimal(total));
+        return total == null ? null : new BigDecimal(total);
     }
 
     public void setTotal(String total) {
@@ -116,8 +116,7 @@ public class InvoiceWS implements WSSecured, Serializable {
     }
 
     public void setTotal(BigDecimal total) {
-        if (total != null)
-            this.total = total.toString();
+        this.total = (total != null ? total.toString() : null);
     }
 
     public Integer getToProcess() {
@@ -141,7 +140,7 @@ public class InvoiceWS implements WSSecured, Serializable {
     }
 
     public BigDecimal getBalanceAsDecimal() {
-        return (balance == null ? null : new BigDecimal(balance));
+        return balance == null ? null : new BigDecimal(balance);
     }
 
     public void setBalance(String balance) {
@@ -149,8 +148,7 @@ public class InvoiceWS implements WSSecured, Serializable {
     }
 
     public void setBalance(BigDecimal balance) {
-        if (balance != null)
-            this.balance = balance.toString();
+        this.balance = (balance != null ? balance.toString() : null);
     }
 
     public String getCarriedBalance() {
@@ -158,7 +156,7 @@ public class InvoiceWS implements WSSecured, Serializable {
     }
 
     public BigDecimal getCarriedBalanceAsDecimal() {
-        return (carriedBalance == null ? null : new BigDecimal(carriedBalance));
+        return carriedBalance == null ? null : new BigDecimal(carriedBalance);
     }
 
     public void setCarriedBalance(String carriedBalance) {
@@ -166,8 +164,7 @@ public class InvoiceWS implements WSSecured, Serializable {
     }
 
     public void setCarriedBalance(BigDecimal carriedBalance) {
-        if (carriedBalance != null)
-            this.carriedBalance = carriedBalance.toString();
+        this.carriedBalance = (carriedBalance != null ? carriedBalance.toString() : null);
     }
 
     public Integer getInProcessPayment() {

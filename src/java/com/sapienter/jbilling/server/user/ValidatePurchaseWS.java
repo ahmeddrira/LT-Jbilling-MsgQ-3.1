@@ -20,8 +20,6 @@
 
 package com.sapienter.jbilling.server.user;
 
-import com.sapienter.jbilling.common.Constants;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -34,7 +32,6 @@ public class ValidatePurchaseWS implements Serializable {
     private String[] message;
     private Boolean authorized;
     private String quantity;
-    private BigDecimal quantityAsDecimal;
 
     public ValidatePurchaseWS() {
         success = true;
@@ -72,9 +69,7 @@ public class ValidatePurchaseWS implements Serializable {
     }
 
     public BigDecimal getQuantityAsDecimal() {
-        if(quantityAsDecimal != null)
-            return quantityAsDecimal;
-        return (quantity == null ? null : new BigDecimal(quantity));
+        return quantity == null ? null : new BigDecimal(quantity);
     }
 
     public void setQuantity(String quantity) {
@@ -85,14 +80,7 @@ public class ValidatePurchaseWS implements Serializable {
         this.setQuantity(new BigDecimal(quantity));
     }
 
-    /**
-     * <strong>Note:</strong> Subsequent call to getQuantity returns value rounded to 2 decimals.
-     * Use getQuantityAsDecimal if precision is important, i.e. for calculations
-     * @param quantity
-     */
     public void setQuantity(BigDecimal quantity) {
-        this.quantityAsDecimal = quantity;
-        if (quantity != null)
-            this.quantity = quantity.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
+        this.quantity = (quantity != null ? quantity.toString() : null);
     }
 }

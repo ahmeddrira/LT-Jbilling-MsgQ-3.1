@@ -112,7 +112,7 @@ public class OrderLineWS implements Serializable {
     }
 
     public BigDecimal getAmountAsDecimal() {
-        return (amount == null ? null : new BigDecimal(amount));
+        return amount == null ? null : new BigDecimal(amount);
     }
 
     public void setAmount(String amount) {
@@ -120,7 +120,7 @@ public class OrderLineWS implements Serializable {
     }
 
     public void setAmount(BigDecimal amount) {
-        this.amount = amount.toString();
+        this.amount = (amount != null ? amount.toString() : null);
     }
 
     public Date getCreateDatetime() {
@@ -184,7 +184,7 @@ public class OrderLineWS implements Serializable {
     }
 
     public BigDecimal getPriceAsDecimal() {
-        return (price == null ? null : new BigDecimal(price));
+        return price == null ? null : new BigDecimal(price);
     }
 
     public void setPrice(String price) {
@@ -192,7 +192,7 @@ public class OrderLineWS implements Serializable {
     }
 
     public void setPrice(BigDecimal price) {
-        this.price = price.toString();
+        this.price = (price != null ? price.toString() : null);
     }
 
     public String getPriceStr() {
@@ -204,7 +204,7 @@ public class OrderLineWS implements Serializable {
     }
 
     public BigDecimal getQuantityAsDecimal() {
-        return (quantity == null ? null : new BigDecimal(quantity));
+        return quantity == null ? null : new BigDecimal(quantity);
     }
 
     public void setQuantity(String quantity) {
@@ -216,7 +216,7 @@ public class OrderLineWS implements Serializable {
     }
 
     public void setQuantity(BigDecimal quantity) {
-        this.quantity = quantity.toString();
+        this.quantity = (quantity != null ? quantity.toString() : null);
     }
 
     public Integer getVersionNum() {

@@ -33,7 +33,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     // ItemDTO
     private Integer id;
     private String number;
-    private BigDecimal percentage;
+    private String percentage;
     private Integer priceManual;
     private Integer hasDecimals;
     private Integer deleted;
@@ -44,7 +44,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer[] types = null;
     private String promoCode = null;
     private Integer currencyId = null;
-    private BigDecimal price = null;
+    private String price = null;
     private Integer orderLineTypeId = null;
 
     private List<ItemPriceDTOEx> prices = null;
@@ -67,7 +67,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
                      Integer deleted, Integer entityId) {
         this.id = id;
         this.number = number;
-        this.percentage = percentage;
+        this.percentage = percentage != null ? percentage.toString() : null;
         this.priceManual = priceManual;
         this.hasDecimals = hasDecimals;
         this.deleted = deleted;
@@ -100,12 +100,20 @@ public class ItemDTOEx implements WSSecured, Serializable {
         this.number = number;
     }
 
-    public BigDecimal getPercentage() {
+    public String getPercentage() {
         return this.percentage;
     }
 
-    public void setPercentage(BigDecimal percentage) {
+    public BigDecimal getPercentageAsDecimal() {
+        return percentage != null ? new BigDecimal(percentage) : null;
+    }
+
+    public void setPercentage(String percentage) {
         this.percentage = percentage;
+    }
+
+    public void setPercentage(BigDecimal percentage) {
+        this.percentage = (percentage != null ? percentage.toString() : null);
     }
 
     public Integer getPriceManual() {
@@ -199,12 +207,20 @@ public class ItemDTOEx implements WSSecured, Serializable {
         this.currencyId = currencyId;
     }
 
-    public BigDecimal getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public BigDecimal getPriceAsDecimal() {
+        return price != null ? new BigDecimal(price) : null;
+    }
+
+    public void setPrice(String price) {
         this.price = price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = (price != null ? price.toString() : null);
     }
 
     public List<ItemPriceDTOEx> getPrices() {

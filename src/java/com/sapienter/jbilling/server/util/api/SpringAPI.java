@@ -377,8 +377,8 @@ public class SpringAPI implements JbillingAPI {
 		return session.isMediationProcessing();
 	}
 
-	public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) {
-		return session.isUserSubscribedTo(userId, itemId);
+	public String isUserSubscribedTo(Integer userId, Integer itemId) {
+		return session.isUserSubscribedTo(userId, itemId);       
 	}
 
 	public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId)

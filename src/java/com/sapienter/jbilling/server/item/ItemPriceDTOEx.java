@@ -27,7 +27,7 @@ public class ItemPriceDTOEx implements Serializable {
 
     // ItemPriceDTO
     private Integer id;
-    private BigDecimal price;
+    private String price;
     private Integer currencyId;
 
     // ItemPriceDTOEx
@@ -40,7 +40,7 @@ public class ItemPriceDTOEx implements Serializable {
 
     public ItemPriceDTOEx(Integer id, BigDecimal price, Integer currencyId) {
         this.id = id;
-        this.price = price;
+        this.price = price != null ? price.toString() : null;
         this.currencyId = currencyId;
     }
 
@@ -58,12 +58,20 @@ public class ItemPriceDTOEx implements Serializable {
         this.id = id;
     }
 
-    public BigDecimal getPrice() {
+    public String getPrice() {
         return this.price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public BigDecimal getPriceAsDecimal() {
+        return price != null ? new BigDecimal(price) : null;
+    }
+
+    public void setPrice(String price) {
         this.price = price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = (price != null ? price.toString() : null);
     }
 
     public Integer getCurrencyId() {

@@ -85,8 +85,8 @@ public abstract class AbstractGeneratorTask extends PluggableTask
             LOG.debug("Config filename: " + configFilename);
 
             // load the parsing rules
-            Digester digester = DigesterLoader.createDigester(new URL(
-                "file:///" + configFilename));
+            Digester digester = DigesterLoader.createDigester(new URL("file:///" + configFilename));
+            digester.setUseContextClassLoader(true);
 
             // parse the input string
             //digester.setValidating(true);

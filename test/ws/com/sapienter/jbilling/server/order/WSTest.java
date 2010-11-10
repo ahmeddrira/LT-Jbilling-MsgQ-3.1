@@ -24,20 +24,6 @@
  */
 package com.sapienter.jbilling.server.order;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
@@ -48,7 +34,19 @@ import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
+import junit.framework.TestCase;
 import org.joda.time.DateMidnight;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author Emil
@@ -1078,28 +1076,21 @@ public class WSTest  extends TestCase {
         }
     }
 
-    /*
-        Todo: fails with Hessian web services. Known bug serializing/deserializing BigDecimal values
-              see http://bugs.caucho.com/view.php?id=3920
-     */
-    /*
     public void testIsUserSubscribedTo() throws Exception {
     	JbillingAPI api = JbillingAPIFactory.getAPI();
     	
     	// Test a non-existing user first, result should be 0
-    	BigDecimal result = api.isUserSubscribedTo(Integer.valueOf(999), Integer.valueOf(999));
-    	assertEquals(BigDecimal.ZERO, result);
+    	String result = api.isUserSubscribedTo(999, 999);
+    	assertEquals(BigDecimal.ZERO, new BigDecimal(result));
     	
-    	// Test the result given by a known existing user (
-    	// in PostgreSQL test db)
-    	result = api.isUserSubscribedTo(Integer.valueOf(2), Integer.valueOf(2));
-    	assertEquals(new BigDecimal("1"), result);
+    	// Test the result given by a known existing user (in PostgreSQL test db)
+    	result = api.isUserSubscribedTo(2, 2);
+    	assertEquals(new BigDecimal("1"), new BigDecimal(result));
     	
     	// Test another user
-    	result = api.isUserSubscribedTo(Integer.valueOf(73), Integer.valueOf(1));
-    	assertEquals(new BigDecimal("89"), result);
+    	result = api.isUserSubscribedTo(73, 1);
+    	assertEquals(new BigDecimal("89"), new BigDecimal(result));
     }
-    */
 
     public void testGetUserItemsByCategory() throws Exception {
     	JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -1314,7 +1305,7 @@ public class WSTest  extends TestCase {
             // should be priced at 0.42 (see row 1731)
             pf[0].setStrValue("212222");
             ItemDTOEx item = api.getItem(2800, userId, pf);
-            assertEquals("price", new BigDecimal("0.42"), item.getPrice());
+            assertEquals("price", new BigDecimal("0.42"), item.getPriceAsDecimal());
 
 
             /* rateOrder */

@@ -299,7 +299,7 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getLastOrdersByItemType(userId, itemTypeId, number)
     }
 
-    public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) {
+    public String isUserSubscribedTo(Integer userId, Integer itemId) {
         return webServicesSession.isUserSubscribedTo(userId, itemId)
     }
 

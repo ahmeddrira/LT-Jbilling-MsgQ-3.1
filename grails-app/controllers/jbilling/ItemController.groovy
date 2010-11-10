@@ -63,14 +63,17 @@ class ItemController {
 				} else {
 					webServicesSession.updateItemCategory(dto)
 				}
-			} catch (Exception e) {
+			} catch (SessionInternalError e) {
 				log.error "Error Updating/Creating Item Category " + dto.getId()
-				flash.errorMessages = message(code: 'item.category.create.update.failed')
-				flash.args= dto.getId()
+				flash.errorMessages?.addAll(e.getErrorMessages())				
+				//boolean retValue = viewUtils.resolveExceptionForValidation(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
 			}
 		}
 		
-		flash.message = message(code: 'item.category.saved')
+		if (!(flash.errorMessages?.size() > 0) )
+		{
+			flash.message = message(code: 'item.category.saved')
+		}	
 		redirect (action: index)
 	}
 	

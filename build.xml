@@ -263,44 +263,6 @@
               todir="${jbilling.conf.dir}"/>
     </target>
 
-    <!-- compile the Jasper design reports -->
-    <target name="designs" depends="init">
-        <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask"> 
-            <classpath refid="compile.classpath"/>
-            <!--
-		  <classpath>
-			<pathelement location="${jasper.home.dir}/classes"/>
-		    <fileset dir="${jasper.home.dir}/lib">
-		      <include name="**/*.jar"/>
-		    </fileset>
-		  </classpath>
-		  -->
-        </taskdef>
-        
-        <jrc destdir="${build.designs.dir}"
-             tempdir="${basedir}/tmp"
-             keepjava="true"
-             xmlvalidation="true">
-            <src>
-                <fileset dir="${source.descriptor.dir}/designs">
-                    <include name="**/*.jrxml"/>
-                </fileset>
-            </src>
-
-            <classpath>
-                <path refid="compile.classpath"/>
-                <pathelement location="${build.deploy.dir}/jbilling.jar"/>
-            </classpath>
-            <!--
-			<classpath>
-				<pathelement location="${jasper.home.dir}/classes"/>
-			    <fileset dir="${jasper.home.dir}/lib">
-			      <include name="**/*.jar"/>
-			    </fileset>
-			</classpath>
-			-->
-        </jrc>
-    </target>
 
     <!-- Wipes out the whole thing -->
     <target name="purge">
@@ -318,8 +280,46 @@
     <!-- Builds from scratch and prepares test -->
     <target name="dclean" depends="purge,deploy-local, jar_api, prepare-test">
     </target>
+    
+    <!-- todo: temporary alias for the old build targets. Remove when fully migrated to grails -->
+    <target name="designs" depends="compile-designs"/>
 
-    <!-- todo: where to generate compiled rules .pkg files? defaults to ./rules/ -->
+    <!-- compile the Jasper design reports -->
+    <target name="compile-designs">
+        <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask">
+            <classpath refid="compile.classpath"/>
+        </taskdef>
+
+        <!-- clean old designs -->
+        <delete dir="${build.resources.dir}/designs"/>
+        <mkdir dir="${build.resources.dir}/designs"/>
+
+        <!-- copy company logos -->
+        <delete dir="${build.resources.dir}/logos"/>
+        <mkdir dir="${build.resources.dir}/logos"/>
+        <copy todir="${build.resources.dir}/logos">
+            <fileset dir="${source.descriptor.dir}/logos"/>
+        </copy>
+
+        <!-- compile designs -->
+        <jrc destdir="${build.resources.dir}/designs"
+             tempdir="${basedir}/tmp"
+             keepjava="true"
+             xmlvalidation="true">
+            <src>
+                <fileset dir="${source.descriptor.dir}/designs">
+                    <include name="**/*.jrxml"/>
+                </fileset>
+            </src>
+
+            <classpath>
+                <path refid="compile.classpath"/>
+                <pathelement path="${build.classes.dir}"/>
+            </classpath>
+        </jrc>
+    </target>
+
+    <!-- todo: where to generate compiled rules .pkg files? defaults to ./resources/rules/ -->
     <target name="compile-rules" description="compile rules files">
         <echo>Compiling the binary rules</echo>
 
@@ -387,7 +387,9 @@
 
     <target name="test" depends="prepare-test, test-unit, test-ws, test-integration"/>
 
-    <target name="prepare-test" depends="compile-rules, prepare-test-db" description="Prepares the testing environment"/>
+    <target name="prepare-test"
+            depends="compile-designs, compile-rules, prepare-test-db" 
+            description="Prepares the testing environment"/>
     
     <target name="prepare-test-db">
         <echo message="Importing test data"/>

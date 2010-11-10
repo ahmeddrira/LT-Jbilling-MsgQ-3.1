@@ -149,14 +149,14 @@ public class WSSecurityMethodMapper {
         GET_USER                        ("getUserWS", 0, Type.USER),        
         DELETE_USER                     ("deleteUser", 0, Type.USER),
         GET_USER_CONTACT                ("getUserContactsWS", 0, Type.USER),
-        UPDATE_USER_CONTACT             ("updateUserContact", 0, Type.USER),
+        UPDATE_USER_CONTACT             ("updateUserContact", 0, Type.USER), // todo: should validate user and contact type ids
         UPDATE_CREDIT_CARD              ("updateCreditCard", 0, Type.USER),
         UPDATE_ACH                      ("updateAch", 0, Type.USER),
         SET_AUTH_PAYMENT_TYPE           ("setAuthPaymentType", 0, Type.USER),
         GET_AUTH_PAYMENT_TYPE           ("getAuthPaymentType", 0, Type.USER),
         GET_PARTNER                     ("getPartner", 0, Type.PARTNER),
 
-        GET_ITEM                        ("getItem", 1, Type.USER),
+        GET_ITEM                        ("getItem", 0, Type.ITEM), // todo: should validate item id and user id
         DELETE_ITEM                     ("deleteItem", 0, Type.ITEM),
         DELETE_ITEM_CATEGORY            ("deleteItemCategory", 0, Type.ITEM_CATEGORY),
         GET_USER_ITEMS_BY_CATEGORY      ("getUserItemsByCategory", 0, Type.USER),

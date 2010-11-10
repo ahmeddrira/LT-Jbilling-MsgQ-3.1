@@ -159,6 +159,7 @@
             <set>
                 <!-- Enter here endings to match. This is not a regex, just a search of suffix -->
                 <value>WS</value>
+                <value>DTOEx</value>
             </set>
         </property>
     </bean>

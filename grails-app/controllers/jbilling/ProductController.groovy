@@ -149,9 +149,12 @@ class ProductController {
 				webServicesSession.createItem(dto)
 				flash.messsage = message (code: 'item.create.success')
 			}
-		} catch (Exception e) {
-			flash.errorMessages = message (code: 'item.create.update.failed')
+		} catch (SessionInternalError e) {
+			log.error "Error Updating/Creating Item " + dto.getId()
+			flash.errorMessages?.addAll(e.getErrorMessages())				
+			//boolean retValue = viewUtils.resolveExceptionForValidation(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
 		}
+
 		flash.args= dto.getId()
 		redirect (controller: "item")
 	}

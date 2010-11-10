@@ -95,8 +95,8 @@ function add(tblId) {
 <body onload="nLoad();">
 <p><g:message code="prompt.product.category" /></p>
 <p>
-	<g:message code="${flash.message}" args="${flash.args}" default="${flash.defaultMsg}"/> 
 	<jB:renderErrorMessages/>
+	<g:message code="${flash.message}" args="${flash.args}" default="${flash.defaultMsg}"/> 
 </p>
 <g:form>
 	<g:hiddenField name="recCnt" value="0" />

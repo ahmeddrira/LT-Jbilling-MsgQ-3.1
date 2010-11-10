@@ -1415,7 +1415,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return itemTypeBL.getEntity().getId();
     }
 
-    public void updateItemCategory(ItemTypeWS itemType) {
+    public void updateItemCategory(ItemTypeWS itemType) 
+    		throws SessionInternalError {
         UserBL bl = new UserBL(getCallerId());
         Integer executorId = bl.getEntity().getUserId();
 

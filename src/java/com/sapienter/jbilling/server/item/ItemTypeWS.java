@@ -21,6 +21,9 @@ package com.sapienter.jbilling.server.item;
 
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 
+import javax.validation.constraints.Size;
+import javax.validation.constraints.Min;
+
 import java.io.Serializable;
 
 /**
@@ -30,7 +33,11 @@ import java.io.Serializable;
 public class ItemTypeWS implements Serializable {
 
     private Integer id;
+    
+    @Size (min=1,max=100, message="validation.error.size,1,100")    
     private String description;
+    
+    @Min(value = 1, message="validation.error.min,1")
     private Integer orderLineTypeId;
 
     public ItemTypeWS() {

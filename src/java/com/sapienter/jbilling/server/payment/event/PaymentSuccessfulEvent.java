@@ -30,5 +30,13 @@ public class PaymentSuccessfulEvent extends AbstractPaymentEvent {
     public String getName() {
         return "Payment Successful";
     }
+
+    @Override
+    public String toString() {
+        return "PaymentSuccessfulEvent{"
+                + "paymentId=" + getPayment().getId()
+                + ", amount=" + getPayment().getAmount()
+                + "}";
+    }
     
 }

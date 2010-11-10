@@ -64,8 +64,6 @@ public class PaymentWS implements WSSecured, Serializable {
     private Integer resultId;
     private String paymentNotes = null;
     private Integer paymentPeriod;
-    private BigDecimal amountAsDecimal;
-    private BigDecimal balanceAsDecimal;
     
     public Integer getResultId() {
         return resultId;
@@ -75,9 +73,6 @@ public class PaymentWS implements WSSecured, Serializable {
         this.resultId = resultId;
     }
     
-    /**
-     * 
-     */
     public PaymentWS() {
         super();
     }
@@ -156,24 +151,15 @@ public class PaymentWS implements WSSecured, Serializable {
     }
 
     public BigDecimal getAmountAsDecimal() {
-        if(amountAsDecimal != null)
-            return amountAsDecimal;
-        return (amount == null ? null : new BigDecimal(amount));
+        return amount != null ? new BigDecimal(amount) : null;
     }
 
     public void setAmount(String amount) {
         this.amount = amount;
     }
 
-    /**
-     * <strong>Note:</strong> Subsequent call to getAmount returns value rounded to 2 decimals.
-     * Use getAmountAsDecimal if precision is important, i.e. for calculations
-     * @param quantity
-     */
     public void setAmount(BigDecimal amount) {
-        this.amountAsDecimal = amount;
-        if (amount != null)
-            this.amount = amount.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
+        this.amount = (amount != null ? amount.toString() : null);
     }
 
     public Integer getIsRefund() {
@@ -237,24 +223,15 @@ public class PaymentWS implements WSSecured, Serializable {
     }
 
     public BigDecimal getBalanceAsDecimal() {
-        if(balanceAsDecimal != null)
-            return balanceAsDecimal;
-        return (balance == null ? null : new BigDecimal(balance));
+        return balance != null ? new BigDecimal(balance) : null;
     }
 
     public void setBalance(String balance) {
         this.balance = balance;
     }
 
-    /**
-     * <strong>Note:</strong> Subsequent call to getBalance returns value rounded to 2 decimals.
-     * Use getBalanceAsDecimal if precision is important, i.e. for calculations
-     * @param quantity
-     */
     public void setBalance(BigDecimal balance) {
-        this.balanceAsDecimal = balance;
-        if (balance != null)
-            this.balance = balance.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
+        this.balance = (balance != null ? balance.toString() : null);        
     }
 
     public Date getCreateDatetime() {
@@ -315,5 +292,5 @@ public class PaymentWS implements WSSecured, Serializable {
 
     public Integer getOwningUserId() {
         return getUserId();
-    }
+    }        
 }

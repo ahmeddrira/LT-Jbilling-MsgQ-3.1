@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import sun.jdbc.rowset.CachedRowSet;
 
 import org.apache.log4j.Logger;
@@ -481,8 +483,12 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         bl.delete(executorId);
     }
 
-    public void updateUserContact(Integer userId, Integer typeId,
-            ContactWS contact) throws SessionInternalError {
+    public void updateUserContact(Integer userId, Integer typeId, ContactWS contact) throws SessionInternalError {
+        // todo: support multiple WS method param validations through WSSecurityMethodMapper
+        ContactTypeDTO type = new ContactTypeDAS().find(typeId);
+        if (type == null || type.getEntity() == null || !getCallerCompanyId().equals(type.getEntity().getId()))
+            throw new SessionInternalError("Invalid contact type.");
+
         // update the contact
         ContactBL cBl = new ContactBL();
         cBl.updateForUser(new ContactDTOEx(contact), userId, typeId);
@@ -555,6 +561,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         // log.debug("principal = " + context.getCallerPrincipal().getName());
         UserBL bl = new UserBL(userId);
         dto = bl.getUserWS();
+
+        LOG.debug("Returned user: " + dto);
 
         return dto;
     }

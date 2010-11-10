@@ -505,9 +505,10 @@ public class UserDTO implements Serializable {
     }
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "user_credit_card_map", joinColumns = {
-            @JoinColumn(name = "user_id", updatable = false)}, inverseJoinColumns = {
-            @JoinColumn(name = "credit_card_id", updatable = false)})
+    @JoinTable(name = "user_credit_card_map",
+               joinColumns = {@JoinColumn(name = "user_id", updatable = false)},
+               inverseJoinColumns = {@JoinColumn(name = "credit_card_id", updatable = false)}
+    )
     public Set<CreditCardDTO> getCreditCards() {
         return this.creditCards;
     }

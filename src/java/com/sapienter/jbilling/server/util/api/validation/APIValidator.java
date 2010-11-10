@@ -51,10 +51,6 @@ public class APIValidator implements MethodBeforeAdvice {
 		this.validator = validator;
 	}
 
-	public static Logger getLog() {
-		return LOG;
-	}
-
 	public void before(Method method, Object[] args, Object target) throws Throwable {
 		ArrayList<String> errors = new ArrayList<String>();
 		
@@ -87,8 +83,7 @@ public class APIValidator implements MethodBeforeAdvice {
         
         if (errors.size() > 0) {
         	SessionInternalError exception = new SessionInternalError();
-        	exception.setErrorMessages(new String[errors.size()]);
-        	errors.toArray(exception.getErrorMessages());
+        	exception.setErrorMessages(errors.toArray(new String[errors.size()]));        	            
         	throw exception;
         }
     }

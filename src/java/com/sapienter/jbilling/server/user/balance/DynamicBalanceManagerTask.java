@@ -172,7 +172,7 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
         // fail fast condition, no dynamic balance or ammount is zero
         if (customer == null
                 || customer.getBalanceType() == Constants.BALANCE_NO_DYNAMIC
-                || amount.equals(BigDecimal.ZERO)) {
+                || amount.compareTo(BigDecimal.ZERO) == 0) {
             LOG.debug("Nothing to update");
             return;
         }

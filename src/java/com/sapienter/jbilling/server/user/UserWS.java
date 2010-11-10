@@ -42,30 +42,28 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.validation.CreateValidationGroup;
 import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
 
-/**
- * @author Emil
- */
+/** @author Emil */
 public class UserWS implements WSSecured, Serializable {
-	
-	@Min(value=1, message="validation.error.min,1", groups=UpdateValidationGroup.class)
-	@Max(value=0, message="validation.error.max,0", groups=CreateValidationGroup.class)
+
+    @Min(value = 1, message = "validation.error.min,1", groups = UpdateValidationGroup.class)
+    @Max(value = 0, message = "validation.error.max,0", groups = CreateValidationGroup.class)
     private int id;
     private Integer currencyId;
-    @Size(min=5, max=40, message="validation.error.size,5,40", groups=CreateValidationGroup.class)
+    @Size(min = 5, max = 40, message = "validation.error.size,5,40", groups = CreateValidationGroup.class)
     private String password;
     private int deleted;
     private Date createDatetime;
     private Date lastStatusChange;
     private Date lastLogin;
-    @Size(min=5, max=50, message="validation.error.size,5,50")
+    @Size(min = 5, max = 50, message = "validation.error.size,5,50")
     private String userName;
     private int failedAttempts;
     private Integer languageId;
 
     private CreditCardDTO creditCard = null;
     private AchDTO ach = null;
-    
-    @NotNull(message="validation.error.notnull")
+
+    @NotNull(message = "validation.error.notnull")
     @Valid
     private ContactWS contact = null;
     private String role = null;
@@ -91,28 +89,9 @@ public class UserWS implements WSSecured, Serializable {
     private String notes;
     private Integer automaticPaymentType;
 
-    public String getNotes() {
-		return notes;
-	}
-	public void setNotes(String notes) {
-		this.notes = notes;
-	}
-	public Integer getAutomaticPaymentType() {
-		return automaticPaymentType;
-	}
-	public void setAutomaticPaymentType(Integer automaticPaymentType) {
-		this.automaticPaymentType = automaticPaymentType;
-	}
-	public Integer getPartnerId() {
-        return partnerId;
-    }
-    public void setPartnerId(Integer partnerId) {
-        this.partnerId = partnerId;
-    }
-    // to comply with the Java Bean spec.
     public UserWS() {
     }
-    
+
     public UserWS(UserDTOEx dto) {
         id = dto.getId();
         currencyId = dto.getCurrencyId();
@@ -136,10 +115,16 @@ public class UserWS implements WSSecured, Serializable {
         subscriberStatusId = dto.getSubscriptionStatusId();
         if (dto.getCustomer() != null) {
             partnerId = (dto.getCustomer().getPartner() == null) ? null : dto.getCustomer().getPartner().getId();
-            parentId = (dto.getCustomer().getParent() == null) ? null : dto.getCustomer().getParent().getBaseUser().getId();
+            parentId = (dto.getCustomer().getParent() == null)
+                       ? null
+                       : dto.getCustomer().getParent().getBaseUser().getId();
             mainOrderId = dto.getCustomer().getCurrentOrderId();
-            isParent = dto.getCustomer().getIsParent() == null ? false : dto.getCustomer().getIsParent().equals(new Integer(1));
-            invoiceChild = dto.getCustomer().getInvoiceChild() == null ? false : dto.getCustomer().getInvoiceChild().equals(new Integer(1));
+            isParent = dto.getCustomer().getIsParent() == null
+                       ? false
+                       : dto.getCustomer().getIsParent().equals(new Integer(1));
+            invoiceChild = dto.getCustomer().getInvoiceChild() == null
+                           ? false
+                           : dto.getCustomer().getInvoiceChild().equals(new Integer(1));
             childIds = new Integer[dto.getCustomer().getChildren().size()];
             int index = 0;
             for (CustomerDTO customer : dto.getCustomer().getChildren()) {
@@ -151,7 +136,7 @@ public class UserWS implements WSSecured, Serializable {
             setDynamicBalance(dto.getCustomer().getDynamicBalance());
             setCreditLimit(dto.getCustomer().getCreditLimit());
             setAutoRecharge(dto.getCustomer().getAutoRecharge());
-            
+
             setNotes(dto.getCustomer().getNotes());
             setAutomaticPaymentType(dto.getCustomer().getAutoPaymentType());
         }
@@ -160,206 +145,195 @@ public class UserWS implements WSSecured, Serializable {
 
         setOwingBalance(dto.getBalance());
     }
-    
-    public String toString() {
-        return "id = [" + id + "] credit card = [" + creditCard + "] ach = [" +
-                ach + "] contact = [" + contact + "] type = [" + role + 
-                "] language = [" + languageId + language + "]  status = [" + 
-                status + "] statusId = [" + statusId + "] subscriberStatusId = [" + 
-                subscriberStatusId + "] roleId = [" + mainRoleId + "] " +  
-                " parentId = [" + parentId + "] " + super.toString();
+
+    public Integer getPartnerId() {
+        return partnerId;
     }
-    /**
-     * @return
-     */
+
+    public void setPartnerId(Integer partnerId) {
+        this.partnerId = partnerId;
+    }
+
     public ContactWS getContact() {
         return contact;
     }
 
-    /**
-     * @param contact
-     */
     public void setContact(ContactWS contact) {
         this.contact = contact;
     }
 
-    /**
-     * @return
-     */
     public CreditCardDTO getCreditCard() {
         return creditCard;
     }
 
-    /**
-     * @param creditCard
-     */
     public void setCreditCard(CreditCardDTO creditCard) {
         this.creditCard = creditCard;
     }
-    
+
     public AchDTO getAch() {
         return ach;
     }
-    
+
     public void setAch(AchDTO ach) {
         this.ach = ach;
     }
 
-    /**
-     * @return
-     */
     public String getLanguage() {
         return language;
     }
 
-    /**
-     * @param language
-     */
     public void setLanguage(String language) {
         this.language = language;
     }
 
-    /**
-     * @return
-     */
     public String getStatus() {
         return status;
     }
 
-    /**
-     * @param status
-     */
     public void setStatus(String status) {
         this.status = status;
     }
 
-    /**
-     * @return
-     */
     public String getRole() {
         return role;
     }
 
-    /**
-     * @param type
-     */
     public void setRole(String type) {
         this.role = type;
     }
 
-    /**
-     * @return
-     */
     public Integer getMainRoleId() {
         return mainRoleId;
     }
 
-    /**
-     * @param mainRoleId
-     */
     public void setMainRoleId(Integer mainRoleId) {
         this.mainRoleId = mainRoleId;
     }
 
-    /**
-     * @return
-     */
     public Integer getStatusId() {
         return statusId;
     }
 
-    /**
-     * @param statusId
-     */
     public void setStatusId(Integer statusId) {
         this.statusId = statusId;
     }
+
     public Integer getSubscriberStatusId() {
         return subscriberStatusId;
     }
+
     public void setSubscriberStatusId(Integer subscriberStatusId) {
         this.subscriberStatusId = subscriberStatusId;
     }
+
     public Integer getParentId() {
-        return parentId;                                                                                                                     }
+        return parentId;
+    }
+
     public void setParentId(Integer parentId) {
         this.parentId = parentId;
     }
+
     public Boolean getIsParent() {
         return isParent;
     }
+
     public void setIsParent(Boolean isParent) {
         this.isParent = isParent;
     }
+
     public Boolean getInvoiceChild() {
         return invoiceChild;
     }
+
     public void setInvoiceChild(Boolean invoiceChild) {
         this.invoiceChild = invoiceChild;
     }
+
     public Date getCreateDatetime() {
         return createDatetime;
     }
+
     public void setCreateDatetime(Date createDatetime) {
         this.createDatetime = createDatetime;
     }
+
     public Integer getCurrencyId() {
         return currencyId;
     }
+
     public void setCurrencyId(Integer currencyId) {
         this.currencyId = currencyId;
     }
+
     public int getDeleted() {
         return deleted;
     }
+
     public void setDeleted(int deleted) {
         this.deleted = deleted;
     }
+
     public int getFailedAttempts() {
         return failedAttempts;
     }
+
     public void setFailedAttempts(int failedAttempts) {
         this.failedAttempts = failedAttempts;
     }
+
     public int getUserId() {
         return id;
     }
+
     public void setUserId(int id) {
         this.id = id;
     }
+
     public Date getLastLogin() {
         return lastLogin;
     }
+
     public void setLastLogin(Date lastLogin) {
         this.lastLogin = lastLogin;
     }
+
     public Date getLastStatusChange() {
         return lastStatusChange;
     }
+
     public void setLastStatusChange(Date lastStatusChange) {
         this.lastStatusChange = lastStatusChange;
     }
+
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
+
     public String getUserName() {
         return userName;
     }
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
+
     public Integer getLanguageId() {
         return languageId;
     }
+
     public void setLanguageId(Integer languageId) {
         this.languageId = languageId;
     }
+
     public Integer getMainOrderId() {
         return mainOrderId;
     }
+
     public void setMainOrderId(Integer mainOrderId) {
         this.mainOrderId = mainOrderId;
     }
@@ -435,7 +409,7 @@ public class UserWS implements WSSecured, Serializable {
     public BigDecimal getDynamicBalanceAsDecimal() {
         return dynamicBalance == null ? null : new BigDecimal(dynamicBalance);
     }
-    
+
     public void setDynamicBalance(String dynamicBalance) {
         this.dynamicBalance = dynamicBalance;
     }
@@ -460,8 +434,25 @@ public class UserWS implements WSSecured, Serializable {
         this.autoRecharge = (autoRecharge != null ? autoRecharge.toString() : null);
     }
 
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public Integer getAutomaticPaymentType() {
+        return automaticPaymentType;
+    }
+
+    public void setAutomaticPaymentType(Integer automaticPaymentType) {
+        this.automaticPaymentType = automaticPaymentType;
+    }
+
     /**
      * Unsupported, web-service security enforced using {@link #getOwningUserId()}
+     *
      * @return null
      */
     public Integer getOwningEntityId() {
@@ -470,5 +461,28 @@ public class UserWS implements WSSecured, Serializable {
 
     public Integer getOwningUserId() {
         return getUserId();
+    }
+   
+    @Override
+    public String toString() {
+        return "UserWS{"
+               + "id=" + id
+               + ", userName='" + userName + '\''
+               + ", currencyId=" + currencyId
+               + ", languageId=" + languageId
+               + ", statusId=" + statusId
+               + ", subscriberStatusId=" + subscriberStatusId
+               + ", deleted=" + deleted
+               + ", isParent=" + isParent
+               + ", parentId=" + parentId
+               + ", creditCardId=" + (creditCard != null ? creditCard.getId() : null)
+               + ", achId=" + (ach != null ? ach.getId() : null)
+               + ", automaticPaymentType=" + automaticPaymentType
+               + ", owingBalance='" + owingBalance + '\''
+               + ", balanceType=" + balanceType
+               + ", dynamicBalance='" + dynamicBalance + '\''
+               + ", autoRecharge='" + autoRecharge + '\''
+               + ", creditLimit='" + creditLimit + '\''
+               + '}';
     }
 }

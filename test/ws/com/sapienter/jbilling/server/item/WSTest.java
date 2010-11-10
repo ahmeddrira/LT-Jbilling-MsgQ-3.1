@@ -282,8 +282,8 @@ public class WSTest  extends TestCase {
 	    	String description = item.getDescription();
 	    	Integer prMan = item.getPriceManual();
 	    	String number = item.getNumber();
-	    	BigDecimal price = item.getPrice();
-	    	BigDecimal perc = item.getPercentage();
+	    	BigDecimal price = new BigDecimal(item.getPrice());
+	    	BigDecimal perc = new BigDecimal(item.getPercentage());
 	    	String promo = item.getPromoCode();
 	
 	    	System.out.println("Changing properties");

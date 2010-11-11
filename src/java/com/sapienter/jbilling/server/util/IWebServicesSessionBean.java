@@ -38,6 +38,7 @@ import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.RecordCountWS;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.order.OrderProcessWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
@@ -196,7 +197,7 @@ public interface IWebServicesSessionBean {
         Billing process
      */
 
-    public void triggerBilling(Date runDate);
+    public boolean triggerBilling(Date runDate);
     public void triggerAgeing(Date runDate);
 
     public BillingProcessConfigurationWS getBillingProcessConfiguration() throws SessionInternalError;
@@ -204,6 +205,9 @@ public interface IWebServicesSessionBean {
 
     public BillingProcessWS getBillingProcess(Integer processId);
     public Integer getLastBillingProcess() throws SessionInternalError;
+    
+    public List<OrderProcessWS> getOrderProcesses(Integer orderId);
+    public List<OrderProcessWS> getOrderProcessesByInvoice(Integer invoiceId);
 
     public BillingProcessWS getReviewBillingProcess();
     public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws SessionInternalError;

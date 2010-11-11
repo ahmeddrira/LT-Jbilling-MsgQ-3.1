@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,6 +39,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.sapienter.jbilling.server.order.OrderProcessWS;
+import com.sapienter.jbilling.server.order.db.OrderProcessDAS;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import sun.jdbc.rowset.CachedRowSet;
@@ -2050,9 +2054,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         Billing process
      */
 
-    public void triggerBilling(Date runDate) {
+    public boolean triggerBilling(Date runDate) {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        processBean.trigger(runDate);        
+        return processBean.trigger(runDate);
     }
 
     public void triggerAgeing(Date runDate) {
@@ -2086,6 +2090,32 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public Integer getLastBillingProcess() throws SessionInternalError {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
         return processBean.getLast(getCallerCompanyId());
+    }
+
+    public List<OrderProcessWS> getOrderProcesses(Integer orderId) {
+        OrderDTO order = new OrderBL(orderId).getDTO();
+
+        if (order == null)
+            return Collections.emptyList();
+
+        List<OrderProcessWS> ws = new ArrayList<OrderProcessWS>(order.getOrderProcesses().size());
+        for (OrderProcessDTO process : order.getOrderProcesses())
+            ws.add(new OrderProcessWS(process));
+
+        return ws;
+    }
+
+    public List<OrderProcessWS> getOrderProcessesByInvoice(Integer invoiceId) {
+        InvoiceDTO invoice = new InvoiceBL(invoiceId).getDTO();
+
+        if (invoice == null)
+            return Collections.emptyList();
+
+        List<OrderProcessWS> ws = new ArrayList<OrderProcessWS>(invoice.getOrderProcesses().size());
+        for (OrderProcessDTO process : invoice.getOrderProcesses())
+            ws.add(new OrderProcessWS(process));
+
+        return ws;
     }
 
     public BillingProcessWS getReviewBillingProcess() {

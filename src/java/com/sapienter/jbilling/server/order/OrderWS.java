@@ -28,6 +28,8 @@ package com.sapienter.jbilling.server.order;
 import com.sapienter.jbilling.server.security.WSSecured;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -36,12 +38,17 @@ import java.util.Date;
 public class OrderWS implements WSSecured, Serializable {
 
     private Integer id;
-    private Integer createdBy;
     private Integer statusId;
+    private Integer isCurrent;
+    private Integer userId = null;
+    private Integer currencyId = null;
     private Integer billingTypeId;
+    private Integer period = null;
+    private Date createDate;
+    private Integer createdBy;
     private Date activeSince;
     private Date activeUntil;
-    private Date createDate;
+    private Date cycleStarts;
     private Date nextBillableDay;
     private int deleted;
     private Integer notify;
@@ -54,50 +61,29 @@ public class OrderWS implements WSSecured, Serializable {
     private Integer ownInvoice;
     private String notes;
     private Integer notesInInvoice;
-    private Integer isCurrent;
-    private Integer versionNum;
-    private Date cycleStarts;
-    
-    //
-    private String statusStr = null;
-    private String timeUnitStr = null;
-
-    // 
     private OrderLineWS orderLines[] = null;
-    private Integer period = null;
-    private Integer userId = null; // who is buying ?
-    private Integer currencyId = null;
-    // show the description
-    // instead of the ids
-    private String periodStr = null;
-    private String billingTypeStr = null;
     private String pricingFields = null;
 
-    /**
-     * 
-     */
+    // balances
+    private String total;
+
+    // textual descriptions
+    private String statusStr = null;
+    private String timeUnitStr = null;
+    private String periodStr = null;
+    private String billingTypeStr = null;
+
+    // optlock (not necessary)
+    private Integer versionNum;
+
     public OrderWS() {
     }
 
-    /**
-     * @param id
-     * @param billingTypeId
-     * @param activeSince
-     * @param activeUntil
-     * @param createDate
-     * @param nextBillableDay
-     * @param createdBy
-     * @param toProcess
-     * @param deleted
-     */
-    public OrderWS(Integer id, Integer billingTypeId, Integer notify,
-            Date activeSince, Date activeUntil, Date createDate, 
-            Date nextBillableDay, Integer createdBy, Integer statusId, 
-            Integer deleted, Integer currencyId, Date lastNotified, 
-            Integer notifStep, Integer dueDateUnitId, Integer dueDateValue, 
-            Integer anticipatePeriods, Integer dfFm, Integer isCurrent, 
-            String notes, Integer notesInInvoice, Integer ownInvoice, 
-            Integer period, Integer userId, Integer version, Date cycleStarts) {
+    public OrderWS(Integer id, Integer billingTypeId, Integer notify, Date activeSince, Date activeUntil,
+                   Date createDate, Date nextBillableDay, Integer createdBy, Integer statusId, Integer deleted,
+                   Integer currencyId, Date lastNotified, Integer notifStep, Integer dueDateUnitId, Integer dueDateValue,
+                   Integer anticipatePeriods, Integer dfFm, Integer isCurrent, String notes, Integer notesInInvoice,
+                   Integer ownInvoice, Integer period, Integer userId, Integer version, Date cycleStarts) {
         setId(id);
         setBillingTypeId(billingTypeId);
         setNotify(notify);
@@ -125,73 +111,34 @@ public class OrderWS implements WSSecured, Serializable {
         setCycleStarts(cycleStarts);
     }
 
-    /**
-     * @return
-     */
-    public String getBillingTypeStr() {
-        return billingTypeStr;
+    public Integer getId() {
+        return id;
     }
 
-    /**
-     * @param billingTypeStr
-     */
-    public void setBillingTypeStr(String billingTypeStr) {
-        this.billingTypeStr = billingTypeStr;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    /**
-     * @return
-     */
-    public OrderLineWS[] getOrderLines() {
-        return orderLines;
+    public Integer getStatusId() {
+        return statusId;
     }
 
-    /**
-     * @param orderLines
-     */
-    public void setOrderLines(OrderLineWS orderLines[]) {
-        this.orderLines = orderLines;
+    public void setStatusId(Integer statusId) {
+        this.statusId = statusId;
     }
 
-    /**
-     * @return
-     */
-    public Integer getPeriod() {
-        return period;
+    public Integer getIsCurrent() {
+        return isCurrent;
     }
 
-    /**
-     * @param period
-     */
-    public void setPeriod(Integer period) {
-        this.period = period;
+    public void setIsCurrent(Integer current) {
+        isCurrent = current;
     }
 
-    /**
-     * @return
-     */
-    public String getPeriodStr() {
-        return periodStr;
-    }
-
-    /**
-     * @param periodStr
-     */
-    public void setPeriodStr(String periodStr) {
-        this.periodStr = periodStr;
-    }
-
-
-    /**
-     * @return
-     */
     public Integer getUserId() {
         return userId;
     }
 
-    /**
-     * @param userId
-     */
     public void setUserId(Integer userId) {
         this.userId = userId;
     }
@@ -203,46 +150,6 @@ public class OrderWS implements WSSecured, Serializable {
     public void setCurrencyId(Integer currencyId) {
         this.currencyId = currencyId;
     }
-    
-    public String toString() {
-        StringBuffer str = new StringBuffer(super.toString() + "periodStr= " + periodStr +
-                " currencyId= " + currencyId);
-        str.append("lines=");
-        if (getOrderLines() != null) {
-            for (OrderLineWS line: getOrderLines()) {
-                str.append(line.toString() + "-");
-            }
-        } else {
-            str.append(" none ");
-        }
-        str.append("]");
-        return str.toString();
-
-    }
-
-    public Date getActiveSince() {
-        return activeSince;
-    }
-
-    public void setActiveSince(Date activeSince) {
-        this.activeSince = activeSince;
-    }
-
-    public Date getActiveUntil() {
-        return activeUntil;
-    }
-
-    public void setActiveUntil(Date activeUntil) {
-        this.activeUntil = activeUntil;
-    }
-
-    public Integer getAnticipatePeriods() {
-        return anticipatePeriods;
-    }
-
-    public void setAnticipatePeriods(Integer anticipatePeriods) {
-        this.anticipatePeriods = anticipatePeriods;
-    }
 
     public Integer getBillingTypeId() {
         return billingTypeId;
@@ -250,6 +157,14 @@ public class OrderWS implements WSSecured, Serializable {
 
     public void setBillingTypeId(Integer billingTypeId) {
         this.billingTypeId = billingTypeId;
+    }
+
+    public Integer getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(Integer period) {
+        this.period = period;
     }
 
     public Date getCreateDate() {
@@ -268,6 +183,38 @@ public class OrderWS implements WSSecured, Serializable {
         this.createdBy = createdBy;
     }
 
+    public Date getActiveSince() {
+        return activeSince;
+    }
+
+    public void setActiveSince(Date activeSince) {
+        this.activeSince = activeSince;
+    }
+
+    public Date getActiveUntil() {
+        return activeUntil;
+    }
+
+    public void setActiveUntil(Date activeUntil) {
+        this.activeUntil = activeUntil;
+    }
+
+    public Date getCycleStarts() {
+        return cycleStarts;
+    }
+
+    public void setCycleStarts(Date cycleStarts) {
+        this.cycleStarts = cycleStarts;
+    }
+
+    public Date getNextBillableDay() {
+        return nextBillableDay;
+    }
+
+    public void setNextBillableDay(Date nextBillableDay) {
+        this.nextBillableDay = nextBillableDay;
+    }
+
     public int getDeleted() {
         return deleted;
     }
@@ -276,12 +223,28 @@ public class OrderWS implements WSSecured, Serializable {
         this.deleted = deleted;
     }
 
-    public Integer getDfFm() {
-        return dfFm;
+    public Integer getNotify() {
+        return notify;
     }
 
-    public void setDfFm(Integer dfFm) {
-        this.dfFm = dfFm;
+    public void setNotify(Integer notify) {
+        this.notify = notify;
+    }
+
+    public Date getLastNotified() {
+        return lastNotified;
+    }
+
+    public void setLastNotified(Date lastNotified) {
+        this.lastNotified = lastNotified;
+    }
+
+    public Integer getNotificationStep() {
+        return notificationStep;
+    }
+
+    public void setNotificationStep(Integer notificationStep) {
+        this.notificationStep = notificationStep;
     }
 
     public Integer getDueDateUnitId() {
@@ -300,36 +263,28 @@ public class OrderWS implements WSSecured, Serializable {
         this.dueDateValue = dueDateValue;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getDfFm() {
+        return dfFm;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setDfFm(Integer dfFm) {
+        this.dfFm = dfFm;
     }
 
-    public Integer getIsCurrent() {
-        return isCurrent;
+    public Integer getAnticipatePeriods() {
+        return anticipatePeriods;
     }
 
-    public void setIsCurrent(Integer isCurrent) {
-        this.isCurrent = isCurrent;
+    public void setAnticipatePeriods(Integer anticipatePeriods) {
+        this.anticipatePeriods = anticipatePeriods;
     }
 
-    public Date getLastNotified() {
-        return lastNotified;
+    public Integer getOwnInvoice() {
+        return ownInvoice;
     }
 
-    public void setLastNotified(Date lastNotified) {
-        this.lastNotified = lastNotified;
-    }
-
-    public Date getNextBillableDay() {
-        return nextBillableDay;
-    }
-
-    public void setNextBillableDay(Date nextBillableDay) {
-        this.nextBillableDay = nextBillableDay;
+    public void setOwnInvoice(Integer ownInvoice) {
+        this.ownInvoice = ownInvoice;
     }
 
     public String getNotes() {
@@ -348,36 +303,36 @@ public class OrderWS implements WSSecured, Serializable {
         this.notesInInvoice = notesInInvoice;
     }
 
-    public Integer getNotificationStep() {
-        return notificationStep;
+    public OrderLineWS[] getOrderLines() {
+        return orderLines;
     }
 
-    public void setNotificationStep(Integer notificationStep) {
-        this.notificationStep = notificationStep;
+    public void setOrderLines(OrderLineWS[] orderLines) {
+        this.orderLines = orderLines;
     }
 
-    public Integer getNotify() {
-        return notify;
+    public String getPricingFields() {
+        return pricingFields;
     }
 
-    public void setNotify(Integer notify) {
-        this.notify = notify;
+    public void setPricingFields(String pricingFields) {
+        this.pricingFields = pricingFields;
     }
 
-    public Integer getOwnInvoice() {
-        return ownInvoice;
+    public String getTotal() {
+        return total;
     }
 
-    public void setOwnInvoice(Integer ownInvoice) {
-        this.ownInvoice = ownInvoice;
+    public BigDecimal getTotalAsDecimal() {
+        return total != null ? new BigDecimal(total) : null;
     }
 
-    public Integer getStatusId() {
-        return statusId;
+    public void setTotal(String total) {
+        this.total = total;
     }
 
-    public void setStatusId(Integer statusId) {
-        this.statusId = statusId;
+    public void setTotal(BigDecimal total) {
+        this.total = (total != null ? total.toString() : null);
     }
 
     public String getStatusStr() {
@@ -396,28 +351,28 @@ public class OrderWS implements WSSecured, Serializable {
         this.timeUnitStr = timeUnitStr;
     }
 
+    public String getPeriodStr() {
+        return periodStr;
+    }
+
+    public void setPeriodStr(String periodStr) {
+        this.periodStr = periodStr;
+    }
+
+    public String getBillingTypeStr() {
+        return billingTypeStr;
+    }
+
+    public void setBillingTypeStr(String billingTypeStr) {
+        this.billingTypeStr = billingTypeStr;
+    }
+
     public Integer getVersionNum() {
         return versionNum;
     }
 
     public void setVersionNum(Integer versionNum) {
         this.versionNum = versionNum;
-    }
-
-    public Date getCycleStarts() {
-        return cycleStarts;
-    }
-
-    public void setCycleStarts(Date cycleStarts) {
-        this.cycleStarts = cycleStarts;
-    }
-    
-    public String getPricingFields() {
-        return pricingFields;
-    }
-    
-    public void setPricingFields(String pricingFields) {
-        this.pricingFields = pricingFields;
     }
 
     /**
@@ -430,5 +385,31 @@ public class OrderWS implements WSSecured, Serializable {
 
     public Integer getOwningUserId() {
         return getUserId();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append("OrderWS");
+        sb.append("{id=").append(id);
+        sb.append(", userId=").append(userId);
+        sb.append(", currencyId=").append(currencyId);
+        sb.append(", activeUntil=").append(activeUntil);
+        sb.append(", activeSince=").append(activeSince);
+        sb.append(", isCurrent=").append(isCurrent);
+        sb.append(", statusStr='").append(statusStr).append('\'');
+        sb.append(", periodStr='").append(periodStr).append('\'');
+        sb.append(", billingTypeStr='").append(billingTypeStr).append('\'');
+
+        sb.append(", lines=");
+        if (getOrderLines() != null) {
+            sb.append(Arrays.toString(getOrderLines()));
+        } else {
+            sb.append("[]");
+        }
+
+        sb.append('}');
+        return sb.toString();
     }
 }

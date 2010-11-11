@@ -39,9 +39,9 @@ public class PartnerPayoutWS implements Serializable {
     private Integer paymentId;
     private Date startingDate;
     private Date endingDate;
-    private BigDecimal paymentsAmount;
-    private BigDecimal refundsAmount;
-    private BigDecimal balanceLeft;
+    private String paymentsAmount;
+    private String refundsAmount;
+    private String balanceLeft;
 
     public PartnerPayoutWS() {
     }
@@ -52,9 +52,9 @@ public class PartnerPayoutWS implements Serializable {
         this.paymentId = dto.getPayment() != null ? dto.getPayment().getId() : null;
         this.startingDate = dto.getStartingDate();
         this.endingDate = dto.getEndingDate();
-        this.paymentsAmount = dto.getPaymentsAmount();
-        this.refundsAmount = dto.getRefundsAmount();
-        this.balanceLeft = dto.getBalanceLeft();
+        setPaymentsAmount(dto.getPaymentsAmount());
+        setRefundsAmount(dto.getRefundsAmount());
+        setBalanceLeft(dto.getBalanceLeft());
     }
 
     public int getId() {
@@ -97,28 +97,52 @@ public class PartnerPayoutWS implements Serializable {
         this.endingDate = endingDate;
     }
 
-    public BigDecimal getPaymentsAmount() {
+    public String getPaymentsAmount() {
         return paymentsAmount;
     }
 
-    public void setPaymentsAmount(BigDecimal paymentsAmount) {
+    public BigDecimal getPaymentsAmountAsDecimal() {
+        return paymentsAmount != null ? new BigDecimal(paymentsAmount) : null;
+    }
+
+    public void setPaymentsAmount(String paymentsAmount) {
         this.paymentsAmount = paymentsAmount;
     }
 
-    public BigDecimal getRefundsAmount() {
+    public void setPaymentsAmount(BigDecimal paymentsAmount) {
+        this.paymentsAmount = (paymentsAmount != null ? paymentsAmount.toString() : null);
+    }
+
+    public String getRefundsAmount() {
         return refundsAmount;
     }
 
-    public void setRefundsAmount(BigDecimal refundsAmount) {
+    public BigDecimal getRefundsAmountAsDecimal() {
+        return refundsAmount != null ? new BigDecimal(refundsAmount) : null;
+    }
+
+    public void setRefundsAmount(String refundsAmount) {
         this.refundsAmount = refundsAmount;
     }
 
-    public BigDecimal getBalanceLeft() {
+    public void setRefundsAmount(BigDecimal refundsAmount) {
+        this.refundsAmount = (refundsAmount != null ? refundsAmount.toString() : null);
+    }
+
+    public String getBalanceLeft() {
         return balanceLeft;
     }
 
-    public void setBalanceLeft(BigDecimal balanceLeft) {
+    public BigDecimal getBalanceLeftAsDecimal() {
+        return balanceLeft != null ? new BigDecimal(balanceLeft) : null;
+    }
+
+    public void setBalanceLeft(String balanceLeft) {
         this.balanceLeft = balanceLeft;
+    }
+
+    public void setBalanceLeft(BigDecimal balanceLeft) {
+        this.balanceLeft = (balanceLeft != null ? balanceLeft.toString() : null);
     }
 
     @Override

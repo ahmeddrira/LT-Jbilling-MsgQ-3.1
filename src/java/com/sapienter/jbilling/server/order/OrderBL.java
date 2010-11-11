@@ -165,9 +165,11 @@ public class OrderBL extends ResultList
                 order.getBaseUserByUserId().getId(),
                 order.getVersionNum(), order.getCycleStarts());
 
+        retValue.setTotal(order.getTotal());
+
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
-
+        
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
         for (Iterator it = order.getLines().iterator(); it.hasNext();) {
             OrderLineDTO line = (OrderLineDTO) it.next();

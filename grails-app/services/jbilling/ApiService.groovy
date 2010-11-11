@@ -24,7 +24,8 @@ import com.sapienter.jbilling.server.user.partner.PartnerWS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import com.sapienter.jbilling.server.mediation.RecordCountWS
 import com.sapienter.jbilling.server.notification.MessageDTO;
-import com.sapienter.jbilling.server.util.PreferenceWS;
+import com.sapienter.jbilling.server.util.PreferenceWS
+import com.sapienter.jbilling.server.order.OrderProcessWS;
 
 
 /**
@@ -348,8 +349,8 @@ class ApiService implements IWebServicesSessionBean {
         Billing process
      */
 
-    public void triggerBilling(Date runDate) {
-        webServicesSession.triggerBilling(runDate)
+    public boolean triggerBilling(Date runDate) {
+        return webServicesSession.triggerBilling(runDate)
     }
 
     public void triggerAgeing(Date runDate) {
@@ -370,6 +371,14 @@ class ApiService implements IWebServicesSessionBean {
 
     public Integer getLastBillingProcess() {
         return webServicesSession.getLastBillingProcess()
+    }
+
+    public List<OrderProcessWS> getOrderProcesses(Integer orderId) {
+        return webServicesSession.getOrderProcesses(orderId);
+    }
+
+    public List<OrderProcessWS> getOrderProcessesByInvoice(Integer invoiceId) {
+        return webServiceSession.getOrderProcessesByInvoice(invoiceId);
     }
 
     public BillingProcessWS getReviewBillingProcess() {

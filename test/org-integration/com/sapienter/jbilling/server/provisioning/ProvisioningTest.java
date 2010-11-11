@@ -62,8 +62,6 @@ public class ProvisioningTest extends TestCase {
         try {
             Thread.sleep(t);
         } catch (InterruptedException e) {
-
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -130,9 +128,6 @@ public class ProvisioningTest extends TestCase {
 
                 }
             }
-        } catch (JbillingAPIException e) {
-            e.printStackTrace();
-            fail("Exception!" + e.getMessage());
         } catch (SessionInternalError e) {
             e.printStackTrace();
             fail("Exception!" + e.getMessage());
@@ -205,9 +200,6 @@ public class ProvisioningTest extends TestCase {
                                  Constants.PROVISIONING_STATUS_INACTIVE); // default
                 }
             }
-        } catch (JbillingAPIException e) {
-            e.printStackTrace();
-            fail("Exception!" + e.getMessage());
         } catch (SessionInternalError e) {
             e.printStackTrace();
             fail("Exception!" + e.getMessage());
@@ -280,9 +272,6 @@ public class ProvisioningTest extends TestCase {
                                  Constants.PROVISIONING_STATUS_INACTIVE); // default
                 }
             }
-        } catch (JbillingAPIException e) {
-            e.printStackTrace();
-            fail("Exception!" + e.getMessage());
         } catch (SessionInternalError e) {
             e.printStackTrace();
             fail("Exception!" + e.getMessage());

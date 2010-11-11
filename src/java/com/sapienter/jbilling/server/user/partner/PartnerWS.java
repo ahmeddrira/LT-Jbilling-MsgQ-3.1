@@ -44,16 +44,16 @@ public class PartnerWS implements WSSecured, Serializable {
     private Integer periodUnitId;
     private Integer userId;
     private Integer feeCurrencyId;
-    private BigDecimal balance;
-    private BigDecimal totalPayments;
-    private BigDecimal totalRefunds;
-    private BigDecimal totalPayouts;
-    private BigDecimal percentageRate;
-    private BigDecimal referralFee;
+    private String balance;
+    private String totalPayments;
+    private String totalRefunds;
+    private String totalPayouts;
+    private String percentageRate;
+    private String referralFee;
     private Integer oneTime;
     private Integer periodValue;
     private Date nextPayoutDate;
-    private BigDecimal duePayout;
+    private String duePayout;
     private Integer automaticProcess;
 
     private List<PartnerRangeWS> ranges = new ArrayList<PartnerRangeWS>(0);
@@ -68,16 +68,16 @@ public class PartnerWS implements WSSecured, Serializable {
         this.periodUnitId = dto.getPeriodUnit() != null ? dto.getPeriodUnit().getId() : null;
         this.userId = dto.getUser() != null ? dto.getUser().getId() : null;
         this.feeCurrencyId = dto.getFeeCurrency() != null ? dto.getFeeCurrency().getId() : null;
-        this.balance = dto.getBalance();
-        this.totalPayments = dto.getTotalPayments();
-        this.totalRefunds = dto.getTotalRefunds();
-        this.totalPayouts = dto.getTotalPayouts();
-        this.percentageRate = dto.getPercentageRate();
-        this.referralFee = dto.getReferralFee();
+        setBalance(dto.getBalance());
+        setTotalPayments(dto.getTotalPayments());
+        setTotalRefunds(dto.getTotalRefunds());
+        setTotalPayouts(dto.getTotalPayouts());
+        setPercentageRate(dto.getPercentageRate());
+        setReferralFee(dto.getReferralFee());
         this.oneTime = dto.getOneTime();
         this.periodValue = dto.getPeriodValue();
         this.nextPayoutDate = dto.getNextPayoutDate();
-        this.duePayout = dto.getDuePayout();
+        setDuePayout(dto.getDuePayout());
         this.automaticProcess = dto.getAutomaticProcess();
 
         // partner ranges
@@ -128,52 +128,100 @@ public class PartnerWS implements WSSecured, Serializable {
         this.feeCurrencyId = feeCurrencyId;
     }
 
-    public BigDecimal getBalance() {
+    public String getBalance() {
         return balance;
     }
 
-    public void setBalance(BigDecimal balance) {
+    public BigDecimal getBalanceAsDecimal() {
+        return balance != null ? new BigDecimal(balance) : null;
+    }
+
+    public void setBalance(String balance) {
         this.balance = balance;
     }
 
-    public BigDecimal getTotalPayments() {
+    public void setBalance(BigDecimal balance) {
+        this.balance = (balance != null ? balance.toString() : null);
+    }
+
+    public String getTotalPayments() {
         return totalPayments;
     }
 
-    public void setTotalPayments(BigDecimal totalPayments) {
+    public BigDecimal getTotalPaymentsAsBigDecimal() {
+        return totalPayments != null ? new BigDecimal(totalPayments) : null;
+    }
+
+    public void setTotalPayments(String totalPayments) {
         this.totalPayments = totalPayments;
     }
 
-    public BigDecimal getTotalRefunds() {
+    public void setTotalPayments(BigDecimal totalPayments) {
+        this.totalPayments = (totalPayments != null ? totalPayments.toString() : null);
+    }
+
+    public String getTotalRefunds() {
         return totalRefunds;
     }
 
-    public void setTotalRefunds(BigDecimal totalRefunds) {
+    public BigDecimal getTotalRefundsAsDecimal() {
+        return totalRefunds != null ? new BigDecimal(totalRefunds) : null;
+    }
+
+    public void setTotalRefunds(String totalRefunds) {
         this.totalRefunds = totalRefunds;
     }
 
-    public BigDecimal getTotalPayouts() {
+    public void setTotalRefunds(BigDecimal totalRefunds) {
+        this.totalRefunds = (totalRefunds != null ? totalRefunds.toString() : null);
+    }
+
+    public String getTotalPayouts() {
         return totalPayouts;
     }
 
-    public void setTotalPayouts(BigDecimal totalPayouts) {
+    public BigDecimal getTotalPayoutsAsDecimal() {
+        return totalPayouts != null ? new BigDecimal(totalPayouts) : null;
+    }
+
+    public void setTotalPayouts(String totalPayouts) {
         this.totalPayouts = totalPayouts;
     }
 
-    public BigDecimal getPercentageRate() {
+    public void setTotalPayouts(BigDecimal totalPayouts) {
+        this.totalPayouts = (totalPayouts != null ? totalPayouts.toString() : null);
+    }
+
+    public String getPercentageRate() {
         return percentageRate;
     }
 
-    public void setPercentageRate(BigDecimal percentageRate) {
+    public BigDecimal getPercentageRateAsDecimal() {
+        return percentageRate != null ? new BigDecimal(percentageRate) : null;
+    }
+
+    public void setPercentageRate(String percentageRate) {
         this.percentageRate = percentageRate;
     }
 
-    public BigDecimal getReferralFee() {
+    public void setPercentageRate(BigDecimal percentageRate) {
+        this.percentageRate = (percentageRate != null ? percentageRate.toString() : null);
+    }
+
+    public String getReferralFee() {
         return referralFee;
     }
 
-    public void setReferralFee(BigDecimal referralFee) {
+    public BigDecimal getReferralFeeAsDecimal() {
+        return referralFee != null ? new BigDecimal(referralFee) : null;
+    }
+
+    public void setReferralFee(String referralFee) {
         this.referralFee = referralFee;
+    }
+
+    public void setReferralFee(BigDecimal referralFee) {
+        this.referralFee = (referralFee != null ? referralFee.toString() : null);
     }
 
     public Integer getOneTime() {
@@ -200,12 +248,20 @@ public class PartnerWS implements WSSecured, Serializable {
         this.nextPayoutDate = nextPayoutDate;
     }
 
-    public BigDecimal getDuePayout() {
+    public String getDuePayout() {
         return duePayout;
     }
 
-    public void setDuePayout(BigDecimal duePayout) {
+    public BigDecimal getDuePayoutAsDecimal() {
+        return duePayout != null ? new BigDecimal(duePayout) : null;
+    }
+
+    public void setDuePayout(String duePayout) {
         this.duePayout = duePayout;
+    }
+
+    public void setDuePayout(BigDecimal duePayout) {
+        this.duePayout = (duePayout != null ? duePayout.toString() : null);
     }
 
     public Integer getAutomaticProcess() {

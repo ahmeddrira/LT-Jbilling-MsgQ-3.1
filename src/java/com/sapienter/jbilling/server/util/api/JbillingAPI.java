@@ -31,6 +31,7 @@ import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.RecordCountWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.order.OrderProcessWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
@@ -53,166 +54,169 @@ public interface JbillingAPI {
         Users
      */
 
-    public UserWS getUserWS(Integer userId) ;
-    public Integer createUser(UserWS newUser) ;
-    public void updateUser(UserWS user) ;
-    public void deleteUser(Integer userId) ;
+    public UserWS getUserWS(Integer userId);
+    public Integer createUser(UserWS newUser);
+    public void updateUser(UserWS user);
+    public void deleteUser(Integer userId);
 
-    public ContactWS[] getUserContactsWS(Integer userId) ;
-    public void updateUserContact(Integer userId, Integer typeId, ContactWS contact) ;
+    public ContactWS[] getUserContactsWS(Integer userId);
+    public void updateUserContact(Integer userId, Integer typeId, ContactWS contact);
 
-    public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard) ;
-    public void updateAch(Integer userId, AchDTO ach) ;
+    public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard);
+    public void updateAch(Integer userId, AchDTO ach);
 
-    public void setAutoPaymentType(Integer userId, Integer autoPaymentType, boolean use) ;
-    public Integer getAutoPaymentType(Integer userId) ;
+    public void setAutoPaymentType(Integer userId, Integer autoPaymentType, boolean use);
+    public Integer getAutoPaymentType(Integer userId);
 
-    public Integer[] getUsersByStatus(Integer statusId, boolean in) ;
-    public Integer[] getUsersInStatus(Integer statusId) ;
-    public Integer[] getUsersNotInStatus(Integer statusId) ;
-    public Integer[] getUsersByCustomField(Integer typeId, String value) ;
-    public Integer[] getUsersByCreditCard(String number) ;
+    public Integer[] getUsersByStatus(Integer statusId, boolean in);
+    public Integer[] getUsersInStatus(Integer statusId);
+    public Integer[] getUsersNotInStatus(Integer statusId);
+    public Integer[] getUsersByCustomField(Integer typeId, String value);
+    public Integer[] getUsersByCreditCard(String number);
 
-    public Integer getUserId(String username) ;
+    public Integer getUserId(String username);
 
     @Deprecated
-    public Integer authenticate(String username, String password) ;
+    public Integer authenticate(String username, String password);
 
-    public void processPartnerPayouts(Date runDate) ;
-    public PartnerWS getPartner(Integer partnerId) ;
+    public void processPartnerPayouts(Date runDate);
+    public PartnerWS getPartner(Integer partnerId);
 
-    public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) ;
-    public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id) ;
+    public UserTransitionResponseWS[] getUserTransitions(Date from, Date to);
+    public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id);
 
-    public CreateResponseWS create(UserWS user, OrderWS order) ;
+    public CreateResponseWS create(UserWS user, OrderWS order);
 
 
     /*
         Items
      */
 
-    public ItemDTOEx getItem(Integer itemId, Integer userId, PricingField[] fields) ;
-    public ItemDTOEx[] getAllItems() ;
-    public Integer createItem(ItemDTOEx item) ;
-    public void updateItem(ItemDTOEx item) ;
-    public void deleteItem(Integer itemId) ;
+    public ItemDTOEx getItem(Integer itemId, Integer userId, PricingField[] fields);
+    public ItemDTOEx[] getAllItems();
+    public Integer createItem(ItemDTOEx item);
+    public void updateItem(ItemDTOEx item);
+    public void deleteItem(Integer itemId);
 
-    public ItemDTOEx[] getItemByCategory(Integer itemTypeId) ;
-    public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) ;
+    public ItemDTOEx[] getItemByCategory(Integer itemTypeId);
+    public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId);
 
-    public ItemTypeWS[] getAllItemCategories() ;
-    public Integer createItemCategory(ItemTypeWS itemType) ;
-    public void updateItemCategory(ItemTypeWS itemType) ;
-    public void deleteItemCategory(Integer itemCategoryId) ;
+    public ItemTypeWS[] getAllItemCategories();
+    public Integer createItemCategory(ItemTypeWS itemType);
+    public void updateItemCategory(ItemTypeWS itemType);
+    public void deleteItemCategory(Integer itemCategoryId);
 
-    public String isUserSubscribedTo(Integer userId, Integer itemId) ;
+    public String isUserSubscribedTo(Integer userId, Integer itemId);
 
-    public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId) ;
-    public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number) ;
+    public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId);
+    public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number);
 
-    public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId) ;
-    public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number) ;
+    public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId);
+    public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number);
 
-    public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, PricingField[] fields) ;
-    public ValidatePurchaseWS validateMultiPurchase(Integer userId, Integer[] itemIds, PricingField[][] fields) ;
+    public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, PricingField[] fields);
+    public ValidatePurchaseWS validateMultiPurchase(Integer userId, Integer[] itemIds, PricingField[][] fields);
 
 
     /*
         Orders
      */
 
-    public OrderWS getOrder(Integer orderId) ;
-    public Integer createOrder(OrderWS order) ;
-    public void updateOrder(OrderWS order) ;
-    public Integer createUpdateOrder(OrderWS order) ;
-    public void deleteOrder(Integer id) ;
+    public OrderWS getOrder(Integer orderId);
+    public Integer createOrder(OrderWS order);
+    public void updateOrder(OrderWS order);
+    public Integer createUpdateOrder(OrderWS order);
+    public void deleteOrder(Integer id);
 
-    public Integer createOrderAndInvoice(OrderWS order) ;
+    public Integer createOrderAndInvoice(OrderWS order);
 
-    public OrderWS getCurrentOrder(Integer userId, Date date) ;
-    public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, PricingField[] fields, Date date, String eventDescription) ; 
+    public OrderWS getCurrentOrder(Integer userId, Date date);
+    public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, PricingField[] fields, Date date, String eventDescription); 
 
-    public OrderLineWS getOrderLine(Integer orderLineId) ;
-    public void updateOrderLine(OrderLineWS line) ;
+    public OrderLineWS getOrderLine(Integer orderLineId);
+    public void updateOrderLine(OrderLineWS line);
 
-    public Integer[] getOrderByPeriod(Integer userId, Integer periodId) ;
-    public OrderWS getLatestOrder(Integer userId) ;
-    public Integer[] getLastOrders(Integer userId, Integer number) ;
+    public Integer[] getOrderByPeriod(Integer userId, Integer periodId);
+    public OrderWS getLatestOrder(Integer userId);
+    public Integer[] getLastOrders(Integer userId, Integer number);
 
-    public OrderWS rateOrder(OrderWS order) ;
-    public OrderWS[] rateOrders(OrderWS orders[]) ;
+    public OrderWS rateOrder(OrderWS order);
+    public OrderWS[] rateOrders(OrderWS orders[]);
 
-    public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order) ;
+    public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order);
 
 
     /*
         Invoices
      */
 
-    public InvoiceWS getInvoiceWS(Integer invoiceId) ;
+    public InvoiceWS getInvoiceWS(Integer invoiceId);
 
-    public Integer[] createInvoice(Integer userId, boolean onlyRecurring) ;
-    public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) ;
-    public void deleteInvoice(Integer invoiceId) ;
+    public Integer[] createInvoice(Integer userId, boolean onlyRecurring);
+    public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId);
+    public void deleteInvoice(Integer invoiceId);
 
-    public Integer[] getAllInvoices(Integer userId) ;
-    public InvoiceWS getLatestInvoice(Integer userId) ;
-    public Integer[] getLastInvoices(Integer userId, Integer number) ;
+    public Integer[] getAllInvoices(Integer userId);
+    public InvoiceWS getLatestInvoice(Integer userId);
+    public Integer[] getLastInvoices(Integer userId, Integer number);
 
-    public Integer[] getInvoicesByDate(String since, String until) ;
-    public Integer[] getUserInvoicesByDate(Integer userId, String since, String until) ;
+    public Integer[] getInvoicesByDate(String since, String until);
+    public Integer[] getUserInvoicesByDate(Integer userId, String since, String until);
 
-    public byte[] getPaperInvoicePDF(Integer invoiceId) ;
+    public byte[] getPaperInvoicePDF(Integer invoiceId);
 
 
     /*
         Payments
      */
 
-    public PaymentWS getPayment(Integer paymentId) ;
-    public PaymentWS getLatestPayment(Integer userId) ;
-    public Integer[] getLastPayments(Integer userId, Integer number) ;
+    public PaymentWS getPayment(Integer paymentId);
+    public PaymentWS getLatestPayment(Integer userId);
+    public Integer[] getLastPayments(Integer userId, Integer number);
 
-    public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) ;
-    public Integer applyPayment(PaymentWS payment, Integer invoiceId) ;
-    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) ;
+    public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId);
+    public Integer applyPayment(PaymentWS payment, Integer invoiceId);
+    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment);
 
 
     /*
         Billing process
      */
 
-    public void triggerBilling(Date runDate) ;
-    public void triggerAgeing(Date runDate) ;
+    public boolean triggerBilling(Date runDate);
+    public void triggerAgeing(Date runDate);
 
-    public BillingProcessConfigurationWS getBillingProcessConfiguration() ;
-    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws) ;
+    public BillingProcessConfigurationWS getBillingProcessConfiguration();
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws);
 
-    public BillingProcessWS getBillingProcess(Integer processId) ;
-    public Integer getLastBillingProcess() ;
+    public BillingProcessWS getBillingProcess(Integer processId);
+    public Integer getLastBillingProcess();
 
-    public BillingProcessWS getReviewBillingProcess() ;
-    public BillingProcessConfigurationWS setReviewApproval(Boolean flag) ;
+    public List<OrderProcessWS> getOrderProcesses(Integer orderId);
+    public List<OrderProcessWS> getOrderProcessesByInvoice(Integer invoiceId);
 
-    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId) ;
+    public BillingProcessWS getReviewBillingProcess();
+    public BillingProcessConfigurationWS setReviewApproval(Boolean flag);
+
+    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId);
 
 
     /*
         Mediation process
      */
 
-    public void triggerMediation() ;
-    public boolean isMediationProcessing() ;
+    public void triggerMediation();
+    public boolean isMediationProcessing();
 
-    public List<MediationProcessWS> getAllMediationProcesses() ;
-    public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) ;
-    public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId) ;
-    public List<RecordCountWS> getNumberOfMediationRecordsByStatuses() ;
+    public List<MediationProcessWS> getAllMediationProcesses();
+    public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId);
+    public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId);
+    public List<RecordCountWS> getNumberOfMediationRecordsByStatuses();
 
-    public List<MediationConfigurationWS> getAllMediationConfigurations() ;
-    public void createMediationConfiguration(MediationConfigurationWS cfg) ;
-    public List<Integer> updateAllMediationConfigurations(List<MediationConfigurationWS> configurations) ;
-    public void deleteMediationConfiguration(Integer cfgId) ;
+    public List<MediationConfigurationWS> getAllMediationConfigurations();
+    public void createMediationConfiguration(MediationConfigurationWS cfg);
+    public List<Integer> updateAllMediationConfigurations(List<MediationConfigurationWS> configurations);
+    public void deleteMediationConfiguration(Integer cfgId);
 
 
 
@@ -220,15 +224,15 @@ public interface JbillingAPI {
         Provisioning process
      */
 
-    public void triggerProvisioning() ;
+    public void triggerProvisioning();
 
-    public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result) ;
-    public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) ;
+    public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result);
+    public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus);
 
 
     /*
         Utilities
      */
 
-    public void generateRules(String rulesData) ;
+    public void generateRules(String rulesData);
 }

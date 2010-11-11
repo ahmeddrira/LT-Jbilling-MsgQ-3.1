@@ -30,8 +30,14 @@ import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.user.partner.PartnerPayoutWS;
+import com.sapienter.jbilling.server.user.partner.PartnerWS;
+import com.sapienter.jbilling.server.util.api.JbillingAPI;
+import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 import junit.framework.TestCase;
 
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
@@ -46,11 +52,17 @@ import com.sapienter.jbilling.server.util.RemoteContext;
  */
 public class PartnerTest extends TestCase {
 
-    public void testPartnerGeneral() {
-        try {
-            IUserSessionBean session = RemoteContext.getBean("userRemoteSession");
-            Partner partner = null;
+    private JbillingAPI api;
 
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        api = JbillingAPIFactory.getAPI();
+    }
+    
+    public void testPartnerGeneral() {
+        try {            
             Calendar cal = Calendar.getInstance();
             cal.clear();
 
@@ -58,10 +70,10 @@ public class PartnerTest extends TestCase {
              *  first run
              */
             cal.set(2009, Calendar.MARCH, 15);
-            session.processPayouts(cal.getTime());
+            api.processPartnerPayouts(cal.getTime());
 
             // partner 1
-            partner = session.getPartnerDTO(new Integer(10));
+            PartnerWS partner = api.getPartner(10);
 
             // no payouts
             assertEquals("No new payouts for 1", 0, partner.getPartnerPayouts().size());
@@ -70,33 +82,32 @@ public class PartnerTest extends TestCase {
             assertEquals("1:next payout still apr 1", partner.getNextPayoutDate().getTime(), cal.getTime().getTime());
 
             // partner 2
-            partner = session.getPartnerDTO(new Integer(11));
+            partner = api.getPartner(11);
 
             // no payouts, this guy doens't get paid in the batch
             assertEquals("No new payouts for 2", 0, partner.getPartnerPayouts().size());
 
             // still she should get paid
             // note: value should come from the ranged commission
-            assertEquals("2: due payout ", new BigDecimal("2.3"), partner.getDuePayout());
+            assertEquals("2: due payout ", new BigDecimal("2.3"), partner.getDuePayoutAsDecimal());
             cal.set(2009, Calendar.MARCH, 1);
             assertEquals("2:next payout mar 1", partner.getNextPayoutDate().getTime(), cal.getTime().getTime());
 
             // partner 3
-            partner = session.getPartnerDTO(new Integer(12));
+            partner = api.getPartner(12);
 
             // a new payout
-            Set<PartnerPayout> payouts = partner.getPartnerPayouts();
+            List<PartnerPayoutWS> payouts = partner.getPartnerPayouts();
             assertEquals("3: one payout", 1, payouts.size());
 
-            Iterator<PartnerPayout> payoutsIter = payouts.iterator();
-            PartnerPayout payout = payoutsIter.next();
+            PartnerPayoutWS payout = payouts.get(0);
             assertNotNull("Payout", payout);
 
-            PaymentDTO payment = payout.getPayment();
+            PaymentWS payment = api.getPayment(payout.getPaymentId());
             assertNotNull("Payout payment", payment);
-            assertEquals("3: payout total", new BigDecimal("2.5"), payment.getAmount());
+            assertEquals("3: payout total", new BigDecimal("2.5"), payment.getAmountAsDecimal());
             assertEquals("3: sucessful payment in new payout", Constants.RESULT_OK, payment.getResultId());
-            assertEquals("3 due payout zero", BigDecimal.ZERO, partner.getDuePayout());
+            assertEquals("3 due payout zero", BigDecimal.ZERO, partner.getDuePayoutAsDecimal());
 
             cal.set(2009, Calendar.MARCH, 25);
             assertEquals("3:next payout 10 days later ", partner.getNextPayoutDate().getTime(), cal.getTime().getTime());
@@ -105,55 +116,50 @@ public class PartnerTest extends TestCase {
              * second run
              */
             cal.set(2009, Calendar.APRIL, 1);
-            session.processPayouts(cal.getTime());
-            
+            api.processPartnerPayouts(cal.getTime());
+
             // partner 1
-            partner = session.getPartnerDTO(new Integer(10));
+            partner = api.getPartner(10);
 
             // new payout
             payouts = partner.getPartnerPayouts();
             assertEquals("1:New payout", 1, payouts.size());
-            payoutsIter = payouts.iterator();
-            payout = payoutsIter.next();
+            payout = payouts.get(0);
 
             assertNotNull("Payout", payout);
-            payment = payout.getPayment();
+            payment = api.getPayment(payout.getPaymentId());
             assertNotNull("Payout payment", payment);
-            assertEquals("1: payout total", new BigDecimal("5"), payment.getAmount());
-            assertEquals("1: payout payments total", new BigDecimal("10"), payout.getPaymentsAmount());
-            assertEquals("1: payout refunds total", new BigDecimal("5"), payout.getRefundsAmount());
+            assertEquals("1: payout total", new BigDecimal("5"), payment.getAmountAsDecimal());
+            assertEquals("1: payout payments total", new BigDecimal("10"), payout.getPaymentsAmountAsDecimal());
+            assertEquals("1: payout refunds total", new BigDecimal("5"), payout.getRefundsAmountAsDecimal());
             assertEquals("1: sucessful payment in new payout", Constants.RESULT_OK, payment.getResultId());
-            assertEquals("1 due payout zero", BigDecimal.ZERO, partner.getDuePayout());
+            assertEquals("1 due payout zero", BigDecimal.ZERO, partner.getDuePayoutAsDecimal());
 
             // partner 2
-            partner = session.getPartnerDTO(new Integer(11));
+            partner = api.getPartner(11);
 
             // no payouts, this guy doens't get paid in the batch
             assertEquals("No new payouts for 2", 0, partner.getPartnerPayouts().size());
 
             // still she should get paid
-            assertEquals("2: due payout ", new BigDecimal("2.3"), partner.getDuePayout());
+            assertEquals("2: due payout ", new BigDecimal("2.3"), partner.getDuePayoutAsDecimal());
             cal.set(2009, Calendar.MARCH, 1);
             assertEquals("2:next payout mar 1", partner.getNextPayoutDate().getTime(), cal.getTime().getTime());
 
             // partner 3
-            partner = session.getPartnerDTO(new Integer(12));
+            partner = api.getPartner(12);
 
             // a new payout
             payouts = partner.getPartnerPayouts();
             assertEquals("3: two payout", 2, payouts.size());
-            payoutsIter = payouts.iterator();
-            payout = payoutsIter.next();
+            payout = payouts.get(0);
 
             // make sure we have the lastest payout
-            PartnerPayout payout2 = payoutsIter.next();
-            if (payout2.getId() > payout.getId()) {
-                payout = payout2;
-            }
-            payment = payout.getPayment();
+            payout = payouts.get(payouts.size() - 1);
+            payment = api.getPayment(payout.getPaymentId());
             assertNotNull("Payout payment", payment);
-            assertEquals("3: payout total", BigDecimal.ZERO, payment.getAmount());
-            assertEquals("3 due payout zero", BigDecimal.ZERO, partner.getDuePayout());
+            assertEquals("3: payout total", BigDecimal.ZERO, payment.getAmountAsDecimal());
+            assertEquals("3 due payout zero", BigDecimal.ZERO, partner.getDuePayoutAsDecimal());
 
             cal.set(2009, Calendar.MARCH, 25);
             cal.add(Calendar.DATE, 10);

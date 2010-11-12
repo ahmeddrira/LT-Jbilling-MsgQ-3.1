@@ -145,8 +145,6 @@ public class ProvisioningCommandsRulesTask extends PluggableTask implements IInt
         List<Object> rulesMemoryContext = new ArrayList<Object>();
         CommandManager commandManager = new CommandManager(eventType, newOrder);
 
-        session.setGlobal("command", commandManager);
-
         // Add order lines
         for (OrderLineDTO line : newOrder.getLines()) {
             rulesMemoryContext.add(line);
@@ -179,7 +177,6 @@ public class ProvisioningCommandsRulesTask extends PluggableTask implements IInt
         List<Object> rulesMemoryContext = new ArrayList<Object>();
         CommandManager commandManager = new CommandManager(eventType, newOrder);
 
-        session.setGlobal("command", commandManager);
         rulesMemoryContext.add(line);
 
         // add helper command order

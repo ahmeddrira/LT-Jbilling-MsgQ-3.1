@@ -22,6 +22,7 @@ import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS
 import com.sapienter.jbilling.server.user.partner.PartnerWS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
+import com.sapienter.jbilling.server.util.WebServicesSessionSpringBean;
 import com.sapienter.jbilling.server.mediation.RecordCountWS
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.util.PreferenceWS
@@ -465,5 +466,9 @@ class ApiService implements IWebServicesSessionBean {
     public void saveNotificationPreferences(PreferenceWS[] prefList) {
         webServicesSession.saveNotificationPreferences(prefList)
     }
+	
+	public void saveCustomerNotes(Integer userId, String notes) {
+		webServicesSession.saveCustomerNotes(userId, notes)
+	}
     
 }

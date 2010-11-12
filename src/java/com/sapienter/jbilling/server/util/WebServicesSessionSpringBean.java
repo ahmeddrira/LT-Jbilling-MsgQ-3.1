@@ -134,6 +134,7 @@ import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
@@ -2296,4 +2297,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
     }
     
+    public void saveCustomerNotes(Integer userId, String notes) {
+    	CustomerDTO cust= UserBL.getUserEntity(userId).getCustomer();
+    	if ( null != cust ) {
+    		cust.setNotes(notes);
+    	}   
+    }
 }

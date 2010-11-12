@@ -50,9 +50,11 @@ class UserController {
 		bindData(contact, params)
 		log.info "Email: " + contact.getEmail()
 		newUser.setContact(contact);
+		//TODO Set languageId of the logged-in user instead?
 		newUser.setLanguageId(new Integer(1));
+		//TODO Set the currency Id of the logged-in user?
 		newUser.setCurrencyId(1);
-		newUser.setStatusId(1);//
+		newUser.setStatusId(1);//active
 		//set email
 		try {			
 			int id = webServicesSession.createUser(newUser);

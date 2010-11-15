@@ -95,12 +95,12 @@ class UserController {
 				notes= user?.getNotes();
 				if ( Constants.AUTO_PAYMENT_TYPE_CC == user.getAutomaticPaymentType())
 				{
-					log.info "Auto CC true"
+					log.info "Edit. Auto CC true"
 					isAutoCC=true;
 				} 
 				if ( Constants.AUTO_PAYMENT_TYPE_ACH == user.getAutomaticPaymentType() )
 				{
-					log.info "Auto Ach True"
+					log.info "Edit. Auto Ach True"
 					isAutoAch= true;
 				}
 				log.info  "retrieved notes "  + user?.getNotes()
@@ -164,8 +164,10 @@ class UserController {
 		user.setNotes(params.notes)
 		if (params.isAutomaticPaymentCC == "on") {
 			user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_CC)
+			log.info "setting CC for auto"
 		} else if (params.isAutomaticPaymentAch == "on") {
 			user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
+			log.info "setting ACH for auto"
 		}
 		log.info  "Saving ach accountType as " + user?.getAch()?.getAccountType()
 //		log.info  "or " + params.ach.accountType

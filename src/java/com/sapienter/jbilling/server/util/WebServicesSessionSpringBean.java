@@ -150,6 +150,7 @@ import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import com.sapienter.jbilling.server.user.db.CustomerDAS;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -554,8 +555,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
         
         //udpate customerdto here - notes, automaticPaymentMethod
+        CustomerDTO cust= UserBL.getUserEntity(user.getUserId()).getCustomer();
+    	if ( null != cust ) {
+    		cust.setNotes(user.getNotes());
+    		cust.setAutoPaymentType(user.getAutomaticPaymentType());
+    		new CustomerDAS().save(cust);
+    	} 
         //CustomerDTO customer= new CustomerDTO(user);
-        //new CustomerDAS().save(customer);
     }
 
     /**

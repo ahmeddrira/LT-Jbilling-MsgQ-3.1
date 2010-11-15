@@ -229,7 +229,7 @@ function toggle(obj) {
 							<td><g:textField name="creditCard.name"
 								value="${user?.creditCard?.name}" /></td>
 							<td class="form_prompt"><g:checkBox
-								name="isAutomaticPaymentCC"  checked=${isAutoCC} onclick="toggle(this)"/> <g:message
+								name="isAutomaticPaymentCC"  checked="${isAutoCC}" onclick="toggle(this)"/> <g:message
 								code="prompt.preferred.auto.payment" /></td>
 						</tr>
 						<tr>
@@ -265,7 +265,7 @@ function toggle(obj) {
 							<td><g:textField name="ach.bankAccount"
 								value="${user?.ach?.bankAccount}" /></td>
 							<td class="form_prompt"><g:checkBox
-								name="isAutomaticPaymentAch" checked=${isAutoAch} onclick="toggle(this)"/> <g:message
+								name="isAutomaticPaymentAch" checked="${isAutoAch}" onclick="toggle(this)"/> <g:message
 								code="prompt.preferred.auto.payment" /></td>
 						</tr>
 						<tr>

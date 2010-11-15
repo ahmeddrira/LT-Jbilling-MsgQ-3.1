@@ -46,6 +46,9 @@ import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import sun.jdbc.rowset.CachedRowSet;
 
+import com.sapienter.jbilling.server.util.db.PreferenceDTO;
+import grails.plugins.springsecurity.SpringSecurityService;
+
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
@@ -92,10 +95,12 @@ import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.order.OrderProcessWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
@@ -130,6 +135,8 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
@@ -143,8 +150,6 @@ import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
-import com.sapienter.jbilling.server.util.db.PreferenceDTO;
-import grails.plugins.springsecurity.SpringSecurityService;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -1219,6 +1224,25 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throw new SessionInternalError("Error updating current order");
         }
     }
+    
+    public OrderWS[] getUserOrders(Integer userId) throws SessionInternalError { 
+    	if (userId == null) throw new SessionInternalError("User Id cannot be null.");
+
+        List<OrderDTO> subscriptions= new OrderDAS().findByUserSubscriptions(userId);
+        if (null == subscriptions)
+        {
+        	return new OrderWS[0];
+        }
+        OrderWS[] orderArr= new OrderWS[subscriptions.size()];
+        OrderBL bl = null;
+        for(OrderDTO dto: subscriptions) {
+        	bl= new OrderBL(dto);
+        	orderArr[subscriptions.indexOf(dto)]= bl.getWS(getCallerLanguageId());
+        }
+        
+		return orderArr;
+	}
+    
 
     /*
      * PAYMENT
@@ -2301,6 +2325,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     	CustomerDTO cust= UserBL.getUserEntity(userId).getCustomer();
     	if ( null != cust ) {
     		cust.setNotes(notes);
-    	}   
+    	} else {
+    		throw new SessionInternalError("Not a customer");
+    	}
     }
 }

@@ -38,8 +38,9 @@ class UserController {
 	}
 	
 	def index = {
-		UserBL userbl = new UserBL(webServicesSession.getCallerId());
-		languageId = String.valueOf(userbl.getEntity().getLanguageIdField());
+		//UserBL userbl = new UserBL(webServicesSession.getCallerId());
+		//languageId = String.valueOf(userbl.getEntity().getLanguageIdField());
+		languageId= webServicesSession.getCallerLanguageId().toString()
 		render( view:"user")
 	}
 	
@@ -69,8 +70,10 @@ class UserController {
 	}
 	
 	def edit = {
-		UserBL userbl = new UserBL(webServicesSession.getCallerId());
-		languageId = String.valueOf(userbl.getEntity().getLanguageIdField());
+		//UserBL userbl = new UserBL(webServicesSession.getCallerId());
+		//languageId = String.valueOf(userbl.getEntity().getLanguageIdField());
+		languageId= webServicesSession.getCallerLanguageId().toString()
+
 		UserWS user = null;
 		def notes= null;
 		def expMnth, expYr;

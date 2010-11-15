@@ -147,6 +147,8 @@ public interface IWebServicesSessionBean {
     public OrderWS getCurrentOrder(Integer userId, Date date) throws SessionInternalError;
     public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, String pricing, Date date, String eventDescription) throws SessionInternalError;
 
+    public OrderWS[] getUserOrders(Integer userId) throws SessionInternalError;
+    
     public OrderLineWS getOrderLine(Integer orderLineId) throws SessionInternalError;
     public void updateOrderLine(OrderLineWS line) throws SessionInternalError;
 
@@ -246,13 +248,11 @@ public interface IWebServicesSessionBean {
     /*
         Utilities
      */
-
     public void generateRules(String rulesData) throws SessionInternalError;
     
     /*
         Notifications
     */
-
     public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto);
 
     public void saveNotificationPreferences(PreferenceWS[] prefList);

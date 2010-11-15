@@ -233,6 +233,10 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.updateCurrentOrder(userId, lines, pricing, date, eventDescription)
     }
 
+	public OrderWS[] getUserOrders(Integer userId) {
+		return webServicesSession.getUserOrders(userId);
+	}
+	
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) {
         return webServicesSession.payInvoice(invoiceId)
     }

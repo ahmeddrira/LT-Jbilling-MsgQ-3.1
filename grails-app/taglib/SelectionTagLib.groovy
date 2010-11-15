@@ -1,3 +1,5 @@
+import java.util.List;
+
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import com.sapienter.jbilling.server.user.db.UserStatusDTO;
 import com.sapienter.jbilling.server.user.db.SubscriberStatusDTO;
@@ -23,70 +25,60 @@ class SelectionTagLib {
 	
 	def selectRoles = { attrs, body ->
 		
-		def langId= Integer.parseInt(attrs.languageId);
-		def name= attrs.name;		
-		def value = attrs.value ? Integer.parseInt(attrs.value): -1
+		Integer langId= attrs.languageId?.toInteger();
+		String name= attrs.name;		
+		String value = attrs.value?.toString()
 		
 		List list= new ArrayList();
 		String[] sarr= null;
-		boolean selected= false;
 		for (RoleDTO role: RoleDTO.list()) {
-			String title= role.getTitle(Integer.valueOf(langId));
+			String title= role.getTitle(langId);
 			sarr=new String[2]
 			sarr[0]= role.getId()
 			sarr[1]= title
 			list.add(sarr)
-			if (!selected) {
-				selected= (value==sarr[0]) ? true:false
-			}
 		}
-		out << render(template:"/selectTag", model:[name:name, list:list, selected:selected])
+		out << render(template:"/selectTag", model:[name:name, list:list, value:value])
 	}
 
 	def userStatus = { attrs, body ->
 		
-		def langId= Integer.parseInt(attrs.languageId);
-		def name= attrs.name;
-		def value = attrs.value ? (attrs.value instanceof String ? Integer.parseInt(attrs.value): attrs.value) : -1		
+		Integer langId= attrs.languageId?.toInteger();
+		String name= attrs.name;
+		String value = attrs.value?.toString()
 
 		List list= new ArrayList();
 		String[] sarr= null;
-		boolean selected= false;
 		for (UserStatusDTO status: UserStatusDTO.list()) {
-			String title= status.getDescription(Integer.valueOf(langId));			
+			String title= status.getDescription(langId);			
 			sarr=new String[2]
 			sarr[0]= status.getId()
 			sarr[1]= title
 			list.add(sarr)
-			if (!selected) {
-				selected= (value==sarr[0]) ? true:false
-			}
 		}
-		out << render(template:"/selectTag", model:[name:name, list:list, selected:selected])
+		out << render(template:"/selectTag", model:[name:name, list:list, value:value])
 		
 	}
 	
 	def subscriberStatus = { attrs, body ->
 		
-		def langId= Integer.parseInt(attrs.languageId);
-		def name= attrs.name;
-		def value = attrs.value ? (attrs.value instanceof String ? Integer.parseInt(attrs.value): attrs.value) : -1
+		Integer langId= attrs.languageId?.toInteger();
+		String name= attrs.name;
+		String value = attrs.value?.toString()
 
+		log.info "Value of tagName=" + name + " is " + value
+		
 		List list= new ArrayList();
 		String[] sarr= null;
-		boolean selected= false;
 		for (SubscriberStatusDTO status: SubscriberStatusDTO.list()) {
-			String title= status.getDescription(Integer.valueOf(langId));
+			String title= status.getDescription(langId);
 			sarr=new String[2]
 			sarr[0]= status.getId()
 			sarr[1]= title
 			list.add(sarr)
-			if (!selected) {
-				selected= (value==sarr[0]) ? true:false
-			}			
 		}
 		
-		out << render(template:"/selectTag", model:[name:name, list:list, selected:selected])
+		out << render(template:"/selectTag", model:[name:name, list:list, value:value])
 	}
 
 					

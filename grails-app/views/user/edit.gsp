@@ -113,6 +113,7 @@ function toggle(obj) {
 							</td>
 
 							<td valign="top">
+							<g:hiddenField name="contact.id" value="${user?.contact?.id}"/>
 							<table style="border-left: 2px solid black; padding: 5px;">
 								<tr>
 									<td class="form_prompt"><g:message

@@ -88,7 +88,8 @@ public class UserWS implements WSSecured, Serializable {
 
     private String notes;
     private Integer automaticPaymentType;
-
+    private String companyName;
+    
     public UserWS() {
     }
 
@@ -142,7 +143,11 @@ public class UserWS implements WSSecured, Serializable {
         }
         blacklistMatches = dto.getBlacklistMatches() != null ? dto.getBlacklistMatches().toArray(new String[0]) : null;
         userIdBlacklisted = dto.getUserIdBlacklisted();
-
+        if (null != dto.getCompany())
+        {
+        	companyName= dto.getCompany().getDescription();
+        }
+        
         setOwingBalance(dto.getBalance());
     }
 
@@ -450,7 +455,15 @@ public class UserWS implements WSSecured, Serializable {
         this.automaticPaymentType = automaticPaymentType;
     }
 
-    /**
+    public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
+	/**
      * Unsupported, web-service security enforced using {@link #getOwningUserId()}
      *
      * @return null

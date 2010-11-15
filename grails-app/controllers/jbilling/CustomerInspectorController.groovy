@@ -6,6 +6,8 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.payment.PaymentWS;
 
 class CustomerInspectorController {
 	
@@ -90,4 +92,39 @@ class CustomerInspectorController {
 		}
 		render "save d"
 	}
+
+	def invoices= {
+		List<Integer> ids= webServicesSession.getLastInvoices(params._id?.toInteger(), 99)
+		List<InvoiceWS> invoices= new ArrayList<InvoiceWS>()
+		log.info "Found ${ids.size()} invoices. ${ids.get(0).getClass().getName()}"
+		for(Integer i: ids) {
+			invoices.add(webServicesSession.getInvoiceWS(i))
+		}		
+		[invoices:invoices]
+	}
+	def payments= {
+		List<Integer> ids= webServicesSession.getLastPayments(params._id?.toInteger(), 99)
+		List<PaymentWS> payments= new ArrayList<PaymentWS>()
+		log.info "Found ${ids.size()} payments. ${ids.get(0).getClass().getName()}"
+		for(Integer i: ids) {
+			payments.add(webServicesSession.getPayment(i))
+		}		
+		[payments:payments]
+	}
+	def orders= {
+		OrderWS[] orders=webServicesSession.getUserOrders(params._id?.toInteger())
+		log.info "found " + orders?.length + " orders"
+		[orders:orders]
+	}
+	def editCustomer= {
+		Integer userId= params._id?.toInteger()
+		redirect(controller:"user", action:"edit",id:userId)
+	}
+	def makePayment= {
+		render "make payment for Customer "
+	}
+	def createOrder= {
+		render "create Order for customer " 
+	}
+	
 }

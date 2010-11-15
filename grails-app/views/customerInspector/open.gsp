@@ -4,7 +4,7 @@
 <body>
 <h2 align="center"><g:message code="prompt.customer.inspector" /></h2>
 <p><jB:renderErrorMessages /></p>
-
+<g:form>
 <g:hiddenField name="_id" value="${_id}"/>
 ${user?.getContact()?.firstName}&nbsp;${user?.getContact()?.lastName} <br/> 
 ${user?.companyName }<br/><br/>
@@ -18,13 +18,13 @@ ${user?.companyName }<br/><br/>
 		value="${user?.subscriberStatusId}" languageId="${languageId?.toString()}"/>
 	<td>&nbsp;
 <tr><td>Next Invoice Date: ${}<td>&nbsp;<td>&nbsp;
-<tr><td colspan="3"><input type="button" value="View Customer" onclick="">
-<input type="button" value="View Invoices" onclick="">
-<input type="button" value="View Payments" onclick="">
-<input type="button" value="View Orders" onclick="">
-<tr><td colspan="3"><input type="button" value="Edit Customer" onclick="">
-<input type="button" value="Make Payment" onclick="">
-<input type="button" value="Create Order" onclick="">
+<tr><td colspan="3">
+<g:actionSubmit  action="invoices"  value="View Invoices" class=""/>
+<g:actionSubmit  action="payments"  value="View Payments" class=""/>
+<g:actionSubmit  action="orders"  value="View Orders" class=""/>
+<tr><td colspan="3"><g:actionSubmit  action="editCustomer"  value="Edit Customer" class=""/>
+<g:actionSubmit  action="makePayment"  value="Make Payment" class=""/>
+<g:actionSubmit  action="createOrder"  value="Create Order" class=""/>
 <tr><td colspan="3">Address
 <tr><td colspan="3">&nbsp;
 <tr><td colspan="3">Address: ${user?.contact?.address1}&nbsp;${user?.contact?.address2}
@@ -77,6 +77,7 @@ ${user?.companyName }<br/><br/>
 <tr><td>Used for Automatic Payment: <td>${isAutoAch?"Yes":"No"}<td>&nbsp;
 
 </table>
+</g:form>
 <script language="javascript">
 document.getElementById('subscriberStatusId').disabled=true;
 </script>

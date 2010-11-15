@@ -1744,7 +1744,6 @@ ALTER TABLE public.pluggable_task_type OWNER TO jbilling;
 
 CREATE TABLE pluggable_task_type_category (
     id integer NOT NULL,
-    description character varying(50) NOT NULL,
     interface_name character varying(200) NOT NULL
 );
 
@@ -11269,6 +11268,29 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 93	2	description	1	Orders
 93	3	description	1	Payments
 93	4	description	1	Users
+23	1	description	1	Item management and order line total calculation
+23	2	description	1	Billing process: order filters
+23	3	description	1	Billing process: invoice filters
+23	4	description	1	Invoice presentation
+23	5	description	1	Billing process: order perios calculation
+23	6	description	1	Payment gateway integration
+23	7	description	1	Notifications
+23	8	description	1	Payment instrument selection
+23	9	description	1	Penalties for overdue invoices
+23	10	description	1	Alarms when a payment gateway is down
+23	11	description	1	Subscription status manager
+23	12	description	1	Parameters for asynchronous payment processing
+23	13	description	1	Add one product to order
+23	14	description	1	Product pricing
+23	15	description	1	Mediation Reader
+23	16	description	1	Mediation Processor
+23	17	description	1	Generic internal events listener
+23	18	description	1	External provisioning processor
+23	19	description	1	Purchase validation against pre-paid balance / credit limit
+23	20	description	1	Billing process: customer selection
+23	21	description	1	Mediation Error Handler
+23	22	description	1	Scheduled Plug-ins
+23	23	description	1	Rules Generators
 \.
 
 
@@ -15107,30 +15129,30 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 -- Data for Name: pluggable_task_type_category; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY pluggable_task_type_category (id, description, interface_name) FROM stdin;
-1	order processing task	com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask
-2	order_filter task	com.sapienter.jbilling.server.pluggableTask.OrderFilterTask
-3	invoice filter task	com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask
-4	invoice composition task	com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask
-5	order period calculation task	com.sapienter.jbilling.server.pluggableTask.OrderPeriodTask
-6	payment processing task	com.sapienter.jbilling.server.pluggableTask.PaymentTask
-7	notification task	com.sapienter.jbilling.server.pluggableTask.NotificationTask
-8	payment information task	com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask
-9	invoice overdue penalty	com.sapienter.jbilling.server.pluggableTask.PenaltyTask
-10	processor alarm task	com.sapienter.jbilling.server.pluggableTask.ProcessorAlarm
-11	subscription status manager	com.sapienter.jbilling.server.user.tasks.ISubscriptionStatusManager
-12	asynchronous payment processor parameters	com.sapienter.jbilling.server.payment.tasks.IAsyncPaymentParameters
-13	item purchase manager	com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager
-14	item pricing	com.sapienter.jbilling.server.item.tasks.IPricing
-15	Mediation Reader	com.sapienter.jbilling.server.mediation.task.IMediationReader
-16	Mediation Processor	com.sapienter.jbilling.server.mediation.task.IMediationProcess
-17	Internal events	com.sapienter.jbilling.server.system.event.task.IInternalEventsTask
-18	External Provisioning	com.sapienter.jbilling.server.provisioning.task.IExternalProvisioning
-19	Validate Purchase	com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask
-20	BillingProcessFilterTask	com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask
-21	Mediation Error Handler	com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler
-22	Scheduled Tasks	com.sapienter.jbilling.server.process.task.IScheduledTask
-23	Rules Generator	com.sapienter.jbilling.server.rule.task.IRulesGenerator
+COPY pluggable_task_type_category (id, interface_name) FROM stdin;
+1	com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask
+2	com.sapienter.jbilling.server.pluggableTask.OrderFilterTask
+3	com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask
+4	com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask
+5	com.sapienter.jbilling.server.pluggableTask.OrderPeriodTask
+6	com.sapienter.jbilling.server.pluggableTask.PaymentTask
+7	com.sapienter.jbilling.server.pluggableTask.NotificationTask
+8	com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask
+9	com.sapienter.jbilling.server.pluggableTask.PenaltyTask
+10	com.sapienter.jbilling.server.pluggableTask.ProcessorAlarm
+11	com.sapienter.jbilling.server.user.tasks.ISubscriptionStatusManager
+12	com.sapienter.jbilling.server.payment.tasks.IAsyncPaymentParameters
+13	com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager
+14	com.sapienter.jbilling.server.item.tasks.IPricing
+15	com.sapienter.jbilling.server.mediation.task.IMediationReader
+16	com.sapienter.jbilling.server.mediation.task.IMediationProcess
+17	com.sapienter.jbilling.server.system.event.task.IInternalEventsTask
+18	com.sapienter.jbilling.server.provisioning.task.IExternalProvisioning
+19	com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask
+20	com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask
+21	com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler
+22	com.sapienter.jbilling.server.process.task.IScheduledTask
+23	com.sapienter.jbilling.server.rule.task.IRulesGenerator
 \.
 
 

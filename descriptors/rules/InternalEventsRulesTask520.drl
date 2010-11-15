@@ -8,7 +8,7 @@ import com.sapienter.jbilling.server.order.db.OrderLineDTO
 rule 'Modify order'
 when
         OrderToInvoiceEvent(userId == 1010)
-        order : OrderDTO(notes == "Change me.")
+        order : OrderDTO(notes == "To be changed")
 then
         order.setNotes("Modified by rules.");
 

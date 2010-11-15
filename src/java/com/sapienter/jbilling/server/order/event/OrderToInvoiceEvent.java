@@ -89,6 +89,6 @@ public class OrderToInvoiceEvent implements Event {
     }
 
     public String toString() {
-        return getName();
+        return "OrderToInvoice event=userId " + userId + " orderId " + orderId + " order " + order + " start " + start + " end " + end;
     }
 }

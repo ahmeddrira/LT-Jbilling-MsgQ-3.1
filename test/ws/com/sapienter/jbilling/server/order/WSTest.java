@@ -875,12 +875,13 @@ public class WSTest  extends TestCase {
 
             // create order with 2 lines (item ids 1 & 2) and invoice
             OrderWS order = createMockOrder(USER_ID, 2, new BigDecimal("5.00"));
-            order.setNotes("Change me.");
+            order.setNotes("To be changed");
             Integer invoiceId = api.createOrderAndInvoice(order);
 
             // get back created order
             InvoiceWS invoice = api.getInvoiceWS(invoiceId);
             Integer orderId = invoice.getOrders()[0];
+            System.out.println("Invoice generated " + invoice.getId() + " from order " + orderId);
             order = api.getOrder(orderId);
 
             // check order was modified

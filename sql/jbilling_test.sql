@@ -11398,11 +11398,12 @@ COPY invoice_line (id, invoice_id, type_id, amount, quantity, price, deleted, it
 --
 
 COPY invoice_line_type (id, description, order_position) FROM stdin;
-1	item	2
-2	tax	5
 3	due invoice	1
-4	interests	3
-5	sub account	4
+6	item one-time	3
+1	item recurring	2
+4	interests	4
+5	sub account	5
+2	tax	6
 \.
 
 

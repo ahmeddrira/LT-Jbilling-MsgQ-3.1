@@ -177,11 +177,12 @@ public final class Constants implements CommonConstants {
     public static final Integer PLUGGABLE_TASK_T_PAPER_INVOICE = new Integer(12);
     
     // invoice line types
-    public static final Integer INVOICE_LINE_TYPE_ITEM = new Integer(1);
+    public static final Integer INVOICE_LINE_TYPE_ITEM_RECURRING = new Integer(1);
     public static final Integer INVOICE_LINE_TYPE_TAX = new Integer(2);
     public static final Integer INVOICE_LINE_TYPE_DUE_INVOICE = new Integer(3);
     public static final Integer INVOICE_LINE_TYPE_PENALTY = new Integer(4);
     public static final Integer INVOICE_LINE_TYPE_SUB_ACCOUNT = new Integer(5);
+    public static final Integer INVOICE_LINE_TYPE_ITEM_ONETIME = new Integer(6);
     
     // permission types - this should be moved to PermissionConstant.java
     public static final Integer PERMISSION_TYPE_MENU= new Integer(1);

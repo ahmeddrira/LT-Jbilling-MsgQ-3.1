@@ -416,3 +416,10 @@ ALTER TABLE payment_authorization ALTER COLUMN transaction_id TYPE character var
 
 -- ach external storage gateway_key
 alter table ach add column gateway_key varchar(100) default null;
+
+-- one-time / recurring invoice line types
+insert into invoice_line_type (id, description, order_position) values (6, 'item one-time', 3);
+update invoice_line_type set description = 'item recurring' where id = 1;
+update invoice_line_type set order_position = 4 where id = 4;
+update invoice_line_type set order_position = 5 where id = 5;
+update invoice_line_type set order_position = 6 where id = 2;

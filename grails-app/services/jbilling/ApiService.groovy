@@ -57,6 +57,10 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getInvoiceWS(invoiceId)
     }
 
+    public InvoiceWS getReviewInvoiceWS(Integer invoiceId) {
+        return webServicesSession.getReviewInvoiceWS(invoiceId);
+    }
+
     public Integer[] getAllInvoices(Integer userId) {
         return webServicesSession.getAllInvoices(userId)
     }

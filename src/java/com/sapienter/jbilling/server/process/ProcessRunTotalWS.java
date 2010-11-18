@@ -36,9 +36,9 @@ public class ProcessRunTotalWS implements Serializable {
     private Integer id;
     private Integer processRunId;
     private Integer currencyId;
-    private BigDecimal totalInvoiced;
-    private BigDecimal totalPaid;
-    private BigDecimal totalNotPaid;
+    private String totalInvoiced;
+    private String totalPaid;
+    private String totalNotPaid;
 
     public ProcessRunTotalWS() {
     }
@@ -47,9 +47,9 @@ public class ProcessRunTotalWS implements Serializable {
         this.id = dto.getId();
         this.processRunId = dto.getProcessRun() != null ? dto.getProcessRun().getId() : null;
         this.currencyId = dto.getCurrency() != null ? dto.getCurrency().getId() : null;
-        this.totalInvoiced = dto.getTotalInvoiced();
-        this.totalPaid = dto.getTotalPaid();
-        this.totalNotPaid = dto.getTotalNotPaid();
+        setTotalInvoiced(dto.getTotalInvoiced());
+        setTotalPaid(dto.getTotalPaid());
+        setTotalNotPaid(dto.getTotalNotPaid());
     }
 
     public Integer getId() {
@@ -76,30 +76,54 @@ public class ProcessRunTotalWS implements Serializable {
         this.currencyId = currencyId;
     }
 
-    public BigDecimal getTotalInvoiced() {
+    public String getTotalInvoiced() {
         return totalInvoiced;
     }
 
-    public void setTotalInvoiced(BigDecimal totalInvoiced) {
+    public BigDecimal getTotalInvoicedAsDecimal() {
+        return totalInvoiced != null ? new BigDecimal(totalInvoiced) : null;
+    }
+
+    public void setTotalInvoiced(String totalInvoiced) {
         this.totalInvoiced = totalInvoiced;
     }
 
-    public BigDecimal getTotalPaid() {
+    public void setTotalInvoiced(BigDecimal totalInvoiced) {
+        this.totalInvoiced = (totalInvoiced != null ? totalInvoiced.toString() : null);
+    }
+
+    public String getTotalPaid() {
         return totalPaid;
     }
 
-    public void setTotalPaid(BigDecimal totalPaid) {
+    public BigDecimal getTotalPaidAsDecimal() {
+        return totalPaid != null ? new BigDecimal(totalPaid) : null;
+    }
+
+    public void setTotalPaid(String totalPaid) {
         this.totalPaid = totalPaid;
     }
 
-    public BigDecimal getTotalNotPaid() {
+    public void setTotalPaid(BigDecimal totalPaid) {
+        this.totalPaid = (totalPaid != null ? totalPaid.toString() : null);
+    }
+
+    public String getTotalNotPaid() {
         return totalNotPaid;
     }
 
-    public void setTotalNotPaid(BigDecimal totalNotPaid) {
+    public BigDecimal getTotalNotPaidAsDecimal() {
+        return totalNotPaid != null ? new BigDecimal(totalNotPaid) : null;
+    }
+
+    public void setTotalNotPaid(String totalNotPaid) {
         this.totalNotPaid = totalNotPaid;
     }
 
+    public void setTotalNotPaid(BigDecimal totalNotPaid) {
+        this.totalNotPaid = (totalNotPaid != null ? totalNotPaid.toString() : null);
+    }
+    
     @Override
     public String toString() {
         return "ProcessRunTotalWS{"

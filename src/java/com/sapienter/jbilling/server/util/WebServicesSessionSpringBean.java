@@ -232,6 +232,19 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return InvoiceBL.getWS(invoice);
     }
 
+    /**
+     * Returns an invoice by ID regardless of the review or deleted status.
+     * @param invoiceId invoice ID
+     * @return invoice
+     */
+    public InvoiceWS getReviewInvoiceWS(Integer invoiceId) {
+        if (invoiceId == null)
+            return null;
+
+        InvoiceDTO invoice = new InvoiceDAS().find(invoiceId);
+        return InvoiceBL.getWS(invoice);
+    }
+
     public Integer[] getAllInvoices(Integer userId) {
         IInvoiceSessionBean invoiceBean = Context.getBean(Context.Name.INVOICE_SESSION);
         Set<InvoiceDTO> invoices = invoiceBean.getAllInvoices(userId);
@@ -2115,6 +2128,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
         BillingProcessDTOEx dto = processBean.getDto(processId, getCallerLanguageId());
 
+        LOG.debug("Billing process DTO: " + dto);
+        LOG.debug("Billing process order processes: " + dto.getOrderProcesses().size());
+        LOG.debug("Billing process runs: " + dto.getProcessRuns().size());
+        LOG.debug("Billing runs (from ex): " + dto.getRuns().size());
+        
         return BillingProcessBL.getWS(dto);
     }
 

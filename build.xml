@@ -101,191 +101,17 @@
     </path>
 
 
-    <!-- todo: refactor to be in-line with the grails build. maybe call grails and have it do the work? --> 
+    <!--
+       Resource Compile Targets
+    -->
 
-    <target name="init">
+    <target name="clean" description="Removes all generated resources and compiled test classes.">
+        <delete dir="${build.resources.dir}"/>
+        <delete dir="${build.test.dir}"/>
         <delete dir="${build.test-results.dir}"/>
-        <mkdir dir="${source.dir}"/>
-        <mkdir dir="${source.classes.dir}"/>
-        <mkdir dir="${source.dir}/test"/>
-        <mkdir dir="${source.view.dir}"/>
-        <mkdir dir="${source.descriptor.dir}"/>
-        <mkdir dir="${source.web.descriptor.dir}"/>
-        <mkdir dir="${source.torque.descriptor.dir}"/>
-        <mkdir dir="${basedir}/build"/>
-        <mkdir dir="${basedir}/tmp"/>
-        <mkdir dir="${build.classes.dir}"/>
-        <mkdir dir="${build.api.dir}"/>
-        <mkdir dir="${build.test.dir}"/>
-        <mkdir dir="${build.test-results.dir}"/>
-        <mkdir dir="${build.view.dir}"/>
-        <mkdir dir="${build.designs.dir}"/>
-        <mkdir dir="${build.deploy.dir}"/>
-        <mkdir dir="${deploy.resources.dir}/designs"/>
-        <mkdir dir="${deploy.resources.dir}/invoices"/>
-
-        <!-- Copy the messages file -->
-        <copy todir="${deploy.resources.dir}">
-            <fileset dir="${source.resources.descriptor.dir}">
-                <include name="entityNotifications*.properties"/>
-            </fileset>
-        </copy>
-        <!-- Copy the web services validator file -->
-        <copy todir="${build.dir}/META-INF">
-            <fileset dir="${source.resources.descriptor.dir}">
-                <include name="ws-validation.xml"/>
-            </fileset>
-            <fileset dir="${source.web.descriptor.dir}">
-                <include name="validator-rules.xml"/>
-            </fileset>
-        </copy>
-
-        <!-- Check that one client library is available. If not, get
-               all the client files required for a build from the
-               binary application -->
-        <available file="${libs.client.dir}/WEB-INF/struts-bean.tld"
-                   property="client.libs.present"/>
     </target>
 
-    <target name="compile" depends="init">
-        <javac
-                debug="on"
-                destdir="${build.classes.dir}">
-            <classpath refid="compile.classpath"/>
-            <src path="${source.classes.dir}"/>
-        </javac>
-    </target>
-
-    <target name="jar" depends="compile, findRevision">
-        <copy file="${source.resources.descriptor.dir}/ehcache.xml"
-              todir="${jbilling.conf.dir}"/>
-        <jar jarfile="${build.deploy.dir}/jbilling.jar">
-            <fileset dir="${build.classes.dir}">
-                <include name="${source.server.package.dir}/**"/>
-                <include name="${source.common.package.dir}/**"/>
-            </fileset>
-            <fileset dir="${build.dir}" includes="META-INF/**">
-            </fileset>
-            <fileset dir="${source.resources.descriptor.dir}"
-                     includes="entityNotifications*.properties"/>
-            <manifest>
-                <attribute name="Company" value="Enterprise jBilling Software Ltd."/>
-                <attribute name="Version" value="${version}"/>
-                <attribute name="Date" value="${DSTAMP} ${TSTAMP}"/>
-                <attribute name="Revision" value="${revisionNumber}"/>
-            </manifest>
-        </jar>
-    </target>
-    
-    <target name="findRevision">
-        <!-- TODO: replace with git equivalent
-        <exec executable="svnversion" outputproperty="revisionNumber" failifexecutionfails="false">
-            <arg value="- -no-newline"/>
-            <arg value="${basedir}"/>
-        </exec>
-        -->
-        <tstamp/>
-    </target>
-
-    <target name="compile_api" depends="init">
-        <javac debug="on" destdir="${build.api.dir}" target="1.5" source="1.5">
-            <classpath refid="compile.classpath"/>
-            <src path="${source.classes.dir}"/>
-            <include name="com/sapienter/jbilling/server/util/api/*.java"/>
-        </javac>
-    </target>
-    
-    <target name="jar_api" depends="compile_api, findRevision">
-        <jar jarfile="${build.deploy.dir}/jbilling_api.jar">
-            <fileset dir="${build.api.dir}"/>
-            <manifest>
-                <attribute name="Company" value="Enterprise jBilling Software Ltd."/>
-                <attribute name="Version" value="${version}"/>
-                <attribute name="Date" value="${DSTAMP} ${TSTAMP}"/>
-                <attribute name="Revision" value="${revisionNumber}"/>
-            </manifest>
-        </jar>
-    </target>
-
-    <!-- =================================================================== -->
-    <!-- Create the WAR file for the web-client, to be run by tomcat -->
-    <!-- =================================================================== -->
-
-    <target name="war" depends="jar">
-        <copy todir="${build.classes.dir}">
-            <fileset dir="${source.web.descriptor.dir}">
-                <include name="*.properties"/>
-            </fileset>      
-        </copy>      
-        
-        <war
-                destfile="${build.deploy.dir}/billing.war"
-                webxml="${build.view.dir}/WEB-INF/web.xml"
-                compress="false"
-                >
-            <fileset dir="${source.view.dir}"/>
-            <webinf dir="${build.view.dir}/WEB-INF">
-                <exclude name="web.xml"/>
-            </webinf>
-            <lib dir="${source.lib.dir}">
-                <include name="*.jar"/>
-            </lib>
-            <lib dir="${build.deploy.dir}">
-                <include name="jbilling.jar"/>
-            </lib>
-            <classes dir="${build.classes.dir}" >
-                <include name="${source.client.package.dir}/**"/>
-                <include name="com/sapienter/jbilling/client/jspc/**"/>
-                <include name="*.properties"/>
-            </classes>
-        </war>
-    </target>
-
-
-    <!-- =================================================================== -->
-    <!-- Deploys localy, in the self contained environment                -->
-    <!-- =================================================================== -->
-
-    <target name="deploy-local" depends="jar,war,designs">
-        <copy file="${build.deploy.dir}/billing.war"
-              todir="${deploy.local.dir}"/>
-        <copy todir="${deploy.resources.dir}/designs">
-            <fileset dir="${build.designs.dir}">
-                <include name="*.jasper"/>
-            </fileset>
-        </copy>
-        <copy todir="${jbilling.conf.dir}" overwrite="yes">
-            <fileset dir="${source.spring.descriptor.dir}">
-                <include name="*.xml"/>
-            </fileset>
-        </copy>
-        <copy file="${source.resources.descriptor.dir}/log4j.xml"
-              todir="${jbilling.conf.dir}"/>
-    </target>
-
-
-    <!-- Wipes out the whole thing -->
-    <target name="purge">
-        <delete includeemptydirs="true" failonerror="false">
-            <fileset dir="${build.dir}" includes="**/*"/>
-        </delete>
-        <delete>
-            <fileset dir="${base_dir}/rules" includes="*.pkg"/>
-        </delete>
-    </target>
-
-    <!-- Builds from scratch -->
-    <target name="clean" depends="purge,deploy-local, jar_api">
-    </target>
-    <!-- Builds from scratch and prepares test -->
-    <target name="dclean" depends="purge,deploy-local, jar_api, prepare-test">
-    </target>
-    
-    <!-- todo: temporary alias for the old build targets. Remove when fully migrated to grails -->
-    <target name="designs" depends="compile-designs"/>
-
-    <!-- compile the Jasper design reports -->
-    <target name="compile-designs">
+    <target name="compile-designs" description="Compiles jasper paper invoice designs.">
         <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask">
             <classpath refid="compile.classpath"/>
         </taskdef>
@@ -302,6 +128,7 @@
         </copy>
 
         <!-- compile designs -->
+        <mkdir dir="${basedir}/tmp"/>
         <jrc destdir="${build.resources.dir}/designs"
              tempdir="${basedir}/tmp"
              keepjava="true"
@@ -317,10 +144,10 @@
                 <pathelement path="${build.classes.dir}"/>
             </classpath>
         </jrc>
+        <delete dir="${basedir}/tmp"/>
     </target>
 
-    <!-- todo: where to generate compiled rules .pkg files? defaults to ./resources/rules/ -->
-    <target name="compile-rules" description="compile rules files">
+    <target name="compile-rules" description="Compiles DROOLS binary rules packages.">
         <echo>Compiling the binary rules</echo>
 
         <taskdef name="rulebase" classname="org.drools.contrib.DroolsCompilerAntTask" classpathref="drools.classpath"/>
@@ -388,7 +215,7 @@
     <target name="test" depends="prepare-test, test-unit, test-ws, test-integration"/>
 
     <target name="prepare-test"
-            depends="compile-designs, compile-rules, prepare-test-db" 
+            depends="clean, compile-designs, compile-rules, prepare-test-db"
             description="Prepares the testing environment"/>
     
     <target name="prepare-test-db">
@@ -399,7 +226,12 @@
         <echo message="Ready. Start-up Tomcat and run 'ant test'"/>
     </target>
 
-    <target name="test-unit" description="Run all class level unit tests and generate testing reports.">
+    <target name="test.init">
+        <mkdir dir="${build.test.dir}"/>
+        <mkdir dir="${build.test-results.dir}"/>
+    </target>
+
+    <target name="test-unit" depends="test.init" description="Run all class level unit tests and generate testing reports.">
         <javac srcdir="${source.test.dir}/unit" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
             <classpath refid="test.classpath"/>
             <classpath refid="compile.classpath"/>
@@ -436,7 +268,7 @@
         <fail if="test.failed" message="Unit tests failed! See log's for details."/>
     </target>
 
-	<target name="test-remoting" depends="jar_api">
+	<target name="test-remoting" depends="test.init">
 	        <javac srcdir="${source.test.dir}/ws" includes="RemotingTest.java" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
                 <classpath refid="compile.classpath"/>
                 <classpath refid="test.classpath"/>
@@ -470,7 +302,7 @@
 	        <fail if="test.failed" message="Remoting test failed! See log's for details."/>
 	</target>
 
-    <target name="test-ws" depends="jar_api" description="Run all web service tests and generate testing reports.">
+    <target name="test-ws" depends="test.init" description="Run all web service tests and generate testing reports.">
         <javac srcdir="${source.test.ws.dir}" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
             <classpath refid="compile.classpath"/>
             <classpath refid="test.classpath"/>
@@ -513,7 +345,7 @@
         <fail if="test.failed" message="Web service tests failed! See log's for details."/>
     </target>
 
-    <target name="test-integration" description="Run all integration tests and generate testing reports.">
+    <target name="test-integration" depends="test.init" description="Run all integration tests and generate testing reports.">
         <javac srcdir="${source.test.integration.dir}"
                destdir="${build.test.dir}"
                debug="on" deprecation="no" fork="true">
@@ -606,7 +438,7 @@
          Warning: this task needs a lot of memory (at least 400MB), otherwise it fails with an obscure error.
          To fix set "ANT_OPTS=-Xmx400m -Xss128k"
     -->
-    <target name="db" depends="init">
+    <target name="db">
         <!-- copy the schema files into torque dirs -->
         <copy todir="${torque.home.dir}/src/schema">
             <fileset dir="${source.torque.descriptor.dir}" includes="jbilling*"/>

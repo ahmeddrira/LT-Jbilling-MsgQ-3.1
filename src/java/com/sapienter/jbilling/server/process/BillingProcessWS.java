@@ -22,7 +22,9 @@ package com.sapienter.jbilling.server.process;
 
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.order.OrderProcessWS;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
+import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
 import com.sapienter.jbilling.server.security.WSSecured;
 
 import java.io.Serializable;
@@ -37,7 +39,7 @@ import java.util.List;
  * @since 25-10-2010
  */
 public class BillingProcessWS implements WSSecured, Serializable {
-
+    
     // PaperInvoiceBatchDTO excluded from WS
 
     private Integer id;
@@ -70,16 +72,39 @@ public class BillingProcessWS implements WSSecured, Serializable {
         this.retriesToDo = dto.getRetriesToDo();
 
         // invoice ID's
-        invoiceIds = new ArrayList<Integer>(dto.getInvoices().size());
-        for (InvoiceDTO invoice : dto.getInvoices())
-            invoiceIds.add(invoice.getId());
+        if (!dto.getInvoices().isEmpty()) {
+            invoiceIds = new ArrayList<Integer>(dto.getInvoices().size());
+            for (InvoiceDTO invoice : dto.getInvoices())
+                invoiceIds.add(invoice.getId());
+        }
+
+        // order processes
+        if (!dto.getOrderProcesses().isEmpty()) {
+            orderProcesses = new ArrayList<OrderProcessWS>(dto.getOrderProcesses().size());
+            for (OrderProcessDTO process : dto.getOrderProcesses())
+                orderProcesses.add(new OrderProcessWS(process));
+        }
+
+        if (!dto.getProcessRuns().isEmpty()) {
+            // billing process runs
+            processRuns = new ArrayList<ProcessRunWS>(dto.getProcessRuns().size());
+            for (ProcessRunDTO run : dto.getProcessRuns())
+                processRuns.add(new ProcessRunWS(run));
+        }
     }
 
     public BillingProcessWS(BillingProcessDTOEx ex) {
         this((BillingProcessDTO) ex);
 
         this.billingDateEnd = ex.getBillingDateEnd();
-        this.retries = ex.getRetries();        
+        this.retries = ex.getRetries();
+
+        // billing process runs
+        if (!ex.getRuns().isEmpty()) {
+            processRuns = new ArrayList<ProcessRunWS>(ex.getRuns().size());
+            for (BillingProcessRunDTOEx run : ex.getRuns())
+                processRuns.add(new ProcessRunWS(run));
+        }
     }
 
     public Integer getId() {

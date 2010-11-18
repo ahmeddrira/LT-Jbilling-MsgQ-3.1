@@ -41,6 +41,7 @@ import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerDAS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
+import org.hibernate.ObjectNotFoundException;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -244,8 +245,14 @@ public class WSSecurityMethodMapper {
             if (method != null)
                 for (WSSecureMethod secure : values()) 
                     if (method.equals(secure.getMethod()))
-                        if (secure.getIdArgIndex() <= args.length)
-                            return secure.getType().getMappedSecuredWS((Serializable) args[secure.getIdArgIndex()]);
+                        if (secure.getIdArgIndex() <= args.length) {
+                            try {
+                                return secure.getType().getMappedSecuredWS((Serializable) args[secure.getIdArgIndex()]);
+                            } catch (ObjectNotFoundException e) {
+                                // hibernate complains loudly... object does not exist, no reason to validate.
+                                return null;
+                            }
+                        }
                 
             return null;
         }

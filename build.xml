@@ -1,4 +1,4 @@
-<project name="jbilling" default="deploy-local" basedir=".">
+<project name="jbilling" basedir=".">
 
     <property file="build.properties"/>
 
@@ -234,14 +234,16 @@
 
     <target name="prepare-test"
             depends="clean, copy-resources, compile-designs, compile-rules, prepare-test-db"
-            description="Prepares the testing environment"/>
+            description="Prepares the testing environment">
+
+        <echo message="Environment prepared for test run. Start grails and run 'ant test'."/>
+    </target>
     
     <target name="prepare-test-db">
-        <echo message="Importing test data"/>
+        <echo message="Importing jbilling_test database"/>
         <exec executable="psql" failonerror="true">
             <arg line=" -U jbilling -f ${basedir}/sql/jbilling_test.sql jbilling_test"/>
         </exec>
-        <echo message="Ready. Start-up Tomcat and run 'ant test'"/>
     </target>
 
     <target name="test.init">

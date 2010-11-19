@@ -1701,7 +1701,8 @@ CREATE TABLE pluggable_task (
     entity_id integer NOT NULL,
     type_id integer,
     processing_order integer NOT NULL,
-    optlock integer NOT NULL
+    optlock integer NOT NULL,
+    notes character varying(1000)
 );
 
 
@@ -14903,60 +14904,60 @@ COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 -- Data for Name: pluggable_task; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM stdin;
-2	1	3	1	1
-3	1	37	2	2
-4	1	5	1	1
-5	1	6	1	1
-6	1	36	1	2
-7	1	27	1	1
-8	1	10	1	1
-9	1	12	2	1
-10	2	1	1	1
-11	2	3	1	1
-12	2	4	2	1
-13	2	5	1	1
-14	2	6	1	1
-15	2	7	1	1
-16	2	9	1	1
-17	2	10	1	1
-18	2	12	2	1
-19	1	20	1	1
-21	1	22	2	1
-23	1	23	1	1
-31	1	26	1	1
-420	1	33	1	1
-421	1	32	1	3
-431	1	1	2	1
-440	1	39	1	1
-450	1	41	1	1
-460	1	42	1	1
-470	1	43	1	1
-480	1	44	1	1
-490	1	46	1	2
-500	1	47	1	1
-510	1	48	2	1
-520	1	49	3	1
-20	1	21	4	1
-22	1	21	5	1
-530	1	50	3	1
-540	1	53	1	2
-541	1	54	1	1
-550	1	55	1	1
-560	1	56	2	3
-570	1	15	1	1
-571	1	71	1	1
-580	2	58	1	1
-590	2	59	1	1
-410	1	60	1	1
-600	1	63	1	1
-1	1	61	1	3
-430	1	62	1	1
-572	1	73	2	0
-6020	1	44	1	1
-6030	1	77	1	1
-6040	1	78	1	4
-6050	1	79	2	7
+COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) FROM stdin;
+2	1	3	1	1	\N
+3	1	37	2	2	\N
+4	1	5	1	1	\N
+5	1	6	1	1	\N
+6	1	36	1	2	\N
+7	1	27	1	1	\N
+8	1	10	1	1	\N
+9	1	12	2	1	\N
+10	2	1	1	1	\N
+11	2	3	1	1	\N
+12	2	4	2	1	\N
+13	2	5	1	1	\N
+14	2	6	1	1	\N
+15	2	7	1	1	\N
+16	2	9	1	1	\N
+17	2	10	1	1	\N
+18	2	12	2	1	\N
+19	1	20	1	1	\N
+21	1	22	2	1	\N
+23	1	23	1	1	\N
+31	1	26	1	1	\N
+420	1	33	1	1	\N
+421	1	32	1	3	\N
+431	1	1	2	1	\N
+440	1	39	1	1	\N
+450	1	41	1	1	\N
+460	1	42	1	1	\N
+470	1	43	1	1	\N
+480	1	44	1	1	\N
+490	1	46	1	2	\N
+500	1	47	1	1	\N
+510	1	48	2	1	\N
+520	1	49	3	1	\N
+20	1	21	4	1	\N
+22	1	21	5	1	\N
+530	1	50	3	1	\N
+540	1	53	1	2	\N
+541	1	54	1	1	\N
+550	1	55	1	1	\N
+560	1	56	2	3	\N
+570	1	15	1	1	\N
+571	1	71	1	1	\N
+580	2	58	1	1	\N
+590	2	59	1	1	\N
+410	1	60	1	1	\N
+600	1	63	1	1	\N
+1	1	61	1	3	\N
+430	1	62	1	1	\N
+572	1	73	2	0	\N
+6020	1	44	1	1	\N
+6030	1	77	1	1	\N
+6040	1	78	1	4	\N
+6050	1	79	2	7	\N
 \.
 
 

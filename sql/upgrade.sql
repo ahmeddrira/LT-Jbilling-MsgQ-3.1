@@ -377,3 +377,4 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 (23, 22, 'description',1, 'Scheduled Plug-ins'),
 (23, 23, 'description',1, 'Rules Generators');
 
+ALTER table pluggable_task add column notes varchar(1000);

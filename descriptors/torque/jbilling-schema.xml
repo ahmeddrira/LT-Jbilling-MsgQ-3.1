@@ -1097,6 +1097,7 @@
         <column name="entity_id" required="true" type="INTEGER"/>
         <column name="type_id" type="INTEGER"/>
         <column name="processing_order" required="true" type="INTEGER"/>
+        <column name="notes" required="false" type="VARCHAR" size="1000" />
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="pluggable_task_type">
             <reference foreign="id" local="type_id"/>

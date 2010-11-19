@@ -1199,4 +1199,14 @@ public class BillingProcessBL extends ResultList
         return dto != null ? new BillingProcessWS(dto) : null;
     }
 
+
+    /**
+     * Convert a given BillingProcessDTOEx into a BillingProcessWS web-service object.
+     *
+     * @param ex extended DTO to convert
+     * @return converted web-service object
+     */
+    public static BillingProcessWS getWS(BillingProcessDTOEx ex) {
+        return ex != null ? new BillingProcessWS(ex) : null;
+    }
 }

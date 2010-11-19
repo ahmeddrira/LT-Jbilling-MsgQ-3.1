@@ -60,9 +60,21 @@ public class ProcessRunWS implements Serializable {
         this.statusId = dto.getStatus() != null ? dto.getStatus().getId() : null;
 
         // billing process run totals
-        processRunTotals = new ArrayList<ProcessRunTotalWS>(dto.getProcessRunTotals().size());
-        for (ProcessRunTotalDTO runTotal : dto.getProcessRunTotals())
-            processRunTotals.add(new ProcessRunTotalWS(runTotal));
+        if (!dto.getProcessRunTotals().isEmpty()) {
+            processRunTotals = new ArrayList<ProcessRunTotalWS>(dto.getProcessRunTotals().size());
+            for (ProcessRunTotalDTO runTotal : dto.getProcessRunTotals())
+                processRunTotals.add(new ProcessRunTotalWS(runTotal));
+        }
+    }
+
+    public ProcessRunWS(BillingProcessRunDTOEx ex) {
+        this((ProcessRunDTO) ex);
+
+        if (!ex.getTotals().isEmpty()) {
+            processRunTotals = new ArrayList<ProcessRunTotalWS>(ex.getTotals().size());
+            for (BillingProcessRunTotalDTOEx runTotal : ex.getTotals())
+                processRunTotals.add(new ProcessRunTotalWS(runTotal));
+        }
     }
 
     public Integer getId() {

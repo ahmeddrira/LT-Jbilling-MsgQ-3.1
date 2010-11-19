@@ -570,6 +570,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         //udpate customerdto here - notes, automaticPaymentMethod
         CustomerDTO cust= UserBL.getUserEntity(user.getUserId()).getCustomer();
     	if ( null != cust ) {
+    		LOG.debug("This code should save=" + user.getNotes() + " and " + user.getAutomaticPaymentType());
     		cust.setNotes(user.getNotes());
     		cust.setAutoPaymentType(user.getAutomaticPaymentType());
     		new CustomerDAS().save(cust);
@@ -1244,7 +1245,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
     }
     
-    public OrderWS[] getUserOrders(Integer userId) throws SessionInternalError { 
+    public OrderWS[] getUserSubscriptions(Integer userId) throws SessionInternalError { 
     	if (userId == null) throw new SessionInternalError("User Id cannot be null.");
 
         List<OrderDTO> subscriptions= new OrderDAS().findByUserSubscriptions(userId);

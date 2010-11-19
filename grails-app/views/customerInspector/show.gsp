@@ -13,11 +13,8 @@ ${user?.companyName }<br/><br/>
 <tr><td>Phone: ${user?.contact?.phoneCountryCode}<td>Type: ${user?.role }<td>&nbsp;
 <tr><td>Email: ${user?.contact?.email}<td>Balance: ${user?.owingBalance }<td>&nbsp;
 <tr><td>Status: ${user?.status}<td>&nbsp;<td>&nbsp;
-<tr><td>Subscriber status: <td>
-	<g:subscriberStatus name="subscriberStatusId" 
-		value="${user?.subscriberStatusId}" languageId="${languageId?.toString()}"/>
-	<td>&nbsp;
-<tr><td>Next Invoice Date: ${}<td>&nbsp;<td>&nbsp;
+<tr><td>Subscriber status: <td>${subscribStatus}<td>&nbsp;
+<tr><td>Next Invoice Date: ${user?.nextInvoiceDate}<td>&nbsp;<td>&nbsp;
 <tr><td colspan="3">
 <g:actionSubmit  action="invoices"  value="View Invoices" class=""/>
 <g:actionSubmit  action="payments"  value="View Payments" class=""/>
@@ -30,12 +27,10 @@ ${user?.companyName }<br/><br/>
 <tr><td colspan="3">Address: ${user?.contact?.address1}&nbsp;${user?.contact?.address2}
 <tr><td>City: ${user?.contact?.city}<td>State/Province: ${user?.contact?.stateProvince}<td>Postal Code: ${user?.contact?.postalCode}
 <tr><td colspan="3">Country: ${user?.contact?.countryCode} 
-<tr><td colspan="3">Extra Contact
+<g:each var="ccf" status="idx" in="${user?.contact?.fieldNames}">
+	<tr><td colspan="3">ccf_${ccf}: ${user?.contact?.fieldValues[idx]} 
+</g:each>
 <tr><td colspan="3">&nbsp;
-<tr><td colspan="3">Address:
-<tr><td>City: <td>State/Province:<td>Postal Code:
-<tr><td colspan="3">Country: 
-
 <tr><td colspan="3">Notes
 <tr><td colspan="3">&nbsp;
 <tr><td colspan="3"><g:textArea cols="20" rows="10" name="notes" value="${user.notes}" /> 
@@ -78,8 +73,5 @@ ${user?.companyName }<br/><br/>
 
 </table>
 </g:form>
-<script language="javascript">
-document.getElementById('subscriberStatusId').disabled=true;
-</script>
 </body>
 </html>

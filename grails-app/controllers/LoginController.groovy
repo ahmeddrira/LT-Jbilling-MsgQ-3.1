@@ -100,6 +100,7 @@ class LoginController {
 		}
 
 		if (springSecurityService.isAjax(request)) {
+
 			render([error: msg] as JSON)
 		}
 		else {

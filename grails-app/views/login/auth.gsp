@@ -3,14 +3,14 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 
-    <title>jBilling Login</title>
+    <title><g:message code="login.page.title"/></title>
 
     <link rel="shortcut icon" href="${resource(dir:'images', file:'favicon.ico')}" type="image/x-icon" />
 
     <link media="all" rel="stylesheet" href="${resource(dir:'css', file:'default.css')}" type="text/css" />
     <!--[if lt IE 8]><link rel="stylesheet" href="${resource(dir:'css', file:'lt7.css')}" type="text/css" media="screen"/><![endif]-->
 
-    <g:javascript library="jquery-1.4.3.min" />
+    <g:javascript library="jquery" plugin="jquery"/>
     <g:javascript library="ie-hover" />
 
     <script type='text/javascript'>
@@ -34,7 +34,7 @@
         <g:if test='${flash.message}'>
             <div class="msg-box login error">
                 <img src="${resource(dir:'images', file:'icon14.gif')}" alt="${message(code:'error.icon.alt',default:'Error')}"/>
-                <strong>Oops...</strong>
+                <strong><g:message code="login.error.title"/></strong>
                 <p>${flash.message}</p>
             </div>
         </g:if>
@@ -45,21 +45,21 @@
                     <fieldset>
 
                         <div class="input-row">
-                            <label for='username'>Login ID</label>
+                            <label for='username'><g:message code="login.prompt.username"/></label>
                             <div class="input-bg">
                                 <input type='text' class='text' name='j_username' id='username'/>
                             </div>
                         </div>
 
                         <div class="input-row">
-                            <label for='password'>Password</label>
+                            <label for='password'><g:message code="login.prompt.password"/></label>
                             <div class="input-bg">
                                 <input type='password' class='text' name='j_password' id='password'/>
                             </div>
                         </div>
 
                         <div class="input-row">
-                            <label for='client_id'>Client ID</label>
+                            <label for='client_id'><g:message code="login.prompt.client.id"/></label>
                             <div class="input-bg">
                                 <input type='text' class='text' name='j_client_id' id='client_id'/>
                             </div>
@@ -67,13 +67,13 @@
 
                         <br/>
                         <div class="input-row">
-                            <label for='remember_me'>Remember me</label>
+                            <label for='remember_me'><g:message code="login.prompt.remember.me"/></label>
                             <input type='checkbox' class='chk' name='${rememberMeParameter}' id='remember_me' <g:if test='${hasCookie}'>checked='checked'</g:if> />
                         </div>
 
                         <br/>
                         <div class="input-row center">
-                            <a href="#" class="submit order" onclick="$('#login form').submit();"><span>Login</span></a>
+                            <a href="#" class="submit order" onclick="$('#login form').submit();"><span><g:message code="login.button.submit"/></span></a>
                         </div>
                     </fieldset>
                 </form>

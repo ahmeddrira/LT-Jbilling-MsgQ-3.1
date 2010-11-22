@@ -45,6 +45,7 @@ public class ProcessRunWS implements Serializable {
     private Date paymentFinished;
     private List<ProcessRunTotalWS> processRunTotals = new ArrayList<ProcessRunTotalWS>(0);
     private Integer statusId;
+    private String statusStr;
 
     public ProcessRunWS() {
     }
@@ -69,6 +70,8 @@ public class ProcessRunWS implements Serializable {
 
     public ProcessRunWS(BillingProcessRunDTOEx ex) {
         this((ProcessRunDTO) ex);
+
+        this.statusStr = ex.getStatusStr();
 
         if (!ex.getTotals().isEmpty()) {
             processRunTotals = new ArrayList<ProcessRunTotalWS>(ex.getTotals().size());
@@ -149,6 +152,14 @@ public class ProcessRunWS implements Serializable {
         this.statusId = statusId;
     }
 
+    public String getStatusStr() {
+        return statusStr;
+    }
+
+    public void setStatusStr(String statusStr) {
+        this.statusStr = statusStr;
+    }
+
     @Override
     public String toString() {
         return "ProcessRunWS{"
@@ -161,6 +172,7 @@ public class ProcessRunWS implements Serializable {
                + ", paymentFinished=" + paymentFinished
                + ", processRunTotals=" + (processRunTotals != null ? processRunTotals.size() : null)
                + ", statusId=" + statusId
+               + ", statusStr='" + statusStr + '\''
                + '}';
     }
 }

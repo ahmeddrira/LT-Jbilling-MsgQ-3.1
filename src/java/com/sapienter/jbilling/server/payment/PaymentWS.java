@@ -292,5 +292,21 @@ public class PaymentWS implements WSSecured, Serializable {
 
     public Integer getOwningUserId() {
         return getUserId();
-    }        
+    }
+
+    @Override
+    public String toString() {
+        return "PaymentWS{"
+               + "id=" + id
+               + ", baseUserId=" + baseUserId
+               + ", paymentMethodId=" + paymentMethodId
+               + ", method='" + method + '\''
+               + ", amount='" + amount + '\''
+               + ", balance='" + balance + '\''
+               + ", isRefund=" + isRefund
+               + ", isPreauth=" + isPreauth
+               + ", paymentDate=" + paymentDate
+               + ", deleted=" + deleted               
+               + '}';
+    }
 }

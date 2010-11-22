@@ -1,7 +1,6 @@
 # build artifacts
 target/
 build/
-build.properties
 TEST*.xml
 
 # temp files

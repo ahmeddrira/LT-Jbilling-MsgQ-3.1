@@ -387,7 +387,7 @@ class ApiService implements IWebServicesSessionBean {
     }
 
     public List<OrderProcessWS> getOrderProcessesByInvoice(Integer invoiceId) {
-        return webServiceSession.getOrderProcessesByInvoice(invoiceId);
+        return webServicesSession.getOrderProcessesByInvoice(invoiceId);
     }
 
     public BillingProcessWS getReviewBillingProcess() {

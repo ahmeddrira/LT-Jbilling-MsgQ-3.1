@@ -75,7 +75,9 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
                 .createAlias("baseUserByUserId", "u")
                     .add(Restrictions.eq("u.id", userId))
                 .addOrder(Order.asc("nextBillableDay"));
-        return criteria.list().get(0);
+
+        List results = criteria.list();
+        return results.isEmpty() ? null : results.get(0);
     }
     
     public List<OrderDTO> findByUser_Status(Integer userId,Integer statusId) {

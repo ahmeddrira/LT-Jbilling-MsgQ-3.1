@@ -583,18 +583,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @param userId
      * The id of the user to be returned
      */
-    public UserWS getUserWS(Integer userId)
-            throws SessionInternalError {
-        UserWS dto = null;
-        // calling from dot.net seems to not have a context set. So then when calling
-        // getCallerPrincipal the client gets a 'No security context set' exception
-        // log.debug("principal = " + context.getCallerPrincipal().getName());
+    public UserWS getUserWS(Integer userId) throws SessionInternalError {        
         UserBL bl = new UserBL(userId);
-        dto = bl.getUserWS();
-
-        LOG.debug("Returned user: " + dto);
-
-        return dto;
+        return bl.getUserWS();
     }
 
     /**
@@ -2128,11 +2119,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public BillingProcessWS getBillingProcess(Integer processId) {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
         BillingProcessDTOEx dto = processBean.getDto(processId, getCallerLanguageId());
-
-        LOG.debug("Billing process DTO: " + dto);
-        LOG.debug("Billing process order processes: " + dto.getOrderProcesses().size());
-        LOG.debug("Billing process runs: " + dto.getProcessRuns().size());
-        LOG.debug("Billing runs (from ex): " + dto.getRuns().size());
         
         return BillingProcessBL.getWS(dto);
     }

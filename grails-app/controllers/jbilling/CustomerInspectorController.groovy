@@ -9,6 +9,7 @@ import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.user.db.SubscriberStatusDTO;
+import com.sapienter.jbilling.server.user.ContactWS;
 
 class CustomerInspectorController {
 	
@@ -64,8 +65,11 @@ class CustomerInspectorController {
 			if (user.getSubscriberStatusId() == status.getId())
 			subscribStatus= status.getDescription(Integer.parseInt(languageId))
 		}
+		//find all user contacts
+		ContactWS[] contacts= webServicesSession.getUserContactsWS(user.getUserId())
+		
 		log.info "Custom Contact fields=${user?.contact?.fieldNames}"
-		[user:user, _id:userid, subscribStatus:subscribStatus, orders:orders, languageId:languageId, expDate:expDate, isAutoCC:isAutoCC,isAutoAch:isAutoAch]
+		[user:user, _id:userid, contacts:contacts, subscribStatus:subscribStatus, orders:orders, languageId:languageId, expDate:expDate, isAutoCC:isAutoCC,isAutoAch:isAutoAch]
 	}
 	
 	def editNote ={

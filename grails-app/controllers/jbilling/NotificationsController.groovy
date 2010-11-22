@@ -136,6 +136,17 @@ class NotificationsController {
     
     def edit = {
         
+		//set cookies here..
+		log.info ("doNotAskAgain=" + params.doNotAskAgain + " askPreference=" + params.askPreference)
+		
+		def askPreference=request.getCookie("doNotAskAgain")
+		log.info ("Cooke set to was=" + askPreference)
+		if ( "true".equals(params.doNotAskAgain) ){
+			response.setCookie("doNotAskAgain", String.valueOf(params.askPreference),604800)
+			log.info ("Setting the cookie to value " + params.askPreference)
+			askPreference= params.askPreference
+		}
+		
         log.info "Id is=" + params.id
         Integer messageTypeId= params.id.toInteger()
         
@@ -161,7 +172,7 @@ class NotificationsController {
             }
         }
         
-        [dto:dto, languageId:languageId, entityId:entityId]
+        [dto:dto, languageId:languageId, entityId:entityId, askPreference:askPreference]
     }
     
     def saveAndRedirect = {

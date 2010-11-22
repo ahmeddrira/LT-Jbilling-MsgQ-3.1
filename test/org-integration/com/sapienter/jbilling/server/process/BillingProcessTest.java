@@ -122,7 +122,7 @@ public class BillingProcessTest extends TestCase {
         Integer[] invoiceIds = api.getAllInvoices(user.getUserId());
         System.out.println("Invoice ids: " + Arrays.toString(invoiceIds));
 
-        
+
         InvoiceWS invoice = api.getReviewInvoiceWS(invoiceIds[0]);
         System.out.println("Review invoice: " + invoice);
 
@@ -135,7 +135,7 @@ public class BillingProcessTest extends TestCase {
         api.deleteOrder(orderId);
         api.deleteUser(user.getUserId());
     }
-    
+
     public void testRetry() throws Exception {
         System.out.println("Running testRetry()");
 
@@ -442,54 +442,54 @@ public class BillingProcessTest extends TestCase {
 
     public void testProcess() throws Exception {
         System.out.println("Running testProcess()");
-        try {
-            // get the latest process
-            BillingProcessWS lastDto = api.getBillingProcess(api.getLastBillingProcess());
 
-            // get the review, so we can later check that what id had
-            // is the same that is generated in the real process
-            BillingProcessWS reviewDto = api.getReviewBillingProcess();
+        // get the latest process
+        BillingProcessWS lastDto = api.getBillingProcess(api.getLastBillingProcess());
 
-            // check that the next billing date is updated
-            BillingProcessConfigurationWS config = api.getBillingProcessConfiguration();
-            assertEquals("14.9 - Next billing date starting point",
-                         new Date(2006 - 1900, 10 - 1, 26),
-                         config.getNextRunDate());
+        // get the review, so we can later check that what id had
+        // is the same that is generated in the real process
+        BillingProcessWS reviewDto = api.getReviewBillingProcess();
 
-            // run trigger on the run date
-            api.triggerBilling(runDate);
+        // check that the next billing date is updated
+        BillingProcessConfigurationWS config = api.getBillingProcessConfiguration();
+        assertEquals("14.9 - Next billing date starting point",
+                     new Date(2006 - 1900, 10 - 1, 26),
+                     config.getNextRunDate());
 
-            // validate invoice delegation
-            InvoiceWS invoice = api.getInvoiceWS(8500);
-            assertNotNull("Overdue invoice still there", invoice);
-            assertEquals("Overdue invoice is not 'paid'", 0, invoice.getToProcess().intValue());
-            assertEquals("Overdue invoice is now 'carried over'",
-                         Constants.INVOICE_STATUS_UNPAID_AND_CARRIED,
-                         invoice.getStatusId());
+        // run trigger on the run date
+        api.triggerBilling(runDate);
 
-            assertEquals("Overdue invoice balance remains the same",
-                         new BigDecimal("15.0"),
-                         invoice.getBalanceAsDecimal());
+        // validate invoice delegation
+        InvoiceWS invoice = api.getInvoiceWS(8500);
+        assertNotNull("Overdue invoice still there", invoice);
+        assertEquals("Overdue invoice is not 'paid'", 0, invoice.getToProcess().intValue());
+        assertEquals("Overdue invoice is now 'carried over'",
+                     Constants.INVOICE_STATUS_UNPAID_AND_CARRIED,
+                     invoice.getStatusId());
 
-            assertNotNull("Overdue invoice is now delegated", invoice.getDelegatedInvoiceId());
+        assertEquals("Overdue invoice balance remains the same",
+                     new BigDecimal("15.0"),
+                     invoice.getBalanceAsDecimal());
 
-            // get the latest process
-            // this is the one and only new process run
-            BillingProcessWS lastDtoB = api.getBillingProcess(api.getLastBillingProcess());
-            assertFalse("15 - New Process", lastDto.getId().equals(lastDtoB.getId()));
+        assertNotNull("Overdue invoice is now delegated", invoice.getDelegatedInvoiceId());
 
-            // initially, runs should be 1
-            assertEquals("16 - Only one run", 1, lastDtoB.getProcessRuns().size());
+        // get the latest process
+        // this is the one and only new process run
+        BillingProcessWS lastDtoB = api.getBillingProcess(api.getLastBillingProcess());
+        assertFalse("15 - New Process", lastDto.getId().equals(lastDtoB.getId()));
 
-            // check that the next billing date is updated
-            config = api.getBillingProcessConfiguration();
-            assertEquals("17 - Next billing date for a month later",
-                         new Date(2006 - 1900, 11 - 1, 26),
-                         config.getNextRunDate());
+        // initially, runs should be 1
+        assertEquals("16 - Only one run", 1, lastDtoB.getProcessRuns().size());
 
-            // verify that what just have run, is the same that was displayed
-            // in the review
-            // todo: Billing process WS grand totals
+        // check that the next billing date is updated
+        config = api.getBillingProcessConfiguration();
+        assertEquals("17 - Next billing date for a month later",
+                     new Date(2006 - 1900, 11 - 1, 26),
+                     config.getNextRunDate());
+
+        // verify that what just have run, is the same that was displayed
+        // in the review
+        // todo: Billing process WS grand totals
 //            assertEquals("17.1 - Review invoices = Process invoices",
 //                         reviewDto.getGrandTotal().getInvoicesGenerated().intValue(),
 //                         lastDtoB.getGrandTotal().getInvoicesGenerated().intValue());
@@ -502,24 +502,20 @@ public class BillingProcessTest extends TestCase {
 //                         aTotal.getTotalInvoiced(),
 //                         bTotal.getTotalInvoiced());
 
-            // verify that the transition from pending unsubscription to unsubscribed worked
-            Integer userId = api.getUserId("pendunsus1");
-            UserWS user = api.getUserWS(userId);
+        // verify that the transition from pending unsubscription to unsubscribed worked
+        Integer userId = api.getUserId("pendunsus1");
+        UserWS user = api.getUserWS(userId);
 
-            assertEquals("User should stay on pending unsubscription",
-                         UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION,
-                         user.getSubscriberStatusId());
+        assertEquals("User should stay on pending unsubscription",
+                     UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION,
+                     user.getSubscriberStatusId());
 
-            userId = api.getUserId("pendunsus2");
-            user = api.getUserWS(userId);
+        userId = api.getUserId("pendunsus2");
+        user = api.getUserWS(userId);
 
-            assertEquals("User should have changed to unsubscribed",
-                         UserDTOEx.SUBSCRIBER_UNSUBSCRIBED,
-                         user.getSubscriberStatusId());
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Exception:" + e);
-        }
+        assertEquals("User should have changed to unsubscribed",
+                     UserDTOEx.SUBSCRIBER_UNSUBSCRIBED,
+                     user.getSubscriberStatusId());
     }
 
     // This should work when data of the order lines makes sense (quantity *
@@ -527,52 +523,48 @@ public class BillingProcessTest extends TestCase {
     // Yet, the periods have to be added in this function
     public void testGeneratedInvoices() {
         System.out.println("Running testGeneratedInvoices()");
-        try {
-            List<Integer> invoiceIds = api.getBillingProcessGeneratedInvoices(PROCESS_ID);
 
-            // we know that only one invoice should be generated
-            assertEquals("Invoices generated", 998, invoiceIds.size());
+        List<Integer> invoiceIds = api.getBillingProcessGeneratedInvoices(PROCESS_ID);
 
-            for (Integer id : invoiceIds) {
-                InvoiceWS invoice = api.getInvoiceWS(id);
+        // we know that only one invoice should be generated
+        assertEquals("Invoices generated", 998, invoiceIds.size());
 
-                BigDecimal orderTotal = BigDecimal.ZERO;
-                boolean isProRated = false;
+        for (Integer id : invoiceIds) {
+            InvoiceWS invoice = api.getInvoiceWS(id);
 
-                for (OrderProcessWS orderProcess : api.getOrderProcessesByInvoice(id)) {
-                    OrderWS orderDto = api.getOrder(orderProcess.getOrderId());
+            BigDecimal orderTotal = BigDecimal.ZERO;
+            boolean isProRated = false;
 
-                    orderTotal = orderTotal.add(orderDto.getTotalAsDecimal());
-                    if (orderProcess.getOrderId() >= 103 &&
-                        orderProcess.getOrderId() <= 108 ||
-                        orderProcess.getOrderId() == 113 ||
-                        orderProcess.getOrderId() == 107600) {
+            List<OrderProcessWS> invoiceOrderProcesses = api.getOrderProcessesByInvoice(id);
+            for (OrderProcessWS orderProcess : invoiceOrderProcesses) {
+                OrderWS orderDto = api.getOrder(orderProcess.getOrderId());
 
-                        isProRated = true;
-                    }
-                }
+                orderTotal = orderTotal.add(orderDto.getTotalAsDecimal());
+                if (orderProcess.getOrderId() >= 103 &&
+                    orderProcess.getOrderId() <= 108 ||
+                    orderProcess.getOrderId() == 113 ||
+                    orderProcess.getOrderId() == 107600) {
 
-                if (!isProRated) {
-                    BigDecimal total = invoice.getTotalAsDecimal();
-                    BigDecimal carried = invoice.getCarriedBalanceAsDecimal();
-
-                    assertEquals("Orders total = Invoice " + invoice.getId() + " total",
-                                 orderTotal,
-                                 total.subtract(carried));
-                } else {
-                    // TODO: add exact calculations for pro-rated invoices
+                    isProRated = true;
                 }
             }
 
-            // take the invoice and examine
-            assertTrue("invoice was generated", api.getAllInvoices(1067).length != 0);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Exception:" + e);
+            if (!isProRated) {
+                BigDecimal total = invoice.getTotalAsDecimal();
+                BigDecimal carried = invoice.getCarriedBalanceAsDecimal();
+
+                assertEquals("Orders total = Invoice " + invoice.getId() + " total",
+                             orderTotal,
+                             total.subtract(carried));
+            } else {
+                // TODO: add exact calculations for pro-rated invoices
+            }
         }
+
+        // take the invoice and examine
+        assertTrue("invoice was generated", api.getAllInvoices(1067).length != 0);
     }
 
-/*
     public void testPayments() {
         System.out.println("Running testPayments()");
         try {
@@ -620,12 +612,11 @@ public class BillingProcessTest extends TestCase {
             fail("Exception:" + e);
         }
     }
-*/
 
     /*
      * VALIDATE ORDERS
      */
-/*
+
     public void testOrdersProcessedDate() {
         System.out.println("Running testOrdersProcessedDate()");
         String dates[] = {
@@ -753,7 +744,6 @@ public class BillingProcessTest extends TestCase {
             fail("Exception:" + e);
         }
     }
-*/
 
     /**
      * Test that the BillingProcess will fail with status "Finished: failed" if an exception occurs and that resolving
@@ -761,7 +751,6 @@ public class BillingProcessTest extends TestCase {
      *
      * @throws Exception testing
      */
-/*
     public void testBillingProcessFailure() throws Exception {
         System.out.println("Running testBillingProcessFailure()");
 
@@ -809,9 +798,7 @@ public class BillingProcessTest extends TestCase {
         BillingProcessWS billingProcess = api.getBillingProcess(billingProcessId);
         ProcessRunWS run = billingProcess.getProcessRuns().get(0);
 
-        assertEquals("Last billing process run should have failed.",
-                     Constants.PROCESS_RUN_STATUS_FAILED,
-                     run.getStatusId());
+        assertEquals("Last billing process run should have failed.", "Finished: failed", run.getStatusStr());
 
         // fix the order by setting billing type ID to a proper value
         JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -828,17 +815,13 @@ public class BillingProcessTest extends TestCase {
         billingProcess = api.getBillingProcess(billingProcessId);
         run = billingProcess.getProcessRuns().get(0);
 
-        assertEquals("Last billing process run should have passed.",
-                     Constants.PROCESS_RUN_STATUS_SUCCESS,
-                     run.getStatusId());
+        assertEquals("Last billing process run should have passed.", "Finished: successful", run.getStatusStr());
 
         // cleanup
         api.deleteOrder(orderId);
         api.deleteUser(user.getUserId());
     }
-*/
 
-/*
     public void testAgeing() {
         System.out.println("Running testAgeing()");
 
@@ -900,7 +883,6 @@ public class BillingProcessTest extends TestCase {
             fail("Exception:" + e);
         }
     }
-*/
 
     public static Date parseDate(String str) throws Exception {
         if (str == null) {

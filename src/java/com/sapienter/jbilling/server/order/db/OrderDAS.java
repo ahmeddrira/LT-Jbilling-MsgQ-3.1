@@ -61,6 +61,23 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
         return criteria.list();
     }
     
+    /**
+     * Finds all active orders for a given user
+     * @param userId
+     * @return
+     */
+    public Object findEarliestActiveOrder(Integer userId) {
+        // I need to access an association, so I can't use the parent helper class
+        Criteria criteria = getSession().createCriteria(OrderDTO.class)
+                .createAlias("orderStatus", "s")
+                    .add(Restrictions.eq("s.id", Constants.ORDER_STATUS_ACTIVE))
+                .add(Restrictions.eq("deleted", 0))
+                .createAlias("baseUserByUserId", "u")
+                    .add(Restrictions.eq("u.id", userId))
+                .addOrder(Order.asc("nextBillableDay"));
+        return criteria.list().get(0);
+    }
+    
     public List<OrderDTO> findByUser_Status(Integer userId,Integer statusId) {
         // I need to access an association, so I can't use the parent helper class
         Criteria criteria = getSession().createCriteria(OrderDTO.class)

@@ -152,11 +152,11 @@ public class PartnerTest extends TestCase {
             // a new payout
             payouts = partner.getPartnerPayouts();
             assertEquals("3: two payout", 2, payouts.size());
-            payout = payouts.get(0);
 
-            // make sure we have the lastest payout
+            // check the latest payout
             payout = payouts.get(payouts.size() - 1);
             payment = api.getPayment(payout.getPaymentId());
+
             assertNotNull("Payout payment", payment);
             assertEquals("3: payout total", BigDecimal.ZERO, payment.getAmountAsDecimal());
             assertEquals("3 due payout zero", BigDecimal.ZERO, partner.getDuePayoutAsDecimal());

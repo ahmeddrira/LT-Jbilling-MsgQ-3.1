@@ -237,8 +237,8 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.updateCurrentOrder(userId, lines, pricing, date, eventDescription)
     }
 
-	public OrderWS[] getUserOrders(Integer userId) {
-		return webServicesSession.getUserOrders(userId);
+	public OrderWS[] getUserSubscriptions(Integer userId) {
+		return webServicesSession.getUserSubscriptions(userId);
 	}
 	
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) {
@@ -387,7 +387,7 @@ class ApiService implements IWebServicesSessionBean {
     }
 
     public List<OrderProcessWS> getOrderProcessesByInvoice(Integer invoiceId) {
-        return webServiceSession.getOrderProcessesByInvoice(invoiceId);
+        return webServicesSession.getOrderProcessesByInvoice(invoiceId);
     }
 
     public BillingProcessWS getReviewBillingProcess() {

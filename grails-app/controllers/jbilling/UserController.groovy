@@ -176,7 +176,10 @@ class UserController {
 			if (userExists) {
 				webServicesSession.updateUser(user)
 				log.info  "Updating ach info separately..."
-				webServicesSession.updateAch(user.getUserId(), user.getAch());
+				if ( ach || ach.getAbaRouting() || ach.getBankAccount() )
+				{
+					webServicesSession.updateAch(user.getUserId(), user.getAch());				
+				}
 				flash.message = message(code: 'user.update.success')
 			} else {
 				int id = webServicesSession.createUser(user);

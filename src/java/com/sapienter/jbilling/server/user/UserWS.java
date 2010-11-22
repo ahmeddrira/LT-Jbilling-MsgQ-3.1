@@ -27,6 +27,7 @@ package com.sapienter.jbilling.server.user;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -34,11 +35,13 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
+import com.sapienter.jbilling.server.order.db.OrderDAS;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.security.WSSecured;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
-import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.validation.CreateValidationGroup;
 import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
 
@@ -89,6 +92,8 @@ public class UserWS implements WSSecured, Serializable {
     private String notes;
     private Integer automaticPaymentType;
     private String companyName;
+    
+    private Date nextInvoiceDate;
     
     public UserWS() {
     }
@@ -149,9 +154,29 @@ public class UserWS implements WSSecured, Serializable {
         }
         
         setOwingBalance(dto.getBalance());
+        
+        OrderDTO orderDto= (OrderDTO) new OrderDAS().findEarliestActiveOrder(dto.getId());
+        if (null != orderDto) {
+        	if ( null != orderDto.getNextBillableDay()) {
+        		this.nextInvoiceDate= orderDto.getNextBillableDay();
+        	} else if ( null != orderDto.getActiveSince()) {
+        		this.nextInvoiceDate= orderDto.getActiveSince();
+        	} else if ( null != orderDto.getCreateDate()) {
+        		this.nextInvoiceDate= orderDto.getCreateDate();
+        	}
+        }        
     }
 
-    public Integer getPartnerId() {
+    
+    public Date getNextInvoiceDate() {
+		return nextInvoiceDate;
+	}
+
+	public void setNextInvoiceDate(Date nextInvoiceDate) {
+		this.nextInvoiceDate = nextInvoiceDate;
+	}
+
+	public Integer getPartnerId() {
         return partnerId;
     }
 

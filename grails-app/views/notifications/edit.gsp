@@ -1,5 +1,29 @@
 <html>
 <head>
+<style type="text/css">
+#popup {
+	height: 100%;
+	width: 100%;
+	background: #000000;
+	position: absolute;
+	top: 0;
+	-moz-opacity: 0.75;
+	-khtml-opacity: 0.75;
+	opacity: 0.75;
+	filter: alpha(opacity = 75);
+}
+
+#window {
+	width: 600px;
+	height: 300px;
+	margin: 0 auto;
+	border: 1px solid #000000;
+	background: #ffffff;
+	position: absolute;
+	top: 200px;
+	left: 25%;
+}
+</style>
 <link
 	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
 	rel="stylesheet" type="text/css" />
@@ -11,41 +35,80 @@
 </head>
 <script language="javascript">
 var glFlag= false;//implement onchange
+var askPreference='${askPreference}';
+
 $(function (){
-	//alert('on document ready' + ${languageId});
+	//alert('on document ready' + $ { l anguageId});
 	$("#language.id").val(${languageId});
 });
+
+function Show_Popup(action, userid) {	
+	$('#popup').fadeIn('fast');
+	$('#window').fadeIn('fast');
+}
+function Close_Popup() {	
+	$('#popup').fadeOut('fast');
+	$('#window').fadeOut('fast');
+	checkCookieValue();
+	justGo()
+}
+
+function checkCookieValue(){
+	//alert("Called checkcookievalue()");
+	var doNotAskJS = $('#popupCheckbox:checked').val();	
+	//alert('Checbox value=' + doNotAskJS);
+	if ('on' == doNotAskJS) {
+		//alert("its on");
+		$('#doNotAskAgain').val(true);
+	} else {
+		$('#doNotAskAgain').val(false);
+	}
+}
 
 function anychange(elm) {
 	glFlag=true;
 	elementClick(elm);
 }
 
-function lchange() {
-	if (glFlag) {
-		if (confirm("There have been some changes. Do you want to save the changes first?")){
-		    document.forms[0].action='/jbilling/notifications/saveAndRedirect/' + document.getElementById('_id').value;
-		    document.forms[0].submit();
-		    return false;
-		} else {
-			glFlag= false;
-		}
-	}
-	//alert (document.getElementById('language.id').value);
-    document.forms[0].action='/jbilling/notifications/edit/' + document.getElementById('_id').value;
+function saveFirst() {
+	checkCookieValue();
+	$('#askPreference').val('saveFirst');
+	glFlag=false;
+	document.forms[0].action='/jbilling/notifications/saveAndRedirect/' + document.getElementById('_id').value;
     document.forms[0].submit();
 }
 
+function justGo(){
+	glFlag= false;
+	$('#askPreference').val('justGo');
+	//alert (document.getElementById('language.id').value);
+    document.forms[0].action='/jbilling/notifications/edit/' + document.getElementById('_id').value;
+    document.forms[0].submit();	
+}
+
+function lchange() {
+	if (glFlag) {
+		if ( null == askPreference || '' == askPreference ) {
+			Show_Popup(null,null);			
+		} else if ('saveFirst' == askPreference ) {
+			saveFirst();
+		} else {
+			justGo();
+		}			
+	} else {
+		justGo();	
+	}
+}
+
 //test cursor position code
-var targetElement
-var position
+var targetElement;
+var position;
 
 function elementClick(tempElm) { 
 	//alert('msie=' + $.browser.msie);
 	//alert('mozilla='+$.browser.mozilla);	
-	targetElement= tempElm
+	targetElement= tempElm;
 	//position= tempElm.SelectionStart
-	//alert(position);
 }
 
 function testfunc(testval) { 
@@ -82,6 +145,8 @@ function testfunc(testval) {
 </p>
 <g:form action="saveNotification">
 	<g:hiddenField name="_id" value="${params.id}" />
+	<g:hiddenField id="doNotAskAgain" name="doNotAskAgain" value="${false}"/>
+	<g:hiddenField id="askPreference" name="askPreference" value="${askPreference}"/>
 	<g:hiddenField name="msgDTOId" value="${dto?.getId()}" />
 	<g:hiddenField name="entity.id" value="${entityId}" />
 	<g:hiddenField name="_languageId" value="${languageId}"/>
@@ -220,5 +285,16 @@ function testfunc(testval) {
 		</tr>
 	</table>
 </g:form>
+<div id="popup" style="display: none;"></div>
+<div id="window" style="display: none;">
+<div id="popup_content">
+<h1>Notification has changed.</h1>
+<p>You've made changes to this notification. Do you want to save the changes before switching?</p>
+<p><g:checkBox id="popupCheckbox" value="${false}" />Don't ask me again</p>
+<g:actionSubmit value="Yes"
+				action="saveAndRedirect" class="form_button" onclick="saveFirst()"/>
+<g:actionSubmit value="No"
+				action="" class="form_button" onclick="Close_Popup();"/></div>
+</div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<project name="jbilling" default="deploy-local" basedir=".">
+<project name="jbilling" basedir=".">
 
     <property file="build.properties"/>
 
@@ -111,6 +111,31 @@
         <delete dir="${build.test-results.dir}"/>
     </target>
 
+    <target name="copy-resources" description="Creates the jbilling 'resources/' directories and copies necessary files.">
+        <!-- create invoice design and pdf invoice target directories -->
+        <mkdir dir="${build.resources.dir}/designs"/>
+        <mkdir dir="${build.resources.dir}/invoices"/>
+
+        <!-- copy default company logos -->
+        <delete dir="${build.resources.dir}/logos"/>
+        <mkdir dir="${build.resources.dir}/logos"/>
+        <copy todir="${build.resources.dir}/logos">
+            <fileset dir="${source.descriptor.dir}/logos"/>
+        </copy>
+
+        <!-- copy default mediation files -->
+        <mkdir dir="${build.resources.dir}/mediation"/>
+        <mkdir dir="${build.resources.dir}/mediation/errors"/>
+
+        <copy todir="${build.resources.dir}/mediation">
+            <fileset dir="${source.mediation.descriptor.dir}" includes="mediation.dtd"/>
+            <fileset dir="${source.mediation.descriptor.dir}" includes="asterisk.xml"/>
+        </copy>
+
+        <!-- create rules directories -->
+        <mkdir dir="${build.resources.dir}/rules"/>
+    </target>
+
     <target name="compile-designs" description="Compiles jasper paper invoice designs.">
         <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask">
             <classpath refid="compile.classpath"/>
@@ -119,13 +144,6 @@
         <!-- clean old designs -->
         <delete dir="${build.resources.dir}/designs"/>
         <mkdir dir="${build.resources.dir}/designs"/>
-
-        <!-- copy company logos -->
-        <delete dir="${build.resources.dir}/logos"/>
-        <mkdir dir="${build.resources.dir}/logos"/>
-        <copy todir="${build.resources.dir}/logos">
-            <fileset dir="${source.descriptor.dir}/logos"/>
-        </copy>
 
         <!-- compile designs -->
         <mkdir dir="${basedir}/tmp"/>
@@ -215,15 +233,17 @@
     <target name="test" depends="prepare-test, test-unit, test-ws, test-integration"/>
 
     <target name="prepare-test"
-            depends="clean, compile-designs, compile-rules, prepare-test-db"
-            description="Prepares the testing environment"/>
+            depends="clean, copy-resources, compile-designs, compile-rules, prepare-test-db"
+            description="Prepares the testing environment">
+
+        <echo message="Environment prepared for test run. Start grails and run 'ant test'."/>
+    </target>
     
     <target name="prepare-test-db">
-        <echo message="Importing test data"/>
+        <echo message="Importing jbilling_test database"/>
         <exec executable="psql" failonerror="true">
             <arg line=" -U jbilling -f ${basedir}/sql/jbilling_test.sql jbilling_test"/>
         </exec>
-        <echo message="Ready. Start-up Tomcat and run 'ant test'"/>
     </target>
 
     <target name="test.init">
@@ -238,7 +258,7 @@
             <classpath path="${build.classes.dir}"/>
         </javac>
         
-        <copy file="${base_dir}/../conf/jbilling.properties" todir="${build.test.dir}"/>
+        <copy file="${source.java.dir}/jbilling.properties" todir="${build.test.dir}"/>
 
         <!-- run unit tests -->
         <mkdir dir="${build.test-results.dir}/unit/xml"/>

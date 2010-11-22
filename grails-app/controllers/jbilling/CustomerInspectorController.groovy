@@ -8,6 +8,8 @@ import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.user.db.SubscriberStatusDTO;
+import com.sapienter.jbilling.server.user.ContactWS;
 
 class CustomerInspectorController {
 	
@@ -19,19 +21,19 @@ class CustomerInspectorController {
 		redirect (action: 'editNote', params:[id:webServicesSession.getCallerId()])
 	}
 	
-	def open = {
+	def show = {
 		UserWS user= null
 		OrderWS[] orders=new OrderWS[0]
 		int userid
 		def languageId= webServicesSession.getCallerLanguageId()?.toString()
 		if (params["id"] && params["id"].matches("^[0-9]+")) {			
 			userid= Integer.parseInt(params["id"])
-			log.info "Method - open, inspecting user id=" + userid
+			log.info "Method - show, inspecting user id=" + userid
 			
 			try {
 				user = webServicesSession.getUserWS(userid)
 				log.info "User found=" + user?.getContact()?.getFirstName()
-				orders= webServicesSession.getUserOrders(userid)
+				orders= webServicesSession.getUserSubscriptions(userid)
 				log.info "found " + orders?.length + " orders"
 			} catch (Exception e) {
 				flash.message = message(code: 'user.not.found')
@@ -57,8 +59,17 @@ class CustomerInspectorController {
 			expDate="${1 + cal.get(Calendar.MONTH)}-"
 			expDate+= cal.get(Calendar.YEAR)
 		}
-		log.info "Subscriber status id: " + user.getSubscriberStatusId()		
-		[user:user, _id:userid, orders:orders, languageId:languageId, expDate:expDate, isAutoCC:isAutoCC,isAutoAch:isAutoAch]
+		log.info "Subscriber status id: " + user.getSubscriberStatusId()
+		String subscribStatus="";
+		for (SubscriberStatusDTO status: SubscriberStatusDTO.list() ){
+			if (user.getSubscriberStatusId() == status.getId())
+			subscribStatus= status.getDescription(Integer.parseInt(languageId))
+		}
+		//find all user contacts
+		ContactWS[] contacts= webServicesSession.getUserContactsWS(user.getUserId())
+		
+		log.info "Custom Contact fields=${user?.contact?.fieldNames}"
+		[user:user, _id:userid, contacts:contacts, subscribStatus:subscribStatus, orders:orders, languageId:languageId, expDate:expDate, isAutoCC:isAutoCC,isAutoAch:isAutoAch]
 	}
 	
 	def editNote ={
@@ -94,25 +105,29 @@ class CustomerInspectorController {
 	}
 
 	def invoices= {
-		List<Integer> ids= webServicesSession.getLastInvoices(params._id?.toInteger(), 99)
-		List<InvoiceWS> invoices= new ArrayList<InvoiceWS>()
-		log.info "Found ${ids.size()} invoices. ${ids.get(0).getClass().getName()}"
-		for(Integer i: ids) {
-			invoices.add(webServicesSession.getInvoiceWS(i))
-		}		
-		[invoices:invoices]
+//		List<Integer> ids= webServicesSession.getLastInvoices(params._id?.toInteger(), 99)
+//		List<InvoiceWS> invoices= new ArrayList<InvoiceWS>()
+//		log.info "Found ${ids?.size()} invoices. ${ids?.get(0).getClass().getName()}"
+//		if (ids)
+//		for(Integer i: ids) {
+//			invoices.add(webServicesSession.getInvoiceWS(i))
+//		}		
+//		[invoices:invoices]
+		render "Show invoices here."
 	}
 	def payments= {
-		List<Integer> ids= webServicesSession.getLastPayments(params._id?.toInteger(), 99)
-		List<PaymentWS> payments= new ArrayList<PaymentWS>()
-		log.info "Found ${ids.size()} payments. ${ids.get(0).getClass().getName()}"
-		for(Integer i: ids) {
-			payments.add(webServicesSession.getPayment(i))
-		}		
-		[payments:payments]
+//		List<Integer> ids= webServicesSession.getLastPayments(params._id?.toInteger(), 99)
+//		List<PaymentWS> payments= new ArrayList<PaymentWS>()
+//		log.info "Found ${ids?.size()} payments. ${ids?.get(0).getClass().getName()}"
+//		if(ids)
+//		for(Integer i: ids) {
+//			payments.add(webServicesSession.getPayment(i))
+//		}		
+//		[payments:payments]
+		render "Show payments here."
 	}
 	def orders= {
-		OrderWS[] orders=webServicesSession.getUserOrders(params._id?.toInteger())
+		OrderWS[] orders=webServicesSession.getUserSubscriptions(params._id?.toInteger())
 		log.info "found " + orders?.length + " orders"
 		[orders:orders]
 	}
@@ -121,10 +136,10 @@ class CustomerInspectorController {
 		redirect(controller:"user", action:"edit",id:userId)
 	}
 	def makePayment= {
-		render "make payment for Customer "
+		render "make payment screen "
 	}
 	def createOrder= {
-		render "create Order for customer " 
+		render "create Order screen " 
 	}
 	
 }

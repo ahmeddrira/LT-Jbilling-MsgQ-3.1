@@ -1,8 +1,6 @@
 <project name="jbilling" basedir=".">
 
     <property file="build.properties"/>
-
-    <!-- for accessing GRAILS_HOME -->
     <property environment="env"/>
 
     <path id="compile.classpath">
@@ -25,30 +23,17 @@
     <path id="test.classpath">
         <pathelement location="${build.test.dir}"/>
         <pathelement location="${junit.dir}/junit.jar"/>
-        <pathelement location="${source.lib.dir}/commons-logging.jar"/>
-        <pathelement location="${source.lib.dir}/log4j.jar"/>
 
         <fileset dir="${easymock.dir}">
             <include name="*.jar"/>
         </fileset>
 
-        <!-- jbilling classes -->
-        <pathelement path="${build.classes.dir}"/>
-
-        <!-- classes for webservices -->
-        <fileset dir="${env.GRAILS_HOME}/lib/">
-            <include name="*spring*.jar"/>
-            <include name="aopalliance*.jar"/>
+        <fileset dir="${drools.dir}">
+            <include name="*.jar"/>
         </fileset>
 
-        <pathelement location="${source.lib.dir}/hibernate3.jar"/>
-        <pathelement location="${source.lib.dir}/cxf.jar"/>
-        <pathelement location="${source.lib.dir}/XmlSchema.jar"/>
-        <pathelement location="${source.lib.dir}/wsdl4j.jar"/>
-        <pathelement location="${source.lib.dir}/FastInfoset.jar"/>
-        <pathelement location="${source.lib.dir}/neethi.jar"/>
-        <pathelement location="${source.lib.dir}/hessian-4.0.7.jar"/>
-        <pathelement location="${source.lib.dir}/joda-time.jar"/>
+        <!-- compiled jbilling classes -->
+        <pathelement path="${build.classes.dir}"/>
     </path>
 
     <path id="spring.classpath">
@@ -73,32 +58,10 @@
             <include name="*.jar"/>
         </fileset>
 
-        <!-- jbilling classes -->
+        <!-- compiled jbilling classes -->
         <pathelement path="${build.classes.dir}"/>
     </path>
 
-    
-    <!-- todo: remove obsolete paths -->
-
-    <path id="xdoclet.classpath">
-    <path refid="compile.classpath"/>
-        <fileset dir="${xdoclet.home.dir}">
-            <include name="*.jar"/>
-        </fileset>
-    </path>
-    
-    <path id="hibernate.classpath">
-        <fileset dir="${hibernate.tools.dir}">
-            <include name="**/*.jar"/>
-        </fileset>
-        <pathelement location="${source.lib.dir}/postgresql*.jar"/>
-    </path>
-
-    <path id="tomcat.classpath">
-        <fileset dir="${server.dir}/lib">
-            <include name="**/*.jar"/>
-        </fileset>
-    </path>
 
 
     <!--
@@ -236,7 +199,7 @@
             depends="clean, copy-resources, compile-designs, compile-rules, prepare-test-db"
             description="Prepares the testing environment">
 
-        <echo message="Environment prepared for test run. Start grails and run 'ant test'."/>
+        <echo message="Environment prepared for test run. Start grails with './run-app' and run 'ant test'."/>
     </target>
     
     <target name="prepare-test-db">
@@ -252,10 +215,11 @@
     </target>
 
     <target name="test-unit" depends="test.init" description="Run all class level unit tests and generate testing reports.">
-        <javac srcdir="${source.test.dir}/unit" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
-            <classpath refid="test.classpath"/>
+        <javac srcdir="${source.test.dir}/unit"
+               destdir="${build.test.dir}"
+               debug="true" deprecation="false" nowarn="true" fork="true">
             <classpath refid="compile.classpath"/>
-            <classpath path="${build.classes.dir}"/>
+            <classpath refid="test.classpath"/>
         </javac>
         
         <copy file="${source.java.dir}/jbilling.properties" todir="${build.test.dir}"/>
@@ -263,9 +227,8 @@
         <!-- run unit tests -->
         <mkdir dir="${build.test-results.dir}/unit/xml"/>
         <junit errorproperty="test.failed" failureproperty="test.failed">
-            <classpath refid="test.classpath"/>
-            <classpath refid="compile.classpath"/>            
-            <classpath path="${build.classes.dir}"/>
+            <classpath refid="compile.classpath"/>
+            <classpath refid="test.classpath"/>                                    
 
             <batchtest fork="yes" todir="${build.test-results.dir}/unit/xml">
                 <formatter type="brief" usefile="false"/>
@@ -289,7 +252,10 @@
     </target>
 
 	<target name="test-remoting" depends="test.init">
-	        <javac srcdir="${source.test.dir}/ws" includes="RemotingTest.java" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
+	        <javac srcdir="${source.test.dir}/ws"
+                   destdir="${build.test.dir}"
+                   includes="RemotingTest.java"
+                   debug="true" deprecation="false" nowarn="true" fork="true">
                 <classpath refid="compile.classpath"/>
                 <classpath refid="test.classpath"/>
 	        </javac>
@@ -323,7 +289,9 @@
 	</target>
 
     <target name="test-ws" depends="test.init" description="Run all web service tests and generate testing reports.">
-        <javac srcdir="${source.test.ws.dir}" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
+        <javac srcdir="${source.test.ws.dir}"
+               destdir="${build.test.dir}"
+               debug="true" deprecation="false" nowarn="true" fork="true">
             <classpath refid="compile.classpath"/>
             <classpath refid="test.classpath"/>
         </javac>
@@ -343,7 +311,9 @@
             <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
             <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
 
+            <classpath refid="compile.classpath"/>
             <classpath refid="test.classpath"/>
+
 
             <formatter type="brief" usefile="false"/>
             <formatter type="xml"/>            
@@ -368,7 +338,7 @@
     <target name="test-integration" depends="test.init" description="Run all integration tests and generate testing reports.">
         <javac srcdir="${source.test.integration.dir}"
                destdir="${build.test.dir}"
-               debug="on" deprecation="no" fork="true">
+               debug="true" deprecation="false" nowarn="true" fork="true">
 
             <src path="${source.test.ws.dir}"/> <!-- todo: integration uses some support classes from ws tests, refactor -->
             <classpath refid="compile.classpath"/>
@@ -398,8 +368,8 @@
 
             <sysproperty key="mediation.errors.dir" value="${build.resources.dir}/mediation/errors"/>
 
-            <classpath refid="spring.classpath"/>
             <classpath refid="compile.classpath"/>
+            <classpath refid="spring.classpath"/>            
             <classpath refid="test.classpath"/>
 
             <formatter type="brief" usefile="false"/>
@@ -622,7 +592,7 @@
         <java classname="com.sapienter.jbilling.tools.RulesGenerator" failonerror="true">
             <classpath>
                 <path refid="compile.classpath"/>
-                <pathelement location="${digester.jar}"/>
+                <fileset dir="${digester.dir}" includes="*.jar"/>
                 <pathelement location="${build.classes.dir}"/>
             </classpath>
             <arg value="${source.rules.dir}/templates/${rulesTemplateFile}"/>

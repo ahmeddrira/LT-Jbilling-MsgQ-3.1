@@ -39,23 +39,27 @@ public class VelocityRulesGeneratorTaskTest extends TestCase {
     // class under test
     public static final VelocityRulesGeneratorTask task = new VelocityRulesGeneratorTask();
     public static File outputFile = null;
+
     // set plug-in parameters
     static {
         HashMap<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put(AbstractGeneratorTask.PARAM_CONFIG_FILENAME, 
-                System.getProperty("user.dir") + 
-                "/descriptors/rules/rules-generator-config.xml");
+
+        // rules digester config
+        String config = System.getProperty("user.dir") + "/descriptors/rules/rules-generator-config.xml";
+        parameters.put(AbstractGeneratorTask.PARAM_CONFIG_FILENAME, config);
+
+        // output file
         try {
             outputFile = File.createTempFile("test", "pkg");
             outputFile.deleteOnExit();
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
-        parameters.put(AbstractGeneratorTask.PARAM_OUTPUT_FILENAME, 
-                outputFile.getAbsolutePath());
-        parameters.put(VelocityRulesGeneratorTask.PARAM_TEMPLATE_FILENAME, 
-                System.getProperty("user.dir") + 
-                "/descriptors/rules/rules-generator-template-unit-test.vm");
+        parameters.put(AbstractGeneratorTask.PARAM_OUTPUT_FILENAME, outputFile.getAbsolutePath());
+
+        // rules velocity template
+        String template = System.getProperty("user.dir") + "/descriptors/rules/rules-generator-template-unit-test.vm";
+        parameters.put(VelocityRulesGeneratorTask.PARAM_TEMPLATE_FILENAME, template);
         task.setParameters(parameters);
     }
 
@@ -111,86 +115,69 @@ public class VelocityRulesGeneratorTaskTest extends TestCase {
         Object data = task.getData();
 
         // test objects
-        assertTrue("Data Object is an instance of List", 
-                data instanceof List);
+        assertTrue("Data Object is an instance of List", data instanceof List);
         List<Bundle> bundles = (List<Bundle>) data;
         assertTrue("List contains two objects", bundles.size() == 2);
 
         // first bundle
         Bundle bundle1 = bundles.get(0);
-        assertEquals("Bundle1 original product", "Silver Package",
-                bundle1.getOriginalProduct().getName());
+        assertEquals("Bundle1 original product", "Silver Package", bundle1.getOriginalProduct().getName());
         // first bundle products
         List<Product> replacementProducts1 = bundle1.getReplacementProducts();
-        assertEquals("Bundle1 first replacement product", 
-                "Medium speed connection", 
-                replacementProducts1.get(0).getName());
-        assertEquals("Bundle1 second replacement product", 
-                "Unlimited emails", 
-                replacementProducts1.get(1).getName());
+        assertEquals("Bundle1 first replacement product", "Medium speed connection", replacementProducts1.get(0).getName());
+        assertEquals("Bundle1 second replacement product", "Unlimited emails", replacementProducts1.get(1).getName());
 
         // second bundle
         Bundle bundle2 = bundles.get(1);
-        assertEquals("Bundle2 original product", "Gold Package",
-                bundle2.getOriginalProduct().getName());
+        assertEquals("Bundle2 original product", "Gold Package", bundle2.getOriginalProduct().getName());
+
         // first bundle products
         List<Product> replacementProducts2 = bundle2.getReplacementProducts();
-        assertEquals("Bundle2 first replacement product", 
-                "High speed connection", 
-                replacementProducts2.get(0).getName());
-        assertEquals("Bundle2 second replacement product", 
-                "Unlimited emails", 
-                replacementProducts2.get(1).getName());
+        assertEquals("Bundle2 first replacement product", "High speed connection", replacementProducts2.get(0).getName());
+        assertEquals("Bundle2 second replacement product", "Unlimited emails", replacementProducts2.get(1).getName());
     }
 
     public void testRuleGeneration() throws Exception {
-        try {
-            // generate and compile rules
-            task.process();
-        } catch (Exception e) {
-            // check the generated rules string
-            String rules = task.getRules();
-            System.out.println(rules);
-            throw e;
-        }
+        // generate and compile rules
+        task.process();
+
         // check the generated rules string
         String rules = task.getRules();
-        // System.out.println(rules);
 
-        String expected = 
-"package InternalEventsRulesTask520\n" +
-"\n" +
-"import com.sapienter.jbilling.server.order.OrderLineBL\n" +
-"import com.sapienter.jbilling.server.order.event.OrderToInvoiceEvent\n" +
-"import com.sapienter.jbilling.server.order.db.OrderDTO\n" +
-"import com.sapienter.jbilling.server.order.db.OrderLineDTO\n" +
-"\n" +
-"rule 'Bundle 1'\n" +
-"when\n" +
-"        OrderToInvoiceEvent(userId == 1010)\n" +
-"        $order : OrderDTO(notes == \"Change me.\")\n" +
-"        $planLine : OrderLineDTO( itemId == 1) from $order.lines # Plan\n" +
-"then\n" +
-"        $order.setNotes(\"Modified by rules created by generateRules API method.\");\n" +
-"        $order.getLines().remove($planLine); # Plan is only for grouping\n" +
-"\n" +
-"        OrderLineBL.addItem($order, 1, false); # A product for this plan\n" +
-"        OrderLineBL.addItem($order, 1, false); # A product for this plan\n" +
-"        update($order);\n" +
-"end\n" +
-"rule 'Bundle 2'\n" +
-"when\n" +
-"        OrderToInvoiceEvent(userId == 1010)\n" +
-"        $order : OrderDTO(notes == \"Change me.\")\n" +
-"        $planLine : OrderLineDTO( itemId == 1) from $order.lines # Plan\n" +
-"then\n" +
-"        $order.setNotes(\"Modified by rules created by generateRules API method.\");\n" +
-"        $order.getLines().remove($planLine); # Plan is only for grouping\n" +
-"\n" +
-"        OrderLineBL.addItem($order, 1, false); # A product for this plan\n" +
-"        OrderLineBL.addItem($order, 1, false); # A product for this plan\n" +
-"        update($order);\n" +
-"end\n";
+        String expected =
+                "package InternalEventsRulesTask520\n" +
+                "\n" +
+                "import com.sapienter.jbilling.server.order.OrderLineBL\n" +
+                "import com.sapienter.jbilling.server.order.event.OrderToInvoiceEvent\n" +
+                "import com.sapienter.jbilling.server.order.db.OrderDTO\n" +
+                "import com.sapienter.jbilling.server.order.db.OrderLineDTO\n" +
+                "\n" +
+                "rule 'Bundle 1'\n" +
+                "when\n" +
+                "        OrderToInvoiceEvent(userId == 1010)\n" +
+                "        $order : OrderDTO(notes == \"Change me.\")\n" +
+                "        $planLine : OrderLineDTO( itemId == 1) from $order.lines # Plan\n" +
+                "then\n" +
+                "        $order.setNotes(\"Modified by rules created by generateRules API method.\");\n" +
+                "        $order.getLines().remove($planLine); # Plan is only for grouping\n" +
+                "\n" +
+                "        OrderLineBL.addItem($order, 1, false); # A product for this plan\n" +
+                "        OrderLineBL.addItem($order, 1, false); # A product for this plan\n" +
+                "        update($order);\n" +
+                "end\n" +
+                "rule 'Bundle 2'\n" +
+                "when\n" +
+                "        OrderToInvoiceEvent(userId == 1010)\n" +
+                "        $order : OrderDTO(notes == \"Change me.\")\n" +
+                "        $planLine : OrderLineDTO( itemId == 1) from $order.lines # Plan\n" +
+                "then\n" +
+                "        $order.setNotes(\"Modified by rules created by generateRules API method.\");\n" +
+                "        $order.getLines().remove($planLine); # Plan is only for grouping\n" +
+                "\n" +
+                "        OrderLineBL.addItem($order, 1, false); # A product for this plan\n" +
+                "        OrderLineBL.addItem($order, 1, false); # A product for this plan\n" +
+                "        update($order);\n" +
+                "end\n";
 
         assertEquals("Generated rules match expected rules.", expected, rules);
     }

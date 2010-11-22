@@ -14,7 +14,13 @@ ${user?.companyName }<br/><br/>
 <tr><td>Email: ${user?.contact?.email}<td>Balance: ${user?.owingBalance }<td>&nbsp;
 <tr><td>Status: ${user?.status}<td>&nbsp;<td>&nbsp;
 <tr><td>Subscriber status: <td>${subscribStatus}<td>&nbsp;
-<tr><td>Next Invoice Date: ${user?.nextInvoiceDate}<td>&nbsp;<td>&nbsp;
+<tr><td>Next Invoice Date: <g:if test='${null != user?.nextInvoiceDate}'>
+								${user?.nextInvoiceDate}
+						   </g:if>
+						   <g:else>
+						   		No Active Orders.
+						   </g:else>
+							<td>&nbsp;<td>&nbsp;
 <tr><td colspan="3">
 <g:actionSubmit  action="invoices"  value="View Invoices" class=""/>
 <g:actionSubmit  action="payments"  value="View Payments" class=""/>
@@ -30,6 +36,22 @@ ${user?.companyName }<br/><br/>
 <g:each var="ccf" status="idx" in="${user?.contact?.fieldNames}">
 	<tr><td colspan="3">ccf_${ccf}: ${user?.contact?.fieldValues[idx]} 
 </g:each>
+<tr><td colspan="3">&nbsp;
+<tr><td colspan="3">Extra Contact
+<g:each var="contact" in="${contacts}">
+	<g:if test='${contact.id != user?.contact?.id}'>
+		<tr><td colspan="3">&nbsp;
+		<tr><td colspan="3">Address: ${contact?.address1}&nbsp;${contact?.address2}
+		<tr><td>City: ${contact?.city}
+			<td>State/Province: ${contact?.stateProvince}
+			<td>Postal Code: ${contact?.postalCode}
+		<tr><td colspan="3">Country: ${contact?.countryCode} 
+		<g:each var="ccf" status="idx2" in="${contact?.fieldNames}">
+			<tr><td colspan="3">ccf_${ccf}: ${contact?.fieldValues[idx2]}
+		</g:each>
+	</g:if>
+</g:each>
+
 <tr><td colspan="3">&nbsp;
 <tr><td colspan="3">Notes
 <tr><td colspan="3">&nbsp;

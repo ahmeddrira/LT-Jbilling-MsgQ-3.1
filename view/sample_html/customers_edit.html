@@ -1,0 +1,314 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>jBilling</title>
+	<link media="all" rel="stylesheet" href="css/all.css" type="text/css" />
+	<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="js/slideBlock.js"></script>
+	<script type="text/javascript" src="js/clearinput.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="js/form.js"></script>
+	<script type="text/javascript" src="js/checkbox.js"></script>
+	<!--[if lt IE 8]><link rel="stylesheet" type="text/css" href="css/lt7.css" media="screen"/><![endif]-->
+</head>
+<body>
+	<div id="wrapper">
+		<!-- header -->
+		<div id="header">
+			<h1><a href="#">jBilling</a></h1>
+			<div class="search">
+				<form action="#" class="form default">
+					<fieldset>
+						<input type="image" src="images/icon-search.gif" value="" class="btn" />
+						<div class="input-bg">
+							<input type="text" class="text default" value="Search for..." />
+							<a href="#" class="open"></a>
+							<div class="popup">
+								<div class="top-bg">
+									<div class="btm-bg">
+										<div class="input-row">
+											<input type="radio" id="check01" name="search" checked="checked" />
+											<label for="check01">Anywhere</label>
+										</div>
+										<div class="input-row">
+											<input type="radio" id="check02" name="search" />
+											<label for="check02">Users</label>
+										</div>
+										<div class="input-row">
+											<input type="radio" id="check03" name="search" />
+											<label for="check03">Invoices</label>
+										</div>
+										<div class="input-row">
+											<input type="radio" id="check04" name="search" />
+											<label for="check04">Emails</label>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+			<ul class="top-nav">
+				<li>Hello Andre</li>
+				<li><a href="#"><img src="images/icon25.gif" alt="image description" />My Acount</a></li>
+				<li><a href="#"><img src="images/icon26.gif" alt="image description" />jBilling Training</a></li>
+				<li><a href="#"><img src="images/icon27.gif" alt="image description" />Help</a></li>
+				<li><a href="#"><img src="images/icon28.gif" alt="image description" />Logout</a></li>
+			</ul>
+			<div id="navigation">
+				<ul>
+					<li class="active"><a href="#"><span>Customers</span><em></em></a></li>
+					<li><a href="#"><span>Invoices</span><em></em></a></li>
+					<li><a href="#"><span>Payments and Refunds</span><em></em></a></li>
+					<li><a href="#"><span>Orders</span><em></em></a></li>
+					<li><a href="#"><span>Billing</span><em></em></a></li>
+					<li><a href="#"><span>Mediation</span><em></em></a></li>
+					<li><a href="#"><span>Reports</span><em></em></a></li>
+					<li><a href="#"><span>Products</span><em></em></a></li>
+					<li><a href="#"><span>Configuration</span><em></em></a></li>
+				</ul>
+			</div>
+		</div>
+		<div id="main">
+			<!-- breadcrumbs -->
+			<div class="breadcrumbs">
+				<ul>
+					<li><a href="#">Home</a></li>
+					<li><a href="#">Customers</a></li>
+					<li>Edit Customer</li>
+				</ul>
+			</div>
+			<!-- form edit -->
+			<div class="form-edit">
+				<div class="heading">
+					<strong>Edit Customer - <span>George Burns Jr.</span></strong>
+				</div>
+				<div class="form-hold">
+					<form action="">
+						<fieldset>
+							<div class="form-columns">
+								<div class="column">
+									<div class="row">
+										<p>Number</p>
+										<span>1</span>
+									</div>
+									<div class="row">
+										<p>Type</p>
+										<span>Superuser</span>
+									</div>
+									<div class="row">
+										<label>Login Name</label>
+										<div class="inp-bg"><input type="text" value="admin" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>Current Password</label>
+										<div class="inp-bg"><input type="text" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>Password</label>
+										<div class="inp-bg"><input type="text" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>Repeat Password</label>
+										<div class="inp-bg"><input type="text" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>Status</label>
+										<select>
+											<option>Active</option>
+										</select>
+									</div>
+									<div class="row">
+										<label>Subscriber Status</label>
+										<select>
+											<option>Pending Unsubscription</option>
+										</select>
+									</div>
+									<div class="row">
+										<label>Language</label>
+										<select>
+											<option>English</option>
+										</select>
+									</div>
+									<div class="row">
+										<label>Currency</label>
+										<select>
+											<option>United States Dollar</option>
+										</select>
+									</div>
+									<div class="row">
+										<label>&nbsp;</label>
+										<input type="checkbox" class="cb" id="cb1" checked="checked" />
+										<label for="cb1" class="lb">Exclude from Aging</label>
+									</div>
+								</div>
+								<div class="column">
+									<div class="row">
+										<label>Contact Type</label>
+										<select>
+											<option>Primary</option>
+										</select>
+									</div>
+									<div class="row">
+										<label>Organization Name</label>
+										<div class="inp-bg"><input type="text" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>First Name</label>
+										<div class="inp-bg"><input type="text" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>Last Name</label>
+										<div class="inp-bg"><input type="text" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>Phone Number</label>
+										<div class="inp-bg inp2"><input type="text" value="000" class="field" /></div>
+										<div class="inp-bg inp3"><input type="text" value="555111222" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>Email</label>
+										<div class="inp-bg"><input type="text" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>Address</label>
+										<div class="inp-bg"><input type="text" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>Address 2</label>
+										<div class="inp-bg"><input type="text" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>City</label>
+										<div class="inp-bg"><input type="text" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>State / Province</label>
+										<div class="inp-bg inp4"><input type="text" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>Zip / Postal Code</label>
+										<div class="inp-bg inp4"><input type="text" class="field" /></div>
+									</div>
+									<div class="row">
+										<label>Country</label>
+										<select>
+											<option>United States</option>
+										</select>
+									</div>
+									<div class="row">
+										<label>&nbsp;</label>
+										<input type="checkbox" class="cb" id="cb2" checked="checked" />
+										<label for="cb2" class="lb">Include this contact in notifications</label>
+									</div>
+								</div>
+							</div>
+							<!-- box cards -->
+							<div class="box-cards">
+								<div class="box-cards-title">
+									<a class="btn-open" href="#"><span>Credit Card</span></a>
+								</div>
+								<div class="box-card-hold">
+									<div class="form-columns">
+										<div class="column">
+											<div class="row">
+												<label>Credit Card</label>
+												<div class="inp-bg"><input type="text" class="field" /></div>
+											</div>
+											<div class="row">
+												<label>Name on Card</label>
+												<div class="inp-bg"><input type="text" class="field" /></div>
+											</div>
+											<div class="row">
+												<label>Expiry Date</label>
+												<div class="sel">
+												<select class="select-date">
+													<option>mm</option>
+												</select>
+												</div>
+												<div class="sel">
+												<select class="select-date">
+													<option>yyyy</option>
+												</select>
+												</div>
+											</div>
+										</div>
+										<div class="column">
+											<div class="row">
+												<input type="checkbox" onclick="singleSelectCheckbox(this)" class="cb check" id="cb4"/>
+												<label for="cb4" class="lb">Preferred for automatic payment</label>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- box cards -->
+							<div class="box-cards box-cards-open">
+								<div class="box-cards-title">
+									<a class="btn-open" href="#"><span>ACH</span></a>
+								</div>
+								<div class="box-card-hold">
+									<div class="form-columns">
+										<div class="column">
+											<div class="row">
+												<label>ABA Routing Number</label>
+												<div class="inp-bg inp4"><input type="text" class="field" /></div>
+											</div>
+											<div class="row">
+												<label>Bank Account Number</label>
+												<div class="inp-bg"><input type="text" class="field" /></div>
+											</div>
+											<div class="row">
+												<label>Bank Name</label>
+												<div class="inp-bg"><input type="text" class="field" /></div>
+											</div>
+											<div class="row">
+												<label>Name on Customer Acount</label>
+												<div class="inp-bg"><input type="text" class="field" /></div>
+											</div>
+											<div class="row">
+												<label>Account Type</label>
+												<input type="radio" class="rb" name="acc-type" id="rb1" />
+												<label for="rb1" class="rb">Checking</label>
+												<input type="radio" class="rb" name="acc-type" id="rb2" />
+												<label for="rb2" class="rb">Saving</label>
+											</div>
+										</div>
+										<div class="column">
+											<div class="row">
+												<input type="checkbox" onclick="singleSelectCheckbox(this)" class="cb check" id="cb3" checked="checked" />
+												<label for="cb3" class="lb">Preferred for automatic payment</label>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- box text -->
+							<div class="box-text">
+								<ul>
+									<li><p><em>January 12, 2010 3:30 pm</em></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque volutpat elit eget
+orci viverra eleifend. Fusce ultrices, sapien quis varius consectetur, dolor orci suscipit urna, eu posuere arcu urna dapibus tortor. </p></li>
+									<li><p><em>January 12, 2010 3:30 pm</em></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque volutpat elit eget
+orci viverra eleifend. Fusce ultrices, sapien quis varius consectetur, dolor orci suscipit urna, eu posuere arcu urna dapibus tortor. </p></li>
+									<li><p><em>January 12, 2010 3:30 pm</em></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque volutpat elit eget
+orci viverra eleifend. Fusce ultrices, sapien quis varius consectetur, dolor orci suscipit urna, eu posuere arcu urna dapibus tortor. </p></li>
+									<li><p><em>January 12, 2010 3:30 pm</em></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque volutpat elit eget
+orci viverra eleifend. Fusce ultrices, sapien quis varius consectetur, dolor orci suscipit urna, eu posuere arcu urna dapibus tortor. </p></li>
+								</ul>
+							</div>
+							<div class="buttons">
+								<ul>
+									<li><a class="submit save" href="#"><span>Save Changes</span></a></li>
+									<li><a class="submit cancel" href="#"><span>Cancel</span></a></li>
+								</ul>
+							</div>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

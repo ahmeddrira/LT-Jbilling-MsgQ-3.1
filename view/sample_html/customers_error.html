@@ -1,0 +1,521 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>jBilling</title>
+	<link media="all" rel="stylesheet" href="css/all.css" type="text/css" />
+	<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="js/clearinput.js"></script>
+	<!--[if lt IE 8]><link rel="stylesheet" type="text/css" href="css/lt7.css" media="screen"/><![endif]-->
+</head>
+<body>
+	<div id="wrapper">
+		<!-- header -->
+		<div id="header">
+			<h1><a href="#">jBilling</a></h1>
+			<div class="search">
+				<form action="#">
+					<fieldset>
+						<input type="image" src="images/icon-search.gif" value="" class="btn" />
+						<div class="input-bg">
+							<input type="text" class="text default" value="Search for..." />
+							<a href="#" class="open"></a>
+							<div class="popup">
+								<div class="top-bg">
+									<div class="btm-bg">
+										<div class="input-row">
+											<input type="radio" id="check01" name="search" checked="checked" />
+											<label for="check01">Anywhere</label>
+										</div>
+										<div class="input-row">
+											<input type="radio" id="check02" name="search" />
+											<label for="check02">Users</label>
+										</div>
+										<div class="input-row">
+											<input type="radio" id="check03" name="search" />
+											<label for="check03">Invoices</label>
+										</div>
+										<div class="input-row">
+											<input type="radio" id="check04" name="search" />
+											<label for="check04">Emails</label>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+			<ul class="top-nav">
+				<li>Hello Andre</li>
+				<li><a href="#"><img src="images/icon25.gif" alt="image description" />My Acount</a></li>
+				<li><a href="#"><img src="images/icon26.gif" alt="image description" />jBilling Training</a></li>
+				<li><a href="#"><img src="images/icon27.gif" alt="image description" />Help</a></li>
+				<li><a href="#"><img src="images/icon28.gif" alt="image description" />Logout</a></li>
+			</ul>
+			<div id="navigation">
+				<ul>
+					<li class="active"><a href="#"><span>Customers</span><em></em></a></li>
+					<li><a href="#"><span>Invoices</span><em></em></a></li>
+					<li><a href="#"><span>Payments and Refunds</span><em></em></a></li>
+					<li><a href="#"><span>Orders</span><em></em></a></li>
+					<li><a href="#"><span>Billing</span><em></em></a></li>
+					<li><a href="#"><span>Mediation</span><em></em></a></li>
+					<li><a href="#"><span>Reports</span><em></em></a></li>
+					<li><a href="#"><span>Products</span><em></em></a></li>
+					<li><a href="#"><span>Configuration</span><em></em></a></li>
+				</ul>
+			</div>
+		</div>
+		<div id="main">
+			<!-- breadcrumbs -->
+			<div class="breadcrumbs">
+				<ul>
+					<li><a href="#">Home</a></li>
+					<li><a href="#">Customers</a></li>
+					<li>George Burns Jr.</li>
+				</ul>
+			</div>
+			<!-- left-column -->
+			<div id="left-column">
+				<div class="heading">
+					<strong>Filter By</strong>
+				</div>
+				<ul class="accordion">
+					<li><a href="#">User ID</a></li>
+					<li><a href="#">Status</a></li>
+					<li class="other">
+						<a href="#" class="delete"></a>
+						<a href="#"><strong>Login Name</strong></a>
+					</li>
+					<li class="open other">
+						<a href="#" class="delete"></a>
+						<a href="#"><strong>Created Date</strong></a>
+						<div class="slide">
+							<form action="#">
+								<fieldset>
+									<div class="input-row">
+										<div class="input-bg">
+											<a href="#"></a>
+											<input type="text" class="text" value="05/15/2010" id="item01" />
+										</div>
+										<label for="item01">From</label>
+									</div>
+									<div class="input-row">
+										<div class="input-bg">
+											<a href="#"></a>
+											<input type="text" class="text select" value="Select" id="item02" />
+										</div>
+										<label for="item02">To</label>
+									</div>
+								</fieldset>
+							</form>
+						</div>
+					</li>
+					<li><a href="#">Email</a></li>
+				</ul>
+				<div class="btn-hold">	
+					<a href="#" class="submit apply"><span>Apply Filters</span></a>
+					<a href="#" class="submit add"><span>Add Filter</span></a>
+					<a href="#" class="submit2 save"><span>Save</span></a>
+					<a href="#" class="submit2 load"><span>Load</span></a>
+				</div>
+				<div class="heading">
+					<a href="#" class="arrow open"><strong>Create New ...</strong></a>
+					<div class="drop">
+						<ul>
+							<li><a href="#">Castomer</a></li>
+							<li><a href="#">Order</a></li>
+							<li><a href="#">Invoice</a></li>
+							<li><a href="#">Lorem Ipsum</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="heading">
+					<strong>Recent Items</strong>
+				</div>
+				<ul class="list">
+					<li><a href="#"><img src="images/icon09.gif" alt="" />Invoice</a></li>
+					<li><a href="#"><img src="images/icon10.gif" alt="" />Payment</a></li>
+					<li><a href="#"><img src="images/icon11.gif" alt="" />Customer</a></li>
+					<li><a href="#"><img src="images/icon12.gif" alt="" />Order</a></li>
+					<li><a href="#"><img src="images/icon13.gif" alt="" />Others</a></li>
+				</ul>
+			</div>
+			<div class="columns-holder">
+				<div class="msg-box error">
+					<img src="images/icon14.gif" alt="" />
+					<strong>We are sorry!</strong>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut purus ante. Aenean feugiat luctus convallis.</p>
+				</div>
+				<div class="column">
+					<div class="column-hold">
+						<div class="heading table-heading">
+							<strong class="name">Name</strong>
+							<strong class="parent">Parent/Child</strong>
+							<strong class="owed">Owed, $</strong>
+							<strong class="status">Status</strong>
+							<strong class="user">User ID</strong>
+						</div>
+						<div class="table-box">
+							<ul>
+								<li>
+									<a class="active" href="#">
+										<span class="block last">
+											<img src="images/icon17.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											<span><img src="images/icon15.gif" alt="" /></span>
+										</span>
+										<span class="block">
+											<span>1001</span>
+										</span>
+										<strong>George Burns Jr.</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon18.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											<span><img src="images/icon16.gif" alt="" /></span>
+										</span>
+										<span class="block">
+											<span>1002</span>
+										</span>
+										<strong>Susan Burns</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon19.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											&nbsp;
+										</span>
+										<span class="block">
+											<span>1003</span>
+										</span>
+										<strong>Don Burns</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon17.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											<span><img src="images/icon15.gif" alt="" /></span>
+										</span>
+										<span class="block">
+											<span>1001</span>
+										</span>
+										<strong>George Burns Jr.</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon18.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											<span><img src="images/icon16.gif" alt="" /></span>
+										</span>
+										<span class="block">
+											<span>1002</span>
+										</span>
+										<strong>Susan Burns</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon19.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											&nbsp;
+										</span>
+										<span class="block">
+											<span>1003</span>
+										</span>
+										<strong>Don Burns</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon17.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											<span><img src="images/icon15.gif" alt="" /></span>
+										</span>
+										<span class="block">
+											<span>1001</span>
+										</span>
+										<strong>George Burns Jr.</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon18.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											<span><img src="images/icon16.gif" alt="" /></span>
+										</span>
+										<span class="block">
+											<span>1002</span>
+										</span>
+										<strong>Susan Burns</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon19.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											&nbsp;
+										</span>
+										<span class="block">
+											<span>1003</span>
+										</span>
+										<strong>Don Burns</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon17.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											<span><img src="images/icon15.gif" alt="" /></span>
+										</span>
+										<span class="block">
+											<span>1001</span>
+										</span>
+										<strong>George Burns Jr.</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon18.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											<span><img src="images/icon16.gif" alt="" /></span>
+										</span>
+										<span class="block">
+											<span>1002</span>
+										</span>
+										<strong>Susan Burns</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon19.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											&nbsp;
+										</span>
+										<span class="block">
+											<span>1003</span>
+										</span>
+										<strong>Don Burns</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon17.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											<span><img src="images/icon15.gif" alt="" /></span>
+										</span>
+										<span class="block">
+											<span>1001</span>
+										</span>
+										<strong>George Burns Jr.</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon18.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											<span><img src="images/icon16.gif" alt="" /></span>
+										</span>
+										<span class="block">
+											<span>1002</span>
+										</span>
+										<strong>Susan Burns</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<span class="block last">
+											<img src="images/icon19.gif" alt="" />
+											<span>2</span>
+										</span>
+										<span class="block">
+											<span>999.99</span>
+										</span>
+										<span class="block">
+											&nbsp;
+										</span>
+										<span class="block">
+											<span>1003</span>
+										</span>
+										<strong>Don Burns</strong><em>The Extinguisher Company</em>
+									</a>
+								</li>
+							</ul>
+						</div>
+						<div class="btn-box">
+							<a href="#" class="submit add"><span>Add New</span></a>
+							<a href="#" class="submit delete"><span>Delete Selected</span></a>
+						</div>
+					</div>
+				</div>
+				<div class="column">
+					<div class="column-hold">
+						<div class="heading">
+							<strong>George Burns Jr. - <em>The Extingusher Company</em></strong>
+						</div>
+						<div class="box">
+							<a href="#" class="edit"></a>
+							<strong>Note:</strong>
+							<p>This person always pay on time but lately they have been dealing with medical issues that have taken all their spare cash.</p>
+						</div>
+						<div class="heading">
+							<strong>User Info</strong>
+						</div>
+						<div class="box">
+							<a href="#" class="edit"></a>
+							<dl>
+								<dt>User ID</dt>
+								<dd>2009-001</dd>
+								<dt>Login Name</dt>
+								<dd>george.burns.jr</dd>
+								<dt>Status</dt>
+								<dd>Suspended</dd>
+								<dt>Created Date</dt>
+								<dd>01-Mar-2008</dd>
+								<dt>Email Address</dt>
+								<dd><a href="mailto:&#103;&#101;&#111;&#114;&#103;&#101;&#064;&#098;&#117;&#114;&#110;&#115;&#046;&#099;&#111;&#109;">&#103;&#101;&#111;&#114;&#103;&#101;&#064;&#098;&#117;&#114;&#110;&#115;&#046;&#099;&#111;&#109;</a></dd>
+							</dl>
+						</div>
+						<div class="heading">
+							<strong>Payment Info</strong>
+						</div>
+						<div class="box">
+							<a href="#" class="edit"></a>
+							<dl class="other other2">
+								<dt>Last Invoiced Date</dt>
+								<dd>Jun-01-2010</dd>
+								<dt>Due Date</dt>
+								<dd>Jun-15-2010</dd>
+								<dt>Invoiced Amount</dt>
+								<dd>78.23</dd>
+								<dt>Amount Owed</dt>
+								<dd>123.45</dd>
+								<dt>Lifetime revenue</dt>
+								<dd>214.21</dd>
+							</dl>
+							<dl class="other">
+								<dt>Credit Card</dt>
+								<dd>4800 0000 0000 0000</dd>
+								<dt>Expiry Date</dt>
+								<dd>May 2012</dd>
+							</dl>
+						</div>
+						<div class="heading">
+							<strong>Contact Info</strong>
+						</div>
+						<div class="box">
+							<a href="#" class="edit"></a>
+							<dl>
+								<dt>Telephone</dt>
+								<dd>415.555.1212</dd>
+								<dt>Address</dt>
+								<dd>123 Main St. Suitr 555</dd>
+								<dt>City</dt>
+								<dd>Mainsville</dd>
+								<dt>State/Province</dt>
+								<dd>California</dd>
+								<dt>Country</dt>
+								<dd>United States</dd>
+							</dl>
+						</div>
+						<div class="btn-box">
+							<a href="#" class="submit order"><span>Create Order</span></a>
+							<a href="#" class="submit payment"><span>Create Payment</span></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -23,7 +23,7 @@
 <div id="wrapper">
     <!-- header -->
     <div id="header">
-        <h1><a href="#">jBilling</a></h1>
+        <h1><a href="${resource(dir:'')}">jBilling</a></h1>
     </div>
     <div id="navigation">
         <ul>

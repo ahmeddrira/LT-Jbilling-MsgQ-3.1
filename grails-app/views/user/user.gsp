@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>This is the title</title>
+    <meta name="layout" content="main" />
 </head>
 <body>
 <p><g:message code="prompt.create.user.form" /></p>

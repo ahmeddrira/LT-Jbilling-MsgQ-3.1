@@ -1,7 +1,6 @@
 <html>
 <head>
-<title>
-</title>
+    <meta name="layout" content="main" />
 </head>
 <script language="javascript">
 function toggle(obj) {

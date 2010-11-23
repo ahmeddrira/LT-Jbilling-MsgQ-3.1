@@ -1,12 +1,14 @@
 # build artifacts
 target/
 build/
+resources/
 TEST*.xml
 
 # temp files
 activemq-data/
 tmp/
 logs/
+*.log
 *~
 .ant-targets*.xml
 

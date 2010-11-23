@@ -4,47 +4,7 @@ eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 function ieHover() {
 	hoverForIE6('.column .box, .table-box li', 'hover');
 }
-function initInputs() {
-    var _inputs = document.getElementsByTagName('input');
-    if (_inputs) {
-        for(var i=0; i<_inputs.length; i++) {
-            if (_inputs[i].type == 'text' || _inputs[i].type == 'password') {
-                _inputs[i].alt = _inputs[i].value;
 
-                _inputs[i].onfocus = function(){
-                    if(this.value==this.alt) this.value='';
-                    _value = this.value;
-                }
-                _inputs[i].onblur = function(){
-                    if (this.value == '')
-                    this.value = this.alt;
-                }
-            }
-        }
-    }
-    var _textareas = document.getElementsByTagName('textarea');
-    if (_textareas) {
-        for(var i=0; i<_textareas.length; i++) {
-            if (_textareas[i].value) {
-                _textareas[i].title = _textareas[i].value;
-
-                _textareas[i].onfocus = function(){
-                    if(this.value==this.title) this.value='';
-                    _value = this.value;
-                }
-                _textareas[i].onblur = function(){
-                    if (this.value == '')
-                    this.value = this.title;
-                }
-            }
-        }
-    }
-}
-
-if (window.addEventListener)
-    window.addEventListener("load", initInputs, false);
-else if (window.attachEvent)
-    window.attachEvent("onload", initInputs);
 
 function initPopups()
 {

@@ -1,64 +1,45 @@
 <html>
-<link
-	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
-	rel="stylesheet" type="text/css" />
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<head>
+<meta name="layout" content="main" />
+
+<script language="javascript">
+	$(document).ready(function() {
+		  // Apply a class on mouse over and remove it on mouse out.
+	      $('.link-table tr').click(function() {
+		    $(".Highlight").removeClass()
+	        $(this).addClass('Highlight');
+	      });
+	      
+	      $('.link-table tr').click(function() {
+	          var categId = $(this).find("#categId").val();
+	    	  //alert(categId)
+	    	  $("#selectedId").val(categId);	    	  
+	      });
+
+	      $('.link-table tr').dblclick(function() {
+	    	  //var selVal= $('#selectedId').val();
+	    	  $('#notifications').attr('action', '/jbilling/notifications/lists/' + $('#selectedId').val());	    	  
+	    	  $('#notifications').submit();
+	      });	      
+	});	    	
+</script>
+
 <style type="text/css">
 .Highlight {
 	background-color: red;
 	cursor: pointer;
 }
 </style>
-<head>
 <title>
 </title>
 </head>
-<script language="javascript">
-	$(function ()
-	{
-		  // Apply a class on mouse over and remove it on mouse out.
-	      $('.link-table tr').click(function ()
-	      {
-		    $(".Highlight").removeClass()
-	        $(this).addClass('Highlight');
-	      });
-	      
-	      $('.link-table tr').click(function ()
-	      {
-	          var categId = $(this).find("#categId").val();
-	    	  //alert(categId)
-	    	  document.getElementById("selectedId").value= categId;	    	  
-	      });
 
-	      //$('.link-table tr').click(function(){
-		  //    $("div#newTbl").html('Retrieving...');
-		  //	  $.ajax({
-		  //	      type: "POST",
-		  //		  data: "selectedId=" +  document.getElementById("selectedId").value,
-		  //		  url: "/jbilling/notifications/lists/" + document.getElementById("selectedId").value,
-		  //		  success: function(msg){
-		  //			  $("div#newTbl").html(msg)
-		  //		  }
-		  //});});
-
-	      $('.link-table tr').dblclick(function()
-	      {
-	    	  //alert(document.getElementById("selectedId").value);
-	          document.forms[0].action='/jbilling/notifications/lists/' + document.getElementById("selectedId").value;
-	          document.forms[0].submit();
-	      });
-	      
-	});	    	
-</script>
 <body>
 <p>
 	<g:message code="${flash.message}" args="${flash.args}" default="${flash.defaultMsg}" />
 	<jB:renderErrorMessages />
 </p>
-<g:form>
+<g:form name="notifications" controller="notifications" action="preferences">
 <g:hiddenField name="selectedId" value="0" />
 	<div>
 	<table id="catTbl" cellspacing='4' class="link-table">
@@ -81,8 +62,11 @@
 
 	<table>
 		<tr>
-			<td><g:actionSubmit value="Preferences" action="preferences"
-				class="form_button" /></td>			
+			<td><input type="submit" name="preferences" value="Preferences" class="form_button" />
+			<!--  <g:actionSubmit value="Preferences" action="preferences"
+				class="form_button" />
+			-->
+			</td>			
 		</tr>
 	</table>
 	</div>

@@ -20,13 +20,14 @@ import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.UserBL
 import grails.plugins.springsecurity.Secured;
+import com.sapienter.jbilling.client.authentication.CompanyUserAuthenticationFilter;
 
 @Secured(['isAuthenticated()'])
 class UserController {
 	
 	IWebServicesSessionBean webServicesSession
 	ViewUtils viewUtils
-	def languageId= "1"
+	Integer languageId= (Integer) session[CompanyUserAuthenticationFilter.SESSION_USER_LANGUAGE_ID]
 	def isAutoCC= false
 	def isAutoAch= false
 	
@@ -37,10 +38,8 @@ class UserController {
 		[ users: users] 
 	}
 	
-	def index = {
-		//UserBL userbl = new UserBL(webServicesSession.getCallerId());
-		//languageId = String.valueOf(userbl.getEntity().getLanguageIdField());
-		languageId= webServicesSession.getCallerLanguageId().toString()
+	def index = {		
+		//languageId= webServicesSession.getCallerLanguageId().toString()
 		render( view:"user")
 	}
 	
@@ -70,10 +69,9 @@ class UserController {
 	}
 	
 	def edit = {
-		//UserBL userbl = new UserBL(webServicesSession.getCallerId());
-		//languageId = String.valueOf(userbl.getEntity().getLanguageIdField());
-		languageId= webServicesSession.getCallerLanguageId().toString()
-
+		
+		//languageId= webServicesSession.getCallerLanguageId().toString()
+		log.info "Edit User: LanguageID=" + languageId
 		UserWS user = null;
 		def notes= null;
 		def expMnth, expYr;

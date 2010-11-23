@@ -1,16 +1,7 @@
 <html>
 <head>
-<link
-	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
-	rel="stylesheet" type="text/css" />
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>	
-
-</head>
+<meta name="layout" content="main" />
 <script language="javascript">
-
 $(function (){
 	$("#language.id").val(${languageId});
 });
@@ -56,6 +47,7 @@ function testfunc() {
 	}	
 }
 </script>
+</head>
 <body>
 <h2><g:message code="prompt.edit.note" /></h2>
 <p>

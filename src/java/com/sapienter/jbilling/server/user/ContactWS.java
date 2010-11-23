@@ -70,12 +70,33 @@ public class ContactWS implements Serializable {
     private int deleted;
     private Integer include;
 
-    
+    private Integer[] fieldIDs= null; 
     private String[] fieldNames = null;
     private String[] fieldValues = null;
     private Integer type = null; // the contact type
     
-    public String[] getFieldNames() {
+    private Integer contactTypeId= null;
+    private String contactTypeDescr= null;       
+    
+    public String getContactTypeDescr() {
+		return contactTypeDescr;
+	}
+	public void setContactTypeDescr(String contactTypeDescr) {
+		this.contactTypeDescr = contactTypeDescr;
+	}
+	public Integer[] getFieldIDs() {
+		return fieldIDs;
+	}
+	public void setFieldIDs(Integer[] fieldIDs) {
+		this.fieldIDs = fieldIDs;
+	}
+	public Integer getContactTypeId() {
+		return contactTypeId;
+	}
+	public void setContactTypeId(Integer contactTypeId) {
+		this.contactTypeId = contactTypeId;
+	}
+	public String[] getFieldNames() {
         return fieldNames;
     }
     public void setFieldNames(String[] fieldNames) {
@@ -202,16 +223,23 @@ public class ContactWS implements Serializable {
         setDeleted(other.getDeleted());
         setInclude(other.getInclude());
         setType(other.getType());
+        fieldIDs = new Integer[other.getFieldsTable().size()];
         fieldNames = new String[other.getFieldsTable().size()];
         fieldValues = new String[other.getFieldsTable().size()];
         int index = 0;
         for (Iterator it = other.getFieldsTable().keySet().iterator();
                 it.hasNext();) {
-            fieldNames[index] = (String) it.next();
+            fieldIDs[index] = new Integer((String) it.next());
             ContactFieldDTO fieldDto = (ContactFieldDTO) other.
-                getFieldsTable().get(fieldNames[index]);
+                getFieldsTable().get(fieldIDs[index].toString());
+            fieldNames[index]= fieldDto.getType().getPromptKey();
             fieldValues[index] = fieldDto.getContent();
             index++;
+        }        
+        //set Contact Type Name
+        if ( null != other.getContactMap() && null != other.getContactMap().getContactType())
+        {
+        	setContactTypeId(other.getContactMap().getContactType().getId());
         }
     }
 
@@ -227,7 +255,7 @@ public class ContactWS implements Serializable {
     }
     public Integer getType() {
         return type;
-}
+    }
     public void setType(Integer type) {
         this.type = type;
     }

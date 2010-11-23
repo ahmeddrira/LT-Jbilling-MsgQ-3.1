@@ -1,48 +1,42 @@
 package jbilling
 
-import java.util.Calendar;
-
-import com.sapienter.jbilling.common.Constants;
-import com.sapienter.jbilling.server.user.db.CustomerDTO;
-import com.sapienter.jbilling.server.user.IUserSessionBean;
-import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.util.Context;
-import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.user.db.SubscriberStatusDTO;
-import com.sapienter.jbilling.client.ViewUtils 
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.AchDTO;
-import com.sapienter.jbilling.server.user.ContactWS;
-import com.sapienter.jbilling.server.user.db.CustomerDTO;
-import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
-import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.user.UserBL
-import grails.plugins.springsecurity.Secured;
+import com.sapienter.jbilling.client.ViewUtils
+import com.sapienter.jbilling.common.Constants
+import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.server.entity.AchDTO
+import com.sapienter.jbilling.server.entity.CreditCardDTO
+import com.sapienter.jbilling.server.user.ContactWS
+import com.sapienter.jbilling.server.user.UserWS
+import com.sapienter.jbilling.server.user.db.UserDTO
+import com.sapienter.jbilling.server.util.IWebServicesSessionBean
+import grails.plugins.springsecurity.Secured
 
 @Secured(['isAuthenticated()'])
 class UserController {
 	
 	IWebServicesSessionBean webServicesSession
 	ViewUtils viewUtils
-	def languageId= "1"
-	def isAutoCC= false
-	def isAutoAch= false
-	
-	def list = {
-		// now find the list of users
-		def users = webServicesSession.getUsersInStatus(UserDTOEx.STATUS_ACTIVE);
-		// now redirect to the gsp view
-		[ users: users] 
-	}
-	
+	def languageId = "1"
+	def isAutoCC = false
+	def isAutoAch = false
+
 	def index = {
-		//UserBL userbl = new UserBL(webServicesSession.getCallerId());
-		//languageId = String.valueOf(userbl.getEntity().getLanguageIdField());
-		languageId= webServicesSession.getCallerLanguageId().toString()
-		render( view:"user")
+        redirect action: list, params: params
 	}
+
+    def select = {
+        if (params["id"]) {
+            UserDTO user = UserDTO.findById(params["id"])
+            render template: "details", model:[selected: user]
+        } else {            
+            flash.error = message(code: "object.not.found")
+        }
+    }
+
+	def list = {
+		def users = UserDTO.list()
+		[ users: users ] 
+	}    
 	
 	def create = {
 		UserWS newUser = new UserWS();

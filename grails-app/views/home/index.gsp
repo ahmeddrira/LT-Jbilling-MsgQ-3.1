@@ -1,5 +1,6 @@
 <html>
     <head>
+        <title>Main Page</title>
         <meta name="layout" content="main" />
         <style type="text/css" media="screen">
 

@@ -34,11 +34,11 @@
         <g:if test='${flash.message}'>
             <div class="msg-box login error">
                 <img src="${resource(dir:'images', file:'icon14.gif')}" alt="${message(code:'error.icon.alt',default:'Error')}"/>
-                <strong><g:message code="login.error.title"/></strong>
+                <strong><g:message code="flash.error.title"/></strong>
                 <p>${flash.message}</p>
             </div>
         </g:if>
-
+        
         <div id="login">
             <div class="form-box">
                 <form action='${postUrl}' method='POST' id='loginForm' class='cssform' autocomplete='off'>

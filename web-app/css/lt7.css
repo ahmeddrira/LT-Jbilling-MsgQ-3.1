@@ -16,4 +16,9 @@
 	background:url(../images/none.gif);
 	filter: progid:dximagetransform.microsoft.alphaimageloader(src='images/bg-lightbox.png', sizingmethod='crop');
 }
-.table-box li {zoom:1;}
+.table-box li,
+.buttons,
+.form-columns,
+.form-columns .row {
+	zoom:1;
+}

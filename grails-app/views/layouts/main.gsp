@@ -7,11 +7,11 @@
 
     <link rel="shortcut icon" href="${resource(dir:'images', file:'favicon.ico')}" type="image/x-icon" />
 
-    <link media="all" rel="stylesheet" href="${resource(dir:'css', file:'default.css')}" type="text/css" />
+    <link media="all" rel="stylesheet" href="${resource(dir:'css', file:'all.css')}" type="text/css" />
     <!--[if lt IE 8]><link rel="stylesheet" href="${resource(dir:'css', file:'lt7.css')}" type="text/css" media="screen"/><![endif]-->
 
     <g:javascript library="jquery" plugin="jquery"/>
-    <g:javascript library="ie-hover" />
+    <g:javascript library="main" />
 
     <g:layoutHead/>
 </head>

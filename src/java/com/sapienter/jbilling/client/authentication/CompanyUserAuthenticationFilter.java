@@ -20,9 +20,17 @@
 
 package com.sapienter.jbilling.client.authentication;
 
+import org.apache.log4j.Logger;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * An extension of the base spring security {@link UsernamePasswordAuthenticationFilter} that appends
@@ -36,13 +44,22 @@ import javax.servlet.http.HttpServletRequest;
  *      usernameParameter = "j_username"
  *      clientIdParameter = "j_client_id"
  *
+ * 
+ *
  * @author Brian Cowdery
  * @since 04-10-2010
  */
 public class CompanyUserAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+    private static final Logger LOG = Logger.getLogger(CompanyUserAuthenticationFilter.class);
+
     public static final String FORM_CLIENT_ID_KEY = "j_client_id";
     public static final String VALUE_SEPARATOR = ";";
+
+    public static final String SESSION_USER_ID = "user_id";
+    public static final String SESSION_USER_LANGUAGE_ID = "language_id";
+    public static final String SESSION_USER_COMPANY_ID = "company_id";
+    public static final String SESSION_USER_LOCALE = "locale";
 
     private String clientIdParameter;
 
@@ -69,5 +86,39 @@ public class CompanyUserAuthenticationFilter extends UsernamePasswordAuthenticat
 
     public void setClientIdParameter(String clientIdParameter) {
         this.clientIdParameter = clientIdParameter;
+    }
+
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                            Authentication result) throws IOException, ServletException {
+
+        CompanyUserDetails principal = (CompanyUserDetails) result.getPrincipal();
+
+        // add common user attributes to the session for easy access
+        HttpSession session = request.getSession();
+        session.setAttribute(SESSION_USER_ID, principal.getUserId());                                                                         
+        session.setAttribute(SESSION_USER_LANGUAGE_ID, principal.getLanguageId());
+        session.setAttribute(SESSION_USER_COMPANY_ID, principal.getCompanyId());        
+        session.setAttribute(SESSION_USER_LOCALE, principal.getLocale());
+
+        super.successfulAuthentication(request, response, result);
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                              AuthenticationException failed) throws IOException, ServletException {
+
+        String principal = (String) failed.getAuthentication().getPrincipal();
+        LOG.debug("User " + principal + " authentication failed!");
+
+        // clear user session variables just in-case. the user could have re-authenticated
+        // with bad credentials, which would invalidate the current session.
+        HttpSession session = request.getSession();
+        session.removeAttribute(SESSION_USER_ID);
+        session.removeAttribute(SESSION_USER_LANGUAGE_ID);
+        session.removeAttribute(SESSION_USER_COMPANY_ID);
+        session.removeAttribute(SESSION_USER_LOCALE);
+
+        super.unsuccessfulAuthentication(request, response, failed);
     }
 }

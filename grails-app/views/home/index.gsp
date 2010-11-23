@@ -83,6 +83,17 @@
             content you may choose. Below is a list of controllers that are currently deployed in this application,
             click on each to execute its default action:</p>
 
+            <div id="userInfo" class="dialog">
+                <h2>Logged In User:</h2>
+                <ul>
+                    <li>Username: <sec:loggedInUserInfo field="username"/></li>
+                    <li>User id: ${session['user_id']}</li>
+                    <li>Language id: ${session['language_id']}</li>
+                    <li>Company id: ${session['company_id']}</li>
+                    <li>Locale: ${session['locale']}</li>
+                </ul>
+            </div>            
+
             <div id="controllerList" class="dialog">
                 <h2>Available Controllers:</h2>
                 <ul>

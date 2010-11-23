@@ -31,8 +31,8 @@ import java.util.Collection;
 
 /**
  * A spring security {@link AccessDecisionVoter} implementation that handles individual user permission
- * access requests. User permission authorities are a lowercase string containing the permission type
- * and individual permission id.
+ * access requests. User permission authorities are a uppercase string containing the permission type
+ * and individual permission id (e.g., "WEB_SERVICES_120", "USER_CREATION_10").
  *
  * This voter abstains from un-supported access requests.
  *

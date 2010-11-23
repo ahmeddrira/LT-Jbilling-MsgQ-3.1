@@ -21,8 +21,6 @@
 package com.sapienter.jbilling.client.authentication;
 
 import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
-import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
@@ -38,7 +36,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * An implementation of the GrailsUserDetailsService for use with the default DaoAuthenticationProvider. This
@@ -52,7 +49,6 @@ import java.util.Locale;
  * @since 04-10-2010
  */
 public class CompanyUserDetailsService implements GrailsUserDetailsService {
-
     // empty list of roles for use if the given credentials don't resolve to a
     // usable UserDetails. Contains a single entry that does not grant any permissions.
     private static final List<GrantedAuthority> NO_AUTHORITIES;
@@ -89,6 +85,10 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
         // get the user for the given name
         // CompanyUserAuthenticationFilter concatenates the user name with the entity id
         String[] tokens = s.split(CompanyUserAuthenticationFilter.VALUE_SEPARATOR);
+
+        if (tokens.length < 2)
+            throw new UsernameNotFoundException("Un-supported username '" + s + "', username must contain client id.");
+
         String username = tokens[0];
         Integer entityId = Integer.valueOf(tokens[1]);
 
@@ -116,22 +116,7 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
         return new CompanyUserDetails(user.getUserName(), user.getPassword(), user.isEnabled(),
                                       !user.isAccountExpired(), !user.isPasswordExpired(), !user.isAccountLocked(),
                                       authorities.isEmpty() ? NO_AUTHORITIES : authorities,
-                                      user, getLocale(user),
+                                      user, UserBL.getLocale(user),
                                       user.getId(), user.getEntity().getId(), user.getLanguage().getId());
-    }
-
-    /**
-     * Get the user's locale based on their selected language and set country.
-     *
-     * @param user user
-     * @return users locale
-     */
-    private Locale getLocale(UserDTO user) {
-        String languageCode = user.getLanguage().getCode();
-
-        ContactDTO contact = new ContactDAS().findPrimaryContact(user.getId());
-        String countryCode = contact.getCountryCode();
-
-        return countryCode != null ? new Locale(languageCode, countryCode) : new Locale(languageCode);
     }
 }

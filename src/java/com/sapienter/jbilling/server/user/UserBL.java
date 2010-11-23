@@ -36,6 +36,8 @@ import java.util.List;
 
 import javax.naming.NamingException;
 
+import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
@@ -690,25 +692,34 @@ public class UserBL extends ResultList
         return result;
     }
 
+    /**
+     * Get the locale for this user.
+     *
+     * @return users locale
+     */
     public Locale getLocale() {
-        Locale retValue = null;
-        // get the language first
-        Integer languageId = user.getLanguageIdField();
-        LanguageDTO language = new LanguageDAS().find(languageId);
-        String languageCode = language.getCode();
+        return getLocale(user);       
+    }
 
-        // now the country
-        ContactBL contact = new ContactBL();
-        contact.set(user.getUserId());
-        String countryCode = contact.getEntity().getCountryCode();
+    /**
+     * Get a locale for the given user based on their selected language and set country.
+     *
+     * This method assumes that the user is part of the current persistence context, and that
+     * the LanguageDTO association can safely be lazy-loaded.
+     * 
+     * @param user user 
+     * @return users locale
+     */
+    public static Locale getLocale(UserDTO user) {
+        String languageCode = user.getLanguage().getCode();
 
-        if (countryCode != null) {
-            retValue = new Locale(languageCode, countryCode);
-        } else {
-            retValue = new Locale(languageCode);
-        }
+        ContactDTO contact = new ContactDAS().findPrimaryContact(user.getId());
 
-        return retValue;
+        String countryCode = null;
+        if (contact != null)
+            countryCode = contact.getCountryCode();
+
+        return countryCode != null ? new Locale(languageCode, countryCode) : new Locale(languageCode);
     }
 
     public Integer getCurrencyId() {

@@ -20,13 +20,13 @@
             <g:pageProperty name="page.filters"/>
 
             <div class="heading">
-                <a href="#" class="arrow open"><strong><g:message code="create.new.title"/></strong></a>
+                <a href="#" class="arrow open"><strong><g:message code="shortcut.title"/></strong></a>
                 <div class="drop">
                     <ul>
-                        <li><g:link controller="user" action="create"><g:message code="create.new.link.customer"/></g:link></li>
-                        <li><g:link controller="product" action="create"><g:message code="create.new.link.product"/></g:link></li>
-                        <li><g:link controller="order" action="create"><g:message code="create.new.link.order"/></g:link></li>
-                        <li><g:link controller="user" action="invoice"><g:message code="create.new.link.invoice"/></g:link></li>
+                        <li><g:link controller="user" action="create"><g:message code="shortcut.link.customer"/></g:link></li>
+                        <li><g:link controller="product" action="create"><g:message code="shortcut.link.product"/></g:link></li>
+                        <li><g:link controller="order" action="create"><g:message code="shortcut.link.order"/></g:link></li>
+                        <li><g:link controller="user" action="invoice"><g:message code="shortcut.link.invoice"/></g:link></li>
                     </ul>
                 </div>
             </div>
@@ -49,11 +49,15 @@
             <g:render template="/layouts/includes/messages"/>
 
             <g:applyLayout name="templates/column">
-                <g:pageProperty name="page.column1"/>
+                <div id="column1">
+                    <g:pageProperty name="page.column1"/>
+                </div>
             </g:applyLayout>
 
             <g:applyLayout name="templates/column">
-                <g:pageProperty name="page.column2"/>
+                <div id="column2">
+                    <g:pageProperty name="page.column2"/>
+                </div>
             </g:applyLayout>
         </div>
     </div>

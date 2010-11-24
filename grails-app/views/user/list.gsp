@@ -4,10 +4,16 @@
     <meta name="layout" content="list" />
 
     <script type="text/javascript">
+        var selected;
+
         $(document).ready(function() {
             $('.table-box li a').bind('click', function() {
+                if (selected) selected.attr("class", "");
+                selected = $(this);
+                selected.attr("class", "active");
+
                 $.ajax({
-                    url: "select/" + $(this).attr("id"),
+                    url: "select/" + selected.attr("id"),
                     success: function(data) {
                         var column = $(".columns-holder .column").last();
                         column.html(data);
@@ -54,20 +60,20 @@
         <li><a href="#">Email</a></li>
     </ul>
     <div class="btn-hold">
-        <a href="#" class="submit apply"><span>Apply Filters</span></a>
-        <a href="#" class="submit add"><span>Add Filter</span></a>
-        <a href="#" class="submit2 save"><span>Save</span></a>
-        <a href="#" class="submit2 load"><span>Load</span></a>
+        <a href="#" class="submit apply"><span><g:message code="filters.apply.button"/></span></a>
+        <a href="#" class="submit add"><span><g:message code="filters.add.button"/></span></a>
+        <a href="#" class="submit2 save"><span><g:message code="filters.save.button"/></span></a>
+        <a href="#" class="submit2 load"><span><g:message code="filters.load.button"/></span></a>
     </div>   
 </content>
 
 <content tag="column1">
     <div class="heading table-heading">
-        <strong class="name"><g:message code="customers.table.th.name"/></strong>
-        <strong class="parent"><g:message code="customers.table.th.hierarchy"/></strong>
-        <strong class="owed"><g:message code="customers.table.th.balance"/></strong>
-        <strong class="status"><g:message code="customers.table.th.status"/></strong>
-        <strong class="user"><g:message code="customers.table.th.user.id"/></strong>
+        <strong class="name"><g:message code="customer.table.th.name"/></strong>
+        <strong class="parent"><g:message code="customer.table.th.hierarchy"/></strong>
+        <strong class="owed"><g:message code="customer.table.th.balance"/></strong>
+        <strong class="status"><g:message code="customer.table.th.status"/></strong>
+        <strong class="user"><g:message code="customer.table.th.user.id"/></strong>
     </div>
 
     <div class="table-box">
@@ -140,8 +146,8 @@
     </div>
 
     <div class="btn-box">
-        <a href="${createLink(action: 'create')}" class="submit add"><span>Add New</span></a>                
-        <a href="${createLink(action: 'delete')}" class="submit delete"><span>Delete Selected</span></a>
+        <a href="${createLink(action: 'create')}" class="submit add"><span><g:message code="button.create"/></span></a>
+        <a href="${createLink(action: 'delete')}" class="submit delete"><span><g:message code="button.delete"/></span></a>
     </div>
 </content>
 
@@ -151,12 +157,12 @@
     </g:if>
     <g:else>
         <!-- no user selected -->
-        <div class="heading"><strong><em>No user selected.</em></strong></div>
-        <div class="box"><em>Please select a user to view.</em></div>
+        <div class="heading"><strong><em><g:message code="customer.detail.not.selected.title"/></em></strong></div>
+        <div class="box"><em><g:message code="customer.detail.not.selected.message"/></em></div>
 
-        <div class="heading"><strong>User Info</strong></div>
-        <div class="heading"><strong>Payment Info</strong></div>
-        <div class="heading"><strong>Contact Info</strong></div>
+        <div class="heading"><strong><g:message code="customer.detail.user.title"/></strong></div>
+        <div class="heading"><strong><g:message code="customer.detail.payment.title"/></strong></div>
+        <div class="heading"><strong><g:message code="customer.detail.contact.title"/></strong></div>
     </g:else>
 </content>
 

@@ -25,33 +25,32 @@
     </div>
     <div class="box">
         <a href="#" class="edit"></a>
-        <strong>Note:</strong>
+        <strong><g:message code="customer.detail.note.title"/></strong>
         <g:if test="${customer && customer.notes}">
             <p>${customer.notes}</p>
         </g:if>
         <g:else>
-            <p><em>No customer notes.</em></p>
+            <p><em><g:message code="customer.detail.note.empty.message"/></em></p>
         </g:else>
     </div>
 
-
     <!-- user details -->
     <div class="heading">
-        <strong>User Info</strong>
+        <strong><g:message code="customer.detail.user.title"/></strong>
     </div>
     <div class="box">
         <a href="#" class="edit"></a>
         <dl>
-            <dt>User ID</dt>
+            <dt><g:message code="customer.detail.user.user.id"/></dt>
             <dd>${selected.id}</dd>
-            <dt>Login Name</dt>
+            <dt><g:message code="customer.detail.user.username"/></dt>
             <dd>${selected.userName}</dd>
-            <dt>Status</dt>
+            <dt><g:message code="customer.detail.user.status"/></dt>
             <dd>${selected.userStatus.description}</dd>
-            <dt>Created Date</dt>
+            <dt><g:message code="customer.detail.user.created.date"/></dt>
             <dd>${selected.createDatetime}</dd>
             <g:if test="${contact}">
-            <dt>Email Address</dt>
+            <dt><g:message code="customer.detail.user.email"/></dt>
             <dd><a href="mailto:${contact.email}">${contact.email}</a></dd>
             </g:if>
         </dl>
@@ -59,64 +58,60 @@
 
     <!-- user payment details -->
     <div class="heading">
-        <strong>Payment Info</strong>
+        <strong><g:message code="customer.detail.payment.title"/></strong>
     </div>
     <div class="box">
         <a href="#" class="edit"></a>
         <dl class="other other2">
-            <dt>Last Invoiced Date</dt>
+            <dt><g:message code="customer.detail.payment.invoiced.date"/></dt>
             <dd>Jun-01-2010</dd>
-            <dt>Due Date</dt>
+            <dt><g:message code="customer.detail.payment.due.date"/></dt>
             <dd>Jun-15-2010</dd>
-            <dt>Invoiced Amount</dt>
+            <dt><g:message code="customer.detail.payment.invoiced.amount"/></dt>
             <dd>78.23</dd>
-            <dt>Amount Owed</dt>
+            <dt><g:message code="customer.detail.payment.amount.owed"/></dt>
             <dd>123.45</dd>
-            <dt>Lifetime revenue</dt>
+            <dt><g:message code="customer.detail.payment.lifetime.revenue"/></dt>
             <dd>214.21</dd>
         </dl>
         <dl class="other">
-            <dt>Credit Card</dt>
+            <dt><g:message code="customer.detail.payment.credit.card"/></dt>
             <dd>4800 0000 0000 0000</dd>
-            <dt>Expiry Date</dt>
+            <dt><g:message code="customer.detail.payment.credit.card.expiry"/></dt>
             <dd>May 2012</dd>
         </dl>
     </div>
 
     <!-- contact details -->    
     <div class="heading">
-        <strong>Contact Info</strong>
+        <strong><g:message code="customer.detail.contact.title"/></strong>
     </div>
     <g:if test="${contact}">
     <div class="box">
         <a href="#" class="edit"></a>
         <dl>
-            <dt>Telephone</dt>
+            <dt><g:message code="customer.detail.contact.telephone"/></dt>
             <dd>
-                <g:if test="${contact.phoneCountryCode}">
-                    ${contact.phoneCountryCode}.
-                </g:if>
-                <g:if test="${contact.phoneAreaCode}">
-                    ${contact.phoneAreaCode}.
-                </g:if>
+                <g:if test="${contact.phoneCountryCode}">${contact.phoneCountryCode}.</g:if>
+                <g:if test="${contact.phoneAreaCode}">${contact.phoneAreaCode}.</g:if>
                 ${contact.phoneNumber} &nbsp;
             </dd>
-            <dt>Address</dt>
+            <dt><g:message code="customer.detail.contact.address"/></dt>
             <dd>${contact.address1} ${contact.address2} &nbsp;</dd>
-            <dt>City</dt>
+            <dt><g:message code="customer.detail.contact.city"/></dt>
             <dd>${contact.city} &nbsp;</dd>
-            <dt>State/Province</dt>
+            <dt><g:message code="customer.detail.contact.state"/></dt>
             <dd>${contact.stateProvince} &nbsp;</dd>
-            <dt>Country</dt>
+            <dt><g:message code="customer.detail.contact.country"/></dt>
             <dd>${contact.countryCode} &nbsp;</dd>
-            <dt>Postal/Zip Code</dt>
+            <dt><g:message code="customer.detail.contact.zip"/></dt>
             <dd>${contact.postalCode} &nbsp;</dd>
         </dl>
     </div>
     </g:if>
 
     <div class="btn-box">
-        <a href="#" class="submit order"><span>Create Order</span></a>
-        <a href="#" class="submit payment"><span>Create Payment</span></a>
+        <a href="#" class="submit order"><span><g:message code="button.create.order"/></span></a>
+        <a href="#" class="submit payment"><span><g:message code="button.create.payment"/></span></a>
     </div>
 </div>

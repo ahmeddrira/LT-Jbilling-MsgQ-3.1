@@ -14,10 +14,6 @@
             <include name="*.jar"/>
         </fileset>
 
-        <!-- grails plug-in libraries -->
-        <fileset dir="${grails.plugins.lib.dir}">
-            <include name="*.jar"/>
-        </fileset>
     </path>
         
     <path id="test.classpath">

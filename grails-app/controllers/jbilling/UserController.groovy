@@ -10,6 +10,7 @@ import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import grails.plugins.springsecurity.Secured
+import com.sapienter.jbilling.server.user.db.CustomerDTO
 
 @Secured(['isAuthenticated()'])
 class UserController {
@@ -19,7 +20,7 @@ class UserController {
 	def languageId = "1"
 	def isAutoCC = false
 	def isAutoAch = false
-	
+    
 	def index = {
         redirect action: list, params: params
 	}
@@ -28,8 +29,21 @@ class UserController {
         if (params["id"]) {
             UserDTO user = UserDTO.findById(params["id"])
             render template: "details", model:[selected: user]
-        } else {            
-            flash.error = message(code: "object.not.found")
+        } 
+    }
+
+    def subaccounts = {
+        if (params["id"]) {
+            UserDTO user = UserDTO.findById(params["id"])
+            def children = user?.customer?.children?.collect{ it.baseUser }
+
+            if (!children.isEmpty()) {
+                render template: "table", model:[users: children]
+            } else {
+                flash.info = "customer.no.subaccount.warning"
+                flash.args = [user.id]
+                render template: "/layouts/includes/messages"
+            }
         }
     }
 

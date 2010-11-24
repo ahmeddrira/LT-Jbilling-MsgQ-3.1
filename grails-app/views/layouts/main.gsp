@@ -10,6 +10,7 @@
 
     <div id="main">
         <g:render template="/layouts/includes/breadcrumbs"/>
+        <g:render template="/layouts/includes/messages"/>
         <g:layoutBody />
     </div>
 </div>

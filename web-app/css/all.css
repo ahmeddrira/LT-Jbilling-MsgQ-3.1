@@ -528,13 +528,21 @@ table {
 	height:1%;
 	padding:4px 9px;
 }
-.msg-box.error {
-	background:#f8dec7;
-	border:1px solid #e9a66b;
-}
 .msg-box.successfully {
 	background:#eaf9c5;
 	border:1px solid #b7cf7b;
+}
+.msg-box.info {
+    background:#ffffff;
+    border:1px solid #b7cf7b;
+}
+.msg-box.warn {
+    background:#ffffff;
+    border:1px solid #e9a66b;
+}
+.msg-box.error {
+	background:#f8dec7;
+	border:1px solid #e9a66b;
 }
 .msg-box img {
 	float:left;
@@ -580,6 +588,15 @@ table {
 	top:16px;
 	right:14px;
 	position:absolute;
+}
+.column .heading .edit {
+    width:25px;
+	height:20px;
+    background:url(../images/icon21.gif) no-repeat;
+    overflow:hidden;
+    display:block;
+    float:left;
+    margin:3px 7px 0 0;
 }
 .column .box.hover ,
 .column .box:hover {
@@ -669,6 +686,7 @@ table {
 	overflow:hidden;
 	border-bottom:1px solid #bbb;
 	vertical-align:top;
+    background:url(../images/bg-gradient.gif) repeat-x;
 }
 .table-box li em {
 	display:block;
@@ -686,10 +704,9 @@ table {
 	overflow:hidden;
 	height:41px;
 	padding:8px 0 0 9px;
-	background:url(../images/bg-gradient.gif) repeat-x;
 }
 .table-box ul li a:hover {text-decoration:none;}
-.table-box ul li a.active {
+.table-box ul li.active {
 	background:url(../images/bg-gradient2.gif) repeat-x;
 }
 .table-box .block {

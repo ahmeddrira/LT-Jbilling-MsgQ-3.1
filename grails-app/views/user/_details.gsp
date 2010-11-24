@@ -13,6 +13,7 @@
 <div class="column-hold">
     <!-- user notes -->
     <div class="heading">
+        <a href="${createLink(action: 'edit', )}" class="edit"></a>
         <strong>
             <g:if test="${contact && (contact.firstName || contact.lastName)}">
                 ${contact.firstName} ${contact.lastName}
@@ -48,7 +49,7 @@
             <dt><g:message code="customer.detail.user.status"/></dt>
             <dd>${selected.userStatus.description}</dd>
             <dt><g:message code="customer.detail.user.created.date"/></dt>
-            <dd>${selected.createDatetime}</dd>
+            <dd><g:formatDate format="MMM-dd-yyyy" date="${selected.createDatetime}"/></dd>
             <g:if test="${contact}">
             <dt><g:message code="customer.detail.user.email"/></dt>
             <dd><a href="mailto:${contact.email}">${contact.email}</a></dd>

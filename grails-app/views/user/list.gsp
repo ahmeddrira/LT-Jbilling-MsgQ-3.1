@@ -1,24 +1,18 @@
 <%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 <html>
 <head>
-    <meta name="layout" content="list" />
+    <meta name="layout" content="panels" />
 
     <script type="text/javascript">
         var selected;
 
+        // todo: should be attached to the ajax "success" event.
+        // row should only be highlighted when it really is selected.
         $(document).ready(function() {
-            $('.table-box li a').bind('click', function() {
+            $('.table-box li').bind('click', function() {
                 if (selected) selected.attr("class", "");
                 selected = $(this);
                 selected.attr("class", "active");
-
-                $.ajax({
-                    url: "select/" + selected.attr("id"),
-                    success: function(data) {
-                        var column = $(".columns-holder .column").last();
-                        column.html(data);
-                    }
-                })
             })
         });
     </script>
@@ -68,101 +62,19 @@
 </content>
 
 <content tag="column1">
-    <div class="heading table-heading">
-        <strong class="name"><g:message code="customer.table.th.name"/></strong>
-        <strong class="parent"><g:message code="customer.table.th.hierarchy"/></strong>
-        <strong class="owed"><g:message code="customer.table.th.balance"/></strong>
-        <strong class="status"><g:message code="customer.table.th.status"/></strong>
-        <strong class="user"><g:message code="customer.table.th.user.id"/></strong>
-    </div>
-
-    <div class="table-box">
-        <ul>
-            <g:each in="${users}" var="user">
-                <g:set var="customer" value="${user.customer}"/>
-                <g:set var="contact" value="${ContactDTO.findByUserId(user.id)}"/>
-                
-                <li>
-                    <a href="#user-${user.id}" id="${user.id}"
-                        <g:if test="${selected && selected.id == user.id}">class="active"</g:if>>
-                        <span class="block last">
-                            <g:if test="${customer}">
-                                <g:if test="${customer.isParent == 1 && customer.parent}">
-                                    <%-- is a parent, but also a child of another account --%>
-                                    <img src="${resource(dir:'images', file:'icon17.gif')}" alt="parent and child" />
-                                    <span>${customer.children.size()}</span>
-                                </g:if>
-                                <g:elseif test="${customer.isParent == 1 && !customer.parent}">
-                                    <%-- is a top level parent --%>
-                                    <img src="${resource(dir:'images', file:'icon18.gif')}" alt="parent" />
-                                    <span>${customer.children.size()}</span>
-                                </g:elseif>
-                                <g:elseif test="${customer.isParent == 0 && customer.parent}">
-                                    <%-- is a child account, but not a parent --%>
-                                    <img src="${resource(dir:'images', file:'icon19.gif')}" alt="child" />                                    
-                                </g:elseif>
-                                <g:else>
-                                    <span>&nbsp;</span>
-                                </g:else>
-                            </g:if>
-                            <g:else>
-                                <span>&nbsp;</span>
-                            </g:else>
-                        </span>
-                        <span class="block">
-                            <span>999.99</span>
-                        </span>
-                        <span class="block">
-                            <span>
-                                <g:if test="${user.userStatus.id > 1 && user.userStatus.id < 5}">
-                                    <img src="${resource(dir:'images', file:'icon15.gif')}" alt="overdue" />
-                                </g:if>
-                                <g:elseif test="${user.userStatus.id >= 5}">
-                                    <img src="${resource(dir:'images', file:'icon16.gif')}" alt="suspended" />
-                                </g:elseif>
-                                <g:else>
-                                    <span>&nbsp;</span>
-                                </g:else>
-                            </span>
-                        </span>
-                        <span class="block">
-                            <span>${user.id}</span>
-                        </span>
-                        <strong>
-                            <g:if test="${contact && (contact.firstName || contact.lastName)}">
-                                ${contact.firstName} ${contact.lastName}
-                            </g:if>
-                            <g:else>
-                                ${user.userName}
-                            </g:else>
-                        </strong>
-                        <em>
-                            <g:if test="${contact}">${contact.organizationName}</g:if>
-                        </em>
-                    </a>
-                </li>
-            </g:each>
-        </ul>
-    </div>
-
-    <div class="btn-box">
-        <a href="${createLink(action: 'create')}" class="submit add"><span><g:message code="button.create"/></span></a>
-        <a href="${createLink(action: 'delete')}" class="submit delete"><span><g:message code="button.delete"/></span></a>
-    </div>
+    <g:render template="table" model="['users': users]"/> 
 </content>
 
 <content tag="column2">
     <g:if test="${selected}">
+        <!-- show selected user details -->
         <g:render template="details" model="['selected': selected]"/>
     </g:if>
     <g:else>
         <!-- no user selected -->
         <div class="heading"><strong><em><g:message code="customer.detail.not.selected.title"/></em></strong></div>
         <div class="box"><em><g:message code="customer.detail.not.selected.message"/></em></div>
-
-        <div class="heading"><strong><g:message code="customer.detail.user.title"/></strong></div>
-        <div class="heading"><strong><g:message code="customer.detail.payment.title"/></strong></div>
-        <div class="heading"><strong><g:message code="customer.detail.contact.title"/></strong></div>
+        <div class="btn-box"></div>
     </g:else>
 </content>
 

@@ -2692,7 +2692,6 @@
     <PluggableTaskType Id="24" CategoryId="6" ClassName="com.sapienter.jbilling.server.user.tasks.PaymentACHCommerceTask" MinParameters="5"/>
     <PluggableTaskType Id="25" CategoryId="12" ClassName="com.sapienter.jbilling.server.payment.tasks.NoAsyncParameters" MinParameters="0"/>
     <PluggableTaskType Id="26" CategoryId="12" ClassName="com.sapienter.jbilling.server.payment.tasks.RouterAsyncParameters" MinParameters="0"/>
-    <PluggableTaskType Id="27" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentEmailAuthorizeNetTask" MinParameters="1"/>
     <PluggableTaskType Id="28" CategoryId="13" ClassName="com.sapienter.jbilling.server.item.tasks.BasicItemManager" MinParameters="0"/>
     <PluggableTaskType Id="29" CategoryId="13" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
     <PluggableTaskType Id="30" CategoryId="1" ClassName="com.sapienter.jbilling.server.order.task.RulesLineTotalTask" MinParameters="0"/>
@@ -2723,10 +2722,10 @@
     <PluggableTaskType Id="55" CategoryId="19" ClassName="com.sapienter.jbilling.server.user.tasks.UserBalanceValidatePurchaseTask" MinParameters="0"/>
     <PluggableTaskType Id="56" CategoryId="19" ClassName="com.sapienter.jbilling.server.user.tasks.RulesValidatePurchaseTask" MinParameters="0"/>
     <PluggableTaskType Id="57" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentsGatewayTask" MinParameters="4"/>
+    <PluggableTaskType Id="58" CategoryId="17" ClassName="com.sapienter.jbilling.server.payment.tasks.SaveCreditCardExternallyTask" MinParameters="1"/>
     <PluggableTaskType Id="59" CategoryId="13" ClassName="com.sapienter.jbilling.server.order.task.RulesItemManager2" MinParameters="0"/>
     <PluggableTaskType Id="60" CategoryId="1" ClassName="com.sapienter.jbilling.server.order.task.RulesLineTotalTask2" MinParameters="0"/>
     <PluggableTaskType Id="61" CategoryId="14" ClassName="com.sapienter.jbilling.server.item.tasks.RulesPricingTask2" MinParameters="0"/>
-    <PluggableTaskType Id="62" CategoryId="17" ClassName="com.sapienter.jbilling.server.payment.tasks.SaveCreditCardExternallyTask" MinParameters="1"/>
     <PluggableTaskType Id="63" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentFakeExternalStorage" MinParameters="0"/>
     <PluggableTaskType Id="64" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayTask" MinParameters="3"/>
     <PluggableTaskType Id="65" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayExternalTask" MinParameters="3"/>
@@ -2741,6 +2740,8 @@
     <PluggableTaskType Id="76" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask" MinParameters="2"/>
     <PluggableTaskType Id="77" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentMethodRouterTask" MinParameters="4"/>
     <PluggableTaskType Id="78" CategoryId="23" ClassName="com.sapienter.jbilling.server.rule.task.VelocityRulesGeneratorTask" MinParameters="2"/>
+    <PluggableTaskType Id="79" CategoryId="22" ClassName="com.sapienter.jbilling.server.mediation.task.MediationProcessTask" MinParameters="0"/>
+    <PluggableTaskType Id="80" CategoryId="22" ClassName="com.sapienter.jbilling.server.billing.task.BillingProcessTask" MinParameters="1"/>
 
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>

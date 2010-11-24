@@ -68,6 +68,9 @@ public class PluggableTaskDTO implements java.io.Serializable {
     @Column(name = "processing_order")
     private Integer processingOrder;
     
+    @Column(name = "notes")
+    private String notes;
+    
     @ManyToOne
     @JoinColumn(name="type_id")
     private PluggableTaskTypeDTO type;
@@ -159,4 +162,14 @@ public class PluggableTaskDTO implements java.io.Serializable {
             }
         }
     }
+
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+
+	public String getNotes() {
+		return notes;
+	}
 }

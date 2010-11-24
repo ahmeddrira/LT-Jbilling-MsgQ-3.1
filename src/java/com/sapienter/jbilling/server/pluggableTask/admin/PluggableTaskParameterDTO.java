@@ -26,6 +26,7 @@
 package com.sapienter.jbilling.server.pluggableTask.admin;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -77,7 +78,7 @@ public class PluggableTaskParameterDTO implements Serializable {
     private String strValue;
     
     @Column(name = "float_value")
-    private Float floatValue;
+    private BigDecimal floatValue;
 
     @ManyToOne
     @JoinColumn(name="task_id")
@@ -94,11 +95,11 @@ public class PluggableTaskParameterDTO implements Serializable {
     @Transient
     private String value = null;
 
-    public Float getFloatValue() {
+    public BigDecimal getFloatValue() {
         return floatValue;
     }
 
-    public void setFloatValue(Float floatValue) {
+    public void setFloatValue(BigDecimal floatValue) {
         this.floatValue = floatValue;
     }
 
@@ -165,7 +166,7 @@ public class PluggableTaskParameterDTO implements Serializable {
             type = new Integer(FLO);
             value = String.valueOf(getFloatValue());
         } else {
-            // the value of this parameer is null
+            // the value of this parameter is null
             // we default the type to String
             type = new Integer(STR);
         }
@@ -188,7 +189,7 @@ public class PluggableTaskParameterDTO implements Serializable {
         case FLO:
             setIntValue(null);
             setStrValue(null);
-            setFloatValue(Float.valueOf(value));  
+            setFloatValue(new BigDecimal(value));  
         break;
         }
     }
@@ -198,6 +199,9 @@ public class PluggableTaskParameterDTO implements Serializable {
     }
 
     public String getValue() {
+    	if (value == null) {
+    		populateValue();
+    	}
         return value;
     }
     public void setValue(String value) {

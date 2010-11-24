@@ -229,7 +229,12 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             return null;
         }
 
-        return InvoiceBL.getWS(invoice);
+        InvoiceWS wsDto= InvoiceBL.getWS(invoice);
+        if ( null != invoice.getInvoiceStatus())
+        {	
+        	wsDto.setStatusDescr(invoice.getInvoiceStatus().getDescription(getCallerLanguageId()));
+        }
+        return wsDto;
     }
 
     /**
@@ -251,7 +256,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         List<InvoiceWS> ids = new ArrayList<InvoiceWS>(invoices.size());
         for (InvoiceDTO invoice : invoices)
-            ids.add(InvoiceBL.getWS(invoice));
+        {
+        	InvoiceWS wsdto= InvoiceBL.getWS(invoice); 
+        	if ( null != invoice.getInvoiceStatus())
+        		wsdto.setStatusDescr(invoice.getInvoiceStatus().getDescription(getCallerLanguageId()));
+        		
+        	ids.add(wsdto);
+        }
         return ids.toArray(new InvoiceWS[ids.size()]);
     }
     

@@ -59,11 +59,22 @@ public class InvoiceWS implements WSSecured, Serializable {
     private String number;
     private Integer overdueStep;
 
+    //additional fields for the new gui
+    private String statusDescr;
+    
     public InvoiceWS() {
         super();
     }
+  
+    public String getStatusDescr() {
+		return statusDescr;
+	}
 
-    public Integer getId() {
+	public void setStatusDescr(String statusDescr) {
+		this.statusDescr = statusDescr;
+	}
+
+	public Integer getId() {
         return this.id;
     }
 

@@ -7325,6 +7325,7 @@ COPY contact_type (id, entity_id, is_primary) FROM stdin;
 1	\N	\N
 2	1	1
 3	2	1
+4	1	0
 \.
 
 
@@ -10560,6 +10561,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	12	title	1	Paper invoice notificaiton
 28	2	description	1	Primary
 28	3	description	1	Primary
+28	4	description	1	Extra Contact
 35	1	description	1	Cheque
 35	2	description	1	Visa
 35	3	description	1	MasterCard

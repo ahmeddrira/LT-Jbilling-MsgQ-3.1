@@ -1,48 +1,36 @@
 <html>
 <head>
-<link
-	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
-	rel="stylesheet" type="text/css" />
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-<style type="text/css">
-.Highlight {
-	background-color: red;
-	cursor: pointer;
-}
-</style>
+<meta name="layout" content="main" />
+<script type='text/javascript'>
+	$(document).ready( function ()
+	    {
+	      // Apply a class on mouse click
+	      $('.link-table tr').click(function ()
+	      {
+	    	  $(".Highlight").removeClass();
+			  $(this).addClass('Highlight');
+	      });
+	  
+	      // Assign a click handler that grabs item Id from the first cell
+	      $('.link-table tr').click(function ()
+	      {
+		      var tdVal= $(this).find('td input').attr('value')
+		      //alert ('tdVal=' + tdVal);
+	          $("#deleteItemId").val(tdVal);
+	      });
 
-<script type="text/javascript">
-
-    $(function ()
-    {
-      // Apply a class on mouse click
-      $('.link-table tr').click(function ()
-      {
-    	  $(".Highlight").removeClass();
-		  $(this).addClass('Highlight');
-      });
-  
-      // Assign a click handler that grabs item Id from the first cell
-      $('.link-table tr').click(function ()
-      {
-          document.getElementById("deleteItemId").value= $(this).find('td input').attr('value');
-      });
-
-      $('.link-table tr').dblclick(function()
-      {
-          //alert ($(this).find('td input').attr('value'));
-          document.forms[0].action='/jbilling/product/type/' + $(this).find('td input').attr('value');
-          document.forms[0].submit();
-      });     
+	      $('.link-table tr').dblclick(function()
+	      {
+	          var testVal= ($(this).find('td :input').attr('value'));
+	          //alert ('testVal=' + testVal);
+	          //document.forms[0].action='/jbilling/product/type/' + $(this).find('td input').attr('value');
+	          //document.forms[0].submit();
+	          $('#item').attr('action', '/jbilling/product/type/' + testVal);	    	  
+	    	  $('#item').submit();
+	      });
+	      $("#recCnt").val(${categories?.size()});
+	});
       
-    });
-  </script>
-
-</head>
-<script language="javascript">
 function nLoad() {
 	document.getElementById("recCnt").value = ${categories.size()};
 }
@@ -54,6 +42,8 @@ function del() {
 		return false;
 	}
 	if (confirm("Are you sure you want to delete [" + document.getElementById("deleteItemId").value + "]")){
+		$('#item').attr('action', '/jbilling/item/delete/');	    	  
+		$('#item').submit();
 		return true;
 	}
 	return false;
@@ -80,25 +70,32 @@ function add(tblId) {
 	        cells[i].firstElementChild.name = "categories["+(count)+"].orderLineTypeId";
 	    }	   
 	    cells[i].firstElementChild.value="";
-	    //alert(cells[i].firstElementChild.id);
-	    
-	}
-	
+	    //alert(cells[i].firstElementChild.id);	    
+	}	
 	//document.getElementById('catTbl').tBodies[0].appendChild(newNode);	
 	count++;
 	//alert("New Count Value=" + count);
 	document.getElementById("recCnt").value = count;
 	//alert("New recCnt Value=" + document.getElementById("recCnt").value);
 }
-
 </script>
+
+<style type="text/css">
+.Highlight {
+	background-color: red;
+	cursor: pointer;
+}
+</style>
+
+</head>
+
 <body onload="nLoad();">
 <p><g:message code="prompt.product.category" /></p>
 <p>
 	<jB:renderErrorMessages/>
 	<g:message code="${flash.message}" args="${flash.args}" default="${flash.defaultMsg}"/> 
 </p>
-<g:form>
+<g:form name="item" controller="item" action="save">
 	<g:hiddenField name="recCnt" value="0" />
 	<g:hiddenField name="deleteItemId" value="0" />
 	<!-- g:hiddenField name="delOrderTypeId" value="0"/-->
@@ -115,7 +112,6 @@ function add(tblId) {
 		<tbody>
 			<g:each in="${categories}" status="idx" var="cat">
 				<tr>
-
 					<td><g:textField readonly="readonly"
 						name="categories[${idx}].id" value="${cat.id}" /></td>
 					<td><g:textField name="categories[${idx}].description"
@@ -132,18 +128,23 @@ function add(tblId) {
 		<tr>
 			<td><input type="button" value="Add" onclick="add('catTbl')"
 				class="form_button" /></td>
-			<td><g:actionSubmit type="button" value="Delete"
+			<td> <input type="submit" value="Delete"
+				onclick="javascript: return del();" class="form_button"/>
+				<!-- <g:actionSubmit type="button" value="Delete"
 				onclick="javascript: return del()" class="form_button"
-				action="delete" /></td>
+				action="delete" /> -->
+			</td>
 		</tr>
 	</table>
 
 	<table>
 		<tr>
-			<td><g:actionSubmit value="Save Changes" action="save"
-				class="form_button" /></td>
+			<td><input type="submit" value="Save Changes" class="form_button" />
+				<!-- <g:actionSubmit value="Save Changes" action="save"
+				class="form_button" /> -->
+			</td>
 			<td><g:actionSubmit value="Cancel" action="index"
-				class="form_button" onclick="javascript: document.forms[0].submit();"/></td>
+				class="form_button" onclick="javascript: history.back();"/></td>
 		</tr>
 	</table>
 

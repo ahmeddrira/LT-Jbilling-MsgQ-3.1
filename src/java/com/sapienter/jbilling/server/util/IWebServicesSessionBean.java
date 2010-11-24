@@ -173,6 +173,7 @@ public interface IWebServicesSessionBean {
     public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws SessionInternalError;
     public void deleteInvoice(Integer invoiceId);
 
+    public InvoiceWS[] getAllInvoicesForUser(Integer userId);
     public Integer[] getAllInvoices(Integer userId);
     public InvoiceWS getLatestInvoice(Integer userId) throws SessionInternalError;
     public Integer[] getLastInvoices(Integer userId, Integer number) throws SessionInternalError;

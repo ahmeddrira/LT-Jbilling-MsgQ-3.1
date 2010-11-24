@@ -19,7 +19,7 @@ class UserController {
 	def languageId = "1"
 	def isAutoCC = false
 	def isAutoAch = false
-
+	
 	def index = {
         redirect action: list, params: params
 	}
@@ -64,10 +64,9 @@ class UserController {
 	}
 	
 	def edit = {
-		//UserBL userbl = new UserBL(webServicesSession.getCallerId());
-		//languageId = String.valueOf(userbl.getEntity().getLanguageIdField());
-		languageId= webServicesSession.getCallerLanguageId().toString()
-
+		
+		//languageId= webServicesSession.getCallerLanguageId().toString()
+		log.info "Edit User: LanguageID=" + languageId
 		UserWS user = null;
 		def notes= null;
 		def expMnth, expYr;

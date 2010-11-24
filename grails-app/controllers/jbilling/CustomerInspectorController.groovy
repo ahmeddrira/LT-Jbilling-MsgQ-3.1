@@ -10,6 +10,8 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.user.db.SubscriberStatusDTO;
 import com.sapienter.jbilling.server.user.ContactWS;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
 
 class CustomerInspectorController {
 	
@@ -38,22 +40,23 @@ class CustomerInspectorController {
 			} catch (Exception e) {
 				flash.message = message(code: 'user.not.found')
 				flash.args= [params["id"]]
+				redirect (controller:'user')
 			}
 		}
 		boolean isAutoCC
-		if ( Constants.AUTO_PAYMENT_TYPE_CC == user.getAutomaticPaymentType())
+		if ( Constants.AUTO_PAYMENT_TYPE_CC == user?.getAutomaticPaymentType())
 		{
 			log.info "Auto CC true"
 			isAutoCC=true;
 		}
 		boolean isAutoAch
-		if ( Constants.AUTO_PAYMENT_TYPE_ACH == user.getAutomaticPaymentType() )
+		if ( Constants.AUTO_PAYMENT_TYPE_ACH == user?.getAutomaticPaymentType() )
 		{
 			log.info "Auto Ach True"
 			isAutoAch= true;
 		}
 		String expDate;
-		if (null != user.getCreditCard() && null != user.getCreditCard().getNumber()) {
+		if (null != user?.getCreditCard() && null != user?.getCreditCard()?.getNumber()) {
 			Calendar cal= Calendar.getInstance();
 			cal.setTime(user.getCreditCard().getExpiry())
 			expDate="${1 + cal.get(Calendar.MONTH)}-"
@@ -67,6 +70,22 @@ class CustomerInspectorController {
 		}
 		//find all user contacts
 		ContactWS[] contacts= webServicesSession.getUserContactsWS(user.getUserId())
+		List<ContactWS> contactList= new ArrayList<ContactWS>(contacts.length);
+		for (ContactWS contact:contacts) {
+			if (user?.contact?.getId() != contact?.getId() )
+			{
+				ContactTypeDTO typeDto= new ContactTypeDAS().find(contact.getContactTypeId())
+				log.info "Contact ID= " + contact?.getId() + " Contact Type ID="+ contact.getContactTypeId()
+				log.info "TypeDto=" + typeDto + " LanguageId="+ languageId
+				log.info "getting type descr=" + typeDto?.getDescription(languageId)
+				if (typeDto)
+				{
+					contact.setContactTypeDescr(typeDto.getDescription(languageId))
+				}
+				contactList.add(contact)
+			}
+		}
+		contacts= (ContactWS[]) contactList.toArray(new ContactWS[contactList.size()])
 		
 		log.info "Custom Contact fields=${user?.contact?.fieldNames}"
 		[user:user, _id:userid, contacts:contacts, subscribStatus:subscribStatus, orders:orders, languageId:languageId, expDate:expDate, isAutoCC:isAutoCC,isAutoAch:isAutoAch]
@@ -105,25 +124,13 @@ class CustomerInspectorController {
 	}
 
 	def invoices= {
-//		List<Integer> ids= webServicesSession.getLastInvoices(params._id?.toInteger(), 99)
-//		List<InvoiceWS> invoices= new ArrayList<InvoiceWS>()
-//		log.info "Found ${ids?.size()} invoices. ${ids?.get(0).getClass().getName()}"
-//		if (ids)
-//		for(Integer i: ids) {
-//			invoices.add(webServicesSession.getInvoiceWS(i))
-//		}		
-//		[invoices:invoices]
-		render "Show invoices here."
+		int _id= params._id?.toInteger();
+		log.info "Redirecting to get invoices for id " + _id
+		redirect (controller:"invoice", action: "lists", id:_id)
 	}
 	def payments= {
-//		List<Integer> ids= webServicesSession.getLastPayments(params._id?.toInteger(), 99)
-//		List<PaymentWS> payments= new ArrayList<PaymentWS>()
-//		log.info "Found ${ids?.size()} payments. ${ids?.get(0).getClass().getName()}"
-//		if(ids)
-//		for(Integer i: ids) {
-//			payments.add(webServicesSession.getPayment(i))
-//		}		
-//		[payments:payments]
+		int _id= params._id?.toInteger();
+		log.info "Redirecting to get payments for id " + _id
 		render "Show payments here."
 	}
 	def orders= {

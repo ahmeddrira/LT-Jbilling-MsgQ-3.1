@@ -1,20 +1,7 @@
 <html>
-<link
-	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
-	rel="stylesheet" type="text/css" />
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-<style type="text/css">
-.Highlight {
-	background-color: red;
-	cursor: pointer;
-}
-</style>
 <head>
+<meta name="layout" content="main" />
 
-</head>
 <script language="javascript">
 	$(function ()
 	{
@@ -32,7 +19,16 @@
 			document.forms[0].submit();
 		});
 	});
-	</script>
+</script>
+	
+<style type="text/css">
+	.Highlight {
+		background-color: red;
+		cursor: pointer;
+	}
+</style>
+
+</head>
 <body>
 <p>
 	<g:message code="${flash.message}" args="${flash.args}" default="${flash.defaultMsg}" />

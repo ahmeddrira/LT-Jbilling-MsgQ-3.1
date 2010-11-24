@@ -24,6 +24,7 @@
 	left: 25%;
 }
 </style>
+
 <link
 	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
 	rel="stylesheet" type="text/css" />
@@ -32,8 +33,11 @@
 <script
 	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>	
 
-</head>
 <script language="javascript">
+
+//test cursor position code
+var targetElement;
+var position;
 var glFlag= false;//implement onchange
 var askPreference='${askPreference}';
 
@@ -46,6 +50,7 @@ function Show_Popup(action, userid) {
 	$('#popup').fadeIn('fast');
 	$('#window').fadeIn('fast');
 }
+
 function Close_Popup() {	
 	$('#popup').fadeOut('fast');
 	$('#window').fadeOut('fast');
@@ -100,10 +105,6 @@ function lchange() {
 	}
 }
 
-//test cursor position code
-var targetElement;
-var position;
-
 function elementClick(tempElm) { 
 	//alert('msie=' + $.browser.msie);
 	//alert('mozilla='+$.browser.mozilla);	
@@ -136,8 +137,9 @@ function testfunc(testval) {
 	//alert(targetElement.SelectionStart);
 	//alert(targetElement.Text.Substring(0, targetElement.SelectionStart).Length);
 }
-
 </script>
+</head>
+
 <body>
 <h2><g:message code="prompt.edit.notification" /></h2>
 <p>

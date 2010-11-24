@@ -38,7 +38,7 @@
       $('.link-table tr').click(function ()
       {
           var productId = $(this).find("#productId").val();
-    	  document.getElementById("selectedId").value= productId;
+    	  $("#selectedId").val(productId);
     	  //alert(document.getElementById("selectedId").value);
     	  //jQuery.get();
       });
@@ -47,8 +47,8 @@
 	      $("div#newTbl").html('Retrieving...');
 		  $.ajax({
 		      type: "POST",
-			  data: "productId=" +  document.getElementById("selectedId").value,
-			  url: "/jbilling/product/show/" + document.getElementById("selectedId").value,
+			  data: "productId=" +  $("#selectedId").val(),
+			  url: "/jbilling/product/show/" + $("#selectedId").val(),
 			  success: function(msg){
 				  $("div#newTbl").html(msg)
 			  }
@@ -57,7 +57,7 @@
       $('.link-table tr').dblclick(function()
       {
     	  //alert(document.getElementById("selectedId").value);
-          document.forms[0].action='/jbilling/product/edit/' + document.getElementById("selectedId").value;
+          document.forms[0].action='/jbilling/product/edit/' + $("#selectedId").val();
           document.forms[0].submit();
       });
       

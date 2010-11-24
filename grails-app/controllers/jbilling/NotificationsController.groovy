@@ -37,7 +37,7 @@ class NotificationsController {
     def lists={
         Integer languageId = webServicesSession.getCallerLanguageId();
         Integer entityId = webServicesSession.getCallerCompanyId();
-        log.info "entityId=" + entityId
+        log.info "entityId=" + entityId + " selectedId=" + params.selectedId
         Integer categoryId= params.selectedId.toInteger()
         log.info "Category Id selected=" + categoryId
         

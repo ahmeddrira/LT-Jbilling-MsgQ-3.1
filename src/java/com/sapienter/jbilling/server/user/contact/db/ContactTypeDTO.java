@@ -32,16 +32,19 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.AbstractDescription;
 
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @Table(name="contact_type")
-public class ContactTypeDTO  implements java.io.Serializable {
+public class ContactTypeDTO extends AbstractDescription implements java.io.Serializable {
 
 
      private int id;
@@ -101,8 +104,10 @@ public class ContactTypeDTO  implements java.io.Serializable {
         this.contactMaps = contactMaps;
     }
 
-
-
+    @Transient
+    protected String getTable() {
+        return Constants.TABLE_CONTACT_TYPE;
+    }
 
 }
 

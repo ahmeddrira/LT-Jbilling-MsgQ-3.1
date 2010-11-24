@@ -141,6 +141,7 @@ import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.CustomerDAS;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
@@ -150,7 +151,6 @@ import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
-import com.sapienter.jbilling.server.user.db.CustomerDAS;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -245,6 +245,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return InvoiceBL.getWS(invoice);
     }
 
+    public InvoiceWS[] getAllInvoicesForUser(Integer userId) {
+        IInvoiceSessionBean invoiceBean = Context.getBean(Context.Name.INVOICE_SESSION);
+        Set<InvoiceDTO> invoices = invoiceBean.getAllInvoices(userId);
+
+        List<InvoiceWS> ids = new ArrayList<InvoiceWS>(invoices.size());
+        for (InvoiceDTO invoice : invoices)
+            ids.add(InvoiceBL.getWS(invoice));
+        return ids.toArray(new InvoiceWS[ids.size()]);
+    }
+    
     public Integer[] getAllInvoices(Integer userId) {
         IInvoiceSessionBean invoiceBean = Context.getBean(Context.Name.INVOICE_SESSION);
         Set<InvoiceDTO> invoices = invoiceBean.getAllInvoices(userId);

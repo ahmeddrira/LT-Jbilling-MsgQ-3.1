@@ -246,9 +246,9 @@ public class ContactWS implements Serializable {
     public String toString() {
         String ret = super.toString();
         ret += " type=" + getType(); 
-        if (fieldNames != null) {
-            for (int f = 0; f < fieldNames.length; f++) {
-                ret = ret + " " + fieldNames[f] + "=" + fieldValues[f];
+        if (fieldIDs != null) {
+            for (int f = 0; f < fieldIDs.length; f++) {
+                ret = ret + " " + fieldIDs[f] + "=" + fieldValues[f];
             }
         }
         return ret;

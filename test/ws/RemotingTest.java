@@ -268,13 +268,13 @@ public class RemotingTest extends TestCase {
         contact.setEmail("frodo@shire.com");
         contact.setFirstName("Frodo");
         contact.setLastName("Baggins");
-        String fields[] = new String[2];
-        fields[0] = "1";
-        fields[1] = "2";
+        Integer fields[] = new Integer[2];
+        fields[0] = 1;
+        fields[1] = 2;
         String fieldValues[] = new String[2];
         fieldValues[0] = "serial-from-ws";
         fieldValues[1] = "FAKE_2";
-        contact.setFieldNames(fields);
+        contact.setFieldIDs(fields);
         contact.setFieldValues(fieldValues);
         contact.setType(2);
         return contact;

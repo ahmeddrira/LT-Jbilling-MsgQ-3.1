@@ -936,13 +936,13 @@ Ch8: no applicable orders
             contact.setEmail("frodo@shire.com");
             contact.setFirstName("Frodo");
             contact.setLastName("Baggins");
-            String fields[] = new String[2];
-            fields[0] = "1";
-            fields[1] = "2"; // the ID of the CCF for the processor
+            Integer fields[] = new Integer[2];
+            fields[0] = 1;
+            fields[1] = 2; // the ID of the CCF for the processor
             String fieldValues[] = new String[2];
             fieldValues[0] = "serial-from-ws";
             fieldValues[1] = "FAKE_2"; // the plug-in parameter of the processor
-            contact.setFieldNames(fields);
+            contact.setFieldIDs(fields);
             contact.setFieldValues(fieldValues);
             newUser.setContact(contact);
             
@@ -1749,13 +1749,13 @@ Ch8: no applicable orders
         contact.setEmail("frodo@shire.com");
         contact.setFirstName("Frodo");
         contact.setLastName("Baggins");
-        String fields[] = new String[2];
-        fields[0] = "1";
-        fields[1] = "2"; // the ID of the CCF for the processor
+        Integer fields[] = new Integer[2];
+        fields[0] = 1;
+        fields[1] = 2; // the ID of the CCF for the processor
         String fieldValues[] = new String[2];
         fieldValues[0] = "serial-from-ws";
         fieldValues[1] = "FAKE_2"; // the plug-in parameter of the processor
-        contact.setFieldNames(fields);
+        contact.setFieldIDs(fields);
         contact.setFieldValues(fieldValues);
         newUser.setContact(contact);
         

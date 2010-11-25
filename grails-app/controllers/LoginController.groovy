@@ -9,6 +9,7 @@ import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import com.sapienter.jbilling.server.user.db.CompanyDTO
 
 class LoginController {
 
@@ -46,10 +47,13 @@ class LoginController {
 			return
 		}
 
+        def companies = CompanyDTO.list()
+
 		String view = 'auth'
 		String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
 		render view: view, model: [postUrl: postUrl,
-		                           rememberMeParameter: config.rememberMe.parameter]
+		                           rememberMeParameter: config.rememberMe.parameter,
+                                   companies: companies]
 	}
 
 	/**

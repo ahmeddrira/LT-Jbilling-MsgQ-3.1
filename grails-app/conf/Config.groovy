@@ -90,6 +90,10 @@ grails.plugins.springsecurity.rejectIfNoRule = false
 // failure url
 grails.plugins.springsecurity.failureHandler.defaultFailureUrl = '/login/authfail?login_error=1'
 
+// remember me cookies
+grails.plugins.springsecurity.rememberMe.cookieName = "jbilling_remember_me"
+grails.plugins.springsecurity.rememberMe.key = "xANgU6Y7lJVhI"
+
 // static security rules 
 grails.plugins.springsecurity.controllerAnnotations.staticRules = [
         '/services/**': ['IS_AUTHENTICATED_FULLY','WEB_SERVICES_120'],
@@ -120,3 +124,4 @@ grails.plugins.springsecurity.filterChain.chainMap = [
 
 // voter configuration
 grails.plugins.springsecurity.voterNames = ['authenticatedVoter', 'roleVoter', 'permissionVoter', 'webExpressionVoter']
+

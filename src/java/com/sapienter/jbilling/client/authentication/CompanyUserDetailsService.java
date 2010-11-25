@@ -84,7 +84,7 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException, DataAccessException {
         // get the user for the given name
         // CompanyUserAuthenticationFilter concatenates the user name with the entity id
-        String[] tokens = s.split(CompanyUserAuthenticationFilter.VALUE_SEPARATOR);
+        String[] tokens = s.split(UsernameHelper.VALUE_SEPARATOR);
 
         if (tokens.length < 2)
             throw new UsernameNotFoundException("Un-supported username '" + s + "', username must contain client id.");
@@ -112,8 +112,11 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
             authorities.add(role);
         }
 
+        // rebuild username token with company ID from retrieved user (just to be safe).
+        String usernameToken = UsernameHelper.buildUsernameToken(user.getUserName(), user.getEntity().getId());
+        
         // return user details for the retrieved account
-        return new CompanyUserDetails(user.getUserName(), user.getPassword(), user.isEnabled(),
+        return new CompanyUserDetails(usernameToken, user.getPassword(), user.isEnabled(),
                                       !user.isAccountExpired(), !user.isPasswordExpired(), !user.isAccountLocked(),
                                       authorities.isEmpty() ? NO_AUTHORITIES : authorities,
                                       user, UserBL.getLocale(user),

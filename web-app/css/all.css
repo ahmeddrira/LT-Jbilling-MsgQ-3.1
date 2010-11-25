@@ -323,35 +323,12 @@ table {
 .heading .drop ul li a:hover {color:#0e61b1; text-decoration:none;}
 /* login */
 #login {
-	background:#fff;
 	padding: 20px;
-	border:1px solid #a4c0db;
 	margin: 50px auto;
-	overflow:hidden;
-	width: 200px;
+	width: 500px;
 }
-#login .input-bg {
-    width: 120px;
-	height:24px;
-	overflow: hidden;
-	float: right;
-	padding: 1px;
-	background:url(../images/bg-input02.gif) no-repeat;
-}
-#login .input-bg input {
-	height: 16px;
-	float: left;
-	border: none;
-	background: none;
-	padding: 5px 0 3px 5px;
-	color: #383838;
-}
-#login .input-row {
-    margin-bottom: 7px;
-}
-#login .input-row label {
-	line-height:26px;
-	width:32px;
+#login .form-columns {
+    width: auto;
 }
 /* left-column */
 #left-column {

@@ -11,7 +11,11 @@
     <!--[if lt IE 8]><link rel="stylesheet" href="${resource(dir:'css', file:'lt7.css')}" type="text/css" media="screen"/><![endif]-->
 
     <g:javascript library="jquery" plugin="jquery"/>
+    <g:javascript library="slideBlock" />
+    <g:javascript library="clearinput" />
     <g:javascript library="main" />
+    <g:javascript library="form" />
+    <g:javascript library="checkbox" />
 
     <script type='text/javascript'>
         $(document).ready(function() {
@@ -29,51 +33,65 @@
         <ul>
         </ul>
     </div>
+
     <div id="main">
-        
         <g:if test='${flash.message}'>
             <div class="msg-box login error">
                 <img src="${resource(dir:'images', file:'icon14.gif')}" alt="${message(code:'error.icon.alt',default:'Error')}"/>
-                <strong><g:message code="flash.error.title"/></strong>
+                <strong><g:message code="flash.error.title" args="${flash.args}"/></strong>
                 <p>${flash.message}</p>
             </div>
         </g:if>
-        
-        <div id="login">
-            <div class="form-box">
+
+        <div id="login" class="form-edit">
+            <div class="heading">
+                <strong><g:message code="login.prompt.title"/></strong>
+            </div>
+            <div class="form-hold">
                 <form action='${postUrl}' method='POST' id='loginForm' class='cssform' autocomplete='off'>
                     <fieldset>
 
-                        <div class="input-row">
-                            <label for='username'><g:message code="login.prompt.username"/></label>
-                            <div class="input-bg">
-                                <input type='text' class='text' name='j_username' id='username'/>
+                        <div class="form-columns">
+                            <div class="row">
+                                <label for="username"><g:message code="login.prompt.username"/></label>
+                                <div class="inp-bg">
+                                    <input type="text" class="field" name="j_username" id="username"/>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="input-row">
-                            <label for='password'><g:message code="login.prompt.password"/></label>
-                            <div class="input-bg">
-                                <input type='password' class='text' name='j_password' id='password'/>
+                            <div class="row">
+                                <label for="password"><g:message code="login.prompt.password"/></label>
+                                <div class="inp-bg">
+                                    <input type="password" class="field" name="j_password" id="password"/>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="input-row">
-                            <label for='client_id'><g:message code="login.prompt.client.id"/></label>
-                            <div class="input-bg">
-                                <input type='text' class='text' name='j_client_id' id='client_id'/>
+                            <div class="row">
+                                <label for="client_id"><g:message code="login.prompt.client.id"/></label>
+                                <select name="j_client_id" id="client_id">
+                                    <g:each var="company" in="${companies}">
+                                        <option value="${company.id}">${company.description}</option>
+                                    </g:each>
+                                </select>
                             </div>
-                        </div>
 
-                        <br/>
-                        <div class="input-row">
-                            <label for='remember_me'><g:message code="login.prompt.remember.me"/></label>
-                            <input type='checkbox' class='chk' name='${rememberMeParameter}' id='remember_me' <g:if test='${hasCookie}'>checked='checked'</g:if> />
-                        </div>
+                            <br/>
+                            <div class="row">
+                                <label>&nbsp;</label>
+                                <input type="checkbox" class="cb" name="${rememberMeParameter}" id="remember_me" <g:if test="${hasCookie}">checked="checked"</g:if> />
+                                <label for="remember_me" class="lb"><g:message code="login.prompt.remember.me"/></label>
+                            </div>
 
-                        <br/>
-                        <div class="input-row center">
-                            <a href="#" class="submit order" onclick="$('#login form').submit();"><span><g:message code="login.button.submit"/></span></a>
+                            <br/>
+                        </div>
+                        <div class="buttons">
+                            <ul>
+                                <li>
+                                    <a href="#" class="submit save" onclick="$('#login form').submit();">
+                                        <span><g:message code="login.button.submit"/></span>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </fieldset>
                 </form>

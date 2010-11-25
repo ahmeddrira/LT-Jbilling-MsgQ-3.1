@@ -54,7 +54,6 @@ public class CompanyUserAuthenticationFilter extends UsernamePasswordAuthenticat
     private static final Logger LOG = Logger.getLogger(CompanyUserAuthenticationFilter.class);
 
     public static final String FORM_CLIENT_ID_KEY = "j_client_id";
-    public static final String VALUE_SEPARATOR = ";";
 
     public static final String SESSION_USER_ID = "user_id";
     public static final String SESSION_USER_LANGUAGE_ID = "language_id";
@@ -72,12 +71,10 @@ public class CompanyUserAuthenticationFilter extends UsernamePasswordAuthenticat
      */
     @Override
     protected String obtainUsername(HttpServletRequest request) {
-        StringBuilder username = new StringBuilder();
-        username.append(request.getParameter(getUsernameParameter()));
-        username.append(VALUE_SEPARATOR);
-        username.append(request.getParameter(getClientIdParameter()));
+        String username = request.getParameter(getUsernameParameter());
+        String companyId = request.getParameter(getClientIdParameter());
 
-        return username.toString();
+        return UsernameHelper.buildUsernameToken(username, companyId);
     }
 
     public final String getClientIdParameter() {

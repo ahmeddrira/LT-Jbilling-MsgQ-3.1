@@ -264,7 +264,7 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getLastPayments(userId, number)
     }
 	
-	public BigDecimal getTotalRevenueByUser (Integer userId) throws SessionInternalError {
+	public BigDecimal getTotalRevenueByUser (Integer userId) {
 		return webServicesSession.getTotalRevenueByUser(userId);
 	}
 

@@ -31,6 +31,10 @@ import java.util.Locale;
  * A spring security {@link org.springframework.security.core.userdetails.UserDetails}
  * implementation that includes the users company id.
  *
+ * The UserDetailsService expects to encounter usernames that also include a company ID token. This
+ * class maintains the username in this format. Do not change this behaviour as it will break "remember me"
+ * and other advanced security features that use the UserDetailsService!
+ *
  * @author Brian Cowdery
  * @since 04-10-2010
  */
@@ -39,19 +43,21 @@ public class CompanyUserDetails extends GrailsUser {
     private final UserDTO user;
     private final Locale locale;
     private final Integer companyId;
+    private final Integer currencyId;
     private final Integer languageId;
 
     public CompanyUserDetails(String username, String password, boolean enabled, boolean accountNonExpired,
                               boolean credentialsNonExpired, boolean accountNonLocked,
                               Collection<GrantedAuthority> authorities,
                               UserDTO user, Locale locale,
-                              Integer id, Integer companyId, Integer languageId) {
+                              Integer id, Integer companyId, Integer currencyId, Integer languageId) {
 
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities, id);
 
         this.user = user;
         this.locale = locale;
         this.companyId = companyId;
+        this.currencyId = currencyId;
         this.languageId = languageId;
     }
 
@@ -64,6 +70,19 @@ public class CompanyUserDetails extends GrailsUser {
         return user;
     }
 
+    /**
+     * Returns the username without the company ID token.
+     *
+     * This class must store the company ID with the username when returned from
+     * {@link #getUsername()} for "remember me" and other advanced security features
+     * to work with our implementation of the UserDetailsService.
+     * 
+     * @return raw username
+     */
+    public String getPlainUsername() {
+        return user.getUserName();
+    }
+    
     /**
      * Returns the users {@link Locale} according to their language and/or country code.
      *
@@ -93,6 +112,15 @@ public class CompanyUserDetails extends GrailsUser {
     }
 
     /**
+     * Returns the users currency ID.
+     *
+     * @return user currency ID
+     */
+    public Integer getCurrencyId() {
+        return currencyId;
+    }
+
+    /**
      * Returns the users language ID.
      *
      * @return user language ID
@@ -101,12 +129,14 @@ public class CompanyUserDetails extends GrailsUser {
         return languageId;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("CompanyUserDetails");
         sb.append("{id=").append(getId());
         sb.append(", username=").append("'").append(getUsername()).append("'");
         sb.append(", companyId=").append(getCompanyId());
+        sb.append(", currencyId=").append(getCurrencyId());
         sb.append(", languageId=").append(getLanguageId());
         sb.append(", enabled=").append(isEnabled());
         sb.append(", accountExpired=").append(!isAccountNonExpired());  

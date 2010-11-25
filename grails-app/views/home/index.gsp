@@ -87,10 +87,11 @@
             <div id="userInfo" class="dialog">
                 <h2>Logged In User:</h2>
                 <ul>
-                    <li>Username: <sec:loggedInUserInfo field="username"/></li>
+                    <li>Username: <sec:loggedInUserInfo field="plainUsername"/></li>
                     <li>User id: ${session['user_id']}</li>
-                    <li>Language id: ${session['language_id']}</li>
                     <li>Company id: ${session['company_id']}</li>
+                    <li>Currency id: ${session['currency_id']}</li>
+                    <li>Language id: ${session['language_id']}</li>
                     <li>Locale: ${session['locale']}</li>
                 </ul>
             </div>            

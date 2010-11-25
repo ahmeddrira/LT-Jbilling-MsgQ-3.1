@@ -18,10 +18,11 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sapienter.jbilling.client.authentication;
+package com.sapienter.jbilling.client.authentication.util;
 
 /**
- * UsernameHelper
+ * Helper class to manage building username tokens for the {@link com.sapienter.jbilling.client.authentication.CompanyUserAuthenticationFilter} which
+ * expects a username that also includes the client ID.
  *
  * @author Brian Cowdery
  * @since 24-11-2010
@@ -30,6 +31,11 @@ public class UsernameHelper {
 
     public static final String VALUE_SEPARATOR = ";";
 
+    
+    public static String buildUsernameToken(String username, Integer companyId) {
+        return buildUsernameToken(username, companyId.toString());
+    }
+
     public static String buildUsernameToken(String username, String companyId) {
         StringBuilder token = new StringBuilder();
         token.append(username);
@@ -37,9 +43,5 @@ public class UsernameHelper {
         token.append(companyId);
 
         return token.toString();
-    }
-    
-    public static String buildUsernameToken(String username, Integer companyId) {
-        return buildUsernameToken(username, companyId.toString());
     }
 }

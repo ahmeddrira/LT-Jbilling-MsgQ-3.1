@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.client.authentication;
 
+import com.sapienter.jbilling.client.authentication.util.UsernameHelper;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO;
@@ -49,6 +50,7 @@ import java.util.List;
  * @since 04-10-2010
  */
 public class CompanyUserDetailsService implements GrailsUserDetailsService {
+
     // empty list of roles for use if the given credentials don't resolve to a
     // usable UserDetails. Contains a single entry that does not grant any permissions.
     private static final List<GrantedAuthority> NO_AUTHORITIES;
@@ -119,7 +121,7 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
         return new CompanyUserDetails(usernameToken, user.getPassword(), user.isEnabled(),
                                       !user.isAccountExpired(), !user.isPasswordExpired(), !user.isAccountLocked(),
                                       authorities.isEmpty() ? NO_AUTHORITIES : authorities,
-                                      user, UserBL.getLocale(user),
-                                      user.getId(), user.getEntity().getId(), user.getLanguage().getId());
+                                      user, UserBL.getLocale(user), user.getId(),
+                                      user.getEntity().getId(), user.getCurrency().getId(), user.getLanguage().getId());
     }
 }

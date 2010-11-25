@@ -46,7 +46,7 @@
     </div>
     <ul class="top-nav">
         <%-- todo: great user using first name if available, add actions for account manipulation, training and help --%>
-        <li><g:message code="topnav.greeting"/> <sec:loggedInUserInfo field="username"/></li>
+        <li><g:message code="topnav.greeting"/> <sec:loggedInUserInfo field="plainUsername"/></li>
         <li><a href="#"><img src="${resource(dir:'images', file:'icon25.gif')}" alt="account" /><g:message code="topnav.link.account"/></a></li>
         <li><a href="#"><img src="${resource(dir:'images', file:'icon26.gif')}" alt="training" /><g:message code="topnav.link.training"/></a></li>
         <li><a href="#"><img src="${resource(dir:'images', file:'icon27.gif')}" alt="help" /><g:message code="topnav.link.help"/></a></li>

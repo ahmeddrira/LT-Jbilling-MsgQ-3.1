@@ -52,6 +52,12 @@ beans = {
         rememberMeServices = ref('rememberMeServices')
     }
 
+    // remember me cookie authentication
+    rememberMeAuthenticationFilter(com.sapienter.jbilling.client.authentication.CompanyUserRememberMeFilter) {
+        authenticationManager = ref('authenticationManager')
+        rememberMeServices = ref('rememberMeServices')
+    }
+
     /*
         Automatic authentication using a defined username and password that removes the need for the caller
         to authenticate themselves. This is used with web-service protocols that don't support authentication,

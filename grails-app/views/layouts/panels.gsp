@@ -48,17 +48,22 @@
         <div class="columns-holder">
             <g:render template="/layouts/includes/messages"/>
 
-            <g:applyLayout name="templates/column">
-                <div id="column1">
-                    <g:pageProperty name="page.column1"/>
+            <div class="column">
+                <div class="column-hold">
+                    <div id="column1">
+                        <g:pageProperty name="page.column1"/>
+                    </div>
                 </div>
-            </g:applyLayout>
+            </div>
 
-            <g:applyLayout name="templates/column">
-                <div id="column2">
-                    <g:pageProperty name="page.column2"/>
+            <div class="column">
+                <div class="column-hold">
+                    <div id="column2">
+                        <g:pageProperty name="page.column2"/>
+                    </div>
                 </div>
-            </g:applyLayout>
+            </div>
+
         </div>
     </div>
 </div>

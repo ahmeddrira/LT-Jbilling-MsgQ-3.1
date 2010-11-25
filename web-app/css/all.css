@@ -987,11 +987,11 @@ table {
 .box-cards .form-columns label {
 	width:165px;
 }
-.box-cards .form-columns label.rb {
+.form-columns label.rb {
 	width:auto;
 	margin-right:20px;
 }
-.box-cards .form-columns label.lb {
+.form-columns label.lb {
 	width:auto;
 }
 .form-columns input.rb {

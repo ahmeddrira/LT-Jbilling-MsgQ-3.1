@@ -52,37 +52,37 @@
                     <fieldset>
 
                         <div class="form-columns">
-                            <div class="row">
-                                <label for="username"><g:message code="login.prompt.username"/></label>
-                                <div class="inp-bg">
-                                    <input type="text" class="field" name="j_username" id="username"/>
-                                </div>
-                            </div>
 
-                            <div class="row">
-                                <label for="password"><g:message code="login.prompt.password"/></label>
-                                <div class="inp-bg">
-                                    <input type="password" class="field" name="j_password" id="password"/>
-                                </div>
-                            </div>
+                            <g:applyLayout name="form/input">
+                                <content tag="label"><g:message code="login.prompt.username"/></content>
+                                <content tag="label.for">username</content>
+                                <input type="text" class="field" name="j_username" id="username"/>
+                            </g:applyLayout>
 
-                            <div class="row">
-                                <label for="client_id"><g:message code="login.prompt.client.id"/></label>
+                            <g:applyLayout name="form/input">
+                                <content tag="label"><g:message code="login.prompt.password"/></content>
+                                <content tag="label.for">password</content>
+                                <input type="password" class="field" name="j_password" id="password"/>
+                            </g:applyLayout>
+
+                            <g:applyLayout name="form/select">
+                                <content tag="label"><g:message code="login.prompt.client.id"/></content>
+                                <content tag="label.for">client_id</content>
                                 <select name="j_client_id" id="client_id">
                                     <g:each var="company" in="${companies}">
                                         <option value="${company.id}">${company.description}</option>
                                     </g:each>
                                 </select>
-                            </div>
+                            </g:applyLayout>
+
+                            <g:applyLayout name="form/checkbox">
+                                <content tag="label"><g:message code="login.prompt.remember.me"/></content>
+                                <content tag="name">${rememberMeParameter}</content>
+                                <content tag="checked">${hasCookie}</content>
+                            </g:applyLayout>
 
                             <br/>
-                            <div class="row">
-                                <label>&nbsp;</label>
-                                <input type="checkbox" class="cb" name="${rememberMeParameter}" id="remember_me" <g:if test="${hasCookie}">checked="checked"</g:if> />
-                                <label for="remember_me" class="lb"><g:message code="login.prompt.remember.me"/></label>
-                            </div>
 
-                            <br/>
                         </div>
                         <div class="buttons">
                             <ul>

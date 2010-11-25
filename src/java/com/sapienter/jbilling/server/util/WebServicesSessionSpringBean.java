@@ -151,6 +151,8 @@ import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentDAS;
+
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -229,7 +231,12 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             return null;
         }
 
-        return InvoiceBL.getWS(invoice);
+        InvoiceWS wsDto= InvoiceBL.getWS(invoice);
+        if ( null != invoice.getInvoiceStatus())
+        {	
+        	wsDto.setStatusDescr(invoice.getInvoiceStatus().getDescription(getCallerLanguageId()));
+        }
+        return wsDto;
     }
 
     /**
@@ -251,7 +258,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         List<InvoiceWS> ids = new ArrayList<InvoiceWS>(invoices.size());
         for (InvoiceDTO invoice : invoices)
-            ids.add(InvoiceBL.getWS(invoice));
+        {
+        	InvoiceWS wsdto= InvoiceBL.getWS(invoice); 
+        	if ( null != invoice.getInvoiceStatus())
+        		wsdto.setStatusDescr(invoice.getInvoiceStatus().getDescription(getCallerLanguageId()));
+        		
+        	ids.add(wsdto);
+        }
         return ids.toArray(new InvoiceWS[ids.size()]);
     }
     
@@ -1314,6 +1327,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         PaymentBL payment = new PaymentBL();
         return payment.getManyWS(userId, number, languageId);
     }
+    
+    public BigDecimal getTotalRevenueByUser (Integer userId) throws SessionInternalError {
+    	return new PaymentDAS().findTotalRevenueByUser(userId);
+    }    
 
     /*
      * ITEM

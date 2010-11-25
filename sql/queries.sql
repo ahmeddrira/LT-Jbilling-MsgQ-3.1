@@ -399,7 +399,6 @@ order by create_datetime;
 select p.billing_date, p.retries_to_do, r.*, finished - started
  from billing_process p, process_run r
  where p.id = r.process_id
-  and invoices_generated > 0
  order by p.billing_date desc, started desc;
 
 -- update an entry of  jbilling_seqs

@@ -1,3 +1,4 @@
+<%@ page import="com.sapienter.jbilling.server.util.Util"%>
 <html>
 <head>
 <meta name="layout" content="main" />
@@ -9,7 +10,7 @@
     	//}).disableSelection();
     	
 		// Apply a class on mouse click
-		$('#invTbltr').click(function ()
+		$('.link-table tr').click(function ()
 		{
 			$('.Highlight').removeClass();
 			$(this).addClass('Highlight');
@@ -20,9 +21,10 @@
 			$("#selectedInvId").val(tdVal);
 		});
 
-		$('#invTbltr').dblclick(function()
+		$('.link-table tr').dblclick(function()
 		{
 		    var testVal= $("#selectedInvId").val();
+		    if ('' == testVal || null == testVal) return false;
 		    window.location = '/jbilling/invoice/show/' + testVal;			
 		});
 	});
@@ -34,7 +36,7 @@
 	}
 </style>
 </head>
-<body>
+<body><p><jB:renderErrorMessages /></p>
 <input type="hidden" name="selectedInvId" id="selectedInvId" value=""/>
 <table cellpadding="5" id="invTbl" class="link-table">
 	<thead>
@@ -52,10 +54,10 @@
 		<g:each var="inv" in="${invoices}">
 			<tr id="invTbltr">
 				<td>
-				${com.sapienter.jbilling.server.util.Util.formatDate(inv.createDateTime, session["user_id"]) }
+				${Util.formatDate(inv.createDateTime, session["user_id"]) }
 				</td>
 				<td>
-				${com.sapienter.jbilling.server.util.Util.formatDate(inv.dueDate, session["user_id"]) }
+				${Util.formatDate(inv.dueDate, session["user_id"]) }
 				</td>
 				<td id="invId">
 				${inv.id }
@@ -67,11 +69,11 @@
 				${inv.statusDescr }
 				</td>
 				<td>
-				${com.sapienter.jbilling.server.util.Util.formatMoney(new BigDecimal(inv.total),
+				${Util.formatMoney(new BigDecimal(inv.total),
 					session["user_id"],inv.currencyId, false)}
 				</td>
 				<td>
-				${com.sapienter.jbilling.server.util.Util.formatMoney(new BigDecimal(inv.balance),
+				${Util.formatMoney(new BigDecimal(inv.balance),
 					session["user_id"],inv.currencyId, false)}
 				</td>
 			</tr>

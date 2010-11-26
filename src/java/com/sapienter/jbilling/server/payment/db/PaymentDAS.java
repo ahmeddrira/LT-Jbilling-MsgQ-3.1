@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.Constants;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
@@ -97,10 +98,10 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
                 .createAlias("baseUser", "u")
                     .add(Restrictions.eq("u.id", userId))
         		.createAlias("paymentResult", "pr")
-        		.add(Restrictions.ne("pr.id", 2));
+        		.add(Restrictions.ne("pr.id", CommonConstants.PAYMENT_RESULT_FAILED));
         criteria.add(Restrictions.eq("isRefund", 0));
         criteria.setProjection(Projections.sum("amount"));
-        criteria.setComment("PaymentDAS.findTotalRevenueByUser");
+        criteria.setComment("PaymentDAS.findTotalRevenueByUser-Gross Receipts");
 
         BigDecimal grossReceipts= criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult();
         
@@ -109,10 +110,10 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
                 .createAlias("baseUser", "u")
                     .add(Restrictions.eq("u.id", userId))
             		.createAlias("paymentResult", "pr")
-            		.add(Restrictions.ne("pr.id", 2));
+            		.add(Restrictions.ne("pr.id", CommonConstants.PAYMENT_RESULT_FAILED));
         criteria2.add(Restrictions.ne("isRefund", 1));
         criteria2.setProjection(Projections.sum("amount"));
-        criteria2.setComment("PaymentDAS.findTotalRevenueByUser");
+        criteria2.setComment("PaymentDAS.findTotalRevenueByUser-Gross Refunds");
         
         BigDecimal refunds= criteria2.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria2.uniqueResult();
         

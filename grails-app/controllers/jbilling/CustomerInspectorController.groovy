@@ -17,6 +17,7 @@ class CustomerInspectorController {
 	
 	IWebServicesSessionBean webServicesSession
 	ViewUtils viewUtils
+	Integer languageId= session["language_id"]
 	
 	def index = { 
 		//render "nothing to show here."
@@ -27,7 +28,7 @@ class CustomerInspectorController {
 		UserWS user= null
 		OrderWS[] orders=new OrderWS[0]
 		int userid
-		def languageId= webServicesSession.getCallerLanguageId()?.toString()
+		//def languageId= webServicesSession.getCallerLanguageId()?.toString()
 		if (params["id"] && params["id"].matches("^[0-9]+")) {			
 			userid= Integer.parseInt(params["id"])
 			log.info "Method - show, inspecting user id=" + userid
@@ -66,7 +67,7 @@ class CustomerInspectorController {
 		String subscribStatus="";
 		for (SubscriberStatusDTO status: SubscriberStatusDTO.list() ){
 			if (user.getSubscriberStatusId() == status.getId())
-			subscribStatus= status.getDescription(Integer.parseInt(languageId))
+			subscribStatus= status.getDescription(languageId)
 		}
 		//find all user contacts
 		ContactWS[] contacts= webServicesSession.getUserContactsWS(user.getUserId())

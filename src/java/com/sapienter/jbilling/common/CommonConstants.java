@@ -78,6 +78,12 @@ public interface CommonConstants {
     public static final Integer PAYMENT_METHOD_DINERS = new Integer(7);
     public static final Integer PAYMENT_METHOD_PAYPAL = new Integer(8);
     public static final Integer PAYMENT_METHOD_GATEWAY_KEY = new Integer(9);
+    
+    //payment result 
+    public static final Integer PAYMENT_RESULT_SUCCESSFUL = new Integer(1);
+    public static final Integer PAYMENT_RESULT_FAILED = new Integer(2);
+    public static final Integer PAYMENT_RESULT_PROCESSOR_UNAVAILABLE = new Integer(3);
+    public static final Integer PAYMENT_RESULT_ENTERED = new Integer(4);
  
     // billing process review status
     public static final Integer REVIEW_STATUS_GENERATED = new Integer(1);

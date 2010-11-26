@@ -2,6 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <g:render template="/layouts/includes/head"/>
+
+    <jqui:resources/>
+
+    <g:javascript library="panels"/>
+
     <g:layoutHead/>
 </head>
 <body>
@@ -48,18 +53,28 @@
         <div class="columns-holder">
             <g:render template="/layouts/includes/messages"/>
 
-            <div class="column">
-                <div class="column-hold">
-                    <div id="column1">
+            <div id="viewport">
+                <div class="column panel" index="1">
+                    <div class="column-hold">
                         <g:pageProperty name="page.column1"/>
                     </div>
                 </div>
-            </div>
 
-            <div class="column">
-                <div class="column-hold">
-                    <div id="column2">
+                <div class="column panel" index="2">
+                    <div class="column-hold">
                         <g:pageProperty name="page.column2"/>
+                    </div>
+                </div>
+
+                <div class="column panel" index="3">
+                    <div class="column-hold">
+                        <g:pageProperty name="page.column3"/>
+                    </div>
+                </div>
+
+                <div class="column panel" index="4">
+                    <div class="column-hold">
+                        <g:pageProperty name="page.column4"/>
                     </div>
                 </div>
             </div>

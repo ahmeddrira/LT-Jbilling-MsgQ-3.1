@@ -533,13 +533,20 @@ table {
 	color:#40454d;
 	font-size:14px;
 }
+#viewport {
+    overflow: hidden; width: 200%;
+}
+#viewport .panel {
+    width: 25%
+}
 .columns-holder {
 	overflow:hidden;
 	height:1%;
 }
 .columns-holder .column {
 	width:50%;
-	float:left
+	float:left;
+    position: relative;
 }
 * html .columns-holder .column {margin:0 -1px;}
 * +html .columns-holder .column {margin:0 -1px;}
@@ -987,11 +994,11 @@ table {
 .box-cards .form-columns label {
 	width:165px;
 }
-.form-columns label.rb {
+.box-cards .form-columns label.rb {
 	width:auto;
 	margin-right:20px;
 }
-.form-columns label.lb {
+.box-cards .form-columns label.lb {
 	width:auto;
 }
 .form-columns input.rb {

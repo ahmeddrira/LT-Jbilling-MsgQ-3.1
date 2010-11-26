@@ -16,5 +16,5 @@
 
 <g:javascript library="jquery" plugin="jquery"/>
 <g:javascript library="main"/>
-<g:javascript library="clearInput"/>
+<g:javascript library="clearinput"/>
 

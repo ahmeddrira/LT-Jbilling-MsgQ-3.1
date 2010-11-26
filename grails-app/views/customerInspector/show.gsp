@@ -1,5 +1,7 @@
+<%@ page import="com.sapienter.jbilling.server.util.Util"%>
 <html>
 <head>
+<meta name="layout" content="main" />
 </head>
 <body>
 <h2 align="center"><g:message code="prompt.customer.inspector" /></h2>
@@ -68,8 +70,9 @@ ${user?.companyName }<br/><br/>
 <g:each var="ordr" in="${orders}">
 	<g:each var="ln" in="${ordr?.orderLines}">
 		<tr><td>${ordr?.id}</td><td>${ln?.description}</td>
-			<td>${ordr?.periodStr}</td><td>${ln?.quantity}</td><td>${ln?.price}</td>
-			<td>${ordr?.total}</td></tr>
+			<td>${ordr?.periodStr}</td><td>${(int)Double.parseDouble(ln?.quantity)}</td>
+			<td>${Util.formatMoney(new BigDecimal(ln?.price), session["user_id"],ordr?.currencyId, false)}</td>
+			<td>${(int)Double.parseDouble(ordr?.total)}</td></tr>
 	</g:each>
 </g:each>
 </tbody>

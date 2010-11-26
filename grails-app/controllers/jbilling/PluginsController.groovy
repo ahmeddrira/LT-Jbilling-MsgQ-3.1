@@ -4,7 +4,9 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskTypeCategoryDTO;
 import com.sapienter.jbilling.server.user.UserBL 
+import grails.plugins.springsecurity.Secured;
 
+@Secured(['isAuthenticated()'])
 class PluginsController {
 	
     def webServicesSession
@@ -19,7 +21,7 @@ class PluginsController {
 	 */
     def listCategories ={
         UserBL userbl = new UserBL(webServicesSession.getCallerId());
-        Integer languageId = userbl.getEntity().getLanguageIdField();
+        Integer languageId = session.language_id;
         List categorylist= PluggableTaskTypeCategoryDTO.list();
         log.info "Categories found= " + categorylist?.size()
         render (view:"categories", model:[lst:categorylist, languageId:languageId])
@@ -30,8 +32,8 @@ class PluginsController {
 	 * the selected Category
 	 */
 	def lists = {
-		Integer languageId = webServicesSession.getCallerLanguageId();
-		Integer entityId = webServicesSession.getCallerCompanyId();
+		Integer languageId = session.language_id;
+		Integer entityId = session.company_id;
 		log.info "entityId=" + entityId
 		Integer categoryId= params.selectedId.toInteger()
 		log.info "Category Id selected=" + categoryId
@@ -39,7 +41,7 @@ class PluginsController {
 		def lstByCateg= pluggableTaskDAS.findByEntityCategory(entityId, categoryId);
 		
 		log.info "number of plug-ins=" + lstByCateg.size();
-		[lst:lstByCateg, languageId:languageId, entityId:entityId]
+		[plugins:lstByCateg]
 	}
 	
 	def show = {

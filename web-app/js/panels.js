@@ -71,6 +71,18 @@ function render(data, target) {
 }
 
 /**
+ * Closes the panel containing the passed element and shifts the view back
+ * to the previous position.
+ * 
+ * @param element element contained in the panel to close. usually the ajax link or form element.
+ */
+function closePanel(element) {
+    register(element);
+    prev.animate();
+    $('.columns-holder [index=' + clicked + '] .column-hold').html('');
+}
+
+/**
  * Resets the view back it's original position.
  */
 function reset() {

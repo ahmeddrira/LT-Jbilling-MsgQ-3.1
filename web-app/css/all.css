@@ -582,12 +582,12 @@ table {
     float:left;
     margin:3px 7px 0 0;
 }
-.column .box.hover ,
-.column .box:hover {
+.column .box.edit.hover ,
+.column .box.edit:hover {
 	background:#eef7ff;
 }
-.column .box.hover .edit,
-.column .box:hover .edit{
+.column .box.hover a.edit,
+.column .box:hover a.edit{
 	display:block;
 }
 .column .box strong {
@@ -913,6 +913,12 @@ table {
 .form-columns textarea:focus,
 .form-columns textarea {
 	outline:none;
+	width:492px;
+	height:130px;
+	overflow:auto;
+	margin:20px auto;
+	border:1px solid #bbb;
+	background:#f5f5f5;
 }
 .form-columns .inp-bg input.field {
 	float:left;

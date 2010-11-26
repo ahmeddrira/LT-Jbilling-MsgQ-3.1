@@ -24,8 +24,9 @@
             <em><g:if test="${contact}">${contact.organizationName}</g:if></em>
         </strong>
     </div>
-    <div class="box">
-        <a href="#" class="edit"></a>
+    <div class="box edit">
+        <g:remoteLink action="select" id="${selected.id}" params="[template: 'quickedit/notes']" before="register(this);" onSuccess="render(data, next);" class="edit">
+        </g:remoteLink>
         <strong><g:message code="customer.detail.note.title"/></strong>
         <g:if test="${customer && customer.notes}">
             <p>${customer.notes}</p>
@@ -40,7 +41,6 @@
         <strong><g:message code="customer.detail.user.title"/></strong>
     </div>
     <div class="box">
-        <a href="#" class="edit"></a>
         <dl>
             <dt><g:message code="customer.detail.user.user.id"/></dt>
             <dd>${selected.id}</dd>
@@ -62,7 +62,6 @@
         <strong><g:message code="customer.detail.payment.title"/></strong>
     </div>
     <div class="box">
-        <a href="#" class="edit"></a>
         <dl class="other other2">
             <dt><g:message code="customer.detail.payment.invoiced.date"/></dt>
             <dd>Jun-01-2010</dd>
@@ -89,7 +88,6 @@
     </div>
     <g:if test="${contact}">
     <div class="box">
-        <a href="#" class="edit"></a>
         <dl>
             <dt><g:message code="customer.detail.contact.telephone"/></dt>
             <dd>

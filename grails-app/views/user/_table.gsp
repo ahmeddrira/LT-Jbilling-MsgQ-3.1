@@ -1,7 +1,8 @@
 <%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 <%--
-  details
+  Customer table template. The customer table is used multiple times for rendering the
+  main list and for rendering a separate list of sub-accounts. 
 
   @author Brian Cowdery
   @since  24-Nov-2010

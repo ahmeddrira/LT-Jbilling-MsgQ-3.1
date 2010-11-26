@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
+<%@ page import="com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 <%--
   details
@@ -62,23 +62,28 @@
         <strong><g:message code="customer.detail.payment.title"/></strong>
     </div>
     <div class="box">
+        <g:set var="invoice" value="${selected.invoices ? selected.invoices.asList().first() : null}"/>
+        <g:set var="payment" value="${selected.payments ? selected.payments.asList().first() : null}"/>
+
         <dl class="other other2">
             <dt><g:message code="customer.detail.payment.invoiced.date"/></dt>
-            <dd>Jun-01-2010</dd>
+            <dd><g:formatDate format="MMM-dd-yyyy" date="${invoice?.createDatetime}"/> &nbsp;</dd>
             <dt><g:message code="customer.detail.payment.due.date"/></dt>
-            <dd>Jun-15-2010</dd>
+            <dd><g:formatDate format="MMM-dd-yyyy" date="${invoice?.dueDate}"/> &nbsp;</dd>
             <dt><g:message code="customer.detail.payment.invoiced.amount"/></dt>
-            <dd>78.23</dd>
+            <dd><g:formatNumber number="${invoice?.total}" type="currency" currencyCode="${selected.currency.code}"/> &nbsp;</dd>
             <dt><g:message code="customer.detail.payment.amount.owed"/></dt>
-            <dd>123.45</dd>
+            <dd><g:formatNumber number="${new UserBL().getBalance(selected.id)}" type="currency" currencyCode="${selected.currency.code}"/> &nbsp;</dd>
             <dt><g:message code="customer.detail.payment.lifetime.revenue"/></dt>
-            <dd>214.21</dd>
+            <dd>&nbsp;</dd>
         </dl>
+
+        <g:set var="card" value="${selected.creditCards ? selected.creditCards.asList().first() : null}"/>
         <dl class="other">
             <dt><g:message code="customer.detail.payment.credit.card"/></dt>
-            <dd>4800 0000 0000 0000</dd>
+            <dd>${card?.number} &nbsp;</dd>
             <dt><g:message code="customer.detail.payment.credit.card.expiry"/></dt>
-            <dd>May 2012</dd>
+            <dd><g:formatDate format="MMM-dd-yyyy" date="${card?.ccExpiry}"/> &nbsp;</dd>
         </dl>
     </div>
 

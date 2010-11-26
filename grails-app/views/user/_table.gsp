@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
+<%@ page import="com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 <%--
   Customer table template. The customer table is used multiple times for rendering the
@@ -53,7 +53,7 @@
                 </span>
                 <g:remoteLink action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                     <span class="block">
-                        <span>999.99</span>
+                        <span><g:formatNumber number="${new UserBL().getBalance(user.id)}" type="currency" currencyCode="${user.currency.code}"/></span>
                     </span>
                     <span class="block">
                         <span>

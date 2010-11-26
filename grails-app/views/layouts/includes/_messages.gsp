@@ -11,7 +11,7 @@
     <g:if test='${flash.message}'>
         <div class="msg-box successfully">
             <img src="${resource(dir:'images', file:'icon20.gif')}" alt="${message(code:'success.icon.alt',default:'Success')}"/>
-            <strong><g:message code="flash.success.title"/></strong>            
+            <strong><g:message code="flash.success.title"/></strong>
             <p><g:message code="${flash.message}" args="${flash.args}"/></p>
         </div>
     </g:if>
@@ -37,4 +37,18 @@
         </div>
     </g:if>
 </div>
+
+<script type="text/javascript">
+    $('#messages').ajaxSuccess(function(e, xhr, settings) {
+        var url = "${resource(dir:'')}/messages";
+        if (settings.url != url) {
+            $.ajax({
+                url: url,
+                success: function(data) {
+                    $('#messages').replaceWith(data);
+                }
+            });
+        }
+    });
+</script>
 

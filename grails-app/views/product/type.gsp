@@ -1,20 +1,9 @@
 <html>
-<link
-	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
-	rel="stylesheet" type="text/css" />
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-<style type="text/css">
-.Highlight {
-	background-color: red;
-	cursor: pointer;
-}
-</style>
 
+<head>
+<meta name="layout" content="main" />
 <script type="text/javascript">
-    $(function ()
+	$(document).ready( function ()
     {
     	// Return a helper with preserved width of cells
     	var fixHelper = function(e, ui) {
@@ -24,25 +13,20 @@
     	    return ui;
     	};
     	 
-    	$("#catTbl tbody").sortable({
-    	    helper: fixHelper
-    	}).disableSelection();
+//    	$("#catTbl tbody").sortable({
+//   	    helper: fixHelper
+//    	}).disableSelection();
         
       // Apply a class on mouse over and remove it on mouse out.
       $('.link-table tr').click(function ()
       {
     	  $(".Highlight").removeClass();
 		  $(this).addClass('Highlight');
-      });
-      
-      $('.link-table tr').click(function ()
-      {
           var productId = $(this).find("#productId").val();
     	  $("#selectedId").val(productId);
-    	  //alert(document.getElementById("selectedId").value);
-    	  //jQuery.get();
+    	  //alert(document.getElementById("selectedId").value);    	  
       });
-      
+           
 	  $('.link-table tr').click(function(){
 	      $("div#newTbl").html('Retrieving...');
 		  $.ajax({
@@ -57,17 +41,22 @@
       $('.link-table tr').dblclick(function()
       {
     	  //alert(document.getElementById("selectedId").value);
+    	  //$("#productTypes"). att r( " action "," http://google.com ");
+		  //$("#productTypes").submit();
           document.forms[0].action='/jbilling/product/edit/' + $("#selectedId").val();
           document.forms[0].submit();
       });
       
     });
+</script>
 
-  </script>
+<style type="text/css">
+.Highlight {
+	background-color: red;
+	cursor: pointer;
+}
+</style>
 
-
-<title>
-</title>
 </head>
 <script language="javascript">
 function nLoad() {
@@ -87,16 +76,12 @@ function del() {
 }
 function add() {
 }
-
-
 </script>
 <body onload="nLoad()">
 <h2><g:message code="prompt.products" /></h2>
-<p>
-	<g:message code="${flash.message}" args="${flash.args}" default="${flash.defaultMsg}" />
-	<jB:renderErrorMessages />
-</p>
-<g:form>
+<p><g:message code="${flash.message}" args="${flash.args}"
+	default="${flash.defaultMsg}" /> <jB:renderErrorMessages /></p>
+<g:form id="productTypes">
 	<g:hiddenField name="recCnt" value="0" />
 	<g:hiddenField name="selectedId" value="0" />
 	<div id="replaceTbl">

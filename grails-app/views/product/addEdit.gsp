@@ -1,5 +1,6 @@
 <html>
 <head>
+<meta name="layout" content="main" />
 <script language="javascript">
 function lchange() {
 	//alert("onchange called=" + document.getElementById('languageId').value);

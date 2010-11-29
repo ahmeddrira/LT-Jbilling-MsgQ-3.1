@@ -918,6 +918,8 @@ table {
 .form-columns textarea:focus,
 .form-columns textarea {
 	outline:none;
+}
+.form-columns textarea {
 	width:492px;
 	height:130px;
 	overflow:auto;

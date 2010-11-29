@@ -54,9 +54,11 @@ class InvoiceController {
 		BigDecimal totalRevenue;
 		String delegatedInvoices= ""
 		
-		log.info "Show Invoice ${params.id}"
+		log.info "Show Invoice |${params.id}|"
+		//log.info "Show Invoice |${params.selectedInvId}|"
 		if (params["id"] && params["id"].matches("^[0-9]+")) {
 			int id= Integer.parseInt(params["id"])
+			log.info "Integer Invoice Id=${id}"
 			try {
 				invoice= webServicesSession.getInvoiceWS(id)
 				log.info "Found invoice ${invoice}. Loading..."

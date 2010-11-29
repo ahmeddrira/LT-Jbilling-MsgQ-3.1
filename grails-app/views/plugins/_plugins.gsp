@@ -8,7 +8,7 @@
     <ul>
 		<g:each in="${plugins}" status="idx" var="dto">
 		   <li>
-			 <g:remoteLink action="select" id="${dto.id}" update="column2">
+		     <g:remoteLink action="show" id="${dto.id}" before="register(this);" onSuccess="render(data, next);">
                  <strong>
                     ${dto.getId()}
 		         </strong>

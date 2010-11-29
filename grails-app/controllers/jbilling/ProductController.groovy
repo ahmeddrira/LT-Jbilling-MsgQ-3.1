@@ -20,6 +20,7 @@ class ProductController {
 	
 	def webServicesSession
     def index = { render "nothing to see here."}
+	Integer languageId= session["language_id"]
 	int typeId
 	
 	
@@ -50,10 +51,8 @@ class ProductController {
 		def prodId= params.productId.toInteger()
 		log.info "Showing item id=" + prodId 
 		ItemDTO dto = new ItemBL(prodId).getEntity();
-		// get the info from the caller
-		UserBL userbl = new UserBL(webServicesSession.getCallerId());
-		Integer languageId = userbl.getEntity().getLanguageIdField();
-		LanguageDTO lang= LanguageDTO.findById(languageId);
+		// get the info from the caller		
+		LanguageDTO lang= new LanguageDTO(languageId);
 		String language= lang.getDescription();
 		log.info "Language: " + language
 		[item:dto, languageId:languageId, language:language]
@@ -68,7 +67,7 @@ class ProductController {
 		ItemDTO dto= ItemDTO.findById(itemId)
 		boolean exists= (dto!=null)		
 		UserBL userbl = new UserBL(webServicesSession.getCallerId());
-		Integer languageId = userbl.getEntity().getLanguageIdField();
+		//Integer languageId = userbl.getEntity().getLanguageIdField();
 		Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())
 		CurrencyDTO[] currs= new CurrencyBL().getCurrencies(languageId, entityId)
 		log.info "LanguageId=" + languageId + " EntityId=" + entityId + " found Currencies=" + currs.length
@@ -77,7 +76,7 @@ class ProductController {
 	
 	def changeLanguage = {
 		log.info "Id=" + params.id + " languageId=" + params.languageId
-        Integer languageId = Integer.parseInt(params.languageId)
+        Integer _languageId = Integer.parseInt(params.languageId)
         ItemDTO dto= null;
         if (params.id)
 		{
@@ -86,15 +85,15 @@ class ProductController {
 		boolean exists= (dto!=null)
 		UserBL userbl = new UserBL(webServicesSession.getCallerId());		
 		Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())
-		CurrencyDTO[] currs= new CurrencyBL().getCurrencies(languageId, entityId)
-		log.info "LanguageId=" + languageId + " EntityId=" + entityId + " found Currencies=" + currs.length
-		render(view:"addEdit", model: [item:dto, exists:exists,languageId:languageId, currencies:currs])		
+		CurrencyDTO[] currs= new CurrencyBL().getCurrencies(_languageId, entityId)
+		log.info "LanguageId=" + _languageId + " EntityId=" + entityId + " found Currencies=" + currs.length
+		render(view:"addEdit", model: [item:dto, exists:exists,languageId:_languageId, currencies:currs])		
 	}
 	
 	def add = {
 		log.info "Add: " + params["id"]
 		UserBL userbl = new UserBL(webServicesSession.getCallerId());
-		Integer languageId = userbl.getEntity().getLanguageIdField();
+		//Integer languageId = userbl.getEntity().getLanguageIdField();
 		Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())
 		CurrencyDTO[] currs= new CurrencyBL().getCurrencies(languageId, entityId)		
 		log.info "LanguageId=" + languageId + " EntityId=" + entityId + " found Currencies=" + currs.length
@@ -139,7 +138,7 @@ class ProductController {
 		}
 		log.info "dto.hasDecimals=" + dto.getHasDecimals()
 		log.info "dto.priceManual=" + dto.getPriceManual()
-        Integer languageId= params.languageId?.toInteger()
+        Integer _languageId= params.languageId?.toInteger()
 
 		try{
 			if (null != dto.getId() && 0 != dto.getId()) {			

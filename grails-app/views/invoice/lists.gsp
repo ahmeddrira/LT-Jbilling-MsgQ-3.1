@@ -25,9 +25,11 @@
 
 		$('.link-table tr').dblclick(function()
 		{
-		    var testVal= $("#selectedInvId").val();
-		    if ('' == testVal || null == testVal) return false;
-		    window.location = '/jbilling/invoice/show/' + testVal;			
+		    var testVal= $("#selectedInvId").val();		    
+		    if ( null == testVal || "" == testVal ) return false;
+		    //window.location = '/jbilling/invoice/show/' + testVal;			
+		    $('#invoice').attr('action', '/jbilling/invoice/show/' + testVal);	    	  
+	    	$('#invoice').submit();
 		});
 		$('.delete-invoice').click(function() {
 			var testVal= $("#selectedInvId").val();
@@ -38,8 +40,6 @@
 			Show_Popup();
 			//if (confirm("Are you sure you want to delete the invoice# " 
 			//		+ document.getElementById("selectedInvId").value + "]")){
-			//	$('#invoice').attr('action', '/jbilling/invoice/delete/');	    	  
-			//	$('#invoice').submit();
 			//	return true;
 			//}
 			return false;
@@ -131,7 +131,7 @@ function Close_Popup() {
 				<td>
 				${Util.formatDate(inv.dueDate, session["user_id"]) }
 				</td>
-				<td id="invId"><input type="hidden" id="userId" value="${inv.userId}"/>
+				<td id="invId">
 				${inv.id }
 				</td>
 				<td>
@@ -147,6 +147,7 @@ function Close_Popup() {
 				<td>
 				${Util.formatMoney(new BigDecimal(inv.balance),
 					session["user_id"],inv.currencyId, false)}
+					<input type="hidden" id="userId" value="${inv.userId}"/>
 				</td>
 			</tr>
 		</g:each>

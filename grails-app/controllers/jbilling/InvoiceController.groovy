@@ -10,24 +10,41 @@ class InvoiceController {
 	
 	def IWebServicesSessionBean webServicesSession
 	Integer languageId= session["language_id"]
-
-    def index = { redirect(action:'lists')}
 	
-	def lists ={ 
-		InvoiceWS[] invoices= null;
-		log.info "Get invoices list for id [${params?.id}]"
-		if (params["id"] && params["id"].matches("^[0-9]+")) {
-			int id= Integer.parseInt(params["id"])
+	def index = { redirect(action:'lists')}
+	
+	def delete = {
+		int invoiceId =params.selectedInvId?.toInteger()
+		int userId= params._userId?.toInteger()
+		if (invoiceId) {
 			try {
-				invoices= webServicesSession.getAllInvoicesForUser(id)
+				webServicesSession.deleteInvoice(invoiceId)
+			}  catch (Exception e) {
+				flash.message = message(code: 'error.invoice.details')
+				flash.args= [params["id"]]
+				redirect(action:'lists')
+			}
+		}
+		log.info "redirecting to view lists for userId ${userId}"
+		redirect (action:lists, id:userId)
+	}
+	
+	def lists ={
+		InvoiceWS[] invoices= null;
+		int userId;
+		log.info "Get invoices list for user id [${params?.id}]"
+		if (params["id"] && params["id"].matches("^[0-9]+")) {
+			userId= Integer.parseInt(params["id"])
+			try {
+				invoices= webServicesSession.getAllInvoicesForUser(userId)
 				if (invoices)
-					log.info "found invoices [${invoices.size()}]" 
+					log.info "found invoices [${invoices.size()}]"
 			} catch (Exception e) {
 				flash.message = message(code: 'invoices.empty')
 				flash.args= [params["id"]]
 			}
 		}
-		[invoices:invoices]
+		[invoices:invoices, userId:userId]
 	}
 	
 	def show = {
@@ -58,7 +75,6 @@ class InvoiceController {
 				}
 				if (delegatedInvoices.length() > 0 )
 					delegatedInvoices= delegatedInvoices.substring(3)
-				
 			} catch (Exception e) {
 				e.printStackTrace()
 				log.error e.getMessage()

@@ -19,6 +19,8 @@
 			var tdVal= $(this).find('#invId').text();
 			//alert ('tdVal=' + tdVal);
 			$("#selectedInvId").val(tdVal);
+			
+			$("#selectedUserId").val($(this).find('#userId').text());			
 		});
 
 		$('.link-table tr').dblclick(function()
@@ -27,6 +29,21 @@
 		    if ('' == testVal || null == testVal) return false;
 		    window.location = '/jbilling/invoice/show/' + testVal;			
 		});
+		$('.delete-invoice').click(function() {
+			var testVal= $("#selectedInvId").val();
+			if (null== testVal || '' == testVal) {
+				alert('<g:message code="invoice.not.selected.message"/>');
+				return false;
+			}
+			Show_Popup();
+			//if (confirm("Are you sure you want to delete the invoice# " 
+			//		+ document.getElementById("selectedInvId").value + "]")){
+			//	$('#invoice').attr('action', '/jbilling/invoice/delete/');	    	  
+			//	$('#invoice').submit();
+			//	return true;
+			//}
+			return false;
+		});	
 	});
 </script>
 <style type="text/css">
@@ -35,9 +52,64 @@
 		cursor: pointer;
 	}
 </style>
+<style type="text/css">
+#popup {
+	height: 100%;
+	width: 100%;
+	background: #000000;
+	position: absolute;
+	top: 0;
+	-moz-opacity: 0.75;
+	-khtml-opacity: 0.75;
+	opacity: 0.75;
+	filter: alpha(opacity = 75);
+}
+
+#window {
+	width: 600px;
+	height: 300px;
+	margin: 0 auto;
+	border: 1px solid #000000;
+	background: #ffffff;
+	position: absolute;
+	top: 200px;
+	left: 25%;
+}
+</style>
+<script type="text/javascript">
+function Show_Popup(action, userid) {	
+	$('#popup').fadeIn('fast');
+	$('#window').fadeIn('fast');
+}
+function Close_Popup() {	
+	$('#popup').fadeOut('fast');
+	$('#window').fadeOut('fast');
+}
+</script>
 </head>
 <body><p><jB:renderErrorMessages /></p>
+
+<g:form name="invoice">
+
+<div class="deleteprompt">
+	<div id="popup" style="display: none;"></div>
+	<div id="window" style="display: none;">
+		<div id="popup_content">
+			<h1><g:message code="invoice.prompt.delete"/></h1>
+			<p><g:message code="invoice.prompt.are.you.sure"/></p>
+			<h6>This action is not reversible</h6>
+			<g:actionSubmit value="Delete Invoice" action="delete" class="form_button"
+				onclick=""/> 
+			<input type="button" value="Cancel" class="form_button" 
+				onclick="javascript: Close_Popup()" />
+		</div>
+	</div>
+</div>
+
 <input type="hidden" name="selectedInvId" id="selectedInvId" value=""/>
+<input type="hidden" name="selectedUserId" id="selectedUserId" value=""/>
+
+<input type="hidden" name="_userId" value="${userId}"/>
 <table cellpadding="5" id="invTbl" class="link-table">
 	<thead>
 		<tr>
@@ -59,7 +131,7 @@
 				<td>
 				${Util.formatDate(inv.dueDate, session["user_id"]) }
 				</td>
-				<td id="invId">
+				<td id="invId"><input type="hidden" id="userId" value="${inv.userId}"/>
 				${inv.id }
 				</td>
 				<td>
@@ -81,5 +153,9 @@
 	</tbody>
 </table>
 
+    <div class="btn-box">
+        <a href="#" class="delete-invoice"><span><g:message code="button.delete"/></span></a>
+    </div>
+</g:form>
 </body>
 </html>

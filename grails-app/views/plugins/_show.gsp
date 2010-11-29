@@ -12,16 +12,43 @@
         <strong>${plugin.type.getDescription(languageId, "title")}</strong>
     </div>
     <div class="box">
-        <dl>
-            <dt><g:message code="plugins.plugin.description"/></dt>
-            <dd>${plugin.type.getDescription(languageId)}</dd>
+        <strong><g:message code="plugins.plugin.description"/></strong>
+        <p>${plugin.type.getDescription(languageId)}</p>
+        <br/>
+        <dl class="other">
             <dt><g:message code="plugins.plugin.id-long"/></dt>
             <dd>${plugin.getId()}</dd>
             <dt><g:message code="plugins.plugin.notes"/></dt>
-            <dd>${plugin.getNotes()}</dd>
+            <dd>
+                <g:if test="${plugin.getNotes() != null}">
+                    ${plugin.getNotes()}
+                </g:if>
+                <g:else>
+                    <g:message code="plugins.plugin.noNotes"/>
+                </g:else>
+            </dd>
             <dt><g:message code="plugins.plugin.order"/></dt>
             <dd>${plugin.getProcessingOrder()}</dd>
         </dl>
+        
+        <div class="box-cards box-cards-open">
+             <div class="box-cards-title">
+                      <span><g:message code="plugins.plugin.parameter"/></span>
+                      <span><g:message code="plugins.plugin.value"/></span>
+             </div>
+             <div class="box-card-hold">
+                 <div class="form-columns">
+                    <div class="column">
+                       <g:each in="${plugin.parameters}">
+                           <div class="row">
+                              <label>${it.name}</label>
+                              <label>${it.value}</label>
+                           </div>
+                       </g:each>
+                     </div>
+                 </div>
+             </div>
+        </div>
     </div>
 
     <div class="btn-box">

@@ -75,6 +75,7 @@ public class Context {
         INTERNAL_EVENTS_RULES_TASK_CONFIG,
         MEMCACHE_DATASOURCE,
         PRICING_FINDER,
+        NANPA_CALL_IDENTIFICATION_FINDER,
     }
 
     private static final Map<Name, String> springBeans = new EnumMap<Name, String>(Name.class);
@@ -125,6 +126,7 @@ public class Context {
         springBeans.put(Name.PROVISIONING_COMMANDS_REPLY_DESTINATION, "provisioningCommandsReplyDestination");
         springBeans.put(Name.MEMCACHE_DATASOURCE, "memcacheDataSource");
         springBeans.put(Name.PRICING_FINDER, "pricingFinder");
+        springBeans.put(Name.NANPA_CALL_IDENTIFICATION_FINDER, "callIdentificationFinder");
     }
 
     private Context() {

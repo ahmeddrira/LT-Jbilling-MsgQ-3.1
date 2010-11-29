@@ -365,7 +365,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @param invoiceId
      * The id of the invoice to delete
      */
-    public void deleteInvoice(Integer invoiceId) {
+    public void deleteInvoice(Integer invoiceId) throws SessionInternalError {
         Integer executorId = getCallerId();
         InvoiceBL invoice = new InvoiceBL(invoiceId);
         invoice.delete(executorId);

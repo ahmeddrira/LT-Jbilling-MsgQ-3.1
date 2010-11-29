@@ -11,6 +11,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.user.db.CustomerDTO
+import com.sapienter.jbilling.server.user.db.CompanyDTO
 
 @Secured(['isAuthenticated()'])
 class UserController {
@@ -25,16 +26,24 @@ class UserController {
         redirect action: list, params: params
 	}
 
+	def list = {
+        def company = new CompanyDTO(session['company_id'])
+		def users = UserDTO.findAllByCompanyAndDeleted(company, 0)
+		[ users: users ]
+	}
+
     def select = {
         if (params["id"]) {
-            UserDTO user = UserDTO.findById(params["id"])
-            render template: "details", model:[selected: user]
+            UserDTO user = UserDTO.get(params["id"])
+
+            def template = params["template"] ? params["template"] : "details";
+            render template: template, model:[selected: user]
         } 
     }
 
     def subaccounts = {
         if (params["id"]) {
-            UserDTO user = UserDTO.findById(params["id"])
+            UserDTO user = UserDTO.get(params["id"])
             def children = user?.customer?.children?.collect{ it.baseUser }
 
             if (!children.isEmpty()) {
@@ -47,11 +56,14 @@ class UserController {
         }
     }
 
-	def list = {
-		def users = UserDTO.list()
-		[ users: users ] 
-	}    
-	
+    def saveNotes = {
+        webServicesSession.saveCustomerNotes(Integer.valueOf(params["id"]), String.valueOf(params["notes"]));
+
+        flash.message = "customer.notes.updated"
+        flash.args = [params["id"]]
+        render text: "success", contentType: "text/plain"
+    }
+
 	def create = {
 		UserWS newUser = new UserWS();
 		bindData (newUser, params);

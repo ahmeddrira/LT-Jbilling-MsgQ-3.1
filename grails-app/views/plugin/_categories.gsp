@@ -10,6 +10,9 @@
                  <strong>
                     ${dto.getDescription(session['language_id'])}
 		         </strong>
+		         <em>
+                    ${dto.getInterfaceName()}
+		         </em>
 			 </g:remoteLink>
 		   </li>
         </g:each>

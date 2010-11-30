@@ -30,7 +30,48 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * NANPACallIdentificationFinder
+ * NANPACallIdentificationFinder to query call destination data based on the called international
+ * code, area code and sub-area code.
+ *
+ * Rules:
+ * <code>
+ *  function String getAreaCode(String number) {
+ *      return number.length() >= 10 ? number.substring(number.length() - 10, number.length() - 7) : null;
+ *  }
+ *
+ *  function String getSubareaCode(String number) {
+ *      return number.length() >= 7 ? number.substring(number.length() - 7, number.length() - 4) : null;
+ *  }
+ *
+ *  rule 'Resolve Call Destination'
+ *  no-loop
+ *  dialect 'java'
+ *  when
+ *      $result : MediationResult( step == MediationResult.STEP_4_RESOLVE_ITEM,
+ *                                  description != null,
+ *                                  lines.empty == false )
+ *
+ *      PricingField( name == "dst", $dst : strValue != null, resultId == $result.id )
+ *
+ *      # Only for international calls
+ *      OrderLineDTO( itemId == 40 ) from $result.lines
+ *
+ *  then
+ *      NANPACallIdentificationFinder finder = NANPACallIdentificationFinder.getInstance();
+ *
+ *      String areaCode = getAreaCode($dst);
+ *      String subareaCode = getSubareaCode($dst);
+ *      String destination = finder.findCallDescription("1", areaCode, subareaCode);
+ *
+ *      $result.setDescription($result.getDescription() + " " + destination);
+ *
+ *      LOG.debug("Found call destination '" + destination + "', for area: " + areaCode
+ *                + " sub-area: " + subareaCode);
+ *
+ *  end
+ * </code>
+ *
+ * See descriptors/spring/jbilling-caching.xml for configuration
  *
  * @author Brian Cowdery
  * @since 29-11-2010

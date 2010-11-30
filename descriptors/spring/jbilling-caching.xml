@@ -78,5 +78,42 @@
 		<constructor-arg ref="memcacheJdbcTemplate"/>
 		<constructor-arg ref="pricingLoader"/>
 	</bean>
-	
+	    
+    <!-- NANPA call identification data -->
+    <bean id="callIdentificationReader"
+          class="com.sapienter.jbilling.server.mediation.task.StatelessJDBCReader"
+          lazy-init="true">
+		<property name="parameters">
+			<map>
+                <entry key="url" value="jdbc:mysql://localhost:3306/jbilling_test"/>
+				<entry key="driver" value="com.mysql.jdbc.Driver"/>
+                <entry key="username" value="jbilling"/>
+				<entry key="password" value="password"/>
+                <entry key="table_name" value="nanpa_code"/>
+				<entry key="batch_size" value="100"/>
+			</map>
+		</property>
+        <property name="entityId" value="1"/>
+	</bean>
+
+	<bean id="callIdentificationLoader"
+          class="com.sapienter.jbilling.server.mediation.cache.BasicLoaderImpl"
+          init-method="init"
+          lazy-init="true">
+		<property name="jdbcTemplate" ref="memcacheJdbcTemplate" />
+        <property name="transactionTemplate" ref="memcacheTransactionTemplate"/>
+		<property name="reader" ref="callIdentificationReader" />
+        <property name="tableName" value="nanpa_code"/>
+        <property name="indexName" value="nanpa_idx"/>
+		<property name="indexColumnNames" value="intl_code,area_code,subarea_code"/>
+	</bean>
+
+	<bean id="callIdentificationFinder"
+          class="com.sapienter.jbilling.server.mediation.cache.NANPACallIdentificationFinder"
+          init-method="init"
+          lazy-init="true">
+		<constructor-arg ref="memcacheJdbcTemplate" />
+		<constructor-arg ref="callIdentificationLoader" />
+	</bean>
+
 </beans>

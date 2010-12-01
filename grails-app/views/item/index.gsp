@@ -63,7 +63,7 @@ function add(tblId) {
 		.click (function () {return false});
 	count++;
 	$("#recCnt").val(count);
-
+	$("#deleteItemId").val(0);
 }
 </script>
 

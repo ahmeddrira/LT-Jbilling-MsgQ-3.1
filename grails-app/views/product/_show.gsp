@@ -2,10 +2,14 @@
 <div class="heading"><a href="${createLink(action: 'edit', )}"
 	class="edit"></a></div>
 
-<div class="box edit"><g:remoteLink action="edit" id="${item.id}"
-	params="[template: 'addEdit']" before="register(this);"
-	onSuccess="render(data, next);" class="edit">
-</g:remoteLink> <strong><g:message code="prompt.add.edit.products" /></strong></div>
+<div class="box edit">
+	<g:remoteLink action="edit" id="${item.id}"
+		before="register(this);" onSuccess="render(data, next);" class="edit">
+	</g:remoteLink> 
+	<strong>
+		<g:message code="prompt.add.edit.products"/>
+	</strong>
+</div>
 
 <div class="table-box">
 <ul>

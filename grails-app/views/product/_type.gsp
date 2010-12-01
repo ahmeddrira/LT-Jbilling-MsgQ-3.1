@@ -2,14 +2,13 @@
 <script type="text/javascript">
 
 	$(document).ready(function() {
-	
+			
 		$('#catTbl li').click(function () {
 			var productId = $(this).find("#productId").val();
 			//alert( productId);
 			$("#selectedId").val(productId);
 		});		
 	
-
 		$('#catTbl li').dblclick(function() {	
 			//alert(document.getElementById("selectedId").value);
 			//$("#productTypes"). att r( " action "," http://google.com ");
@@ -17,7 +16,6 @@
 			document.forms[0].action='/jbilling/product/edit/' + $("#selectedId").val();
 			document.forms[0].submit();
 		});
-
 	});
 
 	function del() {
@@ -34,7 +32,7 @@
 	function add() {
 	}
 </script>
-
+<div class="column-hold">
 <div class="heading table-heading">
 	<strong style="width: 100%">
 		<g:message code="prompt.products"/>
@@ -83,4 +81,4 @@
 	</div>
 
 </g:form>
-
+</div>

@@ -1,4 +1,3 @@
-
 <div class="heading table-heading">
 	<strong style="width: 100%">
 		<g:message code="prompt.product.category"/>
@@ -22,7 +21,7 @@
 			<g:each in="${categories}" status="idx" var="cat">
 			   <li id="row${idx}">
 			     <g:remoteLink controller="product" action="type" id="${cat.id}" 
-			     				before="register(this);" onSuccess="render(data, next);">
+			     	before="register(this);" onSuccess="render(data, next);">
 	                 <strong>
 	                    <g:textField readonly="readonly"
 							name="categories[${idx}].id" value="${cat.id}" />
@@ -50,10 +49,10 @@
 	    	<span><g:message code="button.delete"/></span></a>
 	</div>
 
-	 <div class="btn-box">
-	    <a href="javascript:void(0)" onclick="$('#item').submit();" class="submit add">
+	<div class="btn-box">
+	    <a href="javascript:void(0)" onclick="$('#item').submit();" class="submit save">
 	    	<span><g:message code="button.save"/></span></a>
-	    <a href="${createLink(action: 'index')}" class="submit cancel">
+	    <a href="javascript:void(0)" class="submit cancel" onclick="javascript: closePanel(this);">
 	    	<span><g:message code="button.cancel"/></span></a>
 	</div>
 

@@ -1,4 +1,3 @@
-
 <script language="javascript">
 function lchange() {
 	//alert("onchange called=" + document.getElementById('languageId').value);
@@ -6,6 +5,7 @@ function lchange() {
     document.forms[0].submit();
 }
 </script>
+<div class="column-hold">
 
 <div class="heading table-heading">
 	<strong style="width: 100%">
@@ -13,7 +13,7 @@ function lchange() {
 	</strong>
 </div>
 
-<g:form action="updateOrCreate" name="addEdit">
+<g:form  name="product" controller="product" action="updateOrCreate">
 	<g:hiddenField name="id" value="${item?.id}" />
 	<div class="table-box">
 		<ul>
@@ -95,10 +95,19 @@ function lchange() {
 					checked="${(item?.priceManual > 0 ? true:false)}" /></strong>
 			</li>
 		</ul>
+		
+		<div class="btn-box">
+		    <a href="javascript:void(0)" onclick="$('#product').submit();" class="submit save">
+		    	<span><g:message code="button.save"/></span></a>
+		    <a href="javascript:void(0)" class="submit cancel" onclick="closePanel(this);">
+		    	<span><g:message code="button.cancel"/></span></a>
+		</div>
+		<%--
 		<div class="btn-box">
 		    <a href="${createLink(action: 'updateOrCreate')}" class="submit add"><span><g:message code="button.save"/></span></a>
 		    <a href="#" class="submit cancel" onclick="javascript: history.back()"><span><g:message code="button.cancel"/></span></a>
 		</div>
+		--%>
 		<!-- 
 		<table>
 			<tr>
@@ -111,3 +120,4 @@ function lchange() {
 		 -->
 	</div>
 </g:form>
+</div>

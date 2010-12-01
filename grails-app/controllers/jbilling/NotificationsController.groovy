@@ -21,28 +21,25 @@ class NotificationsController {
     
     def webServicesSession
 	ViewUtils viewUtils
-    
+	Integer languageId = session.language_id
+	
     def index = { 
-        redirect (action:listCategories)
+        redirect (action: 'listCategories')
     }
     
-    def listCategories ={
-        UserBL userbl = new UserBL(webServicesSession.getCallerId());
-        Integer languageId = userbl.getEntity().getLanguageIdField();
+    def listCategories = {
         List categorylist= NotificationCategoryDTO.list()
         log.info "Categories found= " + categorylist?.size()
-        render (view:"categories", model:[lst:categorylist, languageId:languageId])
+        [lst:categorylist, languageId:languageId]
     }
     
-    def lists={
-        Integer languageId = webServicesSession.getCallerLanguageId();
+    def lists = {
         Integer entityId = webServicesSession.getCallerCompanyId();
         log.info "entityId=" + entityId + " selectedId=" + params.selectedId
-        Integer categoryId= params.selectedId.toInteger()
-        log.info "Category Id selected=" + categoryId
-        
-        def lstByCateg= NotificationMessageTypeDTO.findAllByCategory(new NotificationCategoryDTO(categoryId))
-        
+        Integer categoryId= params["id"]?.toInteger() 
+		//params.selectedId.toInteger()*/
+        log.info "Category Id selected=" + categoryId       
+        def lstByCateg= NotificationMessageTypeDTO.findAllByCategory(new NotificationCategoryDTO(categoryId))        
         log.info "size of messages=" + lstByCateg.size() + " of total " + NotificationMessageTypeDTO.list()?.size()
         [lst:lstByCateg, languageId:languageId, entityId:entityId]
     }
@@ -66,9 +63,7 @@ class NotificationsController {
                     subList.put(dto.getPreferenceType().getId(), dto)
                     break;
             }
-        }
-        
-        Integer languageId = webServicesSession.getCallerLanguageId();
+        }        
         [subList:subList, languageId:languageId]
     }
     
@@ -150,13 +145,13 @@ class NotificationsController {
         log.info "Id is=" + params.id
         Integer messageTypeId= params.id.toInteger()
         
-        Integer languageId;
+        Integer _languageId;
         if (params.get('language.id')) {
             log.info "params.language.id is not null= " + params.get('language.id')
-            languageId= params.get('language.id')?.toInteger()
-            log.info "setting language id from requrest= " + languageId
+            _languageId= params.get('language.id')?.toInteger()
+            log.info "setting language id from requrest= " + _languageId
         } else {
-            languageId = webServicesSession.getCallerLanguageId();            
+            _languageId = languageId            
             log.info "setting users language id"
         }
         
@@ -166,13 +161,13 @@ class NotificationsController {
         NotificationMessageDTO dto=null
         for (NotificationMessageDTO messageDTO: typeDto.getNotificationMessages()) {
             if (messageDTO?.getEntity()?.getId() == entityId 
-            && messageDTO.getLanguage().getId()== languageId) {
+            && messageDTO.getLanguage().getId()== _languageId) {
                 dto= messageDTO;
                 break;
             }
         }
         
-        [dto:dto, languageId:languageId, entityId:entityId, askPreference:askPreference]
+        [dto:dto, languageId:_languageId, entityId:entityId, askPreference:askPreference]
     }
     
     def saveAndRedirect = {

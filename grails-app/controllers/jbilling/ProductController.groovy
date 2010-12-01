@@ -26,18 +26,21 @@ class ProductController {
 	
 	def type = {		
 		log.info params["id"]		
+		ItemTypeDTO dto
+		def items
 		if (params["id"] && params["id"].matches("^[0-9]+")) {			
 			typeId= Integer.parseInt(params["id"])			
-			ItemTypeDTO dto= ItemTypeDTO.findById(typeId);
+			dto= ItemTypeDTO.findById(typeId);
 			if ( dto.getEntity().getId() == webServicesSession.getCallerCompanyId() ) {
 				log.info "caller id and itemtype entity id are same."								
 			}			
-			log.info "Lets see the item size here.. " + dto.getItems().size()
+			items= dto.getItems()
+			log.info "Lets see the item size here.. " + items?.size()
 			log.info "Showing products of typeId=" + typeId
-			render template: "type", model:[list:dto.getItems()]
 		} else {
 			redirect (action: index)
 		}		
+		render template: "type", model:[list: items]
 	}
 	
 	def showAll = {
@@ -91,17 +94,16 @@ class ProductController {
 		Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())
 		CurrencyDTO[] currs= new CurrencyBL().getCurrencies(_languageId, entityId)
 		log.info "LanguageId=" + _languageId + " EntityId=" + entityId + " found Currencies=" + currs.length
-		render(view:"addEdit", model: [item:dto, exists:exists,languageId:_languageId, currencies:currs])		
+		render(template:"addEdit", model: [item:dto, exists:exists,languageId:_languageId, currencies:currs])		
 	}
 	
 	def add = {
 		log.info "Add: " + params["id"]
 		UserBL userbl = new UserBL(webServicesSession.getCallerId());
-		//Integer languageId = userbl.getEntity().getLanguageIdField();
 		Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())
 		CurrencyDTO[] currs= new CurrencyBL().getCurrencies(languageId, entityId)		
 		log.info "LanguageId=" + languageId + " EntityId=" + entityId + " found Currencies=" + currs.length
-		render(view:"addEdit", model:[languageId:languageId, currencies:currs])
+		render(template:"addEdit", model:[languageId:languageId, currencies:currs])
 	}
 	
 	def updateOrCreate ={

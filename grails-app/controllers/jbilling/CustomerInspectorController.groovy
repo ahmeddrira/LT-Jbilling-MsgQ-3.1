@@ -89,7 +89,7 @@ class CustomerInspectorController {
 		contacts= (ContactWS[]) contactList.toArray(new ContactWS[contactList.size()])
 		
 		log.info "Custom Contact fields=${user?.contact?.fieldNames}"
-		[user:user, _id:userid, contacts:contacts, subscribStatus:subscribStatus, orders:orders, languageId:languageId, expDate:expDate, isAutoCC:isAutoCC,isAutoAch:isAutoAch]
+		render template:"show", model:[user:user, _id:userid, contacts:contacts, subscribStatus:subscribStatus, orders:orders, languageId:languageId, expDate:expDate, isAutoCC:isAutoCC,isAutoAch:isAutoAch]
 	}
 	
 	def editNote ={

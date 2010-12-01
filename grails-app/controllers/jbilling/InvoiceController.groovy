@@ -29,7 +29,7 @@ class InvoiceController {
 		redirect (action:lists, id:userId)
 	}
 	
-	def lists ={
+	def lists = {
 		InvoiceWS[] invoices= null;
 		int userId;
 		log.info "Get invoices list for user id [${params?.id}]"
@@ -44,7 +44,7 @@ class InvoiceController {
 				flash.args= [params["id"]]
 			}
 		}
-		[invoices:invoices, userId:userId]
+		render template: "lists", model: [invoices:invoices, userId:userId]
 	}
 	
 	def show = {
@@ -87,6 +87,6 @@ class InvoiceController {
 			}
 		}		
 		
-		[totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
+		render template: "show", model:[totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
 	}
 }

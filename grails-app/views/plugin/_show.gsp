@@ -33,20 +33,16 @@
         
         <div class="box-cards box-cards-open">
              <div class="box-cards-title">
-                      <span><g:message code="plugins.plugin.parameter"/></span>
-                      <span><g:message code="plugins.plugin.value"/></span>
+                   <span><g:message code="plugins.plugin.value"/></span>
+                   <span style="width:50%"><g:message code="plugins.plugin.parameter"/></span>
              </div>
              <div class="box-card-hold">
-                 <div class="form-columns">
-                    <div class="column">
                        <g:each in="${plugin.parameters}">
-                           <div class="row">
+                           <div class="form-columns">
                               <label>${it.name}</label>
                               <label>${it.value}</label>
                            </div>
                        </g:each>
-                     </div>
-                 </div>
              </div>
         </div>
     </div>

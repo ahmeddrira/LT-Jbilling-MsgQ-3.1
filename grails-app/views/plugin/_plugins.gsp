@@ -9,15 +9,18 @@
 		<g:each in="${plugins}" status="idx" var="dto">
 		   <li>
 		     <g:remoteLink action="show" id="${dto.id}" before="register(this);" onSuccess="render(data, next);">
+                 <span class="block">
+                    <span>${dto.getProcessingOrder()}</span>
+		         </span>
                  <strong>
                     ${dto.getId()}
 		         </strong>
                  <strong>
 		            ${dto.type.getDescription(session['language_id'], "title")}
 		         </strong>
-                 <span class="block">
-                    <span>${dto.getProcessingOrder()}</span>
-		         </span>
+		         <em>
+		            ${dto.type.getClassName()}
+		         </em>
 			 </g:remoteLink>
 		   </li>
         </g:each>

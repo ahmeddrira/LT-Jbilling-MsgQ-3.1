@@ -7,7 +7,7 @@ import com.sapienter.jbilling.server.user.UserBL
 import grails.plugins.springsecurity.Secured;
 
 @Secured(['isAuthenticated()'])
-class PluginsController {
+class PluginController {
 	
     def webServicesSession
 	PluggableTaskDAS pluggableTaskDAS

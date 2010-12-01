@@ -11251,7 +11251,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 23	2	description	1	Billing process: order filters
 23	3	description	1	Billing process: invoice filters
 23	4	description	1	Invoice presentation
-23	5	description	1	Billing process: order perios calculation
+23	5	description	1	Billing process: order periods calculation
 23	6	description	1	Payment gateway integration
 23	7	description	1	Notifications
 23	8	description	1	Payment instrument selection

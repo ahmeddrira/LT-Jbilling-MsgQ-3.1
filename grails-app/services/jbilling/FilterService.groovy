@@ -3,6 +3,7 @@ package jbilling
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import javax.servlet.http.HttpSession
 import org.springframework.web.context.request.RequestContextHolder
+import java.text.SimpleDateFormat
 /*
  jBilling - The Enterprise Open Source Billing System
  Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -30,6 +31,8 @@ import org.springframework.web.context.request.RequestContextHolder
  * @since  30-11-2010
  */
 class FilterService {
+
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy")
 
     public static final String SESSION_FILTER_TYPE = "filter_type";
     public static final String SESSION_FILTERS = "filters";
@@ -65,8 +68,8 @@ class FilterService {
             filters.each {
                 it.stringValue = params["filters.${it.id}.stringValue"]
                 it.integerValue = params["filters.${it.id}.integerValue"] ? Integer.valueOf((String) params["filters.${it.id}.integerValue"]) : null
-                it.startDateValue = params["filters.${it.id}.startDateValue"]
-                it.endDateValue = params["filters.${it.id}.endDateValue"]
+                it.startDateValue = params["filters.${it.id}.startDateValue"] ? DATE_FORMAT.parse((String) params["filters.${it.id}.startDateValue"]) : null
+                it.endDateValue = params["filters.${it.id}.endDateValue"] ? DATE_FORMAT.parse((String) params["filters.${it.id}.endDateValue"]) : null
             }
         }
 

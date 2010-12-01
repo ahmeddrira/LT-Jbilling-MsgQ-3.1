@@ -12,6 +12,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.user.db.UserStatusDTO
+import com.sapienter.jbilling.server.user.db.UserStatusDAS
 
 @Secured(['isAuthenticated()'])
 class UserController {
@@ -31,6 +32,7 @@ class UserController {
 
     def list = {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params);
+        def statuses = new UserStatusDAS().findAll()
 
         def users = UserDTO.withCriteria {
             and {
@@ -50,7 +52,7 @@ class UserController {
                                 break
 
                             case FilterConstraint.STATUS:
-                                eq("userStatus", new UserStatusDTO(filter.integerValue))
+                                eq("userStatus", statuses.find{ it.statusValue == filter.integerValue })
                                 break
                         }
                     }
@@ -62,9 +64,9 @@ class UserController {
         }
 
         if (params["applyFilter"]) {
-            render template: "table", model: [users: users, filters: filters]
+            render template: "table", model: [users: users, statuses: statuses, filters: filters]
         } else {
-            [ users: users, filters: filters ]
+            [ users: users, statuses: statuses, filters: filters ]
         }
     }
 

@@ -1,7 +1,6 @@
 <div class="heading">
     <strong>Edit Notes</strong>
 </div>
-
 <g:formRemote id="notes-form" name="notes-form" url="[action: 'saveNotes']" onSuccess="closePanel(this);">
 
     <g:hiddenField name="id" value="${selected.id}"/>
@@ -20,5 +19,4 @@
             <li><a class="submit cancel" onclick="closePanel(this);" href="#"><span>Cancel</span></a></li>
         </ul>
     </div>
-
-</g:formRemote>            
+</g:formRemote>

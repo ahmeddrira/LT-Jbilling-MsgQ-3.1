@@ -1,13 +1,9 @@
-<html>
-<head>
-<script language="javascript">
-</script>
-</head>
-<body>
-<h2><g:message code="prompt.notifications.preferences" /></h2>
-<p>
-	<jB:renderErrorMessages />
-</p>
+<div class="heading table-heading">
+    <strong style="width:100%">
+		<g:message code="prompt.notifications.preferences"/>
+    </strong>
+</div>
+
 <g:form action="savePrefs">
 <g:hiddenField name="recCnt" value="8"/>
 	<div>
@@ -107,5 +103,3 @@
 	</table>
 	</div>
 </g:form>
-</body>
-</html>

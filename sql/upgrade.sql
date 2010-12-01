@@ -531,3 +531,17 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 (24, 79, 'description',1, 'A scheduled task to execute the Mediation Process.'),
 (24, 80, 'title',1, 'Billing Process Task'),
 (24, 80, 'description',1, 'A scheduled task to execute the Billing Process.');
+
+-- filter database tables
+drop table if exists filter;
+create table filter (
+   id int not null,
+   type varchar(255) not null,
+   constraint_type varchar(255) not null,
+   field varchar(255) not null,
+   template varchar(255) not null,
+   version int not null,
+   primary key (id)
+);
+
+insert into jbilling_seqs (name, next_id) values ('filter', 0);

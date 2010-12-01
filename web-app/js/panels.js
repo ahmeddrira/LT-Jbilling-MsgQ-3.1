@@ -1,6 +1,26 @@
 var width;
 var clicked;
 
+var first = {
+    index: function() {
+        return 1;
+    },
+    visible: function() {
+        var position = $('.columns-holder [index=' + this.index() + ']').position().left;
+        return position > 0 && position < $('.columns-holder').width();
+    },
+    animate: function() {
+        var columns = $('.columns-holder .column');
+        width = columns.first().width();
+
+        columns.each(function() {
+            $(this).animate({
+                left: '=0'
+            });
+        });
+    }
+};
+
 var next = {
     index: function() {
         return clicked + 1;

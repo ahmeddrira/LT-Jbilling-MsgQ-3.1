@@ -647,11 +647,6 @@ table {
 	float:left;
 	width:auto;
 }
-
-.column .heading .first {
-	float:left;
-	width:auto;
-}
 .column .heading .user {
 	width:60px;
 }

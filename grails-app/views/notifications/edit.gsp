@@ -1,5 +1,4 @@
-<html>
-<head>
+
 <style type="text/css">
 #popup {
 	height: 100%;
@@ -24,14 +23,6 @@
 	left: 25%;
 }
 </style>
-
-<link
-	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
-	rel="stylesheet" type="text/css" />
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>	
 
 <script language="javascript">
 
@@ -138,48 +129,55 @@ function testfunc(testval) {
 	//alert(targetElement.Text.Substring(0, targetElement.SelectionStart).Length);
 }
 </script>
-</head>
 
-<body>
-<h2><g:message code="prompt.edit.notification" /></h2>
-<p>
-	<jB:renderErrorMessages />
-</p>
-<g:form action="saveNotification">
+<div class="column-hold">
+
+<div class="heading table-heading">
+	<strong style="width: 100%">
+		<g:message code="prompt.edit.notification"/>
+	</strong>
+</div>
+
+<g:form name="notifications" controller="notifications" action="saveNotification">
+
 	<g:hiddenField name="_id" value="${params.id}" />
 	<g:hiddenField id="doNotAskAgain" name="doNotAskAgain" value="${false}"/>
 	<g:hiddenField id="askPreference" name="askPreference" value="${askPreference}"/>
 	<g:hiddenField name="msgDTOId" value="${dto?.getId()}" />
 	<g:hiddenField name="entity.id" value="${entityId}" />
 	<g:hiddenField name="_languageId" value="${languageId}"/>
-	<table cellspacing="4">
-		<tr>
-			<td colspan="2"><input type="button" value="$first_name" onclick="testfunc(this.value);">
-			<input type="button" value="$last_name" onclick="testfunc(this.value);">
-			<input type="button" value="$company_id" onclick="testfunc(this.value);">
-			<input type="button" value="$company_name" onclick="testfunc(this.value);">
-			<input type="button" value="$number" onclick="testfunc(this.value);">
-			<input type="button" value="$password" onclick="testfunc(this.value);">
-			<input type="button" value="$order_id" onclick="testfunc(this.value);">
-			</td>
-		</tr>
-		<tr>
-			<td><g:message code="title.notification.active" />:</td>
-			<td><g:checkBox onchange="anychange(this)" name="useFlag"
-				checked="${(dto?.getUseFlag() > 0)}" /></td>
-		</tr>
-		<tr>
-			<td><g:message code="prompt.product.language" />:</td>
-			<td><g:select name="language.id"
+	
+	
+	<div class="table-box">
+		<ul>
+		<li>
+			<strong>			 
+			<input type="button" class="submit add" value="$first_name" onclick="testfunc(this.value);">
+			<input type="button" class="submit add" value="$last_name" onclick="testfunc(this.value);">
+			<input type="button" class="submit add" value="$company_id" onclick="testfunc(this.value);">
+			<input type="button" class="submit add" value="$company_name" onclick="testfunc(this.value);">
+			<input type="button" class="submit add" value="$number" onclick="testfunc(this.value);">
+			<input type="button" class="submit add" value="$password" onclick="testfunc(this.value);">
+			<input type="button" class="submit add" value="$order_id" onclick="testfunc(this.value);">
+			</strong>
+		</li>
+		<li>
+			<strong><g:message code="title.notification.active" />:</strong>
+			<strong><g:checkBox onchange="anychange(this)" name="useFlag"
+				checked="${(dto?.getUseFlag() > 0)}" /></strong>
+		</li>
+		<li>
+			<strong><g:message code="prompt.product.language" />:</strong>
+			<strong><g:select name="language.id"
 				from="${com.sapienter.jbilling.server.util.db.LanguageDTO.list()}"
 				optionKey="id" optionValue="description" value="${languageId}"
-				onchange="lchange()" /></td>
-		</tr>
+				onchange="lchange()" /></strong>
+		</li>
 
 		<g:set var="flag" value="${true}" />
-		<tr>
-			<td><g:message code="prompt.edit.notification.subject" />:</td>
-			<td><g:each in="${dto?.getNotificationMessageSections()}"
+		<li>
+			<strong><g:message code="prompt.edit.notification.subject" />:</strong>
+			<strong><g:each in="${dto?.getNotificationMessageSections()}"
 				var="section">
 				<g:if test="${section.section == 1}">
 					<g:hiddenField
@@ -207,13 +205,13 @@ function testfunc(testval) {
 				<g:textField onchange="anychange(this)" size="30"
 					name="messageSections[1].notificationMessageLines.content"
 					value="" />
-			</g:if></td>
-		</tr>
+			</g:if></strong>
+		</li>
 
 		<g:set var="flag" value="${true}" />
-		<tr>
-			<td><g:message code="prompt.edit.notification.bodytext" />:</td>
-			<td><g:each in="${dto?.getNotificationMessageSections()}"
+		<li>
+			<strong><g:message code="prompt.edit.notification.bodytext" />:</strong>
+			<strong><g:each in="${dto?.getNotificationMessageSections()}"
 				var="section">
 				<g:if test="${section.section == 2}">
 					<g:hiddenField
@@ -241,13 +239,13 @@ function testfunc(testval) {
 				<g:textArea onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
 					name="messageSections[2].notificationMessageLines.content"
 					value="" />
-			</g:if></td>
-		</tr>
+			</g:if></strong>
+		</li>
 
 		<g:set var="flag" value="${true}" />
-		<tr>
-			<td><g:message code="prompt.edit.notification.bodyhtml" />:</td>
-			<td><g:each in="${dto?.getNotificationMessageSections()}"
+		<li>
+			<strong><g:message code="prompt.edit.notification.bodyhtml" />:</strong>
+			<strong><g:each in="${dto?.getNotificationMessageSections()}"
 				var="section">
 				<g:if test="${section?.section == 3}">
 					<g:hiddenField
@@ -275,17 +273,27 @@ function testfunc(testval) {
 				<g:textArea onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
 					name="messageSections[3].notificationMessageLines.content"
 					value="" />
-			</g:if></td>
-		</tr>
-	</table>
+			</g:if></strong>
+		</li>
+		</ul>
+	</div>
+	
+	<div class="btn-box">
+	    <a href="#" onclick="$('#notifications').submit();" class="submit save">
+	    	<span><g:message code="button.save"/></span></a>
+	   	<a href="#" onclick="javascript: closePanel(this);" class="submit cancel">
+	    	<span><g:message code="button.cancel"/></span></a>
+	</div>
+	<%-- 
 	<table>
 		<tr>
 			<td><g:actionSubmit value="Save Changes"
 				action="saveNotification" class="form_button" /></td>
 			<td><input type="button" value="Cancel"
-				onClick="javascript: history.back()" /></td>
+				onClick="javascript: closePanel(this);" /></td>
 		</tr>
 	</table>
+	--%>
 </g:form>
 <div id="popup" style="display: none;"></div>
 <div id="window" style="display: none;">
@@ -298,5 +306,4 @@ function testfunc(testval) {
 <g:actionSubmit value="No"
 				action="" class="form_button" onclick="Close_Popup();"/></div>
 </div>
-</body>
-</html>
+</div>

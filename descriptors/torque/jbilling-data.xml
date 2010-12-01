@@ -1804,7 +1804,7 @@
     <InternationalDescription TableId="23" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Billing process: order filters"/>
     <InternationalDescription TableId="23" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Billing process: invoice filters"/>
     <InternationalDescription TableId="23" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Invoice presentation"/>
-    <InternationalDescription TableId="23" ForeignId="5" PsudoColumn="description" LanguageId="1" Content="Billing process: order perios calculation"/>
+    <InternationalDescription TableId="23" ForeignId="5" PsudoColumn="description" LanguageId="1" Content="Billing process: order periods calculation"/>
     <InternationalDescription TableId="23" ForeignId="6" PsudoColumn="description" LanguageId="1" Content="Payment gateway integration"/>
     <InternationalDescription TableId="23" ForeignId="7" PsudoColumn="description" LanguageId="1" Content="Notifications"/>
     <InternationalDescription TableId="23" ForeignId="8" PsudoColumn="description" LanguageId="1" Content="Payment instrument selection"/>

@@ -1,14 +1,11 @@
-<html>
-<head>
-<script language="javascript">
-</script>
-</head>
-<body>
-<h2><g:message code="prompt.notifications.preferences" /></h2>
-<p>
-	<jB:renderErrorMessages />
-</p>
-<g:form action="savePrefs">
+<div class="column-hold">
+<div class="heading table-heading">
+    <strong style="width:100%">
+		<g:message code="prompt.notifications.preferences"/>
+    </strong>
+</div>
+
+<g:form name="notifications" controller="notifications" action="savePrefs">
 <g:hiddenField name="recCnt" value="8"/>
 	<div>
 	<table cellspacing="1">
@@ -97,15 +94,22 @@
 			</tr>								
 		</tbody>
 	</table>
+	<div class="btn-box">
+	    <a href="javascript:void(0)" onclick="$('#notifications').submit();" class="submit save">
+	    	<span><g:message code="button.save"/></span></a>
+	    <a href="javascript:void(0)" class="submit cancel" onclick="closePanel(this);">
+	    	<span><g:message code="button.cancel"/></span></a>
+	</div>
+	<%--
 	<table>
 		<tr>
-			<td><g:actionSubmit value="Save Changes"
+			<td><g:actionSubmit onclick="$('#notifications').submit();" value="Save Changes"
 				action="savePrefs" class="form_button" /></td>
 			<td><input type="button" value="Cancel"
-				onClick="javascript: history.back()" /></td>
+				onClick="closePanel(this);" /></td>
 		</tr>
 	</table>
+	--%>
 	</div>
 </g:form>
-</body>
-</html>
+</div>

@@ -13,7 +13,7 @@ function lchange() {
 </head>
 <body>
 <h2><g:message code="prompt.add.edit.products" /></h2>
-<g:form>
+<g:form name="product" controller="product" action="updateOrCreate">
 	<g:hiddenField name="id" value="${item?.id}" />
 	<div id="outerTbl">
 	<table id="productDetails" cellspacing='4' class="product-table">
@@ -103,14 +103,23 @@ function lchange() {
 			<td></td>
 		</tr>
 	</table>
+	
+	<div class="btn-box">
+	    <a href="javascript:void(0)" onclick="$('#product').submit();" class="submit save">
+	    	<span><g:message code="button.save"/></span></a>
+	    <a href="javascript:void(0)" class="submit cancel" onclick="closePanel(this);">
+	    	<span><g:message code="button.cancel"/></span></a>
+	</div>
+	<%--
 	<table>
 		<tr>
 			<td><g:actionSubmit value="Save" action="updateOrCreate"
 				class="form_button" /></td>
 			<td><input type="button" value="Cancel"
-				onClick="javascript: history.back()" /></td>
+				onClick="closePanel(this);" /></td>
 		</tr>
 	</table>
+	--%>
 	</div>
 </g:form>
 </body>

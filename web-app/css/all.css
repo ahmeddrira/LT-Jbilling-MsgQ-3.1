@@ -975,6 +975,15 @@ table {
 	height:30px;
 	background:url(../images/bg-gradient3.gif) repeat-x;
 }
+.box-cards-title span {
+    font-size: 14px;
+    font-weight: bold;
+    color: #383838;
+    line-height: 30px;
+	float:right;
+	padding-right:35px;	
+}
+
 .box-cards-title a.btn-open {
 	display:block;
 	width:100%;

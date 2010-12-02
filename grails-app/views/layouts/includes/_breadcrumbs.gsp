@@ -7,6 +7,9 @@
 
 <!-- breadcrumbs -->
 <div class="breadcrumbs">
+    <div id="spinner" style="display: none;">
+        <img src="${resource(dir:'images', file:'spinner.gif')}" alt="loading..." />
+    </div>
     <ul>
         <%-- todo: add the grails breadcrumbs plugin for easy breadcrumb trails - http://www.grails.org/plugin/breadcrumbs --%>
         <%-- quick and dirty breadcrumbs --%>
@@ -19,3 +22,12 @@
         </g:if>
     </ul>
 </div>
+
+<script type="text/javascript">
+    $('#spinner').ajaxStart(function() {
+        $(this).show('fade');
+    })
+    .ajaxStop(function() {
+        $(this).hide('fade');
+    })
+</script>

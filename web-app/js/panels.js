@@ -10,14 +10,7 @@ var first = {
         return position > 0 && position < $('.columns-holder').width();
     },
     animate: function() {
-        var columns = $('.columns-holder .column');
-        width = columns.first().width();
-
-        columns.each(function() {
-            $(this).animate({
-                left: '=0'
-            });
-        });
+        reset();
     }
 };
 

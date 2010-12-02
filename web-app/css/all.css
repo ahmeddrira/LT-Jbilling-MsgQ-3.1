@@ -303,7 +303,9 @@ table {
 	background:url(../images/arrow02.gif) no-repeat 100% 14px;
 }
 .heading .arrow:hover {text-decoration:none;}
-.heading .drop {
+.heading.active .drop {display:block;}
+.dropdown.active .drop {display:block;}
+.drop {
 	position:absolute;
 	top:31px;
 	left:-1px;
@@ -313,21 +315,20 @@ table {
 	display:none;
 	border:1px solid #bfbfbf;
 }
-.heading.active .drop {display:block;}
-.heading .drop ul {
+.drop ul {
 	margin:0;
 	padding:0 4px;
 	list-style:none;
 	overflow:hidden;
 }
-.heading .drop ul li {
+.drop ul li {
 	border-top:1px solid #ececec;
 	margin-top:-1px;
 	line-height:27px;
 	padding:0 6px;
 }
-.heading .drop ul li a {color:#696969;}
-.heading .drop ul li a:hover {color:#0e61b1; text-decoration:none;}
+.drop ul li a {color:#696969;}
+.drop ul li a:hover {color:#0e61b1; text-decoration:none;}
 /* login */
 #login {
 	padding: 20px;

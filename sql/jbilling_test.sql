@@ -868,6 +868,7 @@ CREATE TABLE filter (
     constraint_type character varying(255) NOT NULL,
     field character varying(255) NOT NULL,
     template character varying(255) NOT NULL,
+    visible boolean NOT NULL,
     version integer NOT NULL
 );
 
@@ -10445,7 +10446,12 @@ COPY event_log_module (id) FROM stdin;
 -- Data for Name: filter; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY filter (id, type, constraint_type, field, template, version) FROM stdin;
+COPY filter (id, type, constraint_type, field, template, visible, version) FROM stdin;
+1	ALL	EQ	id	id	t	0
+2	ALL	DATE_BETWEEN	createDatetime	created	t	0
+3	CUSTOMER	STATUS	userStatus	customer/status	t	0
+4	CUSTOMER	LIKE	userName	customer/login	t	0
+5	CUSTOMER	EQ	language.id	customer/language	f	0
 \.
 
 
@@ -11794,6 +11800,8 @@ mediation_record_line	1
 mediation_record_line	1
 pluggable_task	605
 filter	0
+filter	1
+filter	1
 \.
 
 

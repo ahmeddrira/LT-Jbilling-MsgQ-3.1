@@ -31,55 +31,81 @@
         <div id="left-column">
             <!-- filters -->
             <g:if test="${filters}">
-                <div class="heading">
-                    <strong><g:message code="filters.title"/></strong>
-                </div>
+                <div id="filters">
+                    <div class="heading">
+                        <strong><g:message code="filters.title"/></strong>
+                    </div>
 
-                <g:formRemote id="filters-form" name="filters-form" url="[action: list]" onSuccess="render(data, first);">
-                    <g:hiddenField name="applyFilter" value="true"/>
+                    <g:formRemote id="filters-form" name="filters-form" url="[action: list]" onSuccess="render(data, first);">
+                        <g:hiddenField name="applyFilter" value="true"/>
 
-                    <ul class="accordion">
-                        <g:each var="filter" in="${filters}">
-                            <li>
-                                <g:render template="/filter/${filter.template}" model="[filter: filter]"/>
-                            </li>
-                        </g:each>
-                    </ul>
-
+                        <ul class="accordion">
+                            <g:each var="filter" in="${filters}">
+                                <g:if test="${filter.visible}">
+                                    <li>
+                                        <g:render template="/filter/${filter.template}" model="[filter: filter]"/>
+                                    </li>
+                                </g:if>
+                            </g:each>
+                        </ul>
+                    </g:formRemote>
+                    
                     <div class="btn-hold">
                         <a href="#" class="submit apply" onclick="applyFilters()"><span><g:message code="filters.apply.button"/></span></a>
-                        <a href="#" class="submit add"><span><g:message code="filters.add.button"/></span></a>
+
+                        <g:if test="${filters.find { !it.visible }}">
+                            <div class="dropdown">
+                                <a href="#" class="submit add open"><span><g:message code="filters.add.button"/></span></a>
+                                <div class="drop">
+                                    <ul>
+                                        <g:each var="filter" in="${filters}">
+                                            <g:if test="${!filter.visible}">
+                                                <li>
+                                                    <a href="#">${filter.field}</a>
+                                                </li>
+                                            </g:if>
+                                        </g:each>
+                                    </ul>
+                                </div>
+                            </div>
+                        </g:if>
+
                         <a href="#" class="submit2 save"><span><g:message code="filters.save.button"/></span></a>
                         <a href="#" class="submit2 load"><span><g:message code="filters.load.button"/></span></a>
                     </div>
-                </g:formRemote>
+                </div>
             </g:if>
 
             <!-- shortcuts -->
-            <div class="heading">
-                <a href="#" class="arrow open"><strong><g:message code="shortcut.title"/></strong></a>
-                <div class="drop">
-                    <ul>
-                        <li><g:link controller="user" action="create"><g:message code="shortcut.link.customer"/></g:link></li>
-                        <li><g:link controller="product" action="create"><g:message code="shortcut.link.product"/></g:link></li>
-                        <li><g:link controller="order" action="create"><g:message code="shortcut.link.order"/></g:link></li>
-                        <li><g:link controller="user" action="invoice"><g:message code="shortcut.link.invoice"/></g:link></li>
-                    </ul>
+            <div id="shortcuts">
+                <div class="heading">
+                    <a href="#" class="arrow open"><strong><g:message code="shortcut.title"/></strong></a>
+                    <div class="drop">
+                        <ul>
+                            <li><g:link controller="user" action="create"><g:message code="shortcut.link.customer"/></g:link></li>
+                            <li><g:link controller="product" action="create"><g:message code="shortcut.link.product"/></g:link></li>
+                            <li><g:link controller="order" action="create"><g:message code="shortcut.link.order"/></g:link></li>
+                            <li><g:link controller="user" action="invoice"><g:message code="shortcut.link.invoice"/></g:link></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
             <!-- recently viewed items -->
-            <div class="heading">
-                <strong><g:message code="recent.items.title"/></strong>
+            <div id="recent-items">
+                <div class="heading">
+                    <strong><g:message code="recent.items.title"/></strong>
+                </div>
+                <ul class="list">
+                    <li><a href="#"><img src="${resource(dir:'images', file:'icon09.gif')}" alt="invoice" />Invoice</a></li>
+                    <li><a href="#"><img src="${resource(dir:'images', file:'icon10.gif')}" alt="payment" />Payment</a></li>
+                    <li><a href="#"><img src="${resource(dir:'images', file:'icon11.gif')}" alt="customer" />Customer</a></li>
+                    <li><a href="#"><img src="${resource(dir:'images', file:'icon12.gif')}" alt="order" />Order</a></li>
+                    <li><a href="#"><img src="${resource(dir:'images', file:'icon13.gif')}" alt="other" />Others</a></li>
+                </ul>
             </div>
-            <ul class="list">
-                <li><a href="#"><img src="${resource(dir:'images', file:'icon09.gif')}" alt="invoice" />Invoice</a></li>
-                <li><a href="#"><img src="${resource(dir:'images', file:'icon10.gif')}" alt="payment" />Payment</a></li>
-                <li><a href="#"><img src="${resource(dir:'images', file:'icon11.gif')}" alt="customer" />Customer</a></li>
-                <li><a href="#"><img src="${resource(dir:'images', file:'icon12.gif')}" alt="order" />Order</a></li>
-                <li><a href="#"><img src="${resource(dir:'images', file:'icon13.gif')}" alt="other" />Others</a></li>
-            </ul>
         </div>
+
 
         <!-- content columns -->
         <div class="columns-holder">

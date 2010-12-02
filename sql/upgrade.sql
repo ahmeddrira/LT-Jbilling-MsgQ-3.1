@@ -540,8 +540,15 @@ create table filter (
    constraint_type varchar(255) not null,
    field varchar(255) not null,
    template varchar(255) not null,
+   visible bool not null,
    version int not null,
    primary key (id)
 );
 
-insert into jbilling_seqs (name, next_id) values ('filter', 0);
+insert into filter (id, type, constraint_type, field, template, visible, version) values (1, 'ALL', 'EQ', 'id', 'id', true, 0);
+insert into filter (id, type, constraint_type, field, template, visible, version) values (2, 'ALL', 'DATE_BETWEEN', 'createDatetime', 'created', true, 0);
+insert into filter (id, type, constraint_type, field, template, visible, version) values (3, 'CUSTOMER', 'STATUS', 'userStatus', 'customer/status', true, 0);
+insert into filter (id, type, constraint_type, field, template, visible, version) values (4, 'CUSTOMER', 'LIKE', 'userName', 'customer/login', true, 0);
+insert into filter (id, type, constraint_type, field, template, visible, version) values (5, 'CUSTOMER', 'EQ', 'language.id', 'customer/language', false, 0);
+
+insert into jbilling_seqs (name, next_id) values ('filter', (select round(max(id)/100)+1 from filter));

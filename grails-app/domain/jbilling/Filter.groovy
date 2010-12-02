@@ -44,6 +44,7 @@ class Filter {
     FilterConstraint constraintType
     String field
     String template
+    Boolean visible
 
     String stringValue
     Integer integerValue

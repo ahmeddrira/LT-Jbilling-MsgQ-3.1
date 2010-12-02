@@ -34,33 +34,35 @@ class FilterService {
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy")
 
-    public static final String SESSION_FILTER_TYPE = "filter_type";
-    public static final String SESSION_FILTERS = "filters";
-
-    def HttpSession getSession() {
-        return RequestContextHolder.currentRequestAttributes().getSession()
-    }
-
+    /**
+     * Fetches the filters for the given type and sets the filter values from the UI
+     * input fields if the "applyFilter" request parameter is present.
+     *
+     * Filters are available in the session (and can also be set elsewhere in the session)
+     * using the key FilterType.name() + "_FILTERS".
+     *
+     * @param type filter type
+     * @param params request parameters from controller action
+     * @return filters for the given filter type
+     */
     def Object getFilters(FilterType type, GrailsParameterMap params) {
-        def session = getSession();
+        def session = getSession()
+        def key = getSessionKey(type)
 
         /*
             Fetch filters for the given filter type. If the filters are already
             in the session, use the existing filters instead of fetching new ones.
          */
         def filters = [];
-        if (session[SESSION_FILTER_TYPE] != type) {
+        if (!session[key]) {
             filters = Filter.withCriteria {
                 or {
                     eq("type", FilterType.ALL)
                     eq("type", type)
                 }
             }
-
-            session[SESSION_FILTER_TYPE] = type
-            
         } else {
-            filters = session[SESSION_FILTERS]
+            filters = session[key]
         }
 
         // update filters with values from request parameters
@@ -73,7 +75,27 @@ class FilterService {
             }
         }
 
-        session[SESSION_FILTERS] = filters
+        // store filters in session for next request
+        session[key] = filters
         return filters
+    }
+
+    /**
+     * Returns the HTTP session
+     *
+     * @return http session
+     */
+    def HttpSession getSession() {
+        return RequestContextHolder.currentRequestAttributes().getSession()
+    }
+
+    /**
+     * Returns the session attribute key for the given set of filters.
+     *
+     * @param type filter type
+     * @return session attribute key
+     */
+    def String getSessionKey(FilterType type) {
+        return "${type.name()}_FILTERS"
     }
 }

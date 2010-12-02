@@ -360,12 +360,14 @@ table {
 .accordion li.other {
 	background:url(../images/bg-accordion02.gif) repeat-x;
 }
-.accordion li a {
+.accordion li span.title {
 	float:left;
 	line-height:30px;
-	padding:0 0 0 22px;
-	background:url(../images/icon01.gif) no-repeat 6px 11px;
+    padding: 0 0 0 7px;
 	color:#383838;
+}
+.accordion li span.active {
+    font-weight: bold;
 }
 .accordion li.open a {
 	background:url(../images/icon02.gif) no-repeat 6px 11px;

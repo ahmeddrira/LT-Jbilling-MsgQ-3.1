@@ -4,6 +4,21 @@
     <g:render template="/layouts/includes/head"/>
     <g:javascript library="panels"/>
 
+    <script type="text/javascript">
+        function applyFilters() {
+            $('#filters-form input:visible, #filters-form select:visible').each(function() {
+                var title = $(this).parents('li').find('.title');
+                if ($(this).val()) {
+                    title.addClass('active');
+                } else {
+                    title.removeClass('active');
+                }
+            });
+
+            $('#filters-form').submit();
+        }
+    </script>
+
     <g:layoutHead/>
 </head>
 <body>
@@ -13,14 +28,34 @@
     <div id="main">
         <g:render template="/layouts/includes/breadcrumbs"/>
 
-        <!-- left column -->
         <div id="left-column">
-            <div class="heading">
-                <strong><g:message code="filters.title"/></strong>
-            </div>
+            <!-- filters -->
+            <g:if test="${filters}">
+                <div class="heading">
+                    <strong><g:message code="filters.title"/></strong>
+                </div>
 
-            <g:pageProperty name="page.filters"/>
+                <g:formRemote id="filters-form" name="filters-form" url="[action: list]" onSuccess="render(data, first);">
+                    <g:hiddenField name="applyFilter" value="true"/>
 
+                    <ul class="accordion">
+                        <g:each var="filter" in="${filters}">
+                            <li>
+                                <g:render template="/filter/${filter.template}" model="[filter: filter]"/>
+                            </li>
+                        </g:each>
+                    </ul>
+
+                    <div class="btn-hold">
+                        <a href="#" class="submit apply" onclick="applyFilters()"><span><g:message code="filters.apply.button"/></span></a>
+                        <a href="#" class="submit add"><span><g:message code="filters.add.button"/></span></a>
+                        <a href="#" class="submit2 save"><span><g:message code="filters.save.button"/></span></a>
+                        <a href="#" class="submit2 load"><span><g:message code="filters.load.button"/></span></a>
+                    </div>
+                </g:formRemote>
+            </g:if>
+
+            <!-- shortcuts -->
             <div class="heading">
                 <a href="#" class="arrow open"><strong><g:message code="shortcut.title"/></strong></a>
                 <div class="drop">
@@ -33,7 +68,7 @@
                 </div>
             </div>
 
-            <%-- todo: recently viewed items functionality --%>
+            <!-- recently viewed items -->
             <div class="heading">
                 <strong><g:message code="recent.items.title"/></strong>
             </div>
@@ -53,29 +88,28 @@
             <div id="viewport">
                 <div class="column panel" index="1">
                     <div class="column-hold">
-                            <g:pageProperty name="page.column1"/>
-                        </div>
-                    </div>
-
-                <div class="column panel" index="2">
-                    <div class="column-hold">
-                            <g:pageProperty name="page.column2"/>
-                        </div>
-                    </div>
-
-                <div class="column panel" index="3">
-                    <div class="column-hold">
-                            <g:pageProperty name="page.column3"/>
-                        </div>
-                    </div>
-
-                <div class="column panel" index="4">
-                    <div class="column-hold">
-                            <g:pageProperty name="page.column4"/>
-                        </div>
+                        <g:pageProperty name="page.column1"/>
                     </div>
                 </div>
 
+                <div class="column panel" index="2">
+                    <div class="column-hold">
+                        <g:pageProperty name="page.column2"/>
+                    </div>
+                </div>
+
+                <div class="column panel" index="3">
+                    <div class="column-hold">
+                        <g:pageProperty name="page.column3"/>
+                    </div>
+                </div>
+
+                <div class="column panel" index="4">
+                    <div class="column-hold">
+                        <g:pageProperty name="page.column4"/>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

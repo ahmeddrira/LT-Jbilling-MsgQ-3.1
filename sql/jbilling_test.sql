@@ -267,6 +267,7 @@ ALTER TABLE ONLY public.invoice_delivery_method DROP CONSTRAINT invoice_delivery
 ALTER TABLE ONLY public.international_description DROP CONSTRAINT international_description_pkey;
 ALTER TABLE ONLY public.generic_status_type DROP CONSTRAINT generic_status_type_pkey;
 ALTER TABLE ONLY public.generic_status DROP CONSTRAINT generic_status_pkey;
+ALTER TABLE ONLY public.filter DROP CONSTRAINT filter_pkey;
 ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_pkey;
 ALTER TABLE ONLY public.event_log_module DROP CONSTRAINT event_log_module_pkey;
 ALTER TABLE ONLY public.event_log_message DROP CONSTRAINT event_log_message_pkey;
@@ -362,6 +363,7 @@ DROP TABLE public.invoice;
 DROP TABLE public.international_description;
 DROP TABLE public.generic_status_type;
 DROP TABLE public.generic_status;
+DROP TABLE public.filter;
 DROP TABLE public.event_log_module;
 DROP TABLE public.event_log_message;
 DROP TABLE public.event_log;
@@ -855,6 +857,22 @@ CREATE TABLE event_log_module (
 
 
 ALTER TABLE public.event_log_module OWNER TO jbilling;
+
+--
+-- Name: filter; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE filter (
+    id integer NOT NULL,
+    type character varying(255) NOT NULL,
+    constraint_type character varying(255) NOT NULL,
+    field character varying(255) NOT NULL,
+    template character varying(255) NOT NULL,
+    version integer NOT NULL
+);
+
+
+ALTER TABLE public.filter OWNER TO jbilling;
 
 --
 -- Name: generic_status; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -10424,6 +10442,14 @@ COPY event_log_module (id) FROM stdin;
 
 
 --
+-- Data for Name: filter; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY filter (id, type, constraint_type, field, template, version) FROM stdin;
+\.
+
+
+--
 -- Data for Name: generic_status; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -11767,6 +11793,7 @@ mediation_process	1
 mediation_record_line	1
 mediation_record_line	1
 pluggable_task	605
+filter	0
 \.
 
 
@@ -20012,6 +20039,14 @@ ALTER TABLE ONLY event_log_module
 
 ALTER TABLE ONLY event_log
     ADD CONSTRAINT event_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: filter_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY filter
+    ADD CONSTRAINT filter_pkey PRIMARY KEY (id);
 
 
 --

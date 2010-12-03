@@ -1,3 +1,5 @@
+<%@ page import="com.sapienter.jbilling.server.user.db.UserStatusDAS" %>
+
 <%--
   _status
 
@@ -7,14 +9,15 @@
 
 <div id="filter-${filter.id}">
     <span class="title <g:if test='${filter.value}'>active</g:if>"><g:message code="filters.status.title"/></span>
-    <a href="#" class="delete"></a>
+    <g:remoteLink class="delete" controller="filter" action="remove" id="${filter.id}" update="filters"/>
+    
     <div class="slide">
         <fieldset>
             <div class="input-row">
                 <div class="select-bg">
                     <g:select name="filters.${filter.id}.integerValue"
                             value="${filter.integerValue}"
-                            from="${statuses}"
+                            from="${new UserStatusDAS().findAll()}"
                             optionKey="id" optionValue="description"
                             noSelection="['': message(code: 'filters.status.empty')]" />
 
@@ -26,3 +29,4 @@
         </fieldset>
     </div>
 </div>
+

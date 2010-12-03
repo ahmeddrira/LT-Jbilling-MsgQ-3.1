@@ -34,6 +34,8 @@ class FilterService {
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy")
 
+    private static final String SESSION_CURRENT_FILTER_TYPE = "current_filter_type";
+
     /**
      * Fetches the filters for the given type and sets the filter values from the UI
      * input fields if the "applyFilter" request parameter is present.
@@ -66,7 +68,7 @@ class FilterService {
         }
 
         // update filters with values from request parameters
-        if (params["applyFilter"]) {
+        if (params?.boolean("applyFilter")) {
             filters.each {
                 it.stringValue = params["filters.${it.id}.stringValue"]
                 it.integerValue = params["filters.${it.id}.integerValue"] ? Integer.valueOf((String) params["filters.${it.id}.integerValue"]) : null
@@ -76,7 +78,50 @@ class FilterService {
         }
 
         // store filters in session for next request
+        session[SESSION_CURRENT_FILTER_TYPE] = type;
         session[key] = filters
+        return filters
+    }
+        
+    /**
+     * Changes the visibility of a filter so that it appears in the filter pane.
+     *
+     * @param id filter id to show
+     * @return updated filter list
+     */
+    def Object showFilter(Integer id) {
+        def type = (FilterType) session[SESSION_CURRENT_FILTER_TYPE]
+        def filters = getFilters(type, null)
+
+        filters?.each{
+            if (it.id == id)
+                it.visible = true 
+        }
+
+        session[getSessionKey(type)] = filters
+        return filters
+    }
+
+    /**
+     * Changes the visibility of the filter so that it is removed from the filter pane. This
+     * method also clears the filter's set value so that it's effect on the entity criteria
+     * will be removed.
+     *
+     * @param id filter id to remove
+     * @return updated filter list
+     */
+    def Object removeFilter(Integer id) {
+        def type = (FilterType) session[SESSION_CURRENT_FILTER_TYPE]
+        def filters = getFilters(type, null)
+
+        filters?.each{
+            if (it.id == id) {
+                it.visible = false
+                it.clear()
+            }
+        }
+
+        session[getSessionKey(type)] = filters
         return filters
     }
 

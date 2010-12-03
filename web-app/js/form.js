@@ -29,7 +29,7 @@ function is_mac() {
 	return false;
 }
 
-function initCastomForms() {
+function initCustomForms() {
 	if(!document.getElementById) {return false;}
 	getElements();
 	separateElements();

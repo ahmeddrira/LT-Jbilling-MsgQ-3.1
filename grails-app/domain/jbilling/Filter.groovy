@@ -66,4 +66,11 @@ class Filter {
 
         return null
     }
+
+    def void clear() {
+        stringValue = null
+        integerValue = null
+        startDateValue = null
+        endDateValue = null
+    }
 }

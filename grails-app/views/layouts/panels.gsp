@@ -30,51 +30,15 @@
 
         <div id="left-column">
             <!-- filters -->
-            <g:if test="${filters}">
+            <g:formRemote id="filters-form" name="filters-form" url="[action: list]" onSuccess="render(data, first);">
+                <g:hiddenField name="applyFilter" value="true"/>
+
                 <div id="filters">
-                    <div class="heading">
-                        <strong><g:message code="filters.title"/></strong>
-                    </div>
-
-                    <g:formRemote id="filters-form" name="filters-form" url="[action: list]" onSuccess="render(data, first);">
-                        <g:hiddenField name="applyFilter" value="true"/>
-
-                        <ul class="accordion">
-                            <g:each var="filter" in="${filters}">
-                                <g:if test="${filter.visible}">
-                                    <li>
-                                        <g:render template="/filter/${filter.template}" model="[filter: filter]"/>
-                                    </li>
-                                </g:if>
-                            </g:each>
-                        </ul>
-                    </g:formRemote>
-                    
-                    <div class="btn-hold">
-                        <a href="#" class="submit apply" onclick="applyFilters()"><span><g:message code="filters.apply.button"/></span></a>
-
-                        <g:if test="${filters.find { !it.visible }}">
-                            <div class="dropdown">
-                                <a href="#" class="submit add open"><span><g:message code="filters.add.button"/></span></a>
-                                <div class="drop">
-                                    <ul>
-                                        <g:each var="filter" in="${filters}">
-                                            <g:if test="${!filter.visible}">
-                                                <li>
-                                                    <a href="#">${filter.field}</a>
-                                                </li>
-                                            </g:if>
-                                        </g:each>
-                                    </ul>
-                                </div>
-                            </div>
-                        </g:if>
-
-                        <a href="#" class="submit2 save"><span><g:message code="filters.save.button"/></span></a>
-                        <a href="#" class="submit2 load"><span><g:message code="filters.load.button"/></span></a>
-                    </div>
+                    <g:if test="${filters}">
+                        <g:render template="/filter/filters"/>
+                    </g:if>
                 </div>
-            </g:if>
+            </g:formRemote>
 
             <!-- shortcuts -->
             <div id="shortcuts">

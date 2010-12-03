@@ -24,7 +24,6 @@ class UserController {
     def isAutoAch = false
 
     def filterService
-    def hibernateCriteriaBuilder
 
     def index = {
         redirect action: list, params: params

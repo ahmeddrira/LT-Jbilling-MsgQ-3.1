@@ -7,8 +7,9 @@
 --%>
 
 <div id="filter-${filter.id}">
-    <span class="title <g:if test='${filter.value}'>active</g:if>"><g:message code="filters.${controllerName}.id.title"/></span>
-    <a href="#" class="delete"></a>
+    <span class="title <g:if test='${filter.value}'>active</g:if>"><g:message code="filters.id.title"/></span>
+    <g:remoteLink class="delete" controller="filter" action="remove" id="${filter.id}" update="filters"/>    
+
     <div class="slide">
         <fieldset>
             <div class="input-row">

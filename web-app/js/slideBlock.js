@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	 initCastomForms();
+	 initCustomForms();
     // Slide effect
     var _parentSlide = 'div.box-cards';
     var _linkSlide = 'a.btn-open';

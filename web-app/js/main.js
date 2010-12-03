@@ -14,12 +14,13 @@ function initPopups()
 	initPopup({
 		popupHolderClass:'popup-hover'
 	});
+    initDropdown();
 }
 if (window.addEventListener)
 	window.addEventListener("load", initPopups, false);
 else if (window.attachEvent)
 	window.attachEvent("onload", initPopups);
-	
+
 function initPopup(_popup) {
 	if (!_popup.popupHolderTag) _popup.popupHolderTag = 'div';
 	if (!_popup.popupTag) _popup.popupTag = 'div';
@@ -95,6 +96,18 @@ function initPopup(_popup) {
 		}
 	}
 }
+
+function initDropdown() {
+    $('.dropdown').each(function() {
+        var open = $(this).find('a.open');
+        var drop = $(this).find('.drop');
+
+        // position drop menu in line with the "open" link
+        drop.css('top', open.position().top + open.outerHeight())
+            .css('left', open.position().left);
+    });
+}
+
 function initScript() {
 	addClass({
 		tagName:'a',

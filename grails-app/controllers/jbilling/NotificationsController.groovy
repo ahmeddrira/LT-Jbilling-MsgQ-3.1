@@ -41,7 +41,7 @@ class NotificationsController {
         log.info "Category Id selected=" + categoryId       
         def lstByCateg= NotificationMessageTypeDTO.findAllByCategory(new NotificationCategoryDTO(categoryId))        
         log.info "size of messages=" + lstByCateg.size() + " of total " + NotificationMessageTypeDTO.list()?.size()
-        [lst:lstByCateg, languageId:languageId, entityId:entityId]
+        render template: 'lists', model:[lst:lstByCateg, languageId:languageId, entityId:entityId]
     }
     
     def preferences = {
@@ -129,22 +129,11 @@ class NotificationsController {
         return prefDTOs;
     }
     
-    def edit = {
+    def view = {
         
-		//set cookies here..
-		log.info ("doNotAskAgain=" + params.doNotAskAgain + " askPreference=" + params.askPreference)
-		
-		def askPreference=request.getCookie("doNotAskAgain")
-		log.info ("Cooke set to was=" + askPreference)
-		if ( "true".equals(params.doNotAskAgain) ){
-			response.setCookie("doNotAskAgain", String.valueOf(params.askPreference),604800)
-			log.info ("Setting the cookie to value " + params.askPreference)
-			askPreference= params.askPreference
-		}
-		
         log.info "Id is=" + params.id
         Integer messageTypeId= params.id.toInteger()
-        
+
         Integer _languageId;
         if (params.get('language.id')) {
             log.info "params.language.id is not null= " + params.get('language.id')
@@ -167,9 +156,50 @@ class NotificationsController {
             }
         }
         
-        [dto:dto, languageId:_languageId, entityId:entityId, askPreference:askPreference]
+        render template:"show", model:[dto:dto, languageDto: LanguageDTO.findById(_languageId), entityId:entityId]
     }
     
+	def edit = {
+		
+		//set cookies here..
+		log.info ("doNotAskAgain=" + params.doNotAskAgain + " askPreference=" + params.askPreference)
+		
+		def askPreference=request.getCookie("doNotAskAgain")
+		log.info ("Cooke set to was=" + askPreference)
+		if ( "true".equals(params.doNotAskAgain) ){
+			response.setCookie("doNotAskAgain", String.valueOf(params.askPreference),604800)
+			log.info ("Setting the cookie to value " + params.askPreference)
+			askPreference= params.askPreference
+		}
+		
+		log.info "Id is=" + params.id
+		Integer messageTypeId= params.id.toInteger()
+		
+		Integer _languageId;
+		if (params.get('language.id')) {
+			log.info "params.language.id is not null= " + params.get('language.id')
+			_languageId= params.get('language.id')?.toInteger()
+			log.info "setting language id from requrest= " + _languageId
+		} else {
+			_languageId = languageId
+			log.info "setting users language id"
+		}
+		
+		Integer entityId = webServicesSession.getCallerCompanyId();
+		
+		NotificationMessageTypeDTO typeDto= NotificationMessageTypeDTO.findById(messageTypeId)
+		NotificationMessageDTO dto=null
+		for (NotificationMessageDTO messageDTO: typeDto.getNotificationMessages()) {
+			if (messageDTO?.getEntity()?.getId() == entityId
+			&& messageDTO.getLanguage().getId()== _languageId) {
+				dto= messageDTO;
+				break;
+			}
+		}
+		
+		[dto:dto, languageId:_languageId, entityId:entityId, askPreference:askPreference]
+	}
+	
     def saveAndRedirect = {
         saveAction(params)
         redirect (action:edit, params:params)

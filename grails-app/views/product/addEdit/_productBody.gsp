@@ -1,8 +1,13 @@
 <script type="text/javascript">
-	function lchange() {
-		$('#product').attr('action', '/jbilling/product/changeLanguage');
-		//alert($('#product').attr('action'));
-		$('#product').submit();
+	var lang=${languageId};
+	
+	function lChange() {
+		if (lang != $('#languageId').val()) {
+			$('#product').attr('action', '/jbilling/product/changeLanguage');
+			//alert($('#product').attr('action'));
+			$('#product').submit();
+		}
+		return false;
 	}
 </script>
 <div class="form-edit">
@@ -30,17 +35,20 @@
 						</div>
 						<div class="row">
 							<label><g:message code="prompt.product.categories" />:</label>
-							<div class="box"><g:select id="droppable" name="types" multiple="true"
+							<div class="box"><g:select name="types" multiple="true"
 				from="${com.sapienter.jbilling.server.item.db.ItemTypeDTO.findAll()}"
-				optionKey="id" optionValue="description" value="${item?.itemTypes}" class="select"/></div>
+				optionKey="id" optionValue="description" value="${item?.itemTypes}" class="selectArea"/>
+							</div>
 						</div>
+						
 						<div class="row">
 							<label><g:message code="prompt.product.language"/>:</label>
-							<div class="inp-bg">
-			<g:select name="languageId"
-				from="${com.sapienter.jbilling.server.util.db.LanguageDTO.list()}"
-				optionKey="id" optionValue="description" value="${languageId}"
-				onchange="lchange()" class="field"/></div>
+							<div class="select">
+							<g:select name="languageId" 
+								from="${com.sapienter.jbilling.server.util.db.LanguageDTO.list()}"
+								optionKey="id" optionValue="description" value="${languageId}"
+								onchange="lChange();"/>
+							</div>
 						</div>
 						<div class="row">
 							<label><g:message code="prompt.product.percentage"/>:</label>

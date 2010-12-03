@@ -30,7 +30,7 @@ class ItemController {
 	}
 	
 	def delete = {
-		Integer itemId= params.deleteItemId.toInteger()
+		Integer itemId= params.selected.toInteger()
 		log.info "Deleting item type=" + itemId 
 		
 		try {

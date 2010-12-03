@@ -1,15 +1,28 @@
 <%@page import="com.sapienter.jbilling.server.order.db.OrderLineTypeDTO"%>
 <script>
+function getSelectedId() {
+	return $('.active').find('#id').text();
+}
 function editCategory() {
-	if (selected)
-	{
-		var selectedId= $('.active').find('#id').text();
-		window.location = ('/jbilling/product/addEditCategory/'+ selectedId);
-		return true;
-	} else {
+	var selectedId= getSelectedId();
+	if ( null == selectedId || "" == selectedId) {
 		alert ('<g:message code="error.edit.record.not.selected"/>');
+	} else {
+		window.location = ('/jbilling/product/addEditCategory/'+ selectedId);
 	}
-	return false;
+	return true;
+}
+function delCategory() {
+	if (!confirm('Are you sure you want to delete?')){
+		return false;
+	}
+	var selectedId= getSelectedId();
+	if ( null == selectedId || "" == selectedId) {
+		alert ('<g:message code="error.record.not.selected"/>');
+	} else {
+		window.location = ('/jbilling/product/deleteCategory/'+ selectedId);
+	}
+	return true;
 }
 </script>
 <div class="heading table-heading">
@@ -38,10 +51,10 @@ function editCategory() {
 </div>
 
 <div class="btn-box">
-    <a href="${createLink(controller: 'product', action: 'addEditCategory')}" class="submit add">
+    <a href="${createLink(action: 'addEditCategory')}" class="submit add">
     	<span><g:message code="button.create"/></span></a>
     <a href="javascript: void(0)" onclick="editCategory();" class="submit edit">
     	<span><g:message code="button.edit"/></span></a>
-    <a href="${createLink(action: 'del')}" class="submit delete">
+    <a href="javascript: void(0)" onclick="delCategory();" class="submit delete">
     	<span><g:message code="button.delete"/></span></a>    	
 </div>

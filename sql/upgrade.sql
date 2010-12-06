@@ -535,14 +535,33 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 -- filter database tables
 drop table if exists filter;
 create table filter (
-   id int not null,
-   type varchar(255) not null,
-   constraint_type varchar(255) not null,
-   field varchar(255) not null,
-   template varchar(255) not null,
-   visible bool not null,
-   version int not null,
-   primary key (id)
+    id int not null,    
+    type varchar(255) not null,
+    constraint_type varchar(255) not null,
+    field varchar(255) not null,
+    template varchar(255) not null,
+    visible bool not null,
+    integer_value int not null,
+    string_value varchar(255) not null,
+    start_date_value timestamp not null,
+    end_date_value timestamp not null,
+    version int not null,
+    primary key (id)
+);
+
+drop table if exists filter_set;
+create table filter_set (
+    id int not null,
+    name varchar(255) not null,
+    user_id int not null,
+    version int not null,    
+    primary key (id)
+);
+
+drop table if exists filter_set_filter;
+create table filter_set_filter (
+    filter_set_filters_id int,
+    filter_id int
 );
 
 insert into filter (id, type, constraint_type, field, template, visible, version) values (1, 'ALL', 'EQ', 'id', 'id', true, 0);

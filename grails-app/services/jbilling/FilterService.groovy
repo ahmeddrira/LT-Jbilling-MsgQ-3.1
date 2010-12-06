@@ -4,6 +4,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import javax.servlet.http.HttpSession
 import org.springframework.web.context.request.RequestContextHolder
 import java.text.SimpleDateFormat
+import com.sapienter.jbilling.client.filters.FilterFactory
 /*
  jBilling - The Enterprise Open Source Billing System
  Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -55,25 +56,15 @@ class FilterService {
             Fetch filters for the given filter type. If the filters are already
             in the session, use the existing filters instead of fetching new ones.
          */
-        def filters = [];
-        if (!session[key]) {
-            filters = Filter.withCriteria {
-                or {
-                    eq("type", FilterType.ALL)
-                    eq("type", type)
-                }
-            }
-        } else {
-            filters = session[key]
-        }
+        def filters = session[key] ?: FilterFactory.getFilters(FilterType.CUSTOMER)
 
         // update filters with values from request parameters
         if (params?.boolean("applyFilter")) {
             filters.each {
-                it.stringValue = params["filters.${it.id}.stringValue"]
-                it.integerValue = params["filters.${it.id}.integerValue"] ? Integer.valueOf((String) params["filters.${it.id}.integerValue"]) : null
-                it.startDateValue = params["filters.${it.id}.startDateValue"] ? DATE_FORMAT.parse((String) params["filters.${it.id}.startDateValue"]) : null
-                it.endDateValue = params["filters.${it.id}.endDateValue"] ? DATE_FORMAT.parse((String) params["filters.${it.id}.endDateValue"]) : null
+                it.stringValue = params["filters.${it.name}.stringValue"]
+                it.integerValue = params.int("filters.${it.name}.integerValue")
+                it.startDateValue = params["filters.${it.name}.startDateValue"] ? DATE_FORMAT.parse((String) params["filters.${it.name}.startDateValue"]) : null
+                it.endDateValue = params["filters.${it.name}.endDateValue"] ? DATE_FORMAT.parse((String) params["filters.${it.name}.endDateValue"]) : null
             }
         }
 
@@ -86,15 +77,15 @@ class FilterService {
     /**
      * Changes the visibility of a filter so that it appears in the filter pane.
      *
-     * @param id filter id to show
+     * @param name filter name to show
      * @return updated filter list
      */
-    def Object showFilter(Integer id) {
+    def Object showFilter(String name) {
         def type = (FilterType) session[SESSION_CURRENT_FILTER_TYPE]
         def filters = getFilters(type, null)
 
         filters?.each{
-            if (it.id == id)
+            if (it.name == name)
                 it.visible = true 
         }
 
@@ -107,15 +98,15 @@ class FilterService {
      * method also clears the filter's set value so that it's effect on the entity criteria
      * will be removed.
      *
-     * @param id filter id to remove
+     * @param name filter name to remove
      * @return updated filter list
      */
-    def Object removeFilter(Integer id) {
+    def Object removeFilter(String name) {
         def type = (FilterType) session[SESSION_CURRENT_FILTER_TYPE]
         def filters = getFilters(type, null)
 
         filters?.each{
-            if (it.id == id) {
+            if (it.name == name) {
                 it.visible = false
                 it.clear()
             }

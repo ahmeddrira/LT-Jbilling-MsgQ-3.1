@@ -22,23 +22,25 @@ package jbilling
 
 /**
  * Filter
- 
+
  * @author Brian Cowdery
  * @since  30-11-2010
  */
 class Filter {
 
-    static transients = [ "stringValue", "integerValue", "startDateValue", "endDateValue" ]
+    static transients = [ "value", "name" ]
 
     static mapping = {
         id generator: 'org.hibernate.id.enhanced.TableGenerator',
-            params: [
-                table_name: 'jbilling_seqs',
-                segment_column_name: 'name',
-                value_column_name: 'next_id',
-                segment_value: 'filter'
-            ]
+           params: [
+           table_name: 'jbilling_seqs',
+           segment_column_name: 'name',
+           value_column_name: 'next_id',
+           segment_value: 'filter'
+           ]
     }
+
+    static belongsTo = FilterSet
 
     FilterType type
     FilterConstraint constraintType
@@ -72,5 +74,13 @@ class Filter {
         integerValue = null
         startDateValue = null
         endDateValue = null
+    }
+
+    public String getName() {
+        return "${type}-${constraintType}_${field.replaceAll('\\.','_').capitalize()}"
+    }
+
+    public String toString ( ) {
+        return "Filter{id=${id}, type=${type}, constrainttype=${constraintType}, field=${field}}"
     }
 }

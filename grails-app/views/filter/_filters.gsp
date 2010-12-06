@@ -31,8 +31,8 @@
                     <g:each var="filter" in="${filters}">
                         <g:if test="${!filter.visible}">
                             <li>
-                                <g:remoteLink controller="filter" action="add" id="${filter.id}" update="filters">
-                                    ${filter.field}
+                                <g:remoteLink controller="filter" action="add" id="${filter.name}" update="filters">
+                                    <g:message code="filters.${filter.field}.title"/>
                                 </g:remoteLink>
                             </li>
                         </g:if>
@@ -48,7 +48,8 @@
 
 <script type="text/javascript">
     /*
-        Todo: see R
+        Need to call JS methods to apply theme to AJAX rendered input forms.    
+        Todo: see Requirement #641 - remove javascript input field styling
      */
     initCustomForms();
     initPopups();

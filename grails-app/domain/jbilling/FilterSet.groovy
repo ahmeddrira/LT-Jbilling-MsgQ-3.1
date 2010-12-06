@@ -20,31 +20,30 @@
 
 package jbilling
 
+import com.sapienter.jbilling.server.user.db.UserDTO
+
 /**
- * FilterController
+ * FilterSet
  
  * @author Brian Cowdery
  * @since  03-12-2010
  */
-class FilterController {
+class FilterSet {
 
-    def filterService
-
-    def add = {
-        def filters = filterService.showFilter(params["id"])
-        render template: "filters", model:[filters: filters]
+    static mapping = {
+        id generator: 'org.hibernate.id.enhanced.TableGenerator',
+            params: [
+                table_name: 'jbilling_seqs',
+                segment_column_name: 'name',
+                value_column_name: 'next_id',
+                segment_value: 'filter'
+            ]
+        user column: 'user_id'
     }
 
-    def remove = {
-        def filters = filterService.removeFilter(params["id"])
-        render template: "filters", model:[filters: filters]
-    }
-    
-    def save = {
+    static hasMany = [ filters: Filter ]
+    static belongsTo = [ user: com.sapienter.jbilling.server.user.db.UserDTO ]
 
-    }
+    String name
 
-    def load = {
-
-    }
 }

@@ -9,10 +9,9 @@ import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.user.db.UserDTO
+import com.sapienter.jbilling.server.user.db.UserStatusDAS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import grails.plugins.springsecurity.Secured
-import com.sapienter.jbilling.server.user.db.UserStatusDTO
-import com.sapienter.jbilling.server.user.db.UserStatusDAS
 
 @Secured(['isAuthenticated()'])
 class UserController {
@@ -30,7 +29,7 @@ class UserController {
     }
 
     def list = {
-        def filters = filterService.getFilters(FilterType.CUSTOMER, params);
+        def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()
 
         def users = UserDTO.withCriteria {

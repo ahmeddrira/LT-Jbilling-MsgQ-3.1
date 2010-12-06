@@ -1,3 +1,4 @@
+<%@ page import="jbilling.FilterSet" %>
 
 <%--
   Filter side panel template. Prints all filters contained in the "filters" page variable.
@@ -45,8 +46,22 @@
     <g:link class="submit2 save" controller="filter" action="edit" params="[fromAction: actionName, fromController: controllerName]">
         <span><g:message code="filters.save.button"/></span>
     </g:link>
-    
-    <a href="#" class="submit2 load"><span><g:message code="filters.load.button"/></span></a>
+
+    <div class="dropdown">
+        <a href="#" class="submit2 load open"><span><g:message code="filters.load.button"/></span></a>    
+        <div class="drop">
+            <ul>
+                <g:each var="filterset" in="${FilterSet.findAllByUserId((Integer) session['user_id'])}">
+                    <li>
+                        <g:remoteLink controller="filter" action="load" id="${filterset.id}" update="filters">
+                            ${filterset.name}
+                        </g:remoteLink>
+                    </li>
+                </g:each>
+            </ul>
+        </div>
+    </div>
+
 </div>
 
 <script type="text/javascript">

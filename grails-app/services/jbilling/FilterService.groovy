@@ -86,6 +86,20 @@ class FilterService {
     }
 
     /**
+     * Loads the filters for the given FilterSet id, updating the filter list
+     * in the session for current usage.
+     *
+     * @param filterSetId filter set id
+     * @return filter list
+     */
+    def Object loadFilters(Integer filterSetId) {
+        def filterset = FilterSet.get(filterSetId)
+        def type = (FilterType) session[SESSION_CURRENT_FILTER_TYPE]
+        session[getSessionKey(type)] = filterset.filters
+        return filterset.filters
+    }
+
+    /**
      * Changes the visibility of a filter so that it appears in the filter pane.
      *
      * @param name filter name to show

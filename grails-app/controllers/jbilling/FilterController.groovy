@@ -48,8 +48,7 @@ class FilterController {
     def save = {
         def filters = filterService.getCurrentFilters()
 
-        def filterset = new FilterSet(params)
-        filterset.userId = (Integer) session['user_id']
+        def filterset = new FilterSet(name: params["name"], userId: (Integer) session['user_id'])
         filters.each { filterset.addToFilters(new Filter(it)) }
         filterset.save(flush: true)
 
@@ -58,6 +57,7 @@ class FilterController {
     }
 
     def load = {
-
+        def filters = filterService.loadFilters(params.int("id"))
+        render template: "filters", model:[filters: filters]        
     }
 }

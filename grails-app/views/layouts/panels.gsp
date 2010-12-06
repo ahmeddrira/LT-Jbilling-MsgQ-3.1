@@ -32,7 +32,7 @@
             <!-- filters -->
             <g:formRemote id="filters-form" name="filters-form" url="[action: list]" onSuccess="render(data, first);">
                 <g:hiddenField name="applyFilter" value="true"/>
-
+                
                 <div id="filters">
                     <g:if test="${filters}">
                         <g:render template="/filter/filters"/>

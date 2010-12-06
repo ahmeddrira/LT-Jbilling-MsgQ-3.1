@@ -1,6 +1,6 @@
 
 <%--
-  _filters
+  Filter side panel template. Prints all filters contained in the "filters" page variable.
 
   @author Brian Cowdery
   @since  03-12-2010
@@ -42,14 +42,17 @@
         </div>
     </g:if>
 
-    <a href="_filters.gsp#" class="submit2 save"><span><g:message code="filters.save.button"/></span></a>
-    <a href="_filters.gsp#" class="submit2 load"><span><g:message code="filters.load.button"/></span></a>
+    <g:link class="submit2 save" controller="filter" action="edit" params="[fromAction: actionName, fromController: controllerName]">
+        <span><g:message code="filters.save.button"/></span>
+    </g:link>
+    
+    <a href="#" class="submit2 load"><span><g:message code="filters.load.button"/></span></a>
 </div>
 
 <script type="text/javascript">
     /*
         Need to call JS methods to apply theme to AJAX rendered input forms.    
-        Todo: see Requirement #641 - remove javascript input field styling
+        Todo: see Requirement #641 - remove JavaScript input field styling
      */
     initCustomForms();
     initPopups();

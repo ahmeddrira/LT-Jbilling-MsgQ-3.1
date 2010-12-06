@@ -535,16 +535,17 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 -- filter database tables
 drop table if exists filter;
 create table filter (
-    id int not null,    
+    id int not null,
+    filter_set_id int not null,
     type varchar(255) not null,
     constraint_type varchar(255) not null,
     field varchar(255) not null,
     template varchar(255) not null,
     visible bool not null,
-    integer_value int not null,
-    string_value varchar(255) not null,
-    start_date_value timestamp not null,
-    end_date_value timestamp not null,
+    integer_value int,
+    string_value varchar(255),
+    start_date_value timestamp,
+    end_date_value timestamp,
     version int not null,
     primary key (id)
 );
@@ -558,16 +559,5 @@ create table filter_set (
     primary key (id)
 );
 
-drop table if exists filter_set_filter;
-create table filter_set_filter (
-    filter_set_filters_id int,
-    filter_id int
-);
-
-insert into filter (id, type, constraint_type, field, template, visible, version) values (1, 'ALL', 'EQ', 'id', 'id', true, 0);
-insert into filter (id, type, constraint_type, field, template, visible, version) values (2, 'ALL', 'DATE_BETWEEN', 'createDatetime', 'created', true, 0);
-insert into filter (id, type, constraint_type, field, template, visible, version) values (3, 'CUSTOMER', 'STATUS', 'userStatus', 'customer/status', true, 0);
-insert into filter (id, type, constraint_type, field, template, visible, version) values (4, 'CUSTOMER', 'LIKE', 'userName', 'customer/login', true, 0);
-insert into filter (id, type, constraint_type, field, template, visible, version) values (5, 'CUSTOMER', 'EQ', 'language.id', 'customer/language', false, 0);
-
-insert into jbilling_seqs (name, next_id) values ('filter', (select round(max(id)/100)+1 from filter));
+insert into jbilling_seqs (name, next_id) values ('filter', 1);
+insert into jbilling_seqs (name, next_id) values ('filter_set', 1);

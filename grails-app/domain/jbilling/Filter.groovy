@@ -38,9 +38,17 @@ class Filter {
            value_column_name: 'next_id',
            segment_value: 'filter'
            ]
+        filterSet column: 'filter_set_id'
     }
 
-    static belongsTo = FilterSet
+    static constraints = {
+        stringValue(blank:true, nullable:true)
+        integerValue(nullable:true)
+        startDateValue(nullable:true)
+        endDateValue(nullable:true)
+    }
+
+    static belongsTo = [filterSet: FilterSet]
 
     FilterType type
     FilterConstraint constraintType
@@ -52,6 +60,21 @@ class Filter {
     Integer integerValue
     Date startDateValue
     Date endDateValue
+
+    def Filter() {
+    }
+
+    def Filter(Filter filter) {
+        this.type = filter.type
+        this.constraintType = filter.constraintType
+        this.field = filter.field
+        this.template = filter.template
+        this.visible = filter.visible
+        this.stringValue = filter.stringValue
+        this.integerValue = filter.integerValue
+        this.startDateValue = filter.startDateValue
+        this.endDateValue = filter.endDateValue
+    }
 
     def Object getValue() {
         if (stringValue != null)

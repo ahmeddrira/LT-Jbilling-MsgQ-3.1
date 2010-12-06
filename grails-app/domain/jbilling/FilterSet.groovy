@@ -20,8 +20,6 @@
 
 package jbilling
 
-import com.sapienter.jbilling.server.user.db.UserDTO
-
 /**
  * FilterSet
  
@@ -36,14 +34,16 @@ class FilterSet {
                 table_name: 'jbilling_seqs',
                 segment_column_name: 'name',
                 value_column_name: 'next_id',
-                segment_value: 'filter'
+                segment_value: 'filter_set'
             ]
-        user column: 'user_id'
     }
 
-    static hasMany = [ filters: Filter ]
-    static belongsTo = [ user: com.sapienter.jbilling.server.user.db.UserDTO ]
+    static hasMany = [filters: Filter]   
 
     String name
+    Integer userId
 
+    public String toString ( ) {
+        return "FilterSet{id=${id}, name=${name}, userId=${userId}, filters=${filters?.size()}}"
+    }
 }

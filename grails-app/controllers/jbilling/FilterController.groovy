@@ -22,7 +22,7 @@ package jbilling
 
 /**
  * FilterController
- 
+ *
  * @author Brian Cowdery
  * @since  03-12-2010
  */
@@ -39,9 +39,22 @@ class FilterController {
         def filters = filterService.removeFilter(params["id"])
         render template: "filters", model:[filters: filters]
     }
-    
-    def save = {
 
+    def edit = {
+        def filters = filterService.getCurrentFilters()
+        [ filters: filters, fromAction: params["fromAction"], fromController: params["fromController"] ]
+    }
+
+    def save = {
+        def filters = filterService.getCurrentFilters()
+
+        def filterset = new FilterSet(params)
+        filterset.userId = (Integer) session['user_id']
+        filters.each { filterset.addToFilters(new Filter(it)) }
+        filterset.save(flush: true)
+
+        // redirect back to the original action
+        redirect action: params["fromAction"], controller: params["fromController"]
     }
 
     def load = {

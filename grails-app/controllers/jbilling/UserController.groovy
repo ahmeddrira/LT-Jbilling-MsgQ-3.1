@@ -31,6 +31,7 @@ class UserController {
     def list = {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()
+/*
 
         def users = UserDTO.withCriteria {
             and {
@@ -60,6 +61,9 @@ class UserController {
                 eq('deleted', 0)
             }
         }
+*/
+
+        def users = []
 
         if (params["applyFilter"]) {
             render template: "table", model: [users: users, statuses: statuses, filters: filters]

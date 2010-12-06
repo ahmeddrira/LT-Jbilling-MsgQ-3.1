@@ -73,7 +73,18 @@ class FilterService {
         session[key] = filters
         return filters
     }
-        
+
+    /**
+     * Returns the current filters based on the last set used. For example, if you had previously
+     * fetched customer filters, this method would return the customer filters.
+     *
+     * @return current filter list
+     */
+    def Object getCurrentFilters() {
+        def type = (FilterType) session[SESSION_CURRENT_FILTER_TYPE]
+        return getFilters(type, null)
+    }
+
     /**
      * Changes the visibility of a filter so that it appears in the filter pane.
      *
@@ -81,14 +92,13 @@ class FilterService {
      * @return updated filter list
      */
     def Object showFilter(String name) {
-        def type = (FilterType) session[SESSION_CURRENT_FILTER_TYPE]
-        def filters = getFilters(type, null)
-
+        def filters = getCurrentFilters()
         filters?.each{
             if (it.name == name)
                 it.visible = true 
         }
 
+        def type = (FilterType) session[SESSION_CURRENT_FILTER_TYPE]
         session[getSessionKey(type)] = filters
         return filters
     }
@@ -102,9 +112,7 @@ class FilterService {
      * @return updated filter list
      */
     def Object removeFilter(String name) {
-        def type = (FilterType) session[SESSION_CURRENT_FILTER_TYPE]
-        def filters = getFilters(type, null)
-
+        def filters = getCurrentFilters()
         filters?.each{
             if (it.name == name) {
                 it.visible = false
@@ -112,6 +120,7 @@ class FilterService {
             }
         }
 
+        def type = (FilterType) session[SESSION_CURRENT_FILTER_TYPE]
         session[getSessionKey(type)] = filters
         return filters
     }

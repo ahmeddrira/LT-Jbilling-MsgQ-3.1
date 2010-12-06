@@ -44,7 +44,7 @@ class InvoiceController {
 				flash.args= [params["id"]]
 			}
 		}
-		render template: "lists", model: [invoices:invoices, userId:userId]
+		[invoices:invoices, userId:userId]
 	}
 	
 	def show = {
@@ -63,6 +63,7 @@ class InvoiceController {
 				invoice= webServicesSession.getInvoiceWS(id)
 				log.info "Found invoice ${invoice}. Loading..."
 				user= webServicesSession.getUserWS(invoice?.getUserId())
+				log.info "Found user ${user.contact?.firstName} ${user.contact?.lastName}"
 				payments= new ArrayList<PaymentWS>(invoice?.payments?.length)
 				for(Integer pid: invoice?.payments) {
 					PaymentWS payment=webServicesSession.getPayment(pid)

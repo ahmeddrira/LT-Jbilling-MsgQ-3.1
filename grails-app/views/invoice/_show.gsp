@@ -2,81 +2,106 @@
 <%@ page import="com.sapienter.jbilling.server.payment.db.PaymentResultDTO" %>
 <%@ page import="com.sapienter.jbilling.server.payment.db.PaymentMethodDTO" %>
 
-<h2>${user?.getContact()?.firstName}&nbsp;${user?.getContact()?.lastName}</h2>
-${user?.companyName }
-<br/><br/>
-<table border=1 cellpadding="0">
-<tr><td><g:message code="invoice.label.user.id"/>: ${user?.userId }
-<tr><td><g:message code="invoice.label.login.name"/>: ${user?.userName }
-<tr><td><g:message code="invoice.label.lifetime.revenue"/>: ${Util.formatMoney(totalRevenue,session["user_id"],invoice.currencyId, false)}
-<tr><td><g:message code="prompt.customer.note"/>:<BR>
-<g:textArea cols="40" rows="5" name="notes" value="${user?.notes}" />
-<input type="submit" value="Edit Note" onclick="javascript: window.location='/jbilling/customerInspector/editNote/${user?.userId }';"/>
+<div class="column-hold">
 
-<hr>
-<table>
-<tr><td><g:message code="invoice.label.id"/></td><td>${invoice.id}</td>
-<tr><td><g:message code="invoice.label.number"/></td><td>${invoice.number}</td>
-<tr><td><g:message code="invoice.label.status"/></td><td>${invoice.statusDescr}</td>
-<tr><td><g:message code="invoice.label.date"/></td><td>${Util.formatDate(invoice.createDateTime, session["user_id"]) }</td>
-<tr><td><g:message code="invoice.label.duedate"/></td><td>${Util.formatDate(invoice.dueDate, session["user_id"]) }</td>
-<tr><td><g:message code="invoice.label.gen.date"/></td><td>${Util.formatDate(invoice.createTimeStamp, session["user_id"]) }</td>
-<tr><td><g:message code="invoice.label.amount"/></td><td>${Util.formatMoney(new BigDecimal(invoice.total),
-					session["user_id"],invoice.currencyId, false)}</td>
-<tr><td><g:message code="invoice.label.balance"/></td><td>${Util.formatMoney(new BigDecimal(invoice.balance),
-					session["user_id"],invoice.currencyId, false)}</td>
-<tr><td><g:message code="invoice.label.carried.bal"/></td><td>${Util.formatMoney(new BigDecimal(invoice.balance),
-					session["user_id"],invoice.currencyId, false)}</td>
-<tr><td><g:message code="invoice.label.currency"/></td><td>${invoice.currencyId}</td>
-<tr><td><g:message code="invoice.label.payment.attempts"/></td><td>${invoice.paymentAttempts}</td>
-<tr><td><g:message code="invoice.label.orders"/></td>
-<td><g:each var="order" in="${invoice.orders}">
-	${order.toString()}&nbsp;
-</g:each>
-</td>
-<tr><td><g:message code="invoice.label.delegation"/></td><td>${delegatedInvoices}</td>
-</table>
+<!-- Invoice details -->
+<div class="box">
 
-<tr><td><h3><g:message code="invoice.label.lines"/></h3>
-<table><thead>
-<tr><td><g:message code="label.gui.description"/></td>
-	<td><g:message code="label.gui.quantity"/></td>
-	<td><g:message code="label.gui.price"/></td>
-	<td><g:message code="label.gui.amount"/></td>
-</tr></thead><tbody>
-<g:each var="line" in="${invoice.invoiceLines}" status="idx">
-	<tr><td>${line.description}</td>
-		<td>${(int)line.quantity}</td>
-		<td>${Util.formatMoney(new BigDecimal(line.price?:"0.0"),
-					session["user_id"],invoice.currencyId, false)}</td>
-		<td>${Util.formatMoney(new BigDecimal(line.amount),
-					session["user_id"],invoice.currencyId, false)}</td>
-	</tr>
-</g:each>
-</tbody></table>
+	<strong>${user?.contact?.firstName?:'<firstName>'}
+		&nbsp;${user?.contact?.lastName?:'<lastName>'}
+		<br/>
+		<em>${user?.companyName}</em>
+	</strong>
 
-<tr><td><h3><g:message code="invoice.label.payment.refunds"/></h3>
-<table><thead>
-<tr><td><g:message code="label.gui.date"/></td>
-	<td><g:message code="label.gui.payment.refunds"/></td>
-	<td><g:message code="label.gui.amount"/></td>
-	<td><g:message code="label.gui.method"/></td>
-	<td><g:message code="label.gui.result"/></td>
-	<td>.</td>
-</tr></thead><tbody>
-<g:each var="payment" in="${payments}" status="idx">
-	<tr><td>${Util.formatDate(payment.paymentDate, session["user_id"])}</td>
-		<td>${payment.isRefund?"R":"P"}</td>
-		<td>${Util.formatMoney(new BigDecimal(payment.amount),
-					session["user_id"],invoice.currencyId, false)}</td>
-		<td>${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</td>
-		<td>${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</td>
-		<td>*</td>
-	</tr>
-</g:each>
-</tbody></table>
+	<dl class="other">
+		<dt><g:message code="invoice.label.user.id"/>:</dt><dd>${user?.userId }</dd>
+		<dt><g:message code="invoice.label.login.name"/>:</dt><dd>${user?.userName}</dd>
+		<dt><g:message code="invoice.label.lifetime.revenue"/>:</dt><dd>${Util.formatMoney(totalRevenue,session["user_id"],invoice?.currencyId, false)}</dd>
+		<dt><g:message code="prompt.customer.note"/>:</dt>
+		<dd><br/>
+			${user?.notes}
+		</dd>
+		<hr>
+		<dl>
+		<dt><g:message code="invoice.label.id"/></dt><dd>${invoice.id}</dd>
+		<dt><g:message code="invoice.label.number"/></dt><dd>${invoice.number}</dd>
+		<dt><g:message code="invoice.label.status"/></dt><dd>${invoice.statusDescr}</dd>
+		<dt><g:message code="invoice.label.date"/></dt><dd>${Util.formatDate(invoice.createDateTime, session["user_id"])}</dd>
+		<dt><g:message code="invoice.label.duedate"/></dt><dd>${Util.formatDate(invoice.dueDate, session["user_id"])}</dd>
+		<dt><g:message code="invoice.label.gen.date"/></dt><dd>${Util.formatDate(invoice.createTimeStamp, session["user_id"])}</dd>
+		<dt><g:message code="invoice.label.amount"/></dt><dd>${Util.formatMoney(new BigDecimal(invoice.total),
+							session["user_id"],invoice?.currencyId, false)}</dd>
+		<dt><g:message code="invoice.label.balance"/></dt><dd>${Util.formatMoney(new BigDecimal(invoice.balance),
+							session["user_id"],invoice?.currencyId, false)}</dd>
+		<dt><g:message code="invoice.label.carried.bal"/></dt><dd>${Util.formatMoney(new BigDecimal(invoice.balance),
+							session["user_id"],invoice?.currencyId, false)}</dd>
+		<dt><g:message code="invoice.label.currency"/></dt><dd>${invoice?.currencyId}</dd>
+		<dt><g:message code="invoice.label.payment.attempts"/></dt><dd>${invoice.paymentAttempts}</dd>
+		<dt><g:message code="invoice.label.orders"/></dt><dd><g:each var="order" in="${invoice.orders}">
+			${order.toString()}&nbsp;
+		</g:each></dd>
+		<dt><g:message code="invoice.label.delegation"/></dt><dd>${delegatedInvoices}</dd>
+	</dl>
+
+<div class="heading">
+	<strong><g:message code="invoice.label.lines"/></strong>
+</div>
+<div class="box-cards box-cards-open">
+	<div class="box-cards-title">
+		<span><g:message code="label.gui.amount"/></span>
+		<span style="width:25%"><g:message code="label.gui.description"/></span>
+		<span style="width:25%"><g:message code="label.gui.quantity"/></span>
+		<span style="width:25%"><g:message code="label.gui.price"/></span>
+	</div>
+	<div class="box-card-hold">			   
+		<div class="form-columns">
+			<g:each var="line" in="${invoice.invoiceLines}" status="idx">
+				<label>${line.description}</label>
+				<label>${(int)line.quantity}</label>
+				<label>${Util.formatMoney(new BigDecimal(line.price?:"0.0"),
+								session["user_id"],invoice?.currencyId, false)}</label>
+				<label>${Util.formatMoney(new BigDecimal(line.amount),
+								session["user_id"],invoice?.currencyId, false)}</label>
+			</g:each>
+		</div>			  
+	</div>
+</div>
+
+<div class="heading">
+	<strong><g:message code="invoice.label.payment.refunds"/></strong>
+</div>
+
+<div class="box-cards box-cards-open">
+	<div class="box-cards-title">
+		<span>.</span>
+		<span style="width:20%"><g:message code="label.gui.date"/></span>
+		<span style="width:20%"><g:message code="label.gui.payment.refunds"/></span>
+		<span style="width:20%"><g:message code="label.gui.amount"/></span>
+		<span style="width:20%"><g:message code="label.gui.method"/></span>
+		<span style="width:20%"><g:message code="label.gui.result"/></span>
+	</div>
+	<div class="box-card-hold">
+		<div class="form-columns">
+			<g:each var="payment" in="${payments}" status="idx">
+				<label>${Util.formatDate(payment.paymentDate, session["user_id"])}</label>
+				<label>${payment.isRefund?"R":"P"}</label>
+				<label>${Util.formatMoney(new BigDecimal(payment.amount),
+								session["user_id"],invoice?.currencyId, false)}</label>
+				<label>${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</label>
+				<label>${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</label>
+				<label>*</label>
+			</g:each>			
+		</div>			  
+	</div>
+</div>
 
 <hr></hr>
 
-<h3><g:message code="invoice.label.note"/></h3>
+<div class="heading">
+	<strong><g:message code="invoice.label.note"/></strong>
+</div>
+<br/>
 ${invoice.customerNotes }
+</div>
+
+</div>

@@ -8,6 +8,7 @@ TEST*.xml
 activemq-data/
 tmp/
 logs/
+nullmediation/
 *.log
 *~
 .ant-targets*.xml

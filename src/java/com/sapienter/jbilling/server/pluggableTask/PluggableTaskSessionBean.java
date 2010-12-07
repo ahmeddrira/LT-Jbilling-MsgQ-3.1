@@ -75,13 +75,6 @@ public class PluggableTaskSessionBean implements IPluggableTaskSessionBean {
         return retValue;
     }
 
-    public void create(Integer executorId, PluggableTaskDTO dto) {
-            
-        PluggableTaskBL bl = new PluggableTaskBL();
-        bl.create(dto);
-        
-    }
-
     public void createParameter(Integer executorId, Integer taskId, PluggableTaskParameterDTO dto) {
             
         PluggableTaskBL bl = new PluggableTaskBL();

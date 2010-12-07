@@ -28,6 +28,5 @@
 </div>
 
 <div class="btn-box">
-    <a href="${createLink(action: 'create')}" class="submit add"><span><g:message code="button.create"/></span></a>
-    <a href="${createLink(action: 'delete')}" class="submit delete"><span><g:message code="button.delete"/></span></a>
+    <a href="${createLink(action: 'showForm')}" class="submit add"><span><g:message code="button.create"/></span></a>
 </div>

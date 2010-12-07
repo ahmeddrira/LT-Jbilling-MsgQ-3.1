@@ -25,6 +25,7 @@
 package com.sapienter.jbilling.server.pluggableTask;
 
 import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
@@ -321,4 +322,22 @@ public abstract class PluggableTask {
             ResourceFactory.getResourceChangeScannerService().start();
         }
     }
+
+	public List<ParameterDescription> getParameterDescriptions() {
+		return null;
+    }
+	
+	public boolean validate() {
+		if (getParameterDescriptions() != null) {
+			// validate that those required are present
+			for (ParameterDescription param: getParameterDescriptions()) {
+			    if (param.isRequired()) {
+				    if(parameters == null || !parameters.containsKey(param.getName())) {
+				        return false;
+				    }
+			    }
+			}
+		}
+		return true;
+	}
 }

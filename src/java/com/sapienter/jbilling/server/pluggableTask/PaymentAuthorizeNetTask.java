@@ -37,6 +37,7 @@ import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
@@ -47,16 +48,29 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             implements PaymentTask {
 
     // pluggable task parameters names
-    public static final String PARAMETER_LOGIN = "login";
-    public static final String PARAMETER_TRANSACTION = "transaction";
-    public static final String PARAMETER_TEST = "test";
-    public static final String PARAMETER_AVS = "submit_avs";
+    public static final ParameterDescription PARAMETER_LOGIN = 
+        new ParameterDescription("login", true, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_TRANSACTION = 
+        new ParameterDescription("transaction", true, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_TEST = 
+        new ParameterDescription("test", false, ParameterDescription.Type.BOOLEAN);
+    public static final ParameterDescription PARAMETER_AVS = 
+        new ParameterDescription("submit_avs", false, ParameterDescription.Type.STR);
+    
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_LOGIN); 
+            add(PARAMETER_TRANSACTION); 
+            add(PARAMETER_TEST); 
+            add(PARAMETER_AVS); 
+        }
+    };
 
     //private static final String url = "https://certification.authorize.net/gateway/transact.dll";
     private static final String url = "https://secure.authorize.net/gateway/transact.dll";
     private static final int timeOut = 10000; // in millisec
     
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(PaymentAuthorizeNetTask.class);
     
     /* (non-Javadoc)
      * @see com.sapienter.jbilling.server.pluggableTask.PaymentTask#process(com.sapienter.betty.server.payment.PaymentDTOEx)
@@ -65,7 +79,6 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             throws PluggableTaskException{
         boolean retValue = false;
         boolean isTest = false;
-        log = Logger.getLogger(PaymentAuthorizeNetTask.class);
         
         // authorize.net is not available for payouts to partners
         if (paymentInfo.getPayoutId() != null) {
@@ -85,7 +98,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             
             if (paymentInfo.getCreditCard() == null &&
                     paymentInfo.getAch() == null) {
-                log.error("Can't process without a credit card or ach");
+                LOG.error("Can't process without a credit card or ach");
                 throw new TaskException("Credit card/ACH not present in payment");
             }
             
@@ -98,7 +111,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             
             if (paymentInfo.getCreditCard() != null &&
                     paymentInfo.getAch() != null) {
-                log.warn("Both cc and ach are present");
+                LOG.warn("Both cc and ach are present");
                 method = 2; // default to ach (cheaper)
             }
             
@@ -107,7 +120,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             if (paymentInfo.getIsRefund() == 1 &&
                     (paymentInfo.getPayment() == null ||
                         paymentInfo.getPayment().getAuthorization() ==null)) {
-                log.error("Can't process refund without a payment with an" +
+                LOG.error("Can't process refund without a payment with an" +
                         " authorization record");
                 throw new TaskException("Refund without previous " +
                         "authorization");
@@ -119,15 +132,15 @@ public class PaymentAuthorizeNetTask extends PluggableTask
                         paymentInfo.getCreditCard());
             }
             
-            String login = (String) parameters.get(PARAMETER_LOGIN);
-            String transaction = (String) parameters.get(PARAMETER_TRANSACTION);
+            String login = (String) parameters.get(PARAMETER_LOGIN.getName());
+            String transaction = (String) parameters.get(PARAMETER_TRANSACTION.getName());
             
             if (login == null || login.length() == 0 || transaction == null ||
                     transaction.length() == 0) {
                 throw new TaskException("invalid parameters");
             }
             
-            String testStr = (String) parameters.get(PARAMETER_TEST);
+            String testStr = (String) parameters.get(PARAMETER_TEST.getName());
             if (testStr != null) {
                 isTest = true;
             }
@@ -137,7 +150,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
                     paymentInfo.getCurrency().getId());
             String currencyCode = currencyBL.getEntity().getCode();
             
-            log.debug("making call with " + login + " " + transaction + 
+            LOG.debug("making call with " + login + " " + transaction + 
                     " " + expiry);
             
             NameValuePair[] data;
@@ -178,10 +191,10 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             }
             
             // see if AVS info has to be included
-            String doAvs = (String) parameters.get(PARAMETER_AVS);
+            String doAvs = (String) parameters.get(PARAMETER_AVS.getName());
             if (doAvs != null && doAvs.equals("true")) {
                 data = addAVSFields(paymentInfo.getUserId(), data);
-                log.debug("returning after avs " + data);
+                LOG.debug("returning after avs " + data);
             }
             
             AuthorizeNetResponseDTO response = makeCall(data);
@@ -191,13 +204,13 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             if (Integer.valueOf(response.getPaymentAuthorizationDTO().
                     getCode1()).intValue() == 1) {
                 paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
-                log.debug("result is ok");
+                LOG.debug("result is ok");
             } else {
                 // there are actually two other codes, 2 is decalined, but
                 // 3 is just 'error' may be for a 3 it should just return true
                 // to try another processor. Now we only do that for exceptions
                 paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
-                log.debug("result is fail");
+                LOG.debug("result is fail");
             }
             
             // now create the db row with the results of this authorization call
@@ -207,26 +220,26 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             bl.create(response.getPaymentAuthorizationDTO(), paymentInfo.getId());
             
         } catch (HttpException e) {
-            log.warn("Http exception when calling Authorize.net", e);
+            LOG.warn("Http exception when calling Authorize.net", e);
             paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));            
             retValue = true;
         } catch (IOException e) {
-            log.warn("IO exception when calling Authorize.net", e);
+            LOG.warn("IO exception when calling Authorize.net", e);
             paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));            
             retValue = true;
         } catch (Exception e) {
-            log.error("Exception", e);
+            LOG.error("Exception", e);
             throw new PluggableTaskException(e);
         }
         
         // let's make this usefull for testing too
         if (isTest) {
-            log.debug("Running Authorize.net task in test mode!");
+            LOG.debug("Running Authorize.net task in test mode!");
             Random rand = new Random();
             paymentInfo.setPaymentResult(new PaymentResultDAS().find(new Integer(rand.nextInt(3) + 1)));
             retValue = false;
         }
-        log.debug("returning "  + retValue);
+        LOG.debug("returning "  + retValue);
         return retValue;
     }
 
@@ -378,7 +391,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             retValue  = (NameValuePair[]) result.toArray(retValue);
             return retValue;
         } catch (Exception e) {
-            log.warn("Exception when trying to add the AVS fields", e);
+            LOG.warn("Exception when trying to add the AVS fields", e);
             return fields;
         }
     }
@@ -394,7 +407,6 @@ public class PaymentAuthorizeNetTask extends PluggableTask
     public AuthorizeNetResponseDTO makeCall(NameValuePair[] data) 
             throws HttpException, IOException {
         Credentials creds = null;
-        log = Logger.getLogger(PaymentAuthorizeNetTask.class);
 //            creds = new UsernamePasswordCredentials(args[1], args[2]);
 
         //create a singular HttpClient object
@@ -419,7 +431,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
         client.executeMethod(post);
         responseBody = post.getResponseBodyAsString();
 
-        log.debug("Got response:" + responseBody);
+        LOG.debug("Got response:" + responseBody);
         //write out the response body
         AuthorizeNetResponseDTO dto = new AuthorizeNetResponseDTO(
                 responseBody);
@@ -441,9 +453,8 @@ public class PaymentAuthorizeNetTask extends PluggableTask
      */
     public boolean preAuth(PaymentDTOEx payment) 
             throws PluggableTaskException {
-        log = Logger.getLogger(PaymentAuthorizeNetTask.class);
-        String login = (String) parameters.get(PARAMETER_LOGIN);
-        String transaction = (String) parameters.get(PARAMETER_TRANSACTION);
+        String login = (String) parameters.get(PARAMETER_LOGIN.getName());
+        String transaction = (String) parameters.get(PARAMETER_TRANSACTION.getName());
         
         if (login == null || login.length() == 0 || transaction == null ||
                 transaction.length() == 0) {
@@ -473,7 +484,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             payment.setAuthorization(authDto);
             return false;
         } catch (Exception e) {
-            log.info("error trying to pre-authorize", e);
+            LOG.info("error trying to pre-authorize", e);
             return true;
         } 
     }
@@ -485,5 +496,10 @@ public class PaymentAuthorizeNetTask extends PluggableTask
         // the transactio id of the original authorization has to be included
         // along with the amount
         return true;
+    }
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
     }
 }

@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.pluggableTask.admin;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.CascadeType;
@@ -88,6 +89,20 @@ public class PluggableTaskDTO implements java.io.Serializable {
         type = new PluggableTaskTypeDTO();
     }
 
+    public PluggableTaskDTO(Integer entityId, PluggableTaskWS ws) {
+        this.entityId = entityId;
+        setProcessingOrder(ws.getProcessingOrder());
+        setNotes(ws.getNotes());
+        setType(new PluggableTaskTypeDAS().find(ws.getTypeId()));
+        parameters = new ArrayList<PluggableTaskParameterDTO>();
+        for (String key: ws.getParameters().keySet()) {
+            PluggableTaskParameterDTO parameter = new PluggableTaskParameterDTO();
+            parameter.setName(key);
+            parameter.setStrValue(ws.getParameters().get(key));
+            parameter.setTask(this);
+            parameters.add(parameter);
+        }
+    }
  
    public String toString() {
       StringBuffer str = new StringBuffer("{");

@@ -71,7 +71,7 @@ public class PluggableTaskManager<T> {
 
             // check if the order by is in place
             int processingOrder = aRule.getProcessingOrder().intValue();
-            // this is helpful also to indetify bad data in the table
+            // this is helpful also to identify bad data in the table
             if (processingOrder <= lastProcessingOrder) {
                 // means that the results are not ordered !
                 LOG.fatal("Results of processing tasks are not ordered");
@@ -109,6 +109,30 @@ public class PluggableTaskManager<T> {
         } catch (ClassNotFoundException e) {
             throw new PluggableTaskException("Can't find the classes for this" + " task. Class: "
                     + className + " Interface: " + interfaceName, e);
+        } catch (Exception e) {
+            throw new PluggableTaskException(e);
+        }
+
+    }
+    
+    public static Object getInstance(String className, String interfaceName) 
+            throws PluggableTaskException {
+        try {
+            Class task = Class.forName(className);
+            Class taskInterface = Class.forName(interfaceName);
+
+            if (taskInterface.isAssignableFrom(task)) {
+                Object thisTask = (Object) task.newInstance();
+                return thisTask;
+
+            }
+            throw new PluggableTaskException("The task " + className
+                    + " is not implementing " + interfaceName);
+
+        } catch (ClassNotFoundException e) {
+            throw new PluggableTaskException("Can't find the classes for this"
+                    + " task. Class: " + className + " Interface: "
+                    + interfaceName, e);
         } catch (Exception e) {
             throw new PluggableTaskException(e);
         }

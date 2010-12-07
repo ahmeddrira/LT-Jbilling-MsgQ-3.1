@@ -3,9 +3,9 @@ package com.sapienter.jbilling.client
 
 import java.util.List;
 
+import org.codehaus.groovy.grails.web.servlet.GrailsFlashScope 
 import org.springframework.context.support.ReloadableResourceBundleMessageSource 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sun.org.apache.bcel.internal.generic.FNEG;
 
 class ViewUtils {
 	// thanks Groovy for adding the setters and getters for me
@@ -19,7 +19,7 @@ class ViewUtils {
 	 * @return
 	 * true if there are validation errors, otherwise false
 	 */
-	boolean resolveExceptionForValidation(def flash, Locale locale, SessionInternalError exception) {
+	boolean resolveExceptionForValidation(GrailsFlashScope flash, Locale locale, SessionInternalError exception) {
 		List<String> messages = new ArrayList<String>();
 		if (exception.getErrorMessages()?.length > 0) {
 			for (String message : exception.getErrorMessages()) {

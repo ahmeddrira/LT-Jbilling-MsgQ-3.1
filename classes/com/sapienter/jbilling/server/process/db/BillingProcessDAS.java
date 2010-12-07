@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.process.db;
 import java.util.Date;
 import java.util.Iterator;
 
+import com.sapienter.jbilling.server.util.Constants;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
@@ -97,21 +98,6 @@ public class BillingProcessDAS extends AbstractDAS<BillingProcessDTO> {
         return query.iterate();
     }
 
-    public ScrollableResults findBillableUsersToProcess(int entityId) {
-        String findOrdersDue =
-            "SELECT a.id " +
-            " FROM UserDTO a, OrderDTO o" +
-            " WHERE a.id = o.baseUserByUserId.id" + 
-            " AND trunc(o.nextBillableDay) <= :dueDate" + 
-            " AND o.deleted = 0" +
-            " AND a.company.id = :entity ";
-        
-        Query query = getSession().createQuery(findOrdersDue);
-        query.setParameter("dueDate", new Date());
-        query.setParameter("entity", entityId);
-        return query.scroll();    
-    }
-
     /**
      * Search succesfull payments in Payment_Invoice map (with quantity > 0)
      * and returns result, groupped by currency
@@ -150,5 +136,50 @@ public class BillingProcessDAS extends AbstractDAS<BillingProcessDTO> {
         Query query = getSession().createQuery(hql);
         query.setParameter("processId", processId);
         return query.iterate();
+    }
+    
+    public ScrollableResults findBillableUsersToProcess(int entityId, Date processDate) {
+        String findOrdersDue =
+            "SELECT a.id " +
+            " FROM UserDTO a, OrderDTO o" +
+            " WHERE a.id = o.baseUserByUserId.id" +
+            " AND date(o.nextBillableDay) <= :dueDate" +
+            " AND o.deleted = 0" +
+            " AND a.company.id = :entity ";
+
+        Query query = getSession().createQuery(findOrdersDue);
+        query.setParameter("dueDate", processDate);
+        query.setParameter("entity", entityId);
+        return query.scroll();
+    }
+
+    private static final String BILLABLE_USERS_WITH_ORDER_HQL =
+            "select user.id "
+            + " from OrderDTO purchaseOrder "
+            + "     join purchaseOrder.baseUserByUserId as user "
+            + " where "
+            + "     user.deleted = 0 "
+            + "     and user.company.id = :entity_id "
+            + "     and purchaseOrder.orderStatus.id = :active_status_id "
+            + "     and ( "
+            + "         purchaseOrder.nextBillableDay is null"
+            + "         or date(purchaseOrder.nextBillableDay) <= :process_date "
+            + "     )";
+
+    /**
+     * Returns all billable users with an order to process. This can be either any open one-time
+     * order or an active recurring order with a valid next billable date.
+     *
+     * @param entityId entity id to find orders for
+     * @param processDate billing process run date
+     * @return billable users
+     */
+    public ScrollableResults findBillableUsersWithOrdersToProcess(int entityId, Date processDate) {
+        Query query = getSession().createQuery(BILLABLE_USERS_WITH_ORDER_HQL);
+        query.setParameter("entity_id", entityId);
+        query.setParameter("active_status_id", Constants.ORDER_STATUS_ACTIVE);
+        query.setParameter("process_date", processDate);
+        
+        return query.scroll();
     }
 }

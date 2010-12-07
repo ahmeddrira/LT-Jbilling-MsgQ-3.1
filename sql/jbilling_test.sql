@@ -182,6 +182,7 @@ DROP INDEX public.ix_invoice_line_invoice_id;
 DROP INDEX public.ix_invoice_due_date;
 DROP INDEX public.ix_invoice_date;
 DROP INDEX public.ix_el_main;
+DROP INDEX public.ix_contact_user_id;
 DROP INDEX public.ix_contact_phone;
 DROP INDEX public.ix_contact_orgname;
 DROP INDEX public.ix_contact_lname;
@@ -15145,6 +15146,9 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 77	22	com.sapienter.jbilling.server.mediation.task.MediationProcessTask	0
 78	23	com.sapienter.jbilling.server.rule.task.VelocityRulesGeneratorTask	2
 79	22	com.sapienter.jbilling.server.billing.task.BillingProcessTask	1
+81	22	com.sapienter.jbilling.server.process.task.ScpUploadTask	4
+82	22	com.sapienter.jbilling.server.process.task.SftpUploadTask	5
+84	20	com.sapienter.jbilling.server.process.task.BillableUserOrdersBillingProcessFilterTask	0
 \.
 
 
@@ -20665,6 +20669,13 @@ CREATE INDEX ix_contact_orgname ON contact USING btree (organization_name);
 --
 
 CREATE INDEX ix_contact_phone ON contact USING btree (phone_phone_number, phone_area_code, phone_country_code);
+
+
+--
+-- Name: ix_contact_user_id; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE INDEX ix_contact_user_id ON contact USING btree (user_id);
 
 
 --

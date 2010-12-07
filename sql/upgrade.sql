@@ -423,3 +423,7 @@ update invoice_line_type set description = 'item recurring' where id = 1;
 update invoice_line_type set order_position = 4 where id = 4;
 update invoice_line_type set order_position = 5 where id = 5;
 update invoice_line_type set order_position = 6 where id = 2;
+
+-- new billing process filter task 
+insert into pluggable_task_type values (84, 20, 'com.sapienter.jbilling.server.process.task.BillableUserOrdersBillingProcessFilterTask', 0);
+

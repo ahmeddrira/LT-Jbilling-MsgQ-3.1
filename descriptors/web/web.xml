@@ -124,6 +124,12 @@
         <servlet-class>com.sapienter.jbilling.client.util.ServerUpCheckServlet</servlet-class>
     </servlet>
 
+    <!-- File downloads from $JBILLING_HOME/resources/ -->
+    <servlet>
+        <servlet-name>resources</servlet-name>
+        <servlet-class>com.sapienter.jbilling.client.util.FileSystemProxyServlet</servlet-class>
+    </servlet>
+
     <!-- Spring MVC DispatcherServlet -->
     <servlet>
         <servlet-name>jbilling</servlet-name>
@@ -170,6 +176,12 @@
         <servlet-name>serverUpCheck</servlet-name>
         <url-pattern>/serverUpCheck</url-pattern>
     </servlet-mapping>
+
+    <!-- File download servlet mapping -->
+    <servlet-mapping>
+        <servlet-name>resources</servlet-name>
+        <url-pattern>/resources/*</url-pattern>
+    </servlet-mapping>   
 
     <!-- Spring MVC DispatcherServlet Mapping -->
     <servlet-mapping>

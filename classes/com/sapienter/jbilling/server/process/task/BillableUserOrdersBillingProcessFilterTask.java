@@ -20,24 +20,21 @@
 
 package com.sapienter.jbilling.server.process.task;
 
-import org.hibernate.ScrollableResults;
-
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
+import org.hibernate.ScrollableResults;
 
 import java.util.Date;
 
-
 /**
- * Basic filter task for returning the appropriate customers to run through the billing cycle.
- * The task returns all active customers
- * 
- * @author Kevin Salerno
+ * BillableUserOrdersBillingProcessFilterTask
  *
+ * @author Brian Cowdery
+ * @since 28-10-2010
  */
-public class BasicBillingProcessFilterTask extends PluggableTask implements IBillingProcessFilterTask {
+public class BillableUserOrdersBillingProcessFilterTask extends PluggableTask implements IBillingProcessFilterTask {
 
-    public ScrollableResults findUsersToProcess(Integer theEntityId, Date billingDate){        
-        return new BillingProcessDAS().findUsersToProcess(theEntityId);              
+    public ScrollableResults findUsersToProcess(Integer theEntityId, Date billingDate){
+        return new BillingProcessDAS().findBillableUsersWithOrdersToProcess(theEntityId, billingDate);
     }
 }

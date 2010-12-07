@@ -35,9 +35,10 @@
 						</div>
 						<div class="row">
 							<label><g:message code="prompt.product.categories" />:</label>
-							<div class="box"><g:select name="types" multiple="true"
-				from="${com.sapienter.jbilling.server.item.db.ItemTypeDTO.findAll()}"
-				optionKey="id" optionValue="description" value="${item?.itemTypes}" class="selectArea"/>
+							<div class="box">
+							<g:select name="types" multiple="true"
+								from="${com.sapienter.jbilling.server.item.db.ItemTypeDTO.findAll()}"
+								optionKey="id" optionValue="description" value="${item?.itemTypes}" class="selectArea"/>
 							</div>
 						</div>
 						
@@ -57,8 +58,10 @@
 						</div>
 						<div class="row">
 							<label><g:message code="prompt.product.decimal"/>:</label>
-							<div class="inp-bg"><g:checkBox name="hasDecimals"
-				checked="${(item?.hasDecimals > 0 ? true:false)}" class="field"/></div>
+							<div class="checkboxArea">
+								<g:checkBox name="hasDecimals"
+									checked="${(item?.hasDecimals > 0 ? true:false)}" class="cb outtaHere"/>
+							</div>
 						</div>
 						<div class="row">
 							<div class="box-cards box-cards-open">
@@ -83,14 +86,14 @@
 														<g:if test="${curr?.id == obj.currencyDTO?.id}">
 															<g:set var="priceFound" value="${true}"/>
 															<g:textField size="5" name="prices[${counter}].price"
-																value="${obj?.price}" />
+																value="${obj?.price}" class="field"/>
 														</g:if>
 													</g:each>
 													<g:if test="${!priceFound}">
-														<g:textField size="5" name="prices[${counter}].price" value="" />	
+														<g:textField size="5" name="prices[${counter}].price" value=""  class="field"/>	
 													</g:if>
 												</g:if> <g:else>
-													<g:textField size="5" name="prices[${counter}].price" value="" />
+													<g:textField size="5" name="prices[${counter}].price" value=""  class="field"/>
 												</g:else>
 											</label>
 											</div>
@@ -102,8 +105,10 @@
 							</div>
 							<div class="row">
 								<label><g:message code="prompt.product.manual.pricing" />:</label>
-								<div class="inp-bg"><g:checkBox name="priceManual"
-									checked="${(item?.priceManual > 0 ? true:false)}" class="field"/></div>
+								<div class="checkboxArea">
+									<g:checkBox name="priceManual"
+										checked="${(item?.priceManual > 0 ? true:false)}" class="cb outtaHere"/>
+								</div>
 							</div>
 						</div>
 					</div>

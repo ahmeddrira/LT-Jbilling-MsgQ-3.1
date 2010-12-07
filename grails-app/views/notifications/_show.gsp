@@ -95,7 +95,7 @@
 	</div>
 	
 	<div class="btn-box">
-	    <a href="#" onclick="$('#notifications').submit();" class="submit edit">
+	    <a href="${createLink(action: 'edit', params: [id:messageTypeId])}" class="submit edit">
 	    	<span><g:message code="button.edit"/></span></a>
 	</div>
 </div>

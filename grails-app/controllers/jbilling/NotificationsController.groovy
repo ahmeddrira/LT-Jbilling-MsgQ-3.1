@@ -32,18 +32,7 @@ class NotificationsController {
         log.info "Categories found= " + categorylist?.size()
         [lst:categorylist, languageId:languageId]
     }
-    
-    def lists = {
-        Integer entityId = webServicesSession.getCallerCompanyId();
-        log.info "entityId=" + entityId + " selectedId=" + params.selectedId
-        Integer categoryId= params["id"]?.toInteger() 
-		//params.selectedId.toInteger()*/
-        log.info "Category Id selected=" + categoryId       
-        def lstByCateg= NotificationMessageTypeDTO.findAllByCategory(new NotificationCategoryDTO(categoryId))        
-        log.info "size of messages=" + lstByCateg.size() + " of total " + NotificationMessageTypeDTO.list()?.size()
-        render template: 'lists', model:[lst:lstByCateg, languageId:languageId, entityId:entityId]
-    }
-    
+
     def preferences = {
         Map<PreferenceDTO> subList= new HashMap<PreferenceDTO>();
         List<PreferenceDTO> masterList= PreferenceDTO.findAllByForeignId(webServicesSession.getCallerCompanyId())
@@ -66,7 +55,30 @@ class NotificationsController {
         }        
         [subList:subList, languageId:languageId]
     }
-    
+
+	def editPreferences = {
+		Map<PreferenceDTO> subList= new HashMap<PreferenceDTO>();
+		List<PreferenceDTO> masterList= PreferenceDTO.findAllByForeignId(webServicesSession.getCallerCompanyId())
+		log.info "masterList.size=" + masterList.size()
+		for(PreferenceDTO dto: masterList) {
+			Integer prefid= dto.getPreferenceType().getId()
+			switch (prefid) {
+				case Constants.PREFERENCE_TYPE_SELF_DELIVER_PAPER_INVOICES:
+				case Constants.PREFERENCE_TYPE_INCLUDE_CUSTOMER_NOTES:
+				case Constants.PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP:
+				case Constants.PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP2:
+				case Constants.PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP3:
+				case Constants.PREFERENCE_TYPE_USE_INVOICE_REMINDERS:
+				case Constants.PREFERENCE_TYPE_NO_OF_DAYS_INVOICE_GEN_1_REMINDER:
+				case Constants.PREFERENCE_TYPE_NO_OF_DAYS_NEXT_REMINDER:
+					log.info "Adding dto: " + dto.getPreferenceType().getId()
+					subList.put(dto.getPreferenceType().getId(), dto)
+					break;
+			}
+		}
+		[subList:subList, languageId:languageId]
+	}
+
     def savePrefs ={
         log.info "pref[5].value=" + params.get("pref[5].value")
         List<PreferenceWS> prefDTOs=bindDTOs(params)
@@ -128,7 +140,18 @@ class NotificationsController {
         }
         return prefDTOs;
     }
-    
+	
+	def lists = {
+		Integer entityId = webServicesSession.getCallerCompanyId();
+		log.info "entityId=" + entityId + " selectedId=" + params.selectedId
+		Integer categoryId= params["id"]?.toInteger()
+		//params.selectedId.toInteger()*/
+		log.info "Category Id selected=" + categoryId
+		def lstByCateg= NotificationMessageTypeDTO.findAllByCategory(new NotificationCategoryDTO(categoryId))
+		log.info "size of messages=" + lstByCateg.size() + " of total " + NotificationMessageTypeDTO.list()?.size()
+		render template: 'lists', model:[lst:lstByCateg, languageId:languageId, entityId:entityId]
+	}
+	
     def view = {
         
         log.info "Id is=" + params.id
@@ -156,7 +179,7 @@ class NotificationsController {
             }
         }
         
-        render template:"show", model:[dto:dto, languageDto: LanguageDTO.findById(_languageId), entityId:entityId]
+        render template:"show", model:[dto:dto, messageTypeId:messageTypeId, languageDto: LanguageDTO.findById(_languageId), entityId:entityId]
     }
     
 	def edit = {
@@ -207,9 +230,7 @@ class NotificationsController {
     
     def saveNotification = {
         log.info "_Id= " + params._id
-        
         saveAction(params)
-        
         redirect (action:listCategories)
     }
     
@@ -234,7 +255,7 @@ class NotificationsController {
             //new record
             messageId= null;
         }        
-        messageDTO.setContent(bindSections(params))        
+        messageDTO.setContent(bindSections(params))
         log.info "msgDTO.language.id=" + messageDTO?.getLanguageId()
         log.info "msgDTO.type.id=" + messageDTO?.getTypeId()
         log.info "msgDTO.use.flag=" + messageDTO.getUseFlag()

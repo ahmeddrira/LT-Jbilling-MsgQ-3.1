@@ -14,13 +14,13 @@ function getSelectedId2() {
 }
 
 function delProduct() {
-	if (!confirm('Are you sure you want to delete?')){
-		return false;
-	}
 	var selectedId= getSelectedId2();
 	if ( null == selectedId || "" == selectedId) {
 		alert ('<g:message code="error.record.not.selected"/>');
 	} else {
+		if (!confirm('Are you sure you want to delete?')){
+			return false;
+		}
 		window.location = ('/jbilling/product/deleteProduct/'+ selectedId);
 	}
 	return true;

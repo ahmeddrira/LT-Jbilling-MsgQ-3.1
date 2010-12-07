@@ -17,8 +17,8 @@
 	</ul>
 </div>
 <div class="btn-box">	
-<g:remoteLink action="preferences" class="submit"  
-	before="register(this);" onSuccess="render(data, next);">
-	<span><g:message code="button.preferences"/></span>
-</g:remoteLink>
+	<g:remoteLink action="preferences" class="submit"  
+		before="register(this);" onSuccess="render(data, next);">
+		<span><g:message code="button.preferences"/></span>
+	</g:remoteLink>
 </div>

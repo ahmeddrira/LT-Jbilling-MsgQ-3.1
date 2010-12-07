@@ -2,7 +2,7 @@
 <head>
     <meta name="layout" content="main" />
     <script type="text/javascript">
-    	
+
 	</script>
 </head>
 <body>
@@ -19,21 +19,23 @@
 					<div class="form-columns">
 						<div class="column">
 							<div class="row">
-								<p><g:message code="product.category.id"/></p>
-								<span><g:textField readonly="readonly"
-							name="id" value="${dto?.id}"/></span>
+								<label><g:message code="product.category.id"/></label>
+								<div class="inp-bg"><g:textField class="field" readonly="readonly"
+									name="id" value="${dto?.id}"/></div>
 							</div>
 							<div class="row">
-								<p><g:message code="product.category.name"/></p>
-								<span><g:textField name="description" 
-							value="${dto?.description}"/></span>
+								<label><g:message code="product.category.name"/></label>
+								<div class="inp-bg"><g:textField class="field" name="description" 
+									value="${dto?.description}"/></div>
 							</div>
 							<div class="row">
-								<p><g:message code="product.category.type"/></p>
-								<span><g:select name="orderLineTypeId"
-							from="${com.sapienter.jbilling.server.order.db.OrderLineTypeDTO.list()}"
-							optionKey="id" optionValue="description"
-							value="${dto?.orderLineTypeId}" /></span>
+								<label><g:message code="product.category.type"/></label>
+								<div style="width: 220px; " class="selectArea">
+									<g:select name="orderLineTypeId"
+										from="${com.sapienter.jbilling.server.order.db.OrderLineTypeDTO.list()}"
+										optionKey="id" optionValue="description"
+										value="${dto?.orderLineTypeId}" />
+								</div>
 							</div>
 						</div>
 					</div>

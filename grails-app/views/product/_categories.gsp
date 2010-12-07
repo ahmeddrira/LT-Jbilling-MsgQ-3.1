@@ -13,13 +13,13 @@ function editCategory() {
 	return true;
 }
 function delCategory() {
-	if (!confirm('Are you sure you want to delete?')){
-		return false;
-	}
 	var selectedId= getSelectedId();
 	if ( null == selectedId || "" == selectedId) {
 		alert ('<g:message code="error.record.not.selected"/>');
 	} else {
+		if (!confirm('Are you sure you want to delete?')){
+			return false;
+		}
 		window.location = ('/jbilling/product/deleteCategory/'+ selectedId);
 	}
 	return true;

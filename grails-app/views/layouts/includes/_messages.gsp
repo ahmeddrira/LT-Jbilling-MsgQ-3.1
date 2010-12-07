@@ -7,6 +7,7 @@
 
 <%-- show flash messages if available --%>
 <%-- either 'flash.message', 'flash.info', 'flash.warn' or 'flash.error' --%>
+<%-- will also print all messages from 'flash.errorMessages' as an unordered list --%>
 <div id="messages">
     <g:if test='${flash.message}'>
         <div class="msg-box successfully">
@@ -34,6 +35,17 @@
             <img src="${resource(dir:'images', file:'icon14.gif')}" alt="${message(code:'error.icon.alt',default:'Error')}"/>
             <strong><g:message code="flash.error.title"/></strong>
             <p><g:message code="${flash.error}" args="${flash.args}"/></p>
+        </div>
+    </g:if>
+    <g:if test="${flash.errorMessages}">
+        <div class="msg-box error">
+            <img src="${resource(dir:'images', file:'icon14.gif')}" alt="${message(code:'error.icon.alt',default:'Error')}"/>
+            <strong><g:message code="flash.validation.error.title"/></strong>
+            <ul>
+                <g:each var="message" in="${flash.errorMessages}">
+                    <li>${message}</li>
+                </g:each>
+            </ul>
         </div>
     </g:if>
 </div>

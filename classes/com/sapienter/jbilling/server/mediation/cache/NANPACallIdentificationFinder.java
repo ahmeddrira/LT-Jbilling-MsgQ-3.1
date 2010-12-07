@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,14 +36,6 @@ import java.sql.SQLException;
  *
  * Rules:
  * <code>
- *  function String getAreaCode(String number) {
- *      return number.length() >= 10 ? number.substring(number.length() - 10, number.length() - 7) : null;
- *  }
- *
- *  function String getSubareaCode(String number) {
- *      return number.length() >= 7 ? number.substring(number.length() - 7, number.length() - 4) : null;
- *  }
- *
  *  rule 'Resolve Call Destination'
  *  no-loop
  *  dialect 'java'
@@ -58,16 +51,11 @@ import java.sql.SQLException;
  *
  *  then
  *      NANPACallIdentificationFinder finder = NANPACallIdentificationFinder.getInstance();
- *
- *      String areaCode = getAreaCode($dst);
- *      String subareaCode = getSubareaCode($dst);
- *      String destination = finder.findCallDescription("1", areaCode, subareaCode);
+ *      String destination = finder.findCallDescription($dst);
  *
  *      $result.setDescription($result.getDescription() + " " + destination);
  *
- *      LOG.debug("Found call destination '" + destination + "', for area: " + areaCode
- *                + " sub-area: " + subareaCode);
- *
+ *      LOG.debug("Found call destination '" + destination + "', for: " + $dst);
  *  end
  * </code>
  *
@@ -79,6 +67,15 @@ import java.sql.SQLException;
 public class NANPACallIdentificationFinder extends AbstractFinder {
 
     private static final Logger LOG = Logger.getLogger(NANPACallIdentificationFinder.class);
+    
+    private static final String INTERNATIONAL_PREFIX_REGEX = "^\\+?011";
+    private static final String BLANK = "";
+    private static final String DEFAULT_COUNTRY_CODE = "1";
+    private static final String DEFAULT_DESCRIPTION = "Unknown";
+
+    private static final Integer MAX_COUNTRY_CODE_LENGTH = 3;
+    private static final Integer MAX_AREA_CODE_LENGTH = 4;
+    private static final Integer MAX_SUBAREA_CODE_LENGTH = 3;
 
     public static NANPACallIdentificationFinder getInstance() {
         Object bean = Context.getBean(Context.Name.NANPA_CALL_IDENTIFICATION_FINDER);
@@ -93,7 +90,18 @@ public class NANPACallIdentificationFinder extends AbstractFinder {
         // noop
     }
 
-    public String findCallDescription(String internationalCode, String areaCode, String subareaCode) {       
+    public String findCallDescription(String number) {
+        LOG.debug("Identifying call '" + number + "'");
+
+        number = number.replaceFirst(INTERNATIONAL_PREFIX_REGEX, BLANK);
+        String countryCode = getCountryCode(number);
+        String areaCode = getAreaCode(countryCode, number);
+        String subareaCode = getSubAreaCode(countryCode, areaCode, number);
+
+        LOG.debug("Country code: '" + countryCode
+                  + "', Area code: '" + areaCode
+                  + "', Subarea code: '" + subareaCode + "'");
+
         return (String) jdbcTemplate.query(
                 "select description "
                 + " from " + loader.getTableName()
@@ -101,7 +109,7 @@ public class NANPACallIdentificationFinder extends AbstractFinder {
                 + " and area_code = ? "
                 + " and subarea_code = ?",
                 new Object[] {
-                        internationalCode,
+                        countryCode,
                         areaCode,
                         subareaCode
                 },
@@ -111,9 +119,147 @@ public class NANPACallIdentificationFinder extends AbstractFinder {
                             return rs.getString("description");
                         }
                         LOG.debug("No call identification data found.");
-                        return null;
+                        return DEFAULT_DESCRIPTION;
                     }
                 });
         
+    }
+
+    /**
+     * Searches for the country code of the given phone number.
+     *
+     * @param number phone number
+     * @return found country code
+     */
+    public String getCountryCode(String number) {
+        LOG.debug("Getting country code from " + number);
+
+        int length = MAX_COUNTRY_CODE_LENGTH;
+        number = getDigits(number, length);
+
+        while (length >= 0) {
+            LOG.debug("Searching for country code: " + number);
+
+            SqlRowSet rs = jdbcTemplate.queryForRowSet(
+                    "select distinct(intl_code) "
+                    + " from " + loader.getTableName()
+                    + " where intl_code = ?",
+                    new Object[] {
+                            number
+                    }
+            );
+
+            if (rs.next()) {
+                return rs.getString("intl_code");
+            } else {
+                length--;
+                number = getDigits(number, length);
+            }
+        }
+        
+        // default country code
+        return DEFAULT_COUNTRY_CODE;
+    }
+
+    /**
+     * Searches for the area code of the given phone number and country code.
+     *
+     * @param countryCode country code
+     * @param number phone number
+     * @return found area code
+     */
+    public String getAreaCode(String countryCode, String number) {
+        LOG.debug("Getting area code for " + countryCode + " from " + number);
+
+        if (countryCode != null)
+            number = number.replaceFirst(countryCode, BLANK);
+
+        int length = MAX_AREA_CODE_LENGTH;
+        number = getDigits(number, length);
+
+        while (length >= 0) {
+            LOG.debug("Searching for area code: " + number);
+
+            SqlRowSet rs = jdbcTemplate.queryForRowSet(
+                    "select distinct(area_code) "
+                    + " from " + loader.getTableName()
+                    + " where intl_code = ? "
+                    + " and area_code = ?",
+                    new Object[] {
+                            countryCode,
+                            number
+                    }
+            );
+
+            if (rs.next()) {
+                return rs.getString("area_code");
+            } else {
+                length--;
+                number = getDigits(number, length);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Searches for the sub-area code of the given phone number, area code, and country code.
+     *
+     * @param countryCode country code
+     * @param areaCode phone number
+     * @param number phone number
+     * @return found sub-area code
+     */
+    public String getSubAreaCode(String countryCode, String areaCode, String number) {
+        LOG.debug("Getting area code for " + countryCode + " " + areaCode + " from " + number);
+
+        if (countryCode != null)
+            number = number.replaceFirst(countryCode, BLANK);
+
+        if (areaCode != null)
+            number = number.replaceFirst(areaCode, BLANK);
+
+        int length = MAX_SUBAREA_CODE_LENGTH;
+        number = getDigits(number, length);
+
+        while (length >= 0) {
+            LOG.debug("Searching for sub-area code: " + number);
+
+            SqlRowSet rs = jdbcTemplate.queryForRowSet(
+                    "select distinct(subarea_code) "
+                    + " from " + loader.getTableName()
+                    + " where intl_code = ? "
+                    + " and area_code = ? " 
+                    + " and subarea_code = ?",
+                    new Object[] {
+                            countryCode,
+                            areaCode,
+                            number
+                    }
+            );
+
+            if (rs.next()) {
+                return rs.getString("subarea_code");
+            } else {
+                length--;
+                number = getDigits(number, length);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Shortens a given number string down to the given length by removing the
+     * trailing numbers. If the length is zero or less-than zero, the string "0"
+     * will be returned as a possible wildcard value for lookup.
+     *
+     * @param length desired length
+     * @param number to shorten
+     * @return country code shortened to the desired length
+     */
+    public String getDigits(String number, int length) {
+        if (length <= 0) return "0";
+        return number.length() > length ? number.substring(0, length) : number;
     }
 }

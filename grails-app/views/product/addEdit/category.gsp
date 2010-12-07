@@ -9,7 +9,14 @@
 	<div class="form-edit">
 		<div class="heading">
 			<strong><g:message code="prompt.product.category"/> - 
-				<span>${dto?.description}</span>
+				<span>
+					<g:if test="${dto == null}">
+						<g:message code="title.item.category.add"/>
+					</g:if>
+					<g:else>
+						<g:message code="title.item.category.edit"/>
+					</g:else>
+				</span>
 			</strong>
 		</div>
 

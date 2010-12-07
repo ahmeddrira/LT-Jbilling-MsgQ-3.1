@@ -12,8 +12,15 @@
 </script>
 <div class="form-edit">
 	<div class="heading">
-		<strong><g:message code="prompt.add.edit.products"/> - 
-			<span>${item?.description}</span>
+		<strong><g:message code="title.product"/> - 
+			<span>
+				<g:if test="${item == null}">
+					<g:message code="title.product.add"/>
+				</g:if>
+				<g:else>
+					<g:message code="title.product.edit"/>
+				</g:else>
+			</span>
 		</strong>
 	</div>
 

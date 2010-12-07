@@ -115,11 +115,11 @@ class UserController {
         //set email
         try {
             int id = webServicesSession.createUser(newUser);
-            flash.message = message(code: 'user.create.success')
+            flash.message = 'user.create.success'
         } catch (SessionInternalError e) {
             boolean retValue = viewUtils.resolveExceptionForValidation(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
         } catch (Exception e) {
-            flash.message = message(code: 'user.create.failed')
+            flash.message = 'user.create.failed'
         }
         flash.args= [params.userName]
         render( view:"user")

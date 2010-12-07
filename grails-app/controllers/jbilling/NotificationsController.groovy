@@ -97,7 +97,7 @@ class NotificationsController {
 		{
 			redirect (action:preferences)
 		} else {
-	        flash.message = message (code: 'preference.saved.success')
+	        flash.message = 'preference.saved.success'
 	        redirect (action:listCategories)
 		}
     }
@@ -261,7 +261,7 @@ class NotificationsController {
         log.info "msgDTO.use.flag=" + messageDTO.getUseFlag()
         log.info "entityId= " + entityId
         webServicesSession.createUpdateNofications(entityId, messageId, messageDTO);
-		flash.message = message (code: 'notification.save.success')
+		flash.message = 'notification.save.success'
     }
     
     def MessageSection[] bindSections (params) {   

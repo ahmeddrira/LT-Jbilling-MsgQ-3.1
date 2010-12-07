@@ -63,6 +63,7 @@ class ProductController {
 			} else {
 				webServicesSession.updateItemCategory(dto)
 			}
+			flash.message = 'item.category.saved'
 		} catch (SessionInternalError e) {
 			log.error "Error Updating/Creating Item Category " + dto.getId()
 			flash.errorMessages?.addAll(e.getErrorMessages())
@@ -70,7 +71,7 @@ class ProductController {
 		}
 		if (!(flash.errorMessages?.size() > 0) )
 		{
-			flash.message = message(code: 'item.category.saved')
+			flash.message = 'item.category.saved'
 		}
 		//TODO move this to product controller
 		redirect (action: 'index')
@@ -232,17 +233,16 @@ class ProductController {
 		try{
 			if (null != dto.getId() && 0 != dto.getId()) {
 				webServicesSession.updateItem(dto)
-				flash.messsage = message (code: 'item.update.success')
+				flash.message = "item.update.success"
 			} else {
 				webServicesSession.createItem(dto)
-				flash.messsage = message (code: 'item.create.success')
+				flash.message = "item.create.success"
 			}
 		} catch (SessionInternalError e) {
 			log.error "Error Updating/Creating ${dto.getId()}\n" + e.printStackTrace() 
 			flash.errorMessages?.addAll(e.getErrorMessages())
 			//boolean retValue = viewUtils.resolveExceptionForValidation(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
 		}
-
 		flash.args= dto.getId()
 		redirect (action: "index")
 	}

@@ -20,7 +20,7 @@ class InvoiceController {
 			try {
 				webServicesSession.deleteInvoice(invoiceId)
 			}  catch (Exception e) {
-				flash.message = message(code: 'error.invoice.details')
+				flash.message = 'error.invoice.details'
 				flash.args= [params["id"]]
 				redirect(action:'lists')
 			}
@@ -40,7 +40,7 @@ class InvoiceController {
 				if (invoices)
 					log.info "found invoices [${invoices.size()}]"
 			} catch (Exception e) {
-				flash.message = message(code: 'invoices.empty')
+				flash.message = 'invoices.empty'
 				flash.args= [params["id"]]
 			}
 		}
@@ -82,7 +82,7 @@ class InvoiceController {
 				e.printStackTrace()
 				log.error e.getMessage()
 				//TODO add messages to properites and set here
-				flash.message = message(code: 'error.invoice.details')
+				flash.message = 'error.invoice.details'
 				flash.args= [params["id"]]
 				redirect(action:'lists')
 			}

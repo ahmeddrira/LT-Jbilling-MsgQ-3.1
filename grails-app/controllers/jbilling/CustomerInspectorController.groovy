@@ -39,7 +39,7 @@ class CustomerInspectorController {
 				orders= webServicesSession.getUserSubscriptions(userid)
 				log.info "found " + orders?.length + " orders"
 			} catch (Exception e) {
-				flash.message = message(code: 'user.not.found')
+				flash.message = 'user.not.found'
 				flash.args= [params["id"]]
 				redirect (controller:'user')
 			}
@@ -102,7 +102,7 @@ class CustomerInspectorController {
 			try {
 				user = webServicesSession.getUserWS(userid)
 			} catch (Exception e) {
-				flash.message = message(code: 'user.not.found')
+				flash.message = 'user.not.found'
 				flash.args= [params["id"]]
 			}
 			if (user) {

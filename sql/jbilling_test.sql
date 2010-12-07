@@ -267,6 +267,8 @@ ALTER TABLE ONLY public.invoice_delivery_method DROP CONSTRAINT invoice_delivery
 ALTER TABLE ONLY public.international_description DROP CONSTRAINT international_description_pkey;
 ALTER TABLE ONLY public.generic_status_type DROP CONSTRAINT generic_status_type_pkey;
 ALTER TABLE ONLY public.generic_status DROP CONSTRAINT generic_status_pkey;
+ALTER TABLE ONLY public.filter_set DROP CONSTRAINT filter_set_pkey;
+ALTER TABLE ONLY public.filter DROP CONSTRAINT filter_pkey;
 ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_pkey;
 ALTER TABLE ONLY public.event_log_module DROP CONSTRAINT event_log_module_pkey;
 ALTER TABLE ONLY public.event_log_message DROP CONSTRAINT event_log_message_pkey;
@@ -362,6 +364,9 @@ DROP TABLE public.invoice;
 DROP TABLE public.international_description;
 DROP TABLE public.generic_status_type;
 DROP TABLE public.generic_status;
+DROP TABLE public.filter_set_filter;
+DROP TABLE public.filter_set;
+DROP TABLE public.filter;
 DROP TABLE public.event_log_module;
 DROP TABLE public.event_log_message;
 DROP TABLE public.event_log;
@@ -855,6 +860,54 @@ CREATE TABLE event_log_module (
 
 
 ALTER TABLE public.event_log_module OWNER TO jbilling;
+
+--
+-- Name: filter; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE filter (
+    id integer NOT NULL,
+    filter_set_id integer NOT NULL,
+    type character varying(255) NOT NULL,
+    constraint_type character varying(255) NOT NULL,
+    field character varying(255) NOT NULL,
+    template character varying(255) NOT NULL,
+    visible boolean NOT NULL,
+    integer_value integer,
+    string_value character varying(255),
+    start_date_value timestamp without time zone,
+    end_date_value timestamp without time zone,
+    version integer NOT NULL
+);
+
+
+ALTER TABLE public.filter OWNER TO jbilling;
+
+--
+-- Name: filter_set; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE filter_set (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    user_id integer NOT NULL,
+    version integer NOT NULL
+);
+
+
+ALTER TABLE public.filter_set OWNER TO jbilling;
+
+--
+-- Name: filter_set_filter; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE filter_set_filter (
+    filter_set_filters_id integer,
+    filter_id integer
+);
+
+
+ALTER TABLE public.filter_set_filter OWNER TO jbilling;
 
 --
 -- Name: generic_status; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -10424,6 +10477,30 @@ COPY event_log_module (id) FROM stdin;
 
 
 --
+-- Data for Name: filter; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY filter (id, filter_set_id, type, constraint_type, field, template, visible, integer_value, string_value, start_date_value, end_date_value, version) FROM stdin;
+\.
+
+
+--
+-- Data for Name: filter_set; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY filter_set (id, name, user_id, version) FROM stdin;
+\.
+
+
+--
+-- Data for Name: filter_set_filter; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY filter_set_filter (filter_set_filters_id, filter_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: generic_status; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -11767,6 +11844,8 @@ mediation_process	1
 mediation_record_line	1
 mediation_record_line	1
 pluggable_task	605
+filter	1
+filter_set	1
 \.
 
 
@@ -20012,6 +20091,22 @@ ALTER TABLE ONLY event_log_module
 
 ALTER TABLE ONLY event_log
     ADD CONSTRAINT event_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: filter_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY filter
+    ADD CONSTRAINT filter_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: filter_set_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY filter_set
+    ADD CONSTRAINT filter_set_pkey PRIMARY KEY (id);
 
 
 --

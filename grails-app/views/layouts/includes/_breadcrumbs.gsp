@@ -7,15 +7,27 @@
 
 <!-- breadcrumbs -->
 <div class="breadcrumbs">
+    <div id="spinner" style="display: none;">
+        <img src="${resource(dir:'images', file:'spinner.gif')}" alt="loading..." />
+    </div>
     <ul>
         <%-- todo: add the grails breadcrumbs plugin for easy breadcrumb trails - http://www.grails.org/plugin/breadcrumbs --%>
         <%-- quick and dirty breadcrumbs --%>
         <li><a href="${resource(dir:'')}"><g:message code="breadcrumb.link.home"/></a></li>
         <g:if test="${controllerName != null}">
-            <li><g:link controller="${controllerName}"><g:message code="breadcumb.link.${controllerName}"/></g:link></li>
+            <li><g:link controller="${controllerName}"><g:message code="breadcrumb.link.${controllerName}"/></g:link></li>
         </g:if>
         <g:if test="${actionName != null && actionName != 'index'}">
-            <li><g:link controller="${controllerName}"><g:message code="breadcumb.link.${controllerName}.${actionName}"/></g:link></li>
+            <li><g:link controller="${controllerName}"><g:message code="breadcrumb.link.${controllerName}.${actionName}"/></g:link></li>
         </g:if>
     </ul>
 </div>
+
+<script type="text/javascript">
+    $('#spinner').ajaxStart(function() {
+        $(this).show('fade');
+    })
+    .ajaxStop(function() {
+        $(this).hide('fade');
+    })
+</script>

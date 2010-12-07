@@ -48,7 +48,7 @@
                 <strong><g:message code="login.prompt.title"/></strong>
             </div>
             <div class="form-hold">
-                <form action='${postUrl}' method='POST' id='loginForm' class='cssform' autocomplete='off'>
+                <form action='${postUrl}' method='POST' id='login-form' autocomplete='off'>
                     <fieldset>
 
                         <div class="form-columns">

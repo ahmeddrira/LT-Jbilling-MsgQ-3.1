@@ -30,7 +30,7 @@ class ItemController {
 	}
 	
 	def delete = {
-		Integer itemId= params.deleteItemId.toInteger()
+		Integer itemId= params.selected.toInteger()
 		log.info "Deleting item type=" + itemId 
 		
 		try {
@@ -41,10 +41,11 @@ class ItemController {
 				throw new SessionInternalError("This category has products. Remove those before deleting the category.")
 			}
 			webServicesSession.deleteItemCategory(itemId);
+			flash.message = "item.category.deleted"
 		} catch (SessionInternalError e) {
 			log.error "Error delete Item Category " + itemId			
-			flash.message = message(code: 'item.category.delete.failed')		
-		}
+			flash.error = "item.category.delete.failed"		
+		}		
 		flash.args= [itemId]
 		redirect (action: index)
 	}

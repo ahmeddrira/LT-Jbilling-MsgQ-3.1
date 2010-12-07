@@ -1,6 +1,19 @@
 var width;
 var clicked;
 
+var first = {
+    index: function() {
+        return 1;
+    },
+    visible: function() {
+        var position = $('.columns-holder [index=' + this.index() + ']').position().left;
+        return position > 0 && position < $('.columns-holder').width();
+    },
+    animate: function() {
+        reset();
+    }
+};
+
 var next = {
     index: function() {
         return clicked + 1;

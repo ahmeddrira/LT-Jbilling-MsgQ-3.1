@@ -39,7 +39,7 @@ class CustomerInspectorController {
 				orders= webServicesSession.getUserSubscriptions(userid)
 				log.info "found " + orders?.length + " orders"
 			} catch (Exception e) {
-				flash.message = message(code: 'user.not.found')
+				flash.message = 'user.not.found'
 				flash.args= [params["id"]]
 				redirect (controller:'user')
 			}
@@ -89,7 +89,7 @@ class CustomerInspectorController {
 		contacts= (ContactWS[]) contactList.toArray(new ContactWS[contactList.size()])
 		
 		log.info "Custom Contact fields=${user?.contact?.fieldNames}"
-		[user:user, _id:userid, contacts:contacts, subscribStatus:subscribStatus, orders:orders, languageId:languageId, expDate:expDate, isAutoCC:isAutoCC,isAutoAch:isAutoAch]
+		render template:"show", model:[user:user, _id:userid, contacts:contacts, subscribStatus:subscribStatus, orders:orders, languageId:languageId, expDate:expDate, isAutoCC:isAutoCC,isAutoAch:isAutoAch]
 	}
 	
 	def editNote ={
@@ -102,7 +102,7 @@ class CustomerInspectorController {
 			try {
 				user = webServicesSession.getUserWS(userid)
 			} catch (Exception e) {
-				flash.message = message(code: 'user.not.found')
+				flash.message = 'user.not.found'
 				flash.args= [params["id"]]
 			}
 			if (user) {

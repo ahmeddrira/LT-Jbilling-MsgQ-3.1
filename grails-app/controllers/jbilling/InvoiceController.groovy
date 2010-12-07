@@ -20,7 +20,7 @@ class InvoiceController {
 			try {
 				webServicesSession.deleteInvoice(invoiceId)
 			}  catch (Exception e) {
-				flash.message = message(code: 'error.invoice.details')
+				flash.message = 'error.invoice.details'
 				flash.args= [params["id"]]
 				redirect(action:'lists')
 			}
@@ -29,7 +29,7 @@ class InvoiceController {
 		redirect (action:lists, id:userId)
 	}
 	
-	def lists ={
+	def lists = {
 		InvoiceWS[] invoices= null;
 		int userId;
 		log.info "Get invoices list for user id [${params?.id}]"
@@ -40,7 +40,7 @@ class InvoiceController {
 				if (invoices)
 					log.info "found invoices [${invoices.size()}]"
 			} catch (Exception e) {
-				flash.message = message(code: 'invoices.empty')
+				flash.message = 'invoices.empty'
 				flash.args= [params["id"]]
 			}
 		}
@@ -63,6 +63,7 @@ class InvoiceController {
 				invoice= webServicesSession.getInvoiceWS(id)
 				log.info "Found invoice ${invoice}. Loading..."
 				user= webServicesSession.getUserWS(invoice?.getUserId())
+				log.info "Found user ${user.contact?.firstName} ${user.contact?.lastName}"
 				payments= new ArrayList<PaymentWS>(invoice?.payments?.length)
 				for(Integer pid: invoice?.payments) {
 					PaymentWS payment=webServicesSession.getPayment(pid)
@@ -81,12 +82,12 @@ class InvoiceController {
 				e.printStackTrace()
 				log.error e.getMessage()
 				//TODO add messages to properites and set here
-				flash.message = message(code: 'error.invoice.details')
+				flash.message = 'error.invoice.details'
 				flash.args= [params["id"]]
 				redirect(action:'lists')
 			}
 		}		
 		
-		[totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
+		render template: "show", model:[totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
 	}
 }

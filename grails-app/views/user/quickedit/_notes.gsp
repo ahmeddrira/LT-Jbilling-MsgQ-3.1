@@ -19,4 +19,4 @@
             <li><a class="submit cancel" onclick="closePanel(this);" href="#"><span>Cancel</span></a></li>
         </ul>
     </div>
-</g:formRemote>            
+</g:formRemote>

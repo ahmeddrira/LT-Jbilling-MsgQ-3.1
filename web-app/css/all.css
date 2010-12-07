@@ -235,6 +235,13 @@ table {
 #navigation ul li a:hover em {
 	background:url(../images/bg-nav-arrow.gif) no-repeat;
 }
+#spinner {
+    float:right;
+    height:32px;
+    width:32px;
+    padding-top:1px;
+    padding-right:3px;
+}
 #main {
 	overflow:hidden;
 	height:1%;
@@ -296,7 +303,9 @@ table {
 	background:url(../images/arrow02.gif) no-repeat 100% 14px;
 }
 .heading .arrow:hover {text-decoration:none;}
-.heading .drop {
+.heading.active .drop {display:block;}
+.dropdown.active .drop {display:block;}
+.drop {
 	position:absolute;
 	top:31px;
 	left:-1px;
@@ -306,21 +315,20 @@ table {
 	display:none;
 	border:1px solid #bfbfbf;
 }
-.heading.active .drop {display:block;}
-.heading .drop ul {
+.drop ul {
 	margin:0;
 	padding:0 4px;
 	list-style:none;
 	overflow:hidden;
 }
-.heading .drop ul li {
+.drop ul li {
 	border-top:1px solid #ececec;
 	margin-top:-1px;
 	line-height:27px;
 	padding:0 6px;
 }
-.heading .drop ul li a {color:#696969;}
-.heading .drop ul li a:hover {color:#0e61b1; text-decoration:none;}
+.drop ul li a {color:#696969;}
+.drop ul li a:hover {color:#0e61b1; text-decoration:none;}
 /* login */
 #login {
 	padding: 20px;
@@ -353,12 +361,14 @@ table {
 .accordion li.other {
 	background:url(../images/bg-accordion02.gif) repeat-x;
 }
-.accordion li a {
+.accordion li span.title {
 	float:left;
 	line-height:30px;
-	padding:0 0 0 22px;
-	background:url(../images/icon01.gif) no-repeat 6px 11px;
+    padding: 0 0 0 7px;
 	color:#383838;
+}
+.accordion li span.active {
+    font-weight: bold;
 }
 .accordion li.open a {
 	background:url(../images/icon02.gif) no-repeat 6px 11px;
@@ -408,7 +418,15 @@ table {
 .accordion li .slide label {
 	float:right;
 	line-height:26px;
-	width:32px;
+	width:47px;
+}
+.accordion li .slide .input-row .select-bg {
+	width:90px;
+	height:16px;
+    float: right;
+    border: none;
+    background: none;
+    padding:5px 0 3px 5px;
 }
 .holder .input-bg a ,
 .accordion li .slide .input-bg a {
@@ -644,11 +662,6 @@ table {
 	overflow:hidden;
 }
 .column .heading .name {
-	float:left;
-	width:auto;
-}
-
-.column .heading .first {
 	float:left;
 	width:auto;
 }

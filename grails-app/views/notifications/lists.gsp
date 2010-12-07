@@ -1,8 +1,40 @@
-<html>
-<head>
-<meta name="layout" content="main" />
-
-<script language="javascript">
+<g:form>
+	<g:hiddenField name="selectedId" value="0" />
+	<div class="heading table-heading">
+	    <strong class="first"><g:message code="title.notification"/></strong>
+	    <strong style="width:20%"><g:message code="title.notification.active"/></strong>
+	</div>
+	
+	<div class="table-box">
+		<ul>
+			<g:each in="${lst}" status="idx" var="dto">
+				<li>
+				<g:remoteLink action="edit" id="${dto.id}" 
+			     			before="register(this);" onSuccess="render(data, next);">
+					<strong><g:hiddenField id="typeId" name="typeId${idx}"
+						value="${dto?.getId()}" /> ${dto.getDescription(languageId)}
+					</strong>
+					<strong align="right">
+						<g:set var="flag" value="${true}"/> 
+						<g:each status="iter" var="var" in="${dto.getNotificationMessages()}">
+							<g:if test="${languageId == var.getLanguage().getId() 
+								&& var.getEntity().getId() == entityId && var.getUseFlag() > 0}">
+								Yes
+								<g:set var="flag" value="${false}"/>
+							</g:if>
+						</g:each> 
+						<g:if test="${flag}">
+							No
+						</g:if>
+					</strong>
+				</g:remoteLink>
+				</li>
+			</g:each>
+		</ul>
+	</div>
+	
+	<%-- 
+	<script language="javascript">
 	$(function ()
 	{
 		$('.sub-table tr', this).click(function()
@@ -19,23 +51,7 @@
 			document.forms[0].submit();
 		});
 	});
-</script>
-	
-<style type="text/css">
-	.Highlight {
-		background-color: red;
-		cursor: pointer;
-	}
-</style>
-
-</head>
-<body>
-<p>
-	<g:message code="${flash.message}" args="${flash.args}" default="${flash.defaultMsg}" />
-	<jB:renderErrorMessages />
-</p>
-<g:form>
-	<g:hiddenField name="selectedId" value="0" />
+	</script>
 	<div>
 	<table id="catTbl" cellspacing='4' class="sub-table">
 		<thead>
@@ -65,6 +81,5 @@
 		</tbody>
 	</table>
 	</div>
+	--%>
 </g:form>
-</body>
-</html>

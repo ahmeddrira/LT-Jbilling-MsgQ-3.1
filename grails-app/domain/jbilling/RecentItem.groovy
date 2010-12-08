@@ -1,5 +1,3 @@
-package jbilling
-
 /*
  jBilling - The Enterprise Open Source Billing System
  Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -20,14 +18,31 @@ package jbilling
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package jbilling
+
 /**
- * FilterType
+ * RecentItem
  
  * @author Brian Cowdery
- * @since  30-11-2010
+ * @since  07-12-2010
  */
-enum FilterType {
-    
-    ALL, INVOICE, ORDER, CUSTOMER
+class RecentItem {
 
+    static mapping = {
+        id generator: 'org.hibernate.id.enhanced.TableGenerator',
+           params: [
+           table_name: 'jbilling_seqs',
+           segment_column_name: 'name',
+           value_column_name: 'next_id',
+           segment_value: 'recent_item'
+           ]
+    }
+
+    Integer userId
+    Integer objectId
+    RecentItemType type
+
+    def String toString() {
+        return "RecentItem{id=${id}, type=${type}, objectId=${objectId}}"
+    }
 }

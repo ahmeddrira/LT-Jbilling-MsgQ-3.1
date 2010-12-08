@@ -561,3 +561,16 @@ create table filter_set (
 
 insert into jbilling_seqs (name, next_id) values ('filter', 1);
 insert into jbilling_seqs (name, next_id) values ('filter_set', 1);
+
+-- recent item tables
+drop table if exists recent_item;
+create table recent_item (
+  id int not null,  
+  type varchar(255) not null,
+  object_id int not null,
+  user_id int not null,
+  version int not null,
+  primary key (id)
+);
+
+insert into jbilling_seqs (name, next_id) values ('recent_item', 1);

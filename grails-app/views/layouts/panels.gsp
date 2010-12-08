@@ -61,11 +61,22 @@
                     <strong><g:message code="recent.items.title"/></strong>
                 </div>
                 <ul class="list">
-                    <li><a href="#"><img src="${resource(dir:'images', file:'icon09.gif')}" alt="invoice" />Invoice</a></li>
-                    <li><a href="#"><img src="${resource(dir:'images', file:'icon10.gif')}" alt="payment" />Payment</a></li>
-                    <li><a href="#"><img src="${resource(dir:'images', file:'icon11.gif')}" alt="customer" />Customer</a></li>
-                    <li><a href="#"><img src="${resource(dir:'images', file:'icon12.gif')}" alt="order" />Order</a></li>
-                    <li><a href="#"><img src="${resource(dir:'images', file:'icon13.gif')}" alt="other" />Others</a></li>
+                    <g:each var="item" in="${recent.reverse()}">
+                        <li>
+                            <g:if test="${item.type.controller == controllerName}">
+                                <g:remoteLink controller="${item.type.controller}" action="select" id="${item.objectId}" onSuccess="render(data, second);">
+                                    <img src="${resource(dir:'images', file:item.type.icon)}" alt="${item.type.messageCode}"/>
+                                    <g:message code="${item.type.messageCode}"/> ${item.objectId}
+                                </g:remoteLink>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="${item.type.controller}" action="list" id="${item.objectId}">
+                                    <img src="${resource(dir:'images', file:item.type.icon)}" alt="${item.type.messageCode}"/>
+                                    <g:message code="${item.type.messageCode}"/> ${item.objectId}
+                                </g:link>
+                            </g:else>
+                        </li>
+                    </g:each>
                 </ul>
             </div>
         </div>

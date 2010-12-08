@@ -67,7 +67,7 @@
 							<label><g:message code="prompt.product.decimal"/>:</label>
 							<div class="checkboxArea">
 								<g:checkBox name="hasDecimals"
-									checked="${(item?.hasDecimals > 0 ? true:false)}" class="cb outtaHere"/>
+									checked="${(item?.hasDecimals > 0 ? true:false)}" class="cb"/>
 							</div>
 						</div>
 						<div class="row">
@@ -114,7 +114,7 @@
 								<label><g:message code="prompt.product.manual.pricing" />:</label>
 								<div class="checkboxArea">
 									<g:checkBox name="priceManual"
-										checked="${(item?.priceManual > 0 ? true:false)}" class="cb outtaHere"/>
+										checked="${(item?.priceManual > 0 ? true:false)}" class="cb"/>
 								</div>
 							</div>
 						</div>

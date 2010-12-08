@@ -158,7 +158,7 @@
 						<label><g:message code="title.notification.active"/>:</label>
 						<div class="checkboxArea">
 							<g:checkBox onchange="anychange(this)" name="useFlag"
-								checked="${(dto?.getUseFlag() > 0)}" class="cb outtaHere"/>
+								checked="${(dto?.getUseFlag() > 0)}" class="cb"/>
 						</div>
 					</div>
 					<div class="row">

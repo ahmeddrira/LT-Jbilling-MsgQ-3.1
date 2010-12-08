@@ -244,14 +244,14 @@ class NotificationsController {
     
     def saveNotification = {
         log.info "_Id= " + params._id
+		def _id=params._id
         try {
 			saveAction(params)
 		} catch (SessionInternalError e) {
 			log.error "Error: " + e.getMessage()
 			flash.error= "error.illegal.modification"
-			//
 		}
-        redirect (action:listCategories)
+        redirect (action: 'cancelEdit', params: [id: _id])
     }
     
     def saveAction(params) {

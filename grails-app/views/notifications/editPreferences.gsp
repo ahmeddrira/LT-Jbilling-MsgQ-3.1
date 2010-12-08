@@ -49,7 +49,7 @@
 							<div class="checkboxArea"><g:hiddenField value="${dto?.id}" name="pref[0].id"/>
 								<g:hiddenField value="${Constants.ENTITY_TABLE_ID}" name="pref[0].tableId"/>
 								<g:hiddenField value="${Constants.PREFERENCE_TYPE_SELF_DELIVER_PAPER_INVOICES}" name="pref[0].preferenceType.id"/>
-								<g:checkBox  class="cb outtaHere" name="pref[0].value" checked="${dto?.getIntValue() != 0}"/>
+								<g:checkBox  class="cb" name="pref[0].value" checked="${dto?.getIntValue() != 0}"/>
 							</div>
 						</div>
 						<g:set var="dto" value="${subList.get(Constants.PREFERENCE_TYPE_INCLUDE_CUSTOMER_NOTES)}" />
@@ -59,7 +59,7 @@
 								<g:hiddenField value="${dto?.id}" name="pref[1].id"/>
 								<g:hiddenField value="${Constants.ENTITY_TABLE_ID}" name="pref[1].tableId"/>
 								<g:hiddenField value="${Constants.PREFERENCE_TYPE_INCLUDE_CUSTOMER_NOTES}" name="pref[1].preferenceType.id"/>		
-								<g:checkBox  class="cb outtaHere" name="pref[1].value" checked="${dto?.getIntValue() != 0}"/>
+								<g:checkBox  class="cb" name="pref[1].value" checked="${dto?.getIntValue() != 0}"/>
 							</div>
 						</div>
 						<g:set var="dto" value="${subList.get(Constants.PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP)}" />
@@ -99,7 +99,7 @@
 								<g:hiddenField value="${dto?.id}" name="pref[5].id"/>
 								<g:hiddenField value="${Constants.ENTITY_TABLE_ID}" name="pref[5].tableId"/>
 								<g:hiddenField value="${Constants.PREFERENCE_TYPE_USE_INVOICE_REMINDERS}" name="pref[5].preferenceType.id"/>		
-								<g:checkBox  class="cb outtaHere" name="pref[5].value" checked="${dto?.getIntValue() != 0}"/>
+								<g:checkBox  class="cb" name="pref[5].value" checked="${dto?.getIntValue() != 0}"/>
 							</div>
 						</div>
 						<g:set var="dto" value="${subList.get(Constants.PREFERENCE_TYPE_NO_OF_DAYS_INVOICE_GEN_1_REMINDER)}" />

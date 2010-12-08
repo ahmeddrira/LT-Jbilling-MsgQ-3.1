@@ -50,6 +50,12 @@ class FilterFactory {
         ]
     ] as Map).asImmutable()
 
+    /**
+     * Returns a list of filters for the given type.
+     * 
+     * @param type filter type
+     * @return list of filters
+     */
     static def Object getFilters(FilterType type) {
         def filters = []
         baseFilters.findAll{ it.key == FilterType.ALL.name() || it.key == type.name()}.each{ filters << it?.value }

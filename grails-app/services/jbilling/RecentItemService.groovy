@@ -33,14 +33,30 @@ class RecentItemService {
 
     public static final Integer MAX_ITEMS = 5
 
+    /**
+     * Returns a list of recently viewed items for the currently logged in user.
+     *
+     * @return list of recently viewed items.
+     */
     def Object getRecentItems() {
         return RecentItem.findAllByUserId(session['user_id'])
     }
 
+    /**
+     * Add a new item to the recent items list for the currently logged in user.
+     *
+     * @param objectId object id
+     * @param type recent item type
+     */
     def void addRecentItem(Integer objectId, RecentItemType type) {
         addRecentItem(new RecentItem(objectId: objectId, type: type))
     }
 
+    /**
+     * Add a new item to the recent items list for the currently logged in user.
+     *
+     * @param item recent item
+     */
     def void addRecentItem(RecentItem item) {
         def items = getRecentItems()
 

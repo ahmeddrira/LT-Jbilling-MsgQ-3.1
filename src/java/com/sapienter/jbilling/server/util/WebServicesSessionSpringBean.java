@@ -2343,22 +2343,23 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     /*
        Notifications
      */
-    public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto) {
+    public void createUpdateNofications(Integer messageId, MessageDTO dto) {
         if (null == messageId) {
-            new NotificationBL().createUpdate(entityId, dto);
+            new NotificationBL().createUpdate(getCallerCompanyId(), dto);
         } else {
-            new NotificationBL(messageId).createUpdate(entityId, dto);
+            new NotificationBL(messageId).createUpdate(getCallerCompanyId(), dto);
         }
     }
     
     public void saveNotificationPreferences(PreferenceWS[] prefList) {    	
         PreferenceBL bl = new PreferenceBL();        
-        for (PreferenceWS pref : prefList) {
-            bl.createUpdateForEntity(pref.getForeignId(), pref.getPreferenceType().getId(),
+        for (PreferenceWS pref: prefList) {
+            bl.createUpdateForEntity(getCallerCompanyId(), pref.getPreferenceType().getId(),
                                      pref.getIntValue(), pref.getStrValue(), pref.getFloatValue());
         }
     }
     
+    /*Secured via WSSecurityMethodMapper entry.*/
     public void saveCustomerNotes(Integer userId, String notes) {
     	CustomerDTO cust= UserBL.getUserEntity(userId).getCustomer();
     	if ( null != cust ) {

@@ -34,28 +34,36 @@ class NotificationsController {
     }
 
     def preferences = {
-        Map<PreferenceDTO> subList= new HashMap<PreferenceDTO>();
-        List<PreferenceDTO> masterList= PreferenceDTO.findAllByForeignId(webServicesSession.getCallerCompanyId())
-        log.info "masterList.size=" + masterList.size()
-        for(PreferenceDTO dto: masterList) {
-            Integer prefid= dto.getPreferenceType().getId()
-            switch (prefid) {
-                case Constants.PREFERENCE_TYPE_SELF_DELIVER_PAPER_INVOICES:
-                case Constants.PREFERENCE_TYPE_INCLUDE_CUSTOMER_NOTES:
-                case Constants.PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP:
-                case Constants.PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP2: 
-                case Constants.PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP3:
-                case Constants.PREFERENCE_TYPE_USE_INVOICE_REMINDERS:
-                case Constants.PREFERENCE_TYPE_NO_OF_DAYS_INVOICE_GEN_1_REMINDER:
-                case Constants.PREFERENCE_TYPE_NO_OF_DAYS_NEXT_REMINDER:
-                    log.info "Adding dto: " + dto.getPreferenceType().getId()
-                    subList.put(dto.getPreferenceType().getId(), dto)
-                    break;
-            }
-        }        
-        [subList:subList, languageId:languageId]
+        render template: "preferences", model: [subList:getPreferenceMapByTypeId(), languageId:languageId]
     }
 
+	def getPreferenceMapByTypeId = {
+		Map<PreferenceDTO> subList= new HashMap<PreferenceDTO>();
+		List<PreferenceDTO> masterList= PreferenceDTO.findAllByForeignId(webServicesSession.getCallerCompanyId())
+		log.info "masterList.size=" + masterList.size()
+		for(PreferenceDTO dto: masterList) {
+			Integer prefid= dto.getPreferenceType().getId()
+			switch (prefid) {
+				case Constants.PREFERENCE_TYPE_SELF_DELIVER_PAPER_INVOICES:
+				case Constants.PREFERENCE_TYPE_INCLUDE_CUSTOMER_NOTES:
+				case Constants.PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP:
+				case Constants.PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP2:
+				case Constants.PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP3:
+				case Constants.PREFERENCE_TYPE_USE_INVOICE_REMINDERS:
+				case Constants.PREFERENCE_TYPE_NO_OF_DAYS_INVOICE_GEN_1_REMINDER:
+				case Constants.PREFERENCE_TYPE_NO_OF_DAYS_NEXT_REMINDER:
+					log.info "Adding dto: " + dto.getPreferenceType().getId()
+					subList.put(dto.getPreferenceType().getId(), dto)
+					break;
+			}
+		}
+		subList
+	}
+	
+	def cancelEditPrefs = {
+		render view: "viewPrefs", model: [lst:NotificationCategoryDTO.list(), subList:getPreferenceMapByTypeId(), languageId:languageId]
+	}
+	
 	def editPreferences = {
 		Map<PreferenceDTO> subList= new HashMap<PreferenceDTO>();
 		List<PreferenceDTO> masterList= PreferenceDTO.findAllByForeignId(webServicesSession.getCallerCompanyId())
@@ -95,15 +103,15 @@ class NotificationsController {
         log.info "Finished: webServicesSession.saveNotificationPreferences(prefDTOs);"
 		if (flash.errorMessages?.size() > 0 )
 		{
-			redirect (action:preferences)
+			redirect (action:editPreferences)
 		} else {
 	        flash.message = 'preference.saved.success'
-	        redirect (action:listCategories)
+	        redirect (action:cancelEditPrefs)
 		}
     }
-    
-    
-    def List<PreferenceWS> bindDTOs(params)  {
+
+
+	def List<PreferenceWS> bindDTOs(params)  {
         List<PreferenceWS> prefDTOs= new ArrayList<PreferenceWS>();
         def count = params.recCnt.toInteger()
         for (int i=0; i < count; i++) {
@@ -163,7 +171,7 @@ class NotificationsController {
             _languageId= params.get('language.id')?.toInteger()
             log.info "setting language id from requrest= " + _languageId
         } else {
-            _languageId = languageId            
+            _languageId = languageId
             log.info "setting users language id"
         }
         
@@ -220,17 +228,29 @@ class NotificationsController {
 			}
 		}
 		
-		[dto:dto, languageId:_languageId, entityId:entityId, askPreference:askPreference]
+		[dto:dto, messageTypeId: messageTypeId, languageId:_languageId, entityId:entityId, askPreference:askPreference]
 	}
 	
     def saveAndRedirect = {
-        saveAction(params)
+		try {
+			saveAction(params)
+		} catch (SessionInternalError e) {
+			log.error "Error: " + e.getMessage()
+			flash.error= "error.illegal.modification"
+			//
+		}
         redirect (action:edit, params:params)
     }
     
     def saveNotification = {
         log.info "_Id= " + params._id
-        saveAction(params)
+        try {
+			saveAction(params)
+		} catch (SessionInternalError e) {
+			log.error "Error: " + e.getMessage()
+			flash.error= "error.illegal.modification"
+			//
+		}
         redirect (action:listCategories)
     }
     
@@ -239,16 +259,16 @@ class NotificationsController {
         msgDTO.setLanguage(new LanguageDTO())
         msgDTO.setEntity(new CompanyDTO())
         bindData(msgDTO, params)
-        
+
         MessageDTO messageDTO= new MessageDTO()
         log.info "params.get('_languageId')?.toInteger() = " + params.get('_languageId')?.toInteger()
         messageDTO.setLanguageId(params.get('_languageId')?.toInteger())
         messageDTO.setTypeId(params._id.toInteger())
         log.info "params.useFlag=" + params.useFlag
         log.info "params.useFlag && 0 = msgDTO.getUseFlag()=" + ( (params.useFlag) && 0 == msgDTO.getUseFlag() )
-        messageDTO.setUseFlag( (params.useFlag) && 0 == msgDTO.getUseFlag())        
+        messageDTO.setUseFlag( (params.useFlag) && 0 == msgDTO.getUseFlag())
         Integer messageId= null;
-        Integer entityId= msgDTO.getEntity().getId()        
+        Integer entityId= msgDTO.getEntity().getId()
         if (params.msgDTOId) {
             messageId= params.msgDTOId.toInteger()
         } else {
@@ -260,17 +280,21 @@ class NotificationsController {
         log.info "msgDTO.type.id=" + messageDTO?.getTypeId()
         log.info "msgDTO.use.flag=" + messageDTO.getUseFlag()
         log.info "entityId= " + entityId
-        webServicesSession.createUpdateNofications(entityId, messageId, messageDTO);
+
+		if (entityId != webServicesSession.getCallerCompanyId()) {
+			throw new SessionInternalError("Cannot update another company's data.")
+		}
+		webServicesSession.createUpdateNofications(messageId, messageDTO)
 		flash.message = 'notification.save.success'
     }
-    
-    def MessageSection[] bindSections (params) {   
-        MessageSection[] lines= new MessageSection[3];	           
+
+    def MessageSection[] bindSections (params) {
+        MessageSection[] lines= new MessageSection[3];
         Integer section= null;
         String content= null;
         MessageSection obj= null;
         
-        for ( int i=1; i<= 3 ; i++) {            
+        for ( int i=1; i<= 3 ; i++) {
             log.info "messageSections[" + i + "].section=" + params.get("messageSections[" + i + "].section")
             log.info "messageSections[" + i + "].id=" + params.get("messageSections[" + i + "].id")
             
@@ -287,4 +311,24 @@ class NotificationsController {
         log.info "Line 3= " + lines[2]
         return lines;
     }
+	
+	def cancelEdit = {
+		log.info "id=${params['id']}"
+		NotificationMessageTypeDTO typeDto= NotificationMessageTypeDTO.findById( Integer.parseInt (params["id"]) )
+		Integer entityId= webServicesSession.getCallerCompanyId()
+		NotificationMessageDTO dto=null
+		for (NotificationMessageDTO messageDTO: typeDto.getNotificationMessages()) {
+			if (messageDTO?.getEntity()?.getId() == entityId
+			&& messageDTO.getLanguage().getId()== languageId) {
+				dto= messageDTO;
+				break;
+			}
+		}
+
+		def lstByCateg= NotificationMessageTypeDTO.findAllByCategory(new NotificationCategoryDTO(typeDto.getCategory().getId()))
+
+		[lst:lstByCateg, languageId:languageId, entityId:entityId, dto:dto, messageTypeId:typeDto.getId(), languageDto: LanguageDTO.findById(languageId)]
+
+	}
+
 }

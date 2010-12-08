@@ -129,7 +129,7 @@
 			<div class="btn-box">
 			    <a href="javascript:void(0)" onclick="$('#notifications').submit();" class="submit save">
 			    	<span><g:message code="button.save"/></span></a>
-			    <a href="${createLink(action: 'listCategories')}" class="submit cancel">
+			    <a href="${createLink(action: 'cancelEditPrefs')}" class="submit cancel">
 						<span><g:message code="button.cancel"/></span></a>
 			</div>
 		</g:form>

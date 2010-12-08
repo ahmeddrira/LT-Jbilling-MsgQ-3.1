@@ -56,7 +56,7 @@ function delProduct() {
 	</div>
 
 	<div class="btn-box">
-	    <a href="${createLink(action: 'addEditProduct')}" class="submit add">
+	    <a href="${createLink(action: 'addEditProduct', params: ['itemTypeId':itemTypeId])}" class="submit add">
 	    	<span><g:message code="button.add.item"/></span></a>
 	   	<a href="javascript: void(0)" onclick="delProduct();" class="submit delete">
     		<span><g:message code="button.delete"/></span></a>

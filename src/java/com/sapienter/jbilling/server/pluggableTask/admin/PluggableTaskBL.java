@@ -196,7 +196,8 @@ public class PluggableTaskBL<T> {
                     } else {
                         boolean found = false;
                         for (PluggableTaskParameterDTO parameter:task.getParameters()) {
-                            if (parameter.getName().equals(param.getName())) {
+                            if (parameter.getName().equals(param.getName()) && parameter.getStrValue() != null &&
+                                    parameter.getStrValue().trim().length() > 0) {
                                 found = true;
                                 break;
                             }
@@ -217,10 +218,20 @@ public class PluggableTaskBL<T> {
             String messages[] = new String[missingParameters.size()];
             int f=0;
             for (ParameterDescription param: missingParameters) {
-                messages[f] = new String("PluggableTaskWS, parameter, plugins.error.required_parameter, " + param.getName());
+                messages[f] = new String("PluggableTaskWS,parameter,plugins.error.required_parameter," + param.getName());
                 f++;
             }
             exception.setErrorMessages(messages);
+            throw exception;
+        }
+        
+        // now validate that the processing order is not already taken
+        if (das.findByEntityCategoryOrder(task.getEntityId(), task.getType().getCategory().getId(), 
+                task.getProcessingOrder()) != null) {
+            
+            SessionInternalError exception = new SessionInternalError("Validation of new plug-in");
+            exception.setErrorMessages(new String[] {
+                    "PluggableTaskWS,processingOrder,plugins.error.same_order," + task.getProcessingOrder()});
             throw exception;
         }
     }

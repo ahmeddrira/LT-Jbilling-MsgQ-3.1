@@ -37,6 +37,7 @@ public class PluggableTaskWS implements java.io.Serializable {
     @Min(value = 1, message = "validation.error.min,1")
     private Integer processingOrder;
     private String notes;
+    @NotNull(message="validation.error.notnull")
     private Integer typeId;
     private Hashtable<String, String> parameters = new Hashtable<String, String>();
     

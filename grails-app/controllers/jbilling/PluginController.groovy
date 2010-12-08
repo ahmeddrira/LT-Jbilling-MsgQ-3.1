@@ -2,6 +2,7 @@ package jbilling
 
 import com.sapienter.jbilling.client.ViewUtils;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask 
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
@@ -74,12 +75,15 @@ class PluginController {
     
     def showForm = {
         // find out the category name
-        PluggableTaskTypeCategoryDTO category = new PluggableTaskTypeCategoryDAS().find(session.selected_category_id);
+        PluggableTaskTypeCategoryDTO category = new PluggableTaskTypeCategoryDAS().find(
+                session.selected_category_id);
         session.selected_category=category; // comes handy later
+        
+        List<PluggableTaskTypeDTO> typesList = new PluggableTaskTypeDAS().findAllByCategory(category.getId());
         // show the form with the description
         render (view:"form", model:
-        [description:category.getDescription(session.language_id),
-            types:new PluggableTaskTypeDAS().findAllByCategory(category.getId())])
+                [description:category.getDescription(session.language_id),
+                 types:typesList, parametersDesc : getDescriptions(typesList.get(0).getId())])
     }
     
     /*
@@ -88,13 +92,16 @@ class PluginController {
      */
     def getTypeParametersDescriptions = {
         log.info "Getting parameters for plug-in type " + params.typeId;
-        PluggableTaskTypeDTO type = new PluggableTaskTypeDAS().find(params.typeId.toInteger());
+        
+        render template:"formParameters", model:[parametersDesc : getDescriptions(params.typeId as Integer) ]
+    }
+    
+    private List<ParameterDescription> getDescriptions(Integer typeId) {
+        PluggableTaskTypeDTO type = new PluggableTaskTypeDAS().find(typeId);
         // create a new class to extract the parameters descriptions
-        PluggableTask thisTask = PluggableTaskManager.getInstance(type.getClassName(), type.getCategory().getInterfaceName());
-        
-        log.info "Got parameters: " + thisTask.getParameterDescriptions();
-        
-        render template:"formParameters", model:[parametersDesc : thisTask.getParameterDescriptions()]
+        PluggableTask thisTask = PluggableTaskManager.getInstance(type.getClassName(), 
+            type.getCategory().getInterfaceName());
+        return thisTask.getParameterDescriptions();
     }
     
     def save = {
@@ -116,18 +123,25 @@ class PluginController {
             
             // the message
             flash.message = messageSource.getMessage("plugins.create.new_plugin_saved", [pluginId].toArray(), locale);
+            flash.errorMessages = null;
             
             // forward to the list of plug-in types and the new plug-in selected
             PluggableTaskDTO dto = new PluggableTaskDAS().find(pluginId);
             render (view: "showListAndPlugin", model:
-            [plugin:dto,
-                plugins:pluggableTaskDAS.findByEntityCategory(session.company_id, dto.getType().getCategory().getId())]);
+                [plugin: dto,
+                 plugins: pluggableTaskDAS.findByEntityCategory(session.company_id, dto.getType().getCategory().getId())]);
         } catch(SessionInternalError e) {
+            // process the exception so the error messages from validation are
+            // put in the flash
             viewUtils.resolveExceptionForValidation(flash, locale, e);
             PluggableTaskTypeCategoryDTO category = session.selected_category;
+            
+            // render the form again, with all the data
             render (view:"form", model:
-            [description:category.getDescription(session.language_id),
-                types:new PluggableTaskTypeDAS().findAllByCategory(category.getId())])
+                [description: category.getDescription(session.language_id),
+                 types: new PluggableTaskTypeDAS().findAllByCategory(category.getId()),
+                 pluginws: newTask,
+                 parametersDesc : getDescriptions(newTask.getTypeId())])
         }
     }
 }

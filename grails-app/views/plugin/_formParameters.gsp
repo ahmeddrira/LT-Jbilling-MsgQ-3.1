@@ -7,7 +7,7 @@
 					${it.name}
 				</label>
 				<div class="inp-bg inp4">
-				  <g:textField class="field" name="plg-parm-${it.name}" id="plg-parm-${it.name}" />
+				  <g:textField class="field" name="plg-parm-${it.name}" id="plg-parm-${it.name} value="${pluginws?.getParameters()?.get(it.name)}" />
 				</div>
                 </div>
             </g:each>

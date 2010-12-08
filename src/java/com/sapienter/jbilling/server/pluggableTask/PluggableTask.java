@@ -324,7 +324,7 @@ public abstract class PluggableTask {
     }
 
 	public List<ParameterDescription> getParameterDescriptions() {
-		return null;
+		return new ArrayList<ParameterDescription>();
     }
 	
 	public boolean validate() {

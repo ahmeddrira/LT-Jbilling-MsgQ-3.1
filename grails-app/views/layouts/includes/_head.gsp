@@ -17,8 +17,9 @@
 <g:javascript library="jquery" plugin="jquery"/>
 <jqui:resources theme="smoothness"/>
 
+<!-- 
 <g:javascript library="form" />
 <g:javascript library="clearinput" />
 <g:javascript library="checkbox" />
 <g:javascript library="slideBlock" />
-<g:javascript library="main" />
+<g:javascript library="main" />	 -->

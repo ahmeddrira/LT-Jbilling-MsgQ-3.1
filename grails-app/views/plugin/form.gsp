@@ -26,13 +26,15 @@
                                            <g:select name="typeId"
                                                      from="${types}"
                                                      optionKey="id"
-                                                     optionValue="className" />
+                                                     optionValue="className"
+                                                     value="${pluginws?.typeId}" />
                                         </span>
                                     </div>
                                     <div class="row">
                                         <label> <g:message code="plugins.plugin.order"/> </label>
                                         <div class="inp-bg inp4">
-                                           <g:textField class="field" name="processingOrder" size="2" />
+                                           <g:textField class="field" name="processingOrder" size="2" 
+                                                        value="${pluginws?.processingOrder}" />
                                         </div>
                                     </div>
                                 </div>
@@ -49,7 +51,7 @@
                             </div>
                             <!-- box text -->
                             <div class="box-text">
-                                <g:textArea name="notes" rows="7" cols="63"/>
+                                <g:textArea name="notes" rows="7" cols="63" value="${pluginws?.notes}" />
                             </div>
                             <div class="buttons">
                                 <ul>

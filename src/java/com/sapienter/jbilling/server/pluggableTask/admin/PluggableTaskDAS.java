@@ -45,10 +45,13 @@ public class PluggableTaskDAS extends AbstractDAS<PluggableTaskDTO> {
         " WHERE b.entityId = :entity";
     
     private static final String findByEntityTypeSQL =
-        "SELECT b " +
-        "  FROM PluggableTaskDTO b " + 
-        " WHERE b.entityId = :entity " +
+        findAllByEntitySQL + 
         "   AND b.type.id = :type";
+
+    private static final String findByEntityCategoryOrderSQL =
+        findAllByEntitySQL + 
+        "   AND b.type.category.id = :category" +
+        "   AND b.processingOrder = :pr_order";
 
     private static final String findByEntityCategorySQL =
         "SELECT b " +
@@ -77,6 +80,16 @@ public class PluggableTaskDAS extends AbstractDAS<PluggableTaskDTO> {
         query.setParameter("entity", entityId);
         query.setParameter("type", typeId);
         query.setComment("PluggableTaskDAS.findByEntityType");
+        return (PluggableTaskDTO) query.uniqueResult();
+    }
+    
+    public PluggableTaskDTO findByEntityCategoryOrder(Integer entityId, Integer categoryId, Integer processingOrder) {
+        Query query = getSession().createQuery(findByEntityCategoryOrderSQL);
+        query.setCacheable(true);
+        query.setParameter("entity", entityId);
+        query.setParameter("category", categoryId);
+        query.setParameter("pr_order", processingOrder);
+        query.setComment("PluggableTaskDAS.findByEntityTypeOrder");
         return (PluggableTaskDTO) query.uniqueResult();
     }
 

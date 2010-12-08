@@ -22,10 +22,11 @@
 </content>
 
 <content tag="column1">
-    <g:render template="categories" model="['categories': categories]"/> 
+	<g:render template="categories" model= "['categories': categories]"/>
 </content>
 
 <content tag="column2">
+    <g:render template="type" model= "['list': list,'languageId':languageId, 'itemTypeId':itemTypeId]"/> 
 </content>
 </body>
 </html>

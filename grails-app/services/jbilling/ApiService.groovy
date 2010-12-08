@@ -474,8 +474,8 @@ class ApiService implements IWebServicesSessionBean {
     /*
         Notification
     */
-    public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto) {
-       webServicesSession.createUpdateNofications(entityId, messageId, dto)
+    public void createUpdateNofications(Integer messageId, MessageDTO dto) {
+       webServicesSession.createUpdateNofications(messageId, dto)
     }
     
     public void saveNotificationPreferences(PreferenceWS[] prefList) {

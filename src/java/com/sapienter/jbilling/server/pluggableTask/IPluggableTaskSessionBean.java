@@ -42,8 +42,6 @@ public interface IPluggableTaskSessionBean {
     public PluggableTaskDTO[] getAllDTOs(Integer entityId) 
             throws SessionInternalError;
 
-    public void create(Integer executorId, PluggableTaskDTO dto);
-
     public void createParameter(Integer executorId, Integer taskId, 
             PluggableTaskParameterDTO dto);
 

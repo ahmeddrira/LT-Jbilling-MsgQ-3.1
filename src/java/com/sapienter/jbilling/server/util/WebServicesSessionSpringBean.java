@@ -110,8 +110,11 @@ import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
@@ -2367,5 +2370,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     	} else {
     		throw new SessionInternalError("Not a customer");
     	}
+    }
+    
+    /*
+     * Plug-ins
+     */
+    @Override
+    public Integer createPlugin(Integer executorId, PluggableTaskWS plugin) {
+        return new PluggableTaskBL().create(executorId, new PluggableTaskDTO(getCallerCompanyId(), plugin));
     }
 }

@@ -171,7 +171,7 @@ public class EventLogger {
         UserDAS user= new UserDAS();
         
         EventLogDTO dto = new EventLogDTO(null, jbDAS.findByName(table), 
-                user.find(userExecutingId), user.find(userAffectedId), 
+                user.find(userExecutingId), (userAffectedId == null) ? null : user.find(userAffectedId), 
                 eventLogMessageDAS.find(message), eventLogModuleDAS.find(module),
                 user.find(userExecutingId).getCompany(), rowId, LEVEL_INFO, oldInt, oldStr, oldDate);
         eventLogDAS.save(dto);

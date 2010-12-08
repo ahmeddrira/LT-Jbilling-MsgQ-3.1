@@ -42,6 +42,7 @@ import com.sapienter.jbilling.server.order.OrderProcessWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -50,7 +51,6 @@ import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
-import com.sapienter.jbilling.server.util.PreferenceWS;
 
 /**
  * Web service bean interface. 
@@ -260,4 +260,9 @@ public interface IWebServicesSessionBean {
 
     public void saveNotificationPreferences(PreferenceWS[] prefList);
     public void saveCustomerNotes(Integer userId, String notes);
+    
+    /*
+     * Plug-ins
+     */
+    public Integer createPlugin(Integer executorId, PluggableTaskWS plugin);
 }

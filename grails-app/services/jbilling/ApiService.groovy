@@ -13,6 +13,7 @@ import com.sapienter.jbilling.server.order.OrderLineWS
 import com.sapienter.jbilling.server.order.OrderWS
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx
 import com.sapienter.jbilling.server.payment.PaymentWS
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS 
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS
 import com.sapienter.jbilling.server.process.BillingProcessWS
 import com.sapienter.jbilling.server.user.ContactWS
@@ -22,7 +23,6 @@ import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS
 import com.sapienter.jbilling.server.user.partner.PartnerWS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
-import com.sapienter.jbilling.server.util.WebServicesSessionSpringBean;
 import com.sapienter.jbilling.server.mediation.RecordCountWS
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.util.PreferenceWS
@@ -486,4 +486,10 @@ class ApiService implements IWebServicesSessionBean {
 		webServicesSession.saveCustomerNotes(userId, notes)
 	}
     
+    /*
+     * Plug-ins
+     */
+    Integer createPlugin(Integer executorId, PluggableTaskWS plugin) {
+        return webServicesSession.createPlugin(executorId, plugin);
+	}
 }

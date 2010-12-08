@@ -20,6 +20,9 @@
 
 package com.sapienter.jbilling.server.pluggableTask.admin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -67,9 +70,15 @@ public class PluggableTaskBL<T> {
         return pluggableTask;
     }
     
-    public void create(PluggableTaskDTO dto) {
+    public int create(Integer executorId, PluggableTaskDTO dto) {
+        validate(dto);
         LOG.debug("Creating a new pluggable task row " + dto);
         pluggableTask = das.save(dto);
+        eLogger.audit(executorId, null, Constants.TABLE_PLUGGABLE_TASK, 
+                pluggableTask.getId(), EventLogger.MODULE_TASK_MAINTENANCE,
+                EventLogger.ROW_CREATED, null, null, null);
+        
+        return pluggableTask.getId();
     }
     
     public void createParameter(Integer taskId, 
@@ -170,6 +179,61 @@ public class PluggableTaskBL<T> {
                     pluggableTask.getId());
         }
         return result;
+    }
+    
+    private void validate(PluggableTaskDTO task) {
+        List<ParameterDescription> missingParameters = new ArrayList<ParameterDescription>();
+        try {
+            // start by getting an instance of this type
+            PluggableTask instance = (PluggableTask) PluggableTaskManager.getInstance(
+                    task.getType().getClassName(), task.getType().getCategory().getInterfaceName());
+            
+            // loop through the descriptions of parameters
+            for (ParameterDescription param: instance.getParameterDescriptions()) {
+                if (param.isRequired()) {
+                    if(task.getParameters()== null || task.getParameters().size() == 0) {
+                        missingParameters.add(param);
+                    } else {
+                        boolean found = false;
+                        for (PluggableTaskParameterDTO parameter:task.getParameters()) {
+                            if (parameter.getName().equals(param.getName()) && parameter.getStrValue() != null &&
+                                    parameter.getStrValue().trim().length() > 0) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            missingParameters.add(param);
+                        }
+                    }
+                }
+            }
+        } catch (PluggableTaskException e) {
+            LOG.error("Getting instance of plug-in for validation", e);
+            throw new SessionInternalError("Validating plug-in");
+        }
+        
+        if (missingParameters.size() > 0) {
+            SessionInternalError exception = new SessionInternalError("Validation of new plug-in");
+            String messages[] = new String[missingParameters.size()];
+            int f=0;
+            for (ParameterDescription param: missingParameters) {
+                messages[f] = new String("PluggableTaskWS,parameter,plugins.error.required_parameter," + param.getName());
+                f++;
+            }
+            exception.setErrorMessages(messages);
+            throw exception;
+        }
+        
+        // now validate that the processing order is not already taken
+        if (das.findByEntityCategoryOrder(task.getEntityId(), task.getType().getCategory().getId(), 
+                task.getProcessingOrder()) != null) {
+            
+            SessionInternalError exception = new SessionInternalError("Validation of new plug-in");
+            exception.setErrorMessages(new String[] {
+                    "PluggableTaskWS,processingOrder,plugins.error.same_order," + task.getProcessingOrder()});
+            throw exception;
+        }
     }
  
 }

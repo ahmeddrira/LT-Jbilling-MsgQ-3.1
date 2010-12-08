@@ -1064,6 +1064,10 @@ table {
 	border:1px solid #bbb;
 	background:#f5f5f5;
 }
+
+.box-text textarea {
+	margin:14px 0px 0px 14px
+}
 .box-text ul {
 	margin:0;
 	width:440px;

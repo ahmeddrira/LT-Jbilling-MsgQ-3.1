@@ -202,7 +202,8 @@ public class WSSecurityMethodMapper {
         DELETE_MEDIATION_CONFIGURATION  ("deleteMediationConfiguration", 0, Type.MEDIATION_CONFIGURATION),
         
         UPDATE_ORDER_LINE_PROVISIONING  ("updateOrderAndLineProvisioningStatus", 0, Type.ORDER),
-        UPDATE_LINE_PROVISIONING        ("updateLineProvisioningStatus", 0, Type.ORDER_LINE);
+        UPDATE_LINE_PROVISIONING        ("updateLineProvisioningStatus", 0, Type.ORDER_LINE),
+        SAVE_CUSTOMER_NOTES             ("saveCustomerNotes", 0, Type.USER);
         
         private Method method;
         private Integer IdArgIndex;

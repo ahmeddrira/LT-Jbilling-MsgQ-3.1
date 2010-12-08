@@ -98,33 +98,33 @@ class ProductController {
 		redirect (action: index)
 	}
 	
-	def type = {		
-		log.info params["id"]		
+	def type = {
+		log.info params["id"]
 		ItemTypeDTO dto
 		def items
-		if (params["id"] && params["id"].matches("^[0-9]+")) {			
-			typeId= Integer.parseInt(params["id"])			
+		if (params["id"] && params["id"].matches("^[0-9]+")) {
+			typeId= Integer.parseInt(params["id"])
 			dto= ItemTypeDTO.findById(typeId);
 			if ( dto.getEntity().getId() == webServicesSession.getCallerCompanyId() ) {
-				log.info "caller id and itemtype entity id are same."								
-			}			
+				log.info "caller id and itemtype entity id are same."
+			}
 			items= dto.getItems()
 			log.info "Lets see the item size here.. " + items?.size()
 			log.info "Showing products of typeId=" + typeId
 		} else {
-			redirect (action: index)
-		}		
-		render template: "type", model:[list: items,languageId:languageId]
+			redirect (action: 'index')
+		}
+		render template: "type", model:[list: items,languageId:languageId, itemTypeId:typeId]
 	}
 	
 	def showAll = {
-		
+
 		log.info "ProductController.showAll[" + ItemDTO.findAll().size() + "]"
 		[list:ItemDTO.findAll(),languageId:languageId]
-		
+
 		//TODO The above should be replaced by below, below throws Itempricingtask error.
 		//ItemDTOEx[] allItems= webServicesSession.getAllItems()
-		//log.info "ProductController.showAll[" + allItems?.length + "]"		
+		//log.info "ProductController.showAll[" + allItems?.length + "]"
 		//render template:"type", model:[list:allItems]
 	}
 	
@@ -132,28 +132,34 @@ class ProductController {
 		log.info params["id"]
 		def prodId= params["id"]?.toInteger()
 		log.info "Showing item id=" + prodId 
+		def itemTypeId= params["itemTypeId"]
 		ItemDTO dto = new ItemBL(prodId).getEntity();
-		// get the info from the caller		
+		//get the info from the caller
 		LanguageDTO lang= new LanguageDTO(languageId);
 		String language= lang.getDescription();
 		log.info "Language: " + language
-		render template: "show", model:[item:dto, languageId:languageId, language:language]
+		render template: "show", model:[item:dto, languageId:languageId, language:language, itemTypeId: itemTypeId]
 	}
 	
 	def addEditProduct ={
 		log.info "Edit: params.Id=" + params.id
 		ItemDTO dto=null
-		if (params.id) {			
+		Integer itemTypeId= params['itemTypeId']?.toInteger()
+		if (params.id) {
 			Integer itemId= params?.id?.toInteger()
 			log.info "Editing item=" + itemId
 			dto= ItemDTO.findById(itemId)
+			if ((!itemTypeId) && dto.getItemTypes()?.iterator()?.hasNext())
+			{
+				itemTypeId= ((ItemTypeDTO)dto?.getItemTypes().iterator()?.next()).getId();
+			}
 		}
 		boolean exists= (dto!=null)
 		UserBL userbl = new UserBL(webServicesSession.getCallerId());
 		Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())
 		CurrencyDTO[] currs= new CurrencyBL().getCurrencies(languageId, entityId)
-		log.info "LanguageId=" + languageId + " EntityId=" + entityId + " found Currencies=" + currs.length
-		render view:"addEdit/product", model: [item:dto, exists:exists,languageId:languageId, currencies:currs]
+		log.info "LanguageId=${languageId} ,EntityId=${entityId} ,fOUND Currencies=${currs.length} ,itemTypeId=${itemTypeId}"
+		render view:"addEdit/product", model: [item:dto, exists:exists,languageId:languageId, currencies:currs,itemTypeId:itemTypeId]
 	}
 
 	def edit = {
@@ -162,7 +168,7 @@ class ProductController {
 		Integer itemId= params?.id?.toInteger()
 		log.info "Editing item=" + itemId
 		ItemDTO dto= ItemDTO.findById(itemId)
-		boolean exists= (dto!=null)		
+		boolean exists= (dto!=null)
 		UserBL userbl = new UserBL(webServicesSession.getCallerId());
 		Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())
 		CurrencyDTO[] currs= new CurrencyBL().getCurrencies(languageId, entityId)
@@ -179,18 +185,18 @@ class ProductController {
             dto= ItemDTO.findById(params.id?.toInteger())
 		}
 		boolean exists= (dto!=null)
-		UserBL userbl = new UserBL(webServicesSession.getCallerId());		
+		UserBL userbl = new UserBL(webServicesSession.getCallerId());
 		Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())
 		CurrencyDTO[] currs= new CurrencyBL().getCurrencies(_languageId, entityId)
 		log.info "LanguageId=" + _languageId + " EntityId=" + entityId + " found Currencies=" + currs.length
-		render(view:"addEdit/product", model: [item:dto, exists:exists,languageId:_languageId, currencies:currs])		
+		render(view:"addEdit/product", model: [item:dto, exists:exists,languageId:_languageId, currencies:currs])
 	}
 	
 	def add = {
 		log.info "Add: " + params["id"]
 		UserBL userbl = new UserBL(webServicesSession.getCallerId());
 		Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())
-		CurrencyDTO[] currs= new CurrencyBL().getCurrencies(languageId, entityId)		
+		CurrencyDTO[] currs= new CurrencyBL().getCurrencies(languageId, entityId)
 		log.info "LanguageId=" + languageId + " EntityId=" + entityId + " found Currencies=" + currs.length
 		render(template:"addEdit", model:[languageId:languageId, currencies:currs])
 	}
@@ -268,6 +274,28 @@ class ProductController {
 		}
 		flash.args= [itemId]
 		redirect (action: "index")
+	}
+	
+	def cancelEditProduct = {
+
+		log.info "Method: cancelEditProduct id=${params['id']} and itemTypeId=${params['itemTypeId']}"
+		
+		def itemTypeId= Integer.parseInt(params["itemTypeId"])
+		ItemTypeDTO dto= ItemTypeDTO.findById(itemTypeId);
+		def items= dto.getItems()
+		log.info "Lets see the item size here.. " + items?.size()
+
+		def prodId= params["id"]?.toInteger()
+		if (null != prodId) {
+			ItemDTO item = new ItemBL(prodId).getEntity();
+			LanguageDTO lang= new LanguageDTO(languageId);
+			String language= lang.getDescription();
+			render view: 'cancelEditProduct', model: [list: items,languageId:languageId, itemTypeId:itemTypeId, item:item, language:language]
+			return 
+		} 
+		
+		List<ItemTypeDTO> categories= ItemTypeDTO.findAllByEntity(new CompanyDTO(webServicesSession.getCallerCompanyId()))
+		render view: 'cancelAddProduct', model: [categories: categories, list: items,languageId:languageId, itemTypeId:itemTypeId]
 	}
 	
 }

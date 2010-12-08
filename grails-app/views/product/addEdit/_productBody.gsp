@@ -125,7 +125,7 @@
 		<div class="btn-box">
 			<a href="javascript:void(0)" onclick="$('#product').submit();" class="submit save">
 				<span><g:message code="button.save"/></span></a>
-			<a href="${createLink(action: 'index')}" class="submit cancel">
+			<a href="${createLink(action: 'cancelEditProduct', params: [id: item?.id, 'itemTypeId':itemTypeId])}" class="submit cancel">
 				<span><g:message code="button.cancel"/></span></a>
 		</div>
 	</div>

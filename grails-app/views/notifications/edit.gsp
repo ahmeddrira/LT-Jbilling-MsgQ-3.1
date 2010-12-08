@@ -291,25 +291,44 @@
 					</div>
 					<div class="row">
 						<div>
-							<input type="button" class="submit" value="$first_name" onclick="testfunc(this.value);"></div>
+							<a href="javascript:void(0)" onclick="testfunc('$first_name');" class="">
+								<span><g:message code="label.token.first.name"/></span></a>
 						</div>
-					<div class="row">
-						<div ><input type="button" class="submit add" value="$last_name" onclick="testfunc(this.value);"></div>
 					</div>
 					<div class="row">
-						<div ><input type="button" class="submit add" value="$company_id" onclick="testfunc(this.value);"></div>
+						<div >
+							<a href="javascript:void(0)" onclick="testfunc('$last_name');" class="">
+							<span><g:message code="label.token.last.name"/></span></a>
+						</div>
 					</div>
 					<div class="row">
-						<div ><input type="button" class="submit add" value="$company_name" onclick="testfunc(this.value);"></div>
+						<div >
+							<a href="javascript:void(0)" onclick="testfunc('$company_id');" class="">
+							<span><g:message code="label.token.company.id"/></span></a>
+						</div>
 					</div>
 					<div class="row">
-						<div ><input type="button" class="submit add" value="$number" onclick="testfunc(this.value);"></div>
+						<div >
+						<a href="javascript:void(0)" onclick="testfunc('$company_name');" class="">
+							<span><g:message code="label.token.company.name"/></span></a>
+						</div>
 					</div>
 					<div class="row">
-						<div ><input type="button" class="submit add" value="$password" onclick="testfunc(this.value);"></div>
+						<div >
+							<a href="javascript:void(0)" onclick="testfunc('$number');" class="">
+							<span><g:message code="label.token.number"/></span></a>
+						</div>
 					</div>
 					<div class="row">
-						<div ><input type="button" class="submit add" value="$order_id" onclick="testfunc(this.value);"></div>
+						<div ><a href="javascript:void(0)" onclick="testfunc('$password');" class="">
+							<span><g:message code="label.token.password"/></span></a>
+						</div>
+					</div>
+					<div class="row">
+						<div >
+						<a href="javascript:void(0)" onclick="testfunc('$order_id');" class="">
+							<span><g:message code="label.token.order.id"/></span></a>
+						</div>
 					</div>
 				</div>
 			</div>			
@@ -317,7 +336,7 @@
 		<div class="btn-box">
 			<a href="javascript:void(0)" onclick="$('#notifications').submit();" class="submit save">
 				<span><g:message code="button.save"/></span></a>
-			<a href="${createLink(action: 'listCategories')}" class="submit cancel">
+			<a href="${createLink(action: 'cancelEdit', params: [id: messageTypeId])}" class="submit cancel">
 					<span><g:message code="button.cancel"/></span></a>
 		</div>
 

@@ -256,7 +256,7 @@ public interface IWebServicesSessionBean {
     /*
         Notifications
     */
-    public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto);
+    public void createUpdateNofications(Integer messageId, MessageDTO dto);
 
     public void saveNotificationPreferences(PreferenceWS[] prefList);
     public void saveCustomerNotes(Integer userId, String notes);

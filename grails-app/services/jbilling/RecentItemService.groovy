@@ -62,15 +62,19 @@ class RecentItemService {
      */
     def void addRecentItem(RecentItem item) {
         def items = getRecentItems()
+        def lastItem = items?.getAt(-1)
+        
+        // add item only if it is different from the last item added        
+        if (!lastItem || lastItem.type != item.type || lastItem.objectId != item.objectId) {
+            item.userId = session['user_id']
+            item.save()
 
-        item.userId = session['user_id']
-        item.save()
-        
-        items << item
-        if (items.size() > MAX_ITEMS)
-            items.remove(0).delete()
-        
-        session[SESSION_RECENT_ITEMS] = items
+            items << item
+            if (items.size() > MAX_ITEMS)
+                items.remove(0).delete()
+
+            session[SESSION_RECENT_ITEMS] = items
+        }
     }
 
     /**

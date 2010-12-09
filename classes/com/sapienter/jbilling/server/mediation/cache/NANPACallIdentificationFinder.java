@@ -65,17 +65,13 @@ import java.sql.SQLException;
  * @since 29-11-2010
  */
 public class NANPACallIdentificationFinder extends AbstractFinder {
-
     private static final Logger LOG = Logger.getLogger(NANPACallIdentificationFinder.class);
-    
-    private static final String INTERNATIONAL_PREFIX_REGEX = "^\\+?011";
-    private static final String BLANK = "";
-    private static final String DEFAULT_COUNTRY_CODE = "1";
-    private static final String DEFAULT_DESCRIPTION = "Unknown";
 
-    private static final Integer MAX_COUNTRY_CODE_LENGTH = 3;
-    private static final Integer MAX_AREA_CODE_LENGTH = 4;
-    private static final Integer MAX_SUBAREA_CODE_LENGTH = 3;
+    private static final String BLANK = "";
+    private static final String DEFAULT_DESCRIPTION = "Unknown";
+    
+    private static final Integer MAX_OCN_LENGTH = 3;
+    private static final Integer MAX_RATE_CENTER_LENGTH = 5;
 
     public static NANPACallIdentificationFinder getInstance() {
         Object bean = Context.getBean(Context.Name.NANPA_CALL_IDENTIFICATION_FINDER);
@@ -93,25 +89,23 @@ public class NANPACallIdentificationFinder extends AbstractFinder {
     public String findCallDescription(String number) {
         LOG.debug("Identifying call '" + number + "'");
 
-        number = number.replaceFirst(INTERNATIONAL_PREFIX_REGEX, BLANK);
-        String countryCode = getCountryCode(number);
-        String areaCode = getAreaCode(countryCode, number);
-        String subareaCode = getSubAreaCode(countryCode, areaCode, number);
-
-        LOG.debug("Country code: '" + countryCode
-                  + "', Area code: '" + areaCode
-                  + "', Subarea code: '" + subareaCode + "'");
+        boolean nanp = isNANP(number);
+        String internationalCode = getInternationalCode(number);
+        String ocn = nanp ? getOCN(number) : findOCN(internationalCode, number);
+        String rateCenter = nanp ? getRateCenter(number) : findRateCenter(internationalCode, ocn, number);
+        
+        LOG.debug("International code: '" + internationalCode + "', OCN: '" + ocn + "', RC: '" + rateCenter + "'");
 
         return (String) jdbcTemplate.query(
                 "select description "
                 + " from " + loader.getTableName()
                 + " where intl_code = ? "
-                + " and area_code = ? "
-                + " and subarea_code = ?",
+                + " and ocn = ? "
+                + " and rate_center = ?",
                 new Object[] {
-                        countryCode,
-                        areaCode,
-                        subareaCode
+                        internationalCode,
+                        ocn,
+                        rateCenter
                 },
                 new ResultSetExtractor() {
                     public String extractData(ResultSet rs) throws SQLException, DataAccessException {
@@ -126,73 +120,61 @@ public class NANPACallIdentificationFinder extends AbstractFinder {
     }
 
     /**
-     * Searches for the country code of the given phone number.
+     * Returns the dialed international prefix code for the given phone number. Dialed
+     * international codes can be either "011" or "1".
      *
-     * @param number phone number
-     * @return found country code
+     * @param number phone number.
+     * @return returns 011, 1 or null if no international prefix code was dialed.
      */
-    public String getCountryCode(String number) {
-        LOG.debug("Getting country code from " + number);
-
-        int length = MAX_COUNTRY_CODE_LENGTH;
-        number = getDigits(number, length);
-
-        while (length >= 0) {
-            LOG.debug("Searching for country code: " + number);
-
-            SqlRowSet rs = jdbcTemplate.queryForRowSet(
-                    "select distinct(intl_code) "
-                    + " from " + loader.getTableName()
-                    + " where intl_code = ?",
-                    new Object[] {
-                            number
-                    }
-            );
-
-            if (rs.next()) {
-                return rs.getString("intl_code");
-            } else {
-                length--;
-                number = getDigits(number, length);
-            }
-        }
-        
-        // default country code
-        return DEFAULT_COUNTRY_CODE;
+    public String getInternationalCode(String number) {
+        if (number.startsWith("011")) return "011";
+        if (number.startsWith("1")) return "1";
+        return null;            
     }
 
     /**
-     * Searches for the area code of the given phone number and country code.
+     * Returns true if the number dialed is a North American Number Plan (NANP)
+     * long distance number and not a 011 international dialed number.
      *
-     * @param countryCode country code
      * @param number phone number
-     * @return found area code
+     * @return true if NANP long distance number.
      */
-    public String getAreaCode(String countryCode, String number) {
-        LOG.debug("Getting area code for " + countryCode + " from " + number);
+    public boolean isNANP(String number) {
+        return number.matches("^(0111|1).*");
+    }
 
-        if (countryCode != null)
-            number = number.replaceFirst(countryCode, BLANK);
 
-        int length = MAX_AREA_CODE_LENGTH;
+    /**
+     * Searches for the OCN of the given number in the rate center table. This search
+     * attempts to find the best match by incrementally shortening the search OCN value
+     * by one digit (e.g., search for 123, then 12, then 1). 
+     *
+     * @param internationalCode international code
+     * @param number phone number to search
+     * @return OCN
+     */
+    public String findOCN(String internationalCode, String number) {        
+        if (internationalCode != null) number = number.replaceFirst("^" + internationalCode, BLANK);
+
+        int length = MAX_OCN_LENGTH;
         number = getDigits(number, length);
 
         while (length >= 0) {
-            LOG.debug("Searching for area code: " + number);
+            LOG.debug("Searching for ocn: " + number);
 
             SqlRowSet rs = jdbcTemplate.queryForRowSet(
-                    "select distinct(area_code) "
+                    "select distinct(ocn) "
                     + " from " + loader.getTableName()
                     + " where intl_code = ? "
-                    + " and area_code = ?",
+                    + " and ocn = ?",
                     new Object[] {
-                            countryCode,
+                            internationalCode,
                             number
                     }
             );
 
             if (rs.next()) {
-                return rs.getString("area_code");
+                return rs.getString("ocn");
             } else {
                 length--;
                 number = getDigits(number, length);
@@ -203,43 +185,40 @@ public class NANPACallIdentificationFinder extends AbstractFinder {
     }
 
     /**
-     * Searches for the sub-area code of the given phone number, area code, and country code.
+     * Searches for the Rate Center of the given number in the rate center table. This search
+     * attempts to find the best match by incrementally shortening the search Rate Center value
+     * by one digit (e.g., search for 123, then 12, then 1).
      *
-     * @param countryCode country code
-     * @param areaCode phone number
-     * @param number phone number
-     * @return found sub-area code
+     * @param internationalCode international code
+     * @param ocn ocn
+     * @param number phone number to search
+     * @return rate center
      */
-    public String getSubAreaCode(String countryCode, String areaCode, String number) {
-        LOG.debug("Getting area code for " + countryCode + " " + areaCode + " from " + number);
+    public String findRateCenter(String internationalCode, String ocn, String number) {
+        if (internationalCode != null) number = number.replaceFirst("^" + internationalCode, BLANK);
+        if (ocn != null) number = number.replaceFirst("^" + ocn, BLANK);
 
-        if (countryCode != null)
-            number = number.replaceFirst(countryCode, BLANK);
-
-        if (areaCode != null)
-            number = number.replaceFirst(areaCode, BLANK);
-
-        int length = MAX_SUBAREA_CODE_LENGTH;
+        int length = MAX_RATE_CENTER_LENGTH;
         number = getDigits(number, length);
 
         while (length >= 0) {
-            LOG.debug("Searching for sub-area code: " + number);
+            LOG.debug("Searching for rate center: " + number);
 
             SqlRowSet rs = jdbcTemplate.queryForRowSet(
-                    "select distinct(subarea_code) "
+                    "select distinct(rate_center) "
                     + " from " + loader.getTableName()
                     + " where intl_code = ? "
-                    + " and area_code = ? " 
-                    + " and subarea_code = ?",
+                    + " and ocn = ? "
+                    + " and rate_center = ?",
                     new Object[] {
-                            countryCode,
-                            areaCode,
+                            internationalCode,
+                            ocn,
                             number
                     }
             );
 
             if (rs.next()) {
-                return rs.getString("subarea_code");
+                return rs.getString("rate_center");
             } else {
                 length--;
                 number = getDigits(number, length);
@@ -248,6 +227,26 @@ public class NANPACallIdentificationFinder extends AbstractFinder {
 
         return null;
     }
+
+    /**
+     * Returns the OCN number from the given 10-digit NANP called number.
+     *
+     * @param number phone number
+     * @return OCN
+     */
+    public String getOCN(String number) {
+        return number.length() >= 10 ? number.substring(number.length() - 10, number.length() - 7) : null;
+    }
+
+    /**
+     * Returns the Rate Center number from the given 10-digit NANP called number.
+     *
+     * @param number phone number
+     * @return rate center
+     */
+    public String getRateCenter(String number) {
+        return number.length() >= 7 ? number.substring(number.length() - 7, number.length() - 4) : null;
+    }       
 
     /**
      * Shortens a given number string down to the given length by removing the

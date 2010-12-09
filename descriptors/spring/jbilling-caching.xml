@@ -89,7 +89,7 @@
 				<entry key="driver" value="com.mysql.jdbc.Driver"/>
                 <entry key="username" value="jbilling"/>
 				<entry key="password" value="password"/>
-                <entry key="table_name" value="nanpa_code"/>
+                <entry key="table_name" value="rate_center_table"/>
 				<entry key="batch_size" value="100"/>
 			</map>
 		</property>
@@ -103,9 +103,9 @@
 		<property name="jdbcTemplate" ref="memcacheJdbcTemplate" />
         <property name="transactionTemplate" ref="memcacheTransactionTemplate"/>
 		<property name="reader" ref="callIdentificationReader" />
-        <property name="tableName" value="nanpa_code"/>
-        <property name="indexName" value="nanpa_idx"/>
-		<property name="indexColumnNames" value="intl_code,area_code,subarea_code"/>
+        <property name="tableName" value="rate_center_table"/>
+        <property name="indexName" value="rate_center_idx"/>
+		<property name="indexColumnNames" value="intl_code,ocn,rate_center"/>
 	</bean>
 
 	<bean id="callIdentificationFinder"

@@ -53,6 +53,7 @@
                 <g:hiddenField name="applyFilter" value="true"/>                
                 <g:render template="/layouts/includes/filters"/>
             </g:formRemote>
+            <g:render template="/layouts/includes/filterSaveDialog"/>
 
             <!-- shortcuts -->
             <g:render template="/layouts/includes/shortcuts"/>

@@ -67,4 +67,9 @@
             </div>
         </div>
     </div>
+
+    <script type="text/javascript">
+        initPopups();
+        initScript();    
+    </script>
 </div>

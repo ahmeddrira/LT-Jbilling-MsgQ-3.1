@@ -22,6 +22,7 @@ package jbilling
 
 import javax.servlet.http.HttpSession
 import org.springframework.web.context.request.RequestContextHolder
+import org.springframework.beans.factory.InitializingBean
 
 /**
  * RecentItemService
@@ -29,10 +30,17 @@ import org.springframework.web.context.request.RequestContextHolder
  * @author Brian Cowdery
  * @since  07-12-2010
  */
-class RecentItemService {
+class RecentItemService implements InitializingBean {
 
     public static final String SESSION_RECENT_ITEMS = "recent_items"
     public static final Integer MAX_ITEMS = 5
+
+    static scope = "session"
+    
+    def void afterPropertiesSet() {
+        if (session['user_id'])
+            session[SESSION_RECENT_ITEMS] = getRecentItems()
+    }
 
     /**
      * Returns a list of recently viewed items for the currently logged in user.

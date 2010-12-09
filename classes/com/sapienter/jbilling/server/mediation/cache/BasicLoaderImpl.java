@@ -214,8 +214,8 @@ public class BasicLoaderImpl implements ILoader {
     }
 
     private static String escapeSpecialChars(String value) {
-        if (value.indexOf("'") > -1) {
-            value= value.replaceAll("'", "''");
+        if (value != null && value.indexOf("'") > -1) {
+            value = value.replaceAll("'", "''");
         }
         return value;
     }

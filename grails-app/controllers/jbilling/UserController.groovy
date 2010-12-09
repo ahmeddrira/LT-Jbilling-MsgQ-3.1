@@ -62,13 +62,12 @@ class UserController {
             }
         }
 
-        def selected = params["id"] ? UserDTO.get(params.int("id")) : null
-        def recent = recentItemService.getRecentItems()
+        def selected = params["id"] ? UserDTO.get(params.int("id")) : null       
 
         if (params["applyFilter"]) {
-            render template: "table", model: [users: users, selected: selected, statuses: statuses, filters: filters, recent: recent]
+            render template: "table", model: [users: users, selected: selected, statuses: statuses, filters: filters ]
         } else {
-            [ users: users, selected: selected, statuses: statuses, filters: filters, recent: recent ]
+            [ users: users, selected: selected, statuses: statuses, filters: filters ]
         }
     }
 

@@ -31,6 +31,7 @@ import org.springframework.web.context.request.RequestContextHolder
  */
 class RecentItemService {
 
+    public static final String SESSION_RECENT_ITEMS = "recent_items"
     public static final Integer MAX_ITEMS = 5
 
     /**
@@ -43,7 +44,8 @@ class RecentItemService {
     }
 
     /**
-     * Add a new item to the recent items list for the currently logged in user.
+     * Add a new item to the recent items list for the currently logged in user and
+     * update the session list.
      *
      * @param objectId object id
      * @param type recent item type
@@ -53,7 +55,8 @@ class RecentItemService {
     }
 
     /**
-     * Add a new item to the recent items list for the currently logged in user.
+     * Add a new item to the recent items list for the currently logged in user and
+     * update the session list.
      *
      * @param item recent item
      */
@@ -66,6 +69,8 @@ class RecentItemService {
         items << item
         if (items.size() > MAX_ITEMS)
             items.remove(0).delete()
+        
+        session[SESSION_RECENT_ITEMS] = items
     }
 
     /**

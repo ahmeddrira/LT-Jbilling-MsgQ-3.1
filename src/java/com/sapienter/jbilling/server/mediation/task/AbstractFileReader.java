@@ -41,6 +41,8 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Format;
 import com.sapienter.jbilling.server.mediation.FormatField;
 import com.sapienter.jbilling.server.mediation.Record;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -62,36 +64,85 @@ public abstract class AbstractFileReader extends AbstractReader {
     public AbstractFileReader() {
     }
     
+    public static final ParameterDescription PARAMETER_FORMAT_FILE = 
+    	new ParameterDescription("format_file", true, ParameterDescription.Type.STR);
+    
+    // optionals
+    public static final ParameterDescription PARAMETER_FORMAT_DIRECTORY = 
+    	new ParameterDescription("format_directory", false, ParameterDescription.Type.STR);
+    
+    public static final ParameterDescription PARAMETER_DIRECTORY =
+    	new ParameterDescription("directory", false, ParameterDescription.Type.STR);
+    
+    public static final ParameterDescription PARAMETER_SUFFIX =
+    	new ParameterDescription("suffix", false, ParameterDescription.Type.STR);
+    
+    public static final ParameterDescription PARAMETER_RENAME =
+    	new ParameterDescription("rename", false, ParameterDescription.Type.BOOLEAN);
+    
+    public static final ParameterDescription PARAMETER_DATE_FORMAT =
+    	new ParameterDescription("date_format", false, ParameterDescription.Type.STR);
+    
+    public static final ParameterDescription PARAMETER_REMOVE_QUOTE =
+    	new ParameterDescription("removeQuote", false, ParameterDescription.Type.BOOLEAN);
+    
+    public static final ParameterDescription PARAMETER_AUTO_ID =
+    	new ParameterDescription("autoID", false, ParameterDescription.Type.STR);
+    
+    public static final ParameterDescription PARAMETER_BUFFER_SIZE =
+    	new ParameterDescription("buffer_size", false, ParameterDescription.Type.STR);
+    
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_FORMAT_FILE);
+            add(PARAMETER_FORMAT_DIRECTORY);
+            add(PARAMETER_DIRECTORY);
+            add(PARAMETER_SUFFIX);
+            add(PARAMETER_RENAME);
+            add(PARAMETER_DATE_FORMAT);
+            add(PARAMETER_REMOVE_QUOTE);
+            add(PARAMETER_AUTO_ID);
+            add(PARAMETER_BUFFER_SIZE);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+    
+    
+    
     @Override
     public boolean validate(List<String> messages) {
         boolean retValue = super.validate(messages); 
 
-        String formatFile = (String) parameters.get("format_file");
+        String formatFile = (String) parameters.get(PARAMETER_FORMAT_FILE.getName());
         if (formatFile == null) {
             messages.add("parameter format_file is required");
             return false;
         }
         
-        String formatDirectory = ((String) parameters.get("format_directory") == null) 
-            ? Util.getSysProp("base_dir") + "mediation" : (String) parameters.get("format_directory");
+        String formatDirectory = ((String) parameters.get(PARAMETER_FORMAT_DIRECTORY.getName()) == null) 
+            ? Util.getSysProp("base_dir") + "mediation" : (String) parameters.get(PARAMETER_FORMAT_DIRECTORY.getName());
 
         formatFileName = formatDirectory + "/" + formatFile;
         
         // optionals
-        directory = ((String) parameters.get("directory") == null) 
-                ? Util.getSysProp("base_dir") + "mediation" : (String) parameters.get("directory");
-        suffix = ((String) parameters.get("suffix") == null) 
-                ? "ALL" : (String) parameters.get("suffix");
-        rename = Boolean.parseBoolean(((String) parameters.get("rename") == null) 
-                ? "false" : (String) parameters.get("rename"));
-        dateFormat = new SimpleDateFormat(((String) parameters.get("date_format") == null) 
-                ? "yyyyMMdd-HHmmss" : (String) parameters.get("date_format"));
-        removeQuote = Boolean.parseBoolean(((String) parameters.get("removeQuote") == null)
-                ? "true" : (String) parameters.get("removeQuote"));
-        autoID = Boolean.parseBoolean(((String) parameters.get("autoID") == null)
-                ? "false" : (String) parameters.get("autoID"));
-        bufferSize = Integer.parseInt(((String) parameters.get("buffer_size") == null)
-                ? "0" : (String) parameters.get("buffer_size"));
+        directory = ((String) parameters.get(PARAMETER_DIRECTORY.getName()) == null) 
+                ? Util.getSysProp("base_dir") + "mediation" : (String) parameters.get(PARAMETER_DIRECTORY.getName());
+        suffix = ((String) parameters.get(PARAMETER_SUFFIX.getName()) == null) 
+                ? "ALL" : (String) parameters.get(PARAMETER_SUFFIX.getName());
+        rename = Boolean.parseBoolean(((String) parameters.get(PARAMETER_RENAME.getName() ) == null) 
+                ? "false" : (String) parameters.get(PARAMETER_RENAME.getName()));
+        dateFormat = new SimpleDateFormat(((String) parameters.get(PARAMETER_DATE_FORMAT.getName()) == null) 
+                ? "yyyyMMdd-HHmmss" : (String) parameters.get(PARAMETER_DATE_FORMAT.getName()));
+        removeQuote = ( parameters.get(PARAMETER_REMOVE_QUOTE.getName()) == null ) 
+                ? true : ((Boolean) parameters.get(PARAMETER_REMOVE_QUOTE.getName())).booleanValue();
+        autoID = (parameters.get(PARAMETER_AUTO_ID.getName()) == null)
+                ? false : ((Boolean) parameters.get(PARAMETER_AUTO_ID.getName())).booleanValue();
+        bufferSize = Integer.parseInt(((String) parameters.get(PARAMETER_BUFFER_SIZE.getName()) == null)
+                ? "0" : (String) parameters.get(PARAMETER_BUFFER_SIZE.getName()));
 
         if (directory == null) {
             messages.add("The plug-in parameter 'directory' is mandatory");
@@ -313,7 +364,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                                     dateFormat.parse(dateStr) : null), field.getIsKey());
                         } catch (ParseException e) {
                             throw new SessionInternalError("Using format: " + dateFormat + "[" +
-                                    parameters.get("date_format") + "]", 
+                                    parameters.get(PARAMETER_DATE_FORMAT.getName()) + "]", 
                                     AbstractFileReader.class,e);
                         }
                         break;

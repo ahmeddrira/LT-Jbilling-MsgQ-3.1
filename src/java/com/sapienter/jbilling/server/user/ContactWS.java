@@ -35,6 +35,7 @@ import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.Email;
 
+import com.sapienter.jbilling.server.pluggableTask.admin.NotNull;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.api.validation.CreateValidationGroup;
 import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
@@ -64,6 +65,7 @@ public class ContactWS implements Serializable {
     private Integer faxCountryCode;
     private Integer faxAreaCode;
     private String faxNumber;
+    @NotNull(message="validation.error.notnull")
     @Email(message="validation.error.email")
     private String email;
     private Date createDate;

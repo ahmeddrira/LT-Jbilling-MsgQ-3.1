@@ -19,6 +19,7 @@
 */
 package com.sapienter.jbilling.server.mediation.task;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 
 /**
  * All readers should extend this class. 
@@ -38,12 +40,28 @@ public abstract class AbstractReader extends PluggableTask implements
     private static final Logger LOG = Logger.getLogger(AbstractReader.class);
     private int batchSize;
     
+    public static final ParameterDescription PARAMETER_BATCH_SIZE = 
+    	new ParameterDescription("batch_size", false, ParameterDescription.Type.INT);
+    
+    
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_BATCH_SIZE);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+    
+    
     public boolean validate(List<String> messages) {
         boolean retValue = true;
         try {
             // the parameter is optional and defaults to 1000 records
-            batchSize = Integer.parseInt(((String) parameters.get("batch_size") == null)
-                ? "100" : (String) parameters.get("batch_size"));
+            batchSize = ( parameters.get(PARAMETER_BATCH_SIZE.getName()) == null)
+                ? 100 : ((Integer) parameters.get(PARAMETER_BATCH_SIZE.getName())).intValue();
             LOG.debug("Batch size for this reader is " + getBatchSize());
         } catch (NumberFormatException e) {
             retValue = false;

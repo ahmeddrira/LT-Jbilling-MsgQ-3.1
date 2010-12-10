@@ -19,6 +19,17 @@
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import org.apache.log4j.Logger;
+
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
@@ -29,6 +40,7 @@ import com.sapienter.jbilling.server.order.db.OrderBillingTypeDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.process.event.NewUserStatusEvent;
 import com.sapienter.jbilling.server.system.event.Event;
@@ -36,15 +48,6 @@ import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
-import org.apache.log4j.Logger;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 /**
  * @author Emil
@@ -71,8 +74,23 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
 
     private static final Logger LOG = Logger.getLogger(BasicPenaltyTask.class);
 
-    public static final String PARAMETER_ITEM = "item";
-    public static final String PARAMETER_AGEING_STEP = "ageing_step";      
+    public static final ParameterDescription PARAMETER_ITEM = 
+    	new ParameterDescription("item", true, ParameterDescription.Type.INT);
+    public static final ParameterDescription PARAMETER_AGEING_STEP = 
+    	new ParameterDescription("ageing_step", true, ParameterDescription.Type.INT);
+
+
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_ITEM);
+            add(PARAMETER_AGEING_STEP);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
 
     private Integer itemId;
     private Integer ageingStep;
@@ -95,7 +113,7 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
     public Integer getPenaltyItemId() throws PluggableTaskException {
         if (itemId == null) {
             try {
-                itemId = Integer.parseInt(parameters.get(PARAMETER_ITEM).toString());
+                itemId = (Integer) parameters.get(PARAMETER_ITEM.getName());
             } catch (NumberFormatException e) {
                 throw new PluggableTaskException("Configured penalty item id must be an integer!", e);
             }
@@ -114,7 +132,7 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
     public Integer getAgeingStep() throws PluggableTaskException {
         if (ageingStep == null) {
             try {
-                ageingStep = Integer.parseInt(parameters.get(PARAMETER_AGEING_STEP).toString());
+                ageingStep = (Integer) parameters.get(PARAMETER_AGEING_STEP.getName());
             } catch (NumberFormatException e) {
                 throw new PluggableTaskException("Configured ageing_step must be an integer!", e);
             }

@@ -95,9 +95,11 @@ public class PluggableTaskBL<T> {
         if (dto == null || dto.getId() == null) {
             throw new SessionInternalError("task to update can't be null");
         }
+        validate(dto);
         for (PluggableTaskParameterDTO param: dto.getParameters()) {
             param.expandValue();
         }
+        LOG.debug("updating " + dto);
         pluggableTask = das.save(dto);
         
         eLogger.audit(executorId, null, Constants.TABLE_PLUGGABLE_TASK, 
@@ -226,13 +228,13 @@ public class PluggableTaskBL<T> {
         }
         
         // now validate that the processing order is not already taken
-        if (das.findByEntityCategoryOrder(task.getEntityId(), task.getType().getCategory().getId(), 
-                task.getProcessingOrder()) != null) {
-            
-            SessionInternalError exception = new SessionInternalError("Validation of new plug-in");
-            exception.setErrorMessages(new String[] {
-                    "PluggableTaskWS,processingOrder,plugins.error.same_order," + task.getProcessingOrder()});
-            throw exception;
+    	PluggableTaskDTO samePlugin = das.findByEntityCategoryOrder(task.getEntityId(), task.getType().getCategory().getId(), 
+            	task.getProcessingOrder()); 
+        if (samePlugin != null && !samePlugin.getId().equals(task.getId())) {
+        	SessionInternalError exception = new SessionInternalError("Validation of new plug-in");
+        	exception.setErrorMessages(new String[] {
+                	"PluggableTaskWS,processingOrder,plugins.error.same_order," + task.getProcessingOrder()});
+        	throw exception;
         }
     }
  

@@ -38,6 +38,7 @@ class ViewUtils {
 		}
 		if (messages.size() > 0) {
 			flash.errorMessages = messages;
+            flash.message = null;
 			return true;
 		} else {
 			return false;

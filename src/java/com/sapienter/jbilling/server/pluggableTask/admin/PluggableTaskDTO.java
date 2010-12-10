@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.pluggableTask.admin;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -90,32 +91,35 @@ public class PluggableTaskDTO implements java.io.Serializable {
     }
 
     public PluggableTaskDTO(Integer entityId, PluggableTaskWS ws) {
-        this.entityId = entityId;
+        setEntityId(entityId);
+        setId(ws.getId());
         setProcessingOrder(ws.getProcessingOrder());
         setNotes(ws.getNotes());
         setType(new PluggableTaskTypeDAS().find(ws.getTypeId()));
+        versionNum = ws.getVersionNumber();
         parameters = new ArrayList<PluggableTaskParameterDTO>();
+        // if this is an existing plug-in..
+        Collection<PluggableTaskParameterDTO> params = null;
+        if (getId() != null && getId() > 0) {
+            params = new PluggableTaskBL(getId()).getDTO().getParameters();
+        }
         for (String key: ws.getParameters().keySet()) {
             PluggableTaskParameterDTO parameter = new PluggableTaskParameterDTO();
             parameter.setName(key);
             parameter.setStrValue(ws.getParameters().get(key));
             parameter.setTask(this);
             parameters.add(parameter);
+            if (params != null) {
+                for (PluggableTaskParameterDTO dbParam: params) {
+                    if (dbParam.getName().equals(parameter.getName())) {
+                        parameter.setId(dbParam.getId());
+                        parameter.setVersionNum(dbParam.getVersionNum());
+                    }
+                }
+            }
         }
     }
  
-   public String toString() {
-      StringBuffer str = new StringBuffer("{");
-      str.append("-" + this.getClass().getName() + "-");
-
-      str.append("id=" + getId() + " " + "entityId=" + getEntityId() + " " + "processingOrder=" + 
-              getProcessingOrder() + " " + "type=" + getType());
-      str.append('}');
-
-      return(str.toString());
-   }
-
-
     public Integer getEntityId() {
         return entityId;
     }
@@ -139,18 +143,6 @@ public class PluggableTaskDTO implements java.io.Serializable {
     public void setProcessingOrder(Integer processingOrder) {
         this.processingOrder = processingOrder;
     }
-
-   public int hashCode(){
-      int result = 17;
-      result = 37*result + ((this.id != null) ? this.id.hashCode() : 0);
-
-      result = 37*result + ((this.entityId != null) ? this.entityId.hashCode() : 0);
-
-      result = 37*result + ((this.processingOrder != null) ? this.processingOrder.hashCode() : 0);
-
-      return result;
-   }
-
 
    public Collection<PluggableTaskParameterDTO> getParameters() {
         return parameters;
@@ -187,4 +179,12 @@ public class PluggableTaskDTO implements java.io.Serializable {
 	public String getNotes() {
 		return notes;
 	}
+
+    @Override
+    public String toString() {
+        return "PluggableTaskDTO [entityId=" + entityId + ", id=" + id
+                + ", notes=" + notes + ", parameters=" + parameters
+                + ", processingOrder=" + processingOrder + ", type=" + type
+                + ", versionNum=" + versionNum + "]";
+    }
 }

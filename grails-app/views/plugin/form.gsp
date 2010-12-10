@@ -8,7 +8,12 @@
             <div class="form-edit">
                 <div class="heading">
                     <strong>
-                    <g:message code="plugins.create.title"/>
+                    <g:if test="${pluginws}">
+                        <g:message code="plugins.update.title"/>
+                    </g:if>
+                    <g:else>
+                        <g:message code="plugins.create.title"/>
+                    </g:else>
                     </strong>
                 </div>
                 <div class="form-hold">
@@ -16,6 +21,18 @@
                         <fieldset>
                             <div class="form-columns">
                                 <div class="column">
+                                    <g:hiddenField name="versionNumber" value="${pluginws?.versionNumber}" />
+                                    <g:if test="${pluginws?.id > 0}">
+                                        <g:set var="this_plugin_id" value="${pluginws?.id}"/>
+                                        <g:hiddenField name="id" value="${pluginws?.id}" />
+                                        <div class="row">
+                                        	<p><g:message code="plugins.plugin.id-long"/></p>
+                                        	<span>${pluginws?.id}</span>
+                                    	</div>
+                                    </g:if>
+                                    <g:else>
+                                        <g:set var="this_plugin_id" value="0"/>
+                                    </g:else>
                                     <div class="row">
                                         <p><g:message code="plugins.create.category"/></p>
                                         <span>${description}</span>
@@ -58,7 +75,7 @@
                                     <li><a class="submit save" onclick="$('#plugin-form').submit();" href="#">
                                         <span><g:message code="plugins.create.save"/></span>
                                     </a></li>
-                                    <li><a class="submit cancel" href="#"><span>Cancel</span></a></li>
+                                    <li><a class="submit cancel" href="${createLink(action:'cancel',params:[plugin_id:this_plugin_id])}"><span>Cancel</span></a></li>
                                 </ul>
                             </div>
                         </fieldset>

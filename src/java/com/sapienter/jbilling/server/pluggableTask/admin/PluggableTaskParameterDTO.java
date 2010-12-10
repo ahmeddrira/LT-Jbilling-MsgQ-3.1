@@ -207,6 +207,13 @@ public class PluggableTaskParameterDTO implements Serializable {
     public void setValue(String value) {
         this.value = value;
     }
+
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
+    }
+
+    public Integer getVersionNum() {
+        return versionNum;
+    }
     
-    protected int getVersionNum() { return versionNum; }
 }

@@ -117,7 +117,7 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
                 data = getRefundData(paymentInfo);
             }
 
-            if ("true".equals(getOptionalParameter(PARAMETER_AVS, "false"))) {
+            if ("true".equals(getOptionalParameter(PARAMETER_AVS.getName(), "false"))) {
                 addAVSFields(paymentInfo.getUserId(), data);
                 log.debug("returning after avs " + data);
             }
@@ -227,7 +227,7 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
             PluggableTaskException {
 
         URL callURL = null;
-        if ("true".equals(getOptionalParameter(PARAMETER_TEST, "false"))) {
+        if ("true".equals(getOptionalParameter(PARAMETER_TEST.getName(), "false"))) {
             callURL = new URL(TEST_URL);
             log.debug("Running Atlas task in test mode!");
         } else {

@@ -33,7 +33,13 @@ class UserController {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()
 
-        def users = UserDTO.withCriteria {
+        params.max = params?.max?.toInteger() ?: 25
+        params.offset = params?.offset?.toInteger() ?: 0
+
+        def users = UserDTO.createCriteria().list(
+                max:    params.max,
+                offset: params.offset                
+        ) {
             and {
                 filters.each { filter ->
                     if (filter.value) {

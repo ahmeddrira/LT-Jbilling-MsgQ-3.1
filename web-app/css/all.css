@@ -643,6 +643,30 @@ table {
 .column .box dd a {
 	color:#383838;
 }
+.pager-box {
+    overflow:hidden;
+    height:1%;
+    padding:6px;
+    background:#f6f6f6;
+    border-top: 1px solid #bbb;
+    border-right: 1px solid #bbb;
+    border-left: 1px solid #bbb;
+    text-align:center;
+}
+.pager-box span {
+    display: inline-block;
+    margin: 0 6px;
+}
+.pager-box a {
+    float:none;
+    margin: 0 6px;
+}
+.pager-box a.prevLink {
+
+}
+.pager-box a.nextLink {
+
+}
 .btn-box {
 	overflow:hidden;
 	height:1%;

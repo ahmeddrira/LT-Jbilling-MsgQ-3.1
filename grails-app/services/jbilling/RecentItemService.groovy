@@ -70,7 +70,7 @@ class RecentItemService implements InitializingBean {
      */
     def void addRecentItem(RecentItem item) {
         def items = getRecentItems()
-        def lastItem = items?.getAt(-1)
+        def lastItem = !items.isEmpty() ? items.getAt(-1) : null
         
         // add item only if it is different from the last item added        
         if (!lastItem || lastItem.type != item.type || lastItem.objectId != item.objectId) {

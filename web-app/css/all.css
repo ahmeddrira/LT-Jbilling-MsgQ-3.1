@@ -461,6 +461,7 @@ table {
 	font-weight:bold;
 	float:left;
 	background:url(../images/bg-btn01.png) no-repeat;
+    cursor: pointer;
 }
 .submit2:hover ,
 .submit:hover {text-decoration:none;}
@@ -883,6 +884,12 @@ table {
 	margin:0 auto;
 	padding:14px 0 0;
 }
+.dialog .form-columns {
+    width: auto;
+}
+.dialog .form-columns label {
+    width: 90px;
+}
 .form-columns .column {
 	float:left;
 	width:385px;
@@ -906,6 +913,12 @@ table {
 	text-align:right;
 	font-size:12px;
 	line-height:24px;
+}
+.form-columns ul {
+    margin: 4px 0 0 0;
+}
+.form-columns li {
+    list-style: inside;    
 }
 .form-columns label.lb {
 	width:auto;

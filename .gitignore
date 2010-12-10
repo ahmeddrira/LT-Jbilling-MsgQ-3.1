@@ -4,6 +4,9 @@ build/
 resources/
 TEST*.xml
 
+# environment specific config files
+src/java/jbilling.properties
+
 # temp files
 activemq-data/
 tmp/

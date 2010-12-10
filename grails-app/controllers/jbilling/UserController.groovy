@@ -23,6 +23,7 @@ class UserController {
     def isAutoAch = false
 
     def filterService
+    def recentItemService
 
     def index = {
         redirect action: list, params: params
@@ -50,7 +51,7 @@ class UserController {
                                 break
 
                             case FilterConstraint.STATUS:
-                                eq("userStatus", statuses.find{ it.statusValue == filter.integerValue })
+                                eq("userStatus", statuses.find{ it.id == filter.integerValue })
                                 break
                         }
                     }
@@ -61,25 +62,25 @@ class UserController {
             }
         }
 
+        def selected = params["id"] ? UserDTO.get(params.int("id")) : null       
+
         if (params["applyFilter"]) {
-            render template: "table", model: [users: users, statuses: statuses, filters: filters]
+            render template: "table", model: [users: users, selected: selected, statuses: statuses, filters: filters ]
         } else {
-            [ users: users, statuses: statuses, filters: filters ]
+            [ users: users, selected: selected, statuses: statuses, filters: filters ]
         }
     }
 
     def select = {
-        if (params["id"]) {
-            UserDTO user = UserDTO.get(params["id"])
-
-            def template = params["template"] ? params["template"] : "details";
-            render template: template, model:[selected: user]
-        }
+        recentItemService.addRecentItem(params.int("id"), RecentItemType.CUSTOMER)
+        UserDTO user = UserDTO.get(params.int("id"))
+        
+        render template: params["template"] ?: "details", model:[selected: user]
     }
 
     def subaccounts = {
         if (params["id"]) {
-            UserDTO user = UserDTO.get(params["id"])
+            UserDTO user = UserDTO.get(params.int("id"))
             def children = user?.customer?.children?.collect{ it.baseUser }
 
             if (!children.isEmpty()) {

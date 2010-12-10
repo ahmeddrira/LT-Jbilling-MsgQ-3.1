@@ -207,6 +207,7 @@ ALTER TABLE ONLY public.report_user DROP CONSTRAINT report_user_pkey;
 ALTER TABLE ONLY public.report_type DROP CONSTRAINT report_type_pkey;
 ALTER TABLE ONLY public.report DROP CONSTRAINT report_pkey;
 ALTER TABLE ONLY public.report_field DROP CONSTRAINT report_field_pkey;
+ALTER TABLE ONLY public.recent_item DROP CONSTRAINT recent_item_pkey;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_pkey;
 ALTER TABLE ONLY public.promotion DROP CONSTRAINT promotion_pkey;
 ALTER TABLE ONLY public.process_run_user DROP CONSTRAINT process_run_user_pkey;
@@ -299,6 +300,7 @@ DROP TABLE public.report_type;
 DROP TABLE public.report_field;
 DROP TABLE public.report_entity_map;
 DROP TABLE public.report;
+DROP TABLE public.recent_item;
 DROP TABLE public.purchase_order;
 DROP TABLE public.promotion_user_map;
 DROP TABLE public.promotion;
@@ -1965,6 +1967,21 @@ CREATE TABLE purchase_order (
 
 
 ALTER TABLE public.purchase_order OWNER TO jbilling;
+
+--
+-- Name: recent_item; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE recent_item (
+    id integer NOT NULL,
+    type character varying(255) NOT NULL,
+    object_id integer NOT NULL,
+    user_id integer NOT NULL,
+    version integer NOT NULL
+);
+
+
+ALTER TABLE public.recent_item OWNER TO jbilling;
 
 --
 -- Name: report; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -11846,6 +11863,7 @@ mediation_record_line	1
 pluggable_task	605
 filter	1
 filter_set	1
+recent_item	1
 \.
 
 
@@ -16558,6 +16576,14 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 
 
 --
+-- Data for Name: recent_item; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
+\.
+
+
+--
 -- Data for Name: report; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -20587,6 +20613,14 @@ ALTER TABLE ONLY promotion
 
 ALTER TABLE ONLY purchase_order
     ADD CONSTRAINT purchase_order_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: recent_item_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY recent_item
+    ADD CONSTRAINT recent_item_pkey PRIMARY KEY (id);
 
 
 --

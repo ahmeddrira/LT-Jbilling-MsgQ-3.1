@@ -1,5 +1,3 @@
-package jbilling
-
 /*
  jBilling - The Enterprise Open Source Billing System
  Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -20,14 +18,18 @@ package jbilling
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package jbilling
+
 /**
- * FilterType
+ * RecentItemController
  
  * @author Brian Cowdery
- * @since  30-11-2010
+ * @since  09-12-2010
  */
-enum FilterType {
-    
-    ALL, INVOICE, ORDER, CUSTOMER
+class RecentItemController {
+
+    def index = {
+        render template: "/layouts/includes/recent"
+    }
 
 }

@@ -54,17 +54,4 @@
     </g:if>
 </div>
 
-<script type="text/javascript">
-    $('#messages').ajaxSuccess(function(e, xhr, settings) {
-        var url = "${resource(dir:'')}/messages";
-        if (settings.url != url) {
-            $.ajax({
-                url: url,
-                success: function(data) {
-                    $('#messages').replaceWith(data);
-                }
-            });
-        }
-    });
-</script>
 

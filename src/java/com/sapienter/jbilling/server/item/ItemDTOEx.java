@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.security.WSSecured;
 import javax.validation.constraints.Size;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Digits;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -38,6 +39,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer id;
     @Size (min=1,max=50, message="validation.error.size,1,50")
     private String number;
+    @Digits(integer=3, fraction=2, message="validation.error.not.a.number")
     private String percentage;
     private Integer priceManual;
     private Integer hasDecimals;

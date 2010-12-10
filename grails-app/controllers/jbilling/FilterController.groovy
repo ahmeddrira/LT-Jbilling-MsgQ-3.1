@@ -31,18 +31,13 @@ class FilterController {
     def filterService
 
     def add = {
-        def filters = filterService.showFilter(params["id"])
-        render template: "filters", model:[filters: filters]
+        def filters = filterService.showFilter(params["name"])
+        render template: "/layouts/includes/filters", model:[filters: filters]
     }
 
     def remove = {
-        def filters = filterService.removeFilter(params["id"])
-        render template: "filters", model:[filters: filters]
-    }
-
-    def edit = {
-        def filters = filterService.getCurrentFilters()
-        [ filters: filters, fromAction: params["fromAction"], fromController: params["fromController"] ]
+        def filters = filterService.removeFilter(params["name"])
+        render template: "/layouts/includes/filters", model:[filters: filters]
     }
 
     def save = {
@@ -52,12 +47,11 @@ class FilterController {
         filters.each { filterset.addToFilters(new Filter(it)) }
         filterset.save(flush: true)
 
-        // redirect back to the original action
-        redirect action: params["fromAction"], controller: params["fromController"]
+        render template: "/layouts/includes/filters", model:[filters: filterset.filters]
     }
 
     def load = {
         def filters = filterService.loadFilters(params.int("id"))
-        render template: "filters", model:[filters: filters]        
+        render template: "/layouts/includes/filters", model:[filters: filters]
     }
 }

@@ -24,6 +24,7 @@
 package com.sapienter.jbilling.server.entity;
 
 import javax.xml.bind.annotation.XmlType;
+import javax.validation.constraints.Digits;
 
 /**
  * Value object for AchEntity.
@@ -35,8 +36,12 @@ public class AchDTO
 {
    private java.lang.Integer id;
    private boolean idHasBeenSet = false;
+   
+   @Digits(integer=16, fraction=0, message="validation.error.not.a.number")
    private java.lang.String abaRouting;
    private boolean abaRoutingHasBeenSet = false;
+   
+   @Digits(integer=16, fraction=0, message="validation.error.not.a.number")
    private java.lang.String bankAccount;
    private boolean bankAccountHasBeenSet = false;
    private java.lang.Integer accountType;

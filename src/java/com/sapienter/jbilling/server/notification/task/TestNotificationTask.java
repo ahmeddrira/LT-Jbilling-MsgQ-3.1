@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.notification.task;
 
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -30,14 +31,28 @@ import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.pluggableTask.NotificationTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 
 public class TestNotificationTask extends PluggableTask implements NotificationTask {
     
-    public static final String PARAMETER_FROM = "from";
+	public static final ParameterDescription PARAMETER_FROM = 
+		new ParameterDescription("from", false, ParameterDescription.Type.STR);
     public static final Logger LOG = Logger.getLogger(TestNotificationTask.class);
+    
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_FROM);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+    
 
     public void deliver(UserDTO user, MessageDTO sections)
             throws TaskException {
@@ -50,7 +65,7 @@ public class TestNotificationTask extends PluggableTask implements NotificationT
             List<ContactDTOEx> emails = contact.getAll(user.getUserId());
             
             // find the from
-            String from = (String) parameters.get(PARAMETER_FROM);
+            String from = (String) parameters.get(PARAMETER_FROM.getName());
             if (from == null || from.length() == 0) {
                 from = Util.getSysProp("email_from");
             }

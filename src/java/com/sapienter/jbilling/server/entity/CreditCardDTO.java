@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.entity;
 
 import javax.xml.bind.annotation.XmlType;
+import org.hibernate.validator.constraints.CreditCardNumber;
 
 /**
  * Only used for web services backward compatibility. 
@@ -32,6 +33,8 @@ public class CreditCardDTO
 {
    private java.lang.Integer id;
    private boolean idHasBeenSet = false;
+   
+   @CreditCardNumber(message = "validation.error.invalid.card.number")
    private java.lang.String number;
    private boolean numberHasBeenSet = false;
    private java.util.Date expiry;

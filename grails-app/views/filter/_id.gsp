@@ -8,7 +8,7 @@
 
 <div id="${filter.name}">
     <span class="title <g:if test='${filter.value}'>active</g:if>"><g:message code="filters.${filter.field}.title"/></span>
-    <g:remoteLink class="delete" controller="filter" action="remove" id="${filter.name}" update="filters"/>
+    <g:remoteLink class="delete" controller="filter" action="remove" params="[name: filter.name]" update="filters"/>
 
     <div class="slide">
         <fieldset>

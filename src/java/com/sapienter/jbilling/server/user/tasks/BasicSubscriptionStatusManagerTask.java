@@ -19,7 +19,9 @@
 */
 package com.sapienter.jbilling.server.user.tasks;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -27,6 +29,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -37,11 +40,23 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
         ISubscriptionStatusManager {
     
     private static final Logger LOG = Logger.getLogger(BasicSubscriptionStatusManagerTask.class);
-    private static final String PARAMETER_ITEM_TYPE_ID = "item_type_id";
+    
+    public static final ParameterDescription PARAMETER_ITEM_TYPE_ID = 
+    	new ParameterDescription("item_type_id", true, ParameterDescription.Type.STR);
     
     private PaymentDTOEx payment;
     private Integer entityId;
     
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_ITEM_TYPE_ID);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
     
     public void paymentFailed(Integer entityId, PaymentDTOEx payment) {
         this.payment = payment;

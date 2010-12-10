@@ -5,6 +5,25 @@
     <g:javascript library="panels"/>
 
     <script type="text/javascript">
+        $(document).ajaxSuccess(function(e, xhr, settings) {
+            var ignored = [
+                "${resource(dir:'')}/recentItem",
+                "${resource(dir:'')}/messages"
+            ];
+
+            if ($.inArray(settings.url, ignored) < 0) {
+                $.ajax({
+                    url: "${resource(dir:'')}/messages",
+                    success: function(data) { $("#messages").replaceWith(data); }
+                });
+
+                $.ajax({
+                    url: "${resource(dir:'')}/recentItem",
+                    success: function(data) { $("#recent-items").replaceWith(data) }
+                });
+            }
+        });
+
         function applyFilters() {
             $('#filters-form input:visible, #filters-form select:visible').each(function() {
                 var title = $(this).parents('li').find('.title');
@@ -16,7 +35,7 @@
             });
 
             $('#filters-form').submit();
-        }
+        }    
     </script>
 
     <g:layoutHead/>
@@ -31,43 +50,16 @@
         <div id="left-column">
             <!-- filters -->
             <g:formRemote id="filters-form" name="filters-form" url="[action: list]" onSuccess="render(data, first);">
-                <g:hiddenField name="applyFilter" value="true"/>
-                
-                <div id="filters">
-                    <g:if test="${filters}">
-                        <g:render template="/filter/filters"/>
-                    </g:if>
-                </div>
+                <g:hiddenField name="applyFilter" value="true"/>                
+                <g:render template="/layouts/includes/filters"/>
             </g:formRemote>
+            <g:render template="/layouts/includes/filterSaveDialog"/>
 
             <!-- shortcuts -->
-            <div id="shortcuts">
-                <div class="heading">
-                    <a href="#" class="arrow open"><strong><g:message code="shortcut.title"/></strong></a>
-                    <div class="drop">
-                        <ul>
-                            <li><g:link controller="user" action="create"><g:message code="shortcut.link.customer"/></g:link></li>
-                            <li><g:link controller="product" action="create"><g:message code="shortcut.link.product"/></g:link></li>
-                            <li><g:link controller="order" action="create"><g:message code="shortcut.link.order"/></g:link></li>
-                            <li><g:link controller="user" action="invoice"><g:message code="shortcut.link.invoice"/></g:link></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            <g:render template="/layouts/includes/shortcuts"/>
 
             <!-- recently viewed items -->
-            <div id="recent-items">
-                <div class="heading">
-                    <strong><g:message code="recent.items.title"/></strong>
-                </div>
-                <ul class="list">
-                    <li><a href="#"><img src="${resource(dir:'images', file:'icon09.gif')}" alt="invoice" />Invoice</a></li>
-                    <li><a href="#"><img src="${resource(dir:'images', file:'icon10.gif')}" alt="payment" />Payment</a></li>
-                    <li><a href="#"><img src="${resource(dir:'images', file:'icon11.gif')}" alt="customer" />Customer</a></li>
-                    <li><a href="#"><img src="${resource(dir:'images', file:'icon12.gif')}" alt="order" />Order</a></li>
-                    <li><a href="#"><img src="${resource(dir:'images', file:'icon13.gif')}" alt="other" />Others</a></li>
-                </ul>
-            </div>
+            <g:render template="/layouts/includes/recent"/>
         </div>
 
 

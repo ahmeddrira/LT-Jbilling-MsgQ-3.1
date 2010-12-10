@@ -34,12 +34,12 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
-import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTaskWithTimeout;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
@@ -48,13 +48,17 @@ import com.sapienter.jbilling.server.util.Constants;
 
 public class PaymentAtlasTask extends PaymentTaskWithTimeout {
 
-    public static final String PARAMETER_MERCHANT_ACCOUNT_CODE = "merchant_account_code";
+    public static final ParameterDescription PARAMETER_MERCHANT_ACCOUNT_CODE = 
+    	new ParameterDescription("merchant_account_code", true, ParameterDescription.Type.STR);
 
-    public static final String PARAMETER_TEST = "test";
+    public static final ParameterDescription PARAMETER_TEST = 
+    	new ParameterDescription("test", false, ParameterDescription.Type.STR);
 
-    public static final String PARAMETER_AVS = "submit_avs";
+    public static final ParameterDescription PARAMETER_AVS = 
+    	new ParameterDescription("submit_avs", false, ParameterDescription.Type.STR);
 
-    public static final String PARAMETER_PASSWORD = "password";
+    public static final ParameterDescription PARAMETER_PASSWORD = 
+    	new ParameterDescription("password", true, ParameterDescription.Type.STR);
 
     private static final String URL = "https://atlasportal.net:8443/gates/xmlrpc";
 
@@ -64,12 +68,25 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
 
     private static final int REPLY_TIME_OUT = 30000; // in millisec
 
-    private Logger log = null;
+    private Logger log = Logger.getLogger(PaymentAtlasTask.class);
 
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_AVS);
+            add(PARAMETER_MERCHANT_ACCOUNT_CODE);
+            add(PARAMETER_PASSWORD);
+            add(PARAMETER_TEST);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+    
     public boolean process(PaymentDTOEx paymentInfo)
             throws PluggableTaskException {
         boolean retValue = false;
-        log = Logger.getLogger(PaymentAtlasTask.class);
 
         if (paymentInfo.getPayoutId() != null) {
             return true;
@@ -139,8 +156,8 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
     }
 
     private void validateParameters() throws PluggableTaskException {
-        ensureGetParameter(PARAMETER_MERCHANT_ACCOUNT_CODE);
-        ensureGetParameter(PARAMETER_PASSWORD);
+        ensureGetParameter(PARAMETER_MERCHANT_ACCOUNT_CODE.getName());
+        ensureGetParameter(PARAMETER_PASSWORD.getName());
     }
 
     public void failure(Integer userId, Integer retry) {
@@ -150,7 +167,7 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
             throws PluggableTaskException {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("merchantAccountCode",
-                ensureGetParameter(PARAMETER_MERCHANT_ACCOUNT_CODE));
+                ensureGetParameter(PARAMETER_MERCHANT_ACCOUNT_CODE.getName()));
         if (paymentInfo.getUserId() != null)
             data.put("customerAccountCode", String.valueOf(paymentInfo
                     .getUserId()));
@@ -208,7 +225,6 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
     private PaymentAuthorizationDTO makeCall(Map<String, Object> data,
             boolean isCharge) throws XmlRpcException, MalformedURLException,
             PluggableTaskException {
-        log = Logger.getLogger(PaymentAtlasTask.class);
 
         URL callURL = null;
         if ("true".equals(getOptionalParameter(PARAMETER_TEST, "false"))) {
@@ -217,7 +233,7 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
         } else {
             callURL = new URL(URL);
         }
-        String merchantAccountCode = ensureGetParameter(PARAMETER_MERCHANT_ACCOUNT_CODE);
+        String merchantAccountCode = ensureGetParameter(PARAMETER_MERCHANT_ACCOUNT_CODE.getName());
 
         int merchantCode = Integer.parseInt(merchantAccountCode);
         merchantCode = merchantCode - (merchantCode % 1000);
@@ -246,7 +262,7 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
         }
 
         Object[] params = new Object[] { String.valueOf(merchantCode),
-                ensureGetParameter(PARAMETER_PASSWORD), transactionRequestList,
+                ensureGetParameter(PARAMETER_PASSWORD.getName()), transactionRequestList,
                 configParam };
 
         Object[] resresponse = (Object[]) paymentProcessor.execute(
@@ -285,7 +301,6 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
     }
 
     public boolean preAuth(PaymentDTOEx payment) throws PluggableTaskException {
-        log = Logger.getLogger(PaymentAtlasTask.class);
         try {
             validateParameters();
             Map<String, Object> data = getChargeData(payment);

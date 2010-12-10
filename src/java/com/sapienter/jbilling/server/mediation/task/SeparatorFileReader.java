@@ -20,7 +20,10 @@
 
 package com.sapienter.jbilling.server.mediation.task;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 
 public class SeparatorFileReader extends AbstractFileReader {
     
@@ -29,13 +32,29 @@ public class SeparatorFileReader extends AbstractFileReader {
     public SeparatorFileReader() {
     }
     
+    public static final ParameterDescription PARAMETER_SEPARATOR = 
+    	new ParameterDescription("separator", true, ParameterDescription.Type.STR);
+    
+    
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_SEPARATOR);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+    
+    
     @Override
     public boolean validate(List<String> messages) {
         boolean retValue = super.validate(messages); 
         
         // optionals
-        fieldSeparator = ((String) parameters.get("separator") == null) 
-                ? "," : (String) parameters.get("separator");
+        fieldSeparator = ((String) parameters.get(PARAMETER_SEPARATOR.getName()) == null) 
+                ? "," : (String) parameters.get(PARAMETER_SEPARATOR.getName());
        
         return retValue;
     }

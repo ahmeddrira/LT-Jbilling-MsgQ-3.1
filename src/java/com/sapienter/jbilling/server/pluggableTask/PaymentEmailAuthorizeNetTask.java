@@ -26,10 +26,14 @@
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
@@ -41,11 +45,24 @@ import com.sapienter.jbilling.server.util.Constants;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class PaymentEmailAuthorizeNetTask extends PaymentAuthorizeNetTask {
+	
+	
+	// pluggable task parameters names
+    public static final ParameterDescription PARAMETER_EMAIL_ADDRESS = 
+        new ParameterDescription("email_address", true, ParameterDescription.Type.STR);
+    
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+        	descriptions.add(PARAMETER_EMAIL_ADDRESS); 
+        }
+    };
+
+	
     public boolean process(PaymentDTOEx paymentInfo) 
             throws PluggableTaskException {
         Logger log = Logger.getLogger(PaymentEmailAuthorizeNetTask.class);
         boolean retValue = super.process(paymentInfo);
-        String address = (String) parameters.get("email_address");
+        String address = (String) parameters.get(PARAMETER_EMAIL_ADDRESS.getName());
         try {
             UserBL user = new UserBL(paymentInfo.getUserId());
             String message;

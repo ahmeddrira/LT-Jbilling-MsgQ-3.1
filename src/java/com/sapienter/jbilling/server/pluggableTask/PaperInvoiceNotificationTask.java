@@ -20,16 +20,19 @@
 
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.process.db.PaperInvoiceBatchDTO;
-import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.PaperInvoiceBatchBL;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
+import com.sapienter.jbilling.server.process.db.PaperInvoiceBatchDTO;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.db.UserDTO;
@@ -42,9 +45,27 @@ public class PaperInvoiceNotificationTask
 
     private static final Logger LOG = Logger.getLogger(PaperInvoiceNotificationTask.class);
     // pluggable task parameters names
-    public static final String PARAMETER_DESIGN = "design";
-    public static final String PARAMETER_LANGUAGE_OPTIONAL = "language";
-    public static final String PARAMETER_SQL_QUERY_OPTIONAL = "sql_query";
+    public static final ParameterDescription PARAMETER_DESIGN = 
+    	new ParameterDescription("design", true, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_LANGUAGE_OPTIONAL = 
+    	new ParameterDescription("language", false, ParameterDescription.Type.BOOLEAN);
+    public static final ParameterDescription PARAMETER_SQL_QUERY_OPTIONAL = 
+    	new ParameterDescription("sql_query", false, ParameterDescription.Type.BOOLEAN);
+
+
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_DESIGN);
+            add(PARAMETER_LANGUAGE_OPTIONAL);
+            add(PARAMETER_SQL_QUERY_OPTIONAL);
+        }
+    };
+
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+
 
     private String design;
     private boolean language;
@@ -60,13 +81,13 @@ public class PaperInvoiceNotificationTask
      */
     private void init(UserDTO user, MessageDTO message)
             throws TaskException {
-        design = (String) parameters.get(PARAMETER_DESIGN);
+        design = (String) parameters.get(PARAMETER_DESIGN.getName());
 
-        language = Boolean.parseBoolean((String) parameters.get(
-                PARAMETER_LANGUAGE_OPTIONAL));
+        language = ((Boolean) parameters.get(
+                PARAMETER_LANGUAGE_OPTIONAL.getName())).booleanValue();
 
-        sqlQuery = Boolean.parseBoolean((String) parameters.get(
-                PARAMETER_SQL_QUERY_OPTIONAL));
+        sqlQuery = ((Boolean) parameters.get(
+                PARAMETER_SQL_QUERY_OPTIONAL.getName())).booleanValue();
 
         invoice = (InvoiceDTO) message.getParameters().get(
                 "invoiceDto");

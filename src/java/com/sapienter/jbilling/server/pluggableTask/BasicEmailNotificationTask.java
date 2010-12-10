@@ -20,29 +20,30 @@
 package com.sapienter.jbilling.server.pluggableTask;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.mail.Address;
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.Logger;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.MessageSection;
 import com.sapienter.jbilling.server.notification.NotificationBL;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import java.util.ArrayList;
-import javax.mail.Message;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
 
 /* 
  * This will send an email to the main contant of the provided user
@@ -57,17 +58,49 @@ public class BasicEmailNotificationTask extends PluggableTask
         implements NotificationTask {
 
     // pluggable task parameters names
-    public static final String PARAMETER_SMTP_SERVER = "smtp_server";
-    public static final String PARAMETER_FROM = "from";
-    public static final String PARAMETER_FROM_NAME = "from_name";
-    public static final String PARAMETER_PORT = "port";
-    public static final String PARAMETER_USERNAME = "username";
-    public static final String PARAMETER_PASSWORD = "password";
-    public static final String PARAMETER_REPLYTO = "reply_to";
-    public static final String PARAMETER_BCCTO = "bcc_to";
-    public static final String PARAMETER_HTML = "html";
-    public static final String PARAMETER_TLS = "tls";
-    public static final String PARAMETER_SSL_AUTH = "ssl_auth";
+    public static final ParameterDescription PARAMETER_SMTP_SERVER = 
+        new ParameterDescription("smtp_server", true, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_PORT = 
+    	new ParameterDescription("port", true, ParameterDescription.Type.INT);
+    public static final ParameterDescription PARAMETER_USERNAME = 
+    	new ParameterDescription("username", true, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_PASSWORD = 
+    	new ParameterDescription("password", true, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_FROM = 
+        new ParameterDescription("from", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_FROM_NAME = 
+    	new ParameterDescription("from_name", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_REPLYTO = 
+    	new ParameterDescription("reply_to", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_BCCTO = 
+    	new ParameterDescription("bcc_to", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_HTML = 
+    	new ParameterDescription("html", false, ParameterDescription.Type.BOOLEAN);
+    public static final ParameterDescription PARAMETER_TLS = 
+    	new ParameterDescription("tls", true, ParameterDescription.Type.BOOLEAN);
+    public static final ParameterDescription PARAMETER_SSL_AUTH = 
+    	new ParameterDescription("ssl_auth", true, ParameterDescription.Type.BOOLEAN);
+    
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_BCCTO);
+            add(PARAMETER_FROM);
+            add(PARAMETER_FROM_NAME);
+            add(PARAMETER_HTML);
+            add(PARAMETER_PASSWORD);
+            add(PARAMETER_PORT);
+            add(PARAMETER_REPLYTO);
+            add(PARAMETER_SMTP_SERVER);
+            add(PARAMETER_SSL_AUTH);
+            add(PARAMETER_TLS);
+            add(PARAMETER_USERNAME);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
 
     private static final Logger LOG = Logger.getLogger(BasicEmailNotificationTask.class);
 
@@ -84,13 +117,13 @@ public class BasicEmailNotificationTask extends PluggableTask
     
     private void init() {
                 // set some parameters
-        server = (String) parameters.get(PARAMETER_SMTP_SERVER);
+        server = (String) parameters.get(PARAMETER_SMTP_SERVER.getName());
         if (server == null || server.length() == 0) {
             server = Util.getSysProp("smtp_server");
         }
 
         port = Integer.parseInt(Util.getSysProp("smtp_port"));
-        String strPort = (String) parameters.get(PARAMETER_PORT);
+        String strPort = String.valueOf(parameters.get(PARAMETER_PORT.getName()));
         if (strPort != null && strPort.trim().length() > 0) {
             try {
                 port = Integer.valueOf(strPort).intValue();
@@ -98,21 +131,21 @@ public class BasicEmailNotificationTask extends PluggableTask
                 LOG.error("The port is not a number", e);
             }
         }
-        username = (String) parameters.get(PARAMETER_USERNAME);
+        username = (String) parameters.get(PARAMETER_USERNAME.getName());
         if (username == null || username.length() == 0) {
             username = Util.getSysProp("smtp_username");
         }
-        password = (String) parameters.get(PARAMETER_PASSWORD);
+        password = (String) parameters.get(PARAMETER_PASSWORD.getName());
         if (password == null || password.length() == 0) {
             password = Util.getSysProp("smtp_password");
         }
-        replyTo = (String) parameters.get(PARAMETER_REPLYTO);
+        replyTo = (String) parameters.get(PARAMETER_REPLYTO.getName());
 
-        doHTML = Boolean.valueOf((String) parameters.get(PARAMETER_HTML));
+        doHTML = ((Boolean) parameters.get(PARAMETER_HTML.getName())).booleanValue();
 
-        tls = Boolean.valueOf((String) parameters.get(PARAMETER_TLS));
+        tls = ((Boolean) parameters.get(PARAMETER_TLS.getName())).booleanValue();
 
-        sslAuth = Boolean.valueOf((String) parameters.get(PARAMETER_SSL_AUTH));
+        sslAuth = ((Boolean) parameters.get(PARAMETER_SSL_AUTH.getName())).booleanValue();
     }
 
     public void deliver(UserDTO user, MessageDTO message)
@@ -189,12 +222,12 @@ public class BasicEmailNotificationTask extends PluggableTask
         }
 
         // the from address
-        String from = (String) parameters.get(PARAMETER_FROM);
+        String from = (String) parameters.get(PARAMETER_FROM.getName());
         if (from == null || from.length() == 0) {
             from = Util.getSysProp("email_from");
         }
 
-        String fromName = (String) parameters.get(PARAMETER_FROM_NAME);
+        String fromName = (String) parameters.get(PARAMETER_FROM_NAME.getName());
         try {
             if (fromName == null || fromName.length() == 0) {
                 msg.setFrom(new InternetAddress(from));
@@ -215,7 +248,7 @@ public class BasicEmailNotificationTask extends PluggableTask
             }
         }
         // the bcc if specified
-        String bcc = (String) parameters.get(PARAMETER_BCCTO);
+        String bcc = (String) parameters.get(PARAMETER_BCCTO.getName());
         if (bcc != null && bcc.length() > 0) {
             try {
                 msg.setBcc(new InternetAddress(bcc, false));

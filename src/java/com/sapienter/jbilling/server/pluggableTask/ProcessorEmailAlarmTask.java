@@ -20,11 +20,14 @@
 
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.notification.NotificationBL;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
@@ -36,14 +39,32 @@ public class ProcessorEmailAlarmTask extends PluggableTask
             implements ProcessorAlarm {
 
     // pluggable task parameters names
-    public static final String PARAMETER_FAILED_LIMIT = "failed_limit";
-    public static final String PARAMETER_FAILED_TIME = "failed_time";
-    public static final String PARAMETER_TIME_BETWEEN_ALARMS 
-            = "time_between_alarms";
+    public static final ParameterDescription PARAMETER_FAILED_LIMIT = 
+    	new ParameterDescription("failed_limit", true, ParameterDescription.Type.INT);
+    public static final ParameterDescription PARAMETER_FAILED_TIME = 
+    	new ParameterDescription("failed_time", true, ParameterDescription.Type.INT);
+    public static final ParameterDescription PARAMETER_TIME_BETWEEN_ALARMS = 
+    	new ParameterDescription("time_between_alarms", true, ParameterDescription.Type.INT);
 
     // optional parameter
-    public static final String PARAMETER_EMAIL_ADDRESS = "email_address";
+    public static final ParameterDescription PARAMETER_EMAIL_ADDRESS = 
+    	new ParameterDescription("email_address", false, ParameterDescription.Type.STR);
 
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_FAILED_LIMIT);
+            add(PARAMETER_FAILED_TIME);
+            add(PARAMETER_TIME_BETWEEN_ALARMS);
+            add(PARAMETER_EMAIL_ADDRESS);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+    
+    
     private String processorName;
     private Integer entityId;
     private ProcessorEmailAlarm alarm;
@@ -57,9 +78,9 @@ public class ProcessorEmailAlarmTask extends PluggableTask
     @Override
     public void initializeParamters(PluggableTaskDTO task) throws PluggableTaskException {
         super.initializeParamters(task);
-        failedLimit = parseInt(parameters.get(PARAMETER_FAILED_LIMIT));
-        failedTime = parseInt(parameters.get(PARAMETER_FAILED_TIME));
-        failedTime = parseInt(parameters.get(PARAMETER_TIME_BETWEEN_ALARMS));
+        failedLimit = (Integer) parameters.get(PARAMETER_FAILED_LIMIT.getName());
+        failedTime = (Integer) parameters.get(PARAMETER_FAILED_TIME.getName());
+        failedTime = (Integer) parameters.get(PARAMETER_TIME_BETWEEN_ALARMS.getName());
     }
 
     // Initialisation
@@ -101,7 +122,7 @@ public class ProcessorEmailAlarmTask extends PluggableTask
     private void sendEmail(String messageKey, String[] params) {
         log.debug("Sending alarm email.");
 
-        String address = (String) parameters.get(PARAMETER_EMAIL_ADDRESS);
+        String address = (String) parameters.get(PARAMETER_EMAIL_ADDRESS.getName());
 
         try {
             // if email address supplied as parameter, use it,

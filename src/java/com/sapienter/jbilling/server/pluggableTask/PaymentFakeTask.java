@@ -19,12 +19,15 @@
 */
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.db.AchDTO;
@@ -50,14 +53,36 @@ import com.sapienter.jbilling.server.util.Constants;
  */
 public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
 
-    public static final String PARAM_PROCESSOR_NAME_OPTIONAL = "processor_name";
-    public static final String VALUE_PROCESSOR_NAME_DEFAULT = "fake-processor";
-    public static final String PARAM_CODE1_OPTIONAL = "code";
-    public static final String VALUE_CODE1_DEFAULT = "fake-code-default";
-    public static final String PARAM_HANDLE_ALL_REQUESTS = "all";
-    public static final String PARAM_NAME_PREFIX = "name_prefix";
+	// pluggable task parameters names
+    public static final ParameterDescription PARAM_PROCESSOR_NAME_OPTIONAL = 
+    	new ParameterDescription("processor_name", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAM_CODE1_OPTIONAL = 
+    	new ParameterDescription("code", false, ParameterDescription.Type.STR);    
+    public static final ParameterDescription PARAM_HANDLE_ALL_REQUESTS = 
+    	new ParameterDescription("all", false, ParameterDescription.Type.BOOLEAN);
+    public static final ParameterDescription PARAM_NAME_PREFIX = 
+    	new ParameterDescription("name_prefix", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAM_ACCEPT_ACH = 
+    	new ParameterDescription("accept-ach", false, ParameterDescription.Type.STR);
+
+    public static final String  VALUE_PROCESSOR_NAME_DEFAULT = "fake-processor";
+    public static final String  VALUE_CODE1_DEFAULT = "fake-code-default";
     private static final String PREAUTH_TRANSACTION_PREFIX = "pAuth-";
-    public static final String PARAM_ACCEPT_ACH = "accept-ach";
+    
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAM_ACCEPT_ACH);
+            add(PARAM_CODE1_OPTIONAL);
+            add(PARAM_HANDLE_ALL_REQUESTS);
+            add(PARAM_NAME_PREFIX);
+            add(PARAM_PROCESSOR_NAME_OPTIONAL);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
     
     private boolean myShouldBlockOtherProcessors;
     private boolean acceptAch;
@@ -74,11 +99,11 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
     public void initializeParamters(PluggableTaskDTO task) throws PluggableTaskException {
         super.initializeParamters(task);
 
-        myShouldBlockOtherProcessors = Boolean.parseBoolean((String) parameters.get(PARAM_HANDLE_ALL_REQUESTS));
-        acceptAch = Boolean.parseBoolean((String)parameters.get(PARAM_ACCEPT_ACH));
+        myShouldBlockOtherProcessors = ((Boolean) parameters.get(PARAM_HANDLE_ALL_REQUESTS.getName())).booleanValue();
+        acceptAch = Boolean.parseBoolean((String)parameters.get(PARAM_ACCEPT_ACH.getName()));
         myFilter = Filter.ACCEPT_ALL;
         if (!myShouldBlockOtherProcessors) {
-            myFilter = createFilter((String) parameters.get(PARAM_NAME_PREFIX));
+            myFilter = createFilter((String) parameters.get(PARAM_NAME_PREFIX.getName()));
         }
     }
 
@@ -196,7 +221,7 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
     }
 
     private String getFakeProcessorName() {
-        String result = (String) parameters.get(PARAM_PROCESSOR_NAME_OPTIONAL);
+        String result = (String) parameters.get(PARAM_PROCESSOR_NAME_OPTIONAL.getName());
         if (result == null) {
             result = VALUE_PROCESSOR_NAME_DEFAULT;
         }
@@ -204,7 +229,7 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
     }
 
     private String getFakeCode1() {
-        String result = (String) parameters.get(PARAM_CODE1_OPTIONAL);
+        String result = (String) parameters.get(PARAM_CODE1_OPTIONAL.getName());
         if (result == null) {
             result = VALUE_CODE1_DEFAULT;
         }

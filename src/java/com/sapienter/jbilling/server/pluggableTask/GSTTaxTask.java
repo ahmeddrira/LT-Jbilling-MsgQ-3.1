@@ -21,12 +21,15 @@
 package com.sapienter.jbilling.server.pluggableTask;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -40,18 +43,32 @@ import com.sapienter.jbilling.server.util.Constants;
 public class GSTTaxTask extends PluggableTask implements OrderProcessingTask {
 
     // pluggable task parameters names
-    public static final String PARAMETER_RATE = "rate";
-    public static final String PARAMETER_DESCRIPTION = "description";
+    public static final ParameterDescription PARAMETER_RATE = 
+        new ParameterDescription("rate", true, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_DESCRIPTION = 
+        new ParameterDescription("description", true, ParameterDescription.Type.STR);
+    
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_RATE);
+            add(PARAMETER_DESCRIPTION);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
 
     public void doProcessing(OrderDTO order) throws TaskException {
         BigDecimal orderTotal = order.getTotal();
-        BigDecimal taxRate = new BigDecimal(parameters.get(PARAMETER_RATE).toString());        
+        BigDecimal taxRate = new BigDecimal(parameters.get(PARAMETER_RATE.getName()).toString());
         BigDecimal gstTax = orderTotal.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND).multiply(taxRate);
         
         OrderLineDTO taxLine = new OrderLineDTO();
         taxLine.setAmount(gstTax);
         taxLine.setDeleted(new Integer(0));
-        taxLine.setDescription((String) parameters.get(PARAMETER_DESCRIPTION));
+        taxLine.setDescription((String) parameters.get(PARAMETER_DESCRIPTION.getName()));
         taxLine.setTypeId(Constants.ORDER_LINE_TYPE_TAX);
         ItemDTO item = new ItemDTO();
         item.setId(0);

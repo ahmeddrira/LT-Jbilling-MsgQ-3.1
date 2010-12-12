@@ -30,15 +30,11 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Email;
 
-import com.sapienter.jbilling.server.pluggableTask.admin.NotNull;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
-import com.sapienter.jbilling.server.util.api.validation.CreateValidationGroup;
-import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
 
 /**
  * @author Emil

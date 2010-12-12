@@ -48,7 +48,7 @@
     </div>
 
     <div class="btn-box">
-        <a href="#" class="submit"><span><g:message code="plugins.plugin.edit"/></span></a>
+        <a href="${createLink(controller:'plugin', action:'edit', id:plugin.getId()) }" class="submit"><span><g:message code="plugins.plugin.edit"/></span></a>
     </div>
 </div>
 

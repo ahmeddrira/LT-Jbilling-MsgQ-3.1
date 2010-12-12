@@ -40,6 +40,21 @@ public class PluggableTaskWS implements java.io.Serializable {
     @NotNull(message="validation.error.notnull")
     private Integer typeId;
     private Hashtable<String, String> parameters = new Hashtable<String, String>();
+    private int versionNumber;
+    
+    public PluggableTaskWS() {
+    }
+    
+    public PluggableTaskWS(PluggableTaskDTO dto) {
+        setNotes(dto.getNotes());
+        setId(dto.getId());
+        setProcessingOrder(dto.getProcessingOrder());
+        setTypeId(dto.getType().getId());
+        for (PluggableTaskParameterDTO param:dto.getParameters()) {
+            parameters.put(param.getName(), param.getValue());
+        }
+        versionNumber = dto.getVersionNum();
+    }
     
 	public void setNotes(String notes) {
 		this.notes = notes;
@@ -89,12 +104,20 @@ public class PluggableTaskWS implements java.io.Serializable {
     public void setParameters(Hashtable<String, String> parameters) {
         this.parameters = parameters;
     }
-
+    
+    public int getVersionNumber() {
+        return versionNumber;
+    }
+    
+    public void setVersionNumber(int versionNumber) {
+        this.versionNumber = versionNumber;
+    }
 
     @Override
     public String toString() {
         return "PluggableTaskWS [id=" + id + ", notes=" + notes
                 + ", parameters=" + parameters + ", processingOrder="
-                + processingOrder + ", typeId=" + typeId + "]";
+                + processingOrder + ", typeId=" + typeId + ", versionNumber="
+                + versionNumber + "]";
     }
 }

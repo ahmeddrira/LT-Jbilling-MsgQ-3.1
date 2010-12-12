@@ -265,4 +265,5 @@ public interface IWebServicesSessionBean {
      * Plug-ins
      */
     public Integer createPlugin(Integer executorId, PluggableTaskWS plugin);
+    public void updatePlugin(Integer executorId, PluggableTaskWS plugin);
 }

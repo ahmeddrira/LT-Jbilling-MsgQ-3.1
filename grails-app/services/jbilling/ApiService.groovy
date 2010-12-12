@@ -492,4 +492,8 @@ class ApiService implements IWebServicesSessionBean {
     Integer createPlugin(Integer executorId, PluggableTaskWS plugin) {
         return webServicesSession.createPlugin(executorId, plugin);
 	}
+    
+    void updatePlugin(Integer executorId, PluggableTaskWS plugin) {
+        webServicesSession.updatePlugin(executorId, plugin);
+	}
 }

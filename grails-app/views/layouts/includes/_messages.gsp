@@ -15,6 +15,8 @@
             <strong><g:message code="flash.success.title"/></strong>
             <p><g:message code="${flash.message}" args="${flash.args}"/></p>
         </div>
+        <!--  clear the messages so they do keep showing up. This messages should show only once -->
+        <g:set var="message" value="" scope="flash"/>
     </g:if>
     <g:if test='${flash.info}'>
         <div class="msg-box info">
@@ -36,6 +38,7 @@
             <strong><g:message code="flash.error.title"/></strong>
             <p><g:message code="${flash.error}" args="${flash.args}"/></p>
         </div>
+        <g:set var="error" value="" scope="flash"/>
     </g:if>
     <g:if test="${flash.errorMessages}">
         <div class="msg-box error">
@@ -47,6 +50,7 @@
                 </g:each>
             </ul>
         </div>
+        <g:set var="errorMessages" value="" scope="flash"/>
     </g:if>
 </div>
 

@@ -20,13 +20,24 @@
 
 package com.sapienter.jbilling.server.mediation.task;
 
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
+
 /**
  * MySQLReader provides a driver string and constructs a url string
  * from plug-in parameters for use by JDBCReader.
  */
 public class MySQLReader extends JDBCReader {
-    public static final String PARAM_HOST = "host";
-    public static final String PARAM_PORT = "port";
+	
+	protected static final ParameterDescription PARAM_HOST = 
+		new ParameterDescription("host", true, ParameterDescription.Type.STR);
+	protected static final ParameterDescription PARAM_PORT = 
+		new ParameterDescription("port", true, ParameterDescription.Type.STR);
+    
+    
+	static {
+		descriptions.add(PARAM_HOST);
+		descriptions.add(PARAM_PORT);
+	}
 
     public MySQLReader() {
         super();
@@ -39,8 +50,8 @@ public class MySQLReader extends JDBCReader {
 
     @Override
     public String getUrl() {
-        String host = (String) parameters.get(PARAM_HOST);
-        String port = (String) parameters.get(PARAM_PORT);
+        String host = (String) parameters.get(PARAM_HOST.getName());
+        String port = (String) parameters.get(PARAM_PORT.getName());
 
         String url = "jdbc:mysql://";
 

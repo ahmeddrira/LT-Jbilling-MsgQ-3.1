@@ -1,9 +1,13 @@
 package com.sapienter.jbilling.server.payment.tasks;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
@@ -21,8 +25,23 @@ public class PaymentMethodRouterTask extends AbstractPaymentRouterTask {
     private static final Logger LOG = Logger.getLogger(
             PaymentMethodRouterTask.class);
     
-    private static final String CREDIT_CARD_DELEGATE = "cc_payment_task";
-    private static final String ACH_DELEGATE = "ach_payment_task";
+    private static final ParameterDescription CREDIT_CARD_DELEGATE = 
+    	new ParameterDescription("cc_payment_task", false, ParameterDescription.Type.STR);
+    private static final ParameterDescription ACH_DELEGATE = 
+    	new ParameterDescription("ach_payment_task", false, ParameterDescription.Type.STR);
+    
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(CREDIT_CARD_DELEGATE);
+            add(ACH_DELEGATE);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+
     
     @Override
     public void initializeParamters(PluggableTaskDTO task)

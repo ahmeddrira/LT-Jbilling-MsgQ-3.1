@@ -20,19 +20,27 @@
 
 package com.sapienter.jbilling.server.mediation.task;
 
-import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.mediation.Record;
-import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
-import com.sapienter.jbilling.server.pluggableTask.TaskException;
-import org.apache.log4j.Logger;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.mediation.Record;
+import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
+import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
+import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 
 /**
  * This plug-in saves mediation errors to a JDBC database by generating insert statements
@@ -66,16 +74,25 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
 
     // plug-in parameters
     // mandatory parameter, url with host, port, database, etc
-    protected final static String PARAM_DATABASE_URL = "url";
+    protected static final ParameterDescription PARAM_DATABASE_URL = 
+    	new ParameterDescription("url", true, ParameterDescription.Type.STR);
     // optional, may be used default values
-    protected final static String PARAM_DRIVER = "driver";
-    protected final static String PARAM_DATABASE_USERNAME = "username";
-    protected final static String PARAM_DATABASE_PASSWORD = "password";
-    protected final static String PARAM_TABLE_NAME = "table_name";
-    protected final static String PARAM_ERRORS_COLUMN_NAME = "errors_column";
-    protected final static String PARAM_RETRY_COLUMN_NAME = "retry_column";
-    protected final static String PARAM_JBILLING_TIMESTAMP_COLUMN_NAME = "timestamp_column";
-    protected final static String PARAM_MEDIATION_CONFIGURATION_ID = "mediation_cfg_id";
+    protected static final ParameterDescription PARAM_DRIVER = 
+    	new ParameterDescription("driver", false, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_DATABASE_USERNAME = 
+    	new ParameterDescription("username", false, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_DATABASE_PASSWORD = 
+    	new ParameterDescription("password", false, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_TABLE_NAME = 
+    	new ParameterDescription("table_name", false, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_ERRORS_COLUMN_NAME = 
+    	new ParameterDescription("errors_column", false, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_RETRY_COLUMN_NAME = 
+    	new ParameterDescription("retry_column", false, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_JBILLING_TIMESTAMP_COLUMN_NAME = 
+    	new ParameterDescription("timestamp_column", false, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_MEDIATION_CONFIGURATION_ID = 
+    	new ParameterDescription("mediation_cfg_id", false, ParameterDescription.Type.STR);
 
     // defaults
     public static final String DRIVER_DEFAULT = "org.postgresql.Driver";
@@ -88,11 +105,31 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
     public static final String JBILLING_TIMESTAMP_COLUMN_NAME_DEFAULT = "jbilling_timestamp";
 
     private Boolean mysql;
+    
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAM_DATABASE_URL);
+            add(PARAM_DRIVER);
+            add(PARAM_DATABASE_USERNAME);
+            add(PARAM_DATABASE_PASSWORD);
+            add(PARAM_TABLE_NAME);
+            add(PARAM_ERRORS_COLUMN_NAME);
+            add(PARAM_RETRY_COLUMN_NAME);
+            add(PARAM_JBILLING_TIMESTAMP_COLUMN_NAME);
+            add(PARAM_MEDIATION_CONFIGURATION_ID);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+
 
     public void process(Record record, List<String> errors, Date processingTime, MediationConfiguration mediationConfiguration) throws TaskException {
-        if (mediationConfiguration != null && getParameter(PARAM_MEDIATION_CONFIGURATION_ID, (String) null) != null) {
+        if (mediationConfiguration != null && getParameter(PARAM_MEDIATION_CONFIGURATION_ID.getName(), (String) null) != null) {
             try {
-                Integer configId = Integer.parseInt(getParameter(PARAM_MEDIATION_CONFIGURATION_ID, ""));
+                Integer configId = Integer.parseInt(getParameter(PARAM_MEDIATION_CONFIGURATION_ID.getName(), ""));
                 if (!mediationConfiguration.getId().equals(configId)) {
                     return;
                 }
@@ -106,9 +143,9 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
         try {
             connection = getConnection();
 
-            String errorColumn = getParameter(PARAM_ERRORS_COLUMN_NAME, ERRORS_COLUMN_NAME_DEFAULT);
-            String retryColumn = getParameter(PARAM_RETRY_COLUMN_NAME, RETRY_COLUMN_NAME_DEFAULT);
-            String timestampColumn = getParameter(PARAM_JBILLING_TIMESTAMP_COLUMN_NAME, JBILLING_TIMESTAMP_COLUMN_NAME_DEFAULT); 
+            String errorColumn = getParameter(PARAM_ERRORS_COLUMN_NAME.getName(), ERRORS_COLUMN_NAME_DEFAULT);
+            String retryColumn = getParameter(PARAM_RETRY_COLUMN_NAME.getName(), RETRY_COLUMN_NAME_DEFAULT);
+            String timestampColumn = getParameter(PARAM_JBILLING_TIMESTAMP_COLUMN_NAME.getName(), JBILLING_TIMESTAMP_COLUMN_NAME_DEFAULT); 
 
             List<String> columnNames = new LinkedList<String>();
 
@@ -130,7 +167,7 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
             columnNames.add(retryColumn);
 
             StringBuilder query = new StringBuilder("insert into ");
-            query.append(getParameter(PARAM_TABLE_NAME, TABLE_NAME_DEFAULT));
+            query.append(getParameter(PARAM_TABLE_NAME.getName(), TABLE_NAME_DEFAULT));
             query.append("(");
             query.append(com.sapienter.jbilling.server.util.Util.join(columnNames, ", "));
             query.append(") values (");
@@ -192,13 +229,13 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
 
 
     protected Connection getConnection() throws SQLException, ClassNotFoundException, TaskException {
-        String driver = getParameter(PARAM_DRIVER, DRIVER_DEFAULT);
-        Object url = parameters.get(PARAM_DATABASE_URL);
+        String driver = getParameter(PARAM_DRIVER.getName(), DRIVER_DEFAULT);
+        Object url = parameters.get(PARAM_DATABASE_URL.getName());
         if (url == null) {
             throw new TaskException("Error, expected mandatory parameter databae_url");
         }
-        String username = getParameter(PARAM_DATABASE_USERNAME, DATABASE_USERNAME_DEFAULT);
-        String password = getParameter(PARAM_DATABASE_PASSWORD, DATABASE_PASSWORD_DEFAULT);
+        String username = getParameter(PARAM_DATABASE_USERNAME.getName(), DATABASE_USERNAME_DEFAULT);
+        String password = getParameter(PARAM_DATABASE_PASSWORD.getName(), DATABASE_PASSWORD_DEFAULT);
 
         // create connection
         Class.forName(driver); // load driver
@@ -216,7 +253,7 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
      */
     private boolean isMySQL() {
         if (mysql == null)
-            mysql = getParameter(PARAM_DRIVER, DRIVER_DEFAULT).contains("mysql");
+            mysql = getParameter(PARAM_DRIVER.getName(), DRIVER_DEFAULT).contains("mysql");
         return mysql;
     } 
 }

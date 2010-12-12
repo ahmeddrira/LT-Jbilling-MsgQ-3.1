@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -42,10 +43,14 @@ public class SaveToFileMediationErrorHandler extends PluggableTask
     private static final Logger LOG = Logger.getLogger(SaveToFileMediationErrorHandler.class);
 
     // plug-in parameters
-    protected final static String PARAM_DIRECTORY_NAME = "directory";
-    protected final static String PARAM_FILE_NAME = "file_name";
-    protected final static String PARAM_ROTATE_FILE_DAILY = "rotate_file_daily";
-    protected final static String PARAM_MEDIATION_CONFIGURATION_ID = "mediation_cfg_id";
+    protected static final ParameterDescription PARAM_DIRECTORY_NAME = 
+    	new ParameterDescription("directory", false, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_FILE_NAME = 
+    	new ParameterDescription("file_name", false, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_ROTATE_FILE_DAILY = 
+    	new ParameterDescription("rotate_file_daily", false, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_MEDIATION_CONFIGURATION_ID = 
+    	new ParameterDescription("mediation_cfg_id", false, ParameterDescription.Type.STR);
 
     // default values
     protected final static String DEFAULT_DIRECTORY_NAME = "mediation" + File.separator + "errors";
@@ -53,11 +58,26 @@ public class SaveToFileMediationErrorHandler extends PluggableTask
     protected final static String DEFAULT_FILE_EXTENSION = ".csv";
     protected final static String DEFAULT_CSV_FILE_SEPARATOR = ",";
 
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAM_DIRECTORY_NAME);
+            add(PARAM_FILE_NAME);
+            add(PARAM_ROTATE_FILE_DAILY);
+            add(PARAM_MEDIATION_CONFIGURATION_ID);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+
+    
 
     public void process(Record record, List<String> errors, Date processingTime, MediationConfiguration mediationConfiguration) throws TaskException {
-        if (mediationConfiguration != null &&  parameters.get(PARAM_MEDIATION_CONFIGURATION_ID) != null) {
+        if (mediationConfiguration != null &&  parameters.get(PARAM_MEDIATION_CONFIGURATION_ID.getName()) != null) {
             try {
-                Integer configId = Integer.parseInt((String) parameters.get(PARAM_MEDIATION_CONFIGURATION_ID));
+                Integer configId = Integer.parseInt((String) parameters.get(PARAM_MEDIATION_CONFIGURATION_ID.getName()));
                 if (!mediationConfiguration.getId().equals(configId)) {
                     return;
                 }
@@ -97,17 +117,17 @@ public class SaveToFileMediationErrorHandler extends PluggableTask
     }
 
     protected String getDirectory() {
-        return parameters.get(PARAM_DIRECTORY_NAME) == null
+        return parameters.get(PARAM_DIRECTORY_NAME.getName()) == null
                 ? Util.getSysProp("base_dir") + DEFAULT_DIRECTORY_NAME
-                : (String) parameters.get(PARAM_DIRECTORY_NAME);
+                : (String) parameters.get(PARAM_DIRECTORY_NAME.getName());
     }
 
     protected String getFileName(Date date) {
-        String fileName = parameters.get(PARAM_FILE_NAME) == null
+        String fileName = parameters.get(PARAM_FILE_NAME.getName()) == null
                 ? DEFAULT_FILE_NAME
-                : (String) parameters.get(PARAM_FILE_NAME);
-        String suffix = parameters.get(PARAM_ROTATE_FILE_DAILY) == null
-                || Boolean.valueOf((String) parameters.get(PARAM_ROTATE_FILE_DAILY)).equals(Boolean.FALSE)
+                : (String) parameters.get(PARAM_FILE_NAME.getName());
+        String suffix = parameters.get(PARAM_ROTATE_FILE_DAILY.getName()) == null
+                || Boolean.valueOf((String) parameters.get(PARAM_ROTATE_FILE_DAILY.getName())).equals(Boolean.FALSE)
                 ? "" : "_" + new SimpleDateFormat("yyyyMMdd").format(date);
         return fileName + suffix + DEFAULT_FILE_EXTENSION;
     }

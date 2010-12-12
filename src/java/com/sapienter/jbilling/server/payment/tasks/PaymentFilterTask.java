@@ -19,6 +19,7 @@
 */
 package com.sapienter.jbilling.server.payment.tasks;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,9 +38,9 @@ import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDTO;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTaskBase;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.util.Constants;
-import java.util.ArrayList;
 
 /**
  * Blacklist filter payment processor, which calls enabled filters (configured 
@@ -48,17 +49,42 @@ import java.util.ArrayList;
  * (perhaps the real processor).
  */
 public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
-    public static final String PARAM_ENABLE_FILTER_USER_ID = "enable_filter_user_id";
-    public static final String PARAM_ENABLE_FILTER_NAME = "enable_filter_name";
-    public static final String PARAM_ENABLE_FILTER_CC_NUMBER = "enable_filter_cc_number";
-    public static final String PARAM_ENABLE_FILTER_ADDRESS = "enable_filter_address";
-    public static final String PARAM_ENABLE_FILTER_IP_ADDRESS = "enable_filter_ip_address";
-    public static final String PARAM_ENABLE_FILTER_PHONE_NUMBER = "enable_filter_phone_number";
-
-    public static final String PARAM_IP_ADDRESS_CCF_ID = "ip_address_ccf_id";
+	
+    public static final ParameterDescription PARAM_ENABLE_FILTER_USER_ID = 
+    	new ParameterDescription("enable_filter_user_id", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAM_ENABLE_FILTER_NAME = 
+    	new ParameterDescription("enable_filter_name", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAM_ENABLE_FILTER_CC_NUMBER = 
+    	new ParameterDescription("enable_filter_cc_number", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAM_ENABLE_FILTER_ADDRESS = 
+    	new ParameterDescription("enable_filter_address", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAM_ENABLE_FILTER_IP_ADDRESS = 
+    	new ParameterDescription("enable_filter_ip_address", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAM_ENABLE_FILTER_PHONE_NUMBER = 
+    	new ParameterDescription("enable_filter_phone_number", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAM_IP_ADDRESS_CCF_ID = 
+    	new ParameterDescription("ip_address_ccf_id", false, ParameterDescription.Type.STR);
 
     private static final String PAYMENT_PROCESSOR_NAME = "Payment filter task";
 
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAM_ENABLE_FILTER_USER_ID);
+            add(PARAM_ENABLE_FILTER_NAME);
+            add(PARAM_ENABLE_FILTER_CC_NUMBER);
+            add(PARAM_ENABLE_FILTER_ADDRESS);
+            add(PARAM_ENABLE_FILTER_IP_ADDRESS);
+            add(PARAM_ENABLE_FILTER_PHONE_NUMBER);
+            add(PARAM_IP_ADDRESS_CCF_ID);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+    
+    
     private static final Logger LOG = Logger.getLogger(PaymentFilterTask.class);
 
     public void failure(Integer userId, Integer retry) {
@@ -135,23 +161,23 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
     private List<BlacklistFilter> getEnabledFilters() {
         List<BlacklistFilter> filters = new LinkedList<BlacklistFilter>();
 
-        if (getBooleanParameter(PARAM_ENABLE_FILTER_USER_ID)) {
+        if (getBooleanParameter(PARAM_ENABLE_FILTER_USER_ID.getName())) {
             filters.add(new UserIdFilter());
             LOG.debug("UserIdFilter enabled");
         } 
-        if (getBooleanParameter(PARAM_ENABLE_FILTER_NAME)) {
+        if (getBooleanParameter(PARAM_ENABLE_FILTER_NAME.getName())) {
             filters.add(new NameFilter());
             LOG.debug("NameFilter enabled");
         } 
-        if (getBooleanParameter(PARAM_ENABLE_FILTER_CC_NUMBER)) {
+        if (getBooleanParameter(PARAM_ENABLE_FILTER_CC_NUMBER.getName())) {
             filters.add(new CreditCardFilter());
             LOG.debug("CreditCardFilter enabled");
         } 
-        if (getBooleanParameter(PARAM_ENABLE_FILTER_ADDRESS)) {
+        if (getBooleanParameter(PARAM_ENABLE_FILTER_ADDRESS.getName())) {
             filters.add(new AddressFilter());
             LOG.debug("AddressFilter enabled");
         } 
-        if (getBooleanParameter(PARAM_ENABLE_FILTER_IP_ADDRESS)) {
+        if (getBooleanParameter(PARAM_ENABLE_FILTER_IP_ADDRESS.getName())) {
             // try to get the ip address ccf id
             Integer ccfId = getIpAddressCcfId();
 
@@ -164,7 +190,7 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
                         " - skipping IpAddresFilter");
             }
         } 
-        if (getBooleanParameter(PARAM_ENABLE_FILTER_PHONE_NUMBER)) {
+        if (getBooleanParameter(PARAM_ENABLE_FILTER_PHONE_NUMBER.getName())) {
             filters.add(new PhoneFilter());
             LOG.debug("PhoneFilter enabled");
         }
@@ -179,7 +205,7 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
     public Integer getIpAddressCcfId() {
         // try to get the ip address ccf id
         Integer ccfId = null;
-        Object param = parameters.get(PARAM_IP_ADDRESS_CCF_ID);
+        Object param = parameters.get(PARAM_IP_ADDRESS_CCF_ID.getName());
         if (param instanceof Integer) {
             ccfId = (Integer) param;
         } else if (param instanceof String) {

@@ -25,8 +25,10 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Calendar;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,23 +39,20 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import com.sapienter.jbilling.server.payment.IExternalCreditCardStorage;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
-import com.sapienter.jbilling.server.payment.IExternalCreditCardStorage;
 import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTaskWithTimeout;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
-import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.user.CreditCardBL;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.user.db.CreditCardDAS;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout
@@ -61,9 +60,12 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout
 
     private static final Logger LOG = Logger.getLogger(PaymentAuthorizeNetCIMTask.class);
 
-    private static final String PARAMETER_NAME = "login";
-    private static final String PARAMETER_KEY = "transaction_key";
-    private static final String PARAMETER_TEST_MODE = "test"; // true or false
+    private static final ParameterDescription PARAMETER_NAME = 
+    	new ParameterDescription("login", true, ParameterDescription.Type.STR);
+    private static final ParameterDescription PARAMETER_KEY = 
+    	new ParameterDescription("transaction_key", true, ParameterDescription.Type.STR);
+    private static final ParameterDescription PARAMETER_TEST_MODE = 
+    	new ParameterDescription("test", false, ParameterDescription.Type.STR); // true or false
 
     /**
      * Validation mode allows you to generate a test transaction at the time you create a customer profile. In Test
@@ -73,8 +75,24 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout
      * consult your Merchant Account Provider before switching to Zero Dollar Authorizations for Visa, because you may
      * be subject to fees For Visa transactions using $0.00, the billTo address and billTo zip fields are required.
      */
-    private static final String PARAMETER_VALIDATION_MODE = "validation_mode"; // none/testMode/liveMode
+    private static final ParameterDescription PARAMETER_VALIDATION_MODE = 
+    	new ParameterDescription("validation_mode", false, ParameterDescription.Type.STR); // none/testMode/liveMode
 
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_NAME);
+            add(PARAMETER_KEY);
+            add(PARAMETER_TEST_MODE);
+            add(PARAMETER_VALIDATION_MODE);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+
+    
     private String getProcessorName() {
         return "Authorize.Net CIM";
     }
@@ -167,10 +185,10 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout
     }
 
     private AuthorizeNetCIMApi createApi() throws PluggableTaskException {
-        return new AuthorizeNetCIMApi(ensureGetParameter(PARAMETER_NAME),
-                                      ensureGetParameter(PARAMETER_KEY),
-                                      getOptionalParameter(PARAMETER_VALIDATION_MODE, "none"),
-                                      Boolean.valueOf(getOptionalParameter(PARAMETER_TEST_MODE, "false")),
+        return new AuthorizeNetCIMApi(ensureGetParameter(PARAMETER_NAME.getName()),
+                                      ensureGetParameter(PARAMETER_KEY.getName()),
+                                      getOptionalParameter(PARAMETER_VALIDATION_MODE.getName(), "none"),
+                                      Boolean.valueOf(getOptionalParameter(PARAMETER_TEST_MODE.getName(), "false")),
                                       getTimeoutSeconds());
     }
 

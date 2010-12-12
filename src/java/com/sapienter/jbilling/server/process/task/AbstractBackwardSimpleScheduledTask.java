@@ -43,14 +43,14 @@ public abstract class AbstractBackwardSimpleScheduledTask extends
             builder.append("start: ");
             builder.append(useProperties()
                            ? Util.getSysProp(PROPERTY_PROCESS_TIME)
-                           : getParameter(PARAM_START_TIME, DEFAULT_START_TIME));
+                           : getParameter(PARAM_START_TIME.getName(), DEFAULT_START_TIME).toString());
             builder.append(", ");
 
             builder.append("end: ");
-            builder.append(getParameter(PARAM_END_TIME, DEFAULT_END_TIME));
+            builder.append(getParameter(PARAM_END_TIME.getName(), DEFAULT_END_TIME));
             builder.append(", ");
 
-            Integer repeat = getParameter(PARAM_REPEAT, DEFAULT_REPEAT);
+            Integer repeat = getParameter(PARAM_REPEAT.getName(), DEFAULT_REPEAT);
             builder.append("repeat: ");
             builder.append((repeat == SimpleTrigger.REPEAT_INDEFINITELY ? "infinite" : repeat));
             builder.append(", ");
@@ -58,7 +58,7 @@ public abstract class AbstractBackwardSimpleScheduledTask extends
             builder.append("interval: ");
             builder.append(useProperties()
                            ? Util.getSysProp(PROPERTY_PROCESS_FREQ) + " mins"
-                           : getParameter(PARAM_INTERVAL, DEFAULT_INTERVAL) + " hrs");
+                           : getParameter(PARAM_INTERVAL.getName(), DEFAULT_INTERVAL) + " hrs");
 
         } catch (PluggableTaskException e) {
             LOG.error("Exception occurred parsing plug-in parameters", e);
@@ -94,9 +94,9 @@ public abstract class AbstractBackwardSimpleScheduledTask extends
      * @return true if properties should be used for scheduling, false if schedule from plug-ins
      */
     protected boolean useProperties() {
-        return parameters.get(PARAM_START_TIME) == null
-            && parameters.get(PARAM_END_TIME) == null
-            && parameters.get(PARAM_REPEAT) == null
-            && parameters.get(PARAM_INTERVAL) == null;
+        return parameters.get(PARAM_START_TIME.getName()) == null
+            && parameters.get(PARAM_END_TIME.getName()) == null
+            && parameters.get(PARAM_REPEAT.getName()) == null
+            && parameters.get(PARAM_INTERVAL.getName()) == null;
     }
 }

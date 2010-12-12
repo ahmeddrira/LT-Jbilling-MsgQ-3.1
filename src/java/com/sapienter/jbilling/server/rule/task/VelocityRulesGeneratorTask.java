@@ -30,6 +30,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 
 /**
  * Generates rules using Velocity templates. 
@@ -42,8 +43,13 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
  */
 public class VelocityRulesGeneratorTask extends AbstractGeneratorTask {
 
-    public static final String PARAM_TEMPLATE_FILENAME = "template_filename";
+	public static final ParameterDescription PARAM_TEMPLATE_FILENAME = 
+		new ParameterDescription("template_filename", true, ParameterDescription.Type.STR);
 
+    static { 
+        descriptions.add(PARAM_TEMPLATE_FILENAME);
+    }
+    
     private static final Logger LOG = Logger.getLogger(VelocityRulesGeneratorTask.class);
 
     public VelocityRulesGeneratorTask() {
@@ -56,12 +62,12 @@ public class VelocityRulesGeneratorTask extends AbstractGeneratorTask {
      */
     protected String generateRules(Object objects) throws TaskException {
         // get filename
-        if (parameters.get(PARAM_TEMPLATE_FILENAME) == null) {
-            throw new TaskException("No '" + PARAM_TEMPLATE_FILENAME + 
+        if (parameters.get(PARAM_TEMPLATE_FILENAME.getName()) == null) {
+            throw new TaskException("No '" + PARAM_TEMPLATE_FILENAME.getName() + 
                     "' parameter specified.");
         }
         File templateFilename = new File(getAbsolutePath((String) 
-                parameters.get(PARAM_TEMPLATE_FILENAME)));
+                parameters.get(PARAM_TEMPLATE_FILENAME.getName())));
 
         // create a new engine (we need to set the file path)
         VelocityEngine velocityEngine = new VelocityEngine();

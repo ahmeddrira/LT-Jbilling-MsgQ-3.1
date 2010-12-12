@@ -19,15 +19,19 @@
  */
 package com.sapienter.jbilling.server.process.task;
 
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.joda.time.DateMidnight;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
 /**
  * Abstract task that contains all the plumbing necessary to construct a SimpleTrigger for
@@ -58,23 +62,42 @@ public abstract class AbstractSimpleScheduledTask extends ScheduledTask {
 
     protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd-HHmm");
 
-    protected static final String PARAM_START_TIME = "start_time";
-    protected static final String PARAM_END_TIME = "end_time";
-    protected static final String PARAM_REPEAT = "repeat";
-    protected static final String PARAM_INTERVAL = "interval";
+    protected static final ParameterDescription PARAM_START_TIME = 
+    	new ParameterDescription("start_time", false, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_END_TIME = 
+    	new ParameterDescription("end_time", false, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_REPEAT = 
+    	new ParameterDescription("repeat", false, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_INTERVAL = 
+    	new ParameterDescription("interval", false, ParameterDescription.Type.STR);
 
     protected static final Date DEFAULT_START_TIME = new DateMidnight(2010, 1, 1).toDate();
     protected static final Date DEFAULT_END_TIME = null;
     protected static final Integer DEFAULT_REPEAT = SimpleTrigger.REPEAT_INDEFINITELY;
     protected static final Integer DEFAULT_INTERVAL = 24;
+    
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAM_END_TIME);
+            add(PARAM_INTERVAL);
+            add(PARAM_REPEAT);
+            add(PARAM_START_TIME);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+
 
     public SimpleTrigger getTrigger() throws PluggableTaskException {
         SimpleTrigger trigger = new SimpleTrigger(getTaskName(),
                                                   Scheduler.DEFAULT_GROUP,
-                                                  getParameter(PARAM_START_TIME, DEFAULT_START_TIME),
-                                                  getParameter(PARAM_END_TIME, DEFAULT_END_TIME),
-                                                  getParameter(PARAM_REPEAT, DEFAULT_REPEAT),
-                                                  getParameter(PARAM_INTERVAL, DEFAULT_INTERVAL) * 3600 * 1000);
+                                                  getParameter(PARAM_START_TIME.getName(), DEFAULT_START_TIME),
+                                                  getParameter(PARAM_END_TIME.getName(), DEFAULT_END_TIME),
+                                                  getParameter(PARAM_REPEAT.getName(), DEFAULT_REPEAT),
+                                                  getParameter(PARAM_INTERVAL.getName(), DEFAULT_INTERVAL) * 3600 * 1000);
 
         trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
 
@@ -86,20 +109,20 @@ public abstract class AbstractSimpleScheduledTask extends ScheduledTask {
 
         try {
             builder.append("start: ");
-            builder.append(getParameter(PARAM_START_TIME, DEFAULT_START_TIME));
+            builder.append(getParameter(PARAM_START_TIME.getName(), DEFAULT_START_TIME));
             builder.append(", ");
 
             builder.append("end: ");
-            builder.append(getParameter(PARAM_END_TIME, DEFAULT_END_TIME));
+            builder.append(getParameter(PARAM_END_TIME.getName(), DEFAULT_END_TIME));
             builder.append(", ");
 
-            Integer repeat = getParameter(PARAM_REPEAT, DEFAULT_REPEAT);
+            Integer repeat = getParameter(PARAM_REPEAT.getName(), DEFAULT_REPEAT);
             builder.append("repeat: ");
             builder.append((repeat == SimpleTrigger.REPEAT_INDEFINITELY ? "infinite" : repeat));
             builder.append(", ");
 
             builder.append("interval: ");
-            builder.append(getParameter(PARAM_INTERVAL, DEFAULT_INTERVAL));
+            builder.append(getParameter(PARAM_INTERVAL.getName(), DEFAULT_INTERVAL));
             builder.append(" hrs");
 
         } catch (PluggableTaskException e) {

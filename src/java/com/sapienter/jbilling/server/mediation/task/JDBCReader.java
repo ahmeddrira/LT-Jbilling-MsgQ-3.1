@@ -20,12 +20,19 @@
 
 package com.sapienter.jbilling.server.mediation.task;
 
-import com.sapienter.jbilling.common.Constants;
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.mediation.Record;
-import com.sapienter.jbilling.server.util.PreferenceBL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -33,9 +40,13 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 
-import java.sql.*;
-import java.util.*;
-import java.util.Date;
+import com.sapienter.jbilling.common.Constants;
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.mediation.Record;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
+import com.sapienter.jbilling.server.util.PreferenceBL;
 
 /**
  * JDBCReader allows reading event records from a database for
@@ -54,18 +65,52 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
     private static final Logger LOG = Logger.getLogger(JDBCReader.class);
 
     // plug-in parameters
-    protected static final String PARAM_DATABASE_NAME = "database_name";
-    protected static final String PARAM_TABLE_NAME = "table_name";
-    protected static final String PARAM_KEY_COLUMN_NAME = "key_column_name";
-    protected static final String PARAM_WHERE_APPEND = "where_append";
-    protected static final String PARAM_ORDER_BY = "order_by";
-    protected static final String PARAM_DRIVER = "driver";
-    protected static final String PARAM_URL = "url";
-    protected static final String PARAM_USERNAME = "username";
-    protected static final String PARAM_PASSWORD = "password";
-    protected static final String PARAM_TIMESTAMP_COLUMN_NAME = "timestamp_column_name";
-    protected static final String PARAM_LOWERCASE_COLUMN_NAME = "lc_column_names";
+    protected static final ParameterDescription PARAM_DATABASE_NAME = 
+    	new ParameterDescription("database_name", true, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_TABLE_NAME = 
+    	new ParameterDescription("table_name", true, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_KEY_COLUMN_NAME = 
+    	new ParameterDescription("key_column_name", true, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_WHERE_APPEND = 
+    	new ParameterDescription("where_append", true, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_ORDER_BY = 
+    	new ParameterDescription("order_by", true, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_DRIVER = 
+    	new ParameterDescription("driver", true, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_URL = 
+    	new ParameterDescription("url", true, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_USERNAME = 
+    	new ParameterDescription("username", true, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_PASSWORD = 
+    	new ParameterDescription("password", true, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_TIMESTAMP_COLUMN_NAME = 
+    	new ParameterDescription("timestamp_column_name", true, ParameterDescription.Type.STR);
+    protected static final ParameterDescription PARAM_LOWERCASE_COLUMN_NAME = 
+    	new ParameterDescription("lc_column_names", true, ParameterDescription.Type.STR);
 
+
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAM_DATABASE_NAME);
+            add(PARAM_TABLE_NAME);
+            add(PARAM_KEY_COLUMN_NAME);
+            add(PARAM_WHERE_APPEND);
+            add(PARAM_ORDER_BY);
+            add(PARAM_DRIVER);
+            add(PARAM_URL);
+            add(PARAM_USERNAME);
+            add(PARAM_PASSWORD);
+            add(PARAM_TIMESTAMP_COLUMN_NAME);
+            add(PARAM_LOWERCASE_COLUMN_NAME);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+    
+    
     // defaults
     protected static final String DATABASE_NAME_DEFAULT = "jbilling_cdr";
     protected static final String TABLE_NAME_DEFAULT = "cdr";
@@ -97,8 +142,8 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
             DriverManagerDataSource dataSource = new DriverManagerDataSource();
             dataSource.setDriverClassName(getDriver());
             dataSource.setUrl(getUrl());
-            dataSource.setUsername(getParameter(PARAM_USERNAME, USERNAME_DEFAULT));
-            dataSource.setPassword(getParameter(PARAM_PASSWORD, PASSWORD_DEFAULT));
+            dataSource.setUsername(getParameter(PARAM_USERNAME.getName(), USERNAME_DEFAULT));
+            dataSource.setPassword(getParameter(PARAM_PASSWORD.getName(), PASSWORD_DEFAULT));
 
             jdbcTemplate = new JdbcTemplate(dataSource);
             jdbcTemplate.setMaxRows(getBatchSize());
@@ -143,7 +188,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
      * the default.
      */
     protected String getDatabaseName() {
-        return getParameter(PARAM_DATABASE_NAME, DATABASE_NAME_DEFAULT);
+        return getParameter(PARAM_DATABASE_NAME.getName(), DATABASE_NAME_DEFAULT);
     }
 
     /**
@@ -151,7 +196,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
      * or the default.
      */
     protected String getTableName() {
-        return getParameter(PARAM_TABLE_NAME, TABLE_NAME_DEFAULT);
+        return getParameter(PARAM_TABLE_NAME.getName(), TABLE_NAME_DEFAULT);
     }
 
     /**
@@ -159,7 +204,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
      * the default.
      */
     protected String getDriver() {
-        return getParameter(PARAM_DRIVER, DRIVER_DEFAULT);
+        return getParameter(PARAM_DRIVER.getName(), DRIVER_DEFAULT);
     }
 
     /**
@@ -167,7 +212,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
      * a default.
      */
     protected String getUrl() {
-        String url = (String) parameters.get(PARAM_URL);
+        String url = (String) parameters.get(PARAM_URL.getName());
         if (url != null) {
             return url;
         }
@@ -203,13 +248,13 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
             query += timestampColName + " IS NULL ";
         }
 
-        String whereAppend = (String) parameters.get(PARAM_WHERE_APPEND);
+        String whereAppend = (String) parameters.get(PARAM_WHERE_APPEND.getName());
         if (whereAppend != null) {
             query += " " + whereAppend + " ";
         }
 
         query += " ORDER BY ";
-        String orderBy = (String) parameters.get(PARAM_ORDER_BY);
+        String orderBy = (String) parameters.get(PARAM_ORDER_BY.getName());
         if (orderBy != null) {
             query += orderBy;
         } else {
@@ -231,7 +276,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
      */
     protected String[] getKeyColumnNames() throws SQLException {
         // try getting key column name from plug-in parameter
-        String keyColumnName = (String) parameters.get(PARAM_KEY_COLUMN_NAME);
+        String keyColumnName = (String) parameters.get(PARAM_KEY_COLUMN_NAME.getName());
         if (keyColumnName != null) {
             return new String[]{keyColumnName};
         }
@@ -269,7 +314,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
         String tableName = getTableNameCorrectCase();
 
         // try getting timestamp column name from plug-in parameter
-        String timestampColumnName = (String) parameters.get(PARAM_TIMESTAMP_COLUMN_NAME);
+        String timestampColumnName = (String) parameters.get(PARAM_TIMESTAMP_COLUMN_NAME.getName());
         if (timestampColumnName != null) {
             // get the columns from metadata
             ResultSet columns = connection.getMetaData().getColumns(null, null, tableName, null);
@@ -478,7 +523,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
          * metadata.
          */
         private void setColumnInfo(SqlRowSet records) throws SQLException {
-            boolean lowercase = getParameter(PARAM_LOWERCASE_COLUMN_NAME, LOWERCASE_COLUMN_NAME_DEFAULT);
+            boolean lowercase = getParameter(PARAM_LOWERCASE_COLUMN_NAME.getName(), LOWERCASE_COLUMN_NAME_DEFAULT);
 
             SqlRowSetMetaData metaData = records.getMetaData();
             columnTypes = new PricingField.Type[metaData.getColumnCount()];

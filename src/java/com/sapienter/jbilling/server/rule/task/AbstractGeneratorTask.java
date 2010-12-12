@@ -24,23 +24,23 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.xmlrules.DigesterLoader;
 import org.apache.log4j.Logger;
-import org.drools.compiler.DroolsParserException;
 import org.drools.compiler.PackageBuilder;
 import org.drools.rule.Package;
 import org.drools.util.DroolsStreamUtils;
-
 import org.xml.sax.SAXException;
 
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 
 /**
  * Provides implementation for parsing the rulesGenerate input data as
@@ -56,9 +56,13 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 public abstract class AbstractGeneratorTask extends PluggableTask 
         implements IRulesGenerator {
 
-    public static final String PARAM_CONFIG_FILENAME = "config_filename";
+	public static final ParameterDescription PARAM_CONFIG_FILENAME = 
+		new ParameterDescription("config_filename", false, ParameterDescription.Type.STR);
+	
+	public static final ParameterDescription PARAM_OUTPUT_FILENAME = 
+		new ParameterDescription("output_filename", true, ParameterDescription.Type.STR);
+	
     private static final String PARAM_CONFIG_FILENAME_DEFAULT = "rules-generator-config.xml";
-    public static final String PARAM_OUTPUT_FILENAME = "output_filename";
 
     private static final Logger LOG = Logger.getLogger(AbstractGeneratorTask.class);
 
@@ -69,6 +73,19 @@ public abstract class AbstractGeneratorTask extends PluggableTask
         super();
     }
 
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAM_CONFIG_FILENAME);
+            add(PARAM_OUTPUT_FILENAME);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+
+    
     /**
      * Parses and validates the XML input data.
      */
@@ -76,8 +93,8 @@ public abstract class AbstractGeneratorTask extends PluggableTask
         try {
             // get the configuration filename
             String configFilename = PARAM_CONFIG_FILENAME_DEFAULT;
-            if (parameters.get(PARAM_CONFIG_FILENAME) != null) {
-                configFilename = (String) parameters.get(PARAM_CONFIG_FILENAME);
+            if (parameters.get(PARAM_CONFIG_FILENAME.getName()) != null) {
+                configFilename = (String) parameters.get(PARAM_CONFIG_FILENAME.getName());
             }
 
             // if the filename is relative, prepend default directory
@@ -128,11 +145,11 @@ public abstract class AbstractGeneratorTask extends PluggableTask
         Package pkg = builder.getPackage();
 
         // get output filename
-        if (parameters.get(PARAM_OUTPUT_FILENAME) == null) {
-            throw new TaskException("No '" + PARAM_OUTPUT_FILENAME + 
+        if (parameters.get(PARAM_OUTPUT_FILENAME.getName()) == null) {
+            throw new TaskException("No '" + PARAM_OUTPUT_FILENAME.getName() + 
                     "' parameter specified.");
         }
-        String outputFilename = (String) parameters.get(PARAM_OUTPUT_FILENAME);
+        String outputFilename = (String) parameters.get(PARAM_OUTPUT_FILENAME.getName());
         // if the filename is relative, prepend default directory
         outputFilename = getAbsolutePath(outputFilename);
         LOG.debug("Output filename: " + outputFilename);

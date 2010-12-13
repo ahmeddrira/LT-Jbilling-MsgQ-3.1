@@ -20,7 +20,7 @@
                     <g:form name="plugin-form" action="save">
                         <fieldset>
                             <div class="form-columns">
-                                <div class="column">
+                                <div class="one_column" style="width:650px">
                                     <g:hiddenField name="versionNumber" value="${pluginws?.versionNumber}" />
                                     <g:if test="${pluginws?.id > 0}">
                                         <g:set var="this_plugin_id" value="${pluginws?.id}"/>
@@ -44,7 +44,8 @@
                                                      from="${types}"
                                                      optionKey="id"
                                                      optionValue="className"
-                                                     value="${pluginws?.typeId}" />
+                                                     value="${pluginws?.typeId}" 
+                                                     style="width:450px"/>
                                         </span>
                                     </div>
                                     <div class="row">

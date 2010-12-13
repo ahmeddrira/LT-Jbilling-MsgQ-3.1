@@ -1,6 +1,6 @@
 <div id="plugin-parameters" class="box-card-hold">
     <div class="form-columns">
-		<div class="column">
+		<div class="one_column">
 			<g:each in="${parametersDesc}">
 			    <div class="row">
 				<label>

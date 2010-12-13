@@ -20,11 +20,16 @@
 
 package com.sapienter.jbilling.server.provisioning.task;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import org.apache.log4j.Logger;
+
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 
 /**
  * Test external provisioning pluggable task. See also 
@@ -33,8 +38,20 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
  */
 public class TestExternalProvisioningTask extends PluggableTask 
         implements IExternalProvisioning {
-    public static final String PARAM_ID = "id";
+	public static final ParameterDescription PARAM_ID = 
+		new ParameterDescription("id", true, ParameterDescription.Type.STR);
     public static final String PARAM_ID_DEFAULT = "test";
+
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAM_ID);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
 
 
     private static final Logger LOG = Logger.getLogger(
@@ -63,7 +80,7 @@ public class TestExternalProvisioningTask extends PluggableTask
     }
 
     public String getId() {
-        String id = (String) parameters.get(PARAM_ID);
+        String id = (String) parameters.get(PARAM_ID.getName());
         if (id != null) {
             return id;
         }

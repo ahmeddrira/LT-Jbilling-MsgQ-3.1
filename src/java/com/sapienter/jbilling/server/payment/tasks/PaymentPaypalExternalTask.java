@@ -19,29 +19,43 @@
  */
 package com.sapienter.jbilling.server.payment.tasks;
 
-import com.sapienter.jbilling.server.pluggableTask.PaymentTaskWithTimeout;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import com.paypal.sdk.exceptions.PayPalException;
+import com.sapienter.jbilling.common.CommonConstants;
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.payment.IExternalCreditCardStorage;
-import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
-import com.sapienter.jbilling.server.payment.tasks.paypal.dto.*;
+import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.payment.tasks.paypal.PaypalApi;
-import com.sapienter.jbilling.server.payment.db.*;
+import com.sapienter.jbilling.server.payment.tasks.paypal.dto.CreditCard;
+import com.sapienter.jbilling.server.payment.tasks.paypal.dto.Payer;
+import com.sapienter.jbilling.server.payment.tasks.paypal.dto.Payment;
+import com.sapienter.jbilling.server.payment.tasks.paypal.dto.PaypalResult;
+import com.sapienter.jbilling.server.pluggableTask.PaymentTaskWithTimeout;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import com.sapienter.jbilling.server.user.ContactBL;
+import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.common.Util;
-import com.paypal.sdk.exceptions.PayPalException;
-import com.sapienter.jbilling.common.CommonConstants;
-import org.apache.log4j.Logger;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Date;
-import java.text.SimpleDateFormat;
+import com.sapienter.jbilling.server.payment.tasks.paypal.dto.*;
+import com.sapienter.jbilling.server.payment.db.*;
 
 /**
  * Created by Roman Liberov, 03/02/2010
@@ -51,30 +65,50 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
     private static final Logger LOG = Logger.getLogger(PaymentPaypalExternalTask.class);
 
     /* Plugin parameters */
-    public static final String PARAMETER_PAYPAL_USER_ID = "PaypalUserId";
-    public static final String PARAMETER_PAYPAL_PASSWORD = "PaypalPassword";
-    public static final String PARAMETER_PAYPAL_SIGNATURE = "PaypalSignature";
-    public static final String PARAMETER_PAYPAL_ENVIRONMENT = "PaypalEnvironment";
-    public static final String PARAMETER_PAYPAL_SUBJECT = "PaypalSubject";
+    public static final ParameterDescription PARAMETER_PAYPAL_USER_ID = 
+    	new ParameterDescription("PaypalUserId", true, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_PAYPAL_PASSWORD = 
+    	new ParameterDescription("PaypalPassword", true, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_PAYPAL_SIGNATURE = 
+    	new ParameterDescription("PaypalSignature", true, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_PAYPAL_ENVIRONMENT = 
+    	new ParameterDescription("PaypalEnvironment", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_PAYPAL_SUBJECT = 
+    	new ParameterDescription("PaypalSubject", false, ParameterDescription.Type.STR);
 
     public String getUserId() throws PluggableTaskException {
-        return ensureGetParameter(PARAMETER_PAYPAL_USER_ID);
+        return ensureGetParameter(PARAMETER_PAYPAL_USER_ID.getName());
     }
 
     public String getPassword() throws PluggableTaskException {
-        return ensureGetParameter(PARAMETER_PAYPAL_PASSWORD);
+        return ensureGetParameter(PARAMETER_PAYPAL_PASSWORD.getName());
     }
 
     public String getSignature() throws PluggableTaskException {
-        return ensureGetParameter(PARAMETER_PAYPAL_SIGNATURE);
+        return ensureGetParameter(PARAMETER_PAYPAL_SIGNATURE.getName());
     }
 
     public String getEnvironment() throws PluggableTaskException {
-        return getOptionalParameter(PARAMETER_PAYPAL_ENVIRONMENT, "Live");
+        return getOptionalParameter(PARAMETER_PAYPAL_ENVIRONMENT.getName(), "Live");
     }
 
     public String getSubject() {
-        return getOptionalParameter(PARAMETER_PAYPAL_SUBJECT, "");
+        return getOptionalParameter(PARAMETER_PAYPAL_SUBJECT.getName(), "");
+    }
+
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAMETER_PAYPAL_USER_ID);
+            add(PARAMETER_PAYPAL_PASSWORD);
+            add(PARAMETER_PAYPAL_SIGNATURE);
+            add(PARAMETER_PAYPAL_ENVIRONMENT);
+            add(PARAMETER_PAYPAL_SUBJECT);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
     }
 
     private PaypalApi getApi() throws PluggableTaskException, PayPalException {

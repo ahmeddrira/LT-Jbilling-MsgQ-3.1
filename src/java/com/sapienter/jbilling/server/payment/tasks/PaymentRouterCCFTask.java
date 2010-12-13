@@ -20,7 +20,9 @@
 
 package com.sapienter.jbilling.server.payment.tasks;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -28,6 +30,7 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
@@ -41,9 +44,23 @@ import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
  * parameter's value.
  */
 public class PaymentRouterCCFTask extends AbstractPaymentRouterTask {
-    public static final String PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR = "custom_field_id";
+	public static final ParameterDescription PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR = 
+		new ParameterDescription("custom_field_id", true, ParameterDescription.Type.STR);
     private static final Logger LOG = Logger.getLogger(PaymentRouterCCFTask.class);
 
+    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
+        { 
+            add(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR);
+        }
+    };
+    
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
+
+    
+    
     @Override
     protected PaymentTask selectDelegate(PaymentDTOEx paymentInfo)
             throws PluggableTaskException {
@@ -88,10 +105,10 @@ public class PaymentRouterCCFTask extends AbstractPaymentRouterTask {
 
         ContactDTOEx contact = contactLoader.getDTO();
         ContactFieldDTO paymentProcessorField = (ContactFieldDTO) contact.getFieldsTable().get(
-                parameters.get(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR));
+                parameters.get(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR.getName()));
         if (paymentProcessorField == null){
             LOG.warn("Can't find CCF with type " + 
-                    parameters.get(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR) +
+                    parameters.get(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR.getName()) +
                     " contact = " + contact);
             processorName = null;
         } else {

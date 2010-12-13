@@ -47,6 +47,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public abstract class PluggableTask {
+	
     public static final SimpleDateFormat PARAMETER_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd-HHmm");
 
     protected HashMap<String, Object> parameters = null;

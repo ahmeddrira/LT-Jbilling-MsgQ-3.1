@@ -15,6 +15,7 @@ import com.sapienter.jbilling.server.util.db.PreferenceDTO
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.client.ViewUtils
+import com.sapienter.jbilling.common.SessionInternalError
 
 @Secured(['isAuthenticated()'])
 class NotificationsController {
@@ -89,7 +90,14 @@ class NotificationsController {
 
     def savePrefs ={
         log.info "pref[5].value=" + params.get("pref[5].value")
-        List<PreferenceWS> prefDTOs=bindDTOs(params)
+		List<PreferenceWS> prefDTOs
+		
+		try {
+			prefDTOs=bindDTOs(params)
+		} catch (SessionInternalError e) {
+			viewUtils.resolveExceptionForValidation(flash, session.locale, e);
+			redirect action: "editPreferences"
+		}
         log.info "Calling: webServicesSession.saveNotificationPreferences(prefDTOs); List Size: " + prefDTOs.size()
 		PreferenceWS[] array= new PreferenceWS[prefDTOs.size()]
 		array= prefDTOs.toArray(array)
@@ -136,7 +144,16 @@ class NotificationsController {
                     break;
                 default: 
                     if (params["pref["+i+"].value"]) {
-                        dto.setIntValue(params["pref["+i+"].value"].toInteger())
+						def val=params["pref["+i+"].value"]
+						try {
+							dto.setIntValue(val.toInteger())
+						} catch (NumberFormatException e) {
+							SessionInternalError exception = new SessionInternalError("Validation of Preference Value");
+							String [] errmsgs= new String[1]
+							errmsgs[0]="PreferenceWS,intValue,validation.error.nonnumeric.days.order.notification," + val;
+							exception.setErrorMessages(errmsgs);
+							throw exception;
+						}
                     } else {
                         dto.setIntValue(0)
                     }

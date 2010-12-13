@@ -36,6 +36,8 @@ import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
@@ -133,6 +135,13 @@ public class WSSecurityMethodMapper {
                 MediationConfiguration config = new MediationConfigurationDAS().find(id);
                 return config != null ? new MappedSecuredWS(config.getEntityId(), null) : null;
             }
+        },
+
+        PLUG_IN {
+            public WSSecured getMappedSecuredWS(Serializable id) {
+                PluggableTaskDTO task = new PluggableTaskBL((Integer)id).getDTO();
+                return task != null ? new MappedSecuredWS(task.getEntityId(), null) : null;
+            }
         };
 
         /**
@@ -203,7 +212,9 @@ public class WSSecurityMethodMapper {
         
         UPDATE_ORDER_LINE_PROVISIONING  ("updateOrderAndLineProvisioningStatus", 0, Type.ORDER),
         UPDATE_LINE_PROVISIONING        ("updateLineProvisioningStatus", 0, Type.ORDER_LINE),
-        SAVE_CUSTOMER_NOTES             ("saveCustomerNotes", 0, Type.USER);
+        SAVE_CUSTOMER_NOTES             ("saveCustomerNotes", 0, Type.USER),
+        
+        DELETE_PLUGIN                   ("deletePlugin", 1, Type.PLUG_IN);
         
         private Method method;
         private Integer IdArgIndex;

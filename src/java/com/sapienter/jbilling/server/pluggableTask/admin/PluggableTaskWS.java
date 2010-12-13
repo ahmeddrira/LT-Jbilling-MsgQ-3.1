@@ -25,8 +25,10 @@ import java.util.Hashtable;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import com.sapienter.jbilling.server.security.WSSecured;
 
-public class PluggableTaskWS implements java.io.Serializable {
+
+public class PluggableTaskWS implements java.io.Serializable, WSSecured {
     /**
      * 
      */
@@ -119,5 +121,18 @@ public class PluggableTaskWS implements java.io.Serializable {
                 + ", parameters=" + parameters + ", processingOrder="
                 + processingOrder + ", typeId=" + typeId + ", versionNumber="
                 + versionNumber + "]";
+    }
+    
+    @Override
+    public Integer getOwningEntityId() {
+        if (getId() == null) {
+            return null;
+        }
+        return new PluggableTaskBL(getId()).getDTO().getEntityId();
+    }
+    
+    @Override
+    public Integer getOwningUserId() {
+        return null;
     }
 }

@@ -5,6 +5,7 @@
   @since  26-11-2010
 --%>
 
+
 <div class="column-hold">
 
     <!-- the plug-in details -->
@@ -47,8 +48,17 @@
         </div>
     </div>
 
+    <g:render template="/confirm" 
+              model="['confirmMessage':'plugins.delete.confirm','popup_controller':'plugin','popup_action':'delete','popup_id':plugin.getId()]"/>
+
     <div class="btn-box">
-        <a href="${createLink(controller:'plugin', action:'edit', id:plugin.getId()) }" class="submit"><span><g:message code="plugins.plugin.edit"/></span></a>
+        <a href="${createLink(controller:'plugin', action:'edit', id:plugin.getId()) }" class="submit">
+            <span><g:message code="plugins.plugin.edit"/></span>
+        </a>
+        <a onclick="$('#confirm-dialog').dialog('open');" class="submit delete">
+            <span><g:message code="plugins.plugin.delete"/></span>
+        </a>
     </div>
 </div>
+
 

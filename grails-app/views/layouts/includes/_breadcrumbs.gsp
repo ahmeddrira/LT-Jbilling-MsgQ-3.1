@@ -17,10 +17,9 @@
     </script>
 
     <ul>
-        <li>&nbsp;</li>
         <g:each var="crumb" in="${session['breadcrumbs']}">
             <li>
-                <g:link controller="${crumb.controller}" action="${crumb.action}" id="${crumb.id}">
+                <g:link controller="${crumb.controller}" action="${crumb.action}" id="${crumb.objectId}">
                     <g:message code="${crumb.messageCode}" args="[crumb.objectId]"/>
                 </g:link>
             </li>

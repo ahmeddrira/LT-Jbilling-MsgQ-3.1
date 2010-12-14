@@ -33,7 +33,14 @@ class HomeController {
     def recentItemService
     def breadcrumbService
     
-    def index = {
-        render view: "index"
+    def index = {        
+        def uri = request.getCookie("last_viewed_uri")
+        def root = grailsAttributes.getApplicationUri(request) 
+
+        if (uri) {
+            redirect(uri: uri.replaceFirst(root, ""))
+        } else {
+            render view: "index"
+        }
     }
 }

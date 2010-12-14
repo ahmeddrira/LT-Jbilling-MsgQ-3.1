@@ -21,11 +21,13 @@
 package jbilling
 
 /**
- * Created by IntelliJ IDEA.
- * User: brian
- * Date: 14-Dec-2010
- * Time: 9:57:39 AM
- * To change this template use File | Settings | File Templates.
+ * History breadcrumb.
+ *
+ * Breadcrumbs represent viewable pages within jBilling. This does not include ajax actions and other
+ * requests that cannot be reached by a URI (i.e., breadcrumbs can be bookmarked).
+ *
+ * @author Brian Cowdery
+ * @since 14-Dec-2010
  */
 class Breadcrumb {
 

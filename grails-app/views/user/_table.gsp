@@ -51,7 +51,7 @@
                         <span>&nbsp;</span>
                     </g:else>
                 </span>
-                <g:remoteLink action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
+                <g:remoteLink breadcrumb="{'action':'list'}" action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                     <span class="block">
                         <span><g:formatNumber number="${new UserBL().getBalance(user.id)}" type="currency" currencyCode="${user.currency.code}"/></span>
                     </span>

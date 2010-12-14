@@ -5,17 +5,11 @@
 
     <script type="text/javascript">
         $(document).ajaxSuccess(function(e, xhr, settings) {
-            var ignored = [
-                "${resource(dir:'')}/recentItem",
-                "${resource(dir:'')}/messages"
-            ];
-
-            if ($.inArray(settings.url, ignored) < 0) {
-                $.ajax({
-                    url: "${resource(dir:'')}/messages",
-                    success: function(data) { $("#messages").replaceWith(data); }
-                });
-            }
+            $.ajax({
+                url: "${resource(dir:'')}/messages",
+                global: false,
+                success: function(data) { $("#messages").replaceWith(data); }
+            });
         });
     </script>
 

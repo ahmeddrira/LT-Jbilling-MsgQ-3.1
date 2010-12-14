@@ -574,3 +574,18 @@ create table recent_item (
 );
 
 insert into jbilling_seqs (name, next_id) values ('recent_item', 1);
+
+-- breadcrumb tables
+drop table if exists breadcrumb;
+create table breadcrumb (
+    id int not null,
+    user_id int not null,
+    controller varchar(255) not null,
+    action varchar(255),
+    name varchar(255),
+    object_id int,
+    version int not null,
+    primary key (id)
+);
+
+insert into jbilling_seqs (name, next_id) values ('breadcrumb', 1);

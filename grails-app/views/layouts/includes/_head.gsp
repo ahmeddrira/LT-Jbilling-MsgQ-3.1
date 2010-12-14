@@ -17,6 +17,7 @@
 <g:javascript library="jquery" plugin="jquery"/>
 <jqui:resources theme="smoothness"/>
 
+<g:javascript library="breadcrumbs"/>
 <g:javascript library="clearinput"/>
 <g:javascript library="slideBlock"/>
 <g:javascript library="main"/>

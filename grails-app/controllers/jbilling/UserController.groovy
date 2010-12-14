@@ -24,7 +24,8 @@ class UserController {
 
     def filterService
     def recentItemService
-
+    def breadcrumbService
+    
     def index = {
         redirect action: list, params: params
     }

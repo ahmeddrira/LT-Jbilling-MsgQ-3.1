@@ -25,7 +25,7 @@
         </strong>
     </div>
     <div class="box edit">
-        <g:remoteLink action="select" id="${selected.id}" params="[template: 'quickedit/notes']" before="register(this);" onSuccess="render(data, next);" class="edit">
+        <g:remoteLink breadcrumb="{'action':'list', 'name':'notes'}" action="select" id="${selected.id}" params="[template: 'quickedit/notes']" before="register(this);" onSuccess="render(data, next);" class="edit">
         </g:remoteLink>
         <strong><g:message code="customer.detail.note.title"/></strong>
         <g:if test="${customer && customer.notes}">

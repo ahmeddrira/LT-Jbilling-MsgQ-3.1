@@ -6,28 +6,24 @@
 --%>
 
 <!-- breadcrumbs -->
-<div class="breadcrumbs">
+<div id="breadcrumbs" class="breadcrumbs">
     <div id="spinner" style="display: none;">
         <img src="${resource(dir:'images', file:'spinner.gif')}" alt="loading..." />
     </div>
+
+    <script type="text/javascript">
+        $('#spinner').ajaxStart(function() { $(this).show('fade'); });
+        $('#spinner').ajaxStop(function() { $(this).hide('fade'); })
+    </script>
+
     <ul>
-        <%-- todo: add the grails breadcrumbs plugin for easy breadcrumb trails - http://www.grails.org/plugin/breadcrumbs --%>
-        <%-- quick and dirty breadcrumbs --%>
-        <li><a href="${resource(dir:'')}"><g:message code="breadcrumb.link.home"/></a></li>
-        <g:if test="${controllerName != null}">
-            <li><g:link controller="${controllerName}"><g:message code="breadcrumb.link.${controllerName}"/></g:link></li>
-        </g:if>
-        <g:if test="${actionName != null && actionName != 'index'}">
-            <li><g:link controller="${controllerName}"><g:message code="breadcrumb.link.${controllerName}.${actionName}"/></g:link></li>
-        </g:if>
+        <li>&nbsp;</li>
+        <g:each var="crumb" in="${session['breadcrumbs']}">
+            <li>
+                <g:link controller="${crumb.controller}" action="${crumb.action}" id="${crumb.id}">
+                    <g:message code="${crumb.messageCode}" args="[crumb.objectId]"/>
+                </g:link>
+            </li>
+        </g:each>
     </ul>
 </div>
-
-<script type="text/javascript">
-    $('#spinner').ajaxStart(function() {
-        $(this).show('fade');
-    })
-    .ajaxStop(function() {
-        $(this).hide('fade');
-    })
-</script>

@@ -1,4 +1,3 @@
-import grails.plugins.springsecurity.Secured
 /*
  jBilling - The Enterprise Open Source Billing System
  Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -19,21 +18,21 @@ import grails.plugins.springsecurity.Secured
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Shows the user's home page after login.
- *
- * Mapped to "/", see UrlMappings.groovy
- *
- * @author Brian Cowdery
- * @since  22-11-2010
- */
-@Secured(['isAuthenticated()'])
-class HomeController {
+package jbilling
 
-    def recentItemService
+/**
+ * Created by IntelliJ IDEA.
+ * User: brian
+ * Date: 14-Dec-2010
+ * Time: 10:25:22 AM
+ * To change this template use File | Settings | File Templates.
+ */
+class BreadcrumbController {
+
     def breadcrumbService
-    
+
     def index = {
-        render view: "index"
+        breadcrumbService.addBreadcrumb(params.c, params.a, params.name, params.int("id"))
+        render template: "/layouts/includes/breadcrumbs"
     }
 }

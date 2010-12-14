@@ -285,6 +285,7 @@ ALTER TABLE ONLY public.contact_map DROP CONSTRAINT contact_map_pkey;
 ALTER TABLE ONLY public.contact_field_type DROP CONSTRAINT contact_field_type_pkey;
 ALTER TABLE ONLY public.contact_field DROP CONSTRAINT contact_field_pkey;
 ALTER TABLE ONLY public.cdrentries DROP CONSTRAINT cdrentries_pkey;
+ALTER TABLE ONLY public.breadcrumb DROP CONSTRAINT breadcrumb_pkey;
 ALTER TABLE ONLY public.blacklist DROP CONSTRAINT blacklist_pkey;
 ALTER TABLE ONLY public.billing_process DROP CONSTRAINT billing_process_pkey;
 ALTER TABLE ONLY public.billing_process_configuration DROP CONSTRAINT billing_process_configuration_pkey;
@@ -387,6 +388,7 @@ DROP TABLE public.contact_field_type;
 DROP TABLE public.contact_field;
 DROP TABLE public.contact;
 DROP TABLE public.cdrentries;
+DROP TABLE public.breadcrumb;
 DROP TABLE public.blacklist;
 DROP TABLE public.billing_process_configuration;
 DROP TABLE public.billing_process;
@@ -550,6 +552,23 @@ CREATE TABLE blacklist (
 
 
 ALTER TABLE public.blacklist OWNER TO jbilling;
+
+--
+-- Name: breadcrumb; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE breadcrumb (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    controller character varying(255) NOT NULL,
+    action character varying(255),
+    name character varying(255),
+    object_id integer,
+    version integer NOT NULL
+);
+
+
+ALTER TABLE public.breadcrumb OWNER TO jbilling;
 
 --
 -- Name: cdrentries; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -3216,6 +3235,14 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 4	1	2008-09-26 00:00:00	4	2	\N	\N	1126	\N	1
 5	1	2008-09-26 00:00:00	5	2	\N	\N	1128	\N	1
 6	1	2008-09-26 00:00:00	6	2	\N	\N	1127	\N	1
+\.
+
+
+--
+-- Data for Name: breadcrumb; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
 \.
 
 
@@ -11864,6 +11891,7 @@ filter	1
 filter_set	1
 pluggable_task	606
 recent_item	1
+breadcrumb	1
 \.
 
 
@@ -19997,6 +20025,14 @@ ALTER TABLE ONLY billing_process
 
 ALTER TABLE ONLY blacklist
     ADD CONSTRAINT blacklist_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: breadcrumb_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY breadcrumb
+    ADD CONSTRAINT breadcrumb_pkey PRIMARY KEY (id);
 
 
 --

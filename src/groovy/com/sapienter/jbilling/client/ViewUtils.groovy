@@ -4,6 +4,7 @@ package com.sapienter.jbilling.client
 import java.util.List;
 
 import org.codehaus.groovy.grails.web.servlet.GrailsFlashScope 
+import org.hibernate.StaleObjectStateException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource 
 import com.sapienter.jbilling.common.SessionInternalError;
 
@@ -19,7 +20,7 @@ class ViewUtils {
 	 * @return
 	 * true if there are validation errors, otherwise false
 	 */
-	boolean resolveExceptionForValidation(GrailsFlashScope flash, Locale locale, SessionInternalError exception) {
+	boolean resolveException(GrailsFlashScope flash, Locale locale, SessionInternalError exception) {
 		List<String> messages = new ArrayList<String>();
 		if (exception.getErrorMessages()?.length > 0) {
 			for (String message : exception.getErrorMessages()) {
@@ -35,14 +36,18 @@ class ViewUtils {
 					[type, property, errorMessage] as Object[], locale);
 				messages.add finalMessage;
 			}
-		}
-		if (messages.size() > 0) {
 			flash.errorMessages = messages;
-            flash.message = null;
 			return true;
-		} else {
-			return false;
-		}
+		} else if (exception.getCause() instanceof StaleObjectStateException) {
+            // this is two people trying to update the same data
+            StaleObjectStateException ex = exception.getCause();
+            flash.error = messageSource.getMessage("error.dobule_update", null, locale);
+        } else {
+            // generic error
+            flash.error = messageSource.getMessage("error.exception", [exception.getMessage()], locale);
+        }
+        
+		return false;
 	}
 	
 }

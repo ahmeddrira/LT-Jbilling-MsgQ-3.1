@@ -124,7 +124,7 @@ class UserController {
             int id = webServicesSession.createUser(newUser);
             flash.message = 'user.create.success'
         } catch (SessionInternalError e) {
-            boolean retValue = viewUtils.resolveExceptionForValidation(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
+            boolean retValue = viewUtils.resolveException(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
         } catch (Exception e) {
             flash.message = 'user.create.failed'
         }
@@ -253,7 +253,7 @@ class UserController {
         } catch (SessionInternalError e) {
             // TODO: the locale like this is not working, and it is messy. Once we have
             // the one resolved by jBilling in the session, add that here.
-            boolean retValue = viewUtils.resolveExceptionForValidation(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
+            boolean retValue = viewUtils.resolveException(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
         } catch (Exception e) {
             e.printStackTrace();
             flash.message = message(code: 'user.create.failed')

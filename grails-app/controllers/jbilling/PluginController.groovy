@@ -139,7 +139,7 @@ class PluginController {
         } catch(SessionInternalError e) {
             // process the exception so the error messages from validation are
             // put in the flash
-            viewUtils.resolveExceptionForValidation(flash, locale, e);
+            viewUtils.resolveException(flash, locale, e);
             PluggableTaskTypeCategoryDTO category = session.selected_category;
             
             // render the form again, with all the data

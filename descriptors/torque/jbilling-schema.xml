@@ -115,6 +115,15 @@
             <reference foreign="id" local="entity_id"/>
         </foreign-key>
     </table>
+    <table name="breadcrumb">
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="user_id" required="true" type="INTEGER"/>
+        <column name="controller" required="true" size="255" type="VARCHAR"/>
+        <column name="action" size="255" type="VARCHAR"/>
+        <column name="name" size="255" type="VARCHAR"/>
+        <column name="object_id" type="INTEGER"/>
+        <column name="version" required="true" type="INTEGER"/>
+    </table>
     <table name="process_run">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="process_id" type="INTEGER"/>
@@ -476,6 +485,29 @@
     </table>
     <table name="event_log_module">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+    </table>
+    <table name="filter">
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="filter_set_id" required="true" type="INTEGER"/>
+        <column name="type" required="true" size="255" type="VARCHAR"/>
+        <column name="constraint_type" required="true" size="255" type="VARCHAR"/>
+        <column name="field" required="true" size="255" type="VARCHAR"/>
+        <column name="template" required="true" size="255" type="VARCHAR"/>
+        <column name="visible" required="true" type="BOOLEAN"/>
+        <column name="integer_value" type="INTEGER"/>
+        <column name="string_value" size="255" type="VARCHAR"/>
+        <column name="start_date_value" type="TIMESTAMP"/>
+        <column name="end_date_value" type="TIMESTAMP"/>
+        <column name="version" required="true" type="INTEGER"/>
+        <foreign-key foreignTable="filter_set">
+            <reference foreign="id" local="filter_set_id"/>
+        </foreign-key>
+    </table>
+    <table name="filter_set">
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="name" required="true" size="255" type="VARCHAR"/>
+        <column name="user_id" required="true" type="INTEGER"/>
+        <column name="version" required="true" type="INTEGER"/>
     </table>
     <table name="international_description">
         <column name="table_id" primaryKey="true" required="true" type="INTEGER"/>
@@ -1224,6 +1256,13 @@
         <foreign-key foreignTable="generic_status">
             <reference foreign="id" local="status_id"/>
         </foreign-key>
+    </table>
+    <table name="recent_item">
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="type" required="true" size="255" type="VARCHAR"/>
+        <column name="object_id" required="true" type="INTEGER"/>
+        <column name="user_id" required="true" type="INTEGER"/>
+        <column name="version" required="true" type="INTEGER"/>
     </table>
     <table name="report">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>

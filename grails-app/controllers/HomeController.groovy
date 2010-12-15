@@ -1,4 +1,5 @@
 import grails.plugins.springsecurity.Secured
+import jbilling.Breadcrumb
 /*
  jBilling - The Enterprise Open Source Billing System
  Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -33,7 +34,15 @@ class HomeController {
     def recentItemService
     def breadcrumbService
     
-    def index = {
-        render view: "index"
+    def index = {        
+        def breadcrumb = Breadcrumb.findByUserId(session['user_id'], [sort:'id', order:'desc'])
+
+        if (breadcrumb) {
+            // show last page viewed
+            redirect(controller: breadcrumb.controller, action: breadcrumb.action, id: breadcrumb.objectId)
+        } else {
+            // show default page
+            redirect(controller: "user")
+        }
     }
 }

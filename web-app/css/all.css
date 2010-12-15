@@ -254,6 +254,7 @@ table {
 	border:1px solid #a4c0db;
 }
 .breadcrumbs ul {
+    height:34px;
 	margin:0;
 	padding:0;
 	list-style:none;

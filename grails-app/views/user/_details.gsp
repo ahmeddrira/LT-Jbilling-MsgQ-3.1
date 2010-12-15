@@ -13,7 +13,7 @@
 <div class="column-hold">
     <!-- user notes -->
     <div class="heading">
-        <a href="${createLink(action: 'edit', )}" class="edit"></a>
+        <g:link action="edit" id="${selected.id}" breadcrumb="id" class="edit"/>
         <strong>
             <g:if test="${contact && (contact.firstName || contact.lastName)}">
                 ${contact.firstName} ${contact.lastName}
@@ -25,8 +25,7 @@
         </strong>
     </div>
     <div class="box edit">
-        <g:remoteLink breadcrumb="{'action':'list', 'name':'notes'}" action="select" id="${selected.id}" params="[template: 'quickedit/notes']" before="register(this);" onSuccess="render(data, next);" class="edit">
-        </g:remoteLink>
+        <g:remoteLink breadcrumb="{'action':'list', 'name':'notes'}" action="select" id="${selected.id}" params="[template: 'quickedit/notes']" before="register(this);" onSuccess="render(data, next);" class="edit"/>
         <strong><g:message code="customer.detail.note.title"/></strong>
         <g:if test="${customer && customer.notes}">
             <p>${customer.notes}</p>

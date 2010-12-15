@@ -44,7 +44,7 @@ class ViewUtils {
             flash.error = messageSource.getMessage("error.dobule_update", null, locale);
         } else {
             // generic error
-            flash.error = messageSource.getMessage("error.exception", [exception.getMessage()], locale);
+            flash.error = messageSource.getMessage("error.exception", [exception.getMessage()] as Object[], locale);
         }
         
 		return false;

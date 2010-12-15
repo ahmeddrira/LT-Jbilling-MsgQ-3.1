@@ -102,10 +102,7 @@ class UserController {
 
     def saveNotes = {
         webServicesSession.saveCustomerNotes(Integer.valueOf(params["id"]), String.valueOf(params["notes"]));
-
-        flash.message = "customer.notes.updated"
-        flash.args = [params["id"]]
-        render text: "success", contentType: "text/plain"
+        chain(action: "select", params: params)
     }
 
     def create = {

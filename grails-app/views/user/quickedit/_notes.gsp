@@ -1,8 +1,7 @@
 <div class="heading">
     <strong>Edit Notes</strong>
 </div>
-<g:formRemote id="notes-form" name="notes-form" url="[action: 'saveNotes']" onSuccess="closePanel(this);">
-
+<g:formRemote id="notes-form" name="notes-form" url="[action: 'saveNotes']" before="register(this);" onSuccess="render(data, prev); closePanel(this);">
     <g:hiddenField name="id" value="${selected.id}"/>
 
     <div class="box">
@@ -10,7 +9,7 @@
             <div class="row">
                 <label class="lb">Notes:</label>
                 <g:textArea name="notes" value="${selected.customer.notes}"/>
-            </div>                        
+            </div>
         </div>
     </div>
     <div class="btn-box buttons">

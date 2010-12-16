@@ -185,10 +185,15 @@ class PluginController {
     }
     
     def delete = {
-        Integer id = params.id as Integer;
-        webServicesSession.deletePlugin(session.user_id, id);
-        pluggableTaskDAS.invalidateCache(); // or the list will still show the deleted plug-in
-        flash.message = messageSource.getMessage("plugins.delete.done",[id].toArray(), session.locale);
+        
+        try {
+            Integer id = params.id as Integer;
+        	webServicesSession.deletePlugin(session.user_id, id);
+        	pluggableTaskDAS.invalidateCache(); // or the list will still show the deleted plug-in
+        	flash.message = messageSource.getMessage("plugins.delete.done",[id].toArray(), session.locale);
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e);
+        }
         redirect (action:listCategories)
     }
 }

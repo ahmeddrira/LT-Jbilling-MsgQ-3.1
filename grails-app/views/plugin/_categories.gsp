@@ -6,7 +6,8 @@
     <ul>
 		<g:each in="${categories}" status="idx" var="dto">
 		   <li>
-		     <g:remoteLink action="plugins" id="${dto.id}" before="register(this);" onSuccess="render(data, next);">
+		     <g:remoteLink action="plugins" id="${dto.id}" before="register(this);" 
+		                   onSuccess="render(data, next);" breadcrumb="id">
                  <strong>
                     ${dto.getDescription(session['language_id'])}
 		         </strong>

@@ -25,6 +25,7 @@ class PluginController {
     ReloadableResourceBundleMessageSource messageSource
     PluggableTaskDAS pluggableTaskDAS
     ViewUtils viewUtils
+    RecentItemService recentItemService;
     
     def index = { 
         redirect (action:listCategories)
@@ -59,10 +60,6 @@ class PluginController {
             // add the category id to the session, so the 'create' button can know 
             // which category to create for
             session.selected_category_id = categoryId;
-            // put the category in the session, it comes handy later
-            PluggableTaskTypeCategoryDTO category = new PluggableTaskTypeCategoryDAS().find(
-                    session.selected_category_id);
-            session.selected_category=category; // comes handy later
         
             // show the list of the plug-ins
             render template: "plugins", model:[plugins:lstByCateg]
@@ -79,7 +76,8 @@ class PluginController {
     
     def showForm = {
         // find out the category name
-        PluggableTaskTypeCategoryDTO category = session.selected_category.attach();
+        PluggableTaskTypeCategoryDTO category =  new PluggableTaskTypeCategoryDAS().find(
+               session.selected_category_id);
         
         List<PluggableTaskTypeDTO> typesList = new PluggableTaskTypeDAS().findAllByCategory(category.getId());
         // show the form with the description
@@ -140,7 +138,9 @@ class PluginController {
             // process the exception so the error messages from validation are
             // put in the flash
             viewUtils.resolveException(flash, locale, e);
-            PluggableTaskTypeCategoryDTO category = session.selected_category;
+            // mmm... this can fail if the this is a new plug-in, started after a recent item click?
+            PluggableTaskTypeCategoryDTO category =  new PluggableTaskTypeCategoryDAS().find(
+                   session.selected_category_id);
             
             // render the form again, with all the data
             render (view:"form", model:
@@ -172,7 +172,8 @@ class PluginController {
     def edit = {
         PluggableTaskDTO dto =  pluggableTaskDAS.find(params.id as Integer);
         if (dto != null) {
-            PluggableTaskTypeCategoryDTO category = session.selected_category.attach();
+            recentItemService.addRecentItem(dto.getId(), RecentItemType.PLUGIN);
+            PluggableTaskTypeCategoryDTO category =  dto.getType().getCategory();
             render (view:"form", model:
                 [description: category.getDescription(session.language_id),
                  types: new PluggableTaskTypeDAS().findAllByCategory(category.getId()),
@@ -195,5 +196,14 @@ class PluginController {
             viewUtils.resolveException(flash, session.locale, e);
         }
         redirect (action:listCategories)
+    }
+    
+    // the next methods is to support the 'Recent Items'
+    def select = {
+        show();
+    }
+    
+    def list = {
+        showListAndPlugin(params.id as Integer);
     }
 }

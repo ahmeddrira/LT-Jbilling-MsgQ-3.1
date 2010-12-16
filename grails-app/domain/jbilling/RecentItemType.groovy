@@ -31,7 +31,8 @@ enum RecentItemType {
     INVOICE     ("invoice", "icon09.gif", "recent.item.invoice.title"),
     ORDER       ("order", "icon10.gif", "recent.item.order.title"),
     PAYMENT     ("payment", "icon11.gif", "recent.item.payment.title"),
-    CUSTOMER    ("user", "icon12.gif", "recent.item.customer.title");
+    CUSTOMER    ("user", "icon12.gif", "recent.item.customer.title"),
+    PLUGIN      ("plugin", "icon13.gif", "recent.item.plugin.title");
 
     String controller
     String icon

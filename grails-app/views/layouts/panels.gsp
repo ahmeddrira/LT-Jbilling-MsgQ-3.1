@@ -22,22 +22,6 @@
             });
         });
 
-        /*
-            Highlight clicked rows in table boxes
-         */
-        $(document).ready(function() {
-            $('body').delegate('.table-box li', 'click', function() {
-                var table = $(this).parents('.table-box')[0];
-                var selected = $.data(table, 'selected');
-
-                if (selected)
-                    $('#' + selected).attr('class', '');
-
-                $(this).attr('class', 'active');
-                $.data(table, 'selected', $(this).attr('id'));
-            })
-        });
-
         function applyFilters() {
             $('#filters-form input:visible, #filters-form select:visible').each(function() {
                 var title = $(this).parents('li').find('.title');
@@ -83,25 +67,25 @@
 
             <div id="viewport">
                 <div class="column panel" index="1">
-                    <div class="column-hold">
+                    <div id="column1" class="column-hold">
                         <g:pageProperty name="page.column1"/>
                     </div>
                 </div>
 
                 <div class="column panel" index="2">
-                    <div class="column-hold">
+                    <div id="column2" class="column-hold">
                         <g:pageProperty name="page.column2"/>
                     </div>
                 </div>
 
                 <div class="column panel" index="3">
-                    <div class="column-hold">
+                    <div id="column3" class="column-hold">
                         <g:pageProperty name="page.column3"/>
                     </div>
                 </div>
 
                 <div class="column panel" index="4">
-                    <div class="column-hold">
+                    <div id="column4" class="column-hold">
                         <g:pageProperty name="page.column4"/>
                     </div>
                 </div>

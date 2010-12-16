@@ -71,7 +71,10 @@ public class ItemTypeDTO extends AbstractDescription
     public ItemTypeDTO() {
     }
 
-    
+    public ItemTypeDTO(int id) {
+        this.id = id;
+    }
+
     public ItemTypeDTO(int id, CompanyDTO entity, int orderLineTypeId) {
         this.id = id;
         this.entity = entity;

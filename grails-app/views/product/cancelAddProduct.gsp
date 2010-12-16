@@ -26,7 +26,7 @@
 </content>
 
 <content tag="column2">
-    <g:render template="type" model= "['list': list,'languageId':languageId, 'itemTypeId':itemTypeId]"/> 
+    <g:render template="products" model= "['list': list,'languageId':languageId, 'itemTypeId':itemTypeId]"/>
 </content>
 </body>
 </html>

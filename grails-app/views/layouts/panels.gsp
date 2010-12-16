@@ -5,6 +5,9 @@
     <g:javascript library="panels"/>
 
     <script type="text/javascript">
+        /*
+            AJAX callbacks for error messages and the recent item list updates
+         */
         $(document).ajaxSuccess(function(e, xhr, settings) {
             $.ajax({
                 url: "${resource(dir:'')}/messages",
@@ -17,6 +20,22 @@
                 global: false,
                 success: function(data) { $("#recent-items").replaceWith(data) }
             });
+        });
+
+        /*
+            Highlight clicked rows in table boxes
+         */
+        $(document).ready(function() {
+            $('body').delegate('.table-box li', 'click', function() {
+                var table = $(this).parents('.table-box')[0];
+                var selected = $.data(table, 'selected');
+
+                if (selected)
+                    $('#' + selected).attr('class', '');
+
+                $(this).attr('class', 'active');
+                $.data(table, 'selected', $(this).attr('id'));
+            })
         });
 
         function applyFilters() {

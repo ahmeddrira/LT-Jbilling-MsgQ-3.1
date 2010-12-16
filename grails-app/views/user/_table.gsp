@@ -22,7 +22,7 @@
             <g:set var="customer" value="${user.customer}"/>
             <g:set var="contact" value="${ContactDTO.findByUserId(user.id)}"/>
 
-            <li>
+            <li id="user-${user.id}" <g:if test="${selected && selected.id == user.id}">class="active"</g:if>>
                 <span class="block last">
                     <g:if test="${customer}">
                         <g:if test="${customer.isParent == 1 && customer.parent}">

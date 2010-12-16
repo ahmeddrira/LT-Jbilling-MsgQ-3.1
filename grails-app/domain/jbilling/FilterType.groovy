@@ -28,6 +28,6 @@ package jbilling
  */
 enum FilterType {
     
-    ALL, INVOICE, ORDER, CUSTOMER
+    ALL, INVOICE, ORDER, CUSTOMER, PAYMENT
 
 }

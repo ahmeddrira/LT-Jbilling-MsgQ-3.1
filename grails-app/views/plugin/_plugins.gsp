@@ -8,7 +8,8 @@
     <ul>
 		<g:each in="${plugins}" status="idx" var="dto">
 		   <li>
-		     <g:remoteLink action="show" id="${dto.id}" before="register(this);" onSuccess="render(data, next);">
+		     <g:remoteLink action="show" id="${dto.id}" before="register(this);" 
++                                  onSuccess="render(data, next);" breadcrumb="id">
                  <span class="block">
                     <span>${dto.getProcessingOrder()}</span>
 		         </span>

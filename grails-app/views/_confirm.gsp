@@ -1,6 +1,11 @@
 
 <div id="confirm-dialog" class="bg-lightbox" title=<g:message code="popup.confirm.title"/>>
-    <g:message code="${confirmMessage}"/>
+    <table>
+        <tbody><tr>
+            <td><img src="/jbilling/images/icon34.gif" alt=""></td>
+            <td class="col2"><g:message code="${confirmMessage}"/></td>
+        </tr></tbody>
+    </table>
 </div>
 
 <script type="text/javascript">

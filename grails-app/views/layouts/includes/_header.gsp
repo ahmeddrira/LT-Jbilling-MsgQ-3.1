@@ -17,7 +17,7 @@
             <fieldset>
                 <input type="image" class="btn" src="${resource(dir:'images', file:'icon-search.gif')}" onclick="$('#search-form').submit()"/>
                 <div class="input-bg">                    
-                    <g:textField name="id" value="${cmd?.id ?: message(code:'search.title')}"/>
+                    <g:textField name="id" value="${cmd?.id ?: message(code:'search.title')}" class="default"/>
                     <a href="#" class="open"></a>
                     <div class="popup">
                         <div class="top-bg">

@@ -5,6 +5,9 @@
     <g:javascript library="panels"/>
 
     <script type="text/javascript">
+        /*
+            AJAX callbacks for error messages and the recent item list updates
+         */
         $(document).ajaxSuccess(function(e, xhr, settings) {
             $.ajax({
                 url: "${resource(dir:'')}/messages",
@@ -64,25 +67,25 @@
 
             <div id="viewport">
                 <div class="column panel" index="1">
-                    <div class="column-hold">
+                    <div id="column1" class="column-hold">
                         <g:pageProperty name="page.column1"/>
                     </div>
                 </div>
 
                 <div class="column panel" index="2">
-                    <div class="column-hold">
+                    <div id="column2" class="column-hold">
                         <g:pageProperty name="page.column2"/>
                     </div>
                 </div>
 
                 <div class="column panel" index="3">
-                    <div class="column-hold">
+                    <div id="column3" class="column-hold">
                         <g:pageProperty name="page.column3"/>
                     </div>
                 </div>
 
                 <div class="column panel" index="4">
-                    <div class="column-hold">
+                    <div id="column4" class="column-hold">
                         <g:pageProperty name="page.column4"/>
                     </div>
                 </div>

@@ -637,6 +637,9 @@ table {
 .column .box .other dt {
 	width:108px;
 }
+.column .box .other dt.long {
+    width: 150px;
+}
 .column .box dd {
 	margin:0;
 	font-weight:bold;
@@ -745,6 +748,9 @@ table {
 }
 .table-box .last {
 	width:60px;
+}
+.table-box .left {
+    text-align: left;
 }
 .table-box .block img {
 	margin-top:9px;
@@ -895,6 +901,25 @@ table {
 	float:none;
 	margin:0 4px;
 	display:inline-block;
+}
+/* cloud */
+ul.cloud  {
+    list-style: none;
+    list-style-position: inside;
+}
+ul.cloud li {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    background-color: #3a3a3a;
+    color: #eee;
+    float: left;
+    font-weight: bold;
+    margin: 3px;
+    padding: 5px;
+    text-align: center;
+}
+ul.cloud li a {
+    color: #eee;
 }
 /* form-columns */
 .form-hold {

@@ -1,3 +1,5 @@
+<%@ page import="jbilling.SearchType" %>
+
 <%--
   Page header for all common jBilling layouts.
 
@@ -10,39 +12,38 @@
 <!-- header -->
 <div id="header">
     <h1><a href="${resource(dir:'')}">jBilling</a></h1>
-    <%-- todo: search action to support global searches. --%>
-    <div class="search">
-        <form action="#">
+    <div class="search">        
+        <g:form controller="search" name="search-form">
             <fieldset>
-                <input type="image" src="${resource(dir:'images', file:'icon-search.gif')}" value="" class="btn" />
-                <div class="input-bg">
-                    <input type="text" class="text" value="${message(code:'topnav.search.title')}" />
+                <input type="image" class="btn" src="${resource(dir:'images', file:'icon-search.gif')}" onclick="$('#search-form').submit()"/>
+                <div class="input-bg">                    
+                    <g:textField name="id" value="${cmd?.id ?: message(code:'search.title')}" class="default"/>
                     <a href="#" class="open"></a>
                     <div class="popup">
                         <div class="top-bg">
                             <div class="btm-bg">
                                 <div class="input-row">
-                                    <input type="radio" id="check01" name="search" checked="checked" />
-                                    <label for="check01"><g:message code="topnav.search.option.anywhere"/></label>
+                                    <g:radio id="customers" name="type" value="CUSTOMERS" checked="${!cmd || cmd?.type?.toString() == 'CUSTOMERS'}"/>
+                                    <label for="customers"><g:message code="search.option.customers"/></label>
                                 </div>
                                 <div class="input-row">
-                                    <input type="radio" id="check02" name="search" />
-                                    <label for="check02"><g:message code="topnav.search.option.users"/></label>
+                                    <g:radio id="orders" name="type" value="ORDERS" checked="${cmd?.type?.toString() == 'ORDERS'}"/>
+                                    <label for="orders"><g:message code="search.option.orders"/></label>
                                 </div>
                                 <div class="input-row">
-                                    <input type="radio" id="check03" name="search" />
-                                    <label for="check03"><g:message code="topnav.search.option.invoices"/></label>
+                                    <g:radio id="invoices" name="type" value="INVOICES" checked="${cmd?.type?.toString() == 'INVOICES'}"/>
+                                    <label for="invoices"><g:message code="search.option.invoices"/></label>
                                 </div>
                                 <div class="input-row">
-                                    <input type="radio" id="check04" name="search" />
-                                    <label for="check04"><g:message code="topnav.search.option.emails"/></label>
+                                    <g:radio id="payments" name="type" value="PAYMENTS" checked="${cmd?.type?.toString() == 'PAYMENTS'}"/>
+                                    <label for="payments"><g:message code="search.option.payments"/></label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </fieldset>
-        </form>
+        </g:form>
     </div>
     <ul class="top-nav">
         <%-- todo: great user using first name if available, add actions for account manipulation, training and help --%>

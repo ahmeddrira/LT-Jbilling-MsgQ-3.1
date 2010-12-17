@@ -48,18 +48,25 @@ class RecentItemService implements InitializingBean {
      * @return list of recently viewed items.
      */
     def Object getRecentItems() {
-        return RecentItem.findAllByUserId(session['user_id'])
+        return RecentItem.withCriteria {
+            eq("userId", session["user_id"])
+            order("id", "asc")
+        }
     }
 
     /**
      * Add a new item to the recent items list for the currently logged in user and
      * update the session list.
      *
+     * This method will not add a recent item if either the ID or recent item type is null.
+     *
      * @param objectId object id
      * @param type recent item type
      */
     def void addRecentItem(Integer objectId, RecentItemType type) {
-        addRecentItem(new RecentItem(objectId: objectId, type: type))
+        if (objectId && type) {
+            addRecentItem(new RecentItem(objectId: objectId, type: type))
+        }
     }
 
     /**
@@ -75,11 +82,11 @@ class RecentItemService implements InitializingBean {
         // add item only if it is different from the last item added        
         if (!lastItem || lastItem.type != item.type || lastItem.objectId != item.objectId) {
             item.userId = session['user_id']
-            item.save()
+            item.save(flush: true)
 
             items << item
             if (items.size() > MAX_ITEMS)
-                items.remove(0).delete()
+                items.remove(0).delete(flush: true)
 
             session[SESSION_RECENT_ITEMS] = items
         }

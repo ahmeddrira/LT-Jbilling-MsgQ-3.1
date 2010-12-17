@@ -2,18 +2,6 @@
 <html>
 <head>
     <meta name="layout" content="panels" />
-
-    <script type="text/javascript">
-        var selected;
-        
-        $(document).ready(function() {
-            $('.table-box li').bind('click', function() {
-                if (selected) selected.attr("class", "");
-                selected = $(this);
-                selected.attr("class", "active");
-            })
-        });
-    </script>
 </head>
 <body>
 

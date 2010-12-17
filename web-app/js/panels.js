@@ -27,6 +27,20 @@ var second = {
     }
 };
 
+var third = {
+    index: function() {
+        return 3;
+    },
+    visible: function() {
+        var position = $('.columns-holder [index=' + this.index() + ']').position().left;
+        return position > 0 && position < $('.columns-holder').width();
+    },
+    animate: function() {
+        reset();
+        next.animate();
+    }
+};
+
 var next = {
     index: function() {
         return clicked + 1;
@@ -116,18 +130,64 @@ function reset() {
     width = null;
 }
 
-$(window).resize(function() {
-    if (width != null) {
-        var columns = $('.columns-holder .column');
-        var delta = columns.first().width() - width;
+/**
+ * Returns the first selected element ID residing in the same column as the given element.
+ *
+ * E.g., getSelectedElementId(this);  #=>  "user-123"
+ *
+ * @param element in the same column as the selected row
+ */
+function getSelectedElementId(element) {
+    var column = $(element).parents('.column-hold')[0];
+    return $(column).find('.table-box li.active').attr('id');
+}
 
-        columns.css('left', function(index, val){
-            return parseInt(val) - delta + 'px';
-        });
-        
-        width = columns.first().width();
-    }
+/**
+ * Returns the object ID of the first selected element residing in the same column as the
+ * given element.
+ *
+ * This method assumes that the list row contains the object's id as part of the element
+ * ID. All non-digit characters are stripped and the remaining digits are returned as the
+ * object id.
+ *
+ * E.g.,
+ *      <li id="user-123" class="active"></li>
+ *      <li id="user-456"></li>
+ *
+ *      getSelectedId(this);   #=>   "123"
+ *
+ * @param element in the same column as the selected row
+ */
+function getSelectedId(element) {
+    var elementId = getSelectedElementId(element);
+    return elementId ? elementId.replace(/\D+/, "") : undefined;
+}
+
+$(document).ready(function() {
+    /*
+        Highlight clicked rows in table lists and store the selected row id.
+     */
+    $('body').delegate('.table-box li', 'click', function() {
+        var column = $(this).parents('.column-hold')[0];
+
+        $(column).find('.table-box li.active').attr('class', '');
+        $(this).attr('class', 'active');
+    });
+
+    /*
+        Adjust panel width when window is re-sized.
+     */
+    $(window).resize(function() {
+        if (width != null) {
+            var columns = $('.columns-holder .column');
+            var delta = columns.first().width() - width;
+
+            columns.css('left', function(index, val){
+                return parseInt(val) - delta + 'px';
+            });
+
+            width = columns.first().width();
+        }
+    });
 });
-
-
 

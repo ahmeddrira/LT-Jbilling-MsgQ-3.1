@@ -92,6 +92,10 @@ class Filter {
         return null
     }
 
+    public String getName() {
+        return "${type}-${constraintType}_${field.replaceAll('\\.','_').capitalize()}"
+    }
+
     def void clear() {
         stringValue = null
         integerValue = null
@@ -99,11 +103,32 @@ class Filter {
         endDateValue = null
     }
 
-    public String getName() {
-        return "${type}-${constraintType}_${field.replaceAll('\\.','_').capitalize()}"
+    @Override
+    def boolean equals(o) {
+        if (this.is(o)) return true;
+        if (getClass() != o.class) return false;
+
+        Filter filter = (Filter) o;
+
+        if (constraintType != filter.constraintType) return false;
+        if (field != filter.field) return false;
+        if (template != filter.template) return false;
+        if (type != filter.type) return false;
+        return true;
     }
 
-    public String toString ( ) {
+    @Override
+    def int hashCode() {
+        int result;
+        result = type.hashCode();
+        result = 31 * result + constraintType.hashCode();
+        result = 31 * result + field.hashCode();
+        result = 31 * result + template.hashCode();
+        return result;
+    }
+
+    @Override
+    def String toString ( ) {
         return "Filter{id=${id}, type=${type}, constrainttype=${constraintType}, field=${field}}"
     }
 }

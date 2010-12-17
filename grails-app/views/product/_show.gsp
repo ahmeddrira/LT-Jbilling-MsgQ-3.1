@@ -1,54 +1,57 @@
 <%@ page import="com.sapienter.jbilling.server.util.Util"%>
-<script>
-function editProduct() {
-	window.location = ('/jbilling/product/addEditProduct/'+ ${item.id});
-}
-</script>
+
+<%--
+  Product details template. This template shows a product and all the relevant product details.
+
+  @author Brian Cowdery
+  @since  16-Dec-2010
+--%>
+
+
 <div class="column-hold">
-
-	<div class="heading">
-	    <strong>${item.getDescription(languageId)}</strong>
+    <!-- product info -->
+    <div class="heading">
+        <g:link action="edit" id="${selectedProduct.id}" breadcrumb="id" class="edit"/>
+	    <strong>${selectedProduct.internalNumber}</strong>
 	</div>
-
 	<div class="box">
-
 		<dl class="other">
-			<dt><g:message code="product.id" />:</dt>
-			<dd>${item.id}</dd>
-			
-			<dt><g:message code="product.internal.number" />:</dt>
-			<dd>${item.internalNumber}&nbsp;</dd>
-			
-			<dt><g:message code="prompt.product.language" />:</dt>
-			<dd>${language}&nbsp;</dd>
-	
-			<dt><g:message code="prompt.product.promo.code" />:</dt>
-			<dd>${item.promoCode}&nbsp;</dd>
-	
-			<dt><g:message code="prompt.product.percentage" />:</dt>
-			<dd>${item.percentage}&nbsp;</dd>
-<%-- --%>
-			<g:each in="${item.itemPrices}">
-				<dt>${it?.currencyDTO?.code}:&nbsp;</dt>
-				<dd>
-${Util.formatMoney(new BigDecimal(it?.price), session["user_id"],it?.currencyDTO?.id, false)}&nbsp;
-				</dd>
+			<dt><g:message code="product.detail.id"/></dt>
+			<dd>${selectedProduct.id}</dd>
+			<dt><g:message code="product.detail.internal.number"/></dt>
+			<dd>${selectedProduct.internalNumber} &nbsp;</dd>
+			<dt><g:message code="product.detail.percentage"/></dt>
+			<dd>${selectedProduct.percentage ?: '-'} &nbsp;</dd>
+
+			<g:each var="price" in="${selectedProduct.itemPrices}">
+				<dt>${price.currencyDTO.code}:&nbsp;</dt>
+                <dd><g:formatNumber number="${price.price}" type="currency" currencyCode="${price.currencyDTO.code}"/> &nbsp;</dd>
 			</g:each>
 
-			<dt><em><g:message code="prompt.product.manual.pricing"/>:&nbsp;</em></dt>
-			<dd><em>${item.priceManual?"Yes":"No"}&nbsp;</em></dd>
+            <br/>
 
-			<dt><em><g:message code="prompt.product.decimal"/>:&nbsp;</em></dt>
-			<dd><em>${item.hasDecimals?"Yes":"No"}&nbsp;</em></dd>
+			<dt class="long"><em><g:message code="product.detail.manual.pricing"/>:&nbsp;</em></dt>
+			<dd><em><g:formatBoolean boolean="${selectedProduct.priceManual > 0}"/> &nbsp;</em></dd>
+			<dt class="long"><em><g:message code="product.detail.decimal"/>:&nbsp;</em></dt>
+			<dd><em><g:formatBoolean boolean="${selectedProduct.hasDecimals > 0}"/> &nbsp;</em></dd>
 
-			<dt><g:message code="prompt.product.categories" />:</dt>
-			<dd><g:each in="${item.itemTypes}">${it.description}&nbsp;</g:each></dd>
+            <p><br/>${selectedProduct.description}</p>
 		</dl>
 	</div>
 
-    <div class="btn-box">
-        <a href="javascript: void(0)" onclick="editProduct();" class="submit edit">
-    		<span><g:message code="button.edit"/></span></a>    	
+    <!-- product categories cloud -->
+    <div class="heading">
+        <strong><g:message code="product.detail.categories.title"/></strong>
     </div>
-	
+    <div class="box">
+        <ul class="cloud">
+            <g:each var="category" in="${selectedProduct.itemTypes}">
+                <li>
+                    <g:link breadcrumb="id" action="list" id="${category.id}">${category.description}</g:link>
+                </li>
+            </g:each>
+        </ul>
+    </div>
+
+    <div class="btn-box"></div>
 </div>

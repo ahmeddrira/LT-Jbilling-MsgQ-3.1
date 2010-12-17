@@ -75,6 +75,30 @@ class FilterService {
     }
 
     /**
+     * Adds a filter to the session list for the given type. If the filter already exists
+     * the current filter will be replaced.
+     *
+     * Note that this is not persisted across sessions unless the user saves the filter set.
+     *
+     * @param type
+     * @param filter
+     */
+    def void setFilter(FilterType type, Filter filter) {
+        def filters = getFilters(type, null)
+
+        if (filters) {
+            def index = filters.indexOf(filter)
+            if (index >= 0) {
+                filters.putAt(index, filter)
+            } else {
+                filters.add(filter)
+            }
+
+            session[getSessionKey(type)] = filters
+        }
+    }
+
+    /**
      * Returns the current filters based on the last set used. For example, if you had previously
      * fetched customer filters, this method would return the customer filters.
      *
@@ -109,7 +133,7 @@ class FilterService {
         def filters = getCurrentFilters()
         filters?.each{
             if (it.name == name)
-                it.visible = true 
+                it.visible = true
         }
 
         def type = (FilterType) session[SESSION_CURRENT_FILTER_TYPE]

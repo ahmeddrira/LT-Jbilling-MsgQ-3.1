@@ -28,19 +28,24 @@ package jbilling
  */
 enum RecentItemType {
 
-    INVOICE     ("invoice", "icon09.gif", "recent.item.invoice.title"),
-    ORDER       ("order", "icon10.gif", "recent.item.order.title"),
-    PAYMENT     ("payment", "icon11.gif", "recent.item.payment.title"),
-    CUSTOMER    ("user", "icon12.gif", "recent.item.customer.title"),
-    PLUGIN      ("plugin", "icon13.gif", "recent.item.plugin.title");
+    INVOICE     ("invoice", "list", null, "icon09.gif", "recent.item.invoice.title"),
+    ORDER       ("order", "list", null, "icon10.gif", "recent.item.order.title"),
+    PAYMENT     ("payment", "list", null, "icon11.gif", "recent.item.payment.title"),
+    CUSTOMER    ("user", "list", null, "icon12.gif", "recent.item.customer.title"),
+    PRODUCT     ("product", "show", null, "icon13.gif", "recent.item.product.title"),
+    PLUGIN      ("plugin", "list", null, "icon13.gif", "recent.item.plugin.title");
 
     String controller
+    String action
+    Map params
     String icon
     String messageCode
 
-    def RecentItemType(controller, icon, messageCode) {
-        this.controller = controller;
-        this.icon = icon;
-        this.messageCode = messageCode;
+    def RecentItemType(controller, action, params, icon, messageCode) {
+        this.controller = controller
+        this.action = action
+        this.params = params
+        this.icon = icon
+        this.messageCode = messageCode
     }
 }

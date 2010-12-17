@@ -1,6 +1,6 @@
 
 <%--
-  _recentitems
+  Recent items side panel.
 
   @author Brian Cowdery
   @since  09-12-2010
@@ -12,19 +12,12 @@
     </div>
     <ul class="list">
         <g:each var="item" in="${session['recent_items']?.reverse()}">
+            <g:set var="type" value="${item.type}"/>
             <li>
-                <g:if test="${item.type.controller == controllerName}">
-                    <g:remoteLink controller="${item.type.controller}" action="select" id="${item.objectId}" onSuccess="render(data, second);">
-                        <img src="${resource(dir:'images', file:item.type.icon)}" alt="${item.type.messageCode}"/>
-                        <g:message code="${item.type.messageCode}"/> ${item.objectId}
-                    </g:remoteLink>
-                </g:if>
-                <g:else>
-                    <g:link controller="${item.type.controller}" action="list" id="${item.objectId}">
-                        <img src="${resource(dir:'images', file:item.type.icon)}" alt="${item.type.messageCode}"/>
-                        <g:message code="${item.type.messageCode}"/> ${item.objectId}
-                    </g:link>
-                </g:else>
+                <g:link controller="${type.controller}" action="${type.action}" id="${item.objectId}" params="${type.params}">
+                    <img src="${resource(dir:'images', file:type.icon)}" alt="${type.messageCode}"/>
+                    <g:message code="${type.messageCode}" args="[item.objectId]"/>
+                </g:link>
             </li>
         </g:each>
     </ul>

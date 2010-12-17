@@ -49,7 +49,10 @@ class BreadcrumbService implements InitializingBean {
      * @return list of recently viewed items.
      */
     def Object getBreadcrumbs() {
-        return Breadcrumb.findAllByUserId(session['user_id'])
+        return Breadcrumb.withCriteria {
+            eq("userId", session["user_id"])
+            order("id", "asc")
+        }
     }
 
     /**

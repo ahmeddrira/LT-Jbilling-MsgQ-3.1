@@ -97,8 +97,10 @@ class ProductController {
      * for an AJAX request the template defined by the "template" parameter will be rendered.
      */
     def show = {
-        ItemDTO product = new ItemBL(params.int("id")).getEntity();
+        ItemDTO product = ItemDTO.get(params.int("id"))
         def categoryId = product?.itemTypes?.asList()?.get(0)?.id
+
+        recentItemService.addRecentItem(product?.id, RecentItemType.PRODUCT)
 
         if (params.template) {
             // render requested template, usually "_show.gsp"
@@ -107,7 +109,7 @@ class ProductController {
         } else {
             // render default "list" view - needed for displaying breadcrumb link to a specific item
             def categories = getCategories();
-            def products = getItemsByTypeId(params.category);
+            def products = getItemsByTypeId(categoryId);
             render view: "list", model: [ categories: categories, products: products, selectedProduct: product, selectedCategoryId: categoryId ]
         }
     }

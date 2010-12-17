@@ -23,8 +23,12 @@
 
 <content tag="column3">
     <g:if test="${selectedProduct}">
-        <!-- todo: javascript magic to show the 3rd panel -->
         <g:render template="show" model="['selectedProduct': selectedProduct]"/>
+
+        <!-- display third panel -->
+        <script type="text/javascript">
+            $(function() { third.animate(); });
+        </script>
     </g:if>
 </content>
 

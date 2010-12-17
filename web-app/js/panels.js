@@ -27,6 +27,20 @@ var second = {
     }
 };
 
+var third = {
+    index: function() {
+        return 3;
+    },
+    visible: function() {
+        var position = $('.columns-holder [index=' + this.index() + ']').position().left;
+        return position > 0 && position < $('.columns-holder').width();
+    },
+    animate: function() {
+        reset();
+        next.animate();
+    }
+};
+
 var next = {
     index: function() {
         return clicked + 1;

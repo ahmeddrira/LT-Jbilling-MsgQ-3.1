@@ -21,6 +21,8 @@ import grails.plugins.springsecurity.Secured;
 @Secured(['isAuthenticated()'])
 class ProductController {
 
+    static pagination = [ max: 25, offset: 0 ]
+
     def webServicesSession
     Integer languageId= session["language_id"]
     int typeId
@@ -39,15 +41,21 @@ class ProductController {
      */
     def list = {
         def categories = getCategories()
-        def products = params.id ? getItemsByTypeId(params.int("id")) : null
+        def products = params.id ? getItemsByTypeId(params.int('id')) : null
         def categoryId = products?.get(0)?.itemTypes?.asList()?.get(0)?.id
 
         [ categories: categories, products: products, selectedCategoryId: categoryId ]
     }
 
     def getCategories() {
-        return ItemTypeDTO.withCriteria {
-            eq("entity", new CompanyDTO(session["company_id"]))
+        params.max = params?.max?.toInteger() ?: pagination.max
+        params.offset = params?.offset?.toInteger() ?: pagination.offset
+
+        return ItemTypeDTO.createCriteria().list(
+                max:    params.max,
+                offset: params.offset
+        ) {
+            eq('entity', new CompanyDTO(session['company_id']))
         }
     }
 
@@ -56,37 +64,52 @@ class ProductController {
      */
     def products = {
         if (params.id) {
-            def products = getItemsByTypeId(params.int("id"))
+            def products = getItemsByTypeId(params.int('id'))
 
             if (products) {
-                render template: "products", model: [ products: products, selectedCategoryId: params.id ]
+                render template: 'products', model: [ products: products, selectedCategoryId: params.id ]
             } else {
-                flash.info = "product.category.no.products.warning"
+                flash.info = 'product.category.no.products.warning'
                 flash.args = [params.id]
-                render template: "/ayouts/includes/messages"
+                render template: '/layouts/includes/messages'
             }
         }
     }
 
+    /**
+     * Get a list of ALL products regardless of the item type selected, and render the "_products.gsp" template.
+     */
     def allProducts = {
-        def products = ItemDTO.withCriteria {
+        params.max = params?.max?.toInteger() ?: pagination.max
+        params.offset = params?.offset?.toInteger() ?: pagination.offset
+
+        def products = ItemDTO.createCriteria().list(
+                max:    params.max,
+                offset: params.offset
+        ) {
             and {
-                eq("deleted", 0)
-                eq("entity", new CompanyDTO(session["company_id"]))
+                eq('deleted', 0)
+                eq('entity', new CompanyDTO(session['company_id']))
             }
         }
 
-        render template: "products", model: [ products: products ]
+        render template: 'products', model: [ products: products ]
     }
 
     def getItemsByTypeId(Integer id) {
-        return ItemDTO.withCriteria {
+        params.max = params?.max?.toInteger() ?: pagination.max
+        params.offset = params?.offset?.toInteger() ?: pagination.offset
+
+        return ItemDTO.createCriteria().list(
+                max:    params.max,
+                offset: params.offset
+        ) {
             and {
                 itemTypes {
-                    eq("id", id)
+                    eq('id', id)
                 }
-                eq("deleted", 0)
-                eq("entity", new CompanyDTO(session["company_id"]))
+                eq('deleted', 0)
+                eq('entity', new CompanyDTO(session['company_id']))
             }
         }
     }
@@ -97,7 +120,7 @@ class ProductController {
      * for an AJAX request the template defined by the "template" parameter will be rendered.
      */
     def show = {
-        ItemDTO product = ItemDTO.get(params.int("id"))
+        ItemDTO product = ItemDTO.get(params.int('id'))
         def categoryId = product?.itemTypes?.asList()?.get(0)?.id
 
         recentItemService.addRecentItem(product?.id, RecentItemType.PRODUCT)
@@ -110,19 +133,9 @@ class ProductController {
             // render default "list" view - needed for displaying breadcrumb link to a specific item
             def categories = getCategories();
             def products = getItemsByTypeId(categoryId);
-            render view: "list", model: [ categories: categories, products: products, selectedProduct: product, selectedCategoryId: categoryId ]
+            render view: 'list', model: [ categories: categories, products: products, selectedProduct: product, selectedCategoryId: categoryId ]
         }
     }
-
-
-
-
-
-
-
-
-
-
 
 
 

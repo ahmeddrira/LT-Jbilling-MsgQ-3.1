@@ -87,7 +87,9 @@
 </div>
 
 <div class="pager-box">
-    <g:paginate controller="user" action="list" total="${users.totalCount}"/> 
+    %{-- remote pager does not support "onSuccess" for panel rendering, take a guess at the update column --}%
+    <g:set var="updateColumn" value="${actionName == 'subaccounts' ? 'column2' : 'column1'}"/>
+    <util:remotePaginate controller="user" action="list" params="[applyFilter: true]" total="${users.totalCount}" update="${updateColumn}"/>
 </div>
 
 <div class="btn-box">

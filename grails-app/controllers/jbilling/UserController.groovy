@@ -16,6 +16,8 @@ import grails.plugins.springsecurity.Secured
 @Secured(['isAuthenticated()'])
 class UserController {
 
+    static pagination = [ max: 25, offset: 0 ]
+
     IWebServicesSessionBean webServicesSession
     ViewUtils viewUtils
     def languageId = "1"
@@ -34,8 +36,8 @@ class UserController {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()
 
-        params.max = params?.max?.toInteger() ?: 25
-        params.offset = params?.offset?.toInteger() ?: 0
+        params.max = params?.max?.toInteger() ?: pagination.max
+        params.offset = params?.offset?.toInteger() ?: pagination.offset
 
         def users = UserDTO.createCriteria().list(
                 max:    params.max,

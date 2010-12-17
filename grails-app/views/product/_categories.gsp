@@ -30,6 +30,10 @@
     </ul>
 </div>
 
+<div class="pager-box">
+    <util:remotePaginate controller="product" action="categories" total="${categories.totalCount}" update="column1"/>
+</div>
+
 <div class="btn-box">
     <g:link action="createCategory" class="submit add"><span><g:message code="button.create"/></span></g:link>
     <g:link action="editCategory" class="submit edit"><span><g:message code="button.edit"/></span></g:link>

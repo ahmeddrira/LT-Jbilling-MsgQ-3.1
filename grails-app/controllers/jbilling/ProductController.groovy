@@ -40,11 +40,16 @@ class ProductController {
      * "id" parameter, the corresponding list of products will also be rendered.
      */
     def list = {
+        def filters = filterService.getFilters(FilterType.PRODUCT, params)
         def categories = getCategories()
-        def products = params.id ? getItemsByTypeId(params.int('id')) : null
-        def categoryId = products?.get(0)?.itemTypes?.asList()?.get(0)?.id
+        def products = params.id ? getItemsByTypeId(params.int('id'), filters) : null
+        def categoryId = !products?.isEmpty() ? products.get(0).itemTypes?.asList()?.get(0)?.id : null
 
-        [ categories: categories, products: products, selectedCategoryId: categoryId ]
+        if (params.applyFilter) {
+            render template: 'products', model: [ products: products, selectedCategoryId: categoryId ]
+        } else {
+            [ categories: categories, products: products, selectedCategoryId: categoryId, filters: filters, filterRender: 'second', filterAction: 'allProducts' ]
+        }
     }
 
     def getCategories() {
@@ -64,7 +69,8 @@ class ProductController {
      */
     def products = {
         if (params.id) {
-            def products = getItemsByTypeId(params.int('id'))
+            def filters = filterService.getFilters(FilterType.PRODUCT, params)
+            def products = getItemsByTypeId(params.int('id'), filters)
 
             if (products) {
                 render template: 'products', model: [ products: products, selectedCategoryId: params.id ]
@@ -80,6 +86,8 @@ class ProductController {
      * Get a list of ALL products regardless of the item type selected, and render the "_products.gsp" template.
      */
     def allProducts = {
+        def filters = filterService.getFilters(FilterType.PRODUCT, params)
+
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset
 
@@ -88,6 +96,19 @@ class ProductController {
                 offset: params.offset
         ) {
             and {
+                filters.each { filter ->
+                    if (filter.value) {
+                        switch (filter.constraintType) {
+                            case FilterConstraint.EQ:
+                                eq(filter.field, filter.value)
+                                break
+
+                            case FilterConstraint.LIKE:
+                                like(filter.field, filter.stringValue)
+                                break
+                        }
+                    }
+                }
                 eq('deleted', 0)
                 eq('entity', new CompanyDTO(session['company_id']))
             }
@@ -96,7 +117,7 @@ class ProductController {
         render template: 'products', model: [ products: products ]
     }
 
-    def getItemsByTypeId(Integer id) {
+    def getItemsByTypeId(Integer id, filters) {
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset
 
@@ -105,6 +126,19 @@ class ProductController {
                 offset: params.offset
         ) {
             and {
+                filters.each { filter ->
+                    if (filter.value) {
+                        switch (filter.constraintType) {
+                            case FilterConstraint.EQ:
+                                eq(filter.field, filter.value)
+                                break
+
+                            case FilterConstraint.LIKE:
+                                like(filter.field, filter.stringValue)
+                                break
+                        }
+                    }
+                }
                 itemTypes {
                     eq('id', id)
                 }
@@ -130,10 +164,11 @@ class ProductController {
             render template: params.template, model: [ selectedProduct: product ]
 
         } else {
-            // render default "list" view - needed for displaying breadcrumb link to a specific item
+            // render default "list" view - needed so a breadcrumb can link to a product by id
+            def filters = filterService.getFilters(FilterType.PRODUCT, params)
             def categories = getCategories();
-            def products = getItemsByTypeId(categoryId);
-            render view: 'list', model: [ categories: categories, products: products, selectedProduct: product, selectedCategoryId: categoryId ]
+            def products = getItemsByTypeId(categoryId, filters);
+            render view: 'list', model: [ categories: categories, products: products, selectedProduct: product, selectedCategoryId: categoryId, filters: filters ]
         }
     }
 

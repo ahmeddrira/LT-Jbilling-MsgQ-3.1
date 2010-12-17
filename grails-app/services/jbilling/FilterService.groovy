@@ -56,7 +56,7 @@ class FilterService {
             Fetch filters for the given filter type. If the filters are already
             in the session, use the existing filters instead of fetching new ones.
          */
-        def filters = session[key] ?: FilterFactory.getFilters(FilterType.CUSTOMER)
+        def filters = session[key] ?: FilterFactory.getFilters(type)
 
         // update filters with values from request parameters
         if (params?.boolean("applyFilter")) {

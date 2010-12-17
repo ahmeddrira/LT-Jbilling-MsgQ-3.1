@@ -47,11 +47,15 @@
 
         <div id="left-column">
             <!-- filters -->
-            <g:formRemote id="filters-form" name="filters-form" url="[action: list]" onSuccess="render(data, first);">
-                <g:hiddenField name="applyFilter" value="true"/>
-                <g:render template="/layouts/includes/filters"/>
-            </g:formRemote>
-            <g:render template="/layouts/includes/filterSaveDialog"/>
+            <g:if test="${filters}">
+                <g:set var="target" value="${filterRender ?: 'next'}"/>
+                <g:set var="action" value="${filterAction ?: 'list'}"/>
+                <g:formRemote id="filters-form" name="filters-form" url="[action: action]" onSuccess="render(data, ${target});">
+                    <g:hiddenField name="applyFilter" value="true"/>
+                    <g:render template="/layouts/includes/filters"/>
+                </g:formRemote>
+                <g:render template="/layouts/includes/filterSaveDialog"/>
+            </g:if>
 
             <!-- shortcuts -->
             <g:render template="/layouts/includes/shortcuts"/>

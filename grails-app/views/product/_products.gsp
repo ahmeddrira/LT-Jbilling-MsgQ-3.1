@@ -27,10 +27,12 @@
     </ul>
 </div>
 
-<div class="pager-box">
-    <g:set var="paginateAction" value="${actionName == 'products' ? 'products' : 'allProducts'}"/>
-    <util:remotePaginate controller="product" action="${paginateAction}" id="${selectedCategoryId}" total="${products.totalCount}" update="column2"/>
-</div>
+<g:if test="${products.totalCount > params.max}">
+    <div class="pager-box">
+        <g:set var="paginateAction" value="${actionName == 'products' ? 'products' : 'allProducts'}"/>
+        <util:remotePaginate controller="product" action="${paginateAction}" id="${selectedCategoryId}" total="${products.totalCount}" update="column2"/>
+    </div>
+</g:if>
 
 <div class="btn-box">
     <g:if test="${selectedCategoryId}">

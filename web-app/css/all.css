@@ -421,13 +421,17 @@ table {
 	line-height:26px;
 	width:47px;
 }
+.accordion li .slide label.lb {
+	width:auto;
+	line-height:20px;
+}
 .accordion li .slide .input-row .select-bg {
 	width:90px;
 	height:16px;
     float: right;
     border: none;
     background: none;
-    padding:5px 0 3px 5px;
+    padding: 3px 0 3px 5px;
 }
 .holder .input-bg a ,
 .accordion li .slide .input-bg a {

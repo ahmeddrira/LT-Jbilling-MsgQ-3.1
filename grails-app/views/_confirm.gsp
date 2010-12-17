@@ -1,9 +1,9 @@
 
 <div id="confirm-dialog" class="bg-lightbox" title=<g:message code="popup.confirm.title"/>>
-    <table>
+    <table style="margin: 3px 0px 0px 10px">
         <tbody><tr>
             <td><img src="/jbilling/images/icon34.gif" alt=""></td>
-            <td class="col2"><g:message code="${confirmMessage}"/></td>
+            <td class="col2" style="padding-left:7px"><g:message code="${confirmMessage}"/></td>
         </tr></tbody>
     </table>
 </div>
@@ -11,8 +11,8 @@
 <script type="text/javascript">
     $('#confirm-dialog').dialog({
         autoOpen: false,
-        height: 200,
-        width: 400,
+        height: 137,
+        width: 375,
         modal: true,
         buttons: {
     	<g:message code="prompt.yes"/>: function() {

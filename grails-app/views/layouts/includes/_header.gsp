@@ -82,7 +82,7 @@
                 <g:link controller="product" breadcrumb="controller"><span><g:message code="menu.link.products"/></span><em></em></g:link>
             </li>
             <li <g:if test="${controllerName == 'configuration'}">class="active"</g:if>>
-                <g:link controller="configuration" breadcrumb="controller"><span><g:message code="menu.link.configuration"/></span><em></em></g:link>
+                <g:link controller="plugin" breadcrumb="controller"><span><g:message code="menu.link.configuration"/></span><em></em></g:link>
             </li>
         </ul>
     </div>

@@ -43,7 +43,7 @@ class ProductController {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
         def categories = getCategories()
         def products = params.id ? getItemsByTypeId(params.int('id'), filters) : null
-        def categoryId = !products?.isEmpty() ? products.get(0).itemTypes?.asList()?.get(0)?.id : null
+        def categoryId = products?.get(0)?.itemTypes?.asList()?.get(0)?.id
 
         if (params.applyFilter) {
             render template: 'products', model: [ products: products, selectedCategoryId: categoryId ]
@@ -78,6 +78,37 @@ class ProductController {
                 flash.info = 'product.category.no.products.warning'
                 flash.args = [params.id]
                 render template: '/layouts/includes/messages'
+            }
+        }
+    }
+
+    def getItemsByTypeId(Integer id, filters) {
+        params.max = params?.max?.toInteger() ?: pagination.max
+        params.offset = params?.offset?.toInteger() ?: pagination.offset
+
+        return ItemDTO.createCriteria().list(
+                max:    params.max,
+                offset: params.offset
+        ) {
+            and {
+                filters.each { filter ->
+                    if (filter.value) {
+                        switch (filter.constraintType) {
+                            case FilterConstraint.EQ:
+                                eq(filter.field, filter.value)
+                                break
+
+                            case FilterConstraint.LIKE:
+                                like(filter.field, filter.stringValue)
+                                break
+                        }
+                    }
+                }
+                itemTypes {
+                    eq('id', id)
+                }
+                eq('deleted', 0)
+                eq('entity', new CompanyDTO(session['company_id']))
             }
         }
     }
@@ -117,37 +148,6 @@ class ProductController {
         render template: 'products', model: [ products: products ]
     }
 
-    def getItemsByTypeId(Integer id, filters) {
-        params.max = params?.max?.toInteger() ?: pagination.max
-        params.offset = params?.offset?.toInteger() ?: pagination.offset
-
-        return ItemDTO.createCriteria().list(
-                max:    params.max,
-                offset: params.offset
-        ) {
-            and {
-                filters.each { filter ->
-                    if (filter.value) {
-                        switch (filter.constraintType) {
-                            case FilterConstraint.EQ:
-                                eq(filter.field, filter.value)
-                                break
-
-                            case FilterConstraint.LIKE:
-                                like(filter.field, filter.stringValue)
-                                break
-                        }
-                    }
-                }
-                itemTypes {
-                    eq('id', id)
-                }
-                eq('deleted', 0)
-                eq('entity', new CompanyDTO(session['company_id']))
-            }
-        }
-    }
-
     /**
      * Show details of the selected product. By default, this action renders the entire list view
      * with the product category list, product list, and product details rendered. When rendering
@@ -172,8 +172,33 @@ class ProductController {
         }
     }
 
+    def deleteCategory = {
+        if (params.id) {
+            webServicesSession.deleteItemCategory(params.int('id'))
 
+            log.debug("Deleted item category ${params.id}.");
 
+            flash.message= 'item.category.deleted'
+            flash.args = [ params.id ]
+        }
+
+        def categories = getCategories()
+        render template: 'categories', model: [ categories: categories ]
+    }
+
+    def deleteProduct = {
+        if (params.id) {
+            webServicesSession.deleteItem(params.int('id'))
+
+            log.debug("Deleted item ${params.id}.");
+
+            flash.message = 'item.delete.success'
+            flash.args = [ params.id ]
+        }
+
+        // return the products list, pass the category so the correct set of products is returned.
+        chain(action: 'products', params: [ id: params.category ])
+    }
 
 
     def addEditCategory = {
@@ -213,27 +238,6 @@ class ProductController {
         }
         //TODO move this to product controller
         redirect (action: 'index')
-    }
-
-    def deleteCategory = {
-        Integer itemId= params.id?.toInteger()
-        log.info "Deleting item type=" + itemId
-
-        try {
-            ItemTypeDTO dto= ItemTypeDTO.findById(itemId)
-            Set items= dto.getItems()
-            log.info "Size of items=" + items?.size()
-            if (items) {
-                throw new SessionInternalError("This category has products. Remove those before deleting the category.")
-            }
-            webServicesSession.deleteItemCategory(itemId);
-            flash.message = "item.category.deleted"
-        } catch (SessionInternalError e) {
-            log.error "Error delete Item Category " + itemId
-            flash.error = "item.category.delete.failed"
-        }
-        flash.args= [itemId]
-        redirect (action: index)
     }
 
     def addEditProduct ={
@@ -348,28 +352,7 @@ class ProductController {
         redirect (action: "index")
     }
 
-    def deleteProduct = {
-        def itemId= params.id?.toInteger()
-        log.info "Deleting item=" + itemId
-        try {
-            List lines= OrderLineDTO.findAllByItem(new ItemDAS().find(itemId))
-            log.info "Lines returned=" + lines?.size()
-            if (lines){
-                log.info "Orders exists for item " + itemId
-                throw new SessionInternalError(lines.size() + "Orders exists for Item.");
-            } else {
-                log.info "Orders DO NOT exists for item " + itemId
-                webServicesSession.deleteItem(itemId)
-                flash.message = 'item.delete.success'
-            }
-            //[id:typeId]
-        } catch (SessionInternalError e) {
-            log.error "Error delete Item " + itemId
-            flash.error = message(code: 'item.delete.failed')
-        }
-        flash.args= [itemId]
-        redirect (action: "index")
-    }
+
 
     def cancelEditProduct = {
 

@@ -72,13 +72,12 @@ class ProductController {
             def filters = filterService.getFilters(FilterType.PRODUCT, params)
             def products = getItemsByTypeId(params.int('id'), filters)
 
-            if (products) {
-                render template: 'products', model: [ products: products, selectedCategoryId: params.id ]
-            } else {
+            if (!products) {
                 flash.info = 'product.category.no.products.warning'
                 flash.args = [params.id]
-                render template: '/layouts/includes/messages'
             }
+
+            render template: 'products', model: [ products: products, selectedCategoryId: params.id ]
         }
     }
 
@@ -155,20 +154,18 @@ class ProductController {
      */
     def show = {
         ItemDTO product = ItemDTO.get(params.int('id'))
-        def categoryId = product?.itemTypes?.asList()?.get(0)?.id
-
         recentItemService.addRecentItem(product?.id, RecentItemType.PRODUCT)
 
         if (params.template) {
             // render requested template, usually "_show.gsp"
-            render template: params.template, model: [ selectedProduct: product ]
+            render template: params.template, model: [ selectedProduct: product, selectedCategoryId: params.category ]
 
         } else {
             // render default "list" view - needed so a breadcrumb can link to a product by id
             def filters = filterService.getFilters(FilterType.PRODUCT, params)
             def categories = getCategories();
             def products = getItemsByTypeId(categoryId, filters);
-            render view: 'list', model: [ categories: categories, products: products, selectedProduct: product, selectedCategoryId: categoryId, filters: filters ]
+            render view: 'list', model: [ categories: categories, products: products, selectedProduct: product, selectedCategoryId: params.category, filters: filters ]
         }
     }
 
@@ -196,8 +193,14 @@ class ProductController {
             flash.args = [ params.id ]
         }
 
-        // return the products list, pass the category so the correct set of products is returned.
-        chain(action: 'products', params: [ id: params.category ])
+        if (params.category) {
+            // return the products list, pass the category so the correct set of products is returned.
+            chain(action: 'products', params: [ id: params.category ])
+        } else {
+            // no category means we deleted from the 'allProducts' view
+            chain(action: 'allProducts', params: params )
+        }
+
     }
 
 

@@ -24,8 +24,8 @@ class ProductController {
     static pagination = [ max: 25, offset: 0 ]
 
     def webServicesSession
-    Integer languageId= session["language_id"]
-    int typeId
+
+    def viewUtils
 
     def filterService
     def recentItemService
@@ -203,180 +203,82 @@ class ProductController {
 
     }
 
-
-    def addEditCategory = {
-        //redirect to add item category form
-        log.info "addEditCategory - if Edit id=${params.id}"
-        ItemTypeDTO dto= null
-        if (params.id) {
-            dto= ItemTypeDTO.findById(params.id)
-        }
-        render view: 'addEdit/category', model:[dto:dto, languageId:languageId]
+    def editCategory = {
+        def category = params.id ? ItemTypeDTO.get(params.id) : null
+        [ category : category ]
     }
 
     def saveCategory = {
-        log.info 'Save called..'
-        int loggedUserId= webServicesSession.getCallerId()
-        log.info "Logged User Id="+ loggedUserId
+        def category = new ItemTypeWS(params)
 
-        def dto = new ItemTypeWS()
-        bindData(dto, params)
-
-        log.info "dto.id=" + dto.getId() + " dto.description=" + dto.getDescription() + " dto.orderLineTypeId=" + dto.getOrderLineTypeId()
+        // save or update
         try {
-            if (dto.getId() == 0 || !(dto.getId()) ){
-                webServicesSession.createItemCategory(dto)
+            if (!category.id || category.id == 0) {
+                log.debug("creating product category ${category}")
+                webServicesSession.createItemCategory(category)
             } else {
-                webServicesSession.updateItemCategory(dto)
+                log.debug("saving changes to product category ${category.id}")
+                webServicesSession.updateItemCategory(category)
             }
+
             flash.message = 'item.category.saved'
+            flash.args = [ params.id ]
+
         } catch (SessionInternalError e) {
-            log.error "Error Updating/Creating Item Category " + dto.getId()
-            flash.errorMessages?.addAll(e.getErrorMessages())
-            //boolean retValue = viewUtils.resolveExceptionForValidation(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
+            viewUtils.resolveException(flash, session['locale'], e);
         }
-        if (!(flash.errorMessages?.size() > 0) )
-        {
-            flash.message = 'item.category.saved'
-        }
-        //TODO move this to product controller
-        redirect (action: 'index')
+
+        render view: 'editCategory', model: [ category : category ]
     }
 
-    def addEditProduct ={
-        log.info "Edit: params.Id=" + params.id
-        ItemDTO dto=null
-        Integer itemTypeId= params['itemTypeId']?.toInteger()
-        if (params.id) {
-            Integer itemId= params?.id?.toInteger()
-            log.info "Editing item=" + itemId
-            dto= ItemDTO.findById(itemId)
-            if ((!itemTypeId) && dto.getItemTypes()?.iterator()?.hasNext())
-            {
-                itemTypeId= ((ItemTypeDTO)dto?.getItemTypes().iterator()?.next()).getId();
-            }
-        }
-        boolean exists= (dto!=null)
-        UserBL userbl = new UserBL(webServicesSession.getCallerId());
-        Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())
-        CurrencyDTO[] currs= new CurrencyBL().getCurrencies(languageId, entityId)
-        log.info "LanguageId=${languageId} ,EntityId=${entityId} ,fOUND Currencies=${currs.length} ,itemTypeId=${itemTypeId}"
-        render view:"addEdit/product", model: [item:dto, exists:exists,languageId:languageId, currencies:currs,itemTypeId:itemTypeId]
+    def editProduct = {
+        def product = params.id ? ItemDTO.get(params.id) : null
+        def currencies = getCurrencies()
+
+        [ product: product, currencies: currencies, categoryId: params.category ]
     }
 
-    def edit = {
-        log.info "Edit: params.selectedId=" + params.selectedId
-        log.info "Edit: params.Id=" + params.id
-        Integer itemId= params?.id?.toInteger()
-        log.info "Editing item=" + itemId
-        ItemDTO dto= ItemDTO.findById(itemId)
-        boolean exists= (dto!=null)
-        UserBL userbl = new UserBL(webServicesSession.getCallerId());
-        Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())
-        CurrencyDTO[] currs= new CurrencyBL().getCurrencies(languageId, entityId)
-        log.info "LanguageId=" + languageId + " EntityId=" + entityId + " found Currencies=" + currs.length
-        render(template:"addEdit", model: [item:dto, exists:exists,languageId:languageId, currencies:currs])
-    }
+    def saveProduct = {
+        def product = new ItemDTOEx()
 
-    def changeLanguage = {
-        log.info "Id=" + params.id + " languageId=" + params.languageId
-        Integer _languageId = Integer.parseInt(params.languageId)
-        ItemDTO dto= null;
-        if (params.id)
-        {
-            dto= ItemDTO.findById(params.id?.toInteger())
+        // bind all parameters that start with "product." and parameters with odd types (boolean integers etc.)
+        bindData(product, params, "product")
+        product.priceManual = params.priceManual ? 1 : 0
+        product.hasDecimals = params.hasDecimals ? 1 : 0
+
+        // bind prices
+        def prices = params.prices.collect { currencyId, price ->
+            new ItemPriceDTOEx(null, !price?.equals('') ? price.toBigDecimal() : null, currencyId.toInteger())
         }
-        boolean exists= (dto!=null)
-        UserBL userbl = new UserBL(webServicesSession.getCallerId());
-        Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())
-        CurrencyDTO[] currs= new CurrencyBL().getCurrencies(_languageId, entityId)
-        log.info "LanguageId=" + _languageId + " EntityId=" + entityId + " found Currencies=" + currs.length
-        render(view:"addEdit/product", model: [item:dto, exists:exists,languageId:_languageId, currencies:currs])
-    }
+        product.prices = prices
 
-    def add = {
-        log.info "Add: " + params["id"]
-        UserBL userbl = new UserBL(webServicesSession.getCallerId());
-        Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())
-        CurrencyDTO[] currs= new CurrencyBL().getCurrencies(languageId, entityId)
-        log.info "LanguageId=" + languageId + " EntityId=" + entityId + " found Currencies=" + currs.length
-        render(template:"addEdit", model:[languageId:languageId, currencies:currs])
-    }
-
-    def updateOrCreate ={
-        ItemDTOEx dto= new ItemDTOEx();
-        log.info "Item Id=" + params.id
-        int pricesCnt= params.pricesCnt?.toInteger()
-        log.info "pricesCnt= ${pricesCnt}"
-        List<ItemPriceDTOEx> prices= new ArrayList<ItemPriceDTOEx>();
-        for (int iter=0 ; iter < pricesCnt ; iter++ )
-        {
-            prices.add(new ItemPriceDTOEx())
-        }
-        dto.setPrices(prices);
-        bindData(dto, params)
-
-        for (ItemPriceDTOEx price : dto.prices) {
-            if (!price.getPrice())
-            {
-                price.setPrice "0"
-                log.info "dto.prices.price=${price.getPrice()}"
-                log.info "dto.prices.currencyId=${price.getCurrencyId()}"
-            }
-        }
-
-        dto.setHasDecimals((params.hasDecimals? 1: 0))
-        dto.setPriceManual((params.priceManual? 1 : 0))
-        log.info "dto.hasDecimals=" + dto.getHasDecimals()
-        log.info "dto.priceManual=" + dto.getPriceManual()
-        Integer _languageId= params.languageId?.toInteger()
-
-        log.info "dto.id=" + dto.getId()
-        log.info "dto.number=" + dto.getNumber()
-        log.info "dto.description=" + dto.getDescription()
-        log.info "dto.types=" + dto.getTypes()
-        log.info "dto.percentage=" + dto.getPercentage()
-        log.info "dto.prices=" + dto?.prices?.size()
-
+        // save or update
         try{
-            if (null != dto.getId() && 0 != dto.getId()) {
-                webServicesSession.updateItem(dto)
-                flash.message = "item.update.success"
+            if (!product.id || product.id == 0) {
+                System.out.println("Saving!")
+                log.debug("creating product ${product}")
+                product.id = webServicesSession.createItem(product)
             } else {
-                webServicesSession.createItem(dto)
-                flash.message = "item.create.success"
+                System.out.println("Updating!")
+                log.debug("saving changes to product ${product.id}")
+                webServicesSession.updateItem(product)
             }
+
+            flash.message = 'product.saved'
+            flash.args = [ product.id ]
+
         } catch (SessionInternalError e) {
-            log.error "Error Updating/Creating ${dto.getId()}\n" + e.printStackTrace()
-            flash.errorMessages?.addAll(e.getErrorMessages())
-            //boolean retValue = viewUtils.resolveExceptionForValidation(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
+            viewUtils.resolveException(flash, session.locale, e);
         }
-        flash.args= dto.getId()
-        redirect (action: "index")
+
+        // todo: web service ItemDTOEX and the ItemDTO object used in the view are not interchangeable!
+        //       refactor the view so that we can just pass the edited product as a model instead of needing to query from the DB again
+
+        chain action: 'editProduct', params: [ id: product.id ]
     }
 
-
-
-    def cancelEditProduct = {
-
-        log.info "Method: cancelEditProduct id=${params['id']} and itemTypeId=${params['itemTypeId']}"
-
-        def itemTypeId= Integer.parseInt(params["itemTypeId"])
-        ItemTypeDTO dto= ItemTypeDTO.findById(itemTypeId);
-        def items= dto.getItems()
-        log.info "Lets see the item size here.. " + items?.size()
-
-        def prodId= params["id"]?.toInteger()
-        if (null != prodId) {
-            ItemDTO item = new ItemBL(prodId).getEntity();
-            LanguageDTO lang= new LanguageDTO(languageId);
-            String language= lang.getDescription();
-            render view: 'cancelEditProduct', model: [list: items,languageId:languageId, itemTypeId:itemTypeId, item:item, language:language]
-            return
-        }
-
-        List<ItemTypeDTO> categories= ItemTypeDTO.findAllByEntity(new CompanyDTO(webServicesSession.getCallerCompanyId()))
-        render view: 'cancelAddProduct', model: [categories: categories, list: items,languageId:languageId, itemTypeId:itemTypeId]
+    def getCurrencies() {
+        return new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
     }
 
 }

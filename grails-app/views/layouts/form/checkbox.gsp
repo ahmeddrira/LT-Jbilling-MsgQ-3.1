@@ -5,10 +5,9 @@
 
     <g:applyLayout name="form/checkbox">
         <content tag="label">Checkbox Label</content>
-        <content tag="name">element_name</content>
+        <content tag="label.for">element_name</content>
         
-        <!-- optional -->
-        <content tag="checked">true</content>
+        <g:checkbox name="element_name" class="cb check" ... />
     </g:applyLayout>
 
 
@@ -18,9 +17,6 @@
 
 <div class="row">
     <label>&nbsp;</label>    
-    <input type="checkbox" class="cb check" onclick="selectSingleCheckbox(this)"
-           name="<g:pageProperty name="page.name"/>"
-           id="<g:pageProperty name="page.name"/>"
-           <g:if test="${pageProperty(name:'page.checked')}">checked</g:if>/>
-    <label for="<g:pageProperty name="page.name"/>" class="lb"><g:pageProperty name="page.label"/></label>
+    <g:layoutBody/>
+    <label for="<g:pageProperty name="page.label.for"/>" class="lb"><g:pageProperty name="page.label"/></label>
 </div>

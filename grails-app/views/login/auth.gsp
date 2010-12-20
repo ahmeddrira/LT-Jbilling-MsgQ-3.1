@@ -77,8 +77,8 @@
 
                             <g:applyLayout name="form/checkbox">
                                 <content tag="label"><g:message code="login.prompt.remember.me"/></content>
-                                <content tag="name">${rememberMeParameter}</content>
-                                <content tag="checked">${hasCookie}</content>
+                                <content tag="label.for">${rememberMeParameter}</content>
+                                <g:checkBox class="cb checkbox" name="${rememberMeParameter}" checked="${hasCookie}"/>
                             </g:applyLayout>
 
                             <br/>

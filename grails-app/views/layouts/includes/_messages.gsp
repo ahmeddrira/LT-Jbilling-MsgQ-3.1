@@ -15,9 +15,8 @@
             <strong><g:message code="flash.success.title"/></strong>
             <p><g:message code="${flash.message}" args="${flash.args}"/></p>
         </div>
-        <!--  clear the messages so they do keep showing up. This messages should show only once -->
-        <g:set var="message" value="" scope="flash"/>
     </g:if>
+
     <g:if test='${flash.info}'>
         <div class="msg-box info">
             <img src="${resource(dir:'images', file:'icon34.gif')}" alt="${message(code:'info.icon.alt',default:'Information')}"/>
@@ -25,6 +24,7 @@
             <p><g:message code="${flash.info}" args="${flash.args}"/></p>
         </div>
     </g:if>
+
     <g:if test='${flash.warn}'>
         <div class="msg-box warn">
             <img src="${resource(dir:'images', file:'icon32.gif')}" alt="${message(code:'warn.icon.alt',default:'Warning')}"/>
@@ -32,14 +32,15 @@
             <p><g:message code="${flash.warn}" args="${flash.args}"/></p>
         </div>
     </g:if>
+
     <g:if test='${flash.error}'>
         <div class="msg-box error">
             <img src="${resource(dir:'images', file:'icon14.gif')}" alt="${message(code:'error.icon.alt',default:'Error')}"/>
             <strong><g:message code="flash.error.title"/></strong>
             <p><g:message code="${flash.error}" args="${flash.args}"/></p>
         </div>
-        <g:set var="error" value="" scope="flash"/>
     </g:if>
+
     <g:if test="${flash.errorMessages}">
         <div class="msg-box error">
             <img src="${resource(dir:'images', file:'icon14.gif')}" alt="${message(code:'error.icon.alt',default:'Error')}"/>
@@ -50,8 +51,14 @@
                 </g:each>
             </ul>
         </div>
-        <g:set var="errorMessages" value="" scope="flash"/>
     </g:if>
+
+    <!-- clear message once displayed -->
+    <g:set var="message" value="" scope="flash"/>
+    <g:set var="info" value="" scope="flash"/>
+    <g:set var="warn" value="" scope="flash"/>
+    <g:set var="error" value="" scope="flash"/>
+    <g:set var="errorMessages" value="" scope="flash"/>
 </div>
 
 

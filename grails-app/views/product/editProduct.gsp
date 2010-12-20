@@ -21,6 +21,7 @@
     <div class="form-hold">
         <g:form name="save-product-form" action="saveProduct">
             <fieldset>
+                <!-- product info -->
                 <div class="form-columns">
                     <div class="column">
                         <g:applyLayout name="form/text">
@@ -61,7 +62,13 @@
                     </div>
                 </div>
 
-                <div class="box-cards open">
+                <!-- spacer -->
+                <div>
+                    <br/>&nbsp;
+                </div>
+
+                <!-- pricing controls -->
+                <div class="box-cards box-cards-open">
                     <div class="box-cards-title">
                         <a class="btn-open" href="#"><span><g:message code="product.prices"/></span></a>
                     </div>
@@ -98,6 +105,7 @@
                     </div>
                 </div>
 
+                <!-- spacer -->
                 <div>
                     <br/>&nbsp;
                 </div>

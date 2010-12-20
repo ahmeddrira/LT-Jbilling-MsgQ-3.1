@@ -1,22 +1,14 @@
 package jbilling
 
-import com.sapienter.jbilling.server.util.db.LanguageDTO;
-import com.sapienter.jbilling.server.user.UserBL;
-
-
-import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
-import com.sapienter.jbilling.server.item.ItemTypeWS;
-import com.sapienter.jbilling.server.item.db.ItemDTO;
-import com.sapienter.jbilling.server.item.db.ItemDAS;
-import com.sapienter.jbilling.server.item.ItemBL;
-import com.sapienter.jbilling.server.order.db.OrderLineDTO;
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.item.ItemPriceDTOEx;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.item.CurrencyBL
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import grails.plugins.springsecurity.Secured;
+import com.sapienter.jbilling.server.item.ItemDTOEx
+import com.sapienter.jbilling.server.item.ItemPriceDTOEx
+import com.sapienter.jbilling.server.item.ItemTypeWS
+import com.sapienter.jbilling.server.item.db.ItemDTO
+import com.sapienter.jbilling.server.item.db.ItemTypeDTO
+import com.sapienter.jbilling.server.user.db.CompanyDTO
+import grails.plugins.springsecurity.Secured
 
 @Secured(['isAuthenticated()'])
 class ProductController {
@@ -24,9 +16,7 @@ class ProductController {
     static pagination = [ max: 25, offset: 0 ]
 
     def webServicesSession
-
     def viewUtils
-
     def filterService
     def recentItemService
     def breadcrumbService
@@ -169,6 +159,9 @@ class ProductController {
         }
     }
 
+    /**
+     * Delete the given category id
+     */
     def deleteCategory = {
         if (params.id) {
             webServicesSession.deleteItemCategory(params.int('id'))
@@ -183,6 +176,9 @@ class ProductController {
         render template: 'categories', model: [ categories: categories ]
     }
 
+    /**
+     * Delete the given product id
+     */
     def deleteProduct = {
         if (params.id) {
             webServicesSession.deleteItem(params.int('id'))
@@ -203,34 +199,56 @@ class ProductController {
 
     }
 
+    /**
+     * Get the item category to be edited and show the "editCategory.gsp" view. If no ID is given
+     * this screen will allow creation of a new category.
+     */
     def editCategory = {
         def category = params.id ? ItemTypeDTO.get(params.id) : null
         [ category : category ]
     }
 
+    /**
+     * Validate and save a category.
+     */
     def saveCategory = {
-        def category = new ItemTypeWS(params)
+        def category = new ItemTypeWS()
+
+        // grails has issues binding the ID for ItemTypeWS object...
+        // bind category ID manually
+        bindData(category, params, 'id')
+        category.id = !params.id?.equals('') ? params.id.toInteger() : null
 
         // save or update
         try {
             if (!category.id || category.id == 0) {
                 log.debug("creating product category ${category}")
-                webServicesSession.createItemCategory(category)
+
+                category.id = webServicesSession.createItemCategory(category)
+
+                flash.message = 'product.category.created'
+                flash.args = [ category.id ]
+
             } else {
                 log.debug("saving changes to product category ${category.id}")
+
                 webServicesSession.updateItemCategory(category)
+
+                flash.message = 'product.category.updated'
+                flash.args = [ category.id ]
             }
 
-            flash.message = 'item.category.saved'
-            flash.args = [ params.id ]
-
         } catch (SessionInternalError e) {
-            viewUtils.resolveException(flash, session['locale'], e);
+            viewUtils.resolveException(flash, session.locale, e);
         }
 
         render view: 'editCategory', model: [ category : category ]
     }
 
+    /**
+     * Get the item to be edited and show the "editProduct.gsp" view. If no ID is given
+     * this screen will allow creation of a new item.
+     */
     def editProduct = {
         def product = params.id ? ItemDTO.get(params.id) : null
         def currencies = getCurrencies()
@@ -238,13 +256,19 @@ class ProductController {
         [ product: product, currencies: currencies, categoryId: params.category ]
     }
 
+    /**
+     * Validate and save a product.
+     */
     def saveProduct = {
         def product = new ItemDTOEx()
 
-        // bind all parameters that start with "product." and parameters with odd types (boolean integers etc.)
+        // bind all parameters that start with "product."
         bindData(product, params, "product")
+
+        // bind parameters with odd types (integer booleans, string integers  etc.)
         product.priceManual = params.priceManual ? 1 : 0
         product.hasDecimals = params.hasDecimals ? 1 : 0
+        product.percentage = !params.percentage?.equals("") ? params.percentage : null
 
         // bind prices
         def prices = params.prices.collect { currencyId, price ->
@@ -255,17 +279,21 @@ class ProductController {
         // save or update
         try{
             if (!product.id || product.id == 0) {
-                System.out.println("Saving!")
                 log.debug("creating product ${product}")
-                product.id = webServicesSession.createItem(product)
-            } else {
-                System.out.println("Updating!")
-                log.debug("saving changes to product ${product.id}")
-                webServicesSession.updateItem(product)
-            }
 
-            flash.message = 'product.saved'
-            flash.args = [ product.id ]
+                product.id = webServicesSession.createItem(product)
+
+                flash.message = 'product.created'
+                flash.args = [ product.id ]
+
+            } else {
+                log.debug("saving changes to product ${product.id}")
+
+                webServicesSession.updateItem(product)
+
+                flash.message = 'product.updated'
+                flash.args = [ product.id ]
+            }
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);

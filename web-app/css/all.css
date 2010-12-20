@@ -558,6 +558,10 @@ table {
 	color:#40454d;
 	font-size:14px;
 }
+.msg-box ul {
+    list-style-position: inside;
+    margin-left: 13px;
+}
 #viewport {
     overflow: hidden; width: 200%;
 }
@@ -1073,7 +1077,6 @@ ul.cloud li a {
     font-weight: bold;
     color: #383838;
     line-height: 30px;
-	float:right;
 	padding-right:35px;	
 }
 

@@ -37,6 +37,7 @@
 </g:if>
 
 <div class="btn-box">
+    <%-- breadcrumb for categories handled in the controller, cannot bind breadcrumb to the control form --%>
     <g:link action="editCategory" class="submit add"><span><g:message code="button.create.category"/></span></g:link>
     <a href="#" onclick="return editCategory();" class="submit edit"><span><g:message code="button.edit"/></span></a>
 </div>

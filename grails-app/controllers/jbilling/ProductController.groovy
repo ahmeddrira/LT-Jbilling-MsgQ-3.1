@@ -205,6 +205,11 @@ class ProductController {
      */
     def editCategory = {
         def category = params.id ? ItemTypeDTO.get(params.id) : null
+
+        // edit category uses a command form, breadcrumb cannot be provided by the client
+        def name = params.id ? 'update' : 'create'
+        breadcrumbService.addBreadcrumb(controllerName, actionName, name, params.id)
+
         [ category : category ]
     }
 

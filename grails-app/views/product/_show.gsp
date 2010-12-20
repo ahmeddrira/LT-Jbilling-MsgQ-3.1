@@ -11,7 +11,7 @@
 <div class="column-hold">
     <!-- product info -->
     <div class="heading">
-        <g:link action="editProduct" id="${selectedProduct.id}" breadcrumb="id" class="edit"/>
+        <g:link action="editProduct" id="${selectedProduct.id}" breadcrumb="{'name': 'update'}" class="edit"/>
 	    <strong>${selectedProduct.internalNumber}</strong>
 	</div>
 	<div class="box">

@@ -9,7 +9,8 @@
 		<g:each in="${plugins}" status="idx" var="dto">
 		   <li>
 		     <g:remoteLink action="show" id="${dto.id}" before="register(this);" 
-+                                  onSuccess="render(data, next);" breadcrumb="id">
+                           onSuccess="render(data, next);" breadcrumb="id"
+                           params="[template:'show']">
                  <span class="block">
                     <span>${dto.getProcessingOrder()}</span>
 		         </span>

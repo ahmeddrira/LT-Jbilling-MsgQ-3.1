@@ -27,6 +27,9 @@
 </content>
 
 <content tag="column2">
+    <g:if test="${plugins}">
+        <g:render template="plugins" model="['plugins': plugins]"/> 
+    </g:if>
 </content>
 
 </body>

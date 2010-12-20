@@ -34,8 +34,7 @@ class FilterFactory {
 
     static baseFilters = ([
         ALL: [
-            new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'id', template: 'id', visible: true),
-            new Filter(type: FilterType.ALL, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'created', visible: true)
+            new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'id', template: 'id', visible: true)
         ],
         INVOICE: [
 
@@ -43,10 +42,16 @@ class FilterFactory {
         ORDER: [
 
         ],
+        PRODUCT: [
+            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.LIKE, field: 'internalNumber', template: 'product/internalNumber', visible: true),
+            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.EQ, field: 'hasDecimals', template: 'product/decimals', visible: true),
+            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.EQ, field: 'priceManual', template: 'product/manualPrice', visible: true),
+        ],
         CUSTOMER: [
+            new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'created', visible: true),
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.STATUS, field: 'userStatus', template: 'customer/status', visible: true),
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.LIKE, field: 'userName', template: 'customer/login', visible: true),
-            new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.LIKE, field: 'language.id', template: 'customer/language', visible: false)
+            new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.EQ, field: 'language.id', template: 'customer/language', visible: false)
         ]
     ] as Map).asImmutable()
 
@@ -58,7 +63,7 @@ class FilterFactory {
      */
     static def Object getFilters(FilterType type) {
         def filters = []
-        baseFilters.findAll{ it.key == FilterType.ALL.name() || it.key == type.name()}.each{ filters << it?.value }
+        baseFilters.findAll{ it.key == FilterType.ALL.name() || it.key == type.name() }.each{ filters << it?.value }
 
         return filters.flatten()
     }

@@ -21,6 +21,8 @@ import grails.plugins.springsecurity.Secured;
 @Secured(['isAuthenticated()'])
 class ProductController {
 
+    static pagination = [ max: 25, offset: 0 ]
+
     def webServicesSession
     Integer languageId= session["language_id"]
     int typeId
@@ -38,16 +40,27 @@ class ProductController {
      * "id" parameter, the corresponding list of products will also be rendered.
      */
     def list = {
+        def filters = filterService.getFilters(FilterType.PRODUCT, params)
         def categories = getCategories()
-        def products = params.id ? getItemsByTypeId(params.int("id")) : null
+        def products = params.id ? getItemsByTypeId(params.int('id'), filters) : null
         def categoryId = products?.get(0)?.itemTypes?.asList()?.get(0)?.id
 
-        [ categories: categories, products: products, selectedCategoryId: categoryId ]
+        if (params.applyFilter) {
+            render template: 'products', model: [ products: products, selectedCategoryId: categoryId ]
+        } else {
+            [ categories: categories, products: products, selectedCategoryId: categoryId, filters: filters, filterRender: 'second', filterAction: 'allProducts' ]
+        }
     }
 
     def getCategories() {
-        return ItemTypeDTO.withCriteria {
-            eq("entity", new CompanyDTO(session["company_id"]))
+        params.max = params?.max?.toInteger() ?: pagination.max
+        params.offset = params?.offset?.toInteger() ?: pagination.offset
+
+        return ItemTypeDTO.createCriteria().list(
+                max:    params.max,
+                offset: params.offset
+        ) {
+            eq('entity', new CompanyDTO(session['company_id']))
         }
     }
 
@@ -56,39 +69,83 @@ class ProductController {
      */
     def products = {
         if (params.id) {
-            def products = getItemsByTypeId(params.int("id"))
+            def filters = filterService.getFilters(FilterType.PRODUCT, params)
+            def products = getItemsByTypeId(params.int('id'), filters)
 
             if (products) {
-                render template: "products", model: [ products: products, selectedCategoryId: params.id ]
+                render template: 'products', model: [ products: products, selectedCategoryId: params.id ]
             } else {
-                flash.info = "product.category.no.products.warning"
+                flash.info = 'product.category.no.products.warning'
                 flash.args = [params.id]
-                render template: "/ayouts/includes/messages"
+                render template: '/layouts/includes/messages'
             }
         }
     }
 
-    def allProducts = {
-        def products = ItemDTO.withCriteria {
-            and {
-                eq("deleted", 0)
-                eq("entity", new CompanyDTO(session["company_id"]))
-            }
-        }
+    def getItemsByTypeId(Integer id, filters) {
+        params.max = params?.max?.toInteger() ?: pagination.max
+        params.offset = params?.offset?.toInteger() ?: pagination.offset
 
-        render template: "products", model: [ products: products ]
-    }
-
-    def getItemsByTypeId(Integer id) {
-        return ItemDTO.withCriteria {
+        return ItemDTO.createCriteria().list(
+                max:    params.max,
+                offset: params.offset
+        ) {
             and {
-                itemTypes {
-                    eq("id", id)
+                filters.each { filter ->
+                    if (filter.value) {
+                        switch (filter.constraintType) {
+                            case FilterConstraint.EQ:
+                                eq(filter.field, filter.value)
+                                break
+
+                            case FilterConstraint.LIKE:
+                                like(filter.field, filter.stringValue)
+                                break
+                        }
+                    }
                 }
-                eq("deleted", 0)
-                eq("entity", new CompanyDTO(session["company_id"]))
+                itemTypes {
+                    eq('id', id)
+                }
+                eq('deleted', 0)
+                eq('entity', new CompanyDTO(session['company_id']))
             }
         }
+    }
+
+    /**
+     * Get a list of ALL products regardless of the item type selected, and render the "_products.gsp" template.
+     */
+    def allProducts = {
+        def filters = filterService.getFilters(FilterType.PRODUCT, params)
+
+        params.max = params?.max?.toInteger() ?: pagination.max
+        params.offset = params?.offset?.toInteger() ?: pagination.offset
+
+        def products = ItemDTO.createCriteria().list(
+                max:    params.max,
+                offset: params.offset
+        ) {
+            and {
+                filters.each { filter ->
+                    if (filter.value) {
+                        switch (filter.constraintType) {
+                            case FilterConstraint.EQ:
+                                eq(filter.field, filter.value)
+                                break
+
+                            case FilterConstraint.LIKE:
+                                like(filter.field, filter.stringValue)
+                                break
+                        }
+                    }
+                }
+                eq('deleted', 0)
+                eq('entity', new CompanyDTO(session['company_id']))
+            }
+        }
+
+        render template: 'products', model: [ products: products ]
     }
 
     /**
@@ -97,7 +154,7 @@ class ProductController {
      * for an AJAX request the template defined by the "template" parameter will be rendered.
      */
     def show = {
-        ItemDTO product = ItemDTO.get(params.int("id"))
+        ItemDTO product = ItemDTO.get(params.int('id'))
         def categoryId = product?.itemTypes?.asList()?.get(0)?.id
 
         recentItemService.addRecentItem(product?.id, RecentItemType.PRODUCT)
@@ -107,25 +164,41 @@ class ProductController {
             render template: params.template, model: [ selectedProduct: product ]
 
         } else {
-            // render default "list" view - needed for displaying breadcrumb link to a specific item
+            // render default "list" view - needed so a breadcrumb can link to a product by id
+            def filters = filterService.getFilters(FilterType.PRODUCT, params)
             def categories = getCategories();
-            def products = getItemsByTypeId(categoryId);
-            render view: "list", model: [ categories: categories, products: products, selectedProduct: product, selectedCategoryId: categoryId ]
+            def products = getItemsByTypeId(categoryId, filters);
+            render view: 'list', model: [ categories: categories, products: products, selectedProduct: product, selectedCategoryId: categoryId, filters: filters ]
         }
     }
 
+    def deleteCategory = {
+        if (params.id) {
+            webServicesSession.deleteItemCategory(params.int('id'))
 
+            log.debug("Deleted item category ${params.id}.");
 
+            flash.message= 'item.category.deleted'
+            flash.args = [ params.id ]
+        }
 
+        def categories = getCategories()
+        render template: 'categories', model: [ categories: categories ]
+    }
 
+    def deleteProduct = {
+        if (params.id) {
+            webServicesSession.deleteItem(params.int('id'))
 
+            log.debug("Deleted item ${params.id}.");
 
+            flash.message = 'item.delete.success'
+            flash.args = [ params.id ]
+        }
 
-
-
-
-
-
+        // return the products list, pass the category so the correct set of products is returned.
+        chain(action: 'products', params: [ id: params.category ])
+    }
 
 
     def addEditCategory = {
@@ -165,27 +238,6 @@ class ProductController {
         }
         //TODO move this to product controller
         redirect (action: 'index')
-    }
-
-    def deleteCategory = {
-        Integer itemId= params.id?.toInteger()
-        log.info "Deleting item type=" + itemId
-
-        try {
-            ItemTypeDTO dto= ItemTypeDTO.findById(itemId)
-            Set items= dto.getItems()
-            log.info "Size of items=" + items?.size()
-            if (items) {
-                throw new SessionInternalError("This category has products. Remove those before deleting the category.")
-            }
-            webServicesSession.deleteItemCategory(itemId);
-            flash.message = "item.category.deleted"
-        } catch (SessionInternalError e) {
-            log.error "Error delete Item Category " + itemId
-            flash.error = "item.category.delete.failed"
-        }
-        flash.args= [itemId]
-        redirect (action: index)
     }
 
     def addEditProduct ={
@@ -300,28 +352,7 @@ class ProductController {
         redirect (action: "index")
     }
 
-    def deleteProduct = {
-        def itemId= params.id?.toInteger()
-        log.info "Deleting item=" + itemId
-        try {
-            List lines= OrderLineDTO.findAllByItem(new ItemDAS().find(itemId))
-            log.info "Lines returned=" + lines?.size()
-            if (lines){
-                log.info "Orders exists for item " + itemId
-                throw new SessionInternalError(lines.size() + "Orders exists for Item.");
-            } else {
-                log.info "Orders DO NOT exists for item " + itemId
-                webServicesSession.deleteItem(itemId)
-                flash.message = 'item.delete.success'
-            }
-            //[id:typeId]
-        } catch (SessionInternalError e) {
-            log.error "Error delete Item " + itemId
-            flash.error = message(code: 'item.delete.failed')
-        }
-        flash.args= [itemId]
-        redirect (action: "index")
-    }
+
 
     def cancelEditProduct = {
 

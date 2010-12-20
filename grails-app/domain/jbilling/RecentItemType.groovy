@@ -30,9 +30,9 @@ enum RecentItemType {
 
     INVOICE     ("invoice", "list", null, "icon09.gif", "recent.item.invoice.title"),
     ORDER       ("order", "list", null, "icon10.gif", "recent.item.order.title"),
-    PAYMENT     ("payment", "list", null, "icon11.gif", "recent.item.payment.title"),
-    CUSTOMER    ("user", "list", null, "icon12.gif", "recent.item.customer.title"),
     PRODUCT     ("product", "show", null, "icon13.gif", "recent.item.product.title"),
+    CUSTOMER    ("user", "list", null, "icon12.gif", "recent.item.customer.title"),
+    PAYMENT     ("payment", "list", null, "icon11.gif", "recent.item.payment.title"),
     PLUGIN      ("plugin", "list", null, "icon13.gif", "recent.item.plugin.title");
 
     String controller

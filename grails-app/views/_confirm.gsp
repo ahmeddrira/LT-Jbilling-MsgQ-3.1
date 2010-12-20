@@ -11,7 +11,7 @@
 <script type="text/javascript">
     $('#confirm-dialog').dialog({
         autoOpen: false,
-        height: 137,
+        height: 155,
         width: 375,
         modal: true,
         buttons: {

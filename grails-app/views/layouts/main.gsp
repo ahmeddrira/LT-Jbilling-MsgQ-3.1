@@ -2,17 +2,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <g:render template="/layouts/includes/head"/>
-
-    <script type="text/javascript">
-        $(document).ajaxSuccess(function(e, xhr, settings) {
-            $.ajax({
-                url: "${resource(dir:'')}/messages",
-                global: false,
-                success: function(data) { $("#messages").replaceWith(data); }
-            });
-        });
-    </script>
-
     <g:layoutHead/>
 </head>
 <body>

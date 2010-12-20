@@ -49,7 +49,7 @@
     </div>
 
     <g:render template="/confirm" 
-              model="['confirmMessage':'plugins.delete.confirm','popup_controller':'plugin','popup_action':'delete','popup_id':plugin.getId()]"/>
+              model="['message':'plugins.delete.confirm','controller':'plugin','action':'delete','id':plugin.getId()]"/>
 
     <div class="btn-box">
         <a href="${createLink(controller:'plugin', action:'edit', id:plugin.getId()) }" class="submit">

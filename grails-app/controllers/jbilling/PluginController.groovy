@@ -35,7 +35,6 @@ class PluginController {
      * Lists all the categories. The same for every company
      */
     def listCategories ={
-        Integer languageId = session.language_id;
         List categorylist= PluggableTaskTypeCategoryDTO.list();
         log.info "Categories found= " + categorylist?.size()
         render (view:"categories", model:[categories:categorylist])
@@ -62,7 +61,11 @@ class PluginController {
             session.selected_category_id = categoryId;
         
             // show the list of the plug-ins
-            render template: "plugins", model:[plugins:lstByCateg]
+            if (params.template == 'show') {
+                render template: "plugins", model:[plugins:lstByCateg]
+            } else {
+                render (view:"categories", model:[categories:PluggableTaskTypeCategoryDTO.list(),plugins:lstByCateg])
+            }
         } else {
             log.error "No Category selected?"
         }
@@ -71,7 +74,11 @@ class PluginController {
     def show = {
         Integer taskId = params.id.toInteger();
         PluggableTaskDTO dto = pluggableTaskDAS.find(taskId);
-        render template: "show", model:[plugin:dto]
+        if (params.template == 'show') {
+            render template: "show", model:[plugin:dto]
+        } else {
+            showListAndPlugin(taskId);
+        }
     }
     
     def showForm = {

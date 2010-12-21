@@ -15,7 +15,7 @@
 <!--[if lt IE 8]><link rel="stylesheet" href="${resource(dir:'css', file:'lt7.css')}" type="text/css" media="screen"/><![endif]-->
 
 <g:javascript library="jquery" plugin="jquery"/>
-<jqui:resources theme="smoothness"/>
+<jqui:resources themeCss="/jbilling/jquery-ui/themes/jbilling/jquery-ui-1.8.6.custom.css"/>
 
 <g:javascript library="breadcrumbs"/>
 <g:javascript library="clearinput"/>

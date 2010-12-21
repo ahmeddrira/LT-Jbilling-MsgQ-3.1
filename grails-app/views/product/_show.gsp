@@ -11,7 +11,7 @@
 <div class="column-hold">
     <!-- product info -->
     <div class="heading">
-        <g:link action="edit" id="${selectedProduct.id}" breadcrumb="id" class="edit"/>
+        <g:link action="editProduct" id="${selectedProduct.id}" breadcrumb="{'name': 'update'}" class="edit"/>
 	    <strong>${selectedProduct.internalNumber}</strong>
 	</div>
 	<div class="box">
@@ -53,5 +53,19 @@
         </ul>
     </div>
 
-    <div class="btn-box"></div>
+    <div class="btn-box">
+        <a onclick="showConfirm(${selectedProduct.id});" class="submit delete"><span><g:message code="button.delete"/></span></a>
+    </div>
+
+<g:render template="/confirm"
+          model="['message': 'product.delete.confirm',
+                  'controller': 'product',
+                  'action': 'deleteProduct',
+                  'id': selectedProduct.id,
+                  'formParams': ['category': selectedCategoryId],
+                  'ajax': true,
+                  'update': 'column2',
+                  'onYes': 'closePanel($(\'column3\'))'
+                 ]"/>
 </div>
+

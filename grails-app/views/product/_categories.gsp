@@ -30,20 +30,20 @@
     </ul>
 </div>
 
-<g:if test="${categories.totalCount > params.max}">
+<g:if test="${categories?.totalCount > params.max}">
     <div class="pager-box">
         <util:remotePaginate controller="product" action="categories" total="${categories.totalCount}" update="column1"/>
     </div>
 </g:if>
 
 <div class="btn-box">
-    <g:link action="createCategory" class="submit add"><span><g:message code="button.create.category"/></span></g:link>
+    <%-- breadcrumb for categories handled in the controller, cannot bind breadcrumb to the control form --%>
+    <g:link action="editCategory" class="submit add"><span><g:message code="button.create.category"/></span></g:link>
     <a href="#" onclick="return editCategory();" class="submit edit"><span><g:message code="button.edit"/></span></a>
-    <a href="#" onclick="return deleteCategory();" class="submit delete"><span><g:message code="button.delete"/></span></a>
 </div>
 
 
-<%-- edit category control form --%>
+<!-- edit category control form -->
 <g:form name="category-edit-form" url="[action: 'editCategory']">
     <g:hiddenField name="id" value="${selectedCategoryId}"/>
 </g:form>
@@ -52,43 +52,6 @@
     function editCategory() {
         $('#category-edit-form input#id').val(getSelectedId('#categories'));
         $('#category-edit-form').submit();
-        return false;
-    }
-</script>
-
-
-<%-- delete item category dialog --%>
-<div id="category-delete-confirm" title="${message(code: 'popup.confirm.title')}">
-    <g:formRemote name="category-delete-form" url="[action: 'deleteCategory']" update="column1">
-        <g:hiddenField name="id" value="${selectedCategoryId}"/>
-    </g:formRemote>
-
-    <p class="dialog-text">
-        <img src="/jbilling/images/icon34.gif" alt="">
-        <g:message code="product.category.delete.confirm"/>
-    </p>
-</div>
-
-<script type="text/javascript">
-    $('#category-delete-confirm').dialog({
-        autoOpen: false,
-        height: 200,
-        width: 400,
-        modal: true,
-        buttons: {
-            "${message(code: 'prompt.yes')}": function() {
-                $('#category-delete-form input#id').val(getSelectedId($('#categories')));
-                $('#category-delete-form').submit();
-                $(this).dialog("close")
-            },
-            "${message(code: 'prompt.no')}": function() {
-                $(this).dialog("close");
-            }
-        }
-    });
-
-    function deleteCategory() {
-        $('#category-delete-confirm').dialog('open');
         return false;
     }
 </script>

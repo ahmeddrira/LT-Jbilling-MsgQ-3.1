@@ -154,8 +154,11 @@ class ProductController {
             // render default "list" view - needed so a breadcrumb can link to a product by id
             def filters = filterService.getFilters(FilterType.PRODUCT, params)
             def categories = getCategories();
-            def products = getItemsByTypeId(categoryId, filters);
-            render view: 'list', model: [ categories: categories, products: products, selectedProduct: product, selectedCategoryId: params.category, filters: filters ]
+
+            def productCategoryId = params.category ?: product?.itemTypes?.asList()?.get(0)?.id
+            def products = getItemsByTypeId(productCategoryId, filters);
+
+            render view: 'list', model: [ categories: categories, products: products, selectedProduct: product, selectedCategoryId: productCategoryId, filters: filters ]
         }
     }
 
@@ -208,7 +211,7 @@ class ProductController {
 
         // edit category uses a command form, breadcrumb cannot be provided by the client
         def name = params.id ? 'update' : 'create'
-        breadcrumbService.addBreadcrumb(controllerName, actionName, name, params.id)
+        breadcrumbService.addBreadcrumb(controllerName, actionName, name, params?.id?.toInteger())
 
         [ category : category ]
     }
@@ -273,7 +276,7 @@ class ProductController {
         // bind parameters with odd types (integer booleans, string integers  etc.)
         product.priceManual = params.priceManual ? 1 : 0
         product.hasDecimals = params.hasDecimals ? 1 : 0
-        product.percentage = !params.percentage?.equals("") ? params.percentage : null
+        product.percentage = !params.percentage?.equals('') ? params.percentage : null
 
         // bind prices
         def prices = params.prices.collect { currencyId, price ->

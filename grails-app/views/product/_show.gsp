@@ -11,7 +11,6 @@
 <div class="column-hold">
     <!-- product info -->
     <div class="heading">
-        <g:link action="editProduct" id="${selectedProduct.id}" breadcrumb="{'name': 'update'}" class="edit"/>
 	    <strong>${selectedProduct.internalNumber}</strong>
 	</div>
 	<div class="box">
@@ -54,6 +53,7 @@
     </div>
 
     <div class="btn-box">
+        <g:link action="editProduct" id="${selectedProduct.id}" breadcrumb="{'name': 'update'}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
         <a onclick="showConfirm(${selectedProduct.id});" class="submit delete"><span><g:message code="button.delete"/></span></a>
     </div>
 

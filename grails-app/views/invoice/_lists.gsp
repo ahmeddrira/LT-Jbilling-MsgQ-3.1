@@ -14,7 +14,7 @@
 	<ul>
 		<g:each var="inv" in="${invoices}">
 			<li>
-				<g:remoteLink action="show" id="${inv.id}" 
+				<g:remoteLink action="show" id="${inv.id}" params="[userId: userId]"
 		     			before="register(this);" onSuccess="render(data, next);">
 				<strong>
 				${Util.formatDate(inv.createDateTime, session["user_id"]) }
@@ -46,7 +46,9 @@
 	</ul>
 </div>
 
+<!-- 
 <div class="btn-box">
     <a href="#" class="submit delete">
     	<span><g:message code="button.delete"/></span></a>
 </div>
+ -->

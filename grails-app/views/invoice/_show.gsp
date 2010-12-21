@@ -104,4 +104,19 @@
 ${invoice.customerNotes }
 </div>
 
+
+<div class="btn-box">
+    <g:if test="${invoice.id}">
+        <a onclick="showConfirm(${invoice.id});" class="submit delete"><span><g:message code="button.delete.invoice"/></span></a>
+    </g:if>
+</div>
+
+<g:render template="/confirm"
+          model="['message':'invoice.prompt.are.you.sure',
+                  'controller':'invoice',
+                  'action':'delete',
+                  'id':invoice.id,
+                  'formParams': ['_userId': userId],
+                 ]"/>
+
 </div>

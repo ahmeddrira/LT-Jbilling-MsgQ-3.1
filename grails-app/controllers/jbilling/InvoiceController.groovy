@@ -14,6 +14,7 @@ class InvoiceController {
 	def index = { redirect(action:'lists')}
 	
 	def delete = {
+		log.info "params= id: ${params.id} userId: ${params._userId}"
 		int invoiceId =params["id"]?.toInteger()
 		int userId= params._userId?.toInteger()
 		if (invoiceId) {
@@ -64,9 +65,13 @@ class InvoiceController {
 			log.info "Integer Invoice Id=${id}"
 			try {
 				invoice= webServicesSession.getInvoiceWS(id)
-				log.info "Found invoice ${invoice}. Loading..."
-				user= webServicesSession.getUserWS(invoice?.getUserId())
-				log.info "Found user ${user.contact?.firstName} ${user.contact?.lastName}"
+				log.info "Found invoice ${invoice}. For user: ${params.userId}. Loading..."
+				if (params.userId) {
+					user= webServicesSession.getUserWS(params.userId.toInteger())
+				} else {
+					user= webServicesSession.getUserWS(invoice?.getUserId())
+				}
+				log.info "Found user ${user}"
 				payments= new ArrayList<PaymentWS>(invoice?.payments?.length)
 				for(Integer pid: invoice?.payments) {
 					PaymentWS payment=webServicesSession.getPayment(pid)
@@ -91,6 +96,6 @@ class InvoiceController {
 			}
 		}		
 		
-		render template: "show", model:[totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
+		render template: "show", model:[userId:user?.getUserId(), totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
 	}
 }

@@ -7,27 +7,33 @@
   @since  16-Dec-2010
 --%>
 
-<div class="heading table-heading">
-    <strong class="name"><g:message code="product.category.th.name"/></strong>
-    <strong style="width: 60px;"><g:message code="product.category.th.type"/></strong>
-</div>
-
-<div id="categories" class="table-box">
-    <ul>
+<div class="table-box">
+    <table cellspacing="0" cellpadding="0">
+        <thead>
+            <th><g:message code="product.category.th.name"/></th>
+            <th class="small"><g:message code="product.category.th.type"/></th>
+        </thead>
+        <tbody>
         <g:each var="category" in="${categories}">
             <g:set var="lineType" value="${new OrderLineTypeDTO(category.orderLineTypeId, 0)}"/>
 
-            <li id="category-${category.id}" <g:if test="${selectedCategoryId == category.id}">class="active"</g:if>>
-                <g:remoteLink breadcrumb="{'action':'list'}" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
-                    <span class="block last left">
-                        <span>${lineType.description}</span>
-                    </span>
-                    <strong>${category.description}</strong>
-                    <em><g:message code="product.category.id.label" args="[category.id]"/></em>
-                </g:remoteLink>
-            </li>
-        </g:each>
-    </ul>
+                <tr id="category-${category.id}" class="${selectedCategoryId == category.id ? 'active' : ''}">
+                    <td>
+                        <g:remoteLink breadcrumb="{'action':'list'}" class="cell double" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
+                            <strong>${category.description}</strong>
+                            <em><g:message code="product.category.id.label" args="[category.id]"/></em>
+                        </g:remoteLink>
+                    </td>
+                    <td>
+                        <g:remoteLink breadcrumb="{'action':'list'}" class="cell" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
+                            <span>${lineType.description}</span>
+                        </g:remoteLink>
+                    </td>
+                </tr>
+
+            </g:each>
+        </tbody>
+    </table>
 </div>
 
 <g:if test="${categories?.totalCount > params.max}">

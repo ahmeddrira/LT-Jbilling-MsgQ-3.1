@@ -13,7 +13,6 @@
 <div class="column-hold">
     <!-- user notes -->
     <div class="heading">
-        <g:link action="edit" id="${selected.id}" breadcrumb="id" class="edit"/>
         <strong>
             <g:if test="${contact && (contact.firstName || contact.lastName)}">
                 ${contact.firstName} ${contact.lastName}
@@ -114,6 +113,7 @@
     </g:if>
 
     <div class="btn-box">
+        <g:link action="edit" id="${selected.id}" breadcrumb="id" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
         <a href="#" class="submit order"><span><g:message code="button.create.order"/></span></a>
         <a href="#" class="submit payment"><span><g:message code="button.create.payment"/></span></a>
     </div>

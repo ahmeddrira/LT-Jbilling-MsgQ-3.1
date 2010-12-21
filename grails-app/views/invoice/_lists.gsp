@@ -45,6 +45,8 @@
 		</g:each>
 	</ul>
 </div>
+
 <div class="btn-box">
-    <a href="#" class="submit delete"><span><g:message code="button.delete"/></span></a>
+    <a href="#" class="submit delete">
+    	<span><g:message code="button.delete"/></span></a>
 </div>

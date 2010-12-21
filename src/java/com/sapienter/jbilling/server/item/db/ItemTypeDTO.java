@@ -153,6 +153,30 @@ public class ItemTypeDTO extends AbstractDescription
     public void setVersionNum(int versionNum) {
         this.versionNum = versionNum;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ItemTypeDTO that = (ItemTypeDTO) o;
+
+        if (id != that.id) return false;
+        if (orderLineTypeId != that.orderLineTypeId) return false;
+        if (description != null ? !description.equals(that.description) : that.description != null) return false;
+        if (entity != null ? !entity.equals(that.entity) : that.entity != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (entity != null ? entity.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + orderLineTypeId;
+        return result;
+    }
 }
 
 

@@ -14,7 +14,7 @@ class InvoiceController {
 	def index = { redirect(action:'lists')}
 	
 	def delete = {
-		int invoiceId =params.selectedInvId?.toInteger()
+		int invoiceId =params["id"]?.toInteger()
 		int userId= params._userId?.toInteger()
 		if (invoiceId) {
 			try {
@@ -33,17 +33,20 @@ class InvoiceController {
 		InvoiceWS[] invoices= null;
 		int userId;
 		log.info "Get invoices list for user id [${params?.id}]"
-		if (params["id"] && params["id"].matches("^[0-9]+")) {
-			userId= Integer.parseInt(params["id"])
-			try {
+		try {
+			if (params["id"] && params["id"].matches("^[0-9]+")) {
+				userId= Integer.parseInt(params["id"])
 				invoices= webServicesSession.getAllInvoicesForUser(userId)
-				if (invoices)
-					log.info "found invoices [${invoices.size()}]"
-			} catch (Exception e) {
-				flash.message = 'invoices.empty'
-				flash.args= [params["id"]]
+			} else {
+				invoices= webServicesSession.getAllInvoices()
 			}
+		} catch (Exception e) {
+			flash.message = 'invoices.empty'
+			flash.args= [params["id"]]
 		}
+		
+		log.info "found invoices [${invoices?.size()}]"
+		
 		[invoices:invoices, userId:userId]
 	}
 	

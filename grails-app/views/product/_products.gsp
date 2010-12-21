@@ -36,7 +36,7 @@
 
 <div class="btn-box">
     <g:if test="${selectedCategoryId}">
-        <g:link action="createProduct" params="['category': selectedCategoryId]" class="submit add"><span><g:message code="button.create.product"/></span></g:link>
+        <g:link action="editProduct" params="['category': selectedCategoryId]" breadcrumb="{'name': 'create'}" class="submit add"><span><g:message code="button.create.product"/></span></g:link>
         <a onclick="showConfirm(${selectedCategoryId});" class="submit delete"><span><g:message code="button.delete.category"/></span></a>
         <g:remoteLink action="allProducts" update="column2" class="submit show"><span><g:message code="button.show.all"/></span></g:remoteLink>
     </g:if>

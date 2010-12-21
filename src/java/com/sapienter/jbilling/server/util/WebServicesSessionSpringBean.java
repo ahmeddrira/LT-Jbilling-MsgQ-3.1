@@ -39,20 +39,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sapienter.jbilling.server.order.OrderProcessWS;
-import com.sapienter.jbilling.server.order.db.OrderProcessDAS;
-import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
-import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
-import sun.jdbc.rowset.CachedRowSet;
-
-import com.sapienter.jbilling.server.util.db.PreferenceDTO;
-import grails.plugins.springsecurity.SpringSecurityService;
-
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.client.authentication.CompanyUserDetails;
 import com.sapienter.jbilling.common.InvalidArgumentException;
@@ -101,11 +93,19 @@ import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+import com.sapienter.jbilling.server.order.OrderProcessWS;
+import com.sapienter.jbilling.server.order.db.OrderProcessDAS;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
+import com.sapienter.jbilling.server.util.db.PreferenceDTO;
+import grails.plugins.springsecurity.SpringSecurityService;
 import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
@@ -154,7 +154,6 @@ import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
-import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 
 
 @Transactional( propagation = Propagation.REQUIRED )
@@ -258,6 +257,22 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public InvoiceWS[] getAllInvoicesForUser(Integer userId) {
         IInvoiceSessionBean invoiceBean = Context.getBean(Context.Name.INVOICE_SESSION);
         Set<InvoiceDTO> invoices = invoiceBean.getAllInvoices(userId);
+
+        List<InvoiceWS> ids = new ArrayList<InvoiceWS>(invoices.size());
+        for (InvoiceDTO invoice : invoices)
+        {
+        	InvoiceWS wsdto= InvoiceBL.getWS(invoice); 
+        	if ( null != invoice.getInvoiceStatus())
+        		wsdto.setStatusDescr(invoice.getInvoiceStatus().getDescription(getCallerLanguageId()));
+        		
+        	ids.add(wsdto);
+        }
+        return ids.toArray(new InvoiceWS[ids.size()]);
+    }
+    
+    public InvoiceWS[] getAllInvoices() {
+        
+        List<InvoiceDTO> invoices = new InvoiceDAS().findAll();
 
         List<InvoiceWS> ids = new ArrayList<InvoiceWS>(invoices.size());
         for (InvoiceDTO invoice : invoices)

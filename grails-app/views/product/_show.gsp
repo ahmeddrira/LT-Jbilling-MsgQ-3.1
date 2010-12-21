@@ -46,14 +46,14 @@
         <ul class="cloud">
             <g:each var="category" in="${selectedProduct.itemTypes}">
                 <li>
-                    <g:link breadcrumb="id" action="list" id="${category.id}">${category.description}</g:link>
+                    <g:link action="list" id="${category.id}">${category.description}</g:link>
                 </li>
             </g:each>
         </ul>
     </div>
 
     <div class="btn-box">
-        <g:link action="editProduct" id="${selectedProduct.id}" breadcrumb="{'name': 'update'}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+        <g:link action="editProduct" id="${selectedProduct.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
         <a onclick="showConfirm(${selectedProduct.id});" class="submit delete"><span><g:message code="button.delete"/></span></a>
     </div>
 

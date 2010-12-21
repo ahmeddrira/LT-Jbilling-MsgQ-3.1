@@ -14,8 +14,8 @@
     </div>
     <div class="btn-box buttons">
         <ul>
-            <li><a class="submit save" onclick="$('#notes-form').submit();" href="#"><span>Save Changes</span></a></li>
-            <li><a class="submit cancel" onclick="closePanel(this);" href="#"><span>Cancel</span></a></li>
+            <li><a class="submit save" onclick="$('#notes-form').submit();"><span>Save Changes</span></a></li>
+            <li><a class="submit cancel" onclick="closePanel(this);"><span>Cancel</span></a></li>
         </ul>
     </div>
 </g:formRemote>

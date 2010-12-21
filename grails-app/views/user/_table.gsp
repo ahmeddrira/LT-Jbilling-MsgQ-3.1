@@ -25,7 +25,7 @@
 
                 <tr id="user-${user.id}" class="${selected?.id == user.id ? 'active' : ''}">
                     <td>
-                        <g:remoteLink breadcrumb="{'action':'list'}" class="cell double" action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell double" action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                             <strong>
                                 <g:if test="${contact?.firstName || contact?.lastName}">
                                     ${contact.firstName} ${contact.lastName}
@@ -38,12 +38,12 @@
                         </g:remoteLink>
                     </td>
                     <td>
-                        <g:remoteLink breadcrumb="{'action':'list'}" class="cell" action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell" action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                             <span>${user.id}</span>
                         </g:remoteLink>
                     </td>
                     <td class="center">
-                        <g:remoteLink breadcrumb="{'action':'list'}" class="cell" action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell" action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                              <span>
                                 <g:if test="${user.userStatus.id > 1 && user.userStatus.id < 5}">
                                     <img src="${resource(dir:'images', file:'icon15.gif')}" alt="overdue" />
@@ -55,7 +55,7 @@
                         </g:remoteLink>
                     </td>
                     <td>
-                        <g:remoteLink breadcrumb="{'action':'list'}" class="cell" action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell" action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                             <span><g:formatNumber number="${new UserBL().getBalance(user.id)}" type="currency" currencyCode="${user.currency.code}"/></span>
                         </g:remoteLink>
                     </td>
@@ -88,13 +88,15 @@
     </table>
 </div>
 
-<div class="pager-box">
-    %{-- remote pager does not support "onSuccess" for panel rendering, take a guess at the update column --}%
-    <g:set var="updateColumn" value="${actionName == 'subaccounts' ? 'column2' : 'column1'}"/>
-    <util:remotePaginate controller="user" action="list" params="[applyFilter: true]" total="${users.totalCount}" update="${updateColumn}"/>
-</div>
+<g:if test="${users?.totalCount > params.max}">
+    <div class="pager-box">
+        %{-- remote pager does not support "onSuccess" for panel rendering, take a guess at the update column --}%
+        <g:set var="updateColumn" value="${actionName == 'subaccounts' ? 'column2' : 'column1'}"/>
+        <util:remotePaginate controller="user" action="list" params="[applyFilter: true]" total="${users.totalCount}" update="${updateColumn}"/>
+    </div>
+</g:if>
 
 <div class="btn-box">
-    <a href="${createLink(action: 'create')}" class="submit add"><span><g:message code="button.create"/></span></a>
-    <a href="${createLink(action: 'delete')}" class="submit delete"><span><g:message code="button.delete"/></span></a>
+    <g:link action='create' class="submit add"><span><g:message code="button.create"/></span></g:link>
+    <g:link action='delete' class="submit delete"><span><g:message code="button.delete"/></span></g:link>
 </div>

@@ -551,8 +551,8 @@ table {
 	margin:0 10px 0 0;
 }
 .msg-box p {
-	margin:0;
 	color:#40454d;
+    margin: 3px 0 0 50px;
 }
 .msg-box strong {
 	color:#40454d;

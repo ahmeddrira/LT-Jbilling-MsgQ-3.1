@@ -7,7 +7,7 @@
 --%>
 
 <div class="table-box">
-    <table cellspacing="0" cellpadding="0">
+    <table id="products" cellspacing="0" cellpadding="0">
         <thead>
             <th><g:message code="product.th.name"/></th>
             <th class="medium"><g:message code="product.th.internal.number"/></th>

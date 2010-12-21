@@ -211,7 +211,7 @@ class ProductController {
 
         // edit category uses a command form, breadcrumb cannot be provided by the client
         def name = params.id ? 'update' : 'create'
-        breadcrumbService.addBreadcrumb(controllerName, actionName, name, params?.id?.toInteger())
+        breadcrumbService.addBreadcrumb(controllerName, actionName, name, params.int('id'))
 
         [ category : category ]
     }
@@ -225,7 +225,7 @@ class ProductController {
         // grails has issues binding the ID for ItemTypeWS object...
         // bind category ID manually
         bindData(category, params, 'id')
-        category.id = !params.id?.equals('') ? params.id.toInteger() : null
+        category.id = !params.id?.equals('') ? params.int('id') : null
 
         // save or update
         try {

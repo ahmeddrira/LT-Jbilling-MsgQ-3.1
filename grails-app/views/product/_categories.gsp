@@ -8,7 +8,7 @@
 --%>
 
 <div class="table-box">
-    <table cellspacing="0" cellpadding="0">
+    <table id="categories" cellspacing="0" cellpadding="0">
         <thead>
             <th><g:message code="product.category.th.name"/></th>
             <th class="small"><g:message code="product.category.th.type"/></th>

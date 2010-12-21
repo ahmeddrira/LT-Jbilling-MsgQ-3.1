@@ -138,7 +138,7 @@ function reset() {
  * @param element in the same column as the selected row
  */
 function getSelectedElementId(element) {
-    var column = $(element).parents('.column-hold')[0];
+    var column = $(element).is('.column-hold') ? element : $(element).parents('.column-hold')[0];
     return $(column).find('.table-box .active').attr('id');
 }
 
@@ -151,8 +151,8 @@ function getSelectedElementId(element) {
  * object id.
  *
  * E.g.,
- *      <li id="user-123" class="active"></li>
- *      <li id="user-456"></li>
+ *      <tr id="user-123" class="active"></tr>
+ *      <tr id="user-456"></tr>
  *
  *      getSelectedId(this);   #=>   "123"
  *

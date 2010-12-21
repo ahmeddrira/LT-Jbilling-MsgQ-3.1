@@ -9,7 +9,7 @@
 --%>
 
 <div class="table-box">
-    <table cellspacing="0" cellpadding="0">
+    <table id="users" cellspacing="0" cellpadding="0">
         <thead>
             <th><g:message code="customer.table.th.name"/></th>
             <th class="small"><g:message code="customer.table.th.user.id"/></th>

@@ -138,8 +138,8 @@ function reset() {
  * @param element in the same column as the selected row
  */
 function getSelectedElementId(element) {
-    var column = $(element).parents('.column-hold')[0];
-    return $(column).find('.table-box li.active').attr('id');
+    var column = $(element).is('.column-hold') ? element : $(element).parents('.column-hold')[0];
+    return $(column).find('.table-box .active').attr('id');
 }
 
 /**
@@ -151,8 +151,8 @@ function getSelectedElementId(element) {
  * object id.
  *
  * E.g.,
- *      <li id="user-123" class="active"></li>
- *      <li id="user-456"></li>
+ *      <tr id="user-123" class="active"></tr>
+ *      <tr id="user-456"></tr>
  *
  *      getSelectedId(this);   #=>   "123"
  *
@@ -163,16 +163,34 @@ function getSelectedId(element) {
     return elementId ? elementId.replace(/\D+/, "") : undefined;
 }
 
+/**
+ * Fixes scrollable table <tbody> height so that overflow can scroll. Tables that do
+ * not need scrolling will not have their height adjusted.
+ */
+function setTableBodyHeight() {
+    $('.table-box table tbody').each(function() {
+        if ($(this).height() > 600)
+            $(this).height(600)
+    });
+}
+
 $(document).ready(function() {
     /*
         Highlight clicked rows in table lists and store the selected row id.
      */
-    $('body').delegate('.table-box li', 'click', function() {
-        var column = $(this).parents('.column-hold')[0];
-
-        $(column).find('.table-box li.active').attr('class', '');
-        $(this).attr('class', 'active');
+    $('body').delegate('.table-box tr', 'click', function() {
+        var box = $(this).parents('.table-box')[0];
+        $(box).find('tr.active').removeClass('active');
+        $(this).addClass('active');
     });
+
+    /*
+        Fix table body height so that overflow can scroll
+     */
+    $(document).ajaxSuccess(function() {
+        setTableBodyHeight();
+    });
+    setTableBodyHeight();
 
     /*
         Adjust panel width when window is re-sized.
@@ -190,4 +208,5 @@ $(document).ready(function() {
         }
     });
 });
+
 

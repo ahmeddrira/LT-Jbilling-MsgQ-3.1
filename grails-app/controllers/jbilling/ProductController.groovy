@@ -35,6 +35,8 @@ class ProductController {
         def products = params.id ? getItemsByTypeId(params.int('id'), filters) : null
         def categoryId = products?.get(0)?.itemTypes?.asList()?.get(0)?.id
 
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
+
         if (params.applyFilter) {
             render template: 'products', model: [ products: products, selectedCategoryId: categoryId ]
         } else {
@@ -62,9 +64,11 @@ class ProductController {
             def filters = filterService.getFilters(FilterType.PRODUCT, params)
             def products = getItemsByTypeId(params.int('id'), filters)
 
+            breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
+
             if (!products) {
                 flash.info = 'product.category.no.products.warning'
-                flash.args = [params.id]
+                flash.args = [ params.id ]
             }
 
             render template: 'products', model: [ products: products, selectedCategoryId: params.id ]
@@ -145,6 +149,7 @@ class ProductController {
     def show = {
         ItemDTO product = ItemDTO.get(params.int('id'))
         recentItemService.addRecentItem(product?.id, RecentItemType.PRODUCT)
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
         if (params.template) {
             // render requested template, usually "_show.gsp"
@@ -154,8 +159,11 @@ class ProductController {
             // render default "list" view - needed so a breadcrumb can link to a product by id
             def filters = filterService.getFilters(FilterType.PRODUCT, params)
             def categories = getCategories();
-            def products = getItemsByTypeId(categoryId, filters);
-            render view: 'list', model: [ categories: categories, products: products, selectedProduct: product, selectedCategoryId: params.category, filters: filters ]
+
+            def productCategoryId = params.category ?: product?.itemTypes?.asList()?.get(0)?.id
+            def products = getItemsByTypeId(productCategoryId, filters);
+
+            render view: 'list', model: [ categories: categories, products: products, selectedProduct: product, selectedCategoryId: productCategoryId, filters: filters ]
         }
     }
 
@@ -168,7 +176,7 @@ class ProductController {
 
             log.debug("Deleted item category ${params.id}.");
 
-            flash.message= 'item.category.deleted'
+            flash.message = 'product.category.deleted'
             flash.args = [ params.id ]
         }
 
@@ -185,7 +193,7 @@ class ProductController {
 
             log.debug("Deleted item ${params.id}.");
 
-            flash.message = 'item.delete.success'
+            flash.message = 'product.deleted'
             flash.args = [ params.id ]
         }
 
@@ -206,9 +214,7 @@ class ProductController {
     def editCategory = {
         def category = params.id ? ItemTypeDTO.get(params.id) : null
 
-        // edit category uses a command form, breadcrumb cannot be provided by the client
-        def name = params.id ? 'update' : 'create'
-        breadcrumbService.addBreadcrumb(controllerName, actionName, name, params.id)
+        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
 
         [ category : category ]
     }
@@ -222,7 +228,7 @@ class ProductController {
         // grails has issues binding the ID for ItemTypeWS object...
         // bind category ID manually
         bindData(category, params, 'id')
-        category.id = !params.id?.equals('') ? params.id.toInteger() : null
+        category.id = !params.id?.equals('') ? params.int('id') : null
 
         // save or update
         try {
@@ -258,6 +264,8 @@ class ProductController {
         def product = params.id ? ItemDTO.get(params.id) : null
         def currencies = getCurrencies()
 
+        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
+
         [ product: product, currencies: currencies, categoryId: params.category ]
     }
 
@@ -273,7 +281,7 @@ class ProductController {
         // bind parameters with odd types (integer booleans, string integers  etc.)
         product.priceManual = params.priceManual ? 1 : 0
         product.hasDecimals = params.hasDecimals ? 1 : 0
-        product.percentage = !params.percentage?.equals("") ? params.percentage : null
+        product.percentage = !params.percentage?.equals('') ? params.percentage : null
 
         // bind prices
         def prices = params.prices.collect { currencyId, price ->

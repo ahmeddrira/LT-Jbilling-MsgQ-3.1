@@ -59,10 +59,15 @@ class BreadcrumbService implements InitializingBean {
      * Add a new breadcrumb to the breadcrumb list for the currently logged in user and
      * update the session list.
      *
-     * @param controller breadcrumb controller
-     * @param action breadcrumb action
-     * @param name breadcrumb message key name
-     * @param objectId breadcrumb entity id
+     * The resulting breadcrumb link is generated using the 'g:link' grails tag. The same
+     * parameter requirements for g:link apply here as well. A breadcrumb MUST have a controller,
+     * but action and ID are optional. the name parameter is used to control the translated breadcrumb
+     * message and is optional.
+     *
+     * @param controller breadcrumb controller (required)
+     * @param action breadcrumb action, may be null
+     * @param name breadcrumb message key name, may be null
+     * @param objectId breadcrumb entity id, may be null.
      */
     def void addBreadcrumb(String controller, String action, String name, Integer objectId) {
         addBreadcrumb(new Breadcrumb(controller: controller, action: action, name: name, objectId: objectId))

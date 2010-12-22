@@ -17,7 +17,9 @@
         <!-- show empty block -->
         <div class="heading"><strong><em><g:message code="product.category.not.selected.title"/></em></strong></div>
         <div class="box"><em><g:message code="product.category.not.selected.message"/></em></div>
-        <div class="btn-box"></div>
+        <div class="btn-box">
+            <g:remoteLink action="allProducts" update="column2" class="submit show"><span><g:message code="button.show.all"/></span></g:remoteLink>
+        </div>
     </g:else>
 </content>
 

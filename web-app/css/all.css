@@ -551,8 +551,8 @@ table {
 	margin:0 10px 0 0;
 }
 .msg-box p {
-	margin:0;
 	color:#40454d;
+    margin: 3px 0 0 50px;
 }
 .msg-box strong {
 	color:#40454d;
@@ -682,7 +682,7 @@ table {
 }
 .btn-box {
 	overflow:hidden;
-	height:1%;
+	height:22px;
 	padding:6px;
 	background:#f6f6f6;
 	border:1px solid #bbb;
@@ -711,10 +711,86 @@ table {
 	padding-right:10px;
 	white-space:nowrap;
 }
+/* list tables */
 .table-box {
+    height: 631px;
+    overflow: hidden;
 	border:solid #bbb;
 	border-width:0 1px;
 }
+.table-box table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+}
+.table-box thead {
+	background:url(../images/bg-heading.gif) repeat-x;
+	border:1px solid #1b437d;
+	padding:0 9px 0 10px;
+	height:30px;
+}
+.table-box thead th {
+    color: #fff;
+    text-align: left;
+    padding: 4px 9px;
+}
+.table-box thead th.large {width: 300px;}
+.table-box thead th.medium {width: 120px;}
+.table-box thead th.small {width: 60px;}
+.table-box thead th.tiny {width: 40px;}
+.table-box tbody {
+    /* height set by javascript to show scroll */
+    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.table-box tbody tr {
+	display: table-row;
+    vertical-align: middle;
+    background: #bbb url(../images/bg-gradient.gif) repeat-x;
+}
+.table-box tbody tr.active {
+    background: #bbb url(../images/bg-gradient2.gif) repeat-x;
+}
+.table-box tbody tr em {
+	display:block;
+}
+.table-box tbody tr strong {
+	font-size:14px;
+	font-weight:normal;
+}
+.table-box tbody tr.active strong {
+	font-weight:bold;
+}
+.table-box tbody td {
+    height: 50px;
+    text-align: left;
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0 9px;
+}
+.table-box td a {
+	color:#383838;
+}
+.table-box td a.cell {
+    display:block;
+    overflow:hidden;
+	height:33px;
+	padding-top:15px;
+}
+.table-box td a.cell.double {
+    height:40px;
+    padding-top:8px;
+}
+.table-box td a:hover {text-decoration:none;}
+.table-box .center {text-align: center;}
+.table-box .left {text-align: left;}
+.table-box .right {text-align: right;}
+/*
+    @Deprecated
+    todo: moving to table based lists... remove ul styles later
+*/
 .table-box ul {
 	margin:0;
 	padding:0;

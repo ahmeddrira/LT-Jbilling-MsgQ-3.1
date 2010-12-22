@@ -6,25 +6,32 @@
   @since  16-Dec-2010
 --%>
 
-<div class="heading table-heading">
-    <strong class="name"><g:message code="product.th.name"/></strong>
-    <strong style="width: 120px"><g:message code="product.th.internal.number"/></strong>
-</div>
+<div class="table-box">
+    <table id="products" cellspacing="0" cellpadding="0">
+        <thead>
+            <th><g:message code="product.th.name"/></th>
+            <th class="medium"><g:message code="product.th.internal.number"/></th>
+        </thead>
+        <tbody>
+            <g:each var="product" in="${products}">
 
-<div id="products" class="table-box">
-    <ul>
-        <g:each var="product" in="${products}">
-            <li id="product-${product.id}" <g:if test="${selectedProduct?.id == product.id}">class="active"</g:if>>
-                <g:remoteLink breadcrumb="id" action="show" id="${product.id}" params="['template': 'show', 'category': selectedCategoryId]" before="register(this);" onSuccess="render(data, next);">
-                    <span class="block last left" style="width: 120px">
-                        <span>${product.internalNumber}</span>
-                    </span>
-                    <strong>${product.getDescription(session['language_id'])}</strong>
-                    <em><g:message code="product.id.label" args="[product.id]"/></em>
-                </g:remoteLink>
-            </li>
-        </g:each>
-    </ul>
+                <tr id="product-${product.id}" class="${selectedProduct?.id == product.id ? 'active' : ''}">
+                    <td>
+                        <g:remoteLink class="cell double" action="show" id="${product.id}" params="['template': 'show', 'category': selectedCategoryId]" before="register(this);" onSuccess="render(data, next);">
+                            <strong>${product.getDescription(session['language_id'])}</strong>
+                            <em><g:message code="product.id.label" args="[product.id]"/></em>
+                        </g:remoteLink>
+                    </td>
+                    <td>
+                        <g:remoteLink class="cell" action="show" id="${product.id}" params="['template': 'show', 'category': selectedCategoryId]" before="register(this);" onSuccess="render(data, next);">
+                            <span>${product.internalNumber}</span>
+                        </g:remoteLink>
+                    </td>
+                </tr>
+
+            </g:each>
+        </tbody>
+    </table>
 </div>
 
 <g:if test="${products?.totalCount > params.max}">
@@ -36,7 +43,7 @@
 
 <div class="btn-box">
     <g:if test="${selectedCategoryId}">
-        <g:link action="editProduct" params="['category': selectedCategoryId]" breadcrumb="{'name': 'create'}" class="submit add"><span><g:message code="button.create.product"/></span></g:link>
+        <g:link action="editProduct" params="['category': selectedCategoryId]" class="submit add"><span><g:message code="button.create.product"/></span></g:link>
         <a onclick="showConfirm(${selectedCategoryId});" class="submit delete"><span><g:message code="button.delete.category"/></span></a>
         <g:remoteLink action="allProducts" update="column2" class="submit show"><span><g:message code="button.show.all"/></span></g:remoteLink>
     </g:if>

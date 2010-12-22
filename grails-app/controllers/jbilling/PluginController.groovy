@@ -21,11 +21,13 @@ import org.springframework.security.access.annotation.Secured
 @Secured(['isAuthenticated()'])
 class PluginController {
     
+    // all automatically injected by Grails. Thanks.
     WebServicesSessionSpringBean webServicesSession;
     ReloadableResourceBundleMessageSource messageSource
     PluggableTaskDAS pluggableTaskDAS
     ViewUtils viewUtils
     RecentItemService recentItemService;
+    BreadcrumbService breadcrumbService;
     
     def index = { 
         redirect (action:listCategories)
@@ -35,6 +37,7 @@ class PluginController {
      * Lists all the categories. The same for every company
      */
     def listCategories ={
+        breadcrumbService.addBreadcrumb("plugin", "listCategories", null, null);
         List categorylist= PluggableTaskTypeCategoryDTO.list();
         log.info "Categories found= " + categorylist?.size()
         render (view:"categories", model:[categories:categorylist])
@@ -53,6 +56,7 @@ class PluginController {
             Integer categoryId = Integer.valueOf(params["id"]);
             log.info "Category Id selected=" + categoryId
             
+            breadcrumbService.addBreadcrumb("plugin", "plugins", null, categoryId);
             def lstByCateg= pluggableTaskDAS.findByEntityCategory(entityId, categoryId);
             
             log.info "number of plug-ins=" + lstByCateg.size();
@@ -73,10 +77,12 @@ class PluginController {
     
     def show = {
         Integer taskId = params.id.toInteger();
+        breadcrumbService.addBreadcrumb("plugin", "show", null, taskId);
         PluggableTaskDTO dto = pluggableTaskDAS.find(taskId);
         if (params.template == 'show') {
             render template: "show", model:[plugin:dto]
         } else {
+            // its being called by the breadcrumbs
             showListAndPlugin(taskId);
         }
     }
@@ -179,6 +185,7 @@ class PluginController {
     def edit = {
         PluggableTaskDTO dto =  pluggableTaskDAS.find(params.id as Integer);
         if (dto != null) {
+            breadcrumbService.addBreadcrumb("plugin", "edit", null, dto.getId());
             recentItemService.addRecentItem(dto.getId(), RecentItemType.PLUGIN);
             PluggableTaskTypeCategoryDTO category =  dto.getType().getCategory();
             render (view:"form", model:
@@ -205,11 +212,7 @@ class PluginController {
         redirect (action:listCategories)
     }
     
-    // the next methods is to support the 'Recent Items'
-    def select = {
-        show();
-    }
-    
+    // the next method is to support the 'Recent Items'
     def list = {
         showListAndPlugin(params.id as Integer);
     }

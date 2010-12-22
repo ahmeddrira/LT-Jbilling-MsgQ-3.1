@@ -119,7 +119,6 @@ ${invoice.customerNotes }
                   'controller':'invoice',
                   'action':'delete',
                   'id':invoice.id,
-                  'formParams': ['_userId': _userId, 'X':'X'],
                  ]"/>
 
 </div>

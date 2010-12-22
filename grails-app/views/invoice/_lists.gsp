@@ -13,9 +13,9 @@
         </thead>
         <tbody>
 			<g:each var="inv" in="${invoices}">
-				<tr id="product-${inv.id}">
+				<tr id="product-${inv.id}"  class="${invoice?.id == inv.id ? 'active' : ''}">
 	            	<td>
-						<g:remoteLink breadcrumb="id" class="cell double" action="show" id="${inv.id}" params="[userId: userId]"
+						<g:remoteLink breadcrumb="id" class="cell double" action="show" id="${inv.id}" params="['template': 'show']"
 			     			before="register(this);" onSuccess="render(data, next);">
 							<span>
 								${Util.formatDate(inv?.getCreateDatetime(), session["user_id"]) }
@@ -23,7 +23,7 @@
 						</g:remoteLink>
 					</td>
 					<td>
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="[userId: userId]"
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 			     			before="register(this);" onSuccess="render(data, next);">
 							<span>
 								${Util.formatDate(inv?.dueDate, session["user_id"]) }
@@ -31,7 +31,7 @@
 						</g:remoteLink>
 					</td>
 					<td>
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="[userId: userId]"
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 				     			before="register(this);" onSuccess="render(data, next);">
 							<span>
 								${inv.id }
@@ -39,7 +39,7 @@
 						</g:remoteLink>
 					</td>
 					<td>
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="[userId: userId]"
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 				     			before="register(this);" onSuccess="render(data, next);">
 							<span>
 								${inv.number }
@@ -47,7 +47,7 @@
 						</g:remoteLink>
 					</td>
 					<td>
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="[userId: userId]"
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 				     			before="register(this);" onSuccess="render(data, next);">
 							<span>
 								${inv.getInvoiceStatus().getDescription(session['language_id']) }
@@ -55,7 +55,7 @@
 						</g:remoteLink>
 					</td>
 					<td>
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="[userId: userId]"
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 				     			before="register(this);" onSuccess="render(data, next);">
 							<span>
 								<g:if test="${null == inv.total }">&nbsp;</g:if>
@@ -69,7 +69,7 @@
 						</g:remoteLink>
 					</td>
 					<td>
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="[userId: userId]"
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 				     			before="register(this);" onSuccess="render(data, next);">
 							<span>
 								<g:if test="${null == inv.balance }">&nbsp;</g:if>
@@ -91,7 +91,7 @@
 
 <g:if test="${invoices?.totalCount > params.max}">
     <div class="pager-box">
-        <util:remotePaginate controller="invoice" action="list" id="${userId == null ? '' : userId}" total="${invoces.totalCount}" update="column2"/>
+        <util:remotePaginate controller="invoice" action="list" total="${invoces.totalCount}" update="column2"/>
     </div>
 </g:if>
 

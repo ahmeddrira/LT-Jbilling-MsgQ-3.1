@@ -37,7 +37,11 @@ class FilterFactory {
             new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'id', template: 'id', visible: true)
         ],
         INVOICE: [
-
+			//new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'id', template: 'product/internalNumber', visible: true),
+			//new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'number', template: 'product/decimals', visible: true),
+			//new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'dueDate', template: 'product/manualPrice', visible: true),
+			new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'created', visible: true),
+			new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'baseUser.id', template: 'invoice/userId', visible: true)
         ],
         ORDER: [
 

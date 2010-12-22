@@ -37,8 +37,15 @@
             <td><g:message code="plugins.plugin.order"/></td>
             <td class="value">${plugin.getProcessingOrder()}</td>
            </tr>
+           <g:if test="!${plugin.parameters}">
+           <tr>
+            <td><g:message code="plugins.plugin.noParamaters"/></td>
+            <td class="value"><g:message code="plugins.plugin.noParamatersTxt"/></td>
+           </tr>
+           </g:if>
         </table>
         
+        <g:if test="${plugin.parameters}">
         <table class="innerTable">
              <thead class="innerHeader">
              <tr>
@@ -55,6 +62,7 @@
              </g:each>
              </tbody>
         </table>
+        </g:if>
     </div>
 
     <g:render template="/confirm" 

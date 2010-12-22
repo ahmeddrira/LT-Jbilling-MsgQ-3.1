@@ -1369,3 +1369,37 @@ div.box-text {
 .optionsDivVisible a:hover {
 	color:#0e61b1;
 }
+
+/* Data in the right section */
+.dataTable {
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    line-height:22px;
+}
+
+td.value {
+    margin: 0;
+	font-weight: bold;	
+	padding-left:10px;
+}
+
+/* an inner table */
+.innerTable {
+	margin: 10px auto 0 auto;
+	width: 80%;
+    border: 1px solid #BBB;
+}
+.innerHeader {
+    height: 30px;
+    background: url(../images/bg-gradient3.gif) repeat-x;
+    font-size: 14px;
+    font-weight: bold;
+	color: #383838;
+	line-height: 30px;
+}
+
+.innerContent {
+    text-align:center;
+	padding:3px 0px 10px;
+}

@@ -16,6 +16,7 @@ import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
 class CustomerInspectorController {
 	
 	IWebServicesSessionBean webServicesSession
+	def filterService
 	ViewUtils viewUtils
 	Integer languageId= session["language_id"]
 	
@@ -126,14 +127,18 @@ class CustomerInspectorController {
 
 	def invoices= {
 		int _id= params._id?.toInteger();
-		log.info "Redirecting to get invoices for id " + _id
-		redirect (controller:"invoice", action: "lists", id:_id)
+		log.info "Redirecting to get invoices for User ID " + _id
+		def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUser.id', template: 'invoice/userId', visible: true, integerValue: _id)
+		filterService.setFilter(FilterType.INVOICE, filter)
+		redirect (controller:"invoice", action: "list")
 	}
+
 	def payments= {
 		int _id= params._id?.toInteger();
 		log.info "Redirecting to get payments for id " + _id
 		render "Show payments here."
 	}
+	
 	def orders= {
 		OrderWS[] orders=webServicesSession.getUserSubscriptions(params._id?.toInteger())
 		log.info "found " + orders?.length + " orders"
@@ -143,9 +148,11 @@ class CustomerInspectorController {
 		Integer userId= params._id?.toInteger()
 		redirect(controller:"user", action:"edit",id:userId)
 	}
+	
 	def makePayment= {
 		render "make payment screen "
 	}
+	
 	def createOrder= {
 		render "create Order screen " 
 	}

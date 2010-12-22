@@ -95,7 +95,7 @@ function Close_Popup() {
 	<div id="popup" style="display: none;"></div>
 	<div id="window" style="display: none;">
 		<div id="popup_content">
-			<h1><g:message code="invoice.prompt.delete"/></h1>
+			<h1><g:message code="button.delete.invoice"/></h1>
 			<p><g:message code="invoice.prompt.are.you.sure"/></p>
 			<h6>This action is not reversible</h6>
 			<g:actionSubmit value="Delete Invoice" action="delete" class="form_button"

@@ -17,13 +17,13 @@
 
                 <tr id="product-${product.id}" class="${selectedProduct?.id == product.id ? 'active' : ''}">
                     <td>
-                        <g:remoteLink breadcrumb="id" class="cell double" action="show" id="${product.id}" params="['template': 'show', 'category': selectedCategoryId]" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell double" action="show" id="${product.id}" params="['template': 'show', 'category': selectedCategoryId]" before="register(this);" onSuccess="render(data, next);">
                             <strong>${product.getDescription(session['language_id'])}</strong>
                             <em><g:message code="product.id.label" args="[product.id]"/></em>
                         </g:remoteLink>
                     </td>
                     <td>
-                        <g:remoteLink breadcrumb="id" class="cell" action="show" id="${product.id}" params="['template': 'show', 'category': selectedCategoryId]" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell" action="show" id="${product.id}" params="['template': 'show', 'category': selectedCategoryId]" before="register(this);" onSuccess="render(data, next);">
                             <span>${product.internalNumber}</span>
                         </g:remoteLink>
                     </td>
@@ -43,7 +43,7 @@
 
 <div class="btn-box">
     <g:if test="${selectedCategoryId}">
-        <g:link action="editProduct" params="['category': selectedCategoryId]" breadcrumb="{'name': 'create'}" class="submit add"><span><g:message code="button.create.product"/></span></g:link>
+        <g:link action="editProduct" params="['category': selectedCategoryId]" class="submit add"><span><g:message code="button.create.product"/></span></g:link>
         <a onclick="showConfirm(${selectedCategoryId});" class="submit delete"><span><g:message code="button.delete.category"/></span></a>
         <g:remoteLink action="allProducts" update="column2" class="submit show"><span><g:message code="button.show.all"/></span></g:remoteLink>
     </g:if>

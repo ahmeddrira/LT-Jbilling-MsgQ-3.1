@@ -19,13 +19,13 @@
 
                 <tr id="category-${category.id}" class="${selectedCategoryId == category.id ? 'active' : ''}">
                     <td>
-                        <g:remoteLink breadcrumb="{'action':'list'}" class="cell double" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell double" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
                             <strong>${category.description}</strong>
                             <em><g:message code="product.category.id.label" args="[category.id]"/></em>
                         </g:remoteLink>
                     </td>
                     <td>
-                        <g:remoteLink breadcrumb="{'action':'list'}" class="cell" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
                             <span>${lineType.description}</span>
                         </g:remoteLink>
                     </td>

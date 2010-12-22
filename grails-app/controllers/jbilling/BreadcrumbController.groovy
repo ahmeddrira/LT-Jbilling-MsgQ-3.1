@@ -32,7 +32,6 @@ class BreadcrumbController {
     def breadcrumbService
 
     def index = {
-        breadcrumbService.addBreadcrumb(params.c, params.a, params.name, params.int("id"))
         render template: "/layouts/includes/breadcrumbs"
     }
 }

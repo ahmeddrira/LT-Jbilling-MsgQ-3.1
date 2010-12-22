@@ -5,16 +5,8 @@
     <g:javascript library="panels"/>
 
     <script type="text/javascript">
-        /*
-            AJAX callbacks for error messages and the recent item list updates
-         */
         $(document).ajaxSuccess(function(e, xhr, settings) {
-            $.ajax({
-                url: "${resource(dir:'')}/messages",
-                global: false,
-                success: function(data) { $("#messages").replaceWith(data); }
-            });
-
+            // ajax support for recent items list
             $.ajax({
                 url: "${resource(dir:'')}/recentItem",
                 global: false,

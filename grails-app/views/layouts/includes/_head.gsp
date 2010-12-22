@@ -17,7 +17,24 @@
 <g:javascript library="jquery" plugin="jquery"/>
 <jqui:resources themeCss="/jbilling/jquery-ui/themes/jbilling/jquery-ui-1.8.6.custom.css"/>
 
-<g:javascript library="breadcrumbs"/>
+<script type="text/javascript">
+    $(document).ajaxSuccess(function(e, xhr, settings) {
+        // ajax support for flash messages
+        $.ajax({
+            url: "${resource(dir:'')}/messages",
+            global: false,
+            success: function(data) { $("#messages").replaceWith(data); }
+       });
+
+        // ajax support for breadcrumbs
+        $.ajax({
+            url: "${resource(dir:'')}/breadcrumb",
+            global: false,
+            success: function(data) { $("#breadcrumbs").replaceWith(data); }
+       });
+    });
+</script>
+
 <g:javascript library="clearinput"/>
 <g:javascript library="slideBlock"/>
 <g:javascript library="main"/>

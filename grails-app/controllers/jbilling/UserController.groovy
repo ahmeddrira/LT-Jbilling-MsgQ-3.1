@@ -71,7 +71,9 @@ class UserController {
             }
         }
 
-        def selected = params["id"] ? UserDTO.get(params.int("id")) : null       
+        def selected = params.id ? UserDTO.get(params.int("id")) : null
+
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
         if (params["applyFilter"]) {
             render template: "table", model: [users: users, selected: selected, statuses: statuses, filters: filters ]
@@ -81,10 +83,11 @@ class UserController {
     }
 
     def select = {
-        recentItemService.addRecentItem(params.int("id"), RecentItemType.CUSTOMER)
-        UserDTO user = UserDTO.get(params.int("id"))
-        
-        render template: params["template"] ?: "details", model:[selected: user]
+        UserDTO user = UserDTO.get(params.int('id'))
+        recentItemService.addRecentItem(params.int('id'), RecentItemType.CUSTOMER)
+        breadcrumbService.addBreadcrumb(controllerName, 'list', params.template ?: null, params.int('id'))
+
+        render template: params.template ?: "details", model: [ selected: user ]
     }
 
     def subaccounts = {
@@ -103,11 +106,14 @@ class UserController {
     }
 
     def saveNotes = {
-        webServicesSession.saveCustomerNotes(Integer.valueOf(params["id"]), String.valueOf(params["notes"]));
+        webServicesSession.saveCustomerNotes(params.int('id'), params.notes);
         chain(action: "select", params: params)
     }
 
     def create = {
+
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
+
         UserWS newUser = new UserWS();
         bindData (newUser, params);
         ContactWS contact = new ContactWS()
@@ -133,6 +139,8 @@ class UserController {
     }
 
     def edit = {
+
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
         //languageId= webServicesSession.getCallerLanguageId().toString()
         log.info "Edit User: LanguageID=" + languageId

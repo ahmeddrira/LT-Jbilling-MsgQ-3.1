@@ -42,8 +42,11 @@ public class NameFilter implements BlacklistFilter {
     public Result checkUser(Integer userId) {
         ContactDTO userContact = new ContactDAS().findPrimaryContact(userId);
 
-        if (userContact.getFirstName() == null && 
-                userContact.getLastName() == null) {
+        if (userContact == null) {
+            return new Result(false, null);
+        }
+
+        if (userContact.getFirstName() == null && userContact.getLastName() == null) {
             return new Result(false, null);
         }
 

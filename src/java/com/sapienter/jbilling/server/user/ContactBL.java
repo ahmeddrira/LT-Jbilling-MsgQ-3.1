@@ -138,7 +138,7 @@ public class ContactBL {
     }
     
     public ContactDTOEx getDTO() {
-        
+
         ContactDTOEx retValue =  new ContactDTOEx(
             contact.getId(),
             contact.getOrganizationName(),
@@ -332,6 +332,16 @@ public class ContactBL {
     public void updatePrimaryForUser(ContactDTOEx dto, Integer userId) {
         contact = contactDas.findPrimaryContact(userId);
         update(dto);
+    }
+
+    public void createUpdatePrimaryForUser(ContactDTOEx dto, Integer userId, Integer entityId) {
+        contact = contactDas.findPrimaryContact(userId);
+
+        if (contact == null) {
+            createPrimaryForUser(dto, userId, entityId);
+        } else {
+            update(dto);
+        }
     }
     
     public void updateForUser(ContactDTOEx dto, Integer userId,

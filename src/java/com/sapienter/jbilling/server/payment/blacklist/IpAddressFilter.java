@@ -52,6 +52,11 @@ public class IpAddressFilter implements BlacklistFilter {
 
     public Result checkUser(Integer userId) {
         ContactDTO contact = new ContactDAS().findPrimaryContact(userId);
+
+        if (contact == null) {
+            return new Result(false, null);
+        }
+
         Set<ContactFieldDTO> contactFields = contact.getFields();
         String ipAddress = null;
 

@@ -52,7 +52,6 @@ public class UserWS implements WSSecured, Serializable {
     @Max(value = 0, message = "validation.error.max,0", groups = CreateValidationGroup.class)
     private int id;
     private Integer currencyId;
-    @NotNull(message="validation.error.notnull")
     @Size(min = 5, max = 40, message = "validation.error.size,5,40", groups = CreateValidationGroup.class)
     private String password;
     private int deleted;

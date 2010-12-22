@@ -1,10 +1,16 @@
-<%@ page import="com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.util.db.LanguageDTO" %>
+<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO; com.sapienter.jbilling.server.user.db.CompanyDTO; com.sapienter.jbilling.server.user.permisson.db.RoleDTO; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.util.db.LanguageDTO" %>
 <html>
 <head>
     <meta name="layout" content="main" />
 
     <script type="text/javascript">
-        // only allow one payment type to be marked as "preferred for automatic payment"
+        $(document).ready(function() {
+            $('.auto-payment').change(function() {
+                if ($(this).is(':checked')) {
+                    $('.auto-payment:checked').not(this).attr('checked', '');
+                }
+            });
+        });
     </script>
 </head>
 <body>
@@ -37,10 +43,10 @@
                             <g:hiddenField name="user.userId" value="${user?.userId}"/>
                         </g:applyLayout>
 
-                        <g:applyLayout name="form/text">
+                        <g:applyLayout name="form/select">
                             <content tag="label"><g:message code="prompt.customer.type"/></content>
-                            <span>${user?.role}</span>
-                            <g:hiddenField name="user.role" value="${user?.role}"/>
+                            <content tag="label.for">user.mainRoleId</content>
+                            <g:selectRoles name="user.mainRoleId" value="${user?.mainRoleId}" languageId="${session['language_id']}" />
                         </g:applyLayout>
 
                         <g:applyLayout name="form/input">
@@ -108,12 +114,22 @@
                         <g:set var="contact" value="${user?.contact}"/>
                         <g:hiddenField name="contact.id" value="${contact?.id}"/>
 
-                        <!-- todo: only show contact type when there are more than one type available -->
-                        <g:applyLayout name="form/text">
-                            <content tag="label"><g:message code="prompt.contact.type"/></content>
-                            <span>${contact?.type}</span>
-                            <g:hiddenField name="contact.type" value="${contact?.type}"/>
-                        </g:applyLayout>
+                        <g:set var="contactTypes" value="${ContactTypeDTO.findAllByEntity(new CompanyDTO(session['company_id']))}"/>
+
+                        <g:if test="${contactTypes.size > 1}">
+                            <g:applyLayout name="form/select">
+                                <content tag="label"><g:message code="prompt.contact.type"/></content>
+                                <g:select name="contact.type" from="${contactTypes}"
+                                          optionKey="id" optionValue="description" value="${contact?.type}"  />
+                            </g:applyLayout>
+                        </g:if>
+                        <g:else>
+                            <g:applyLayout name="form/text">
+                                <content tag="label"><g:message code="prompt.contact.type"/></content>
+                                <span>${contact?.type ?: contactTypes?.get(0)}</span>
+                                <g:hiddenField name="contact.type" value="${contact?.type ?: contactTypes?.get(0)}"/>
+                            </g:applyLayout>
+                        </g:else>
 
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.organization.name"/></content>

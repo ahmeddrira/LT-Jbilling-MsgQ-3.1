@@ -141,6 +141,9 @@ class UserController {
         [ user: user, currencies: currencies ]
     }
 
+    // todo: handle "exclude from aging" flag from edit screen
+    // todo: handle "include contact in notifications" flag from edit screen
+
     /**
      * Validate and save a user.
      */
@@ -182,9 +185,12 @@ class UserController {
                     render view: 'edit', model: [ user: user, currencies: currencies ]
                     return
                 }
-            } else {
-                // keep password the same
-                user.password = oldUser.password
+            }
+        } else {
+            if (!params.newPassword) {
+                flash.error = 'customer.create.without.password'
+                render view: 'edit', model: [ user: user, currencies: currencies ]
+                return
             }
         }
 
@@ -221,7 +227,7 @@ class UserController {
             viewUtils.resolveException(flash, session.locale, e)
         }
 
-        render view: 'edit', model: [ user: user, currencies: currencies ]
+        chain(action: 'list', params: [ id: user.userId ])
     }
 
     def bindExpiryDate(CreditCardDTO creditCard, params) {

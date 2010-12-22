@@ -42,6 +42,10 @@ public class AddressFilter implements BlacklistFilter {
     public Result checkUser(Integer userId) {
         ContactDTO contact = new ContactDAS().findPrimaryContact(userId);
 
+        if (contact == null) {
+            return new Result(false, null);
+        }
+
         if (contact.getAddress1() == null && contact.getAddress2() == null &&
                 contact.getCity() == null && contact.getStateProvince() == null &&
                 contact.getPostalCode() == null && contact.getCountryCode() == null) {

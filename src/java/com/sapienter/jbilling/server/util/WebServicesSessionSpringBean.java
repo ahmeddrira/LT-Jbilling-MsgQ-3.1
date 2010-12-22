@@ -595,9 +595,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         // now update the contact info
         if (user.getContact() != null) {
-            ContactBL cBl = new ContactBL();
-            cBl.updatePrimaryForUser(new ContactDTOEx(user.getContact()),
-                    user.getUserId());
+            new ContactBL().createUpdatePrimaryForUser(new ContactDTOEx(user.getContact()), user.getUserId(), entityId);
         }
 
         // and the credit card

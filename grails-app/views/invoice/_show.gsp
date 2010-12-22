@@ -16,7 +16,10 @@
 	<dl class="other">
 		<dt><g:message code="invoice.label.user.id"/>:</dt><dd>${user?.userId }</dd>
 		<dt><g:message code="invoice.label.login.name"/>:</dt><dd>${user?.userName}</dd>
-		<dt><g:message code="invoice.label.lifetime.revenue"/>:</dt><dd>${Util.formatMoney(totalRevenue,session["user_id"],invoice?.currencyId, false)}</dd>
+		<dt><g:message code="invoice.label.lifetime.revenue"/>:</dt>
+		<dd>
+			${Util.formatMoney((totalRevenue?: new BigDecimal("0.0")),session["user_id"],invoice?.currencyId, false)}
+		</dd>
 		<dt><g:message code="prompt.customer.note"/>:</dt>
 		<dd><br/>
 			${user?.notes}
@@ -29,11 +32,11 @@
 		<dt><g:message code="invoice.label.date"/></dt><dd>${Util.formatDate(invoice.createDateTime, session["user_id"])}</dd>
 		<dt><g:message code="invoice.label.duedate"/></dt><dd>${Util.formatDate(invoice.dueDate, session["user_id"])}</dd>
 		<dt><g:message code="invoice.label.gen.date"/></dt><dd>${Util.formatDate(invoice.createTimeStamp, session["user_id"])}</dd>
-		<dt><g:message code="invoice.label.amount"/></dt><dd>${Util.formatMoney(new BigDecimal(invoice.total),
+		<dt><g:message code="invoice.label.amount"/></dt><dd>${Util.formatMoney(new BigDecimal(invoice.total?: "0.0"),
 							session["user_id"],invoice?.currencyId, false)}</dd>
-		<dt><g:message code="invoice.label.balance"/></dt><dd>${Util.formatMoney(new BigDecimal(invoice.balance),
+		<dt><g:message code="invoice.label.balance"/></dt><dd>${Util.formatMoney(new BigDecimal(invoice.balance ?: "0.0"),
 							session["user_id"],invoice?.currencyId, false)}</dd>
-		<dt><g:message code="invoice.label.carried.bal"/></dt><dd>${Util.formatMoney(new BigDecimal(invoice.balance),
+		<dt><g:message code="invoice.label.carried.bal"/></dt><dd>${Util.formatMoney(new BigDecimal(invoice.balance ?: "0.0"),
 							session["user_id"],invoice?.currencyId, false)}</dd>
 		<dt><g:message code="invoice.label.currency"/></dt><dd>${invoice?.currencyId}</dd>
 		<dt><g:message code="invoice.label.payment.attempts"/></dt><dd>${invoice.paymentAttempts}</dd>
@@ -60,7 +63,7 @@
 				<label>${(int)line.quantity}</label>
 				<label>${Util.formatMoney(new BigDecimal(line.price?:"0.0"),
 								session["user_id"],invoice?.currencyId, false)}</label>
-				<label>${Util.formatMoney(new BigDecimal(line.amount),
+				<label>${Util.formatMoney(new BigDecimal(line.amount?: "0.0"),
 								session["user_id"],invoice?.currencyId, false)}</label>
 			</g:each>
 		</div>			  
@@ -85,7 +88,7 @@
 			<g:each var="payment" in="${payments}" status="idx">
 				<label>${Util.formatDate(payment.paymentDate, session["user_id"])}</label>
 				<label>${payment.isRefund?"R":"P"}</label>
-				<label>${Util.formatMoney(new BigDecimal(payment.amount),
+				<label>${Util.formatMoney(new BigDecimal(payment.amount?:"0.0"),
 								session["user_id"],invoice?.currencyId, false)}</label>
 				<label>${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</label>
 				<label>${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</label>
@@ -116,7 +119,7 @@ ${invoice.customerNotes }
                   'controller':'invoice',
                   'action':'delete',
                   'id':invoice.id,
-                  'formParams': ['_userId': userId],
+                  'formParams': ['_userId': _userId, 'X':'X'],
                  ]"/>
 
 </div>

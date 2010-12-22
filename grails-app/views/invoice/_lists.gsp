@@ -1,54 +1,99 @@
 <%@ page import="com.sapienter.jbilling.server.util.Util"%>
 
-<div class="heading table-heading">
-    <strong class="first"><g:message code="label.gui.date"/></strong>
-    <strong class="name" style="width:20%"><g:message code="invoice.label.duedate"/></strong>
-    <strong class="name" style="width:10%"><g:message code="invoice.label.id"/></strong>
-    <strong class="name" style="width:10%"><g:message code="#"/></strong>
-    <strong class="name" style="width:10%"><g:message code="invoice.label.status"/></strong>
-    <strong class="name" style="width:15%"><g:message code="invoice.label.amount"/></strong>
-    <strong class="name" style="width:20%"><g:message code="invoice.label.balance"/></strong>
-</div>
-
 <div class="table-box">
-	<ul>
-		<g:each var="inv" in="${invoices}">
-			<li>
-				<g:remoteLink action="show" id="${inv.id}" params="[userId: userId]"
-		     			before="register(this);" onSuccess="render(data, next);">
-				<strong>
-				${Util.formatDate(inv.createDateTime, session["user_id"]) }
-				</strong>
-				<strong>
-				${Util.formatDate(inv.dueDate, session["user_id"]) }
-				</strong>
-				<strong>
-				${inv.id }
-				</strong>
-				<strong>
-				${inv.number }
-				</strong>
-				<strong>
-				${inv.statusDescr }
-				</strong>
-				<strong>
-				${Util.formatMoney(new BigDecimal(inv.total),
-					session["user_id"],inv.currencyId, false)}
-				</strong>
-				<span class="block">
-					<span>
-				${Util.formatMoney(new BigDecimal(inv.balance),
-					session["user_id"],inv.currencyId, false)}
-				</span></span>
-				</g:remoteLink>
-			</li>
-		</g:each>
-	</ul>
+	<table id="invoices" cellspacing="0" cellpadding="0">
+		<thead>
+            <th><g:message code="label.gui.date"/></th>
+            <th class="medium"><g:message code="invoice.label.duedate"/></th>
+            <th class="medium"><g:message code="invoice.label.id"/></th>
+            <th class="medium">#</th> <!-- # for Invoice Number -->
+            <th class="medium"><g:message code="invoice.label.status"/></th>
+            <th class="medium"><g:message code="invoice.label.amount"/></th>
+            <th class="medium"><g:message code="invoice.label.balance"/></th>
+        </thead>
+        <tbody>
+			<g:each var="inv" in="${invoices}">
+				<tr id="product-${inv.id}">
+	            	<td>
+						<g:remoteLink breadcrumb="id" class="cell double" action="show" id="${inv.id}" params="[userId: userId]"
+			     			before="register(this);" onSuccess="render(data, next);">
+							<span>
+								${Util.formatDate(inv?.getCreateDatetime(), session["user_id"]) }
+							</span>
+						</g:remoteLink>
+					</td>
+					<td>
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="[userId: userId]"
+			     			before="register(this);" onSuccess="render(data, next);">
+							<span>
+								${Util.formatDate(inv?.dueDate, session["user_id"]) }
+							</span>
+						</g:remoteLink>
+					</td>
+					<td>
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="[userId: userId]"
+				     			before="register(this);" onSuccess="render(data, next);">
+							<span>
+								${inv.id }
+							</span>
+						</g:remoteLink>
+					</td>
+					<td>
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="[userId: userId]"
+				     			before="register(this);" onSuccess="render(data, next);">
+							<span>
+								${inv.number }
+							</span>
+						</g:remoteLink>
+					</td>
+					<td>
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="[userId: userId]"
+				     			before="register(this);" onSuccess="render(data, next);">
+							<span>
+								${inv.getInvoiceStatus().getDescription(session['language_id']) }
+							</span>
+						</g:remoteLink>
+					</td>
+					<td>
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="[userId: userId]"
+				     			before="register(this);" onSuccess="render(data, next);">
+							<span>
+								<g:if test="${null == inv.total }">&nbsp;</g:if>
+								<g:else>
+								${Util.formatMoney(new BigDecimal(inv.total),
+									session["user_id"],
+									inv.currencyId, 
+									false)}
+								</g:else>
+							</span>
+						</g:remoteLink>
+					</td>
+					<td>
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="[userId: userId]"
+				     			before="register(this);" onSuccess="render(data, next);">
+							<span>
+								<g:if test="${null == inv.balance }">&nbsp;</g:if>
+								<g:else>
+								${Util.formatMoney(new BigDecimal( inv.balance ),
+									session["user_id"],
+									inv.currencyId, 
+									false)}
+								</g:else>
+							</span>
+						</g:remoteLink>
+					</td>
+				</tr>
+			</g:each>
+		</tbody>
+	</table>
 </div>
 
-<!-- 
+
+<g:if test="${invoices?.totalCount > params.max}">
+    <div class="pager-box">
+        <util:remotePaginate controller="invoice" action="list" id="${userId == null ? '' : userId}" total="${invoces.totalCount}" update="column2"/>
+    </div>
+</g:if>
+
 <div class="btn-box">
-    <a href="#" class="submit delete">
-    	<span><g:message code="button.delete"/></span></a>
 </div>
- -->

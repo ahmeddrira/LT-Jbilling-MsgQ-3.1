@@ -111,7 +111,7 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
                     .add(Restrictions.eq("u.id", userId))
             		.createAlias("paymentResult", "pr")
             		.add(Restrictions.ne("pr.id", CommonConstants.PAYMENT_RESULT_FAILED));
-        criteria2.add(Restrictions.ne("isRefund", 1));
+        criteria2.add(Restrictions.eq("isRefund", 1));
         criteria2.setProjection(Projections.sum("amount"));
         criteria2.setComment("PaymentDAS.findTotalRevenueByUser-Gross Refunds");
         

@@ -1,21 +1,25 @@
-<div class="heading table-heading">
-    <strong style="width:100%"><g:message code="plugins.category.list.title"/></strong>
-</div>
-
 <div class="table-box">
-    <ul>
-		<g:each in="${categories}" status="idx" var="dto">
-		   <li>
-		     <g:remoteLink action="plugins" id="${dto.id}" before="register(this);" 
-		                   onSuccess="render(data, next);" params="[template:'show']">
-                 <strong>
-                    ${dto.getDescription(session['language_id'])}
-		         </strong>
-		         <em>
-                    ${dto.getInterfaceName()}
-		         </em>
-			 </g:remoteLink>
-		   </li>
-        </g:each>
-    </ul>
+<table cellpadding="0" cellspacing="0">
+    <thead>
+        <th><g:message code="plugins.category.list.title"/></th>
+    </thead>
+    <tbody>
+    <g:each in="${categories}" status="idx" var="dto">
+    <tr>
+        <td>
+        <g:remoteLink action="plugins" id="${dto.id}" before="register(this);" 
+                                   onSuccess="render(data, next);"
+                                   params="[template:'show']">
+             <strong>
+                ${dto.getDescription(session['language_id'])}
+		     </strong>
+		     <em>
+                ${dto.getInterfaceName()}
+		     </em>
+        </g:remoteLink>
+        </td>
+    </tr>
+    </g:each>
+    </tbody>
+</table>
 </div>

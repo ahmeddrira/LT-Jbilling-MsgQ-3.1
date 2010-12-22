@@ -30,13 +30,13 @@ class PluginController {
     BreadcrumbService breadcrumbService;
     
     def index = { 
-        redirect (action:listCategories)
+        listCategories();
     }
     
     /*
      * Lists all the categories. The same for every company
      */
-    def listCategories ={
+    def listCategories = {
         breadcrumbService.addBreadcrumb("plugin", "listCategories", null, null);
         List categorylist= PluggableTaskTypeCategoryDTO.list();
         log.info "Categories found= " + categorylist?.size()

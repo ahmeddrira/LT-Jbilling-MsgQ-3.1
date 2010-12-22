@@ -33,7 +33,7 @@ class ProductController {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
         def categories = getCategories()
         def products = params.id ? getItemsByTypeId(params.int('id'), filters) : null
-        def categoryId = products?.get(0)?.itemTypes?.asList()?.get(0)?.id
+        def categoryId = params.int('id') ?: products ? products.get(0)?.itemTypes?.asList()?.get(0)?.id : null
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
@@ -199,10 +199,10 @@ class ProductController {
 
         if (params.category) {
             // return the products list, pass the category so the correct set of products is returned.
-            chain(action: 'products', params: [ id: params.category ])
+            chain action: 'products', params: [ id: params.category ]
         } else {
             // no category means we deleted from the 'allProducts' view
-            chain(action: 'allProducts', params: params )
+            chain action: 'allProducts', params: params
         }
 
     }
@@ -251,9 +251,11 @@ class ProductController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
+            render view: 'editCategory', model: [ category : category ]
+            return
         }
 
-        render view: 'editCategory', model: [ category : category ]
+        chain action: 'list', params: [ id: category.id ]
     }
 
     /**
@@ -261,8 +263,7 @@ class ProductController {
      * this screen will allow creation of a new item.
      */
     def editProduct = {
-        def product = params.id ? ItemDTO.get(params.id) : null
-        def currencies = getCurrencies()
+        def product = params.id ? webServicesSession.getItem(params.int('id'), session['user_id'], null) : null
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
 
@@ -274,8 +275,6 @@ class ProductController {
      */
     def saveProduct = {
         def product = new ItemDTOEx()
-
-        // bind all parameters that start with "product."
         bindData(product, params, "product")
 
         // bind parameters with odd types (integer booleans, string integers  etc.)
@@ -288,6 +287,24 @@ class ProductController {
             new ItemPriceDTOEx(null, !price?.equals('') ? price.toBigDecimal() : null, currencyId.toInteger())
         }
         product.prices = prices
+
+        // todo: replace with custom validator annotations
+        ///      validate that at least one price has a set dollar value
+        //       validate that the type array is not empty (arrays are not supported by base hibernate validations!)
+
+        // validate that at least one price is set
+        if (!product.prices.any { it.price }) {
+            flash.error = 'product.without.price'
+            render view: 'editProduct', model: [ product: product, currencies: currencies ]
+            return
+        }
+
+        // validate that at least one type is set
+        if (!product.types) {
+            flash.error = 'product.without.type'
+            render view: 'editProduct', model: [ product: product, currencies: currencies ]
+            return
+        }
 
         // save or update
         try{
@@ -310,12 +327,11 @@ class ProductController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
+            render view: 'editProduct', model: [ product: product, currencies: currencies ]
+            return
         }
 
-        // todo: web service ItemDTOEX and the ItemDTO object used in the view are not interchangeable!
-        //       refactor the view so that we can just pass the edited product as a model instead of needing to query from the DB again
-
-        chain action: 'editProduct', params: [ id: product.id ]
+        chain action: 'show', params: [ id: product.id ]
     }
 
     def getCurrencies() {

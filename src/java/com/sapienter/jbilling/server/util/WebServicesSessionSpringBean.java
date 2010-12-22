@@ -1472,7 +1472,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         ItemBL helper = new ItemBL(itemId);
         List<PricingField> f = new ArrayList<PricingField>();
-        f.addAll(Arrays.asList(fields));
+        if (fields != null) f.addAll(Arrays.asList(fields));
         helper.setPricingFields(f);
 
         UserBL caller = new UserBL(getCallerId());

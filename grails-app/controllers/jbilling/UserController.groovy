@@ -225,9 +225,11 @@ class UserController {
             }
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
+            render view: 'edit', model: [ user: user, currencies: currencies ]
+            return
         }
 
-        chain(action: 'list', params: [ id: user.userId ])
+        chain action: 'list', params: [ id: user.userId ]
     }
 
     def bindExpiryDate(CreditCardDTO creditCard, params) {

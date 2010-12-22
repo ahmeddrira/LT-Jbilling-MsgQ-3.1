@@ -57,9 +57,8 @@
                             <content tag="label"><g:message code="product.categories"/></content>
                             <content tag="label.for">product.types</content>
 
-                            <g:set var="itemTypes" value="${product?.itemTypes?.collect { it.id } }"/>
                             <g:select name="product.types" multiple="true" from="${ItemTypeDTO.list()}"
-                                      optionKey="id" optionValue="description" value="${itemTypes ?: categoryId}" />
+                                      optionKey="id" optionValue="description" value="${product?.types ?: categoryId}" />
                         </g:applyLayout>
                     </div>
                 </div>
@@ -70,7 +69,7 @@
                 </div>
 
                 <!-- pricing controls -->
-                <div class="box-cards ${product?.itemPrices ? 'box-cards-open' : ''}">
+                <div class="box-cards box-cards-open">
                     <div class="box-cards-title">
                         <a class="btn-open" href="#"><span><g:message code="product.prices"/></span></a>
                     </div>
@@ -82,8 +81,8 @@
                                         <content tag="label">${currency.getDescription(session['language_id'])} <strong>${currency.symbol}</strong></content>
                                         <content tag="label.for">prices.${currency.id}</content>
 
-                                        <g:set var="itemPrice" value="${product?.itemPrices?.find { it.currencyDTO.id == currency.id }}"/>
-                                        <g:textField class="field" name="prices.${currency.id}" value="${formatNumber(number: itemPrice?.price, format:'#.00')}"/>
+                                        <g:set var="itemPrice" value="${product?.prices?.find { it.currencyId == currency.id }}"/>
+                                        <g:textField class="field" name="prices.${currency.id}" value="${formatNumber(number: itemPrice?.price, format:'#0.00')}"/>
                                     </g:applyLayout>
                                 </g:each>
                             </div>
@@ -92,7 +91,7 @@
                                 <g:applyLayout name="form/input">
                                     <content tag="label"><g:message code="product.percentage"/></content>
                                     <content tag="label.for">product.percentage</content>
-                                    <g:textField class="field" name="product.percentage" value="${formatNumber(number: product?.percentage, format:'#.00')}" size="5"/>
+                                    <g:textField class="field" name="product.percentage" value="${formatNumber(number: product?.percentage, format:'#0.00')}" size="5"/>
                                 </g:applyLayout>
 
                                 <g:applyLayout name="form/checkbox">

@@ -53,7 +53,7 @@
         </div>
     </g:if>
 
-    <!-- clear message once displayed -->
+    <%-- clear message once displayed --%>
     <g:set var="message" value="" scope="flash"/>
     <g:set var="info" value="" scope="flash"/>
     <g:set var="warn" value="" scope="flash"/>

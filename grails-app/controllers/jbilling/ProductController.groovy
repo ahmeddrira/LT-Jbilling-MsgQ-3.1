@@ -209,7 +209,7 @@ class ProductController {
 
     /**
      * Get the item category to be edited and show the "editCategory.gsp" view. If no ID is given
-     * this screen will allow creation of a new category.
+     * this view will allow creation of a new category.
      */
     def editCategory = {
         def category = params.id ? ItemTypeDTO.get(params.id) : null
@@ -319,7 +319,8 @@ class ProductController {
     }
 
     def getCurrencies() {
-        return new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
+        def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
+        return currencies.findAll { it.inUse }
     }
 
 }

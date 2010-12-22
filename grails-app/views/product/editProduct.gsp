@@ -55,6 +55,8 @@
 
                         <g:applyLayout name="form/select">
                             <content tag="label"><g:message code="product.categories"/></content>
+                            <content tag="label.for">product.types</content>
+
                             <g:set var="itemTypes" value="${product?.itemTypes?.collect { it.id } }"/>
                             <g:select name="product.types" multiple="true" from="${ItemTypeDTO.list()}"
                                       optionKey="id" optionValue="description" value="${itemTypes ?: categoryId}" />
@@ -76,15 +78,13 @@
                         <div class="form-columns">
                             <div class="column">
                                 <g:each var="currency" in="${currencies}">
-                                    <g:if test="${currency.inUse}">
-                                        <g:applyLayout name="form/input">
-                                            <content tag="label">${currency.getDescription(session['language_id'])} <strong>${currency.symbol}</strong></content>
-                                            <content tag="label.for">prices.${currency.id}</content>
+                                    <g:applyLayout name="form/input">
+                                        <content tag="label">${currency.getDescription(session['language_id'])} <strong>${currency.symbol}</strong></content>
+                                        <content tag="label.for">prices.${currency.id}</content>
 
-                                            <g:set var="itemPrice" value="${product?.itemPrices?.find { it.currencyDTO.id == currency.id }}"/>
-                                            <g:textField class="field" name="prices.${currency.id}" value="${formatNumber(number: itemPrice?.price, format:'#.00')}"/>
-                                        </g:applyLayout>
-                                    </g:if>
+                                        <g:set var="itemPrice" value="${product?.itemPrices?.find { it.currencyDTO.id == currency.id }}"/>
+                                        <g:textField class="field" name="prices.${currency.id}" value="${formatNumber(number: itemPrice?.price, format:'#.00')}"/>
+                                    </g:applyLayout>
                                 </g:each>
                             </div>
 

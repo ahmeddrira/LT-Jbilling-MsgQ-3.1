@@ -37,7 +37,7 @@
             <td><g:message code="plugins.plugin.order"/></td>
             <td class="value">${plugin.getProcessingOrder()}</td>
            </tr>
-           <g:if test="!${plugin.parameters}">
+           <g:if test="${plugin.parameters.size() == 0}">
            <tr>
             <td><g:message code="plugins.plugin.noParamaters"/></td>
             <td class="value"><g:message code="plugins.plugin.noParamatersTxt"/></td>

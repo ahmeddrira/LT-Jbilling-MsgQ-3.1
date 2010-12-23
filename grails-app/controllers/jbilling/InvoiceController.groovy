@@ -174,8 +174,10 @@ class InvoiceController {
 		if (invoiceId) {
 			try {
 				webServicesSession.deleteInvoice(invoiceId)
+				flash.message = 'invoice.delete.success'
+				flash.args= [invoiceId]
 			}  catch (Exception e) {
-				log.info (e.getMessage() + "\n${e.getClass().getName()}")
+				log.info (e.getMessage())
 				flash.error = 'error.invoice.delete'
 				flash.args= [params["id"]]
 				redirect(action: 'list', params:[id:userId])

@@ -66,10 +66,16 @@
 				<label>${Util.formatMoney(new BigDecimal(line.amount?: "0.0"),
 								session["user_id"],invoice?.currencyId, false)}</label>
 			</g:each>
-		</div>			  
+		</div>
 	</div>
 </div>
-
+<br/>
+<div class="btn-box">
+	<a onclick="" class="submit"><span><g:message code="button.invoice.pay"/></span></a>
+<!-- <a onclick="" class="submit"><span><g:message code="button.invoice.sendEmail"/></span></a>	 -->
+	<a onclick="" class="submit"><span><g:message code="button.invoice.downloadPdf"/></span></a>
+</div>
+<br/>
 <div class="heading">
 	<strong><g:message code="invoice.label.payment.refunds"/></strong>
 </div>

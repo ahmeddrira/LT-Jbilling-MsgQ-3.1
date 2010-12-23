@@ -9,11 +9,12 @@
 
 
 <div class="column-hold">
-    <!-- product info -->
     <div class="heading">
 	    <strong>${selectedProduct.internalNumber}</strong>
 	</div>
+
 	<div class="box">
+        <!-- product info -->
 		<dl class="other">
 			<dt><g:message code="product.detail.id"/></dt>
 			<dd>${selectedProduct.id}</dd>
@@ -34,23 +35,30 @@
 			<dt class="long"><em><g:message code="product.detail.decimal"/>:&nbsp;</em></dt>
 			<dd><em><g:formatBoolean boolean="${selectedProduct.hasDecimals > 0}"/> &nbsp;</em></dd>
 
-            <p><br/>${selectedProduct.description}</p>
+            <p class="description">
+                ${selectedProduct.description}
+            </p>
 		</dl>
-	</div>
 
-    <!-- product categories cloud -->
-    <div class="heading">
-        <strong><g:message code="product.detail.categories.title"/></strong>
+        <!-- product categories cloud -->
+        <div class="box-cards">
+            <div class="box-cards-title">
+                <span><g:message code="product.detail.categories.title"/></span>
+            </div>
+            <div class="box-card-hold">
+                <div class="content">
+                    <ul class="cloud">
+                        <g:each var="category" in="${selectedProduct.itemTypes}">
+                            <li>
+                                <g:link action="list" id="${category.id}">${category.description}</g:link>
+                            </li>
+                        </g:each>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="box">
-        <ul class="cloud">
-            <g:each var="category" in="${selectedProduct.itemTypes}">
-                <li>
-                    <g:link action="list" id="${category.id}">${category.description}</g:link>
-                </li>
-            </g:each>
-        </ul>
-    </div>
+
 
     <div class="btn-box">
         <g:link action="editProduct" id="${selectedProduct.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>

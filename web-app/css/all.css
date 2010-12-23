@@ -587,7 +587,7 @@ table {
 	border:solid #bbb;
 	border-width:0 1px;
 	overflow:hidden;
-	padding:11px 9px;
+	padding: 11px 9px 18px 9px;
 	height:1%;
 	position:relative;
 }
@@ -627,6 +627,10 @@ table {
 .column .box p {
 	margin:0;
 	line-height:16px;
+}
+.column .box p.description {
+    font-size: 14px;
+    padding: 18px 0;
 }
 .column .box dl {
 	margin:0;
@@ -1005,6 +1009,7 @@ ul.cloud li {
     margin: 3px;
     padding: 5px;
     text-align: center;
+    list-style: none;
 }
 ul.cloud li a {
     color: #eee;
@@ -1156,7 +1161,8 @@ ul.cloud li a {
     font-weight: bold;
     color: #383838;
     line-height: 30px;
-	padding-right:35px;	
+	padding-right:35px;
+    padding-left: 7px;
 }
 
 .box-cards-title a.btn-open {
@@ -1182,6 +1188,14 @@ ul.cloud li a {
 .box-cards .box-card-hold {
 	padding:0 0 25px;
 	border-top:1px solid #bbb;
+}
+.box-cards .content {
+    overflow: hidden;
+    padding: 14px 0 0;
+    width: auto;
+}
+.box-cards .content p {
+    padding: 0 9px;
 }
 .box-cards .form-columns label {
 	width:165px;

@@ -4,6 +4,10 @@
 
 <div class="column-hold">
 
+<div class="heading">
+<strong><g:message code="invoice.label.details"/></strong>
+</div>
+
 <!-- Invoice details -->
 <div class="box">
 
@@ -13,100 +17,116 @@
 		<em>${user?.companyName}</em>
 	</strong>
 
-	<dl class="other">
-		<dt><g:message code="invoice.label.user.id"/>:</dt><dd>${user?.userId }</dd>
-		<dt><g:message code="invoice.label.login.name"/>:</dt><dd>${user?.userName}</dd>
-		<dt><g:message code="invoice.label.lifetime.revenue"/>:</dt>
-		<dd>
+	<table class="dataTable">
+		<tr><td><g:message code="invoice.label.user.id"/>:</td><td class="value">${user?.userId }</td></tr>
+		<tr><td><g:message code="invoice.label.login.name"/>:</td><td class="value">${user?.userName}</td></tr>
+		<tr><td><g:message code="invoice.label.lifetime.revenue"/>:</td>
+		<td class="value">
 			${Util.formatMoney((totalRevenue?: new BigDecimal("0.0")),session["user_id"],invoice?.currencyId, false)}
-		</dd>
-		<dt><g:message code="prompt.customer.note"/>:</dt>
-		<dd><br/>
-			${user?.notes}
-		</dd>
-		<hr>
-		<dl>
-		<dt><g:message code="invoice.label.id"/></dt><dd>${invoice.id}</dd>
-		<dt><g:message code="invoice.label.number"/></dt><dd>${invoice.number}</dd>
-		<dt><g:message code="invoice.label.status"/></dt><dd>${invoice.statusDescr}</dd>
-		<dt><g:message code="invoice.label.date"/></dt><dd>${Util.formatDate(invoice.createDateTime, session["user_id"])}</dd>
-		<dt><g:message code="invoice.label.duedate"/></dt><dd>${Util.formatDate(invoice.dueDate, session["user_id"])}</dd>
-		<dt><g:message code="invoice.label.gen.date"/></dt><dd>${Util.formatDate(invoice.createTimeStamp, session["user_id"])}</dd>
-		<dt><g:message code="invoice.label.amount"/></dt><dd>${Util.formatMoney(new BigDecimal(invoice.total?: "0.0"),
-							session["user_id"],invoice?.currencyId, false)}</dd>
-		<dt><g:message code="invoice.label.balance"/></dt><dd>${Util.formatMoney(new BigDecimal(invoice.balance ?: "0.0"),
-							session["user_id"],invoice?.currencyId, false)}</dd>
-		<dt><g:message code="invoice.label.carried.bal"/></dt><dd>${Util.formatMoney(new BigDecimal(invoice.balance ?: "0.0"),
-							session["user_id"],invoice?.currencyId, false)}</dd>
-		<dt><g:message code="invoice.label.currency"/></dt><dd>${invoice?.currencyId}</dd>
-		<dt><g:message code="invoice.label.payment.attempts"/></dt><dd>${invoice.paymentAttempts}</dd>
-		<dt><g:message code="invoice.label.orders"/></dt><dd><g:each var="order" in="${invoice.orders}">
+		</td></tr>
+	</table>
+	<table class="dataTable"  width="50%">
+		<tr><td><g:message code="prompt.customer.note"/>:</td></tr>
+		<tr><td>${user?.notes}</td></tr>
+	</table>
+	<hr>
+	<table class="dataTable">
+		<tr><td><g:message code="invoice.label.id"/>:</td><td class="value">${invoice.id}</td></tr>
+		<tr><td><g:message code="invoice.label.number"/>:</td><td class="value">${invoice.number}</td></tr>
+		<tr><td><g:message code="invoice.label.status"/>:</td><td class="value">${invoice.statusDescr}</td></tr>
+		<tr><td><g:message code="invoice.label.date"/>:</td><td class="value">${Util.formatDate(invoice.createDateTime, session["user_id"])}</td></tr>
+		<tr><td><g:message code="invoice.label.duedate"/>:</td><td class="value">${Util.formatDate(invoice.dueDate, session["user_id"])}</td></tr>
+		<tr><td><g:message code="invoice.label.gen.date"/>:</td><td class="value">${Util.formatDate(invoice.createTimeStamp, session["user_id"])}</td></tr>
+		<tr><td><g:message code="invoice.label.amount"/>:</td><td class="value">${Util.formatMoney(new BigDecimal(invoice.total?: "0.0"),
+							session["user_id"],invoice?.currencyId, false)}</td></tr>
+		<tr><td><g:message code="invoice.label.balance"/>:</td><td class="value">${Util.formatMoney(new BigDecimal(invoice.balance ?: "0.0"),
+							session["user_id"],invoice?.currencyId, false)}</td></tr>
+		<tr><td><g:message code="invoice.label.carried.bal"/>:</td><td class="value">${Util.formatMoney(new BigDecimal(invoice.balance ?: "0.0"),
+							session["user_id"],invoice?.currencyId, false)}</td></tr>
+		<tr><td><g:message code="invoice.label.currency"/>:</td><td class="value">${invoice?.currencyId}</td></tr>
+		<tr><td><g:message code="invoice.label.payment.attempts"/>:</td><td class="value">${invoice.paymentAttempts}</td></tr>
+		<tr><td><g:message code="invoice.label.orders"/>:</td><td class="value"><g:each var="order" in="${invoice.orders}">
 			${order.toString()}&nbsp;
-		</g:each></dd>
-		<dt><g:message code="invoice.label.delegation"/></dt><dd>${delegatedInvoices}</dd>
-	</dl>
-
-<div class="heading">
-	<strong><g:message code="invoice.label.lines"/></strong>
+		</g:each></td></tr>
+		<tr><td><g:message code="invoice.label.delegation"/>:</td><td class="value">${delegatedInvoices}</td></tr>
+	</table>
 </div>
-<div class="box-cards box-cards-open">
-	<div class="box-cards-title">
-		<span><g:message code="label.gui.amount"/></span>
-		<span style="width:25%"><g:message code="label.gui.description"/></span>
-		<span style="width:25%"><g:message code="label.gui.quantity"/></span>
-		<span style="width:25%"><g:message code="label.gui.price"/></span>
+
+	<div class="heading">
+		<strong><g:message code="invoice.label.lines"/></strong>
 	</div>
-	<div class="box-card-hold">			   
-		<div class="form-columns">
-			<g:each var="line" in="${invoice.invoiceLines}" status="idx">
-				<label>${line.description}</label>
-				<label>${(int)line.quantity}</label>
-				<label>${Util.formatMoney(new BigDecimal(line.price?:"0.0"),
-								session["user_id"],invoice?.currencyId, false)}</label>
-				<label>${Util.formatMoney(new BigDecimal(line.amount?: "0.0"),
-								session["user_id"],invoice?.currencyId, false)}</label>
-			</g:each>
-		</div>			  
+	
+	<table class="innerTable" >
+		<thead class="innerHeader">
+	         <tr>
+	            <th align="left"><g:message code="label.gui.description"/></th>
+	            <th align="left"><g:message code="label.gui.quantity"/></th>
+	            <th align="left"><g:message code="label.gui.price"/></th>
+	            <th align="left"><g:message code="label.gui.amount"/></th>
+	         </tr>
+         </thead>
+         <tbody>
+		     <g:each var="line" in="${invoice.invoiceLines}" status="idx">
+		         <tr>
+		            <td align="left" class="innerContent">${line.description}</td>
+		            <td align="left" class="innerContent">${(int)line.quantity}</td>
+		            <td align="left" class="innerContent">${Util.formatMoney(new BigDecimal(line.price?:"0.0"),
+							session["user_id"],invoice?.currencyId, false)}</td>
+		            <td align="left" class="innerContent">${Util.formatMoney(new BigDecimal(line.amount?: "0.0"),
+							session["user_id"],invoice?.currencyId, false)}</td>
+		         </tr>
+	         </g:each>
+         </tbody>
+    </table>
+
+	<br/>
+
+	<div class="btn-box">
+		<a onclick="" class="submit"><span><g:message code="button.invoice.pay"/></span></a>
+		<!-- <a onclick="" class="submit"><span><g:message code="button.invoice.sendEmail"/></span></a> --> 
+		<a href="${createLink (action: 'downloadPdf', id: invoice.id)}" class="submit">
+			<span><g:message code="button.invoice.downloadPdf"/></span>
+		</a>
 	</div>
-</div>
-
-<div class="heading">
-	<strong><g:message code="invoice.label.payment.refunds"/></strong>
-</div>
-
-<div class="box-cards box-cards-open">
-	<div class="box-cards-title">
-		<span>.</span>
-		<span style="width:20%"><g:message code="label.gui.date"/></span>
-		<span style="width:20%"><g:message code="label.gui.payment.refunds"/></span>
-		<span style="width:20%"><g:message code="label.gui.amount"/></span>
-		<span style="width:20%"><g:message code="label.gui.method"/></span>
-		<span style="width:20%"><g:message code="label.gui.result"/></span>
+	<br/>
+	
+	<div class="heading">
+		<strong><g:message code="invoice.label.payment.refunds"/></strong>
 	</div>
-	<div class="box-card-hold">
-		<div class="form-columns">
-			<g:each var="payment" in="${payments}" status="idx">
-				<label>${Util.formatDate(payment.paymentDate, session["user_id"])}</label>
-				<label>${payment.isRefund?"R":"P"}</label>
-				<label>${Util.formatMoney(new BigDecimal(payment.amount?:"0.0"),
-								session["user_id"],invoice?.currencyId, false)}</label>
-				<label>${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</label>
-				<label>${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</label>
-				<label>*</label>
-			</g:each>			
-		</div>			  
+	
+	<table class="innerTable" >
+		<thead class="innerHeader">
+	         <tr>
+	            <th align="left"><g:message code="label.gui.date"/></th>
+				<th align="left"><g:message code="label.gui.payment.refunds"/></th>
+				<th align="left"><g:message code="label.gui.amount"/></th>
+				<th align="left"><g:message code="label.gui.method"/></th>
+				<th align="left"><g:message code="label.gui.result"/></th>
+				<th align="left">.</th>
+	         </tr>
+         </thead>
+         <tbody>
+		     <g:each var="payment" in="${payments}" status="idx">
+		         <tr>
+		         	<td align="left" class="innerContent">${Util.formatDate(payment.paymentDate, session["user_id"])}</td>
+					<td align="left" class="innerContent">${payment.isRefund?"R":"P"}</td>
+					<td align="left" class="innerContent">${Util.formatMoney(new BigDecimal(payment.amount?:"0.0"),
+									session["user_id"],invoice?.currencyId, false)}</td>
+					<td align="left" class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</td>
+					<td align="left" class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</td>
+					<td align="left" class="innerContent">*</td>
+		         </tr>
+	         </g:each>
+         </tbody>
+    </table>
+	
+	<hr/>
+	
+	<div class="heading">
+		<strong><g:message code="invoice.label.note"/></strong>
 	</div>
-</div>
-
-<hr></hr>
-
-<div class="heading">
-	<strong><g:message code="invoice.label.note"/></strong>
-</div>
-<br/>
-${invoice.customerNotes }
-</div>
-
+	<br/>
+	${invoice.customerNotes }
 
 <div class="btn-box">
     <g:if test="${invoice.id}">
@@ -120,5 +140,4 @@ ${invoice.customerNotes }
                   'action':'delete',
                   'id':invoice.id,
                  ]"/>
-
 </div>

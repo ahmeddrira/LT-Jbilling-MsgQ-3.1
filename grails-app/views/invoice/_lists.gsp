@@ -15,49 +15,49 @@
 			<g:each var="inv" in="${invoices}">
 				<tr id="product-${inv.id}"  class="${invoice?.id == inv.id ? 'active' : ''}">
 	            	<td>
-						<g:remoteLink breadcrumb="id" class="cell double" action="show" id="${inv.id}" params="['template': 'show']"
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 			     			before="register(this);" onSuccess="render(data, next);">
-							<span>
+							<strong>
 								${Util.formatDate(inv?.getCreateDatetime(), session["user_id"]) }
-							</span>
+							</strong>
 						</g:remoteLink>
 					</td>
 					<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 			     			before="register(this);" onSuccess="render(data, next);">
-							<span>
+							<strong>
 								${Util.formatDate(inv?.dueDate, session["user_id"]) }
-							</span>
+							</strong>
 						</g:remoteLink>
 					</td>
 					<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 				     			before="register(this);" onSuccess="render(data, next);">
-							<span>
+							<strong>
 								${inv.id }
-							</span>
+							</strong>
 						</g:remoteLink>
 					</td>
 					<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 				     			before="register(this);" onSuccess="render(data, next);">
-							<span>
+							<strong>
 								${inv.number }
-							</span>
+							</strong>
 						</g:remoteLink>
 					</td>
 					<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 				     			before="register(this);" onSuccess="render(data, next);">
-							<span>
+							<strong>
 								${inv.getInvoiceStatus().getDescription(session['language_id']) }
-							</span>
+							</strong>
 						</g:remoteLink>
 					</td>
 					<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 				     			before="register(this);" onSuccess="render(data, next);">
-							<span>
+							<strong>
 								<g:if test="${null == inv.total }">&nbsp;</g:if>
 								<g:else>
 								${Util.formatMoney(new BigDecimal(inv.total),
@@ -65,13 +65,13 @@
 									inv.currencyId, 
 									false)}
 								</g:else>
-							</span>
+							</strong>
 						</g:remoteLink>
 					</td>
 					<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 				     			before="register(this);" onSuccess="render(data, next);">
-							<span>
+							<strong>
 								<g:if test="${null == inv.balance }">&nbsp;</g:if>
 								<g:else>
 								${Util.formatMoney(new BigDecimal( inv.balance ),
@@ -79,7 +79,7 @@
 									inv.currencyId, 
 									false)}
 								</g:else>
-							</span>
+							</strong>
 						</g:remoteLink>
 					</td>
 				</tr>

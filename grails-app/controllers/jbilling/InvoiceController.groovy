@@ -1,5 +1,7 @@
 package jbilling
 
+import grails.converters.JSON
+
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.util.WebServicesSessionSpringBean;
@@ -77,7 +79,7 @@ class InvoiceController {
 	}
 	
 	def showListAndInvoice = { 
-		
+		try {
 		def invId= params.id as Integer
 		
 		log.info "showListAndInvoice(${invId}) called.."
@@ -110,6 +112,12 @@ class InvoiceController {
 		log.info "rendering view showListAndInvoice"
 		
 		render view: 'showListAndInvoice', model:[invoices:invoices, totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
+		}catch (Exception e) {
+			log.error e.getMessage()
+			flash.error = 'error.invoice.details'
+			flash.args= [params["id"]]
+			redirect(action:'list')
+		}
 	}
 	
 	def show = {
@@ -174,8 +182,10 @@ class InvoiceController {
 		if (invoiceId) {
 			try {
 				webServicesSession.deleteInvoice(invoiceId)
+				flash.message = 'invoice.delete.success'
+				flash.args= [invoiceId]
 			}  catch (Exception e) {
-				log.info (e.getMessage() + "\n${e.getClass().getName()}")
+				log.info (e.getMessage())
 				flash.error = 'error.invoice.delete'
 				flash.args= [params["id"]]
 				redirect(action: 'list', params:[id:userId])
@@ -183,5 +193,18 @@ class InvoiceController {
 		}
 		
 		redirect (action:list, params:[id:userId])
+	}
+	
+	def downloadPdf = {
+		log.info 'calling downloadPdf'
+		Integer invId= params.id as Integer
+		try { 
+			byte[] pdfBytes= webServicesSession.getPaperInvoicePDF(invId)
+			render(contentType: "application/pdf", text: new String(pdfBytes));
+		} catch (Exception e ) {
+			log.error e.getMessage()
+			flash.error = 'invoice.prompt.failure.downloadPdf'
+			redirect(action: 'showListAndInvoice', params:[id:invId])
+		}
 	}
 }

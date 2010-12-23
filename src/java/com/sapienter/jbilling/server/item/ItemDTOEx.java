@@ -20,6 +20,8 @@
 
 package com.sapienter.jbilling.server.item;
 
+import com.sapienter.jbilling.server.item.validator.ItemPrices;
+import com.sapienter.jbilling.server.item.validator.ItemTypes;
 import com.sapienter.jbilling.server.security.WSSecured;
 
 import javax.validation.constraints.NotNull;
@@ -50,12 +52,13 @@ public class ItemDTOEx implements WSSecured, Serializable {
     // *** ItemDTOEx ***
     @NotNull @Size (min=1,max=100, message="validation.error.size,1,100")
     private String description = null;
+    @ItemTypes
     private Integer[] types = null;
     private String promoCode = null;
     private Integer currencyId = null;
     private String price = null;
     private Integer orderLineTypeId = null;
-
+    @ItemPrices
     private List<ItemPriceDTOEx> prices = null;
 
     public ItemDTOEx(Integer id,String number, Integer entity, String description, Integer manualPrice,

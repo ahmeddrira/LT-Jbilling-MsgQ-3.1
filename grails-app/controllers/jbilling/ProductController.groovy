@@ -290,24 +290,6 @@ class ProductController {
         }
         product.prices = prices
 
-        // todo: replace with custom validator annotations
-        ///      validate that at least one price has a set dollar value
-        //       validate that the type array is not empty (arrays are not supported by base hibernate validations!)
-
-        // validate that at least one price is set
-        if (!product.prices.any { it.price }) {
-            flash.error = 'product.without.price'
-            render view: 'editProduct', model: [ product: product, currencies: currencies ]
-            return
-        }
-
-        // validate that at least one type is set
-        if (!product.types) {
-            flash.error = 'product.without.type'
-            render view: 'editProduct', model: [ product: product, currencies: currencies ]
-            return
-        }
-
         // save or update
         try{
             if (!product.id || product.id == 0) {

@@ -182,7 +182,7 @@ public interface IWebServicesSessionBean {
     public Integer[] getUserInvoicesByDate(Integer userId, String since, String until) throws SessionInternalError;
 
     public byte[] getPaperInvoicePDF(Integer invoiceId) throws SessionInternalError;
-
+    public void removePaymentLink(Integer invoiceId, Integer paymentId) throws SessionInternalError;
 
     /*
         Payments

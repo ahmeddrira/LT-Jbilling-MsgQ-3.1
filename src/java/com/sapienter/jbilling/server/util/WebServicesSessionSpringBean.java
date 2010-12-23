@@ -109,6 +109,7 @@ import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentInvoiceMapDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
@@ -377,6 +378,24 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         IInvoiceSessionBean invoiceSession = (IInvoiceSessionBean) Context.getBean(Context.Name.INVOICE_SESSION);
         return invoiceSession.getPDFInvoice(invoiceId);
     }
+    
+    /**
+     * @param invoiceId target Invoice
+     * @param paymentId payment to be unlink 
+     */
+    public void removePaymentLink(Integer invoiceId, Integer paymentId) {
+		PaymentBL payment  =new PaymentBL();
+		InvoiceDTO invoice= new InvoiceDAS().find(invoiceId);
+		Iterator<PaymentInvoiceMapDTO> it = invoice.getPaymentMap().iterator();
+        while (it.hasNext()) {
+            PaymentInvoiceMapDTO map = it.next();
+            if (paymentId == map.getPayment().getId()) {
+	            payment.removeInvoiceLink(map.getId());
+	            invoice.getPaymentMap().remove(map);
+	            break;
+            }
+        }
+	}
 
     /**
      * Deletes an invoice 

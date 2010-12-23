@@ -87,6 +87,10 @@ class ApiService implements IWebServicesSessionBean {
     public byte[] getPaperInvoicePDF(Integer invoiceId) {
         return webServicesSession.getPaperInvoicePDF(invoiceId)
     }
+	
+	public void removePaymentLink(Integer invoiceId, Integer paymentId) {
+		webServicesSession.removePaymentLink (invoiceId, paymentId)
+	}
 
     public void deleteInvoice(Integer invoiceId) {
         webServicesSession.deleteInvoice(invoiceId)

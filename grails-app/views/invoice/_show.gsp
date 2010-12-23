@@ -114,7 +114,11 @@
 									session["user_id"],invoice?.currencyId, false)}</td>
 					<td align="left" class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</td>
 					<td align="left" class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</td>
-					<td align="left" class="innerContent">*</td>
+					<td align="left" class="innerContent">
+						<a href="${createLink (action: 'removePaymentLink', id: invoice.id, params:['paymentId': payment.id])}" class="submit">
+							<span>*</span>
+						</a>
+					</td>
 		         </tr>
 	         </g:each>
          </tbody>

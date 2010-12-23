@@ -31,7 +31,8 @@ class InvoiceController {
 		def invoices;
 		log.info "Invoice 'list' method, userid=[${params.id}], "
 		try {
-			def filters = filterService.getFilters(FilterType.INVOICE, params)
+			filters = filterService.getFilters(FilterType.INVOICE, params)
+			log.info "Filters are ${filters}"
 			if ( params["id"] && params["id"].matches("^[0-9]+") ) {
 				def invId= Integer.parseInt(params["id"])
 				redirect(action: 'show', params:[id:invId])
@@ -206,5 +207,22 @@ class InvoiceController {
 			flash.error = 'invoice.prompt.failure.downloadPdf'
 			redirect(action: 'showListAndInvoice', params:[id:invId])
 		}
+	}
+	
+	def removePaymentLink = {
+		
+		Integer invId= params.id as Integer
+		Integer paymentId= params.paymentId as Integer		
+		log.info "Parameters[Invoice Id: ${invId}, Payment Id: ${paymentId}"
+		
+		try {
+			webServicesSession.removePaymentLink(invId, paymentId)
+			flash.message = "payment.unlink.success"
+		} catch (Exception e) {
+			e.printStackTrace()
+			log.error e.getMessage()
+			flash.error = "error.invoice.unlink.payment"
+		}
+		redirect(action: 'showListAndInvoice', params:[id:invId])
 	}
 }

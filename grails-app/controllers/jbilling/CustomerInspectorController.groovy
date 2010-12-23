@@ -126,10 +126,14 @@ class CustomerInspectorController {
 	}
 
 	def invoices= {
-		int _id= params._id?.toInteger();
-		log.info "Redirecting to get invoices for User ID " + _id
-		def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUser.id', template: 'invoice/userId', visible: true, integerValue: _id)
-		filterService.setFilter(FilterType.INVOICE, filter)
+		try {
+			int _id= params.id as Integer;
+			log.info "Redirecting to get invoices for User ID " + _id
+			def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUser.id', template: 'invoice/userId', visible: true, integerValue: _id)
+			filterService.setFilter(FilterType.INVOICE, filter)
+		} catch (Exception e) {
+			log.error e.getMessage()
+		}
 		redirect (controller:"invoice", action: "list")
 	}
 

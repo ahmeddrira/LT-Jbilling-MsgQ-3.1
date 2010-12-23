@@ -216,24 +216,14 @@ public class ItemBL {
     
     public void delete(Integer executorId) {
         item.setDeleted(new Integer(1));
+        itemDas.flush();
+        itemDas.clear();
+
         eLogger.audit(executorId, null, Constants.TABLE_ITEM, item.getId(),
                 EventLogger.MODULE_ITEM_MAINTENANCE, 
                 EventLogger.ROW_DELETED, null, null, null);
-        
     }
 
-    public static boolean validate(ItemDTO dto) {
-        boolean retValue = true;
-        
-        if (dto.getDescription() == null || dto.getPrice() == null ||
-                dto.getPriceManual() == null || 
-                dto.getTypes() == null) {
-            retValue = false;
-        }
-        
-        return retValue;
-    }
-    
     public boolean validateDecimals( Integer hasDecimals ){
         if( hasDecimals == 0 ){
             if(new OrderLineDAS().findLinesWithDecimals(item.getId()) > 0) {

@@ -132,10 +132,11 @@ public class ItemTypeDTO extends AbstractDescription
         this.orderLineTypeId = orderLineTypeId;
     }
 
-    @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="item_type_map", joinColumns = { 
-        @JoinColumn(name="type_id", updatable=false) }, inverseJoinColumns = { 
-        @JoinColumn(name="item_id", updatable=false) })
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
+    @JoinTable(name = "item_type_map",
+               joinColumns = { @JoinColumn(name="type_id", updatable=false) },
+               inverseJoinColumns = { @JoinColumn(name="item_id", updatable=false) }
+    )
     public Set<ItemDTO> getItems() {
         return this.items;
     }

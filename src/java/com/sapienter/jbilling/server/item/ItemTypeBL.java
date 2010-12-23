@@ -80,8 +80,13 @@ public class ItemTypeBL {
     }
     
     public void delete(Integer executorId) {
+        if (!isInUse()) {
+            throw new SessionInternalError("Cannot delete a non-empty item type, remove items before deleting.");
+        }
+
         Integer itemTypeId = itemType.getId();
         itemTypeDas.delete(itemType);
+
         // now remove all the descriptions 
         DescriptionBL desc = new DescriptionBL();
         desc.delete(Constants.TABLE_ITEM_TYPE, itemTypeId);
@@ -89,7 +94,13 @@ public class ItemTypeBL {
         eLogger.audit(executorId, null, Constants.TABLE_ITEM_TYPE, itemTypeId,
                 EventLogger.MODULE_ITEM_TYPE_MAINTENANCE, 
                 EventLogger.ROW_DELETED, null, null,null);
+
+        itemTypeDas.clear();
     }   
+
+    public boolean isInUse() {
+        return itemTypeDas.isInUse(itemType.getId());
+    }
 
     /**
      * Returns all item types, or an empty array if none found.

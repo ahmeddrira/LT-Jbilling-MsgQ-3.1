@@ -33,7 +33,7 @@
         <g:formRemote name="confirm-command-form-${name}" url="[controller: controller, action: action, id: id]" update="${update}">
             <g:hiddenField name="id" value="${id}"/>
             <g:each var="param" in="${formParams?.entrySet()}">
-                <g:if test="${param.value != null && !param.value == 'null' }">
+                <g:if test="${param.value != null && param.value != 'null' }">
                     <g:hiddenField name="${param.key}" value="${param.value}"/>
                 </g:if>
             </g:each>
@@ -43,7 +43,7 @@
         <g:form name="confirm-command-form-${name}" url="[controller: controller, action: action, id: id]">
             <g:hiddenField name="id" value="${id}"/>
             <g:each var="param" in="${formParams?.entrySet()}">
-                <g:if test="${param.value != null && !param.value == 'null' }">
+                <g:if test="${param.value != null && param.value != 'null' }">
                     <g:hiddenField name="${param.key}" value="${param.value}"/>
                 </g:if>
             </g:each>

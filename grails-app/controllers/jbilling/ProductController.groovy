@@ -167,12 +167,18 @@ class ProductController {
      */
     def deleteCategory = {
         if (params.id) {
-            webServicesSession.deleteItemCategory(params.int('id'))
+            try {
+                webServicesSession.deleteItemCategory(params.int('id'))
 
-            log.debug("Deleted item category ${params.id}.");
+                log.debug("Deleted item category ${params.id}.");
 
-            flash.message = 'product.category.deleted'
-            flash.args = [ params.id ]
+                flash.message = 'product.category.deleted'
+                flash.args = [ params.id ]
+
+            } catch (SessionInternalError e) {
+                flash.error = 'product.category.delete.error'
+                flash.args = [ params.id ]
+            }
         }
 
         render template: 'categories', model: [ categories: categories ]

@@ -20,7 +20,24 @@
 package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 public class ItemTypeDAS extends AbstractDAS<ItemTypeDTO> {
 
+    /**
+     * Returns true if the given item type ID is in use.
+     *
+     * @param typeId type id
+     * @return true if in use, false if not
+     */
+    public boolean isInUse(Integer typeId) {
+        Criteria criteria = getSession().createCriteria(getPersistentClass())
+                .createAlias("items", "item")
+                .add(Restrictions.eq("item.deleted", 1))
+                .setProjection(Projections.count("item.id"));
+
+        return (criteria.uniqueResult() != null && ((Integer) criteria.uniqueResult()) > 0);
+    }
 }

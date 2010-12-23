@@ -5,13 +5,16 @@
     <g:javascript library="panels"/>
 
     <script type="text/javascript">
-        $(document).ajaxSuccess(function(e, xhr, settings) {
-            // ajax support for recent items list
+        function renderRecentItems() {
             $.ajax({
                 url: "${resource(dir:'')}/recentItem",
                 global: false,
                 success: function(data) { $("#recent-items").replaceWith(data) }
             });
+        }
+
+        $(document).ajaxSuccess(function(e, xhr, settings) {
+            renderRecentItems();
         });
 
         function applyFilters() {

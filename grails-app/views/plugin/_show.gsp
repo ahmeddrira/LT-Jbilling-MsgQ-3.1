@@ -72,7 +72,7 @@
         <a href="${createLink(controller:'plugin', action:'edit', id:plugin.getId()) }" class="submit">
             <span><g:message code="plugins.plugin.edit"/></span>
         </a>
-        <a onclick="$('#confirm-dialog-${plugin.id}').dialog('open');" class="submit delete">
+        <a onclick="$('#confirm-dialog-delete-${plugin.id}').dialog('open');" class="submit delete">
             <span><g:message code="plugins.plugin.delete"/></span>
         </a>
     </div>

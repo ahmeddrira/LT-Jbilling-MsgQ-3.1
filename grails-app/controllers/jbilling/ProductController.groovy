@@ -180,7 +180,6 @@ class ProductController {
             flash.args = [ params.id ]
         }
 
-        def categories = getCategories()
         render template: 'categories', model: [ categories: categories ]
     }
 
@@ -197,14 +196,16 @@ class ProductController {
             flash.args = [ params.id ]
         }
 
+        // call the rendering action directly instead of using 'chain' or 'redirect' which results
+        // in a second request that clears the flash messages.
         if (params.category) {
             // return the products list, pass the category so the correct set of products is returned.
-            chain action: 'products', params: [ id: params.category ]
+            params.id = params.category
+            products()
         } else {
             // no category means we deleted from the 'allProducts' view
-            chain action: 'allProducts', params: params
+            allProducts()
         }
-
     }
 
     /**

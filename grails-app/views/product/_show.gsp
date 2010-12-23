@@ -54,7 +54,7 @@
 
     <div class="btn-box">
         <g:link action="editProduct" id="${selectedProduct.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
-        <a onclick="showConfirm(${selectedProduct.id});" class="submit delete"><span><g:message code="button.delete"/></span></a>
+        <a onclick="showConfirm('deleteProduct-${selectedProduct.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
     </div>
 
 <g:render template="/confirm"

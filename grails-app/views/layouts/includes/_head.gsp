@@ -18,20 +18,29 @@
 <jqui:resources themeCss="/jbilling/jquery-ui/themes/jbilling/jquery-ui-1.8.6.custom.css"/>
 
 <script type="text/javascript">
-    $(document).ajaxSuccess(function(e, xhr, settings) {
-        // ajax support for flash messages
+    function renderMessages() {
         $.ajax({
             url: "${resource(dir:'')}/messages",
             global: false,
+            async: false,
             success: function(data) { $("#messages").replaceWith(data); }
-       });
+        });
+    }
 
-        // ajax support for breadcrumbs
+    function renderBreadcrumbs() {
         $.ajax({
             url: "${resource(dir:'')}/breadcrumb",
             global: false,
             success: function(data) { $("#breadcrumbs").replaceWith(data); }
        });
+    }
+
+    $(document).ajaxSuccess(function(e, xhr, settings) {
+        renderMessages();
+        renderBreadcrumbs();
+    });
+    $(document).ajaxError(function(e, xhr, settings) {
+        renderMesages();
     });
 </script>
 

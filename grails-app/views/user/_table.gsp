@@ -97,6 +97,6 @@
 </g:if>
 
 <div class="btn-box">
-    <g:link action='create' class="submit add"><span><g:message code="button.create"/></span></g:link>
+    <g:link action='edit' class="submit add"><span><g:message code="button.create"/></span></g:link>
     <g:link action='delete' class="submit delete"><span><g:message code="button.delete"/></span></g:link>
 </div>

@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.item;
 
 import com.sapienter.jbilling.server.security.WSSecured;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -37,7 +38,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
 
     // ItemDTO
     private Integer id;
-    @Size (min=1,max=50, message="validation.error.size,1,50")
+    @NotNull @Size (min=1,max=50, message="validation.error.size,1,50")
     private String number;
     @Digits(integer=3, fraction=2, message="validation.error.not.a.number")
     private String percentage;
@@ -47,7 +48,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer entityId;
 
     // *** ItemDTOEx ***
-    @Size (min=1,max=100, message="validation.error.size,1,100")
+    @NotNull @Size (min=1,max=100, message="validation.error.size,1,100")
     private String description = null;
     private Integer[] types = null;
     private String promoCode = null;

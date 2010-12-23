@@ -1210,17 +1210,20 @@ ul.cloud li a {
 	width:444px;
 	padding-left:0;
 }
-.box-text {
-	width:492px;
-	height:130px;
-	overflow:auto;
+
+div.box-text {
+    width:492px;
+    height:130px;
 	margin:20px auto;
 	border:1px solid #bbb;
 	background:#f5f5f5;
 }
-
 .box-text textarea {
-	margin:14px 0px 0px 14px
+    width:475px;
+    height:115px;
+    padding: 7px;
+    background:#f5f5f5;
+    border: none;
 }
 .box-text ul {
 	margin:0;
@@ -1365,4 +1368,38 @@ ul.cloud li a {
 }
 .optionsDivVisible a:hover {
 	color:#0e61b1;
+}
+
+/* Data in the right section */
+.dataTable {
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    line-height:22px;
+}
+
+td.value {
+    margin: 0;
+	font-weight: bold;	
+	padding-left:10px;
+}
+
+/* an inner table */
+.innerTable {
+	margin: 10px auto 0 auto;
+	width: 80%;
+    border: 1px solid #BBB;
+}
+.innerHeader {
+    height: 30px;
+    background: url(../images/bg-gradient3.gif) repeat-x;
+    font-size: 14px;
+    font-weight: bold;
+	color: #383838;
+	line-height: 30px;
+}
+
+.innerContent {
+    text-align:center;
+	padding:3px 0px 10px;
 }

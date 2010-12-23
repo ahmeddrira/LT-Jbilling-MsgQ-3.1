@@ -1,327 +1,338 @@
+<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO; com.sapienter.jbilling.server.user.db.CompanyDTO; com.sapienter.jbilling.server.user.permisson.db.RoleDTO; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.util.db.LanguageDTO" %>
 <html>
 <head>
     <meta name="layout" content="main" />
-	<script language="javascript">
-		function toggle(obj) {
-			if (obj.checked) {
-				if (obj.name == 'isAutomaticPaymentCC') {
-					document.forms[0].isAutomaticPaymentAch.checked=false;
-				} else if (obj.name == 'isAutomaticPaymentAch' ) {
-					document.forms[0].isAutomaticPaymentCC.checked=false;
-				}
-			}
-		}
-	</script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.auto-payment').change(function() {
+                if ($(this).is(':checked')) {
+                    $('.auto-payment:checked').not(this).attr('checked', '');
+                }
+            });
+        });
+    </script>
 </head>
 <body>
 <div class="form-edit">
-	<div class="heading">
-		<strong><g:message code="prompt.create.edit.cust"/></strong>
-	</div>
-	<div class="form-hold">
-		<g:form action="postEdit">
 
-		<g:hiddenField name="contact.id" value="${user?.contact?.id}"/>
-		<fieldset>
-			<div class="form-columns">
-				<div class="column">
-					<div class="row">
-						<p><g:message code="prompt.customer.number"/>:</p>
-						<span>${user?.userId}</span>
-					</div>
-					<div class="row">
-						<p><g:message code="prompt.customer.type"/></p>
-						<span>${user?.role}</span>
-					</div>
-					<div class="row">
-						<label><g:message code="prompt.login.name"/></label>
-						<div class="inp-bg">
-							<g:textField class="field" name="userName" value="${user?.userName}" />
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message
-										code="prompt.current.password" /></label>
-						<div class="inp-bg">
-							<g:passwordField  class="field" name="password" value="${user?.password}" />
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message code="prompt.password" /></label>
-						<div class="inp-bg">
-							<g:passwordField  class="field" name="newPassword" />
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message code="prompt.verify.password" /></label>
-						<div class="inp-bg">
-							<g:passwordField  class="field" name="verifyPassword" />
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message
-										code="prompt.user.status" /></label>
-						<div style="width: 220px; " class="selectArea ">
-							<g:userStatus name="statusId"
-										value="${user?.statusId}" languageId="${languageId}" />
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message
-									code="prompt.user.subscriber.status" /></label>
-						<div style="width: 220px; " class="selectArea ">
-							<g:subscriberStatus name="subscriberStatusId"
-								value="${user?.subscriberStatusId}" languageId="${languageId}" />
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message
-									code="prompt.user.language" /></label>
-						<div style="width: 220px; " class="selectArea ">
-							<g:select name="languageId"
-								from="${com.sapienter.jbilling.server.util.db.LanguageDTO.list()}"
-								optionKey="id" optionValue="description"
-								value="${user?.languageId}"  />
-						</div>	
-					</div>
-					<div class="row">
-						<label><g:message
-									code="prompt.user.currency" /></label>
-						<div style="width: 220px; " class="selectArea ">
-							<g:select name="currencyId"
-								from="${com.sapienter.jbilling.server.util.db.CurrencyDTO.list()}"
-								optionKey="id" optionValue="description"
-								value="${user?.currencyId}" />
-						</div>
-					</div>
-					<div class="row">
-						<label>&nbsp;</label>
-						<g:checkBox class="cb" name="excludeFromAgeing" checked=""/>
-						<label for="excludeFromAgeing" class="lb"><g:message code="prompt.exclude.ageing" /></label>
-					</div>
-				</div>
-				<div class="column">
-					<div class="row">
-						<label><g:message
-									code="prompt.contact.type" /></label>
-						<div class="inp-bg">
-							${user?.contact?.type}
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message code="prompt.organization.name" /></label>
-						<div class="inp-bg">
-							<g:textField class="field" name="contact.organizationName"
-								value="${user?.contact?.organizationName}" />
-						</div>
-					</div>
-					
-					<div class="row">
-						<label><g:message
-									code="prompt.first.name" /></label>
-						<div class="inp-bg">
-							<g:textField class="field" name="contact.firstName"
-										value="${user?.contact?.firstName}" />
-						</div>
-					</div>
-					
-					<div class="row">
-						<label><g:message
-									code="prompt.last.name" /></label>
-						<div class="inp-bg">
-							<g:textField class="field" name="contact.lastName"
-									value="${user?.contact?.lastName}" />
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message code="prompt.phone.number" /></label>
-						<div class="inp-bg">
-							<g:textField class="field" name="contact.phoneCountryCode"
-								value="${user?.contact?.phoneCountryCode}" size="5" /> -
-							<g:textField class="field" name="contact.phoneAreaCode"
-								value="${user?.contact?.phoneAreaCode}" size="5" /> -
-							<g:textField class="field" name="contact.phoneNumber"
-								value="${user?.contact?.phoneNumber}" size="12" />
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message
-									code="prompt.email.address" /></label>
-						<div class="inp-bg">
-							<g:textField class="field" name="contact.email"
-								value="${user?.contact?.email}" />
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message
-									code="prompt.address1" /></label>
-						<div class="inp-bg">
-							<g:textField class="field" name="contact.address1"
-									value="${user?.contact?.address1}" />
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message
-									code="prompt.address2" /></label>
-						<div class="inp-bg">
-							<g:textField class="field" name="contact.address2"
-									value="${user?.contact?.address2}" />
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message
-									code="prompt.city" /></label>
-						<div class="inp-bg">
-							<g:textField class="field" name="contact.city"
-									value="${user?.contact?.city}" />
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message code="prompt.state" /></label>
-						<div class="inp-bg">
-							<g:textField class="field" name="contact.stateProvince"
-									value="${user?.contact?.stateProvince}" />
-						</div>	
-					</div>
-					<div class="row">
-						<label><g:message
-									code="prompt.zip" /></label>
-						<div class="inp-bg">
-							<g:textField class="field" name="contact.postalCode"
-									value="${user?.contact?.postalCode}" />
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message code="prompt.country" /></label>
-						<div class="inp-bg">
-							<g:textField class="field" name="contact.countryCode"
-									value="${user?.contact?.countryCode}" />
-						</div>
-					</div>
-					<div class="row">
-						<label>&nbsp;</label>
-						<g:checkBox name="includeInNotifications" class="cb" checked="" />
-						<label for="includeInNotifications" class="lb">
-							<g:message code="prompt.include.in.notifications" /></label>
-					</div>
-					
-				</div>
-			</div>
-			
-			<!-- box cards -->
-			<div class="box-cards">
-				<div class="box-cards-title">
-					<a class="btn-open" href="#"><span><g:message code="prompt.credit.card"/></span></a>
-				</div>
-				<div class="box-card-hold">
-					<div class="form-columns">
-						<div class="column">
-							<div class="row">
-								<label><g:message code="prompt.credit.card"/>:</label>
-								<div class="inp-bg"><g:textField class="field" name="creditCard.number"
-									value="${user?.creditCard?.number}" /></div>
-							</div>
-							<div class="row">
-								<label><g:message
-									code="prompt.name.on.card" />:</label>
-								<div class="inp-bg"><g:textField class="field" name="creditCard.name"
-									value="${user?.creditCard?.name}" /></div>
-							</div>
-							<div class="row">
-								<label><g:message code="prompt.expiry.date" />:</label>
-								<div class="sel">
-									<g:textField class="field" name="creditCard.month" size="2"
-										value="${expiryMonth}" />-
-								</div>
-								<div class="sel">
-									<g:textField class="field" name="creditCard.year"
-										size="4" value="${expiryYear}" />
-								</div>
-							</div>
-						</div>
-						<div class="column">
-							<div class="row">
-								<g:checkBox class="cb check" name="isAutomaticPaymentCC"  
-									checked="${isAutoCC}" onclick="toggle(this)"/>
-								<label for="isAutomaticPaymentCC" class="lb"><g:message
-									code="prompt.preferred.auto.payment" /></label>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+    <div class="heading">
+        <strong>
+            <g:if test="${user}">
+                <g:message code="customer.edit.title"/>
+            </g:if>
+            <g:else>
+                <g:message code="customer.add.title"/>
+            </g:else>
+        </strong>
+    </div>
 
-			<!-- box cards -->
-			<div class="box-cards box-cards-open">
-				<div class="box-cards-title">
-					<a class="btn-open" href="#"><span><g:message code="prompt.ach"/></span></a>
-				</div>
-				<div class="box-card-hold">
-					<div class="form-columns">
-						<div class="column">
-							<div class="row">
-								<label><g:message
-									code="prompt.aba.routing.num" />:</label>
-								<div class="inp-bg inp4"><g:textField class="field" name="ach.abaRouting"
-									value="${user?.ach?.abaRouting}" /></div>
-							</div>
-							<div class="row">
-								<label><g:message code="prompt.bank.acc.num" />:</label>
-								<div class="inp-bg"><g:textField class="field" name="ach.bankAccount"
-									value="${user?.ach?.bankAccount}" /></div>
-							</div>
-							<div class="row">
-								<label><g:message code="prompt.bank.name" />:</label>
-								<div class="inp-bg"><g:textField class="field" name="ach.bankName"
-									value="${user?.ach?.bankName}" /></div>
-							</div>
-							<div class="row">
-								<label><g:message
-									code="prompt.name.customer.account" />:</label>
-								<div class="inp-bg"><g:textField class="field" name="ach.accountName"
-									value="${user?.ach?.accountName}" /></div>
-							</div>
-							<div class="row">
-								<label><g:message
-									code="prompt.account.type" />:</label>
-								<input checked="${((user?.ach?.accountType == 1)?"checked":"")}" type="radio" value="1" class="rb" name="ach.accountType" id="rb1" />
-								<label for="rb1" class="rb"><g:message code="label.account.checking"/></label>
-								<input checked="${((user?.ach?.accountType == 2)?"checked":"")}" type="radio" value="2" class="rb" name="ach.accountType" id="rb2" />
-								<label for="rb2" class="rb"><g:message code="label.account.savings"/></label>
-							</div>
-						</div>
-						<div class="column">
-							<div class="row">
-								<g:checkBox name="isAutomaticPaymentAch" checked="${isAutoAch}" class="cb check" onclick="toggle(this)"/>
-								<label for="cb3" class="lb"><g:message 
-									code="prompt.preferred.auto.payment" /></label>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- box text -->
-			<div class="box-text">
-				<g:textArea id='notes' value="${notes}" name="notes"
-							rows="8" cols="90"/>
-			</div>
+    <div class="form-hold">
+        <g:form name="user-edit-form" action="save">
+            <fieldset>
+                <div class="form-columns">
 
-			<div class="buttons">
-				<ul>
-					<li>
-						<a href="${createLink(action: 'postEdit')}" class="submit save">
-							<span><g:message code="button.save"/></span></a>
-					</li>
-					<li>
-						<a href="${createLink(action: 'cancel')}" class="submit cancel">
-							<span><g:message code="button.cancel"/></span></a>
-					</li>
-				</ul>
-			</div>
+                    <!-- user details column -->
+                    <div class="column">
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="prompt.customer.number"/></content>
 
-		</fieldset>
-		</g:form>
-	</div>
+                            <g:if test="${user}"><span>${user?.userId}</span></g:if>
+                            <g:else><em><g:message code="prompt.id.new"/></em></g:else>
+
+                            <g:hiddenField name="user.userId" value="${user?.userId}"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/select">
+                            <content tag="label"><g:message code="prompt.customer.type"/></content>
+                            <content tag="label.for">user.mainRoleId</content>
+                            <g:selectRoles name="user.mainRoleId" value="${user?.mainRoleId}" languageId="${session['language_id']}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.login.name"/></content>
+                            <content tag="label.for">user.userName</content>
+                            <g:textField class="field" name="user.userName" value="${user?.userName}"/>
+                        </g:applyLayout>
+
+                        <g:if test="${user}">
+                             <g:applyLayout name="form/input">
+                                <content tag="label"><g:message code="prompt.current.password"/></content>
+                                <content tag="label.for">oldPassword</content>
+                                <g:passwordField class="field" name="oldPassword"/>
+                            </g:applyLayout>
+                        </g:if>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.password"/></content>
+                            <content tag="label.for">newPassword</content>
+                            <g:passwordField class="field" name="newPassword"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.verify.password"/></content>
+                            <content tag="label.for">verifiedPassword</content>
+                            <g:passwordField class="field" name="verifiedPassword"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/select">
+                            <content tag="label"><g:message code="prompt.user.status"/></content>
+                            <content tag="label.for">user.statusId</content>
+                            <g:userStatus name="user.statusId" value="${user?.statusId}" languageId="${session['language_id']}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/select">
+                            <content tag="label"><g:message code="prompt.user.subscriber.status"/></content>
+                            <content tag="label.for">user.subscriberStatusId</content>
+                            <g:subscriberStatus name="user.subscriberStatusId" value="${user?.subscriberStatusId}" languageId="${session['language_id']}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/select">
+                            <content tag="label"><g:message code="prompt.user.language"/></content>
+                            <content tag="label.for">user.languageId</content>
+                            <g:select name="user.languageId" from="${LanguageDTO.list()}"
+                                    optionKey="id" optionValue="description" value="${user?.languageId}"  />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/select">
+                            <content tag="label"><g:message code="prompt.user.currency"/></content>
+                            <content tag="label.for">user.currencyId</content>
+                            <g:select name="user.currencyId" from="${currencies}"
+                                    optionKey="id" optionValue="description" value="${user?.currencyId}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/checkbox">
+                            <content tag="label"><g:message code="prompt.exclude.ageing"/></content>
+                            <content tag="label.for">excludeFromAgeing</content>
+                            <g:checkBox class="cb checkbox" name="excludeFromAgeing" />
+                        </g:applyLayout>
+
+                    </div>
+
+                    <!-- contact information column -->
+                    <div class="column">
+                        <g:set var="contact" value="${user?.contact}"/>
+                        <g:hiddenField name="contact.id" value="${contact?.id}"/>
+
+                        <g:set var="contactTypes" value="${ContactTypeDTO.findAllByEntity(new CompanyDTO(session['company_id']))}"/>
+
+                        <g:if test="${contactTypes.size > 1}">
+                            <g:applyLayout name="form/select">
+                                <content tag="label"><g:message code="prompt.contact.type"/></content>
+                                <g:select name="contact.type" from="${contactTypes}"
+                                          optionKey="id" optionValue="description" value="${contact?.type}"  />
+                            </g:applyLayout>
+                        </g:if>
+                        <g:else>
+                            <g:applyLayout name="form/text">
+                                <content tag="label"><g:message code="prompt.contact.type"/></content>
+                                <span>${contact?.type ?: contactTypes?.get(0)}</span>
+                                <g:hiddenField name="contact.type" value="${contact?.type ?: contactTypes?.get(0)}"/>
+                            </g:applyLayout>
+                        </g:else>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.organization.name"/></content>
+                            <content tag="label.for">contact.organizationName</content>
+                            <g:textField class="field" name="contact.organizationName" value="${contact?.organizationName}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.firstName"/></content>
+                            <content tag="label.for">contact.firstName</content>
+                            <g:textField class="field" name="contact.firstName" value="${contact?.firstName}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.lastName"/></content>
+                            <content tag="label.for">contact.lastName</content>
+                            <g:textField class="field" name="contact.lastName" value="${contact?.lastName}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="prompt.phone.number"/></content>
+                            <content tag="label.for">contact.phoneCountryCode</content>
+                            <span>
+                                <g:textField class="field" name="contact.phoneCountryCode" value="${contact?.phoneCountryCode}" maxlength="3" size="2"/>
+                                -
+                                <g:textField class="field" name="contact.phoneAreaCode" value="${contact?.phoneAreaCode}" maxlength="5" size="3"/>
+                                -
+                                <g:textField class="field" name="contact.phoneNumber" value="${contact?.phoneNumber}" maxlength="10" size="8"/>
+                            </span>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.email"/></content>
+                            <content tag="label.for">contact.email</content>
+                            <g:textField class="field" name="contact.email" value="${contact?.email}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.address1"/></content>
+                            <content tag="label.for">contact.address1</content>
+                            <g:textField class="field" name="contact.address1" value="${contact?.address1}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.address2"/></content>
+                            <content tag="label.for">contact.address2</content>
+                            <g:textField class="field" name="contact.address2" value="${contact?.address2}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.city"/></content>
+                            <content tag="label.for">contact.city</content>
+                            <g:textField class="field" name="contact.city" value="${contact?.city}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.state"/></content>
+                            <content tag="label.for">contact.stateProvince</content>
+                            <g:textField class="field" name="contact.stateProvince" value="${contact?.stateProvince}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.zip"/></content>
+                            <content tag="label.for">contact.postalCode</content>
+                            <g:textField class="field" name="contact.postalCode" value="${contact?.postalCode}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.country"/></content>
+                            <content tag="label.for">contact.countryCode</content>
+                            <g:textField class="field" name="contact.countryCode" value="${contact?.countryCode}" />
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/checkbox">
+                            <content tag="label"><g:message code="prompt.include.in.notifications"/></content>
+                            <content tag="label.for">includeInNotifications</content>
+                            <g:checkBox class="cb checkbox" name="includeInNotifications"/>
+                        </g:applyLayout>
+                    </div>
+                </div>
+
+                <!-- credit card -->
+                <g:set var="creditCard" value="${user?.creditCard}"/>
+                <g:hiddenField name="creditCard.id" value="${creditCard?.id}"/>
+
+                <div class="box-cards ${creditCard ? 'box-cards-open' : ''}">
+                    <div class="box-cards-title">
+                        <a class="btn-open"><span><g:message code="prompt.credit.card"/></span></a>
+                    </div>
+                    <div class="box-card-hold">
+                        <div class="form-columns">
+                            <div class="column">
+                                <g:applyLayout name="form/input">
+                                    <content tag="label"><g:message code="prompt.credit.card"/></content>
+                                    <content tag="label.for">creditCard.number</content>
+                                    <g:textField class="field" name="creditCard.number" value="${creditCard?.number}" />
+                                </g:applyLayout>
+
+                                <g:applyLayout name="form/input">
+                                    <content tag="label"><g:message code="prompt.name.on.card"/></content>
+                                    <content tag="label.for">creditCard.name</content>
+                                    <g:textField class="field" name="creditCard.name" value="${creditCard?.name}" />
+                                </g:applyLayout>
+
+                                <g:applyLayout name="form/text">
+                                    <content tag="label"><g:message code="prompt.expiry.date"/></content>
+                                    <content tag="label.for">expiryMonth</content>
+                                    <span>
+                                        <g:textField class="text" name="expiryMonth" maxlength="2" size="2" value="${formatDate(date: creditCard?.expiry, format:'MM')}" />
+                                        -
+                                        <g:textField class="text" name="expiryYear" maxlength="4" size="4" value="${formatDate(date: creditCard?.expiry, format:'yyyy')}"/>
+                                        mm/yyyy
+                                    </span>
+                                </g:applyLayout>
+                            </div>
+
+                            <div class="column">
+                                <g:applyLayout name="form/checkbox">
+                                    <content tag="label"><g:message code="prompt.preferred.auto.payment"/></content>
+                                    <content tag="label.for">creditCardAutoPayment</content>
+                                    <g:checkBox class="cb checkbox auto-payment" name="creditCardAutoPayment" checked="${user?.automaticPaymentType == Constants.AUTO_PAYMENT_TYPE_CC}"/>
+                                </g:applyLayout>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ach -->
+                <g:set var="ach" value="${user?.ach}"/>
+                <g:hiddenField name="ach.id" value="${ach?.id}"/>
+
+                <div class="box-cards ${ach ? 'box-cards-open' : ''}">
+                    <div class="box-cards-title">
+                        <a class="btn-open" href="#"><span><g:message code="prompt.ach"/></span></a>
+                    </div>
+                    <div class="box-card-hold">
+                        <div class="form-columns">
+                            <div class="column">
+                               <g:applyLayout name="form/input">
+                                    <content tag="label"><g:message code="prompt.aba.routing.num"/></content>
+                                    <content tag="label.for">ach.abaRouting</content>
+                                    <g:textField class="field" name="ach.abaRouting" value="${ach?.abaRouting}" />
+                                </g:applyLayout>
+
+                               <g:applyLayout name="form/input">
+                                    <content tag="label"><g:message code="prompt.bank.acc.num"/></content>
+                                    <content tag="label.for">ach.bankAccount</content>
+                                    <g:textField class="field" name="ach.bankAccount" value="${ach?.bankAccount}" />
+                                </g:applyLayout>
+
+                               <g:applyLayout name="form/input">
+                                    <content tag="label"><g:message code="prompt.bank.name"/></content>
+                                    <content tag="label.for">ach.bankName</content>
+                                    <g:textField class="field" name="ach.bankName" value="${ach?.bankName}" />
+                                </g:applyLayout>
+
+                               <g:applyLayout name="form/input">
+                                    <content tag="label"><g:message code="prompt.name.customer.account"/></content>
+                                    <content tag="label.for">ach.accountName</content>
+                                    <g:textField class="field" name="ach.accountName" value="${ach?.accountName}" />
+                                </g:applyLayout>
+
+                                <g:applyLayout name="form/radio">
+                                    <content tag="label"><g:message code="prompt.account.type" /></content>
+
+                                    <g:radio class="rb" id="ach.accountType.checking" name="ach.accountType" value="1" checked="${ach?.accountType == 1}"/>
+                                    <label class="rb" for="ach.accountType.checking"><g:message code="label.account.checking"/></label>
+
+                                    <g:radio class="rb" id="ach.accountType.savings" name="ach.accountType" value="2" checked="${ach?.accountType == 2}"/>
+                                    <label class="rb" for="ach.accountType.savings"><g:message code="label.account.savings"/></label>
+                                </g:applyLayout>
+                            </div>
+
+                            <div class="column">
+                                <g:applyLayout name="form/checkbox">
+                                    <content tag="label"><g:message code="prompt.preferred.auto.payment"/></content>
+                                    <content tag="label.for">achAutoPayment</content>
+                                    <g:checkBox class="cb checkbox auto-payment" name="achAutoPayment" checked="${user?.automaticPaymentType == Constants.AUTO_PAYMENT_TYPE_ACH}"/>
+                                </g:applyLayout>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- box text -->
+                <div class="box-text">
+                    <g:textArea name="user.notes" value="${user?.notes}" rows="5" cols="60"/>
+                </div>
+
+                <div class="buttons">
+                    <ul>
+                        <li>
+                            <a onclick="$('#user-edit-form').submit()" class="submit save"><span><g:message code="button.save"/></span></a>
+                        </li>
+                        <li>
+                            <g:link action="list" class="submit cancel"><span><g:message code="button.cancel"/></span></g:link>
+                        </li>
+                    </ul>
+                </div>
+
+            </fieldset>
+        </g:form>
+    </div>
 </div>
 </body>
 </html>

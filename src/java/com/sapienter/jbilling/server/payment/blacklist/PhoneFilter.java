@@ -42,6 +42,10 @@ public class PhoneFilter implements BlacklistFilter {
     public Result checkUser(Integer userId) {
         ContactDTO contact = new ContactDAS().findPrimaryContact(userId);
 
+        if (contact == null) {
+            return new Result(false, null);
+        }
+
         if (contact.getPhoneCountryCode() == null && 
                 contact.getPhoneAreaCode() == null &&
                 contact.getPhoneNumber() == null) {

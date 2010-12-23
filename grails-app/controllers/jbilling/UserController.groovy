@@ -12,6 +12,11 @@ import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.user.db.UserStatusDAS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import grails.plugins.springsecurity.Secured
+import com.sapienter.jbilling.server.item.CurrencyBL
+import com.sapienter.jbilling.server.user.EntityBL
+import com.sapienter.jbilling.client.authentication.JBillingPasswordEncoder
+import org.springframework.security.authentication.encoding.PasswordEncoder
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 @Secured(['isAuthenticated()'])
 class UserController {
@@ -20,9 +25,7 @@ class UserController {
 
     IWebServicesSessionBean webServicesSession
     ViewUtils viewUtils
-    def languageId = "1"
-    def isAutoCC = false
-    def isAutoAch = false
+    PasswordEncoder passwordEncoder
 
     def filterService
     def recentItemService
@@ -32,6 +35,10 @@ class UserController {
         redirect action: list, params: params
     }
 
+    /**
+     * Get a list of users and render the list page. If the "applyFilters" parameter is given, the
+     * partial "_table.gsp" template will be rendered instead of the complete user list.
+     */
     def list = {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()
@@ -75,200 +82,167 @@ class UserController {
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
-        if (params["applyFilter"]) {
-            render template: "table", model: [users: users, selected: selected, statuses: statuses, filters: filters ]
+        if (params.applyFilter) {
+            render template: 'table', model: [users: users, selected: selected, statuses: statuses, filters: filters ]
         } else {
             [ users: users, selected: selected, statuses: statuses, filters: filters ]
         }
     }
 
+    /**
+     * Show details of the selected user. By default, this action renders the "_details.gsp" template.
+     * When rendering for an AJAX request the template defined by the "template" parameter will be rendered.
+     */
     def select = {
         UserDTO user = UserDTO.get(params.int('id'))
         recentItemService.addRecentItem(params.int('id'), RecentItemType.CUSTOMER)
         breadcrumbService.addBreadcrumb(controllerName, 'list', params.template ?: null, params.int('id'))
 
-        render template: params.template ?: "details", model: [ selected: user ]
+        render template: params.template ?: 'details', model: [ selected: user ]
     }
 
+    /**
+     * Fetches a list of sub-accounts for the given user id and renders the user list "_table.gsp" template.
+     */
     def subaccounts = {
         if (params["id"]) {
             UserDTO user = UserDTO.get(params.int("id"))
             def children = user?.customer?.children?.collect{ it.baseUser }
 
             if (!children.isEmpty()) {
-                render template: "table", model:[users: children]
+                render template: 'table', model:[users: children]
             } else {
-                flash.info = "customer.no.subaccount.warning"
+                flash.info = 'customer.no.subaccount.warning'
                 flash.args = [user.id]
-                render template: "/layouts/includes/messages"
+                render template: '/layouts/includes/messages'
             }
         }
     }
 
+    /**
+     * Updates the notes for the given user id.
+     */
     def saveNotes = {
         webServicesSession.saveCustomerNotes(params.int('id'), params.notes);
-        chain(action: "select", params: params)
+
+        def user = UserDTO.get(params.int('id'))
+        render template: 'details', model: [ selected: user ]
     }
 
-    def create = {
-
-        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
-
-        UserWS newUser = new UserWS();
-        bindData (newUser, params);
-        ContactWS contact = new ContactWS()
-        bindData(contact, params)
-        log.info "Email: " + contact.getEmail()
-        newUser.setContact(contact);
-        //TODO Set languageId of the logged-in user instead?
-        newUser.setLanguageId(new Integer(1));
-        //TODO Set the currency Id of the logged-in user?
-        newUser.setCurrencyId(1);
-        newUser.setStatusId(1);//active
-        //set email
-        try {
-            int id = webServicesSession.createUser(newUser);
-            flash.message = 'user.create.success'
-        } catch (SessionInternalError e) {
-            boolean retValue = viewUtils.resolveException(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
-        } catch (Exception e) {
-            flash.message = 'user.create.failed'
-        }
-        flash.args= [params.userName]
-        render( view:"user")
-    }
-
+    /**
+     * Get the user to be edited and show the "edit.gsp" view. If no ID is given this view
+     * will allow creation of a new user.
+     */
     def edit = {
+        def user = params.id ? webServicesSession.getUserWS(params.int('id')) : null
 
-        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
+        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
 
-        //languageId= webServicesSession.getCallerLanguageId().toString()
-        log.info "Edit User: LanguageID=" + languageId
-        UserWS user = null;
-        def notes= null;
-        def expMnth, expYr;
-
-        if (params["id"] && params["id"].matches("^[0-9]+")) {
-
-            int id= Integer.parseInt(params["id"])
-
-            try {
-                user = webServicesSession.getUserWS(id)
-                session["editUser"]= user
-            } catch (Exception e) {
-                flash.message = message(code: 'user.not.found')
-                flash.args= [params["id"]]
-                redirect ( action:index)
-            }
-            if (user) {
-                //CustomerDTO dto= CustomerDTO.findByBaseUser(new UserDTO(user.getUserId()));
-                notes= user?.getNotes();
-                if ( Constants.AUTO_PAYMENT_TYPE_CC == user.getAutomaticPaymentType())
-                {
-                    log.info "Edit. Auto CC true"
-                    isAutoCC=true;
-                }
-                if ( Constants.AUTO_PAYMENT_TYPE_ACH == user.getAutomaticPaymentType() )
-                {
-                    log.info "Edit. Auto Ach True"
-                    isAutoAch= true;
-                }
-                log.info  "retrieved notes "  + user?.getNotes()
-                if (null != user.getCreditCard() && null != user.getCreditCard().getNumber()) {
-                    Calendar cal= Calendar.getInstance();
-                    cal.setTime(user.getCreditCard().getExpiry())
-                    expMnth= 1 + cal.get(Calendar.MONTH)
-                    expYr= cal.get(Calendar.YEAR)
-                }
-                log.info  "Displaying user " + user.getUserId()
-            }
-        }
-
-        if (session["editUser"]) log.info  "User exists...."
-
-        return [user:user, isAutoCC:isAutoCC, isAutoAch:isAutoAch, languageId:languageId, notes:notes, expiryMonth:expMnth, expiryYear:expYr ]
+        [ user: user, currencies: currencies ]
     }
 
-    def cancel ={ render ('Cancelled action') }
+    // todo: handle "exclude from aging" flag from edit screen
+    // todo: handle "include contact in notifications" flag from edit screen
 
-    def postEdit = {
+    /**
+     * Validate and save a user.
+     */
+    def save = {
+        def user = new UserWS()
+        user.setMainRoleId(Constants.TYPE_CUSTOMER)
+        bindData(user, params, 'user')
 
-        UserWS user= session["editUser"]
-        def userExists= true;
-        if ( user == null ) {
-            userExists=false;
-            user= new UserWS()
-        }
-        log.info  "No errors. User exists=" + userExists
+        def contact = new ContactWS()
+        bindData(contact, params, 'contact')
+        user.setContact(contact)
 
-        //set type Customer - Create/Edit Customer
-        user.setMainRoleId(5);
-
-        log.info  "processing contact info..."
-        ContactWS contact= new ContactWS();
-        user.setContact(contact);
-
-        if (params.ach?.abaRouting)
-        {
-            log.info  "processing ach info..."
-            AchDTO ach=new AchDTO();
-            user.setAch(ach);
+        // bind credit card object if parameters present
+        if (params.creditCard.any { key, value -> value }) {
+            def creditCard = new CreditCardDTO()
+            bindData(creditCard, params, 'creditCard')
+            bindExpiryDate(creditCard, params)
+            user.setCreditCard(creditCard)
         }
 
-        if (params.creditCard?.number) {
-            log.info  "processing credit card info..."
-            CreditCardDTO dto= new CreditCardDTO();
-            user.setCreditCard(dto);
-            user.setPassword(params.newPassword);
-            Calendar cal= Calendar.getInstance();
-            cal.set(Calendar.MONTH, Integer.parseInt(params.creditCard.month));
-            cal.set(Calendar.YEAR, Integer.parseInt(params.creditCard.year));
-            cal.roll(Calendar.MONTH, false);
-            int lastDate = cal.getActualMaximum(Calendar.DATE);
-            cal.set(Calendar.DATE, lastDate);
-            user.creditCard.setExpiry(cal.getTime());
+        // bind ach object if parameters present
+        if (params.ach.any { key, value -> value }) {
+            def ach = new AchDTO()
+            bindData(ach, params, 'ach')
+            user.setAch(ach)
         }
 
-        bindData(user, params)
+        // set automatic payment type
+        if (params.creditCardAutoPayment) user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_CC)
+        if (params.achAutoPayment) user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
 
-        user.setNotes(params.notes)
-        if (params.isAutomaticPaymentCC == "on") {
-            user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_CC)
-            log.info "setting CC for auto"
-        } else if (params.isAutomaticPaymentAch == "on") {
-            user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
-            log.info "setting ACH for auto"
-        }
-        log.info  "Saving ach accountType as " + user?.getAch()?.getAccountType()
-//		log.info  "or " + params.ach.accountType
-
-        try {
-            if (userExists) {
-                webServicesSession.updateUser(user)
-                log.info  "Updating ach info separately..."
-                if ( ach || ach.getAbaRouting() || ach.getBankAccount() )
-                {
-                    webServicesSession.updateAch(user.getUserId(), user.getAch());
+        // set password
+        def oldUser = params['user.userId'] ? webServicesSession.getUserWS(params.int('user.userId')) : null
+        if (oldUser) {
+            if (params.newPassword) {
+                // validate that the entered confirmation password matches the users existing password
+                if (!passwordEncoder.isPasswordValid(oldUser.password, params.oldPassword, null)) {
+                    flash.error = 'customer.current.password.doesnt.match.existing'
+                    render view: 'edit', model: [ user: user, currencies: currencies ]
+                    return
                 }
-                flash.message = message(code: 'user.update.success')
-            } else {
-                int id = webServicesSession.createUser(user);
-                flash.message = message(code: 'user.create.success')
             }
-            log.info  params.isAutomaticPaymentCC
-            log.info  params.isAutomaticPaymentAch
-
-        } catch (SessionInternalError e) {
-            // TODO: the locale like this is not working, and it is messy. Once we have
-            // the one resolved by jBilling in the session, add that here.
-            boolean retValue = viewUtils.resolveException(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
-        } catch (Exception e) {
-            e.printStackTrace();
-            flash.message = message(code: 'user.create.failed')
+        } else {
+            if (!params.newPassword) {
+                flash.error = 'customer.create.without.password'
+                render view: 'edit', model: [ user: user, currencies: currencies ]
+                return
+            }
         }
-        session["editUser"]= null;
-        flash.args= [params.userName]
-        //flash.user = newUser;
-        render( view:"user")
+
+        // verify passwords
+        if (params.newPassword == params.verifiedPassword) {
+            if (params.newPassword) user.setPassword(params.newPassword)
+
+        } else {
+            flash.error = 'customer.passwords.dont.match'
+            render view: 'edit', model: [ user: user, currencies: currencies ]
+            return
+        }
+
+        // save or update
+        try {
+            if (!oldUser) {
+                log.debug("creating user ${user}")
+
+                user.userId = webServicesSession.createUser(user)
+
+                flash.message = 'customer.created'
+                flash.args = [ user.userId ]
+
+            } else {
+                log.debug("saving changes to user ${user.userId}")
+
+                webServicesSession.updateUser(user)
+                if (user.ach) webServicesSession.updateAch(user.userId, user.ach)
+
+                flash.message = 'customer.updated'
+                flash.args = [ user.userId ]
+            }
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e)
+            render view: 'edit', model: [ user: user, currencies: currencies ]
+            return
+        }
+
+        chain action: 'list', params: [ id: user.userId ]
+    }
+
+    def bindExpiryDate(CreditCardDTO creditCard, params) {
+        Calendar calendar = Calendar.getInstance()
+        calendar.clear()
+        calendar.set(Calendar.MONTH, params.int('expiryMonth'))
+        calendar.set(Calendar.YEAR, params.int('expiryYear'))
+
+        creditCard.expiry = calendar.getTime()
+    }
+
+    def getCurrencies() {
+        def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
+        return currencies.findAll { it.inUse }
     }
 }

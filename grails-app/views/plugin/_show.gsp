@@ -16,36 +16,53 @@
         <strong><g:message code="plugins.plugin.description"/></strong>
         <p>${plugin.type.getDescription(session['language_id'])}</p>
         <br/>
-        <dl class="other">
-            <dt><g:message code="plugins.plugin.id-long"/></dt>
-            <dd>${plugin.getId()}</dd>
-            <dt><g:message code="plugins.plugin.notes"/></dt>
-            <dd>
+        
+        <table class="dataTable">
+           <tr>
+            <td><g:message code="plugins.plugin.id-long"/></td>
+            <td class="value">${plugin.getId()}</td>
+           </tr>
+           <tr>
+            <td><g:message code="plugins.plugin.notes"/></td>
+            <td class="value">
                 <g:if test="${plugin.getNotes() != null}">
                     ${plugin.getNotes()}
                 </g:if>
                 <g:else>
                     <g:message code="plugins.plugin.noNotes"/>
                 </g:else>
-            </dd>
-            <dt><g:message code="plugins.plugin.order"/></dt>
-            <dd>${plugin.getProcessingOrder()}</dd>
-        </dl>
+            </td>
+           </tr>
+           <tr>
+            <td><g:message code="plugins.plugin.order"/></td>
+            <td class="value">${plugin.getProcessingOrder()}</td>
+           </tr>
+           <g:if test="!${plugin.parameters}">
+           <tr>
+            <td><g:message code="plugins.plugin.noParamaters"/></td>
+            <td class="value"><g:message code="plugins.plugin.noParamatersTxt"/></td>
+           </tr>
+           </g:if>
+        </table>
         
-        <div class="box-cards box-cards-open">
-             <div class="box-cards-title">
-                   <span><g:message code="plugins.plugin.value"/></span>
-                   <span style="width:50%"><g:message code="plugins.plugin.parameter"/></span>
-             </div>
-             <div class="box-card-hold">
-                       <g:each in="${plugin.parameters}">
-                           <div class="form-columns">
-                              <label>${it.name}</label>
-                              <label>${it.value}</label>
-                           </div>
-                       </g:each>
-             </div>
-        </div>
+        <g:if test="${plugin.parameters}">
+        <table class="innerTable">
+             <thead class="innerHeader">
+             <tr>
+                <th><g:message code="plugins.plugin.parameter"/></th>
+                <th><g:message code="plugins.plugin.value"/></th>
+             </tr>
+             </thead>
+             <tbody>
+             <g:each in="${plugin.parameters}">
+             <tr>
+                <td class="innerContent">${it.name}</td>
+                <td class="innerContent">${it.value}</td>
+             </tr>         
+             </g:each>
+             </tbody>
+        </table>
+        </g:if>
     </div>
 
     <g:render template="/confirm" 

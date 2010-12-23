@@ -1,22 +1,23 @@
-<div class="heading table-heading">
-    <strong class="first"><g:message code="plugins.plugin.id"/></strong>
-    <strong style="width:25%"><g:message code="plugins.plugin.order"/></strong>
-    <strong style="width:50%"><g:message code="plugins.plugin.type"/></strong>
-</div>
-
 <div class="table-box">
-    <ul>
+<table cellpadding="0" cellspacing="0">
+    <thead>
+        <th class="small"><g:message code="plugins.plugin.id"/></th>
+    	<th class="medium"><g:message code="plugins.plugin.type"/></th>
+    	<th class="tiny"><g:message code="plugins.plugin.order"/></th>
+    </thead>
+
+    <tbody>
 		<g:each in="${plugins}" status="idx" var="dto">
-		   <li>
+		   <tr>
+		     <td>
 		     <g:remoteLink action="show" id="${dto.id}" before="register(this);" 
-                           onSuccess="render(data, next);" breadcrumb="id"
-                           params="[template:'show']">
-                 <span class="block">
-                    <span>${dto.getProcessingOrder()}</span>
-		         </span>
-                 <strong>
+                           onSuccess="render(data, next);" params="[template:'show']">
                     ${dto.getId()}
-		         </strong>
+			 </g:remoteLink>
+             </td>
+		     <td>
+		     <g:remoteLink action="show" id="${dto.id}" before="register(this);" 
+                           onSuccess="render(data, next);" params="[template:'show']">
                  <strong>
 		            ${dto.type.getDescription(session['language_id'], "title")}
 		         </strong>
@@ -24,9 +25,17 @@
 		            ${dto.type.getClassName()}
 		         </em>
 			 </g:remoteLink>
-		   </li>
+             </td>
+		     <td>
+		     <g:remoteLink action="show" id="${dto.id}" before="register(this);" 
+                           onSuccess="render(data, next);" params="[template:'show']">
+                  ${dto.getProcessingOrder()}
+			 </g:remoteLink>
+             </td>
+		   </tr>
         </g:each>
-    </ul>
+    </tbody>
+</table>
 </div>
 
 <div class="btn-box">

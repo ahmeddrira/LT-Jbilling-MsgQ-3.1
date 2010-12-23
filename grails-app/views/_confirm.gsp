@@ -71,12 +71,9 @@
         modal: true,
         buttons: {
             "${message(code: 'prompt.yes')}": function() {
-                console.log("clicked yes");
                 ${onYes};
-                console.log("submitting form '#confirm-command-form-${name}'");
                 $("#confirm-command-form-${name}").submit();
                 $(this).dialog('close');
-                console.log("closed dialog.")
             },
             "${message(code: 'prompt.no')}": function() {
                 ${onNo};

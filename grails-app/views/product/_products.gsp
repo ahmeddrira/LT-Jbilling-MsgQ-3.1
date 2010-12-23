@@ -6,13 +6,16 @@
   @since  16-Dec-2010
 --%>
 
-<div class="table-box">
-    <table id="products" cellspacing="0" cellpadding="0">
-        <thead>
-            <th><g:message code="product.th.name"/></th>
-            <th class="medium"><g:message code="product.th.internal.number"/></th>
-        </thead>
-        <tbody>
+<%-- list of products --%>
+<g:if test="${products}">
+    <div class="table-box">
+        <table id="products" cellspacing="0" cellpadding="0">
+            <thead>
+                <th><g:message code="product.th.name"/></th>
+                <th class="medium"><g:message code="product.th.internal.number"/></th>
+            </thead>
+            <tbody>
+
             <g:each var="product" in="${products}">
 
                 <tr id="product-${product.id}" class="${selectedProduct?.id == product.id ? 'active' : ''}">
@@ -30,9 +33,24 @@
                 </tr>
 
             </g:each>
-        </tbody>
-    </table>
-</div>
+
+            </tbody>
+        </table>
+    </div>
+</g:if>
+
+<%-- no products to show --%>
+<g:if test="${!products}">
+    <div class="heading"><strong><em><g:message code="product.category.no.products.title"/></em></strong></div>
+    <div class="box">
+        <g:if test="${selectedCategoryId}">
+            <em><g:message code="product.category.no.products.warning"/></em>
+        </g:if>
+        <g:else>
+            <em><g:message code="product.category.not.selected.message"/></em>
+        </g:else>
+    </div>
+</g:if>
 
 <g:if test="${products?.totalCount > params.max}">
     <div class="pager-box">
@@ -45,8 +63,8 @@
     <g:if test="${selectedCategoryId}">
         <g:link action="editProduct" params="['category': selectedCategoryId]" class="submit add"><span><g:message code="button.create.product"/></span></g:link>
         <a onclick="showConfirm('deleteCategory-${selectedCategoryId}');" class="submit delete"><span><g:message code="button.delete.category"/></span></a>
-        <g:remoteLink action="allProducts" update="column2" class="submit show"><span><g:message code="button.show.all"/></span></g:remoteLink>
     </g:if>
+    <g:remoteLink action="allProducts" update="column2" class="submit show"><span><g:message code="button.show.all"/></span></g:remoteLink>
 </div>
 
 <g:render template="/confirm"

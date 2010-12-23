@@ -66,11 +66,6 @@ class ProductController {
 
             breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
 
-            if (!products) {
-                flash.info = 'product.category.no.products.warning'
-                flash.args = [ params.id ]
-            }
-
             render template: 'products', model: [ products: products, selectedCategoryId: params.id ]
         }
     }

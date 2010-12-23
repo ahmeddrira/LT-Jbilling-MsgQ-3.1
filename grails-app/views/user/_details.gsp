@@ -113,8 +113,12 @@
     </g:if>
 
     <div class="btn-box">
-        <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
-        <a href="#" class="submit order"><span><g:message code="button.create.order"/></span></a>
-        <a href="#" class="submit payment"><span><g:message code="button.create.payment"/></span></a>
+        <div class="row">
+            <a href="#" class="submit order"><span><g:message code="button.create.order"/></span></a>
+            <a href="#" class="submit payment"><span><g:message code="button.create.payment"/></span></a>
+        </div>
+        <div class="row">
+            <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+        </div>
     </div>
 </div>

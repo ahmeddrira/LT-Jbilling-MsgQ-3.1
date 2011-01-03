@@ -29,7 +29,7 @@ class PluginController {
     RecentItemService recentItemService;
     BreadcrumbService breadcrumbService;
     
-    def index = { 
+    def index = {
         listCategories();
     }
     

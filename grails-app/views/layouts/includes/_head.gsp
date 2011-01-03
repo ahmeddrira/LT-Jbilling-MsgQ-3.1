@@ -40,7 +40,7 @@
         renderBreadcrumbs();
     });
     $(document).ajaxError(function(e, xhr, settings) {
-        renderMesages();
+        renderMessages();
     });
 </script>
 

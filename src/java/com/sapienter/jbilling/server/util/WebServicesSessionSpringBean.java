@@ -2408,17 +2408,17 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * Plug-ins
      */
     @Override
-    public Integer createPlugin(Integer executorId, PluggableTaskWS plugin) {
-        return new PluggableTaskBL().create(executorId, new PluggableTaskDTO(getCallerCompanyId(), plugin));
+    public Integer createPlugin(PluggableTaskWS plugin) {
+        return new PluggableTaskBL().create(getCallerId(), new PluggableTaskDTO(getCallerCompanyId(), plugin));
     }
     
     @Override
-    public void updatePlugin(Integer executorId, PluggableTaskWS plugin) {
-        new PluggableTaskBL().update(executorId, new PluggableTaskDTO(getCallerCompanyId(), plugin));
+    public void updatePlugin(PluggableTaskWS plugin) {
+        new PluggableTaskBL().update(getCallerId(), new PluggableTaskDTO(getCallerCompanyId(), plugin));
     }
     
     @Override
-    public void deletePlugin(Integer executorId, Integer id) {
-        new PluggableTaskBL(id).delete(executorId);
+    public void deletePlugin(Integer id) {
+        new PluggableTaskBL(id).delete(getCallerId());
     }
 }

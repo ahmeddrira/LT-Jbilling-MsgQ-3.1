@@ -146,7 +146,9 @@ public class CustomerDTO implements java.io.Serializable {
         setCreditLimit(user.getCreditLimit() == null ? null : new BigDecimal(user.getCreditLimit()));
         setDynamicBalance(user.getDynamicBalance() == null ? null : new BigDecimal(user.getDynamicBalance()));
         setAutoRecharge(user.getAutoRecharge() == null ? null : new BigDecimal(user.getAutoRecharge()));
-
+        //setInvoiceChild
+        setInvoiceChild(new Integer(user.getInvoiceChild() == null ? 0 : (user.getInvoiceChild().booleanValue()? 1: 0) ));
+        
         LOG.debug("Customer created with auto-recharge: " + getAutoRecharge() + " incoming var, "
                   + user.getAutoRecharge());
     }

@@ -211,12 +211,23 @@ public class UserBL extends ResultList
             user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
+            //invoiceChild is now editable field
+            user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
 
             // update the main order
             if (dto.getCustomer().getCurrentOrderId() != null) {
                 OrderBL order = new OrderBL(dto.getCustomer().getCurrentOrderId());
                 order.setMainSubscription(executorId);
             }
+            
+            //eventLog audit for change to invoiceChild 
+            eLogger.audit(executorId,
+                    user.getId(),
+                    Constants.TABLE_CUSTOMER,
+                    user.getCustomer().getId(),
+                    EventLogger.MODULE_USER_MAINTENANCE,
+                    EventLogger.ROW_UPDATED, null, null, null);
+            
         }
 
         eLogger.audit(executorId,

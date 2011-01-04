@@ -20,9 +20,11 @@
         /*
             Highlight clicked rows in the configuration side menu
          */
-        $('#left-column ul.list li').click(function() {
-            $(this).parents('ul.list').find('li.active').removeClass('active');
-            $(this).addClass('active');
+        $(document).ready(function() {
+            $('#left-column ul.list li').click(function() {
+                $(this).parents('ul.list').find('li.active').removeClass('active');
+                $(this).addClass('active');
+            });
         });
     </script>
 
@@ -40,47 +42,47 @@
             <div class="menu-items">
                 <ul class="list">
                     <li class="${pageProperty(name: 'page.menu.item') == 'aging' ? 'active' : ''}">
-                        <g:remoteLink action="aging" before="register(this);" onSuccess="render(data, first);">
+                        <g:remoteLink controller="config" action="aging" before="register(this);" onSuccess="render(data, first);">
                             <g:message code="configuration.menu.aging"/>
                         </g:remoteLink>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'billing' ? 'active' : ''}">
-                        <g:remoteLink action="billing" before="register(this);" onSuccess="render(data, first);">
+                        <g:remoteLink controller="config" action="billing" before="register(this);" onSuccess="render(data, first);">
                             <g:message code="configuration.menu.billing"/>
                         </g:remoteLink>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'blacklist' ? 'active' : ''}">
-                        <g:remoteLink action="blacklist" before="register(this);" onSuccess="render(data, first);">
+                        <g:remoteLink controller="config" action="blacklist" before="register(this);" onSuccess="render(data, first);">
                             <g:message code="configuration.menu.blacklist"/>
                         </g:remoteLink>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'company' ? 'active' : ''}">
-                        <g:remoteLink action="company" before="register(this);" onSuccess="render(data, first);">
+                        <g:remoteLink controller="config" action="company" before="register(this);" onSuccess="render(data, first);">
                             <g:message code="configuration.menu.company"/>
                         </g:remoteLink>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'currencies' ? 'active' : ''}">
-                        <g:remoteLink action="currencies" before="register(this);" onSuccess="render(data, first);">
+                        <g:remoteLink controller="config" action="currencies" before="register(this);" onSuccess="render(data, first);">
                             <g:message code="configuration.menu.currencies"/>
                         </g:remoteLink>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'email' ? 'active' : ''}">
-                        <g:remoteLink action="email" before="register(this);" onSuccess="render(data, first);">
+                        <g:remoteLink controller="config" action="email" before="register(this);" onSuccess="render(data, first);">
                             <g:message code="configuration.menu.email"/>
                         </g:remoteLink>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'general' ? 'active' : ''}">
-                        <g:remoteLink action="general" before="register(this);" onSuccess="render(data, first);">
+                        <g:remoteLink controller="config" action="general" before="register(this);" onSuccess="render(data, first);">
                             <g:message code="configuration.menu.general"/>
                         </g:remoteLink>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'invoices' ? 'active' : ''}">
-                        <g:remoteLink action="invoices" before="register(this);" onSuccess="render(data, first);">
+                        <g:remoteLink controller="config" action="invoices" before="register(this);" onSuccess="render(data, first);">
                             <g:message code="configuration.menu.invoices"/>
                         </g:remoteLink>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'mediation' ? 'active' : ''}">
-                        <g:remoteLink action="mediation" before="register(this);" onSuccess="render(data, first);">
+                        <g:remoteLink controller="config" action="mediation" before="register(this);" onSuccess="render(data, first);">
                             <g:message code="configuration.menu.mediation"/>
                         </g:remoteLink>
                     </li>
@@ -90,7 +92,7 @@
                         </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'periods' ? 'active' : ''}">
-                        <g:remoteLink action="periods" before="register(this);" onSuccess="render(data, first);">
+                        <g:remoteLink controller="config" action="periods" before="register(this);" onSuccess="render(data, first);">
                             <g:message code="configuration.menu.order.periods"/>
                         </g:remoteLink>
                     </li>
@@ -100,7 +102,7 @@
                         </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'users' ? 'active' : ''}">
-                        <g:remoteLink action="users" before="register(this);" onSuccess="render(data, first);">
+                        <g:remoteLink controller="config" action="users" before="register(this);" onSuccess="render(data, first);">
                             <g:message code="configuration.menu.users"/>
                         </g:remoteLink>
                     </li>

@@ -81,7 +81,7 @@
             <li <g:if test="${controllerName == 'product'}">class="active"</g:if>>
                 <g:link controller="product"><span><g:message code="menu.link.products"/></span><em></em></g:link>
             </li>
-            <li <g:if test="${controllerName == 'config'}">class="active"</g:if>>
+            <li <g:if test="${controllerName == 'config' || controllerName == 'plugin' || controllerName == 'notifications'}">class="active"</g:if>>
                 <g:link controller="config"><span><g:message code="menu.link.configuration"/></span><em></em></g:link>
             </li>
         </ul>

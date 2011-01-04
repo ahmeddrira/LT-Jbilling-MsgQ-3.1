@@ -30,16 +30,10 @@ public class PaymentMethodRouterTask extends AbstractPaymentRouterTask {
     private static final ParameterDescription ACH_DELEGATE = 
     	new ParameterDescription("ach_payment_task", false, ParameterDescription.Type.STR);
     
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(CREDIT_CARD_DELEGATE);
-            add(ACH_DELEGATE);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(CREDIT_CARD_DELEGATE);
+        descriptions.add(ACH_DELEGATE);
     }
 
     

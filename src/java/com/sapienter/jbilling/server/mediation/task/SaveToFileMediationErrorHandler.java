@@ -58,21 +58,14 @@ public class SaveToFileMediationErrorHandler extends PluggableTask
     protected final static String DEFAULT_FILE_EXTENSION = ".csv";
     protected final static String DEFAULT_CSV_FILE_SEPARATOR = ",";
 
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAM_DIRECTORY_NAME);
-            add(PARAM_FILE_NAME);
-            add(PARAM_ROTATE_FILE_DAILY);
-            add(PARAM_MEDIATION_CONFIGURATION_ID);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAM_DIRECTORY_NAME);
+        descriptions.add(PARAM_FILE_NAME);
+        descriptions.add(PARAM_ROTATE_FILE_DAILY);
+        descriptions.add(PARAM_MEDIATION_CONFIGURATION_ID);
     }
 
-    
 
     public void process(Record record, List<String> errors, Date processingTime, MediationConfiguration mediationConfiguration) throws TaskException {
         if (mediationConfiguration != null &&  parameters.get(PARAM_MEDIATION_CONFIGURATION_ID.getName()) != null) {

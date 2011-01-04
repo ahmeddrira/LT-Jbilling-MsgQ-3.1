@@ -106,23 +106,17 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
 
     private Boolean mysql;
     
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAM_DATABASE_URL);
-            add(PARAM_DRIVER);
-            add(PARAM_DATABASE_USERNAME);
-            add(PARAM_DATABASE_PASSWORD);
-            add(PARAM_TABLE_NAME);
-            add(PARAM_ERRORS_COLUMN_NAME);
-            add(PARAM_RETRY_COLUMN_NAME);
-            add(PARAM_JBILLING_TIMESTAMP_COLUMN_NAME);
-            add(PARAM_MEDIATION_CONFIGURATION_ID);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAM_DATABASE_URL);
+        descriptions.add(PARAM_DRIVER);
+        descriptions.add(PARAM_DATABASE_USERNAME);
+        descriptions.add(PARAM_DATABASE_PASSWORD);
+        descriptions.add(PARAM_TABLE_NAME);
+        descriptions.add(PARAM_ERRORS_COLUMN_NAME);
+        descriptions.add(PARAM_RETRY_COLUMN_NAME);
+        descriptions.add(PARAM_JBILLING_TIMESTAMP_COLUMN_NAME);
+        descriptions.add(PARAM_MEDIATION_CONFIGURATION_ID);
     }
 
 

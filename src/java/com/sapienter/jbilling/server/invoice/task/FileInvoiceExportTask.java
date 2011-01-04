@@ -21,23 +21,28 @@
 
 package com.sapienter.jbilling.server.invoice.task;
 
-import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.invoice.NewInvoiceEvent;
-import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
-import com.sapienter.jbilling.server.system.event.Event;
-import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
-import com.sapienter.jbilling.server.user.ContactBL;
-import com.sapienter.jbilling.server.user.UserBL;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.MathContext;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
+
+import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.invoice.NewInvoiceEvent;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
+import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import com.sapienter.jbilling.server.system.event.Event;
+import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
+import com.sapienter.jbilling.server.user.ContactBL;
+import com.sapienter.jbilling.server.user.UserBL;
 /**
  *
  * @author emilc
@@ -49,8 +54,12 @@ public class FileInvoiceExportTask extends PluggableTask implements IInternalEve
     private static final Logger LOG = Logger.getLogger(FileInvoiceExportTask.class);
 
     // Required parameters
-    private static final String FILE = "file";
+    private static final ParameterDescription PARAMETER_FILE = new ParameterDescription("file", true, ParameterDescription.Type.STR);
 
+    { 
+        descriptions.add(PARAMETER_FILE);
+    }
+    
     public void process(Event event) throws PluggableTaskException {
         NewInvoiceEvent myEvent = (NewInvoiceEvent) event;
         if (myEvent.getInvoice().getIsReview() != null && myEvent.getInvoice().getIsReview() == 1) {
@@ -60,7 +69,7 @@ public class FileInvoiceExportTask extends PluggableTask implements IInternalEve
         LOG.debug("Exporting invoice " + myEvent.getInvoice().getId());
 
         // get filename
-        String filename = (String) parameters.get(FILE);
+        String filename = (String) parameters.get(PARAMETER_FILE.getName());
         if (!(new File(filename)).isAbsolute()) {
             // prepend the default directory if file path is relative
             String defaultDir = Util.getSysProp("base_dir");

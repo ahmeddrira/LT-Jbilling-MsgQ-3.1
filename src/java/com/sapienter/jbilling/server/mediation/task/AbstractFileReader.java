@@ -78,13 +78,13 @@ public abstract class AbstractFileReader extends AbstractReader {
     	new ParameterDescription("suffix", false, ParameterDescription.Type.STR);
     
     public static final ParameterDescription PARAMETER_RENAME =
-    	new ParameterDescription("rename", false, ParameterDescription.Type.BOOLEAN);
+    	new ParameterDescription("rename", false, ParameterDescription.Type.STR);
     
     public static final ParameterDescription PARAMETER_DATE_FORMAT =
     	new ParameterDescription("date_format", false, ParameterDescription.Type.STR);
     
     public static final ParameterDescription PARAMETER_REMOVE_QUOTE =
-    	new ParameterDescription("removeQuote", false, ParameterDescription.Type.BOOLEAN);
+    	new ParameterDescription("removeQuote", false, ParameterDescription.Type.STR);
     
     public static final ParameterDescription PARAMETER_AUTO_ID =
     	new ParameterDescription("autoID", false, ParameterDescription.Type.STR);
@@ -92,26 +92,18 @@ public abstract class AbstractFileReader extends AbstractReader {
     public static final ParameterDescription PARAMETER_BUFFER_SIZE =
     	new ParameterDescription("buffer_size", false, ParameterDescription.Type.STR);
     
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_FORMAT_FILE);
-            add(PARAMETER_FORMAT_DIRECTORY);
-            add(PARAMETER_DIRECTORY);
-            add(PARAMETER_SUFFIX);
-            add(PARAMETER_RENAME);
-            add(PARAMETER_DATE_FORMAT);
-            add(PARAMETER_REMOVE_QUOTE);
-            add(PARAMETER_AUTO_ID);
-            add(PARAMETER_BUFFER_SIZE);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_FORMAT_FILE);
+        descriptions.add(PARAMETER_FORMAT_DIRECTORY);
+        descriptions.add(PARAMETER_DIRECTORY);
+		descriptions.add(PARAMETER_SUFFIX);
+		descriptions.add(PARAMETER_RENAME);
+		descriptions.add(PARAMETER_DATE_FORMAT);
+		descriptions.add(PARAMETER_REMOVE_QUOTE);
+		descriptions.add(PARAMETER_AUTO_ID);
+		descriptions.add(PARAMETER_BUFFER_SIZE);
     }
-    
-    
     
     @Override
     public boolean validate(List<String> messages) {
@@ -138,7 +130,7 @@ public abstract class AbstractFileReader extends AbstractReader {
         dateFormat = new SimpleDateFormat(((String) parameters.get(PARAMETER_DATE_FORMAT.getName()) == null) 
                 ? "yyyyMMdd-HHmmss" : (String) parameters.get(PARAMETER_DATE_FORMAT.getName()));
         removeQuote = ( parameters.get(PARAMETER_REMOVE_QUOTE.getName()) == null ) 
-                ? true : ((Boolean) parameters.get(PARAMETER_REMOVE_QUOTE.getName())).booleanValue();
+                ? true : Boolean.parseBoolean((String) parameters.get(PARAMETER_REMOVE_QUOTE.getName()));
         autoID = (parameters.get(PARAMETER_AUTO_ID.getName()) == null)
                 ? false : ((Boolean) parameters.get(PARAMETER_AUTO_ID.getName())).booleanValue();
         bufferSize = Integer.parseInt(((String) parameters.get(PARAMETER_BUFFER_SIZE.getName()) == null)

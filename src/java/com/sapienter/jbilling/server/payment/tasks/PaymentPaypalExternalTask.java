@@ -96,19 +96,13 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
         return getOptionalParameter(PARAMETER_PAYPAL_SUBJECT.getName(), "");
     }
 
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_PAYPAL_USER_ID);
-            add(PARAMETER_PAYPAL_PASSWORD);
-            add(PARAMETER_PAYPAL_SIGNATURE);
-            add(PARAMETER_PAYPAL_ENVIRONMENT);
-            add(PARAMETER_PAYPAL_SUBJECT);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_PAYPAL_USER_ID);
+        descriptions.add(PARAMETER_PAYPAL_PASSWORD);
+        descriptions.add(PARAMETER_PAYPAL_SIGNATURE);
+        descriptions.add(PARAMETER_PAYPAL_ENVIRONMENT);
+        descriptions.add(PARAMETER_PAYPAL_SUBJECT);
     }
 
     private PaypalApi getApi() throws PluggableTaskException, PayPalException {

@@ -78,19 +78,14 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout
     private static final ParameterDescription PARAMETER_VALIDATION_MODE = 
     	new ParameterDescription("validation_mode", false, ParameterDescription.Type.STR); // none/testMode/liveMode
 
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_NAME);
-            add(PARAMETER_KEY);
-            add(PARAMETER_TEST_MODE);
-            add(PARAMETER_VALIDATION_MODE);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_NAME);
+        descriptions.add(PARAMETER_KEY);
+        descriptions.add(PARAMETER_TEST_MODE);
+        descriptions.add(PARAMETER_VALIDATION_MODE);
     }
+
 
     
     private String getProcessorName() {

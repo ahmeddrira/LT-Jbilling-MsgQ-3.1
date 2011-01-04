@@ -94,35 +94,41 @@
 		<strong><g:message code="invoice.label.payment.refunds"/></strong>
 	</div>
 	
-	<table class="innerTable" >
-		<thead class="innerHeader">
-	         <tr>
-	            <th align="left"><g:message code="label.gui.date"/></th>
-				<th align="left"><g:message code="label.gui.payment.refunds"/></th>
-				<th align="left"><g:message code="label.gui.amount"/></th>
-				<th align="left"><g:message code="label.gui.method"/></th>
-				<th align="left"><g:message code="label.gui.result"/></th>
-				<th align="left">.</th>
-	         </tr>
-         </thead>
-         <tbody>
-		     <g:each var="payment" in="${payments}" status="idx">
+	<g:if test="">
+		<table class="innerTable" >
+			<thead class="innerHeader">
 		         <tr>
-		         	<td align="left" class="innerContent">${Util.formatDate(payment.paymentDate, session["user_id"])}</td>
-					<td align="left" class="innerContent">${payment.isRefund?"R":"P"}</td>
-					<td align="left" class="innerContent">${Util.formatMoney(new BigDecimal(payment.amount?:"0.0"),
-									session["user_id"],invoice?.currencyId, false)}</td>
-					<td align="left" class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</td>
-					<td align="left" class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</td>
-					<td align="left" class="innerContent">
-						<a href="${createLink (action: 'removePaymentLink', id: invoice.id, params:['paymentId': payment.id])}" class="submit">
-							<span>*</span>
-						</a>
-					</td>
+		            <th align="left"><g:message code="label.gui.date"/></th>
+					<th align="left"><g:message code="label.gui.payment.refunds"/></th>
+					<th align="left"><g:message code="label.gui.amount"/></th>
+					<th align="left"><g:message code="label.gui.method"/></th>
+					<th align="left"><g:message code="label.gui.result"/></th>
+					<th align="left">.</th>
 		         </tr>
-	         </g:each>
-         </tbody>
-    </table>
+	         </thead>
+	         <tbody>
+			     <g:each var="payment" in="${payments}" status="idx">
+			         <tr>
+			         	<td align="left" class="innerContent">${Util.formatDate(payment.paymentDate, session["user_id"])}</td>
+						<td align="left" class="innerContent">${payment.isRefund?"R":"P"}</td>
+						<td align="left" class="innerContent">${Util.formatMoney(new BigDecimal(payment.amount?:"0.0"),
+										session["user_id"],invoice?.currencyId, false)}</td>
+						<td align="left" class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</td>
+						<td align="left" class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</td>
+						<td align="left" class="innerContent">
+							<a href="${createLink (action: 'removePaymentLink', id: invoice.id, params:['paymentId': payment.id])}" class="submit">
+								<span>*</span>
+							</a>
+						</td>
+			         </tr>
+		         </g:each>
+	         </tbody>
+	    </table>
+	</g:if>
+	<g:else>
+		<g:message code="invoice.prompt.no.payments.refunds"/>
+	</g:else>
+	
 	
 	<hr/>
 	
@@ -139,9 +145,9 @@
 </div>
 
 <g:render template="/confirm"
-          model="['message':'invoice.prompt.are.you.sure',
-                  'controller':'invoice',
-                  'action':'delete',
-                  'id':invoice.id,
-                 ]"/>
+         model="['message':'invoice.prompt.are.you.sure',
+                 'controller':'invoice',
+                 'action':'delete',
+                 'id':invoice.id,
+                ]"/>
 </div>

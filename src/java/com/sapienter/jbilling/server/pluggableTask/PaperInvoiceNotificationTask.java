@@ -48,23 +48,18 @@ public class PaperInvoiceNotificationTask
     public static final ParameterDescription PARAMETER_DESIGN = 
     	new ParameterDescription("design", true, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_LANGUAGE_OPTIONAL = 
-    	new ParameterDescription("language", false, ParameterDescription.Type.BOOLEAN);
+    	new ParameterDescription("language", false, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_SQL_QUERY_OPTIONAL = 
-    	new ParameterDescription("sql_query", false, ParameterDescription.Type.BOOLEAN);
+    	new ParameterDescription("sql_query", false, ParameterDescription.Type.STR);
 
 
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_DESIGN);
-            add(PARAMETER_LANGUAGE_OPTIONAL);
-            add(PARAMETER_SQL_QUERY_OPTIONAL);
-        }
-    };
-
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_DESIGN);
+        descriptions.add(PARAMETER_LANGUAGE_OPTIONAL);
+        descriptions.add(PARAMETER_SQL_QUERY_OPTIONAL);
     }
+
 
 
     private String design;
@@ -83,11 +78,11 @@ public class PaperInvoiceNotificationTask
             throws TaskException {
         design = (String) parameters.get(PARAMETER_DESIGN.getName());
 
-        language = ((Boolean) parameters.get(
-                PARAMETER_LANGUAGE_OPTIONAL.getName())).booleanValue();
+        language = Boolean.valueOf((String) parameters.get(
+                PARAMETER_LANGUAGE_OPTIONAL.getName()));
 
-        sqlQuery = ((Boolean) parameters.get(
-                PARAMETER_SQL_QUERY_OPTIONAL.getName())).booleanValue();
+        sqlQuery = Boolean.valueOf((String) parameters.get(
+                PARAMETER_SQL_QUERY_OPTIONAL.getName()));
 
         invoice = (InvoiceDTO) message.getParameters().get(
                 "invoiceDto");

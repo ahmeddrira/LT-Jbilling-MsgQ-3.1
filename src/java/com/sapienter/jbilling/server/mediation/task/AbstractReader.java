@@ -41,27 +41,19 @@ public abstract class AbstractReader extends PluggableTask implements
     private int batchSize;
     
     public static final ParameterDescription PARAMETER_BATCH_SIZE = 
-    	new ParameterDescription("batch_size", false, ParameterDescription.Type.INT);
+    	new ParameterDescription("batch_size", false, ParameterDescription.Type.STR);
     
-    
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_BATCH_SIZE);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_BATCH_SIZE);
     }
-    
-    
+
     public boolean validate(List<String> messages) {
         boolean retValue = true;
         try {
             // the parameter is optional and defaults to 1000 records
             batchSize = ( parameters.get(PARAMETER_BATCH_SIZE.getName()) == null)
-                ? 100 : ((Integer) parameters.get(PARAMETER_BATCH_SIZE.getName())).intValue();
+                ? 100 : Integer.parseInt((String) parameters.get(PARAMETER_BATCH_SIZE.getName()));
             LOG.debug("Batch size for this reader is " + getBatchSize());
         } catch (NumberFormatException e) {
             retValue = false;

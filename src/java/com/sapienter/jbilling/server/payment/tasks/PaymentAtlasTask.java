@@ -70,19 +70,14 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
 
     private Logger log = Logger.getLogger(PaymentAtlasTask.class);
 
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_AVS);
-            add(PARAMETER_MERCHANT_ACCOUNT_CODE);
-            add(PARAMETER_PASSWORD);
-            add(PARAMETER_TEST);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_AVS);
+        descriptions.add(PARAMETER_MERCHANT_ACCOUNT_CODE);
+        descriptions.add(PARAMETER_PASSWORD);
+        descriptions.add(PARAMETER_TEST);
     }
+
     
     public boolean process(PaymentDTOEx paymentInfo)
             throws PluggableTaskException {

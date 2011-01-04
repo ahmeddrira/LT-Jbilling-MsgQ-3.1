@@ -67,23 +67,16 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
 
     private static final String PAYMENT_PROCESSOR_NAME = "Payment filter task";
 
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAM_ENABLE_FILTER_USER_ID);
-            add(PARAM_ENABLE_FILTER_NAME);
-            add(PARAM_ENABLE_FILTER_CC_NUMBER);
-            add(PARAM_ENABLE_FILTER_ADDRESS);
-            add(PARAM_ENABLE_FILTER_IP_ADDRESS);
-            add(PARAM_ENABLE_FILTER_PHONE_NUMBER);
-            add(PARAM_IP_ADDRESS_CCF_ID);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAM_ENABLE_FILTER_USER_ID);
+    	descriptions.add(PARAM_ENABLE_FILTER_NAME);
+    	descriptions.add(PARAM_ENABLE_FILTER_CC_NUMBER);
+    	descriptions.add(PARAM_ENABLE_FILTER_ADDRESS);
+    	descriptions.add(PARAM_ENABLE_FILTER_IP_ADDRESS);
+    	descriptions.add(PARAM_ENABLE_FILTER_PHONE_NUMBER);
+    	descriptions.add(PARAM_IP_ADDRESS_CCF_ID);
     }
-    
     
     private static final Logger LOG = Logger.getLogger(PaymentFilterTask.class);
 

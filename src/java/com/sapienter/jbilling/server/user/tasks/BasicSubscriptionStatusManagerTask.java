@@ -47,15 +47,9 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
     private PaymentDTOEx payment;
     private Integer entityId;
     
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_ITEM_TYPE_ID);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_ITEM_TYPE_ID);
     }
     
     public void paymentFailed(Integer entityId, PaymentDTOEx payment) {
@@ -154,10 +148,10 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
         if( failed && payment.getAttempt() == null )
             return false;
   
-        String typeStr = (String) parameters.get(PARAMETER_ITEM_TYPE_ID);
+        String typeStr = (String) parameters.get(PARAMETER_ITEM_TYPE_ID.getName());
         
         if (typeStr == null || typeStr.length() == 0) {
-            throw new SessionInternalError("parameter " + PARAMETER_ITEM_TYPE_ID + 
+            throw new SessionInternalError("parameter " + PARAMETER_ITEM_TYPE_ID.getName() + 
                     " is required");
         }
 

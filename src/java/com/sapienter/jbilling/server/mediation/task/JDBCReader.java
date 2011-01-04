@@ -89,25 +89,19 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
     	new ParameterDescription("lc_column_names", true, ParameterDescription.Type.STR);
 
 
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAM_DATABASE_NAME);
-            add(PARAM_TABLE_NAME);
-            add(PARAM_KEY_COLUMN_NAME);
-            add(PARAM_WHERE_APPEND);
-            add(PARAM_ORDER_BY);
-            add(PARAM_DRIVER);
-            add(PARAM_URL);
-            add(PARAM_USERNAME);
-            add(PARAM_PASSWORD);
-            add(PARAM_TIMESTAMP_COLUMN_NAME);
-            add(PARAM_LOWERCASE_COLUMN_NAME);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAM_DATABASE_NAME);
+        descriptions.add(PARAM_TABLE_NAME);
+        descriptions.add(PARAM_KEY_COLUMN_NAME);
+        descriptions.add(PARAM_WHERE_APPEND);
+        descriptions.add(PARAM_ORDER_BY);
+        descriptions.add(PARAM_DRIVER);
+        descriptions.add(PARAM_URL);
+        descriptions.add(PARAM_USERNAME);
+        descriptions.add(PARAM_PASSWORD);
+        descriptions.add(PARAM_TIMESTAMP_COLUMN_NAME);
+        descriptions.add(PARAM_LOWERCASE_COLUMN_NAME);
     }
     
     

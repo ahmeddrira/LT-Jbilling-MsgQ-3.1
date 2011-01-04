@@ -1,5 +1,7 @@
 package jbilling
 
+import javax.servlet.ServletOutputStream
+
 import grails.converters.JSON
 
 import com.sapienter.jbilling.server.payment.PaymentWS;
@@ -130,7 +132,7 @@ class InvoiceController {
 		String delegatedInvoices= ""
 		
 		log.info "Show Invoice |${params.id}|"
-		//log.info "Show Invoice |${params.selectedInvId}|"
+		
 		if (params["id"] && params["id"].matches("^[0-9]+")) {
 			
 			int invId= Integer.parseInt(params["id"])
@@ -201,7 +203,18 @@ class InvoiceController {
 		Integer invId= params.id as Integer
 		try { 
 			byte[] pdfBytes= webServicesSession.getPaperInvoicePDF(invId)
-			render(contentType: "application/pdf", text: new String(pdfBytes));
+			log.info "Byte Size ${pdfBytes.length}"
+			
+			ServletOutputStream servletOutputStream = response.outputStream
+			
+			response.setContentType("application/pdf")
+			response.setContentLength(pdfBytes.length)
+			
+			response.setHeader("Content-disposition", "inline; filename=Invoice${invId}.pdf")
+			response.setHeader("Expires", "0");
+			response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+			servletOutputStream << pdfBytes
+
 		} catch (Exception e ) {
 			log.error e.getMessage()
 			flash.error = 'invoice.prompt.failure.downloadPdf'

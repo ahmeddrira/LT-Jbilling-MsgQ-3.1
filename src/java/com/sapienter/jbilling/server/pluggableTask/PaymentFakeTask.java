@@ -59,7 +59,7 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
     public static final ParameterDescription PARAM_CODE1_OPTIONAL = 
     	new ParameterDescription("code", false, ParameterDescription.Type.STR);    
     public static final ParameterDescription PARAM_HANDLE_ALL_REQUESTS = 
-    	new ParameterDescription("all", false, ParameterDescription.Type.BOOLEAN);
+    	new ParameterDescription("all", false, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAM_NAME_PREFIX = 
     	new ParameterDescription("name_prefix", false, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAM_ACCEPT_ACH = 
@@ -69,19 +69,13 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
     public static final String  VALUE_CODE1_DEFAULT = "fake-code-default";
     private static final String PREAUTH_TRANSACTION_PREFIX = "pAuth-";
     
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAM_ACCEPT_ACH);
-            add(PARAM_CODE1_OPTIONAL);
-            add(PARAM_HANDLE_ALL_REQUESTS);
-            add(PARAM_NAME_PREFIX);
-            add(PARAM_PROCESSOR_NAME_OPTIONAL);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAM_ACCEPT_ACH);
+        descriptions.add(PARAM_CODE1_OPTIONAL);
+        descriptions.add(PARAM_HANDLE_ALL_REQUESTS);
+        descriptions.add(PARAM_NAME_PREFIX);
+        descriptions.add(PARAM_PROCESSOR_NAME_OPTIONAL);
     }
     
     private boolean myShouldBlockOtherProcessors;
@@ -99,7 +93,7 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
     public void initializeParamters(PluggableTaskDTO task) throws PluggableTaskException {
         super.initializeParamters(task);
 
-        myShouldBlockOtherProcessors = ((Boolean) parameters.get(PARAM_HANDLE_ALL_REQUESTS.getName())).booleanValue();
+        myShouldBlockOtherProcessors = Boolean.parseBoolean((String) parameters.get(PARAM_HANDLE_ALL_REQUESTS.getName())).booleanValue());
         acceptAch = Boolean.parseBoolean((String)parameters.get(PARAM_ACCEPT_ACH.getName()));
         myFilter = Filter.ACCEPT_ALL;
         if (!myShouldBlockOtherProcessors) {

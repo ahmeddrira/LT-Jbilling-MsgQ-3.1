@@ -1,7 +1,27 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <g:render template="/layouts/includes/head"/>
+    %{--
+  jBilling - The Enterprise Open Source Billing System
+  Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
+
+  This file is part of jbilling.
+
+  jbilling is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  jbilling is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License
+  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+  --}%
+
+<g:render template="/layouts/includes/head"/>
     <g:javascript library="panels"/>
 
     <script type="text/javascript">
@@ -41,70 +61,70 @@
             <!-- configuration menu -->
             <div class="menu-items">
                 <ul class="list">
+                    <li class="${pageProperty(name: 'page.menu.item') == 'all' ? 'active' : ''}">
+                        <g:link controller="config">
+                            <g:message code="configuration.menu.all"/>
+                        </g:link>
+                    </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'aging' ? 'active' : ''}">
-                        <g:remoteLink controller="config" action="aging" before="register(this);" onSuccess="render(data, first);">
+                        <g:link controller="config" action="aging">
                             <g:message code="configuration.menu.aging"/>
-                        </g:remoteLink>
+                        </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'billing' ? 'active' : ''}">
-                        <g:remoteLink controller="config" action="billing" before="register(this);" onSuccess="render(data, first);">
+                        <g:link controller="config" action="billing">
                             <g:message code="configuration.menu.billing"/>
-                        </g:remoteLink>
+                        </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'blacklist' ? 'active' : ''}">
-                        <g:remoteLink controller="config" action="blacklist" before="register(this);" onSuccess="render(data, first);">
+                        <g:link controller="config" action="blacklist">
                             <g:message code="configuration.menu.blacklist"/>
-                        </g:remoteLink>
+                        </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'company' ? 'active' : ''}">
-                        <g:remoteLink controller="config" action="company" before="register(this);" onSuccess="render(data, first);">
+                        <g:link controller="config" action="company">
                             <g:message code="configuration.menu.company"/>
-                        </g:remoteLink>
+                        </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'currencies' ? 'active' : ''}">
-                        <g:remoteLink controller="config" action="currencies" before="register(this);" onSuccess="render(data, first);">
+                        <g:link controller="config" action="currencies">
                             <g:message code="configuration.menu.currencies"/>
-                        </g:remoteLink>
+                        </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'email' ? 'active' : ''}">
-                        <g:remoteLink controller="config" action="email" before="register(this);" onSuccess="render(data, first);">
+                        <g:link controller="config" action="email">
                             <g:message code="configuration.menu.email"/>
-                        </g:remoteLink>
-                    </li>
-                    <li class="${pageProperty(name: 'page.menu.item') == 'general' ? 'active' : ''}">
-                        <g:remoteLink controller="config" action="general" before="register(this);" onSuccess="render(data, first);">
-                            <g:message code="configuration.menu.general"/>
-                        </g:remoteLink>
+                        </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'invoices' ? 'active' : ''}">
-                        <g:remoteLink controller="config" action="invoices" before="register(this);" onSuccess="render(data, first);">
+                        <g:link controller="config" action="invoices">
                             <g:message code="configuration.menu.invoices"/>
-                        </g:remoteLink>
+                        </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'mediation' ? 'active' : ''}">
-                        <g:remoteLink controller="config" action="mediation" before="register(this);" onSuccess="render(data, first);">
+                        <g:link controller="config" action="mediation">
                             <g:message code="configuration.menu.mediation"/>
-                        </g:remoteLink>
+                        </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'notification' ? 'active' : ''}">
-                        <g:link controller="notifications" before="register(this);" onSuccess="render(data, first);">
+                        <g:link controller="notifications">
                             <g:message code="configuration.menu.notification"/>
                         </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'periods' ? 'active' : ''}">
-                        <g:remoteLink controller="config" action="periods" before="register(this);" onSuccess="render(data, first);">
+                        <g:link controller="config" action="periods">
                             <g:message code="configuration.menu.order.periods"/>
-                        </g:remoteLink>
+                        </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'plugins' ? 'active' : ''}">
-                        <g:link controller="plugin" before="register(this);" onSuccess="render(data, first);">
+                        <g:link controller="plugin">
                             <g:message code="configuration.menu.plugins"/>
                         </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'users' ? 'active' : ''}">
-                        <g:remoteLink controller="config" action="users" before="register(this);" onSuccess="render(data, first);">
+                        <g:link controller="config" action="users">
                             <g:message code="configuration.menu.users"/>
-                        </g:remoteLink>
+                        </g:link>
                     </li>
                 </ul>
             </div>

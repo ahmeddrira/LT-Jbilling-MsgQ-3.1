@@ -5,7 +5,7 @@
 <body>
 
 <content tag="column1">
-    <g:render template="general"/>
+    <g:render template="all"/>
 </content>
 
 </body>

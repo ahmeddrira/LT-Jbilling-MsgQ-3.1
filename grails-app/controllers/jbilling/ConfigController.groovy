@@ -37,8 +37,4 @@ class ConfigController {
     def index = {
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
     }
-
-    def general = {
-        render template: 'general'
-    }
 }

@@ -1,7 +1,7 @@
 <%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 <html>
 <head>
-    <meta name="layout" content="panels" />
+    <meta name="layout" content="configuration" />
 
     <script type="text/javascript">
         var selected;
@@ -19,8 +19,8 @@
 </head>
 <body>
 
-<content tag="filters">
-</content>
+<!-- selected configuration menu item -->
+<content tag="menu.item">plugins</content>
 
 <content tag="column1">
     <g:render template="categories" model="['categories': categories]"/> 

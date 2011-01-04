@@ -497,6 +497,14 @@ table {
 .submit2.save {
 	margin-right:11px;
 }
+.menu-items {
+	margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.menu-items .list {
+    border-width: 1px 1px 0;
+}
 .list {
 	margin:-10px 0 0;
 	padding:0;
@@ -511,6 +519,11 @@ table {
 	vertical-align:top;
 	height:1%;
 	border-bottom:1px solid #bbb;
+}
+.list li.active {
+    background-color: #fff;
+    background-image: none;
+    font-weight: bold;
 }
 .list li a {
 	display:block;

@@ -719,39 +719,49 @@ table {
 	white-space:nowrap;
 }
 /* list tables */
-.table-box {
+.table-scroll {
+    overflow: auto;
     height: 631px;
-    overflow: hidden;
+}
+.table-box {
+    position: relative;
+    margin: 0 auto;
+    padding-top: 30px;
 	border:solid #bbb;
 	border-width:0 1px;
 }
+
 .table-box table {
     width: 100%;
     border-collapse: collapse;
     margin: 0;
     padding: 0;
 }
-.table-box thead {
-	background:url(../images/bg-heading.gif) repeat-x;
-	border:1px solid #1b437d;
-	padding:0 9px 0 10px;
-	height:30px;
+.table-box thead tr {
+    background:url(../images/bg-heading.gif) repeat-x;
+    border:1px solid #1b437d;
+    width: 100%;
+    height: 30px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: right;
 }
 .table-box thead th {
     color: #fff;
     text-align: left;
     padding: 4px 9px;
+
+    display: inline-block;
 }
-.table-box thead th.large {width: 300px;}
-.table-box thead th.medium {width: 120px;}
-.table-box thead th.small {width: 60px;}
-.table-box thead th.tiny {width: 40px;}
-.table-box tbody {
-    /* height set by javascript to show scroll */
-    overflow: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
+.table-box thead th:first-child, .table-box thead th.first  { float: left; }
+.table-box thead th:last-child, .table-box thead th.last { padding-right: 16px; } /* compensate for scrollbar */
+
+.table-box .large { width: 300px; }
+.table-box .medium { width: 120px; }
+.table-box .small { width: 80px; }
+.table-box .tiny { width: 40px; }
+
 .table-box tbody tr {
 	display: table-row;
     vertical-align: middle;
@@ -794,56 +804,6 @@ table {
 .table-box .center {text-align: center;}
 .table-box .left {text-align: left;}
 .table-box .right {text-align: right;}
-/*
-    @Deprecated
-    todo: moving to table based lists... remove ul styles later
-*/
-.table-box ul {
-	margin:0;
-	padding:0;
-	list-style:none;
-	height:631px;
-	overflow:auto;
-}
-.table-box li {
-	overflow:hidden;
-	border-bottom:1px solid #bbb;
-	vertical-align:top;
-    background:url(../images/bg-gradient.gif) repeat-x;
-}
-.table-box li em {
-	display:block;
-}
-.table-box ul li strong {
-	font-size:14px;
-	font-weight:normal;
-}
-.table-box ul li a.active strong {
-	font-weight:bold;
-}
-.table-box ul li a {
-	display:block;
-	color:#383838;
-	overflow:hidden;
-	height:41px;
-	padding:8px 0 0 9px;
-}
-.table-box ul li a:hover {text-decoration:none;}
-.table-box ul li.active {
-	background:url(../images/bg-gradient2.gif) repeat-x;
-}
-.table-box .block {
-	width:55px;
-	float:right;
-	text-align:center;
-	line-height:39px;
-}
-.table-box .last {
-	width:60px;
-}
-.table-box .left {
-    text-align: left;
-}
 .table-box .block img {
 	margin-top:9px;
 }
@@ -1068,7 +1028,7 @@ ul.cloud li a {
     margin: 4px 0 0 0;
 }
 .form-columns li {
-    list-style: inside;    
+    list-style: inside;
 }
 .form-columns label.lb {
 	width:auto;
@@ -1397,7 +1357,7 @@ div.box-text {
 
 td.value {
     margin: 0;
-	font-weight: bold;	
+	font-weight: bold;
 	padding-left:10px;
 }
 

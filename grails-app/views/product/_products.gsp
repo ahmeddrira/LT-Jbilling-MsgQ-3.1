@@ -9,33 +9,37 @@
 <%-- list of products --%>
 <g:if test="${products}">
     <div class="table-box">
-        <table id="products" cellspacing="0" cellpadding="0">
-            <thead>
-                <th><g:message code="product.th.name"/></th>
-                <th class="medium"><g:message code="product.th.internal.number"/></th>
-            </thead>
-            <tbody>
-
-            <g:each var="product" in="${products}">
-
-                <tr id="product-${product.id}" class="${selectedProduct?.id == product.id ? 'active' : ''}">
-                    <td>
-                        <g:remoteLink class="cell double" action="show" id="${product.id}" params="['template': 'show', 'category': selectedCategoryId]" before="register(this);" onSuccess="render(data, next);">
-                            <strong>${product.getDescription(session['language_id'])}</strong>
-                            <em><g:message code="product.id.label" args="[product.id]"/></em>
-                        </g:remoteLink>
-                    </td>
-                    <td>
-                        <g:remoteLink class="cell" action="show" id="${product.id}" params="['template': 'show', 'category': selectedCategoryId]" before="register(this);" onSuccess="render(data, next);">
-                            <span>${product.internalNumber}</span>
-                        </g:remoteLink>
-                    </td>
+        <div class="table-scroll">
+            <table id="products" cellspacing="0" cellpadding="0">
+                <thead>
+                <tr>
+                    <th><g:message code="product.th.name"/></th>
+                    <th class="medium"><g:message code="product.th.internal.number"/></th>
                 </tr>
+                </thead>
+                <tbody>
 
-            </g:each>
+                <g:each var="product" in="${products}">
 
-            </tbody>
-        </table>
+                    <tr id="product-${product.id}" class="${selectedProduct?.id == product.id ? 'active' : ''}">
+                        <td>
+                            <g:remoteLink class="cell double" action="show" id="${product.id}" params="['template': 'show', 'category': selectedCategoryId]" before="register(this);" onSuccess="render(data, next);">
+                                <strong>${product.getDescription(session['language_id'])}</strong>
+                                <em><g:message code="product.id.label" args="[product.id]"/></em>
+                            </g:remoteLink>
+                        </td>
+                        <td class="medium">
+                            <g:remoteLink class="cell" action="show" id="${product.id}" params="['template': 'show', 'category': selectedCategoryId]" before="register(this);" onSuccess="render(data, next);">
+                                <span>${product.internalNumber}</span>
+                            </g:remoteLink>
+                        </td>
+                    </tr>
+
+                </g:each>
+
+                </tbody>
+            </table>
+        </div>
     </div>
 </g:if>
 

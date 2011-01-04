@@ -8,32 +8,36 @@
 --%>
 
 <div class="table-box">
-    <table id="categories" cellspacing="0" cellpadding="0">
-        <thead>
-            <th><g:message code="product.category.th.name"/></th>
-            <th class="small"><g:message code="product.category.th.type"/></th>
-        </thead>
-        <tbody>
-        <g:each var="category" in="${categories}">
-            <g:set var="lineType" value="${new OrderLineTypeDTO(category.orderLineTypeId, 0)}"/>
-
-                <tr id="category-${category.id}" class="${selectedCategoryId == category.id ? 'active' : ''}">
-                    <td>
-                        <g:remoteLink class="cell double" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
-                            <strong>${category.description}</strong>
-                            <em><g:message code="product.category.id.label" args="[category.id]"/></em>
-                        </g:remoteLink>
-                    </td>
-                    <td>
-                        <g:remoteLink class="cell" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
-                            <span>${lineType.description}</span>
-                        </g:remoteLink>
-                    </td>
+    <div class="table-scroll">
+        <table id="categories" cellspacing="0" cellpadding="0">
+            <thead>
+                <tr>
+                    <th><g:message code="product.category.th.name"/></th>
+                    <th class="small"><g:message code="product.category.th.type"/></th>
                 </tr>
+            </thead>
+            <tbody>
+            <g:each var="category" in="${categories}">
+                <g:set var="lineType" value="${new OrderLineTypeDTO(category.orderLineTypeId, 0)}"/>
 
-            </g:each>
-        </tbody>
-    </table>
+                    <tr id="category-${category.id}" class="${selectedCategoryId == category.id ? 'active' : ''}">
+                        <td>
+                            <g:remoteLink class="cell double" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
+                                <strong>${category.description}</strong>
+                                <em><g:message code="product.category.id.label" args="[category.id]"/></em>
+                            </g:remoteLink>
+                        </td>
+                        <td class="small">
+                            <g:remoteLink class="cell" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
+                                <span>${lineType.description}</span>
+                            </g:remoteLink>
+                        </td>
+                    </tr>
+
+                </g:each>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <g:if test="${categories?.totalCount > params.max}">

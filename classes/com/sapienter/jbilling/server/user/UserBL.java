@@ -226,7 +226,7 @@ public class UserBL extends ResultList
                     Constants.TABLE_CUSTOMER,
                     user.getCustomer().getId(),
                     EventLogger.MODULE_USER_MAINTENANCE,
-                    EventLogger.ROW_UPDATED, null, null, null);
+                    EventLogger.INVOICE_IF_CHILD_CHANGE, null, null, null);
             
         }
 

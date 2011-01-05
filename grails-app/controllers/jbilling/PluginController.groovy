@@ -29,7 +29,7 @@ class PluginController {
     RecentItemService recentItemService;
     BreadcrumbService breadcrumbService;
     
-    def index = { 
+    def index = {
         listCategories();
     }
     
@@ -133,14 +133,14 @@ class PluginController {
             log.info "now saving " + newTask + " by " + session.user_id;
             Integer pluginId;
             if (newTask.getId() == null || newTask.getId() == 0) {
-                pluginId = webServicesSession.createPlugin(session.user_id as Integer, newTask);
+                pluginId = webServicesSession.createPlugin(newTask);
             	pluggableTaskDAS.invalidateCache(); // or the list won't have the new plug-in
             
             	// the message
             	flash.message = messageSource.getMessage("plugins.create.new_plugin_saved", [pluginId].toArray(), locale);
             } else { 
                 // it is an update
-                webServicesSession.updatePlugin(session.user_id, newTask);
+                webServicesSession.updatePlugin(newTask);
             	flash.message = messageSource.getMessage("plugins.create.plugin_updated", [newTask.getId()].toArray(), locale);
                 pluginId = newTask.getId();
             }
@@ -203,7 +203,7 @@ class PluginController {
         
         try {
             Integer id = params.id as Integer;
-        	webServicesSession.deletePlugin(session.user_id, id);
+        	webServicesSession.deletePlugin(id);
         	pluggableTaskDAS.invalidateCache(); // or the list will still show the deleted plug-in
         	flash.message = messageSource.getMessage("plugins.delete.done",[id].toArray(), session.locale);
         } catch (SessionInternalError e) {

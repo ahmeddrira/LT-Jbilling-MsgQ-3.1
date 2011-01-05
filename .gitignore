@@ -22,4 +22,5 @@ libs/
 # project files
 .idea/
 *.iml
+.project
 

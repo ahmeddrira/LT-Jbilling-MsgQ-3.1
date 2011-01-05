@@ -771,6 +771,7 @@ table {
 .table-box thead th:last-child, .table-box thead th.last { padding-right: 16px; } /* compensate for scrollbar */
 
 .table-box .large { width: 300px; }
+.table-box .medium2 { width: 150px; }
 .table-box .medium { width: 120px; }
 .table-box .small { width: 80px; }
 .table-box .tiny { width: 40px; }

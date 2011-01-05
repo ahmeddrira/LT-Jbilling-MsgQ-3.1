@@ -46,7 +46,7 @@ public class VelocityRulesGeneratorTask extends AbstractGeneratorTask {
 	public static final ParameterDescription PARAM_TEMPLATE_FILENAME = 
 		new ParameterDescription("template_filename", true, ParameterDescription.Type.STR);
 
-    static { 
+    { 
         descriptions.add(PARAM_TEMPLATE_FILENAME);
     }
     

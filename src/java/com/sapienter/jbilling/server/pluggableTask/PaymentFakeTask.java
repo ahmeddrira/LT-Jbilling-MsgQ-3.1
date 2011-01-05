@@ -93,7 +93,7 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
     public void initializeParamters(PluggableTaskDTO task) throws PluggableTaskException {
         super.initializeParamters(task);
 
-        myShouldBlockOtherProcessors = Boolean.parseBoolean((String) parameters.get(PARAM_HANDLE_ALL_REQUESTS.getName())).booleanValue());
+        myShouldBlockOtherProcessors = Boolean.parseBoolean((String) parameters.get(PARAM_HANDLE_ALL_REQUESTS.getName()));
         acceptAch = Boolean.parseBoolean((String)parameters.get(PARAM_ACCEPT_ACH.getName()));
         myFilter = Filter.ACCEPT_ALL;
         if (!myShouldBlockOtherProcessors) {

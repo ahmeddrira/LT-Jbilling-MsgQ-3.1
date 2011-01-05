@@ -139,7 +139,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
                 throw new TaskException("invalid parameters");
             }
             
-            String testStr = Boolean.parseBoolean((String) parameters.get(PARAMETER_TEST.getName()));
+            String testStr = (String) parameters.get(PARAMETER_TEST.getName());
             if (testStr != null) {
                 isTest = true;
             }

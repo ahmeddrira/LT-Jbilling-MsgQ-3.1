@@ -78,7 +78,7 @@ public abstract class AbstractCronTask extends ScheduledTask {
      * @return cron expression string
      */
     public String getCronExpression() {
-        return getParameter(PARAM_CRON_EXPRESSION, DEFAULT_CRON_EXPRESSION);
+        return getParameter(PARAM_CRON_EXPRESSION.getName(), DEFAULT_CRON_EXPRESSION);
     }
 
     public String getScheduleString() {

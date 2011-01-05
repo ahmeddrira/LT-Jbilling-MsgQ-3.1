@@ -212,6 +212,7 @@ public class UserBL extends ResultList
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
             //invoiceChild is now editable field
+            Integer oldIntValue= user.getCustomer().getInvoiceChild();
             user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
 
             // update the main order
@@ -226,7 +227,7 @@ public class UserBL extends ResultList
                     Constants.TABLE_CUSTOMER,
                     user.getCustomer().getId(),
                     EventLogger.MODULE_USER_MAINTENANCE,
-                    EventLogger.INVOICE_IF_CHILD_CHANGE, null, null, null);
+                    EventLogger.INVOICE_IF_CHILD_CHANGE, oldIntValue.intValue(), null, null);
             
         }
 

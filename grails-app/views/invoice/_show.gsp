@@ -94,7 +94,8 @@
 		<strong><g:message code="invoice.label.payment.refunds"/></strong>
 	</div>
 	
-	<g:if test="">
+	<g:if test="${payments}">
+		<g:hiddenField name="unlink_payment_id" value="-1"/>
 		<table class="innerTable" >
 			<thead class="innerHeader">
 		         <tr>
@@ -116,9 +117,7 @@
 						<td align="left" class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</td>
 						<td align="left" class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</td>
 						<td align="left" class="innerContent">
-							<a href="${createLink (action: 'removePaymentLink', id: invoice.id, params:['paymentId': payment.id])}" class="submit">
-								<span>*</span>
-							</a>
+							<a onclick="setUnlinkPaymentId(${invoice.id}, ${payment.id});" class="submit2">*</a>
 						</td>
 			         </tr>
 		         </g:each>
@@ -140,9 +139,28 @@
 
 <div class="btn-box">
     <g:if test="${invoice.id}">
-        <a onclick="showConfirm(${invoice.id});" class="submit delete"><span><g:message code="button.delete.invoice"/></span></a>
+        <a onclick="showConfirm('delete-'+${invoice.id});" class="submit delete"><span><g:message code="button.delete.invoice"/></span></a>
     </g:if>
 </div>
+<script type="text/javascript">
+
+function setUnlinkPaymentId(invId, pymId) { 
+	$('#unlink_payment_id').val(pymId);
+	showConfirm("removePaymentLink-" + invId);
+	return true;
+}
+function setPaymentId() {
+    $('#confirm-command-form-removePaymentLink-${invoice.id} [name=paymentId]').val($('#unlink_payment_id').val());
+}
+</script>
+<g:render template="/confirm"
+        model="['message':'invoice.prompt.confirm.remove.payment.link',
+                'controller':'invoice',
+                'action':'removePaymentLink',
+                'id':invoice.id,
+                'formParams': ['paymentId': '-1'],
+                'onYes': 'setPaymentId()',
+               ]"/>
 
 <g:render template="/confirm"
          model="['message':'invoice.prompt.are.you.sure',

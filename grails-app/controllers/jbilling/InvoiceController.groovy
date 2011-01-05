@@ -225,7 +225,7 @@ class InvoiceController {
 	def removePaymentLink = {
 		
 		Integer invId= params.id as Integer
-		Integer paymentId= params.paymentId as Integer		
+		Integer paymentId= params.paymentId as Integer
 		log.info "Parameters[Invoice Id: ${invId}, Payment Id: ${paymentId}"
 		
 		try {

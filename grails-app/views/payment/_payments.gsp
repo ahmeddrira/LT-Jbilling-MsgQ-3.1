@@ -36,11 +36,11 @@
                     </td>
                     <td class="tiny">
                         <g:remoteLink class="cell" action="show" id="${payment.id}" before="register(this);" onSuccess="render(data, next);">
-                            <g:if test="${payment.isRefund == 1}">
-                                <span>P</span>
+                            <g:if test="${payment.isRefund > 0}">
+                                <span>R</span>
                             </g:if>
                             <g:else>
-                                <span>R</span>
+                                <span>P</span>
                             </g:else>
                         </g:remoteLink>
                     </td>
@@ -74,6 +74,5 @@
 </g:if>
 
 <div class="btn-box">
-    <g:link action='edit' class="submit add"><span><g:message code="button.create"/></span></g:link>
-    <g:link action='delete' class="submit delete"><span><g:message code="button.delete"/></span></g:link>
+    <g:link action='create' class="submit payment"><span><g:message code="button.create.payment"/></span></g:link>
 </div>

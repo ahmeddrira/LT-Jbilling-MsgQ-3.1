@@ -4,7 +4,7 @@
   Shows details of a selected payment.
 
   @author Brian Cowdery
-  @since 04-Jan-2010
+  @since 04-Jan-2011
 --%>
 
 <g:set var="customer" value="${selected.baseUser.customer}"/>
@@ -13,31 +13,51 @@
 <div class="column-hold">
     <div class="heading">
         <strong>
-            <g:if test="${contact && (contact.firstName || contact.lastName)}">
-                ${contact.firstName} ${contact.lastName}
+            <g:if test="${selected.isRefund > 0}">
+                Refund
             </g:if>
             <g:else>
-                ${selected.baseUser.userName}
+                Payment
             </g:else>
-            <em><g:if test="${contact}">${contact.organizationName}</g:if></em>
+            <em>${selected.id}</em>
         </strong>
     </div>
 
     <div class="box">
         <!-- payment details -->
-        <dl>
+        <dl class="other">
             <dt><g:message code="payment.id"/></dt>
             <dd>${selected.id}</dd>
-            <dt><g:message code="payment.user.id"/></dt>
-            <dd>${selected.baseUser.id}</dd>
+            <dt><g:message code="payment.attempt"/></dt>
+            <dd>${selected.attempt}</dd>
             <dt><g:message code="payment.date"/></dt>
             <dd><g:formatDate date="${selected.paymentDate}" formatName="date.format"/></dd>
         </dl>
         <br/>
 
         <dl class="other">
+            <dt><g:message code="payment.user.id"/></dt>
+            <dd>${selected.baseUser.id}</dd>
+
+            <g:if test="${contact?.firstName || contact?.lastName}">
+                <dt>Customer Name</dt>
+                <dd>${contact.firstName} ${contact.lastName} &nbsp;</dd>
+            </g:if>
+            <g:if test="${contact?.organizationName}">
+                <dt>Organization</dt>
+                <dd>${contact.organizationName} &nbsp;</dd>
+            </g:if>
+
+            <dt>Login Name</dt>
+            <dd>${selected.baseUser.userName}</dd>
+        </dl>
+        <br/>
+
+        <dl class="other">
             <dt class="long"><g:message code="payment.is.refund"/></dt>
             <dd><em><g:formatBoolean boolean="${selected.isRefund > 0}"/> &nbsp;</em></dd>
+            <dt class="long"><g:message code="payment.is.preauth"/></dt>
+            <dd><em><g:formatBoolean boolean="${selected.isPreauth > 0}"/> &nbsp;</em></dd>
             <dt class="long"><g:message code="payment.result"/></dt>
             <dd>${selected.paymentResult.getDescription(session['language_id'])}</dd>
         </dl>
@@ -59,17 +79,27 @@
                         <th><g:message code="payment.invoice.payment"/></th>
                         <th><g:message code="payment.invoice.payment.amount"/></th>
                         <th><g:message code="payment.invoice.payment.date"/></th>
+                        <th><!-- action --> &nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
                     <g:each var="invoicePayment" in="${selected.invoicesMap}">
                     <tr>
-                        <td class="innerContent">${invoicePayment.invoiceEntity.id}</td>
+                        <td class="innerContent">
+                            <g:link controller="invoice" action="list" id="${invoicePayment.invoiceEntity.id}">
+                                <g:message code="payment.link.invoice" args="[invoicePayment.invoiceEntity.id]"/>
+                            </g:link>
+                        </td>
                         <td class="innerContent">
                             <g:formatNumber number="${invoicePayment.amount}" type="currency" currencyCode="${selected.currencyDTO.code}"/>
                         </td>
                         <td class="innerContent">
                             <g:formatDate date="${invoicePayment.createDatetime}"/>
+                        </td>
+                        <td class="innerContent">
+                            <g:remoteLink action="unlink" id="${selected.id}">
+                                <g:message code="payment.link.unlink"/>
+                            </g:remoteLink>
                         </td>
                     </tr>
                     </g:each>

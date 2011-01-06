@@ -384,17 +384,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @param paymentId payment to be unlink 
      */
     public void removePaymentLink(Integer invoiceId, Integer paymentId) {
-		PaymentBL payment  =new PaymentBL();
-		InvoiceDTO invoice= new InvoiceDAS().find(invoiceId);
-		Iterator<PaymentInvoiceMapDTO> it = invoice.getPaymentMap().iterator();
-        while (it.hasNext()) {
-            PaymentInvoiceMapDTO map = it.next();
-            if (paymentId == map.getPayment().getId()) {
-	            payment.removeInvoiceLink(map.getId());
-	            invoice.getPaymentMap().remove(map);
-	            break;
-            }
-        }
+		PaymentBL paymentBl =new PaymentBL(paymentId);
+		paymentBl.unLinkFromInvoice(invoiceId);
 	}
 
     /**

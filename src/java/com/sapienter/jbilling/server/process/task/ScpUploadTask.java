@@ -1,12 +1,5 @@
 package com.sapienter.jbilling.server.process.task;
 
-import org.apache.log4j.Logger;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.rev6.scf.ScpException;
-import org.rev6.scf.ScpFacade;
-import org.rev6.scf.ScpFile;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
@@ -15,6 +8,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.rev6.scf.ScpException;
+import org.rev6.scf.ScpFacade;
+import org.rev6.scf.ScpFile;
+
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 
 /**
  * The ScpUploadTask will scan a defined path for files to upload using a matcher regular expression.
@@ -55,22 +57,44 @@ import java.util.List;
  * @since 08-06-2010
  */
 public class ScpUploadTask extends AbstractCronTask {
+	
     private static final Logger LOG = Logger.getLogger(ScpUploadTask.class);
 
-    private static final String PARAM_SCP_USERNAME = "scp_username";
-    private static final String PARAM_SCP_PASSWORD = "scp_password";
-    private static final String PARAM_SCP_HOST = "scp_host";
-    private static final String PARAM_SCP_REMOTE_PATH = "scp_remote_path";
+    private static final ParameterDescription PARAM_SCP_USERNAME = 
+    	new ParameterDescription("scp_username", true, ParameterDescription.Type.STR);
+    private static final ParameterDescription PARAM_SCP_PASSWORD = 
+    	new ParameterDescription("scp_password", true, ParameterDescription.Type.STR);
+    private static final ParameterDescription PARAM_SCP_HOST = 
+    	new ParameterDescription("scp_host", true, ParameterDescription.Type.STR);
+    private static final ParameterDescription PARAM_SCP_REMOTE_PATH = 
+    	new ParameterDescription("scp_remote_path", false, ParameterDescription.Type.STR);
 
-    private static final String PARAM_FILE_PATH = "file_path";
-    private static final String PARAM_FILE_PATTERN = "file_pattern";
-    private static final String PARAM_RECURSIVE = "recursive";
-    private static final String PARAM_UPLOAD_FILE = "upload_log";
+    private static final ParameterDescription PARAM_FILE_PATH = 
+    	new ParameterDescription("file_path", true, ParameterDescription.Type.STR);
+    private static final ParameterDescription PARAM_FILE_PATTERN = 
+    	new ParameterDescription("file_pattern", false, ParameterDescription.Type.STR);
+    private static final ParameterDescription PARAM_RECURSIVE = 
+    	new ParameterDescription("recursive", false, ParameterDescription.Type.STR);
+    private static final ParameterDescription PARAM_UPLOAD_FILE = 
+    	new ParameterDescription("upload_log", false, ParameterDescription.Type.STR);
 
     private static final String DEFAULT_FILE_PATTERN = ".*";
     private static final Boolean DEFAULT_RECURSIVE = false;
     private static final String DEFAULT_UPLOAD_FILE = "upload.log";
 
+	//initializer for pluggable params
+    { 
+    	descriptions.add(PARAM_SCP_USERNAME);
+    	descriptions.add(PARAM_SCP_PASSWORD);
+    	descriptions.add(PARAM_SCP_HOST);
+    	descriptions.add(PARAM_SCP_REMOTE_PATH);
+    	descriptions.add(PARAM_FILE_PATH);
+    	descriptions.add(PARAM_FILE_PATTERN);
+    	descriptions.add(PARAM_RECURSIVE);
+    	descriptions.add(PARAM_UPLOAD_FILE);
+    }
+    
+    
     public String getTaskName() {
         return "scp upload task " + getScheduleString();
     }
@@ -79,16 +103,16 @@ public class ScpUploadTask extends AbstractCronTask {
         _init(context);
 
         // scp upload parameters
-        String userName = getParameter(PARAM_SCP_USERNAME);
-        String password = getParameter(PARAM_SCP_PASSWORD);
-        String host = getParameter(PARAM_SCP_HOST);
-        String remotePath = getParameter(PARAM_SCP_REMOTE_PATH, (String) null);
+        String userName = getParameter(PARAM_SCP_USERNAME.getName());
+        String password = getParameter(PARAM_SCP_PASSWORD.getName());
+        String host = getParameter(PARAM_SCP_HOST.getName());
+        String remotePath = getParameter(PARAM_SCP_REMOTE_PATH.getName(), (String) null);
 
         // files to upload
-        File path = new File(getParameter(PARAM_FILE_PATH));
-        String fileRegex = getParameter(PARAM_FILE_PATTERN, DEFAULT_FILE_PATTERN);
-        Boolean recursive = getParameter(PARAM_RECURSIVE, DEFAULT_RECURSIVE);
-        String uploadMarkerFilename = getParameter(PARAM_UPLOAD_FILE, DEFAULT_UPLOAD_FILE);
+        File path = new File(getParameter(PARAM_FILE_PATH.getName()));
+        String fileRegex = getParameter(PARAM_FILE_PATTERN.getName(), DEFAULT_FILE_PATTERN);
+        Boolean recursive = getParameter(PARAM_RECURSIVE.getName(), DEFAULT_RECURSIVE);
+        String uploadMarkerFilename = getParameter(PARAM_UPLOAD_FILE.getName(), DEFAULT_UPLOAD_FILE);
 
         LOG.debug("Scanning " + path.getPath() + (recursive ? " recursively" : "")
                   + " for files matching " + fileRegex);

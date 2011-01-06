@@ -42,16 +42,11 @@ public class TestNotificationTask extends PluggableTask implements NotificationT
 		new ParameterDescription("from", false, ParameterDescription.Type.STR);
     public static final Logger LOG = Logger.getLogger(TestNotificationTask.class);
     
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_FROM);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_FROM);
     }
+
     
 
     public void deliver(UserDTO user, MessageDTO sections)

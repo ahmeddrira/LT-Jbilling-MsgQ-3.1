@@ -48,17 +48,10 @@ public class PaymentRouterCCFTask extends AbstractPaymentRouterTask {
 		new ParameterDescription("custom_field_id", true, ParameterDescription.Type.STR);
     private static final Logger LOG = Logger.getLogger(PaymentRouterCCFTask.class);
 
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR);
     }
-
     
     
     @Override

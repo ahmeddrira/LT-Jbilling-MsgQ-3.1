@@ -94,35 +94,40 @@
 		<strong><g:message code="invoice.label.payment.refunds"/></strong>
 	</div>
 	
-	<table class="innerTable" >
-		<thead class="innerHeader">
-	         <tr>
-	            <th align="left"><g:message code="label.gui.date"/></th>
-				<th align="left"><g:message code="label.gui.payment.refunds"/></th>
-				<th align="left"><g:message code="label.gui.amount"/></th>
-				<th align="left"><g:message code="label.gui.method"/></th>
-				<th align="left"><g:message code="label.gui.result"/></th>
-				<th align="left">.</th>
-	         </tr>
-         </thead>
-         <tbody>
-		     <g:each var="payment" in="${payments}" status="idx">
+	<g:if test="${payments}">
+		<g:hiddenField name="unlink_payment_id" value="-1"/>
+		<table class="innerTable" >
+			<thead class="innerHeader">
 		         <tr>
-		         	<td align="left" class="innerContent">${Util.formatDate(payment.paymentDate, session["user_id"])}</td>
-					<td align="left" class="innerContent">${payment.isRefund?"R":"P"}</td>
-					<td align="left" class="innerContent">${Util.formatMoney(new BigDecimal(payment.amount?:"0.0"),
-									session["user_id"],invoice?.currencyId, false)}</td>
-					<td align="left" class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</td>
-					<td align="left" class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</td>
-					<td align="left" class="innerContent">
-						<a href="${createLink (action: 'removePaymentLink', id: invoice.id, params:['paymentId': payment.id])}" class="submit">
-							<span>*</span>
-						</a>
-					</td>
+		            <th align="left"><g:message code="label.gui.date"/></th>
+					<th align="left"><g:message code="label.gui.payment.refunds"/></th>
+					<th align="left"><g:message code="label.gui.amount"/></th>
+					<th align="left"><g:message code="label.gui.method"/></th>
+					<th align="left"><g:message code="label.gui.result"/></th>
+					<th align="left">.</th>
 		         </tr>
-	         </g:each>
-         </tbody>
-    </table>
+	         </thead>
+	         <tbody>
+			     <g:each var="payment" in="${payments}" status="idx">
+			         <tr>
+			         	<td align="left" class="innerContent">${Util.formatDate(payment.paymentDate, session["user_id"])}</td>
+						<td align="left" class="innerContent">${payment.isRefund?"R":"P"}</td>
+						<td align="left" class="innerContent">${Util.formatMoney(new BigDecimal(payment.amount?:"0.0"),
+										session["user_id"],invoice?.currencyId, false)}</td>
+						<td align="left" class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</td>
+						<td align="left" class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</td>
+						<td align="left" class="innerContent">
+							<a onclick="setUnlinkPaymentId(${invoice.id}, ${payment.id});" class="submit2">*</a>
+						</td>
+			         </tr>
+		         </g:each>
+	         </tbody>
+	    </table>
+	</g:if>
+	<g:else>
+		<g:message code="invoice.prompt.no.payments.refunds"/>
+	</g:else>
+	
 	
 	<hr/>
 	
@@ -134,14 +139,33 @@
 
 <div class="btn-box">
     <g:if test="${invoice.id}">
-        <a onclick="showConfirm(${invoice.id});" class="submit delete"><span><g:message code="button.delete.invoice"/></span></a>
+        <a onclick="showConfirm('delete-'+${invoice.id});" class="submit delete"><span><g:message code="button.delete.invoice"/></span></a>
     </g:if>
 </div>
+<script type="text/javascript">
+
+function setUnlinkPaymentId(invId, pymId) { 
+	$('#unlink_payment_id').val(pymId);
+	showConfirm("removePaymentLink-" + invId);
+	return true;
+}
+function setPaymentId() {
+    $('#confirm-command-form-removePaymentLink-${invoice.id} [name=paymentId]').val($('#unlink_payment_id').val());
+}
+</script>
+<g:render template="/confirm"
+        model="['message':'invoice.prompt.confirm.remove.payment.link',
+                'controller':'invoice',
+                'action':'removePaymentLink',
+                'id':invoice.id,
+                'formParams': ['paymentId': '-1'],
+                'onYes': 'setPaymentId()',
+               ]"/>
 
 <g:render template="/confirm"
-          model="['message':'invoice.prompt.are.you.sure',
-                  'controller':'invoice',
-                  'action':'delete',
-                  'id':invoice.id,
-                 ]"/>
+         model="['message':'invoice.prompt.are.you.sure',
+                 'controller':'invoice',
+                 'action':'delete',
+                 'id':invoice.id,
+                ]"/>
 </div>

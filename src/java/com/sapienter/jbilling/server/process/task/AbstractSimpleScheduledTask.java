@@ -76,20 +76,13 @@ public abstract class AbstractSimpleScheduledTask extends ScheduledTask {
     protected static final Integer DEFAULT_REPEAT = SimpleTrigger.REPEAT_INDEFINITELY;
     protected static final Integer DEFAULT_INTERVAL = 24;
     
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAM_END_TIME);
-            add(PARAM_INTERVAL);
-            add(PARAM_REPEAT);
-            add(PARAM_START_TIME);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAM_END_TIME);
+    	descriptions.add(PARAM_INTERVAL);
+    	descriptions.add(PARAM_REPEAT);
+    	descriptions.add(PARAM_START_TIME);
     }
-
 
     public SimpleTrigger getTrigger() throws PluggableTaskException {
         SimpleTrigger trigger = new SimpleTrigger(getTaskName(),

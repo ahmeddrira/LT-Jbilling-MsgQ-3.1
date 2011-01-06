@@ -73,16 +73,10 @@ public abstract class AbstractGeneratorTask extends PluggableTask
         super();
     }
 
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAM_CONFIG_FILENAME);
-            add(PARAM_OUTPUT_FILENAME);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAM_CONFIG_FILENAME);
+        descriptions.add(PARAM_OUTPUT_FILENAME);
     }
 
     

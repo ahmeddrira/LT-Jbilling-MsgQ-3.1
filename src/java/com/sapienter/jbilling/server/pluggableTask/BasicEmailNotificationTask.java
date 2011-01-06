@@ -61,7 +61,7 @@ public class BasicEmailNotificationTask extends PluggableTask
     public static final ParameterDescription PARAMETER_SMTP_SERVER = 
         new ParameterDescription("smtp_server", true, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_PORT = 
-    	new ParameterDescription("port", true, ParameterDescription.Type.INT);
+    	new ParameterDescription("port", true, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_USERNAME = 
     	new ParameterDescription("username", true, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_PASSWORD = 
@@ -75,31 +75,25 @@ public class BasicEmailNotificationTask extends PluggableTask
     public static final ParameterDescription PARAMETER_BCCTO = 
     	new ParameterDescription("bcc_to", false, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_HTML = 
-    	new ParameterDescription("html", false, ParameterDescription.Type.BOOLEAN);
+    	new ParameterDescription("html", false, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_TLS = 
-    	new ParameterDescription("tls", true, ParameterDescription.Type.BOOLEAN);
+    	new ParameterDescription("tls", true, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_SSL_AUTH = 
-    	new ParameterDescription("ssl_auth", true, ParameterDescription.Type.BOOLEAN);
+    	new ParameterDescription("ssl_auth", true, ParameterDescription.Type.STR);
     
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_BCCTO);
-            add(PARAMETER_FROM);
-            add(PARAMETER_FROM_NAME);
-            add(PARAMETER_HTML);
-            add(PARAMETER_PASSWORD);
-            add(PARAMETER_PORT);
-            add(PARAMETER_REPLYTO);
-            add(PARAMETER_SMTP_SERVER);
-            add(PARAMETER_SSL_AUTH);
-            add(PARAMETER_TLS);
-            add(PARAMETER_USERNAME);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_BCCTO);
+    	descriptions.add(PARAMETER_FROM);
+    	descriptions.add(PARAMETER_FROM_NAME);
+    	descriptions.add(PARAMETER_HTML);
+    	descriptions.add(PARAMETER_PASSWORD);
+    	descriptions.add(PARAMETER_PORT);
+    	descriptions.add(PARAMETER_REPLYTO);
+    	descriptions.add(PARAMETER_SMTP_SERVER);
+    	descriptions.add(PARAMETER_SSL_AUTH);
+    	descriptions.add(PARAMETER_TLS);
+    	descriptions.add(PARAMETER_USERNAME);
     }
 
     private static final Logger LOG = Logger.getLogger(BasicEmailNotificationTask.class);
@@ -141,11 +135,11 @@ public class BasicEmailNotificationTask extends PluggableTask
         }
         replyTo = (String) parameters.get(PARAMETER_REPLYTO.getName());
 
-        doHTML = ((Boolean) parameters.get(PARAMETER_HTML.getName())).booleanValue();
+        doHTML = Boolean.parseBoolean((String) parameters.get(PARAMETER_HTML.getName()));
 
-        tls = ((Boolean) parameters.get(PARAMETER_TLS.getName())).booleanValue();
+        tls = Boolean.parseBoolean((String) parameters.get(PARAMETER_TLS.getName()));
 
-        sslAuth = ((Boolean) parameters.get(PARAMETER_SSL_AUTH.getName())).booleanValue();
+        sslAuth = Boolean.parseBoolean((String) parameters.get(PARAMETER_SSL_AUTH.getName()));
     }
 
     public void deliver(UserDTO user, MessageDTO message)

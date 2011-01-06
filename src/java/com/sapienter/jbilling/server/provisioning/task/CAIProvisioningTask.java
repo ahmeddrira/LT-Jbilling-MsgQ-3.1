@@ -20,13 +20,16 @@
 
 package com.sapienter.jbilling.server.provisioning.task;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.util.Context;
 
 /**
@@ -38,11 +41,25 @@ import com.sapienter.jbilling.server.util.Context;
  */
 public class CAIProvisioningTask extends PluggableTask 
         implements IExternalProvisioning {
-    public static final String PARAM_ID = "id";
+	
     public static final String PARAM_ID_DEFAULT = "cai";
-    public static final String PARAM_REMOVE = "remove";
-    public static final String PARAM_USERNAME = "username";
-    public static final String PARAM_PASSWORD = "password";
+    public static final ParameterDescription PARAMETER_ID = 
+    	new ParameterDescription("id", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_REMOVE = 
+    	new ParameterDescription("remove", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_USERNAME = 
+    	new ParameterDescription("username", true, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAMETER_PASSWORD = 
+    	new ParameterDescription("password", true, ParameterDescription.Type.STR);
+
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_ID);
+        descriptions.add(PARAMETER_REMOVE);
+        descriptions.add(PARAMETER_USERNAME);
+        descriptions.add(PARAMETER_PASSWORD);
+    }
+
 
     private static final Logger LOG = Logger.getLogger(
             CAIProvisioningTask.class);
@@ -80,7 +97,7 @@ public class CAIProvisioningTask extends PluggableTask
         commandBuilder.insert(insertIndex, ":TRANSID," + id);
 
         // delete fields with values that match the remove parameter
-        String removeValue = (String) parameters.get(PARAM_REMOVE);
+        String removeValue = (String) parameters.get(PARAMETER_REMOVE.getName());
         if (removeValue != null) {
             int removeValueIndex = removeValueIndex(commandBuilder, removeValue);
             while (removeValueIndex != -1) {
@@ -114,14 +131,14 @@ public class CAIProvisioningTask extends PluggableTask
                 (IExternalCommunication) Context.getBean(Context.Name.CAI);
 //        IExternalCommunication cai = new TelnetCommunication();
 
-        String username = (String) parameters.get(PARAM_USERNAME);
+        String username = (String) parameters.get(PARAMETER_USERNAME.getName());
         if (username == null) {
-            throw new TaskException("No '" + PARAM_USERNAME + "' plug-in " +
+            throw new TaskException("No '" + PARAMETER_USERNAME.getName() + "' plug-in " +
                     "parameter found.");
         }
-        String password = (String) parameters.get(PARAM_PASSWORD);
+        String password = (String) parameters.get(PARAMETER_PASSWORD.getName());
         if (username == null) {
-            throw new TaskException("No '" + PARAM_PASSWORD + "' plug-in " +
+            throw new TaskException("No '" + PARAMETER_PASSWORD.getName() + "' plug-in " +
                     "parameter found.");
         }
 
@@ -216,7 +233,7 @@ public class CAIProvisioningTask extends PluggableTask
      * Returns the id of the task. 
      */
     public String getId() {
-        String id = (String) parameters.get(PARAM_ID);
+        String id = (String) parameters.get(PARAMETER_ID.getName());
         if (id != null) {
             return id;
         }

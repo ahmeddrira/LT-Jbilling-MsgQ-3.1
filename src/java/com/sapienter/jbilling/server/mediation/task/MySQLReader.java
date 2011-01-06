@@ -34,7 +34,7 @@ public class MySQLReader extends JDBCReader {
 		new ParameterDescription("port", true, ParameterDescription.Type.STR);
     
     
-	static {
+	{
 		descriptions.add(PARAM_HOST);
 		descriptions.add(PARAM_PORT);
 	}

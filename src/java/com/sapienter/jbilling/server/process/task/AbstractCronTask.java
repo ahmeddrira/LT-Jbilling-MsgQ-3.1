@@ -19,13 +19,13 @@
  */
 package com.sapienter.jbilling.server.process.task;
 
-import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import java.text.ParseException;
+
 import org.quartz.CronTrigger;
-import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 
-import java.text.ParseException;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
 /**
  * Abstract task that contains all the plumbing necessary to construct a CronTrigger for
@@ -43,7 +43,15 @@ import java.text.ParseException;
  */
 public abstract class AbstractCronTask extends ScheduledTask {
 
-    protected static final String PARAM_CRON_EXPRESSION = "cron_exp";
+    protected static final ParameterDescription PARAM_CRON_EXPRESSION = 
+    	new ParameterDescription("cron_exp", false, ParameterDescription.Type.STR);
+    
+	
+	//initializer for pluggable params
+    { 
+    	descriptions.add(PARAM_CRON_EXPRESSION);
+    }
+    
     protected static final String DEFAULT_CRON_EXPRESSION = "0 0 12 * * ?"; // 12:00 noon every day
 
     public CronTrigger getTrigger() throws PluggableTaskException {
@@ -70,7 +78,7 @@ public abstract class AbstractCronTask extends ScheduledTask {
      * @return cron expression string
      */
     public String getCronExpression() {
-        return getParameter(PARAM_CRON_EXPRESSION, DEFAULT_CRON_EXPRESSION);
+        return getParameter(PARAM_CRON_EXPRESSION.getName(), DEFAULT_CRON_EXPRESSION);
     }
 
     public String getScheduleString() {

@@ -39,19 +39,14 @@ import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 public class TestExternalProvisioningTask extends PluggableTask 
         implements IExternalProvisioning {
 	public static final ParameterDescription PARAM_ID = 
-		new ParameterDescription("id", true, ParameterDescription.Type.STR);
+		new ParameterDescription("id", false, ParameterDescription.Type.STR);
     public static final String PARAM_ID_DEFAULT = "test";
 
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAM_ID);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAM_ID);
     }
+
 
 
     private static final Logger LOG = Logger.getLogger(

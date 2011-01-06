@@ -53,19 +53,18 @@ public class PaymentAuthorizeNetTask extends PluggableTask
     public static final ParameterDescription PARAMETER_TRANSACTION = 
         new ParameterDescription("transaction", true, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_TEST = 
-        new ParameterDescription("test", false, ParameterDescription.Type.BOOLEAN);
+        new ParameterDescription("test", false, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_AVS = 
         new ParameterDescription("submit_avs", false, ParameterDescription.Type.STR);
     
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_LOGIN); 
-            add(PARAMETER_TRANSACTION); 
-            add(PARAMETER_TEST); 
-            add(PARAMETER_AVS); 
-        }
-    };
-
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_LOGIN); 
+        descriptions.add(PARAMETER_TRANSACTION); 
+        descriptions.add(PARAMETER_TEST); 
+        descriptions.add(PARAMETER_AVS); 
+    }
+    
     //private static final String url = "https://certification.authorize.net/gateway/transact.dll";
     private static final String url = "https://secure.authorize.net/gateway/transact.dll";
     private static final int timeOut = 10000; // in millisec
@@ -498,8 +497,4 @@ public class PaymentAuthorizeNetTask extends PluggableTask
         return true;
     }
     
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
-    }
 }

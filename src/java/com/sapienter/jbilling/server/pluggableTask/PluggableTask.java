@@ -24,26 +24,32 @@
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
-import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
+import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.apache.log4j.Logger;
 import org.drools.KnowledgeBase;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.FactHandle;
 import org.drools.agent.KnowledgeAgent;
 import org.drools.agent.KnowledgeAgentFactory;
 import org.drools.io.ResourceChangeScannerConfiguration;
 import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ByteArrayResource;
+import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.FactHandle;
 
-import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
 
 
 public abstract class PluggableTask {
@@ -59,6 +65,13 @@ public abstract class PluggableTask {
 
     private static HashMap<Integer, KnowledgeAgent> knowledgeBasesCache = new HashMap<Integer, KnowledgeAgent>();
     private static AtomicBoolean isRulesChangeScanerStarted = new AtomicBoolean(false);
+
+    
+    public final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>();
+    
+    public List<ParameterDescription> getParameterDescriptions() {
+        return descriptions;
+    }
 
     protected Integer getEntityId() {
         return entityId;
@@ -322,10 +335,6 @@ public abstract class PluggableTask {
             ResourceFactory.getResourceChangeNotifierService().start();
             ResourceFactory.getResourceChangeScannerService().start();
         }
-    }
-
-	public List<ParameterDescription> getParameterDescriptions() {
-		return new ArrayList<ParameterDescription>();
     }
 	
 	public boolean validate() {

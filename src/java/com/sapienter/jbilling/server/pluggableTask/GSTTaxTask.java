@@ -48,16 +48,10 @@ public class GSTTaxTask extends PluggableTask implements OrderProcessingTask {
     public static final ParameterDescription PARAMETER_DESCRIPTION = 
         new ParameterDescription("description", true, ParameterDescription.Type.STR);
     
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_RATE);
-            add(PARAMETER_DESCRIPTION);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_RATE);
+        descriptions.add(PARAMETER_DESCRIPTION);
     }
 
     public void doProcessing(OrderDTO order) throws TaskException {

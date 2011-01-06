@@ -40,28 +40,22 @@ public class ProcessorEmailAlarmTask extends PluggableTask
 
     // pluggable task parameters names
     public static final ParameterDescription PARAMETER_FAILED_LIMIT = 
-    	new ParameterDescription("failed_limit", true, ParameterDescription.Type.INT);
+    	new ParameterDescription("failed_limit", true, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_FAILED_TIME = 
-    	new ParameterDescription("failed_time", true, ParameterDescription.Type.INT);
+    	new ParameterDescription("failed_time", true, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_TIME_BETWEEN_ALARMS = 
-    	new ParameterDescription("time_between_alarms", true, ParameterDescription.Type.INT);
+    	new ParameterDescription("time_between_alarms", true, ParameterDescription.Type.STR);
 
     // optional parameter
     public static final ParameterDescription PARAMETER_EMAIL_ADDRESS = 
     	new ParameterDescription("email_address", false, ParameterDescription.Type.STR);
 
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_FAILED_LIMIT);
-            add(PARAMETER_FAILED_TIME);
-            add(PARAMETER_TIME_BETWEEN_ALARMS);
-            add(PARAMETER_EMAIL_ADDRESS);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_FAILED_LIMIT);
+        descriptions.add(PARAMETER_FAILED_TIME);
+        descriptions.add(PARAMETER_TIME_BETWEEN_ALARMS);
+        descriptions.add(PARAMETER_EMAIL_ADDRESS);
     }
     
     
@@ -78,9 +72,9 @@ public class ProcessorEmailAlarmTask extends PluggableTask
     @Override
     public void initializeParamters(PluggableTaskDTO task) throws PluggableTaskException {
         super.initializeParamters(task);
-        failedLimit = (Integer) parameters.get(PARAMETER_FAILED_LIMIT.getName());
-        failedTime = (Integer) parameters.get(PARAMETER_FAILED_TIME.getName());
-        failedTime = (Integer) parameters.get(PARAMETER_TIME_BETWEEN_ALARMS.getName());
+        failedLimit = Integer.parseInt((String) parameters.get(PARAMETER_FAILED_LIMIT.getName()));
+        failedTime = Integer.parseInt((String) parameters.get(PARAMETER_FAILED_TIME.getName()));
+        failedTime = Integer.parseInt((String) parameters.get(PARAMETER_TIME_BETWEEN_ALARMS.getName()));
     }
 
     // Initialisation

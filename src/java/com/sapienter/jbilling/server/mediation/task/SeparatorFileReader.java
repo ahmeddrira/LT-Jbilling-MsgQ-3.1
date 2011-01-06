@@ -36,16 +36,11 @@ public class SeparatorFileReader extends AbstractFileReader {
     	new ParameterDescription("separator", true, ParameterDescription.Type.STR);
     
     
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_SEPARATOR);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_SEPARATOR);
     }
+
     
     
     @Override

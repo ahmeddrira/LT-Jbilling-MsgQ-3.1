@@ -75,22 +75,16 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
     private static final Logger LOG = Logger.getLogger(BasicPenaltyTask.class);
 
     public static final ParameterDescription PARAMETER_ITEM = 
-    	new ParameterDescription("item", true, ParameterDescription.Type.INT);
+    	new ParameterDescription("item", true, ParameterDescription.Type.STR);
     public static final ParameterDescription PARAMETER_AGEING_STEP = 
-    	new ParameterDescription("ageing_step", true, ParameterDescription.Type.INT);
+    	new ParameterDescription("ageing_step", true, ParameterDescription.Type.STR);
 
 
-    public static final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>() {
-        { 
-            add(PARAMETER_ITEM);
-            add(PARAMETER_AGEING_STEP);
-        }
-    };
-    
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return descriptions;
-    }
+    //initializer for pluggable params
+    { 
+    	descriptions.add(PARAMETER_ITEM);
+        descriptions.add(PARAMETER_AGEING_STEP);
+	}
 
     private Integer itemId;
     private Integer ageingStep;
@@ -113,7 +107,7 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
     public Integer getPenaltyItemId() throws PluggableTaskException {
         if (itemId == null) {
             try {
-                itemId = (Integer) parameters.get(PARAMETER_ITEM.getName());
+                itemId = Integer.parseInt((String) parameters.get(PARAMETER_ITEM.getName()));
             } catch (NumberFormatException e) {
                 throw new PluggableTaskException("Configured penalty item id must be an integer!", e);
             }
@@ -132,7 +126,7 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
     public Integer getAgeingStep() throws PluggableTaskException {
         if (ageingStep == null) {
             try {
-                ageingStep = (Integer) parameters.get(PARAMETER_AGEING_STEP.getName());
+                ageingStep = Integer.valueOf((String) parameters.get(PARAMETER_AGEING_STEP.getName()));
             } catch (NumberFormatException e) {
                 throw new PluggableTaskException("Configured ageing_step must be an integer!", e);
             }

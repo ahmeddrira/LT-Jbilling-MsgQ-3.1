@@ -118,7 +118,7 @@ function render(data, target) {
  */
 function closePanel(element) {
     register(element);
-    prev.animate();
+    if (!first.visible()) prev.animate(); // animate only if not in the default position.
     $('.columns-holder [index=' + clicked + '] .column-hold').html('');
 }
 

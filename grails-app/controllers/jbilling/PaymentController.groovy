@@ -23,6 +23,10 @@ package jbilling
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.payment.db.PaymentDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
+import org.hibernate.FetchMode
+import org.hibernate.criterion.Restrictions
+import org.hibernate.criterion.Criterion
+import org.hibernate.Criteria
 
 /**
  * PaymentController 
@@ -38,6 +42,7 @@ class PaymentController {
     def filterService
     def recentItemService
     def breadcrumbService
+    def sessionFactory
 
     def index = {
         redirect action: list, params: params
@@ -53,10 +58,29 @@ class PaymentController {
                 max:    params.max,
                 offset: params.offset
         ) {
+            createAlias('baseUser', 'u')
+            createAlias('invoicesMap', 'i', Criteria.LEFT_JOIN)
+
             and {
-                baseUser {
-                    eq('company', new CompanyDTO(session['company_id']))
+                filters.each { filter ->
+                    if (filter.value) {
+                        switch (filter.constraintType) {
+                            case FilterConstraint.EQ:
+                                addToCriteria(Restrictions.eq(filter.field, filter.value))
+                                break
+
+                            case FilterConstraint.LIKE:
+                                addToCriteria(Restrictions.like(filter.field, filter.stringValue))
+                                break
+
+                            case FilterConstraint.DATE_BETWEEN:
+                                addToCriteria(Restrictions.between(filter.field, filter.startDateValue, filter.endDateValue))
+                                break
+                        }
+                    }
                 }
+
+                eq('u.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
             }
         }
@@ -65,7 +89,11 @@ class PaymentController {
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
-        [ payments: payments, selected: selected, filters: filters ]
+        if (params.applyFilter) {
+            render template: 'payments', model: [ payments: payments, selected: selected, filters: filters ]
+        } else {
+            [ payments: payments, selected: selected, filters: filters ]
+        }
     }
 
     def user = {

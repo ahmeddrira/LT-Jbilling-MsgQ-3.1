@@ -69,6 +69,24 @@
     </div>
 
     <script type="text/javascript">
+        /**
+         * Toggles the 'active' class for each filter that has a value and submits the
+         * filter form to apply them.
+         */
+        function applyFilters() {
+            $('#filters-form input:visible, #filters-form select:visible').each(function() {
+                var title = $(this).parents('li').find('.title');
+                if ($(this).val()) {
+                    title.addClass('active');
+                } else {
+                    title.removeClass('active');
+                }
+            });
+
+            $('#filters-form').submit();
+        }
+
+        /* re-initialize popup menus when rendered */
         initPopups();
         initScript();    
     </script>

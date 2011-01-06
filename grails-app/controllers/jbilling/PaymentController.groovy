@@ -39,15 +39,20 @@ class PaymentController {
 
     static pagination = [ max: 25, offset: 0 ]
 
+    def webServicesSession
+    def viewUtils
     def filterService
     def recentItemService
     def breadcrumbService
-    def sessionFactory
 
     def index = {
         redirect action: list, params: params
     }
 
+    /**
+     * Gets a list of payments and renders the the list page. If the "applyFilters" parameter is given,
+     * the partial "_payments.gsp" template will be rendered instead of the complete payments list page.
+     */
     def list = {
         def filters = filterService.getFilters(FilterType.PAYMENT, params)
 
@@ -96,21 +101,60 @@ class PaymentController {
         }
     }
 
-    def user = {
-
-    }
-
+    /**
+     * Show details of the selected payment.
+     */
     def show = {
         PaymentDTO payment = PaymentDTO.get(params.int('id'))
         recentItemService.addRecentItem(params.int('id'), RecentItemType.PAYMENT)
         breadcrumbService.addBreadcrumb(controllerName, 'list', params.template ?: null, params.int('id'))
 
-        render template: params.template ?: 'show', model: [ selected: payment ]
+        render template: 'show', model: [ selected: payment ]
     }
 
+    /**
+     * Convenience shortcut, this action shows all payments for the given user id.
+     */
+    def user = {
+        def filter =  new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.EQ, field: 'u.id', template: 'id', visible: true, integerValue: params.id)
+        filterService.setFilter(FilterType.PAYMENT, filter)
+
+        redirect action: list
+    }
+
+    /**
+     * Delete the given payment id
+     */
     def delete = {
+        if (params.id) {
+            // webServicesSession.deletePayment(params.int('id'))
 
+            log.debug("Deleted payment ${params.id}.")
+
+            flash.message = 'payment.deleted'
+            flash.args = [ params.id ]
+        }
+
+        // render the partial payments list
+        params.applyFilter = true
+        list()
     }
 
+    /**
+     * Gets the payment to be edited and shows the "edit.gsp" view. This edit action cannot be used
+     * to create a new payment, as creation requires a wizard style flow where the user is selected first.
+     */
+    def edit = {
+        def payment = webServicesSession.getPayment(params.int('id'))
+        def user = webServicesSession.getUserWS(payment.userId)
+
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
+
+        [ payment: payment, user: user ]
+    }
+
+    def save = {
+
+    }
 
 }

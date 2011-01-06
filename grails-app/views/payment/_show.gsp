@@ -14,10 +14,10 @@
     <div class="heading">
         <strong>
             <g:if test="${selected.isRefund > 0}">
-                Refund
+                <g:message code="payment.refund.title"/>
             </g:if>
             <g:else>
-                Payment
+                <g:message code="payment.payment.title"/>
             </g:else>
             <em>${selected.id}</em>
         </strong>
@@ -178,9 +178,18 @@
         </div>
     </g:if>
 
+
     <div class="btn-box">
-        <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
-        <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
+        <!-- edit or delete unlinked payments -->
+        <div class="row">
+            <g:if test="${!selected.invoicesMap}">
+                <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+                <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
+            </g:if>
+            <g:else>
+                <em>Cannot edit a payment linked to invoices.</em>
+            </g:else>
+        </div>
     </div>
 
     <g:render template="/confirm"
@@ -190,6 +199,6 @@
                       'id': selected.id,
                       'ajax': true,
                       'update': 'column1',
-                      'onYes': 'closePanel($(\'column2\'))'
+                      'onYes': 'closePanel(\'#column2\')'
                      ]"/>
 </div>

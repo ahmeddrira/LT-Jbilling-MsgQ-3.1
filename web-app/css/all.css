@@ -444,6 +444,11 @@ table {
 	background:url(../images/icon04.gif) no-repeat;
 	margin:4px 3px 0 0;
 }
+.date img {
+    float: right;
+    position: relative;
+    top: -16px;
+}
 .btn-hold {
 	background:#f6f6f6;
 	border:1px solid #bbb;

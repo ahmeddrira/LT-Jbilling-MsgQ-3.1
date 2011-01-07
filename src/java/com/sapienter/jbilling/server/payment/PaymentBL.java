@@ -870,18 +870,21 @@ public class PaymentBL extends ResultList implements PaymentSQL {
      * <i>invoiceId</i> of the Invoice
      * @param invoiceId Invoice Id to be unlinked from this payment
      */
-    public void unLinkFromInvoice(Integer invoiceId) {
+    public boolean unLinkFromInvoice(Integer invoiceId) {
     	
     	InvoiceDTO invoice= new InvoiceDAS().find(invoiceId);
 		Iterator<PaymentInvoiceMapDTO> it = invoice.getPaymentMap().iterator();
+		boolean bSucceeded= false;
         while (it.hasNext()) {
             PaymentInvoiceMapDTO map = it.next();
             if (this.payment.getId() == map.getPayment().getId()) {
 	            this.removeInvoiceLink(map.getId());
 	            invoice.getPaymentMap().remove(map);
+	            bSucceeded=true;
 	            break;
             }
         }
+        return bSucceeded;
     }
     
     public PaymentInvoiceMapDTOEx getMapDTO(Integer mapId) {

@@ -30,16 +30,20 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.AbstractDescription;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @Table(name="period_unit")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class PeriodUnitDTO implements java.io.Serializable {
+public class PeriodUnitDTO extends AbstractDescription implements java.io.Serializable {
 
     private int id;
     private Set<Partner> partners = new HashSet<Partner>(0);
@@ -62,6 +66,11 @@ public class PeriodUnitDTO implements java.io.Serializable {
         this.billingProcessConfigurations = billingProcessConfigurations;
     }
 
+    @Transient
+    protected String getTable() {
+        return Constants.TABLE_PERIOD_UNIT;
+    }
+    
     @Id
     @Column(name = "id", unique = true, nullable = false)
     public int getId() {

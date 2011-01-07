@@ -10,6 +10,8 @@ import com.sapienter.jbilling.server.util.WebServicesSessionSpringBean;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.common.SessionInternalError;
+
 
 class InvoiceController {
 	
@@ -231,8 +233,9 @@ class InvoiceController {
 		try {
 			webServicesSession.removePaymentLink(invId, paymentId)
 			flash.message = "payment.unlink.success"
+		} catch (SessionInternalError e){
+			viewUtils.resolveException(flash, session.locale, e);
 		} catch (Exception e) {
-			e.printStackTrace()
 			log.error e.getMessage()
 			flash.error = "error.invoice.unlink.payment"
 		}

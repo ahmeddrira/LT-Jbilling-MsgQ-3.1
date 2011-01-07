@@ -385,7 +385,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public void removePaymentLink(Integer invoiceId, Integer paymentId) {
 		PaymentBL paymentBl =new PaymentBL(paymentId);
-		paymentBl.unLinkFromInvoice(invoiceId);
+		boolean result= paymentBl.unLinkFromInvoice(invoiceId);
+		if (!result) {
+			throw new SessionInternalError("Unable to find the Invoice Id " + invoiceId + " linked to Payment Id " + paymentId);
+		}
 	}
 
     /**

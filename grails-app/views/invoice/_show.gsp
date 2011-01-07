@@ -50,7 +50,6 @@
 		</g:each></td></tr>
 		<tr><td><g:message code="invoice.label.delegation"/>:</td><td class="value">${delegatedInvoices}</td></tr>
 	</table>
-</div>
 
 	<div class="heading">
 		<strong><g:message code="invoice.label.lines"/></strong>
@@ -59,20 +58,20 @@
 	<table class="innerTable" >
 		<thead class="innerHeader">
 	         <tr>
-	            <th align="left"><g:message code="label.gui.description"/></th>
-	            <th align="left"><g:message code="label.gui.quantity"/></th>
-	            <th align="left"><g:message code="label.gui.price"/></th>
-	            <th align="left"><g:message code="label.gui.amount"/></th>
+	            <th><g:message code="label.gui.description"/></th>
+	            <th><g:message code="label.gui.quantity"/></th>
+	            <th><g:message code="label.gui.price"/></th>
+	            <th><g:message code="label.gui.amount"/></th>
 	         </tr>
          </thead>
          <tbody>
 		     <g:each var="line" in="${invoice.invoiceLines}" status="idx">
 		         <tr>
-		            <td align="left" class="innerContent">${line.description}</td>
-		            <td align="left" class="innerContent">${(int)line.quantity}</td>
-		            <td align="left" class="innerContent">${Util.formatMoney(new BigDecimal(line.price?:"0.0"),
+		            <td class="innerContent">${line.description}</td>
+		            <td class="innerContent">${(int)line.quantity}</td>
+		            <td class="innerContent">${Util.formatMoney(new BigDecimal(line.price?:"0.0"),
 							session["user_id"],invoice?.currencyId, false)}</td>
-		            <td align="left" class="innerContent">${Util.formatMoney(new BigDecimal(line.amount?: "0.0"),
+		            <td class="innerContent">${Util.formatMoney(new BigDecimal(line.amount?: "0.0"),
 							session["user_id"],invoice?.currencyId, false)}</td>
 		         </tr>
 	         </g:each>
@@ -99,25 +98,26 @@
 		<table class="innerTable" >
 			<thead class="innerHeader">
 		         <tr>
-		            <th align="left"><g:message code="label.gui.date"/></th>
-					<th align="left"><g:message code="label.gui.payment.refunds"/></th>
-					<th align="left"><g:message code="label.gui.amount"/></th>
-					<th align="left"><g:message code="label.gui.method"/></th>
-					<th align="left"><g:message code="label.gui.result"/></th>
-					<th align="left">.</th>
+		            <th><g:message code="label.gui.date"/></th>
+					<th><g:message code="label.gui.payment.refunds"/></th>
+					<th><g:message code="label.gui.amount"/></th>
+					<th><g:message code="label.gui.method"/></th>
+					<th><g:message code="label.gui.result"/></th>
+					<th></th>
 		         </tr>
 	         </thead>
 	         <tbody>
 			     <g:each var="payment" in="${payments}" status="idx">
 			         <tr>
-			         	<td align="left" class="innerContent">${Util.formatDate(payment.paymentDate, session["user_id"])}</td>
-						<td align="left" class="innerContent">${payment.isRefund?"R":"P"}</td>
-						<td align="left" class="innerContent">${Util.formatMoney(new BigDecimal(payment.amount?:"0.0"),
+			         	<td class="innerContent">${Util.formatDate(payment.paymentDate, session["user_id"])}</td>
+						<td class="innerContent">${payment.isRefund?"R":"P"}</td>
+						<td class="innerContent">${Util.formatMoney(new BigDecimal(payment.amount?:"0.0"),
 										session["user_id"],invoice?.currencyId, false)}</td>
-						<td align="left" class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</td>
-						<td align="left" class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</td>
-						<td align="left" class="innerContent">
-							<a onclick="setUnlinkPaymentId(${invoice.id}, ${payment.id});" class="submit2">*</a>
+						<td class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</td>
+						<td class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</td>
+						<td class="innerContent">
+							<a href="javascript:void(0);" onclick="setUnlinkPaymentId(${invoice.id}, ${payment.id});">
+							<span><g:message code="invoice.prompt.unlink.payment"/></span></a>
 						</td>
 			         </tr>
 		         </g:each>
@@ -127,24 +127,23 @@
 	<g:else>
 		<g:message code="invoice.prompt.no.payments.refunds"/>
 	</g:else>
-	
-	
-	<hr/>
-	
+
 	<div class="heading">
 		<strong><g:message code="invoice.label.note"/></strong>
 	</div>
-	<br/>
-	${invoice.customerNotes }
+	<p>
+		${invoice.customerNotes}
+	</p>
+</div>
 
 <div class="btn-box">
     <g:if test="${invoice.id}">
         <a onclick="showConfirm('delete-'+${invoice.id});" class="submit delete"><span><g:message code="button.delete.invoice"/></span></a>
     </g:if>
 </div>
-<script type="text/javascript">
 
-function setUnlinkPaymentId(invId, pymId) { 
+<script type="text/javascript">
+function setUnlinkPaymentId(invId, pymId) {
 	$('#unlink_payment_id').val(pymId);
 	showConfirm("removePaymentLink-" + invId);
 	return true;

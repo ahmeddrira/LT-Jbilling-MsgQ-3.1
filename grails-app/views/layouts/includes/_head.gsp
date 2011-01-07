@@ -15,7 +15,7 @@
 <!--[if lt IE 8]><link rel="stylesheet" href="${resource(dir:'css', file:'lt7.css')}" type="text/css" media="screen"/><![endif]-->
 
 <g:javascript library="jquery" plugin="jquery"/>
-<jqui:resources theme="smoothness"/>
+<jqui:resources themeCss="${resource(dir:'jquery-ui/themes/jbilling/jquery-ui-1.8.7.custom.css')}" />
 
 <script type="text/javascript">
     function renderMessages() {

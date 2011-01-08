@@ -137,72 +137,38 @@ public class CurrencyBL {
 
         return exchange;
     }
-    
-    /**
-     * Returns all the currency symbols in the proper order, so
-     * retValue[currencyId] would be the symbol of currencyId
-     * 
-     * @return
-     * @throws NamingException
-     * @throws SQLException
-     */
-    @SuppressWarnings("unchecked")
+
     public CurrencyDTO[] getSymbols() throws NamingException, SQLException {
-        JNDILookup jndi = JNDILookup.getFactory();
-        Connection conn = jndi.lookUpDataSource().getConnection();
-        PreparedStatement stmt = conn.prepareStatement("select id, symbol, code from currency");
-        ResultSet result = stmt.executeQuery();
-        Vector results = new Vector();
-        while (result.next()) {
-            int currencyId = result.getInt(1);
-            // ensure that the vector will have space for this currency
-            if (results.size() < currencyId) {
-                results.setSize(currencyId);
-            }
-            String symbol = result.getString(2);
-            String code = result.getString(3);
-            CurrencyDTO bean = new CurrencyDTO(0, symbol, code, null);
-            results.add(result.getInt(1), bean);
-        }
-        result.close();
-        stmt.close();
-        conn.close();
-        CurrencyDTO[] retValue = new CurrencyDTO[results.size()];
-        
-        return (CurrencyDTO []) results.toArray(retValue);
+        List<CurrencyDTO> currencies = new CurrencyDAS().findAll();
+        return currencies.toArray(new CurrencyDTO[currencies.size()]);
     }
 
     @SuppressWarnings("unchecked")
     public CurrencyDTO[] getCurrencies(Integer languageId, Integer entityId) throws NamingException, SQLException {
-        List result = new ArrayList();
-        
-        CurrencyDTO[] all = getSymbols();
-        for (int currencyId = 1; currencyId < all.length; currencyId++) {
-            set(currencyId);
-            CurrencyDTO newCurrency = new CurrencyDTO();
-            newCurrency.setId(currencyId);
-            newCurrency.setName(currency.getDescription(languageId));
 
-            // find the system rate
-            if (currencyId == 1) {
-                newCurrency.setSysRate(new BigDecimal("1.0"));
+        CurrencyDTO[] currencies = getSymbols();
+
+        for (CurrencyDTO currency : currencies) {
+            set(currency.getId());
+            currency.setName(this.currency.getDescription(languageId));
+
+            // find system rate
+            if (currency.getId() == 1) {
+                currency.setSysRate(new BigDecimal("1.0"));
             } else {
-                newCurrency.setSysRate(exchangeDas.findExchange(0, currencyId).getRate());
+                currency.setSysRate(exchangeDas.findExchange(0, currency.getId()).getRate());
             }
 
-            // may be there's an entity rate
-            EntityBL en = new EntityBL(entityId);
-            CurrencyExchangeDTO exchange = exchangeDas.findExchange(entityId, currencyId);
-            if (exchange != null) {
-                newCurrency.setRate(exchange.getRate().toString());
-            }
+            // find entity specific rate
+            CurrencyExchangeDTO exchange = exchangeDas.findExchange(entityId, currency.getId());
+            if (exchange != null)
+                currency.setRate(exchange.getRate().toString());
 
-            // let's see if this currency is in use by this entity
-            newCurrency.setInUse(entityHasCurrency(entityId, currencyId));
-            result.add(newCurrency);
+            // set in-use flag
+            currency.setInUse(entityHasCurrency(entityId, currency.getId()));
         }
-        CurrencyDTO[] retValue = new CurrencyDTO[result.size()];
-        return (CurrencyDTO[]) result.toArray(retValue);
+
+        return currencies;
     }
     
     public void setCurrencies(Integer entityId, CurrencyDTO[] currencies) 

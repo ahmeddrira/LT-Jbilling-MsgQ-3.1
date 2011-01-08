@@ -6,11 +6,11 @@
 <body>
 <div class="form-edit">
 
-    <g:set var="isNew" value="${payment?.id || payment?.id > 0}"/>
+    <g:set var="isNew" value="${!payment || !payment?.id || payment?.id == 0}"/>
 
     <div class="heading">
         <strong>
-            <g:if test="${isNew}">
+            <g:if test="${!isNew}">
                 <g:if test="${payment.isRefund > 0}">
                     <g:message code="payment.edit.refund.title"/>
                 </g:if>
@@ -32,7 +32,7 @@
                 <div class="form-columns">
                     <div class="column">
                         <g:applyLayout name="form/text">
-                            <content tag="label">Payment ID</content>
+                            <content tag="label"><g:message code="payment.id"/></content>
 
                             <g:if test="${payment}"><span>${payment.id}</span></g:if>
                             <g:else><em><g:message code="prompt.id.new"/></em></g:else>
@@ -40,19 +40,19 @@
                             <g:hiddenField name="payment.id" value="${payment?.id}"/>
                         </g:applyLayout>
 
-                        <g:if test="${isNew}">
+                        <g:if test="${!isNew}">
                             <g:applyLayout name="form/text">
-                                <content tag="label">Payment Attempt</content>
+                                <content tag="label"><g:message code="payment.attempt"/></content>
                                 <span>${payment.attempt}</span>
                                 <g:hiddenField name="payment.attempt" value="${payment?.attempt}"/>
                             </g:applyLayout>
                         </g:if>
 
-                        <g:if test="${isNew}">
+                        <g:if test="${!isNew}">
                             <g:set var="currency" value="${currencies.find { it.id == payment?.currencyId }}"/>
 
                             <g:applyLayout name="form/text">
-                                <content tag="label">Currency</content>
+                                <content tag="label"><g:message code="prompt.user.currency"/></content>
                                 <span>${currency?.getDescription() ?: payment.currencyId}</span>
                                 <g:hiddenField name="payment.currencyId" value="${payment?.currencyId}"/>
                             </g:applyLayout>
@@ -60,54 +60,54 @@
                         <g:else>
                             <g:applyLayout name="form/select">
                                 <content tag="label"><g:message code="prompt.user.currency"/></content>
-                                <content tag="label.for">user.currencyId</content>
+                                <content tag="label.for">payment.currencyId</content>
                                 <g:select name="payment.currencyId" from="${currencies}"
                                           optionKey="id" optionValue="description"/>
                             </g:applyLayout>
                         </g:else>
 
                         <g:applyLayout name="form/input">
-                            <content tag="label">Payment Amount</content>
+                            <content tag="label"><g:message code="payment.amount"/></content>
                             <content tag="label.for">payment.amount</content>
                             <g:textField class="field" name="payment.amount" value="${formatNumber(number: payment?.amount, formatName: 'money.format')}"/>
                         </g:applyLayout>
 
 
                         <g:applyLayout name="form/date">
-                            <content tag="label">Payment Date</content>
+                            <content tag="label"><g:message code="payment.date"/></content>
                             <content tag="label.for">payment.paymentDate</content>
                             <g:textField class="field" name="payment.paymentDate" value="${formatDate(date: payment?.paymentDate, formatName:'datepicker.format')}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/checkbox">
-                            <content tag="label">Refund Payment</content>
+                            <content tag="label"><g:message code="payment.is.refund.payment"/></content>
                             <content tag="label.for">payment.isRefund</content>
-                            <g:checkBox class="cb checkbox" name="isRefund" checked="${payment?.isRefund}" disabled="${isNew ? false : true}"/>
+                            <g:checkBox class="cb checkbox" name="isRefund" checked="${payment?.isRefund}" disabled="${!isNew}"/>
                         </g:applyLayout>
                     </div>
 
                     <div class="column">
                         <g:applyLayout name="form/text">
-                            <content tag="label">User ID</content>
-                            <span>${user.userId}</span>
+                            <content tag="label"><g:message code="payment.user.id"/></content>
+                            <span><g:link controller="user" action="list" id="${user.userId}">${user.userId}</g:link></span>
                             <g:hiddenField name="payment.userId" value="${user.userId}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/text">
-                            <content tag="label">Login Name</content>
+                            <content tag="label"><g:message code="prompt.login.name"/></content>
                             <span>${user.userName}</span>
                         </g:applyLayout>
 
                         <g:if test="${user.contact?.firstName || user.contact?.lastName}">
                             <g:applyLayout name="form/text">
-                                <content tag="label">Name</content>
+                                <content tag="label"><g:message code="prompt.customer.name"/></content>
                                 <em>${user.contact.firstName} ${user.contact.lastName}</em>
                             </g:applyLayout>
                         </g:if>
 
                         <g:if test="${user.contact?.organizationName}">
                             <g:applyLayout name="form/text">
-                                <content tag="label">Organization Name</content>
+                                <content tag="label"><g:message code="prompt.organization.name"/></content>
                                 <em>${user.contact.organizationName}</em>
                             </g:applyLayout>
                         </g:if>
@@ -249,18 +249,18 @@
                 <g:if test="${invoices}">
                     <div class="box-cards">
                         <div class="box-cards-title">
-                            <a class="btn-open"><span>Payable Invoices</span></a>
+                            <a class="btn-open"><span><g:message code="payment.payable.invoices.title"/></span></a>
                         </div>
                         <div class="box-card-hold">
 
                             <table cellpadding="0" cellspacing="0" class="innerTable">
                                 <thead class="innerHeader">
                                 <tr>
-                                    <th>Invoice Number</th>
-                                    <th>Payment Attempts</th>
-                                    <th>Total</th>
-                                    <th>Balance</th>
-                                    <th>Due Date</th>
+                                    <th><g:message code="invoice.label.number"/></th>
+                                    <th><g:message code="invoice.label.payment.attempts"/></th>
+                                    <th><g:message code="invoice.label.total"/></th>
+                                    <th><g:message code="invoice.label.balance"/></th>
+                                    <th><g:message code="invoice.label.duedate"/></th>
                                     <th><!-- action --> &nbsp;</th>
                                 </tr>
                                 </thead>
@@ -272,7 +272,9 @@
                                         <td class="innerContent">
                                             <g:applyLayout name="form/radio">
                                                 <g:radio id="invoice-${invoice.id}" name="invoiceId" value="${invoice.id}"/>
-                                                <label for="invoice-${invoice.id}" class="rb">Invoice ${invoice.number}</label>
+                                                <label for="invoice-${invoice.id}" class="rb">
+                                                    <g:message code= "payment.link.invoice" args="[invoice.number]"/>
+                                                </label>
                                             </g:applyLayout>
                                         </td>
                                         <td class="innerContent">
@@ -289,7 +291,7 @@
                                         </td>
                                         <td class="innerContent">
                                             <g:link controller="invoice" action="list" id="${invoice.id}">
-                                                View Invoice ${invoice.number}
+                                                <g:message code= "payment.link.view.invoice" args="[invoice.number]"/>
                                             </g:link>
                                         </td>
                                     </tr>

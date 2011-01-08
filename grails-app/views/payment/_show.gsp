@@ -40,7 +40,7 @@
             <dd>${selected.baseUser.id}</dd>
 
             <g:if test="${contact?.firstName || contact?.lastName}">
-                <dt>Customer Name</dt>
+                <dt><g:message code="prompt.customer.name"/></dt>
                 <dd>${contact.firstName} ${contact.lastName} &nbsp;</dd>
             </g:if>
             <g:if test="${contact?.organizationName}">
@@ -48,7 +48,7 @@
                 <dd>${contact.organizationName} &nbsp;</dd>
             </g:if>
 
-            <dt>Login Name</dt>
+            <dt><g:message code="prompt.login.name"/></dt>
             <dd>${selected.baseUser.userName}</dd>
         </dl>
         <br/>

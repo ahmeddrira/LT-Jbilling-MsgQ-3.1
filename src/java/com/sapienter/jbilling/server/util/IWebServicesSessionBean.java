@@ -122,6 +122,8 @@ public interface IWebServicesSessionBean {
     
     public String isUserSubscribedTo(Integer userId, Integer itemId);
 
+    public Integer[] getUnpaidInvoices(Integer userId) throws SessionInternalError;
+
     public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId) throws SessionInternalError;
     public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number) throws SessionInternalError;
 
@@ -192,7 +194,11 @@ public interface IWebServicesSessionBean {
     public PaymentWS getLatestPayment(Integer userId) throws SessionInternalError;
     public Integer[] getLastPayments(Integer userId, Integer number) throws SessionInternalError;
     public BigDecimal getTotalRevenueByUser (Integer userId) throws SessionInternalError;
-    
+
+    public Integer createPayment(PaymentWS payment);
+    public void updatePayment(PaymentWS payment);
+    public void deletePayment(Integer paymentId);
+
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) throws SessionInternalError;
     public Integer applyPayment(PaymentWS payment, Integer invoiceId) throws SessionInternalError;
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment);

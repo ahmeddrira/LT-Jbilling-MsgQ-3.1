@@ -142,6 +142,10 @@ public class SpringAPI implements JbillingAPI {
         return session.getUserInvoicesByDate(userId, since, until);
     }
 
+    public Integer[] getUnpaidInvoices(Integer userId) {
+        return session.getUnpaidInvoices(userId);
+    }
+
     public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number) {
         return session.getLastInvoicesByItemType(userId, itemTypeId, number);
     }
@@ -248,6 +252,18 @@ public class SpringAPI implements JbillingAPI {
 
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) {
         return session.payInvoice(invoiceId);
+    }
+
+    public Integer createPayment(PaymentWS payment) {
+        return session.createPayment(payment);
+    }
+
+    public void updatePayment(PaymentWS payment) {
+        session.updatePayment(payment);
+    }
+
+    public void deletePayment(Integer paymentId) {
+        session.deletePayment(paymentId);
     }
 
     public void updateCreditCard(Integer userId, CreditCardDTO creditCard) {

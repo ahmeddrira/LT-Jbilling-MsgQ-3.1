@@ -27,6 +27,14 @@ import org.hibernate.FetchMode
 import org.hibernate.criterion.Restrictions
 import org.hibernate.criterion.Criterion
 import org.hibernate.Criteria
+import com.sapienter.jbilling.server.payment.PaymentWS
+import com.sapienter.jbilling.server.entity.CreditCardDTO
+import com.sapienter.jbilling.server.entity.AchDTO
+import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO
+import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.server.item.CurrencyBL
+import com.sapienter.jbilling.server.invoice.InvoiceWS
+import com.sapienter.jbilling.server.util.db.CurrencyDTO
 
 /**
  * PaymentController 
@@ -127,7 +135,7 @@ class PaymentController {
      */
     def delete = {
         if (params.id) {
-            // webServicesSession.deletePayment(params.int('id'))
+            webServicesSession.deletePayment(params.int('id'))
 
             log.debug("Deleted payment ${params.id}.")
 
@@ -141,20 +149,122 @@ class PaymentController {
     }
 
     /**
+     * Un-links the given payment ID from the given invoice ID and re-renders
+     * the "show payment" view panel.
+     */
+    def unlink = {
+		try {
+			webServicesSession.removePaymentLink(params.int('invoiceId'), params.int('id'))
+			flash.message = "payment.unlink.success"
+
+		} catch (Exception e) {
+			flash.error = "error.invoice.unlink.payment"
+		}
+
+		show()
+    }
+
+    /**
+     * Redirects to the user list and sets a flash message.
+     */
+    def create = {
+        flash.info = 'payment.select.customer'
+        redirect controller: 'user', action: 'list'
+    }
+
+    /**
      * Gets the payment to be edited and shows the "edit.gsp" view. This edit action cannot be used
      * to create a new payment, as creation requires a wizard style flow where the user is selected first.
      */
     def edit = {
-        def payment = webServicesSession.getPayment(params.int('id'))
-        def user = webServicesSession.getUserWS(payment.userId)
+        def payment = params.id ? webServicesSession.getPayment(params.int('id')) : null
+        def user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
+        def invoices = getUnpaidInvoices(user.userId)
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
-        [ payment: payment, user: user ]
+        [ payment: payment, user: user, invoices: invoices, currencies: currencies ]
     }
 
+    def getUnpaidInvoices(Integer userId) {
+        def invoiceIds = webServicesSession.getUnpaidInvoices(userId);
+
+        List<InvoiceWS> invoices = new ArrayList<InvoiceWS>(invoiceIds.size());
+        for (Integer id : invoiceIds)
+            invoices.add(webServicesSession.getInvoiceWS(id))
+        return invoices;
+    }
+
+    /**
+     * Validate and save payment.
+     */
     def save = {
+        def payment = new PaymentWS()
+        bindData(payment, params, 'payment')
 
+        payment.isRefund = params.isRefund ? 1 : 0
+
+        // bind credit card object if parameters present
+        if (params.creditCard.any { key, value -> value }) {
+            def creditCard = new CreditCardDTO()
+            bindData(creditCard, params, 'creditCard')
+            bindExpiryDate(creditCard, params)
+            payment.setCreditCard(creditCard)
+        }
+
+        // bind ach object if parameters present
+        if (params.ach.any { key, value -> value }) {
+            def ach = new AchDTO()
+            bindData(ach, params, 'ach')
+            payment.setAch(ach)
+        }
+
+        // bind cheque object if parameters present
+        if (params.cheque.any { key, value -> value }) {
+            def cheque = new PaymentInfoChequeDTO()
+            bindData(cheque, params, 'cheque')
+            payment.setCheque(cheque)
+        }
+
+        // save or update
+        try {
+            if (!payment.id || payment.id == 0) {
+                log.debug("creating payment ${payment}")
+
+                payment.id = webServicesSession.applyPayment(payment, params.int('invoiceId'))
+
+                flash.message = 'payment.created'
+                flash.args = [ payment.id ]
+
+            } else {
+                log.debug("saving changes to payment ${payment.id}")
+
+                webServicesSession.updatePayment(payment)
+
+                flash.message = 'payment.updated'
+                flash.args = [ payment.id ]
+            }
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.local, e)
+            render view: edit, model: [ payment: payment ]
+            return
+        }
+
+        chain action: list, params: [ id: payment.id ]
     }
 
+    def bindExpiryDate(CreditCardDTO creditCard, params) {
+        Calendar calendar = Calendar.getInstance()
+        calendar.clear()
+        calendar.set(Calendar.MONTH, params.int('expiryMonth'))
+        calendar.set(Calendar.YEAR, params.int('expiryYear'))
+
+        creditCard.expiry = calendar.getTime()
+    }
+
+    def getCurrencies() {
+        def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
+        return currencies.findAll{ it.inUse }
+    }
 }

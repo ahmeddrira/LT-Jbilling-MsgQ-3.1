@@ -164,6 +164,8 @@ public interface JbillingAPI {
     public Integer[] getInvoicesByDate(String since, String until);
     public Integer[] getUserInvoicesByDate(Integer userId, String since, String until);
 
+    public Integer[] getUnpaidInvoices(Integer userId);
+
     public byte[] getPaperInvoicePDF(Integer invoiceId);
 
 
@@ -174,6 +176,10 @@ public interface JbillingAPI {
     public PaymentWS getPayment(Integer paymentId);
     public PaymentWS getLatestPayment(Integer userId);
     public Integer[] getLastPayments(Integer userId, Integer number);
+
+    public Integer createPayment(PaymentWS payment);
+    public void updatePayment(PaymentWS payment);
+    public void deletePayment(Integer paymentId);
 
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId);
     public Integer applyPayment(PaymentWS payment, Integer invoiceId);

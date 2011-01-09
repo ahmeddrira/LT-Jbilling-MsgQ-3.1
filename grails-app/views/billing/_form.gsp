@@ -1,4 +1,10 @@
 <%@page import="com.sapienter.jbilling.server.process.db.PeriodUnitDTO" %>
+
+<%-- 
+<g:javascript library="ui.core"/>
+<g:javascript library="ui.spinner"/>
+--%>
+
 <div class="form-edit">
 
     <div class="heading">
@@ -12,12 +18,10 @@
                 	<%--Use two columns --%>
                     <div class="column">
                     	<div class="row">
-	                        <g:applyLayout name="form/input">
-	                            <content tag="label"><g:message code="billing.next.run.date"/></content>
-	                            <content tag="label.for">nextRunDate</content>
-	                            <content tag="style">inp4</content>
-	                            <a href="#" onclick="$('#nextRunDate').datepicker('show')"></a>
-	                            <g:textField class="field" readonly="true" id="nextRunDate" name="nextRunDate" value="${new java.text.SimpleDateFormat('dd/MM/yyyy').format(configuration?.nextRunDate)}" size="10"/>
+							<g:applyLayout name="form/date">
+	                             <content tag="label"><g:message code="billing.next.run.date"/></content>
+	                             <content tag="label.for">nextRunDate</content>
+	                             <g:textField class="field" name="nextRunDate" value="${formatDate(date: configuration?.nextRunDate, formatName:'datepicker.format')}"/>
 	                        </g:applyLayout>
                         </div>
 
@@ -33,7 +37,7 @@
 	                            <content tag="label"><g:message code="billing.days.to.review"/></content>
 	                            <content tag="label.for">daysForReport</content>
 	                            <content tag="style">inp4</content>
-	                            <g:textField class="field" name="daysForReport" value="${configuration?.daysForReport}" size="2"/>
+	                            <g:textField class="field" name="daysForReport" value="${configuration?.daysForReport}" maxlength="2" size="2"/>
 	                        </g:applyLayout>
                         </div>
                         
@@ -42,7 +46,7 @@
 	                            <content tag="label"><g:message code="billing.number.retries"/></content>
 	                            <content tag="label.for">retries</content>
 	                            <content tag="style">inp4</content>
-	                            <g:textField class="field" name="retries" value="${configuration?.retries}" size="2"/>
+	                            <g:textField class="field" name="retries" value="${configuration?.retries}" maxlength="2" size="2"/>
 	                        </g:applyLayout>
                         </div>
                         
@@ -51,7 +55,7 @@
 	                            <content tag="label"><g:message code="billing.days.for.retry"/></content>
 	                            <content tag="label.for">daysForRetry</content>
 	                            <content tag="style">inp4</content>
-	                            <g:textField class="field" name="daysForRetry" value="${configuration?.daysForRetry}" size="2"/>
+	                            <g:textField class="field" name="daysForRetry" value="${configuration?.daysForRetry}" maxlength="2" size="2"/>
 	                        </g:applyLayout>
                         </div>
                         
@@ -59,21 +63,20 @@
 	                        <g:applyLayout name="form/input">
 	                            <content tag="label"><g:message code="billing.period"/></content>
 	                            <content tag="label.for">periodValue</content>
-	                            <content tag="style">inp4</content>
-	                            <g:textField class="field" name="periodValue" value="${configuration?.periodValue}" size="2"/>
+	                            <g:textField class="field" name="periodValue" value="${configuration?.periodValue}" maxlength="2" size="2"/>
+	                            <g:select style="float: right; position: relative; top: -20px;width:70px" class="field" name="periodUnitId" from="${PeriodUnitDTO.list()}"
+                                      optionKey="id" optionValue="description" value="${configuration?.periodUnitId}" />
 	                        </g:applyLayout>
-	                        <g:applyLayout name="form/select">
-	                            <g:periodUnit name="periodUnitId" 
-	                            	value="${configuration?.periodUnitId}" languageId="${session['language_id']}" />
-						    </g:applyLayout>
                         </div>
                         
                         <div class="row">
 	                        <g:applyLayout name="form/input">
 	                            <content tag="label"><g:message code="billing.due.date"/></content>
 	                            <content tag="label.for">dueDateValue</content>
-	                            <g:textField class="field" name="dueDateValue" value="${configuration?.dueDateValue}" size="10"/>
-	                        </g:applyLayout>
+	                            <g:textField class="field" name="dueDateValue" value="${configuration?.dueDateValue}" maxlength="2" size="2"/>
+	                            <g:select style="float: right; position: relative; top: -20px;width:70px"  class="field" name="dueDateUnitId" from="${PeriodUnitDTO.list()}"
+	                                 optionKey="id" optionValue="description" value="${configuration?.dueDateUnitId}" />
+						    </g:applyLayout>
                         </div>
                         
                         <div class="row">
@@ -105,7 +108,7 @@
 	                            <content tag="label"><g:message code="billing.maximum.period"/></content>
 	                            <content tag="label.for">maximumPeriods</content>
 	                            <content tag="style">inp4</content>
-	                            <g:textField class="field" name="maximumPeriods" value="${configuration?.maximumPeriods}" size="2"/>
+	                            <g:textField class="field" name="maximumPeriods" value="${configuration?.maximumPeriods}" maxlength="2" size="2"/>
 	                        </g:applyLayout>
                         </div>
                         
@@ -117,7 +120,12 @@
 	                            	checked="${configuration?.autoPaymentApplication > 0}"/>
 	                        </g:applyLayout>
                         </div>
-                        
+                    </div>
+                    <div class="column">
+                    	<div class="row"></div>
+                    	<div class="row"></div>
+                    	<div class="row"></div>
+                    	<div class="row"></div>
                     </div>
                 </div>
                 
@@ -134,8 +142,45 @@
                 </div>
             </fieldset>
             <script type="text/javascript">
+            function numericOnly(event) {
+        		// Allow only backspace and delete
+        		if ( event.keyCode == 46 || event.keyCode == 8 ) {
+        			// let it happen, don't do anything
+        		}
+        		else {
+        			// Ensure that it is a number and stop the keypress
+        			if (event.keyCode < 48 || event.keyCode > 57 ) {
+        				event.preventDefault();	
+        			}	
+        		}
+        	}
+        	
             $(function() {
-                $("#nextRunDate").datepicker({dateFormat: 'dd/mm/yy'});
+                
+
+                $("#daysForReport").keydown(function(event){
+                	numericOnly(event);
+                });
+
+                $("#retries").keydown(function(event){
+                	numericOnly(event);
+                });
+                
+                $("#maximumPeriods").keydown(function(event){
+                	numericOnly(event);
+                });
+                $("#daysForRetry").keydown(function(event){
+                	numericOnly(event);
+                });
+                $("#dueDateValue").keydown(function(event){
+                	numericOnly(event);
+                });
+                $("#periodValue").keydown(function(event){
+                	numericOnly(event);
+                });
+				<%--
+                $("#daysForRetry").spinner({max: 99, min: 0});
+                --%>
             });
         </script>
         </g:form>

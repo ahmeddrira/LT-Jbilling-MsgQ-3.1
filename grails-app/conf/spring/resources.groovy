@@ -42,6 +42,13 @@ beans = {
     }
 
     /*
+        Custom data binding and property parsing rules
+     */
+    customPropertyEditorRegistrar(com.sapienter.jbilling.client.editor.CustomPropertyEditorRegistrar) {
+        messageSource = ref('messageSource')
+    }
+
+    /*
         Spring security
      */
     // normal username / password authentication

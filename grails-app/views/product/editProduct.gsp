@@ -82,7 +82,7 @@
                                         <content tag="label.for">prices.${currency.id}</content>
 
                                         <g:set var="itemPrice" value="${product?.prices?.find { it.currencyId == currency.id }}"/>
-                                        <g:textField class="field" name="prices.${currency.id}" value="${formatNumber(number: itemPrice?.price, format:'#0.00')}"/>
+                                        <g:textField class="field" name="prices.${currency.id}" value="${formatNumber(number: itemPrice?.price, formatName: 'money.format')}"/>
                                     </g:applyLayout>
                                 </g:each>
                             </div>
@@ -91,7 +91,7 @@
                                 <g:applyLayout name="form/input">
                                     <content tag="label"><g:message code="product.percentage"/></content>
                                     <content tag="label.for">product.percentage</content>
-                                    <g:textField class="field" name="product.percentage" value="${formatNumber(number: product?.percentage, format:'#0.00')}" size="5"/>
+                                    <g:textField class="field" name="product.percentage" value="${formatNumber(number: product?.percentage, formatName: 'money.format')}" size="5"/>
                                 </g:applyLayout>
 
                                 <g:applyLayout name="form/checkbox">

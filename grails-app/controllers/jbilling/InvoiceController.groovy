@@ -10,6 +10,8 @@ import com.sapienter.jbilling.server.util.WebServicesSessionSpringBean;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.common.SessionInternalError;
+
 
 class InvoiceController {
 	
@@ -45,7 +47,7 @@ class InvoiceController {
 			flash.message = 'invoices.empty'
 			flash.args= [params["id"]]
 		}
-
+		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 		log.info "found invoices [${invoices?.size()}]"
 		[invoices:invoices, filters:filters]
 	}
@@ -137,13 +139,13 @@ class InvoiceController {
 			
 			int invId= Integer.parseInt(params["id"])
 			
+			recentItemService.addRecentItem(invId, RecentItemType.INVOICE)
+			breadcrumbService.addBreadcrumb(controllerName, actionName, null, invId)
+
 			log.info "Template: ${params.template}"
 			if (params.template != 'show') {
 				redirect(action: 'showListAndInvoice', params:[id:invId])
 			} 
-			
-			recentItemService.addRecentItem(invId, RecentItemType.INVOICE)
-			breadcrumbService.addBreadcrumb(controllerName, actionName, null, invId)
 			
 			try {
 				invoice= webServicesSession.getInvoiceWS(invId)
@@ -231,8 +233,9 @@ class InvoiceController {
 		try {
 			webServicesSession.removePaymentLink(invId, paymentId)
 			flash.message = "payment.unlink.success"
+		} catch (SessionInternalError e){
+			viewUtils.resolveException(flash, session.locale, e);
 		} catch (Exception e) {
-			e.printStackTrace()
 			log.error e.getMessage()
 			flash.error = "error.invoice.unlink.payment"
 		}

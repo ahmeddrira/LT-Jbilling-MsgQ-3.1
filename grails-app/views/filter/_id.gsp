@@ -1,6 +1,9 @@
 
 <%--
-  _id
+  Generic ID filter template.
+
+  This filter template uses the defined filter field for translated message keys and can be re-used by
+  any filter accepting an integer value.
 
   @author Brian Cowdery
   @since  30-11-2010
@@ -16,7 +19,7 @@
                 <div class="input-bg">
                     <g:textField name="filters.${filter.name}.integerValue" value="${filter.integerValue}"/>
                 </div>
-                <label for="filters.${filter.name}.integerValue"><g:message code="filters.id.label"/></label>
+                <label for="filters.${filter.name}.integerValue"><g:message code="filters.${filter.field}.label"/></label>
             </div>
         </fieldset>
     </div>

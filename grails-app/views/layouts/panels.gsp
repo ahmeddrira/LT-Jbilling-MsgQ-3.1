@@ -16,19 +16,6 @@
         $(document).ajaxSuccess(function(e, xhr, settings) {
             renderRecentItems();
         });
-
-        function applyFilters() {
-            $('#filters-form input:visible, #filters-form select:visible').each(function() {
-                var title = $(this).parents('li').find('.title');
-                if ($(this).val()) {
-                    title.addClass('active');
-                } else {
-                    title.removeClass('active');
-                }
-            });
-
-            $('#filters-form').submit();
-        }
     </script>
 
     <g:layoutHead/>
@@ -43,7 +30,7 @@
         <div id="left-column">
             <!-- filters -->
             <g:if test="${filters}">
-                <g:set var="target" value="${filterRender ?: 'next'}"/>
+                <g:set var="target" value="${filterRender ?: 'first'}"/>
                 <g:set var="action" value="${filterAction ?: 'list'}"/>
                 <g:formRemote id="filters-form" name="filters-form" url="[action: action]" onSuccess="render(data, ${target});">
                     <g:hiddenField name="applyFilter" value="true"/>

@@ -444,6 +444,11 @@ table {
 	background:url(../images/icon04.gif) no-repeat;
 	margin:4px 3px 0 0;
 }
+.date img {
+    float: right;
+    position: relative;
+    top: -16px;
+}
 .btn-hold {
 	background:#f6f6f6;
 	border:1px solid #bbb;
@@ -771,6 +776,7 @@ table {
 .table-box thead th:last-child, .table-box thead th.last { padding-right: 16px; } /* compensate for scrollbar */
 
 .table-box .large { width: 300px; }
+.table-box .medium2 { width: 150px; }
 .table-box .medium { width: 120px; }
 .table-box .small { width: 80px; }
 .table-box .tiny { width: 40px; }

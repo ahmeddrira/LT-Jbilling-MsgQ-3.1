@@ -84,6 +84,10 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getUserInvoicesByDate(userId, since, until)
     }
 
+    public Integer[] getUnpaidInvoices(Integer userId) {
+        return webServicesSession.getUnpaidInvoices(userId);
+    }
+
     public byte[] getPaperInvoicePDF(Integer invoiceId) {
         return webServicesSession.getPaperInvoicePDF(invoiceId)
     }
@@ -247,7 +251,19 @@ class ApiService implements IWebServicesSessionBean {
 	public OrderWS[] getUserSubscriptions(Integer userId) {
 		return webServicesSession.getUserSubscriptions(userId);
 	}
-	
+
+    public Integer createPayment(PaymentWS payment) {
+        return webServicesSession.createPayment(payment);
+    }
+
+    public void updatePayment(PaymentWS payment) {
+        webServicesSession.updatePayment(payment);
+    }
+
+    public void deletePayment(Integer paymentId) {
+        webServicesSession.deletePayment(paymentId);
+    }
+
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) {
         return webServicesSession.payInvoice(invoiceId)
     }

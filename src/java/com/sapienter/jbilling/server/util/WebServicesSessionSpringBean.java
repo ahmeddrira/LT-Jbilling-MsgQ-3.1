@@ -27,6 +27,7 @@ package com.sapienter.jbilling.server.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -367,6 +368,25 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return results;
     }
 
+    public Integer[] getUnpaidInvoices(Integer userId) {
+        try {
+            CachedRowSet rs = new InvoiceBL().getPayableInvoicesByUser(userId);
+
+            Integer[] invoiceIds = new Integer[rs.size()];
+            int i = 0;
+            while (rs.next())
+                invoiceIds[i++] = rs.getInt(1);
+
+            rs.close();
+            return invoiceIds;
+
+        } catch (SQLException e) {
+            throw new SessionInternalError("Exception occurred querying payable invoices.");
+        } catch (Exception e) {
+            throw new SessionInternalError("An un-handled exception occurred querying payable invoices.");
+        }
+    }
+
     /**
      * Generates and returns the paper invoice PDF for the given invoiceId.
      *
@@ -384,17 +404,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @param paymentId payment to be unlink 
      */
     public void removePaymentLink(Integer invoiceId, Integer paymentId) {
-		PaymentBL payment  =new PaymentBL();
-		InvoiceDTO invoice= new InvoiceDAS().find(invoiceId);
-		Iterator<PaymentInvoiceMapDTO> it = invoice.getPaymentMap().iterator();
-        while (it.hasNext()) {
-            PaymentInvoiceMapDTO map = it.next();
-            if (paymentId == map.getPayment().getId()) {
-	            payment.removeInvoiceLink(map.getId());
-	            invoice.getPaymentMap().remove(map);
-	            break;
-            }
-        }
+		PaymentBL paymentBl =new PaymentBL(paymentId);
+		boolean result= paymentBl.unLinkFromInvoice(invoiceId);
+		if (!result) {
+			throw new SessionInternalError("Unable to find the Invoice Id " + invoiceId + " linked to Payment Id " + paymentId);
+		}
 	}
 
     /**
@@ -1316,6 +1330,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     /*
      * PAYMENT
      */
+
+    public Integer createPayment(PaymentWS payment) {
+        return applyPayment(payment, null);
+    }
+
+    public void updatePayment(PaymentWS payment) {
+        PaymentDTOEx dto = new PaymentDTOEx(payment);
+        new PaymentBL(payment.getId()).update(getCallerId(), dto);
+    }
+
+    public void deletePayment(Integer paymentId) {
+        new PaymentBL(paymentId).delete();
+    }
+
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
             throws SessionInternalError {
         validatePayment(payment);
@@ -2172,6 +2200,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws)
             throws SessionInternalError {
 
+    	//validation
+    	if (!ConfigurationBL.validate(ws)) {
+    		throw new SessionInternalError("Invalid nextRunDate.");
+    	}
         BillingProcessConfigurationDTO dto = ConfigurationBL.getDTO(ws);
 
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);

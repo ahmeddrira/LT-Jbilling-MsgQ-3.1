@@ -72,7 +72,7 @@
                         </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'billing' ? 'active' : ''}">
-                        <g:link controller="config" action="billing">
+                        <g:link controller="billingconfiguration" action="index">
                             <g:message code="configuration.menu.billing"/>
                         </g:link>
                     </li>

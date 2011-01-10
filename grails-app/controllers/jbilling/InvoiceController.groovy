@@ -47,7 +47,7 @@ class InvoiceController {
 			flash.message = 'invoices.empty'
 			flash.args= [params["id"]]
 		}
-
+		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 		log.info "found invoices [${invoices?.size()}]"
 		[invoices:invoices, filters:filters]
 	}
@@ -139,13 +139,13 @@ class InvoiceController {
 			
 			int invId= Integer.parseInt(params["id"])
 			
+			recentItemService.addRecentItem(invId, RecentItemType.INVOICE)
+			breadcrumbService.addBreadcrumb(controllerName, actionName, null, invId)
+
 			log.info "Template: ${params.template}"
 			if (params.template != 'show') {
 				redirect(action: 'showListAndInvoice', params:[id:invId])
 			} 
-			
-			recentItemService.addRecentItem(invId, RecentItemType.INVOICE)
-			breadcrumbService.addBreadcrumb(controllerName, actionName, null, invId)
 			
 			try {
 				invoice= webServicesSession.getInvoiceWS(invId)

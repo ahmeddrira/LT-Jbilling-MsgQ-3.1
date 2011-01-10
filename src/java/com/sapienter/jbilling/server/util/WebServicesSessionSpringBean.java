@@ -2200,6 +2200,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws)
             throws SessionInternalError {
 
+    	//validation
+    	if (!ConfigurationBL.validate(ws)) {
+    		throw new SessionInternalError("Invalid nextRunDate.");
+    	}
         BillingProcessConfigurationDTO dto = ConfigurationBL.getDTO(ws);
 
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);

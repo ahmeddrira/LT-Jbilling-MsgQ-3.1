@@ -1,37 +1,23 @@
 package jbilling
 
-import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
+import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
 
 class BillingController {
 
 	
 	def webServicesSession
+	def viewUtils
 	def recentItemService
 	def breadcrumbService
 	
-    def index = {
-		
-		def configuration= webServicesSession.getBillingProcessConfiguration()
-		[configuration:configuration]
+
+	def index = {
+		render "Find billing cycle here"
 	}
 	
-	def saveConfig = {
-		//do something
-		
-		log.info "${params}"
-		
-		def configuration= new BillingProcessConfigurationWS() 
-		
-		bindData(configuration, params)
-		
-		try {
-			webServicesSession.createUpdateBillingProcessConfiguration(configuration)
-			//flash.message = ''
-		}  catch (Exception e) {
-			//log.info (e.getMessage())
-			//flash.error = 'error.'
-		}
-		
-		redirect action: index
+	def runBilling = {
+	
+		render "run billing if not already running"
 	}
+		
 }

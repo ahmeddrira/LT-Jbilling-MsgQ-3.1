@@ -21,9 +21,12 @@
 package com.sapienter.jbilling.server.process;
 
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import javax.validation.constraints.Min;
 
 /**
  * BillingProcessConfigurationWS
@@ -42,6 +45,7 @@ public class BillingProcessConfigurationWS implements Serializable {
     private Integer daysForRetry;
     private Integer daysForReport;
     private int reviewStatus;
+    @Min(value = 1, message = "validation.error.min,1")
     private int periodValue;
     private int dueDateUnitId;
     private int dueDateValue;
@@ -49,9 +53,10 @@ public class BillingProcessConfigurationWS implements Serializable {
     private Integer onlyRecurring;
     private Integer invoiceDateProcess;
     private Integer autoPayment;
+    @Min(value = 1, message = "validation.error.min,1")
     private int maximumPeriods;
     private int autoPaymentApplication;
-
+    
     public BillingProcessConfigurationWS() {
     }
 

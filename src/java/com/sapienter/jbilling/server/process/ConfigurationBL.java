@@ -25,8 +25,11 @@ package com.sapienter.jbilling.server.process;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDAS;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
+import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
@@ -193,4 +196,26 @@ public class ConfigurationBL {
         return null;
     }
 
+    public static boolean validate(BillingProcessConfigurationWS ws) {
+    	boolean retValue = true;
+ 
+    	//validate nextRunDate - Unique if there is already a successful run for that date 
+    	//(if a process failed, it is fine to run it again)
+    	//TODO Should I Util.truncateDate before using the ws.nextRunDate?
+    	BillingProcessDTO billingProcessDTO=new BillingProcessDAS().isPresent(ws.getEntityId(), 0, ws.getNextRunDate()); 
+    	if ( billingProcessDTO != null) {
+    		for (ProcessRunDTO run: billingProcessDTO.getProcessRuns()) {
+    			//if status is not failed i.e. for the same date, if the process is either running or finished
+    			if (!Constants.PROCESS_RUN_STATUS_FAILED.equals(run.getStatus()) )
+    			{
+    				return false;
+    			}
+    		}
+    	}
+    	//Greater than the latest successful one
+
+    	
+    	return retValue;
+    }
+    
 }

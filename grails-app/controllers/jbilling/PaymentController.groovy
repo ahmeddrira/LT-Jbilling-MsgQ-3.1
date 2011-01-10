@@ -35,6 +35,7 @@ import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.invoice.InvoiceWS
 import com.sapienter.jbilling.server.util.db.CurrencyDTO
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO
 
 /**
  * PaymentController 
@@ -177,13 +178,17 @@ class PaymentController {
      * to create a new payment, as creation requires a wizard style flow where the user is selected first.
      */
     def edit = {
-        def payment = params.id ? webServicesSession.getPayment(params.int('id')) : null
+        def payment = params.id ? webServicesSession.getPayment(params.int('id')) : new PaymentWS()
         def user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
         def invoices = getUnpaidInvoices(user.userId)
+        def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
+
+        // todo: set user's prefered payment instrument
+
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
-        [ payment: payment, user: user, invoices: invoices, currencies: currencies ]
+        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods ]
     }
 
     def getUnpaidInvoices(Integer userId) {

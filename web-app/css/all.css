@@ -1368,13 +1368,13 @@ div.box-text {
 
 /* Data in the right section */
 .dataTable {
-    margin:0;
+    margin: 6px 0 10px;
     padding:0;
     overflow:hidden;
     line-height:22px;
 }
 
-td.value {
+.dataTable td.value {
     margin: 0;
 	font-weight: bold;
 	padding-left:10px;

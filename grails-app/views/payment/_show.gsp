@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
+<%@ page import="com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 <%--
   Shows details of a selected payment.
@@ -24,52 +24,75 @@
     </div>
 
     <div class="box">
+        <!-- user details -->
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><g:message code="payment.user.id"/></td>
+                    <td class="value">${selected.baseUser.id}</td>
+                </tr>
+
+                <g:if test="${contact?.firstName || contact?.lastName}">
+                <tr>
+                    <td><g:message code="prompt.customer.name"/></td>
+                    <td class="value">${contact.firstName} ${contact.lastName} &nbsp;</td>
+                </tr>
+                </g:if>
+
+                <g:if test="${contact?.organizationName}">
+                <tr>
+                    <td>Organization</td>
+                    <td class="value">${contact.organizationName} &nbsp;</td>
+                </tr>
+                </g:if>
+
+                <tr>
+                    <td><g:message code="prompt.login.name"/></td>
+                    <td class="value">${selected.baseUser.userName}</td>
+                </tr>
+            </tbody>
+        </table>
+
         <!-- payment details -->
-        <dl class="other">
-            <dt><g:message code="payment.id"/></dt>
-            <dd>${selected.id}</dd>
-            <dt><g:message code="payment.attempt"/></dt>
-            <dd>${selected.attempt}</dd>
-            <dt><g:message code="payment.date"/></dt>
-            <dd><g:formatDate date="${selected.paymentDate}" formatName="date.format"/></dd>
-        </dl>
-        <br/>
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><g:message code="payment.date"/></td>
+                    <td class="value"><g:formatDate date="${selected.paymentDate}" formatName="date.format"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="payment.amount"/></td>
+                    <td class="value"><g:formatNumber number="${selected.amount}" type="currency" currencyCode="${selected.currencyDTO.code}"/> &nbsp;</td>
+                </tr>
+                <tr>
+                    <td><g:message code="payment.result"/></td>
+                    <td class="value">${selected.paymentResult.getDescription(session['language_id'])}</td>
+                </tr>
+            </tbody>
+        </table>
 
-        <dl class="other">
-            <dt><g:message code="payment.user.id"/></dt>
-            <dd>${selected.baseUser.id}</dd>
+        <hr/>
 
-            <g:if test="${contact?.firstName || contact?.lastName}">
-                <dt><g:message code="prompt.customer.name"/></dt>
-                <dd>${contact.firstName} ${contact.lastName} &nbsp;</dd>
-            </g:if>
-            <g:if test="${contact?.organizationName}">
-                <dt>Organization</dt>
-                <dd>${contact.organizationName} &nbsp;</dd>
-            </g:if>
-
-            <dt><g:message code="prompt.login.name"/></dt>
-            <dd>${selected.baseUser.userName}</dd>
-        </dl>
-        <br/>
-
-        <dl class="other">
-            <dt class="long"><g:message code="payment.is.refund"/></dt>
-            <dd><em><g:formatBoolean boolean="${selected.isRefund > 0}"/> &nbsp;</em></dd>
-            <dt class="long"><g:message code="payment.is.preauth"/></dt>
-            <dd><em><g:formatBoolean boolean="${selected.isPreauth > 0}"/> &nbsp;</em></dd>
-            <dt class="long"><g:message code="payment.result"/></dt>
-            <dd>${selected.paymentResult.getDescription(session['language_id'])}</dd>
-        </dl>
-        <br/>
-
-        <dl class="other">
-            <dt class="long"><g:message code="payment.amount"/></dt>
-            <dd><g:formatNumber number="${selected.amount}" type="currency" currencyCode="${selected.currencyDTO.code}"/> &nbsp;</dd>
-            <dt class="long"><g:message code="payment.balance"/></dt>
-            <dd><g:formatNumber number="${selected.balance}" type="currency" currencyCode="${selected.currencyDTO.code}"/> &nbsp;</dd>
-        </dl>
-        <br/>
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><g:message code="payment.id"/></td>
+                    <td class="value">${selected.id}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="payment.balance"/></td>
+                    <td class="value"><g:formatNumber number="${selected.balance}" type="currency" currencyCode="${selected.currencyDTO.code}"/> &nbsp;</td>
+                </tr>
+                <tr>
+                    <td><g:message code="payment.attempt"/></td>
+                    <td class="value">${selected.attempt}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="payment.is.preauth"/></td>
+                    <td class="value"><em><g:formatBoolean boolean="${selected.isPreauth > 0}"/> &nbsp;</em></td>
+                </tr>
+            </tbody>
+        </table>
 
         <!-- list of linked invoices -->
         <g:if test="${selected.invoicesMap}">
@@ -116,17 +139,27 @@
             <strong><g:message code="payment.credit.card"/></strong>
         </div>
         <div class="box">
-            <dl class="other">
-                <dt><g:message code="payment.credit.card.name"/></dt>
-                <dd>${creditCard.rawName}</dd>
-                <dt><g:message code="payment.credit.card.type"/></dt>
-                <dd>${selected.paymentMethod.getDescription(session['language_id'])}</dd>
-                <dt><g:message code="payment.credit.card.number"/></dt>
-                <!-- todo: Check preference for credit card hiding. Mask CC number if preference set -->
-                <dd>${creditCard.rawNumber}</dd>
-                <dt><g:message code="payment.credit.card.expiry"/></dt>
-                <dd><g:formatDate date="${creditCard.ccExpiry}" formatName="credit.card.date.format"/></dd>
-            </dl>
+            <table class="dataTable" cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <td><g:message code="payment.credit.card.name"/></td>
+                        <td class="value">${creditCard.rawName}</td>
+                    </tr>
+                    <tr>
+                        <td><g:message code="payment.credit.card.type"/></td>
+                        <td class="value">${selected.paymentMethod.getDescription(session['language_id'])}</td>
+                    </tr>
+                    <tr>
+                        <!-- todo: Check preference for credit card hiding. Mask CC number if preference set -->
+                        <td><g:message code="payment.credit.card.number"/></td>
+                        <td class="value">${creditCard.rawNumber}</td>
+                    </tr>
+                    <tr>
+                        <td><g:message code="payment.credit.card.expiry"/></td>
+                        <td class="value"><g:formatDate date="${creditCard.ccExpiry}" formatName="credit.card.date.format"/></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </g:if>
 
@@ -138,24 +171,37 @@
             <strong><g:message code="payment.ach"/></strong>
         </div>
         <div class="box">
-            <dt><g:message code="payment.ach.account.name"/></dt>
-            <dd>${ach.accountName}</dd>
-            <dt><g:message code="payment.ach.bank.name"/></dt>
-            <dd>${ach.bankName}</dd>
-            <dt><g:message code="payment.ach.routing.number"/></dt>
-            <dd>${ach.adbRouting}</dd>
-            <dt><g:message code="payment.ach.account.number"/></dt>
-            <dd>${ach.bankAccount}</dd>
-            <dt><g:message code="payment.ach.account.type"/></dt>
-            <dd>
-                <g:if test="${ach.accountType == 1}">
-                    <g:message code="label.account.checking"/>
-                </g:if>
-                <g:else>
-                    <g:message code="label.account.savings"/>
-                </g:else>
-            </dd>
-            </dd>
+            <table class="dataTable" cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <td><g:message code="payment.ach.account.name"/></td>
+                        <td class="value">${ach.accountName}</td>
+                    </tr>
+                    <tr>
+                        <td><g:message code="payment.ach.bank.name"/></td>
+                        <td class="value">${ach.bankName}</td>
+                    </tr>
+                    <tr>
+                        <td><g:message code="payment.ach.routing.number"/></td>
+                        <td class="value">${ach.adbRouting}</td>
+                    </tr>
+                    <tr>
+                        <td><g:message code="payment.ach.account.number"/></td>
+                        <td class="value">${ach.bankAccount}</td>
+                    </tr>
+                    <tr>
+                        <td><g:message code="payment.ach.account.type"/></td>
+                        <td class="value">
+                            <g:if test="${ach.accountType == 1}">
+                                <g:message code="label.account.checking"/>
+                            </g:if>
+                            <g:else>
+                                <g:message code="label.account.savings"/>
+                            </g:else>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </g:if>
 
@@ -167,23 +213,32 @@
             <strong><g:message code="payment.cheque"/></strong>
         </div>
         <div class="box">
-            <dl class="other">
-                <dt><g:message code="payment.cheque.bank"/></dt>
-                <dd>${cheque.bank}</dd>
-                <dt><g:message code="payment.cheque.number"/></dt>
-                <dd>${cheque.chequeNumber}</dd>
-                <dt><g:message code="payment.cheque.date"/></dt>
-                <dd><g:formatDate date="${cheque.date}" formatName="date.format"/></dd>
-            </dl>
+            <table class="dataTable" cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <td><g:message code="payment.cheque.bank"/></td>
+                        <td class="value">${cheque.bank}</td>
+                    </tr>
+                    <tr>
+                        <td><g:message code="payment.cheque.number"/></td>
+                        <td class="value">${cheque.chequeNumber}</td>
+                    </tr>
+                    <tr>
+                        <td><g:message code="payment.cheque.date"/></td>
+                        <td class="value"><g:formatDate date="${cheque.date}" formatName="date.format"/></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </g:if>
-
 
     <div class="btn-box">
         <!-- edit or delete unlinked payments -->
         <div class="row">
             <g:if test="${!selected.invoicesMap}">
-                <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+                <g:if test="${selected.paymentResult.id == Constants.RESULT_ENTERED}">
+                    <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+                </g:if>
                 <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
             </g:if>
             <g:else>

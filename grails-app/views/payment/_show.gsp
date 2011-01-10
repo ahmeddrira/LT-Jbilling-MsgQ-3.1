@@ -40,7 +40,7 @@
             <dd>${selected.baseUser.id}</dd>
 
             <g:if test="${contact?.firstName || contact?.lastName}">
-                <dt>Customer Name</dt>
+                <dt><g:message code="prompt.customer.name"/></dt>
                 <dd>${contact.firstName} ${contact.lastName} &nbsp;</dd>
             </g:if>
             <g:if test="${contact?.organizationName}">
@@ -48,7 +48,7 @@
                 <dd>${contact.organizationName} &nbsp;</dd>
             </g:if>
 
-            <dt>Login Name</dt>
+            <dt><g:message code="prompt.login.name"/></dt>
             <dd>${selected.baseUser.userName}</dd>
         </dl>
         <br/>
@@ -87,7 +87,7 @@
                     <tr>
                         <td class="innerContent">
                             <g:link controller="invoice" action="list" id="${invoicePayment.invoiceEntity.id}">
-                                <g:message code="payment.link.invoice" args="[invoicePayment.invoiceEntity.id]"/>
+                                <g:message code="payment.link.invoice" args="[invoicePayment.invoiceEntity.number]"/>
                             </g:link>
                         </td>
                         <td class="innerContent">
@@ -97,7 +97,7 @@
                             <g:formatDate date="${invoicePayment.createDatetime}"/>
                         </td>
                         <td class="innerContent">
-                            <g:remoteLink action="unlink" id="${selected.id}">
+                            <g:remoteLink action="unlink" id="${selected.id}" params="[invoiceId: invoicePayment.invoiceEntity.id]" before="register(this);" onSuccess="render(data, second);">
                                 <g:message code="payment.link.unlink"/>
                             </g:remoteLink>
                         </td>
@@ -187,7 +187,7 @@
                 <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
             </g:if>
             <g:else>
-                <em>Cannot edit a payment linked to invoices.</em>
+                <em><g:message code="payment.cant.edit.linked"/></em>
             </g:else>
         </div>
     </div>
@@ -201,4 +201,5 @@
                       'update': 'column1',
                       'onYes': 'closePanel(\'#column2\')'
                      ]"/>
+
 </div>

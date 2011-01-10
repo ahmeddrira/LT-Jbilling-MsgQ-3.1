@@ -27,6 +27,7 @@ package com.sapienter.jbilling.server.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -365,6 +366,25 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 dUntil);
 
         return results;
+    }
+
+    public Integer[] getUnpaidInvoices(Integer userId) {
+        try {
+            CachedRowSet rs = new InvoiceBL().getPayableInvoicesByUser(userId);
+
+            Integer[] invoiceIds = new Integer[rs.size()];
+            int i = 0;
+            while (rs.next())
+                invoiceIds[i++] = rs.getInt(1);
+
+            rs.close();
+            return invoiceIds;
+
+        } catch (SQLException e) {
+            throw new SessionInternalError("Exception occurred querying payable invoices.");
+        } catch (Exception e) {
+            throw new SessionInternalError("An un-handled exception occurred querying payable invoices.");
+        }
     }
 
     /**
@@ -1310,6 +1330,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     /*
      * PAYMENT
      */
+
+    public Integer createPayment(PaymentWS payment) {
+        return applyPayment(payment, null);
+    }
+
+    public void updatePayment(PaymentWS payment) {
+        PaymentDTOEx dto = new PaymentDTOEx(payment);
+        new PaymentBL(payment.getId()).update(getCallerId(), dto);
+    }
+
+    public void deletePayment(Integer paymentId) {
+        new PaymentBL(paymentId).delete();
+    }
+
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
             throws SessionInternalError {
         validatePayment(payment);

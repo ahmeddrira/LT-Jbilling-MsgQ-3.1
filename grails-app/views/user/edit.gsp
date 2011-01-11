@@ -22,7 +22,7 @@
                 <g:message code="customer.edit.title"/>
             </g:if>
             <g:else>
-                <g:message code="customer.add.title"/>
+                <g:message code="customer.create.title"/>
             </g:else>
         </strong>
     </div>

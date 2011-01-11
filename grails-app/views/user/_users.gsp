@@ -28,7 +28,7 @@
 
                 <tr id="user-${user.id}" class="${selected?.id == user.id ? 'active' : ''}">
                     <td>
-                        <g:remoteLink class="cell double" action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell double" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                             <strong>
                                 <g:if test="${contact?.firstName || contact?.lastName}">
                                     ${contact.firstName} ${contact.lastName}
@@ -41,12 +41,12 @@
                         </g:remoteLink>
                     </td>
                     <td class="small">
-                        <g:remoteLink class="cell" action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                             <span>${user.id}</span>
                         </g:remoteLink>
                     </td>
                     <td class="tiny center">
-                        <g:remoteLink class="cell" action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                             <span>
                                 <g:if test="${user.userStatus.id > 1 && user.userStatus.id < 5}">
                                     <img src="${resource(dir:'images', file:'icon15.gif')}" alt="overdue" />
@@ -58,7 +58,7 @@
                         </g:remoteLink>
                     </td>
                     <td class="small">
-                        <g:remoteLink class="cell" action="select" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                             <span><g:formatNumber number="${new UserBL().getBalance(user.id)}" type="currency" currencyCode="${user.currency.code}"/></span>
                         </g:remoteLink>
                     </td>

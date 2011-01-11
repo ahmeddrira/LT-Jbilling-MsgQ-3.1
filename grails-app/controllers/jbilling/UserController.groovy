@@ -83,7 +83,7 @@ class UserController {
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
         if (params.applyFilter) {
-            render template: 'table', model: [users: users, selected: selected, statuses: statuses, filters: filters ]
+            render template: 'users', model: [users: users, selected: selected, statuses: statuses, filters: filters ]
         } else {
             [ users: users, selected: selected, statuses: statuses, filters: filters ]
         }
@@ -93,12 +93,12 @@ class UserController {
      * Show details of the selected user. By default, this action renders the "_details.gsp" template.
      * When rendering for an AJAX request the template defined by the "template" parameter will be rendered.
      */
-    def select = {
+    def show = {
         UserDTO user = UserDTO.get(params.int('id'))
         recentItemService.addRecentItem(params.int('id'), RecentItemType.CUSTOMER)
         breadcrumbService.addBreadcrumb(controllerName, 'list', params.template ?: null, params.int('id'))
 
-        render template: params.template ?: 'details', model: [ selected: user ]
+        render template: params.template ?: 'show', model: [ selected: user ]
     }
 
     /**
@@ -110,7 +110,7 @@ class UserController {
             def children = user?.customer?.children?.collect{ it.baseUser }
 
             if (!children.isEmpty()) {
-                render template: 'table', model:[users: children]
+                render template: 'users', model:[users: children]
             } else {
                 flash.info = 'customer.no.subaccount.warning'
                 flash.args = [user.id]
@@ -126,7 +126,7 @@ class UserController {
         webServicesSession.saveCustomerNotes(params.int('id'), params.notes);
 
         def user = UserDTO.get(params.int('id'))
-        render template: 'details', model: [ selected: user ]
+        render template: 'show', model: [ selected: user ]
     }
 
     /**

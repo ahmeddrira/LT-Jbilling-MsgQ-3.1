@@ -1,10 +1,10 @@
 <%@ page import="com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 <%--
-  details
+  Shows details of a selected user.
 
   @author Brian Cowdery
-  @since  23-11-2010
+  @since  23-Nov-2010
 --%>
 
 <g:set var="customer" value="${selected.customer}"/>
@@ -24,7 +24,7 @@
         </strong>
     </div>
     <div class="box edit">
-        <g:remoteLink action="select" id="${selected.id}" params="[template: 'notes']" before="register(this);" onSuccess="render(data, next);" class="edit"/>
+        <g:remoteLink action="show" id="${selected.id}" params="[template: 'notes']" before="register(this);" onSuccess="render(data, next);" class="edit"/>
         <strong><g:message code="customer.detail.note.title"/></strong>
         <g:if test="${customer && customer.notes}">
             <p>${customer.notes}</p>

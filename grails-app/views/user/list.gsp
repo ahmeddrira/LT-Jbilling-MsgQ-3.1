@@ -6,13 +6,13 @@
 <body>
 
 <content tag="column1">
-    <g:render template="table" model="['users': users]"/> 
+    <g:render template="users" model="['users': users]"/>
 </content>
 
 <content tag="column2">
     <g:if test="${selected}">
         <!-- show selected user details -->
-        <g:render template="details" model="['selected': selected]"/>
+        <g:render template="show" model="['selected': selected]"/>
     </g:if>
     <g:else>
         <!-- show empty block -->

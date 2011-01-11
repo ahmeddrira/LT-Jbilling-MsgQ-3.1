@@ -132,7 +132,7 @@ public abstract class AbstractFileReader extends AbstractReader {
         removeQuote = ( parameters.get(PARAMETER_REMOVE_QUOTE.getName()) == null ) 
                 ? true : Boolean.parseBoolean((String) parameters.get(PARAMETER_REMOVE_QUOTE.getName()));
         autoID = (parameters.get(PARAMETER_AUTO_ID.getName()) == null)
-                ? false : ((Boolean) parameters.get(PARAMETER_AUTO_ID.getName())).booleanValue();
+                ? false : new Boolean(parameters.get(PARAMETER_AUTO_ID.getName())).booleanValue();
         bufferSize = Integer.parseInt(((String) parameters.get(PARAMETER_BUFFER_SIZE.getName()) == null)
                 ? "0" : (String) parameters.get(PARAMETER_BUFFER_SIZE.getName()));
 

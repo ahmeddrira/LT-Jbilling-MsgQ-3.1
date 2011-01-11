@@ -135,7 +135,7 @@ public class VelocityRulesGeneratorTask extends AbstractGeneratorTask {
      * For unit testing.
      * @param parameters parameters to set
      */
-    public void setParameters(HashMap<String, Object> parameters) {
+    public void setParameters(HashMap<String, String> parameters) {
         this.parameters = parameters;
     }
 }

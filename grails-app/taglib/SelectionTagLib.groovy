@@ -1,8 +1,10 @@
+
 import java.util.List;
 
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import com.sapienter.jbilling.server.user.db.UserStatusDTO;
 import com.sapienter.jbilling.server.user.db.SubscriberStatusDTO;
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 
 class SelectionTagLib {
 	
@@ -81,5 +83,25 @@ class SelectionTagLib {
 		out << render(template:"/selectTag", model:[name:name, list:list, value:value])
 	}
 
-					
+	def periodUnit = { attrs, body ->
+		
+		Integer langId= attrs.languageId?.toInteger();
+		String name= attrs.name;
+		String value = attrs.value?.toString()
+
+		log.info "Value of tagName=" + name + " is " + value
+		
+		List list= new ArrayList();
+		String[] sarr= null;
+		for (PeriodUnitDTO period: PeriodUnitDTO.list()) {
+			String title= period.getDescription(langId);
+			sarr=new String[2]
+			sarr[0]= period.getId()
+			sarr[1]= title
+			list.add(sarr)
+		}
+		
+		out << render(template:"/selectTag", model:[name:name, list:list, value:value])
+	}
+	
 }

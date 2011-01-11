@@ -4,19 +4,16 @@
     <meta name="layout" content="main"/>
 
     <script type="text/javascript">
-        $(document).ready(function() {
-            // toggle edit of selected payment type
-            $('.payment-type').change(function() {
-                if ($(this).is(':checked'))
-                    $('.payment-type:checked').not(this).attr('checked', '');
-
-                $('.payment-type').each(function() {
-                    var disabled = $(this).is(':checked') ? '' : 'true';
-                    $('#' + $(this).attr('toggle') + ' :input').not('.payment-type').attr('disabled', disabled);
-                });
+        function togglePaymentType(element) {
+            $('.box-cards.payment-type').not(element).each(function () {
+                closeSlide(this);
+                $(this).find(':input').attr('disabled','true');
             });
-            $('.payment-type:first').attr('checked','true').change();
 
+            $(element).find(':input').attr('disabled','');
+        }
+
+        $(document).ready(function() {
             // populate payment amount with selected invoice balance
             $('#invoices input[name=invoiceId]').change(function() {
                 $('#payment\\.amount').val($('#invoice-' + $(this).val() + '-balance').val());
@@ -51,7 +48,7 @@
 
                 <!-- invoices to pay -->
                 <g:if test="${invoices}">
-                    <div id="invoices" class="box-cards">
+                    <div id="invoices" class="box-cards box-cards-open">
                         <div class="box-cards-title">
                             <a class="btn-open"><span><g:message code="payment.payable.invoices.title"/></span></a>
                         </div>
@@ -233,7 +230,7 @@
                     <g:set var="creditCard" value="${payment?.creditCard}"/>
                     <g:hiddenField name="creditCard.id" value="${creditCard?.id}"/>
 
-                    <div id="creditCard" class="box-cards ${creditCard ? 'box-cards-open' : ''}">
+                    <div id="creditCard" class="box-cards ${creditCard ? 'box-cards-open' : ''} payment-type" onOpen="togglePaymentType('#creditCard');">
                         <div class="box-cards-title">
                             <a class="btn-open"><span><g:message code="prompt.credit.card"/></span></a>
                         </div>
@@ -263,7 +260,7 @@
                                         </span>
                                     </g:applyLayout>
                                 </div>
-
+%{--
                                 <g:if test="${isNew}">
                                     <div class="column">
                                         <g:applyLayout name="form/checkbox">
@@ -273,6 +270,7 @@
                                         </g:applyLayout>
                                     </div>
                                 </g:if>
+--}%
                             </div>
                         </div>
                     </div>
@@ -287,7 +285,7 @@
                     <g:set var="ach" value="${payment?.ach}"/>
                     <g:hiddenField name="ach.id" value="${ach?.id}"/>
 
-                    <div id="ach" class="box-cards ${ach ? 'box-cards-open' : ''}">
+                    <div id="ach" class="box-cards ${ach ? 'box-cards-open' : ''} payment-type" onOpen="togglePaymentType('#ach');">
                         <div class="box-cards-title">
                             <a class="btn-open" href="#"><span><g:message code="prompt.ach"/></span></a>
                         </div>
@@ -328,7 +326,7 @@
                                         <label class="rb" for="ach.accountType.savings"><g:message code="label.account.savings"/></label>
                                     </g:applyLayout>
                                 </div>
-
+%{--
                                 <g:if test="${isNew}">
                                     <div class="column">
                                         <g:applyLayout name="form/checkbox">
@@ -338,6 +336,7 @@
                                         </g:applyLayout>
                                     </div>
                                 </g:if>
+--}%
                             </div>
                         </div>
                     </div>
@@ -352,7 +351,7 @@
                     <g:set var="cheque" value="${payment?.cheque}"/>
                     <g:hiddenField name="cheque.id" value="${cheque?.id}"/>
 
-                    <div id="cheque" class="box-cards ${cheque ? 'box-cards-open' : ''}">
+                    <div id="cheque" class="box-cards ${cheque ? 'box-cards-open' : ''} payment-type" onOpen="togglePaymentType('#cheque');">
                         <div class="box-cards-title">
                             <a class="btn-open"><span><g:message code="prompt.cheque"/></span></a>
                         </div>
@@ -378,6 +377,7 @@
                                     </g:applyLayout>
                                 </div>
 
+%{--
                                 <g:if test="${isNew}">
                                     <div class="column">
                                         <g:applyLayout name="form/checkbox">
@@ -387,6 +387,7 @@
                                         </g:applyLayout>
                                     </div>
                                 </g:if>
+--}%
                             </div>
                         </div>
                     </div>

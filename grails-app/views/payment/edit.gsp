@@ -394,6 +394,7 @@
 
                 <!-- box text -->
                 <div class="box-text">
+                    <label for="payment.paymentNotes"><g:message code="payment.notes"/></label>
                     <g:textArea name="payment.paymentNotes" value="${payment?.paymentNotes}" rows="5" cols="60"/>
                 </div>
 

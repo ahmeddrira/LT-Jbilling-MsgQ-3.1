@@ -119,17 +119,8 @@
                             <g:hiddenField class="field" name="payment.paymentDate" value="${paymentDate}"/>
                         </g:applyLayout>
 
-                        <g:applyLayout name="form/text">
-                            <content tag="label"><g:message code="payment.is.refund.payment"/></content>
-                            <span><g:formatBoolean boolean="${payment?.isRefund > 0}"/></span>
-                            <g:hiddenField name="isRefund" value="${payment?.isRefund}"/>
-                        </g:applyLayout>
-
-                        <g:applyLayout name="form/text">
-                            <content tag="label"><g:message code="payment.label.process.realtime"/></content>
-                            <span><g:formatBoolean boolean="${processNow}"/></span>
-                            <g:hiddenField name="processNow" value="${processNow}"/>
-                        </g:applyLayout>
+                        <g:hiddenField name="isRefund" value="${payment?.isRefund}"/>
+                        <g:hiddenField name="processNow" value="${processNow}"/>
                     </div>
 
                     <div class="column">
@@ -199,8 +190,8 @@
                                             /
                                             <g:formatDate date="${creditCard?.expiry}" format="yyyy"/>
                                         </span>
-                                        <g:hidden name="expiryMonth" maxlength="2" size="2" value="${formatDate(date: creditCard?.expiry, format:'MM')}" />
-                                        <g:hidden name="expiryYear" maxlength="4" size="4" value="${formatDate(date: creditCard?.expiry, format:'yyyy')}"/>
+                                        <g:hiddenField name="expiryMonth" maxlength="2" size="2" value="${formatDate(date: creditCard?.expiry, format:'MM')}" />
+                                        <g:hiddenField name="expiryYear" maxlength="4" size="4" value="${formatDate(date: creditCard?.expiry, format:'yyyy')}"/>
                                     </g:applyLayout>
                                 </div>
                             </div>
@@ -306,6 +297,7 @@
 
                 <!-- box text -->
                 <div class="box-text">
+                    <label><g:message code="payment.notes"/></label>
                     <ul>
                         <li><p>${payment?.paymentNotes}</p></li>
                     </ul>

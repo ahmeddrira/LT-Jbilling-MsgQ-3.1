@@ -260,17 +260,6 @@
                                         </span>
                                     </g:applyLayout>
                                 </div>
-%{--
-                                <g:if test="${isNew}">
-                                    <div class="column">
-                                        <g:applyLayout name="form/checkbox">
-                                            <content tag="label">Use Credit Card for Payment</content>
-                                            <content tag="label.for">creditCardPayment</content>
-                                            <g:checkBox class="cb checkbox payment-type" toggle="creditCard" name="creditCardPayment"/>
-                                        </g:applyLayout>
-                                    </div>
-                                </g:if>
---}%
                             </div>
                         </div>
                     </div>
@@ -326,17 +315,6 @@
                                         <label class="rb" for="ach.accountType.savings"><g:message code="label.account.savings"/></label>
                                     </g:applyLayout>
                                 </div>
-%{--
-                                <g:if test="${isNew}">
-                                    <div class="column">
-                                        <g:applyLayout name="form/checkbox">
-                                            <content tag="label">Use ACH for Payment</content>
-                                            <content tag="label.for">achPayment</content>
-                                            <g:checkBox class="cb checkbox payment-type" toggle="ach" name="achPayment"/>
-                                        </g:applyLayout>
-                                    </div>
-                                </g:if>
---}%
                             </div>
                         </div>
                     </div>
@@ -376,18 +354,6 @@
                                         <g:textField class="field" name="cheque.date" value="${formatDate(date: cheque?.date, formatName:'datepicker.format')}"/>
                                     </g:applyLayout>
                                 </div>
-
-%{--
-                                <g:if test="${isNew}">
-                                    <div class="column">
-                                        <g:applyLayout name="form/checkbox">
-                                            <content tag="label">Use Cheque for Payment</content>
-                                            <content tag="label.for">chequePayment</content>
-                                            <g:checkBox class="cb checkbox payment-type" toggle="cheque" name="chequePayment"/>
-                                        </g:applyLayout>
-                                    </div>
-                                </g:if>
---}%
                             </div>
                         </div>
                     </div>

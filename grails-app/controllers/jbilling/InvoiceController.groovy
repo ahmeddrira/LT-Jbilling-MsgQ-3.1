@@ -124,7 +124,17 @@ class InvoiceController {
 			redirect(action:'list')
 		}
 	}
-	
+
+    /**
+     * Convenience shortcut, this action shows all invoices for the given user id.
+     */
+    def user = {
+        def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUser.id', template: 'id', visible: true, integerValue: params.int('id'))
+        filterService.setFilter(FilterType.INVOICE, filter)
+
+		redirect action: 'list'
+    }
+
 	def show = {
 		log.info "method invoice.show for id ${params.id} & userId ${params.userId}"
 		InvoiceWS invoice;

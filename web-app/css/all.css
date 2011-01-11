@@ -1383,7 +1383,10 @@ div.box-text {
 	font-weight: bold;
 	padding-left:10px;
 }
-
+.box-card-hold .dataTable {
+    margin: 15px auto 10px;
+    width: 80%;
+}
 /* an inner table */
 .innerTable {
 	margin: 10px auto 0 auto;

@@ -52,6 +52,10 @@
             <dt><g:message code="customer.detail.user.email"/></dt>
             <dd><a href="mailto:${contact.email}">${contact.email}</a></dd>
             </g:if>
+            <dt>&nbsp;</dt>
+            <dd>
+                <g:link controller="customerInspector" action="inspect" id="${selected.id}">Inspect Customer ${selected.id}</g:link>
+            </dd>
         </dl>
     </div>
 

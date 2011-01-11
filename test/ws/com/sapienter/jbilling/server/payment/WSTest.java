@@ -463,7 +463,7 @@ public class WSTest extends TestCase {
             payment.setCreditCard(cc);                       
 
             System.out.println("processing payment.");
-            PaymentAuthorizationDTOEx authInfo = api.processPayment(payment);
+            PaymentAuthorizationDTOEx authInfo = api.processPayment(payment, null);
 
             // check payment failed
             assertNotNull("Payment result not null", authInfo);
@@ -486,7 +486,7 @@ public class WSTest extends TestCase {
             // which is also 41111111111111
             payment.setCreditCard(null);
             System.out.println("processing payment.");
-            authInfo = api.processPayment(payment);
+            authInfo = api.processPayment(payment, null);
             // check payment has zero balance
             PaymentWS lastPayment2 = api.getLatestPayment(USER_ID);
             assertNotNull("payment can not be null", lastPayment2);
@@ -508,7 +508,7 @@ public class WSTest extends TestCase {
             cc.setNumber("4111111111111152");
             payment.setCreditCard(cc);
             System.out.println("processing payment.");
-            authInfo = api.processPayment(payment);
+            authInfo = api.processPayment(payment, null);
 
             // check payment successful
             assertNotNull("Payment result not null", authInfo);
@@ -542,7 +542,7 @@ public class WSTest extends TestCase {
 
             payment.setAmount(new BigDecimal("10.00"));
             System.out.println("processing payment.");
-            authInfo = api.processPayment(payment);
+            authInfo = api.processPayment(payment, null);
 
             // check payment successful
             assertNotNull("Payment result not null", authInfo);
@@ -570,7 +570,7 @@ public class WSTest extends TestCase {
             payment.setCreditCard(cc);
             payment.setAmount(new BigDecimal("10.00"));
             System.out.println("processing payment.");
-            authInfo = api.processPayment(payment);
+            authInfo = api.processPayment(payment, null);
 
             // check payment successful
             assertNotNull("Payment result not null", authInfo);
@@ -632,7 +632,7 @@ public class WSTest extends TestCase {
 		payment.setPaymentPeriod(new Integer(1));
 		payment.setAch(ach);
 		
-		PaymentAuthorizationDTOEx result = api.processPayment(payment);
+		PaymentAuthorizationDTOEx result = api.processPayment(payment, null);
 		assertEquals("ACH payment with even amount should pass",
 				Constants.RESULT_OK, api.getPayment(result.getPaymentId()).getResultId());
 		
@@ -649,7 +649,7 @@ public class WSTest extends TestCase {
 		payment.setPaymentPeriod(new Integer(1));
 		payment.setAch(ach);
 		
-		result = api.processPayment(payment);
+		result = api.processPayment(payment, null);
 		assertEquals("ACH payment with odd amount should fail",
 				Constants.RESULT_FAIL, api.getPayment(result.getPaymentId()).getResultId());
 	}

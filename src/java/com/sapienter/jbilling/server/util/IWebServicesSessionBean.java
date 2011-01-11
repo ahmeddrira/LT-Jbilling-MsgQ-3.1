@@ -201,7 +201,7 @@ public interface IWebServicesSessionBean {
 
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) throws SessionInternalError;
     public Integer applyPayment(PaymentWS payment, Integer invoiceId) throws SessionInternalError;
-    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment);
+    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId);
 
 
     /*

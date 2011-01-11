@@ -183,7 +183,7 @@ public interface JbillingAPI {
 
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId);
     public Integer applyPayment(PaymentWS payment, Integer invoiceId);
-    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment);
+    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId);
 
 
     /*

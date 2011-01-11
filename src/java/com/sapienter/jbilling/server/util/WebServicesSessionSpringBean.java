@@ -1350,6 +1350,19 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         new PaymentBL(paymentId).delete();
     }
 
+    /**
+     * Enters a payment and applies it to the given invoice. This method DOES NOT process
+     * the payment but only creates it as 'Entered'. The entered payment will later be
+     * processed by the billing process.
+     *
+     * Invoice ID is optional. If no invoice ID is given the payment will be applied to
+     * the payment user's account according to the configured entity preferences.
+     *
+     * @param payment payment to apply
+     * @param invoiceId invoice id
+     * @return created payment id
+     * @throws SessionInternalError
+     */
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
             throws SessionInternalError {
         validatePayment(payment);
@@ -1359,6 +1372,70 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(
                 Context.Name.PAYMENT_SESSION);
         return session.applyPayment(new PaymentDTOEx(payment), invoiceId);
+    }
+
+    /**
+     * Processes a payment and applies it to the given invoice. This method will actively
+     * processes the payment using the configured payment plug-in.
+     *
+     * Payment is optional when an invoice ID is provided. If no payment is given, the payment
+     * will be processed using the invoiced user's configured "automatic payment" instrument.
+     *
+     * Invoice ID is optional. If no invoice ID is given the payment will be applied to the
+     * payment user's account according to the configured entity preferences.
+     *
+     * @param payment payment to process
+     * @param invoiceId invoice id
+     * @return payment authorization from the payment processor
+     */
+    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId) {
+        if (payment == null && invoiceId != null)
+            return payInvoice(invoiceId);
+
+        validatePayment(payment);
+        Integer entityId = getCallerCompanyId();
+        PaymentDTOEx dto = new PaymentDTOEx(payment);
+
+        // payment without Credit Card or ACH, fetch the users primary payment instrument for use
+        if (payment.getCreditCard() == null && payment.getAch() == null) {
+            LOG.debug("processPayment() called without payment method, fetching users automatic payment instrument.");
+            PaymentDTO instrument;
+            try {
+                instrument = PaymentBL.findPaymentInstrument(entityId, payment.getUserId());
+            } catch (PluggableTaskException e) {
+                throw new SessionInternalError("Exception occurred fetching payment info plug-in.", e);
+            } catch (TaskException e) {
+                throw new SessionInternalError("Exception occurred with plug-in when fetching payment instrument.", e);
+            }
+
+            dto.setCreditCard(instrument.getCreditCard());
+            dto.setAch(instrument.getAch());
+        }
+
+        // populate payment method based on the payment instrument
+        if (dto.getCreditCard() != null)
+            dto.setPaymentMethod(new PaymentMethodDTO(dto.getCreditCard().getCcType()));
+
+        if (dto.getAch() != null)
+            dto.setPaymentMethod(new PaymentMethodDTO(Constants.PAYMENT_METHOD_ACH));
+
+        // process payment
+        IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
+        Integer result = session.processAndUpdateInvoice(dto, null, entityId);
+        LOG.debug("paymentBean.processAndUpdateInvoice() Id=" + result);
+
+        PaymentAuthorizationDTOEx auth = null;
+        if (dto != null && dto.getAuthorization() != null) {
+            LOG.debug("PaymentAuthorizationDTO Id =" + dto.getAuthorization().getId());
+            auth = new PaymentAuthorizationDTOEx(dto.getAuthorization().getOldDTO());
+            LOG.debug("PaymentAuthorizationDTOEx Id =" + auth.getId());
+            auth.setResult(result.equals(Constants.RESULT_OK));
+
+        } else {
+            auth = new PaymentAuthorizationDTOEx();
+            auth.setResult(result.equals(Constants.RESULT_FAIL));
+        }
+        return auth;
     }
 
     public PaymentWS getPayment(Integer paymentId)
@@ -1970,53 +2047,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public ItemTypeWS[] getAllItemCategories() {
         return new ItemTypeBL().getAllItemTypes();
-    }
-
-    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) {
-        validatePayment(payment);
-        Integer entityId = getCallerCompanyId();
-        PaymentDTOEx dto = new PaymentDTOEx(payment);
-
-        // payment without Credit Card or ACH, fetch the users primary payment instrument for use
-        if (payment.getCreditCard() == null && payment.getAch() == null) {
-            LOG.debug("processPayment() called without payment method, fetching users automatic payment instrument.");
-            PaymentDTO instrument;
-            try {
-                instrument = PaymentBL.findPaymentInstrument(entityId, payment.getUserId());
-            } catch (PluggableTaskException e) {
-                throw new SessionInternalError("Exception occurred fetching payment info plug-in.", e);
-            } catch (TaskException e) {
-                throw new SessionInternalError("Exception occurred with plug-in when fetching payment instrument.", e);
-            }
-
-            dto.setCreditCard(instrument.getCreditCard());
-            dto.setAch(instrument.getAch());
-        }
-
-        // populate payment method based on the payment instrument
-        if (dto.getCreditCard() != null)
-            dto.setPaymentMethod(new PaymentMethodDTO(dto.getCreditCard().getCcType()));
-
-        if (dto.getAch() != null)
-            dto.setPaymentMethod(new PaymentMethodDTO(Constants.PAYMENT_METHOD_ACH));
-
-        // process payment
-        IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
-        Integer result = session.processAndUpdateInvoice(dto, null, entityId);
-        LOG.debug("paymentBean.processAndUpdateInvoice() Id=" + result);
-
-        PaymentAuthorizationDTOEx auth = null;
-        if (dto != null && dto.getAuthorization() != null) {
-            LOG.debug("PaymentAuthorizationDTO Id =" + dto.getAuthorization().getId());
-            auth = new PaymentAuthorizationDTOEx(dto.getAuthorization().getOldDTO());
-            LOG.debug("PaymentAuthorizationDTOEx Id =" + auth.getId());
-            auth.setResult(result.equals(Constants.RESULT_OK));
-
-        } else {
-            auth = new PaymentAuthorizationDTOEx();
-            auth.setResult(result.equals(Constants.RESULT_FAIL));
-        }
-        return auth;
     }
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId,

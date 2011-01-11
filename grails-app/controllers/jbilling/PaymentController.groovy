@@ -36,6 +36,7 @@ import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.invoice.InvoiceWS
 import com.sapienter.jbilling.server.util.db.CurrencyDTO
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 /**
  * PaymentController 
@@ -183,8 +184,7 @@ class PaymentController {
         def invoices = getUnpaidInvoices(user.userId)
         def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
 
-        // todo: set user's prefered payment instrument
-
+        // todo: set user's preferred payment instrument
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
@@ -200,11 +200,75 @@ class PaymentController {
         return invoices;
     }
 
+    // todo: can this be better done with page-flow? I hate juggling hidden fields!!
+
+    /**
+     * Shows a summary of the created/edited payment to be confirmed before saving.
+     */
+    def confirm = {
+        def payment = new PaymentWS()
+        bindPayment(payment, params)
+
+        def user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
+        def invoices = getUnpaidInvoices(user.userId)
+
+        def processNow = params.processNow ? true : false
+
+        [ payment: payment, user: user, invoices: invoices, currencies: currencies, processNow: processNow, invoiceId: params.invoiceId ]
+    }
+
     /**
      * Validate and save payment.
      */
     def save = {
         def payment = new PaymentWS()
+        bindPayment(payment, params)
+
+        // save or update
+        try {
+            if (!payment.id || payment.id == 0) {
+                def invoiceId = params.int('invoiceId')
+                log.debug("creating payment ${payment} for invoice ${invoiceId}")
+
+                if (params.processNow) {
+                    def authorization = webServicesSession.processPayment(payment, invoiceId)
+                    payment.id = authorization.paymentId
+
+                    if (authorization.result) {
+                        flash.message = 'payment.successful'
+                        flash.args = [ payment.id ]
+
+                    } else {
+                        flash.error = 'payment.failed'
+                        flash.args = [ payment.id, authorization.responseMessage ]
+                    }
+
+                } else {
+                    payment.id = webServicesSession.applyPayment(payment, invoiceId)
+
+                    flash.info = 'payment.entered'
+                    flash.args = [ payment.id ]
+                }
+
+            } else {
+                log.debug("saving changes to payment ${payment.id}")
+
+                webServicesSession.updatePayment(payment)
+
+                flash.message = 'payment.updated'
+                flash.args = [ payment.id ]
+            }
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.local, e)
+            render view: edit, model: [ payment: payment ]
+            return
+        }
+
+        chain action: list, params: [ id: payment.id ]
+    }
+
+    def bindPayment(PaymentWS payment, GrailsParameterMap params) {
         bindData(payment, params, 'payment')
 
         payment.isRefund = params.isRefund ? 1 : 0
@@ -231,35 +295,10 @@ class PaymentController {
             payment.setCheque(cheque)
         }
 
-        // save or update
-        try {
-            if (!payment.id || payment.id == 0) {
-                log.debug("creating payment ${payment}")
-
-                payment.id = webServicesSession.applyPayment(payment, params.int('invoiceId'))
-
-                flash.message = 'payment.created'
-                flash.args = [ payment.id ]
-
-            } else {
-                log.debug("saving changes to payment ${payment.id}")
-
-                webServicesSession.updatePayment(payment)
-
-                flash.message = 'payment.updated'
-                flash.args = [ payment.id ]
-            }
-
-        } catch (SessionInternalError e) {
-            viewUtils.resolveException(flash, session.local, e)
-            render view: edit, model: [ payment: payment ]
-            return
-        }
-
-        chain action: list, params: [ id: payment.id ]
+        return payment
     }
 
-    def bindExpiryDate(CreditCardDTO creditCard, params) {
+    def bindExpiryDate(CreditCardDTO creditCard, GrailsParameterMap params) {
         Calendar calendar = Calendar.getInstance()
         calendar.clear()
         calendar.set(Calendar.MONTH, params.int('expiryMonth'))

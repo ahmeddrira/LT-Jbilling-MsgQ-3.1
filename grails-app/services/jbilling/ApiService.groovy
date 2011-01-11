@@ -288,8 +288,8 @@ class ApiService implements IWebServicesSessionBean {
 		return webServicesSession.getTotalRevenueByUser(userId);
 	}
 
-    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) {
-        return webServicesSession.processPayment(payment)
+    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId) {
+        return webServicesSession.processPayment(payment, invoiceId)
     }
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, String fields) {

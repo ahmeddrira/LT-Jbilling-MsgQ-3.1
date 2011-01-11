@@ -46,7 +46,7 @@
     </div>
 
     <div class="form-hold">
-        <g:form name="payment-edit-form" action="save">
+        <g:form name="payment-edit-form" action="confirm">
             <fieldset>
 
                 <!-- invoices to pay -->
@@ -116,7 +116,7 @@
                             <content tag="label"><g:message code="payment.id"/></content>
 
                             <g:if test="${!isNew}"><span>${payment.id}</span></g:if>
-                            <g:else><em><g:message code="prompt.id.new"/></em></g:else>
+                            <g:else><span><em><g:message code="prompt.id.new"/></em></span></g:else>
 
                             <g:hiddenField name="payment.id" value="${payment?.id}"/>
                         </g:applyLayout>
@@ -150,7 +150,7 @@
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="payment.amount"/></content>
                             <content tag="label.for">payment.amount</content>
-                            <g:textField class="field" name="payment.amount" value="${formatNumber(number: payment?.amount, formatName: 'money.format')}"/>
+                            <g:textField class="field" name="payment.amount" value="${formatNumber(number: payment?.getAmountAsDecimal(), formatName: 'money.format')}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/date">
@@ -163,8 +163,8 @@
                         <g:if test="${isNew}">
                             <g:applyLayout name="form/checkbox">
                                 <content tag="label"><g:message code="payment.is.refund.payment"/></content>
-                                <content tag="label.for">payment.isRefund</content>
-                                <g:checkBox class="cb checkbox" name="payment.isRefund" checked="${payment?.isRefund}"/>
+                                <content tag="label.for">isRefund</content>
+                                <g:checkBox class="cb checkbox" name="isRefund" checked="${payment?.isRefund}"/>
                             </g:applyLayout>
                         </g:if>
                         <g:else>
@@ -174,6 +174,14 @@
                                 <g:hiddenField name="payment.isRefund" value="${payment?.isRefund}"/>
                             </g:applyLayout>
                         </g:else>
+
+                        <g:if test="${isNew}">
+                            <g:applyLayout name="form/checkbox">
+                                <content tag="label"><g:message code="payment.process.realtime"/></content>
+                                <content tag="label.for">processNow</content>
+                                <g:checkBox class="cb checkbox" name="processNow" value="${processNow}"/>
+                            </g:applyLayout>
+                        </g:if>
                     </div>
 
                     <div class="column">
@@ -386,15 +394,15 @@
 
                 <!-- box text -->
                 <div class="box-text">
-                    <g:textArea name="user.notes" value="${payment?.paymentNotes}" rows="5" cols="60"/>
+                    <g:textArea name="payment.paymentNotes" value="${payment?.paymentNotes}" rows="5" cols="60"/>
                 </div>
 
                 <div class="buttons">
                     <ul>
                         <li>
                             <a onclick="$('#payment-edit-form').submit()" class="submit payment">
-                                <g:if test="${!payment}"><span><g:message code="button.make.payment"/></span></g:if>
-                                <g:if test="${payment}"><span><g:message code="button.save"/></span></g:if>
+                                <g:if test="${isNew}"><span><g:message code="button.make.payment"/></span></g:if>
+                                <g:if test="${!isNew}"><span><g:message code="button.save"/></span></g:if>
                             </a>
                         </li>
                         <li>

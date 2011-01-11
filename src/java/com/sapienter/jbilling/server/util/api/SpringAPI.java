@@ -66,6 +66,10 @@ public class SpringAPI implements JbillingAPI {
         return session.applyPayment(payment, invoiceId);
     }
 
+    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId) {
+        return session.processPayment(payment, invoiceId);
+    }
+
     public Integer authenticate(String username, String password) {
         return session.authenticate(username, password);
     }
@@ -340,13 +344,6 @@ public class SpringAPI implements JbillingAPI {
 
     public ItemTypeWS[] getAllItemCategories() {
         return session.getAllItemCategories();
-    }
-
-    /*
-     * @see com.sapienter.jbilling.server.util.api.JbillingAPI#processPayment(com.sapienter.jbilling.server.payment.PaymentWS)
-     */
-    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) {
-        return session.processPayment(payment);
     }
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, PricingField[] fields) {

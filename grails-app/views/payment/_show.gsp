@@ -41,7 +41,7 @@
 
                 <g:if test="${contact?.organizationName}">
                 <tr>
-                    <td>Organization</td>
+                    <td><g:message code="prompt.organization.name"/></td>
                     <td class="value">${contact.organizationName} &nbsp;</td>
                 </tr>
                 </g:if>

@@ -53,12 +53,12 @@ public class TelnetCommunication implements IExternalCommunication {
     /**
      * Connects to the CAI system.
      */
-    public void connect(Map<String, Object> parameters) throws TaskException {
+    public void connect(Map<String, String> parameters) throws TaskException {
         // try to get server parameters
         String telnetServer = getParameter(PARAM_TELNET_SERVER, parameters);
 
         int telnetPort;
-        String value = (String) parameters.get(PARAM_TELNET_PORT);
+        String value = parameters.get(PARAM_TELNET_PORT);
         if (value != null) {
             telnetPort = Integer.parseInt(value);
         } else {
@@ -162,8 +162,8 @@ public class TelnetCommunication implements IExternalCommunication {
      * Helper method to get values from parameter map. 
      */
     private String getParameter(String parameter, 
-            Map<String, Object>  parameters) throws TaskException { 
-        String value = (String) parameters.get(parameter);
+            Map<String, String>  parameters) throws TaskException { 
+        String value = parameters.get(parameter);
         if (value == null) {
             throw new TaskException("No '" + parameter + "' plug-in " +
                     "parameter found.");

@@ -56,7 +56,7 @@ public abstract class PluggableTask {
 	
     public static final SimpleDateFormat PARAMETER_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd-HHmm");
 
-    protected HashMap<String, Object> parameters = null;
+    protected HashMap<String, String> parameters = null;
     private Integer entityId = null;
     private PluggableTaskDTO task = null;
     protected Hashtable<Object, FactHandle> handlers = null;
@@ -88,7 +88,7 @@ public abstract class PluggableTask {
     public void initializeParamters(PluggableTaskDTO task)
             throws PluggableTaskException {
         Collection<PluggableTaskParameterDTO> DBparameters = task.getParameters();
-        parameters = new HashMap<String, Object>();
+        parameters = new HashMap<String, String>();
         entityId = task.getEntityId();
         this.task = task;
         if (DBparameters.size() <
@@ -111,7 +111,8 @@ public abstract class PluggableTask {
                 }
             }
 
-            parameters.put(parameter.getName(), value);
+            // change: all the parameters will be strings in jB3. TODO: drop the int_value, float_value columns
+            parameters.put(parameter.getName(), value.toString());
         }
     }
 

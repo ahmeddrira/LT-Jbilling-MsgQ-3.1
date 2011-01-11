@@ -243,7 +243,7 @@ public class CAIProvisioningTask extends PluggableTask
     /**
      * For allowing unit testing outside jBilling. 
      */
-    public void setParameters(HashMap<String, Object> parameters) {
+    public void setParameters(HashMap<String, String> parameters) {
         this.parameters = parameters;
     }
 }

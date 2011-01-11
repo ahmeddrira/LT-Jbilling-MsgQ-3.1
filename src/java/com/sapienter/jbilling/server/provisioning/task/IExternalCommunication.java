@@ -34,7 +34,7 @@ public interface IExternalCommunication {
      * Connects to external provisioning system. The 
      * ExternalProvisioning pluggable task can pass in its parameters.
      */
-    public void connect(Map<String, Object> parameters) throws TaskException;
+    public void connect(Map<String, String> parameters) throws TaskException;
 
     /**
      * Sends the command to the external provisioning system.

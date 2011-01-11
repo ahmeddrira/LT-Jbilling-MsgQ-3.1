@@ -19,16 +19,16 @@
  */
 package com.sapienter.jbilling.server.process.task;
 
-import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
-import org.apache.log4j.Logger;
+import java.util.HashMap;
+
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 
-import java.util.HashMap;
+import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
 /**
  * @author Brian Cowdery
@@ -63,9 +63,9 @@ public abstract class ScheduledTask extends PluggableTask implements IScheduledT
         JobDataMap map = context.getJobDetail().getJobDataMap();
         setEntityId(map.getInt("entityId"));
 
-        parameters = new HashMap<String, Object>();
+        parameters = new HashMap<String, String>();
         for (Object key : map.keySet())
-            parameters.put((String) key, map.get(key));
+            parameters.put((String) key, map.get(key).toString());
     }
 
     /**

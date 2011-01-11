@@ -32,7 +32,7 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 public class TestCommunication implements IExternalCommunication {
     private static final Logger LOG = Logger.getLogger(TestCommunication.class);
 
-    public void connect(Map<String, Object> parameters) throws TaskException {
+    public void connect(Map<String, String> parameters) throws TaskException {
         LOG.debug("Connect");
     }
 

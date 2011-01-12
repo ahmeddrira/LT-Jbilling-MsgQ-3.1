@@ -39,24 +39,30 @@
         <strong><g:message code="customer.detail.user.title"/></strong>
     </div>
     <div class="box">
-        <dl>
-            <dt><g:message code="customer.detail.user.user.id"/></dt>
-            <dd>${selected.id}</dd>
-            <dt><g:message code="customer.detail.user.username"/></dt>
-            <dd>${selected.userName}</dd>
-            <dt><g:message code="customer.detail.user.status"/></dt>
-            <dd>${selected.userStatus.description}</dd>
-            <dt><g:message code="customer.detail.user.created.date"/></dt>
-            <dd><g:formatDate format="MMM-dd-yyyy" date="${selected.createDatetime}"/></dd>
-            <g:if test="${contact}">
-            <dt><g:message code="customer.detail.user.email"/></dt>
-            <dd><a href="mailto:${contact.email}">${contact.email}</a></dd>
-            </g:if>
-            <dt>&nbsp;</dt>
-            <dd>
-                <g:link controller="customerInspector" action="inspect" id="${selected.id}">Inspect Customer ${selected.id}</g:link>
-            </dd>
-        </dl>
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><g:message code="customer.detail.user.user.id"/></td>
+                    <td class="value"><g:link controller="customerInspector" action="inspect" id="${selected.id}" title="Inspect customer ${selected.id}">${selected.id}</g:link></td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.user.username"/></td>
+                    <td class="value">${selected.userName}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.user.status"/></td>
+                    <td class="value">${selected.userStatus.description}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.user.created.date"/></td>
+                    <td class="value"><g:formatDate format="MMM-dd-yyyy" date="${selected.createDatetime}"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.user.email"/></td>
+                    <td class="value"><a href="mailto:${contact.email}">${contact.email}</a></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <!-- user payment details -->
@@ -77,7 +83,7 @@
             <dt><g:message code="customer.detail.payment.amount.owed"/></dt>
             <dd><g:formatNumber number="${new UserBL().getBalance(selected.id)}" type="currency" currencyCode="${selected.currency.code}"/> &nbsp;</dd>
             <dt><g:message code="customer.detail.payment.lifetime.revenue"/></dt>
-            <dd>&nbsp;</dd>
+            <dd><g:formatNumber number="${revenue}" type="currency" currencyCode="${selected.currency.code}"/></dd>
         </dl>
 
         <g:set var="card" value="${selected.creditCards ? selected.creditCards.asList().first() : null}"/>

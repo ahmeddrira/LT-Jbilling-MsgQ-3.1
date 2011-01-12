@@ -25,9 +25,12 @@ class CustomerInspectorController {
 	def index = { 
 		redirect action: 'inspect', params: params
 	}
-	
+
+    // todo: move to user controller - does not need it's own controller
+
 	def inspect = {
 		def user = UserDTO.get(params.int('id'))
+        def revenue = webServicesSession.getTotalRevenueByUser(params.int('id'))
 
         // subscription orders
         def subscriptions = user ? webServicesSession.getUserSubscriptions(user.id) : null
@@ -42,7 +45,8 @@ class CustomerInspectorController {
         // used to find the next invoice date
         def cycle = new OrderDAS().findEarliestActiveOrder(user.id)
 
-		[ user: user, contacts: contacts, subscriptions: subscriptions, currencies: currencies, cycle: cycle ]
+
+		[ user: user, contacts: contacts, subscriptions: subscriptions, currencies: currencies, cycle: cycle, revenue: revenue ]
 	}
 
     def getCurrencies() {

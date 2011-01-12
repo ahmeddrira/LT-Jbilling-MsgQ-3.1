@@ -52,7 +52,7 @@
 
                     <g:applyLayout name="form/text">
                         <content tag="label">Email</content>
-                        <span>${contact?.email}</span>
+                        <span><a href="mailto:${contact?.email}">${contact?.email}</a></span>
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
@@ -98,20 +98,25 @@
                     </g:each>
 
                     <g:applyLayout name="form/text">
+                        <content tag="label">Lifetime Revenue</content>
+                        <span><g:formatNumber number="${revenue}" type="currency" currencyCode="${user.currency.code}"/></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
                         <content tag="label">Balance</content>
                         <span><g:formatNumber number="${new UserBL().getBalance(user.id)}" type="currency" currencyCode="${user.currency.code}"/></span>
                     </g:applyLayout>
                 </div>
             </div>
 
-            <div class="form-columns">
-                <div class="row">
+            <div>
+                <div class="btn-row">
                     <g:link controller="user" action="list" id="${user.id}" class="submit user"><span>View Customer</span></g:link>
                     <g:link controller="invoice" action="user" id="${user.id}" class="submit invoice"><span>View Invoices</span></g:link>
                     <g:link controller="payment" action="user" id="${user.id}" class="submit payment"><span>View Payments</span></g:link>
                     <g:link controller="order" action="user" id="${user.id}" class="submit order"><span>View Prders</span></g:link>
                 </div>
-                <div class="row">
+                <div class="btn-row">
                     <g:link controller="user" action="edit" id="${user.id}" class="submit edit"><span>Edit Customer</span></g:link>
                     <g:link controller="payment" action="edit" params="[userId: user.id]" class="submit payment"><span><g:message code="button.create.payment"/></span></g:link>
                     <g:link controller="order" action="edit" params="[userId: user.id]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>

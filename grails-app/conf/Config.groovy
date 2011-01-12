@@ -64,19 +64,20 @@ environments {
 log4j = {
     
     appenders {
-        console name:"CONSOLE", threshold:Level.INFO, layout:pattern(conversionPattern: "%d{ABSOLUTE} %-5p [%c{1}] %m%n")
-        rollingFile name:"FILE", threshold:Level.INFO, datepattern: "'.'yyyy-MM-dd", maxFileSize:1048576,  file: "logs/server.log", layout:pattern(conversionPattern: "%d %-5r %-5p [%c] (%t:%x) %m%n"), append: false
-        rollingFile name:"jbillingAppender", threshold:Level.DEBUG, datepattern: "'.'yyyy-MM-dd", maxFileSize:1048576,  file: "logs/jbilling.log", layout:pattern(conversionPattern: "%d %-5p [%c] %m%n"), append: false
-        rollingFile name:"SQL-FILE", threshold:Level.DEBUG, datepattern: "'.'yyyy-MM-dd", maxFileSize:1048576,  file: "logs/sql.log", layout:pattern(conversionPattern: "%d %-5r %-5p [%c] (%t:%x) %m%n"), append: false
+        console name:"CONSOLE", layout:pattern(conversionPattern: "%d{ABSOLUTE} %-5p [%c{1}] %m%n")
+        rollingFile name:"serverAppender", datepattern: "'.'yyyy-MM-dd", file: "logs/server.log", layout:pattern(conversionPattern: "%d %-5r %-5p [%c] (%t:%x) %m%n")
+        rollingFile name:"jbillingAppender", datepattern: "'.'yyyy-MM-dd", file: "logs/jbilling.log", layout:pattern(conversionPattern: "%d %-5p [%c] %m%n")
+        rollingFile name:"SQL-FILE", datepattern: "'.'yyyy-MM-dd", file: "logs/sql.log", layout:pattern(conversionPattern: "%d %-5r %-5p [%c] (%t:%x) %m%n")
     }
     
     debug jbillingAppender:'com.sapienter.jbilling'
-	debug jbillingAppender:'jbilling'
-    
-    info FILE:'com.mchange'
+	info jbillingAppender:'grails.app'
+	debug jbillingAppender:'grails.app.controller'
+    info jbillingAppender:'com.sapienter.jbilling.client.authentication.CompanyUserRememberMeFilter'
+    // debug SQL-FILE:'org.hibernate.SQL'
     
     root {
-        info 'CONSOLE','FILE'
+        info 'CONSOLE','serverAppender'
         additivity = true
     }
 }

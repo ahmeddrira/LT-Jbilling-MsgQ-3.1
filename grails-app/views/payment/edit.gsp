@@ -13,6 +13,10 @@
             $(element).find(':input').attr('disabled','');
         }
 
+        function clearInvoiceSelection() {
+            $(':input[type=radio][name=invoiceId]').attr('checked','');
+        }
+
         $(document).ready(function() {
             // populate payment amount with selected invoice balance
             $('#invoices input[name=invoiceId]').change(function() {
@@ -72,7 +76,7 @@
                                     <tr>
                                         <td class="innerContent">
                                             <g:applyLayout name="form/radio">
-                                                <g:radio id="invoice-${invoice.id}" name="invoiceId" value="${invoice.id}"/>
+                                                <g:radio id="invoice-${invoice.id}" name="invoiceId" value="${invoice.id}" checked="${invoice.id == invoiceId}"/>
                                                 <label for="invoice-${invoice.id}" class="rb">
                                                     <g:message code= "payment.link.invoice" args="[invoice.number]"/>
                                                 </label>
@@ -101,6 +105,10 @@
                                 </g:each>
                                 </tbody>
                             </table>
+
+                            <div class="btn-row">
+                                <a onclick="clearInvoiceSelection();" class="submit clear"><span>Clear Selection</span></a>
+                            </div>
 
                         </div>
                     </div>
@@ -147,7 +155,8 @@
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="payment.amount"/></content>
                             <content tag="label.for">payment.amount</content>
-                            <g:textField class="field" name="payment.amount" value="${formatNumber(number: payment?.getAmountAsDecimal(), formatName: 'money.format')}"/>
+                            <g:set var="paymentAmount" value="${payment?.getAmountAsDecimal() ?: invoices?.find{ it.id == invoiceId }?.balance }"/>
+                            <g:textField class="field" name="payment.amount" value="${formatNumber(number: paymentAmount, formatName: 'money.format')}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/date">

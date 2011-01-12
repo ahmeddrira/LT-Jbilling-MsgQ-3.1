@@ -188,7 +188,7 @@ class PaymentController {
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
-        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods ]
+        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId') ]
     }
 
     def getUnpaidInvoices(Integer userId) {
@@ -199,8 +199,6 @@ class PaymentController {
             invoices.add(webServicesSession.getInvoiceWS(id))
         return invoices;
     }
-
-    // todo: can this be better done with page-flow? I hate juggling hidden fields!!
 
     /**
      * Shows a summary of the created/edited payment to be confirmed before saving.

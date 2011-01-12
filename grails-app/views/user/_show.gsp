@@ -43,7 +43,7 @@
             <tbody>
                 <tr>
                     <td><g:message code="customer.detail.user.user.id"/></td>
-                    <td class="value"><g:link controller="customerInspector" action="inspect" id="${selected.id}" title="Inspect customer ${selected.id}">${selected.id}</g:link></td>
+                    <td class="value"><g:link controller="customerInspector" action="inspect" id="${selected.id}" title="${message(code: 'customer.inspect.link')}">${selected.id}</g:link></td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.user.username"/></td>

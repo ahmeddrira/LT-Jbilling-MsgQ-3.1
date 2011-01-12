@@ -194,7 +194,7 @@
                                 <tbody>
                                     <tr>
                                         <td><g:message code="invoice.label.id"/></td>
-                                        <td class="value">${invoice.id}</td>
+                                        <td class="value"><g:link controller="invoice" action="list" id="${invoice.id}">${invoice.id}</g:link></td>
 
                                         <td><g:message code="invoice.label.date"/></td>
                                         <td class="value"><g:formatDate date="${invoice.createDatetime}"/></td>
@@ -213,7 +213,16 @@
 
                                     <tr>
                                         <td><g:message code="invoice.label.status"/></td>
-                                        <td class="value">${invoice.invoiceStatus.getDescription(session['language_id'])}</td>
+                                        <td class="value">
+                                            <g:if test="${invoice.invoiceStatus.id == Constants.INVOICE_STATUS_UNPAID}">
+                                                <g:link controller="payment" action="edit" params="[userId: user.id, invoiceId: invoice.id]" title="${message(code: 'invoice.pay.link')}">
+                                                    ${invoice.invoiceStatus.getDescription(session['language_id'])}
+                                                </g:link>
+                                            </g:if>
+                                            <g:else>
+                                                ${invoice.invoiceStatus.getDescription(session['language_id'])}
+                                            </g:else>
+                                        </td>
 
                                         <td><g:message code="invoice.label.duedate"/></td>
                                         <td class="value"><g:formatDate date="${invoice.dueDate}"/></td>

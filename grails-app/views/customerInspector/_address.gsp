@@ -1,22 +1,28 @@
+<%--
+  Address data-table template for the customer inspector.
+
+  @author Brian Cowdery
+  @since  11-Jan-2011
+--%>
 
 <table class="dataTable" cellspacing="0" cellpadding="0">
     <tbody>
     <tr>
-        <td>Address</td>
+        <td><g:message code="customer.detail.contact.address"/></td>
         <td class="value">${contact?.address1} ${contact?.address2}</td>
     </tr>
     <tr>
-        <td>City</td>
+        <td><g:message code="customer.detail.contact.city"/></td>
         <td class="value">${contact?.city}</td>
 
-        <td>State/Province</td>
+        <td><g:message code="customer.detail.contact.state"/></td>
         <td class="value">${contact?.stateProvince}</td>
 
-        <td>Postal Code</td>
+        <td><g:message code="customer.detail.contact.zip"/></td>
         <td class="value">${contact?.postalCode}</td>
     </tr>
     <tr>
-        <td>Country</td>
+        <td><g:message code="customer.detail.contact.country"/></td>
         <td class="value">${contact?.countryCode}</td>
     </tr>
     </tbody>

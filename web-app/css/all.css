@@ -53,6 +53,9 @@ table {
 	padding:0;
 	border-collapse:collapse;
 }
+hr {
+    width: 90%;
+}
 #header {
 	height:123px;
 	position:relative;
@@ -1140,6 +1143,10 @@ ul.cloud li a {
 .box-cards {
 	margin:10px 20px 0;
 	border:1px solid #bbb;
+}
+.box-cards .box-cards {
+    width: 80%;
+    margin: 10px auto;
 }
 .box-cards-title {
 	height:30px;

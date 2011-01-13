@@ -464,17 +464,23 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         ws.setAttempt(dto.getAttempt());
         ws.setBalance(dto.getBalance());
         ws.setCreateDatetime(dto.getCreateDatetime());
-        ws.setCurrencyId(dto.getCurrency().getId());
         ws.setDeleted(dto.getDeleted());
         ws.setIsPreauth(dto.getIsPreauth());
         ws.setIsRefund(dto.getIsRefund());
-        ws.setMethodId(dto.getPaymentMethod().getId());
         ws.setPaymentDate(dto.getPaymentDate());
         ws.setUpdateDatetime(dto.getUpdateDatetime());
-        ws.setResultId(dto.getPaymentResult().getId());
         ws.setPaymentNotes(dto.getPaymentNotes());
         ws.setPaymentPeriod(dto.getPaymentPeriod());
-        
+
+        if (dto.getCurrency() != null)
+            ws.setCurrencyId(dto.getCurrency().getId());
+
+        if (dto.getPaymentMethod() != null)
+            ws.setMethodId(dto.getPaymentMethod().getId());
+
+        if (dto.getPaymentResult() != null)
+            ws.setResultId(dto.getPaymentResult().getId());
+
         if (dto.getCreditCard() != null) {
             com.sapienter.jbilling.server.entity.CreditCardDTO ccDTO = new com.sapienter.jbilling.server.entity.CreditCardDTO();
             ccDTO.setDeleted(dto.getCreditCard().getDeleted());

@@ -176,6 +176,7 @@ public interface JbillingAPI {
     public PaymentWS getPayment(Integer paymentId);
     public PaymentWS getLatestPayment(Integer userId);
     public Integer[] getLastPayments(Integer userId, Integer number);
+    public PaymentWS getUserPaymentInstrument(Integer userId);
 
     public Integer createPayment(PaymentWS payment);
     public void updatePayment(PaymentWS payment);

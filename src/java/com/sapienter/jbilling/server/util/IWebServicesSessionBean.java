@@ -195,6 +195,8 @@ public interface IWebServicesSessionBean {
     public Integer[] getLastPayments(Integer userId, Integer number) throws SessionInternalError;
     public BigDecimal getTotalRevenueByUser (Integer userId) throws SessionInternalError;
 
+    public PaymentWS getUserPaymentInstrument(Integer userId) throws SessionInternalError;
+
     public Integer createPayment(PaymentWS payment);
     public void updatePayment(PaymentWS payment);
     public void deletePayment(Integer paymentId);

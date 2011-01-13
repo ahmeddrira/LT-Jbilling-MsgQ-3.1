@@ -178,6 +178,10 @@ public class SpringAPI implements JbillingAPI {
         return session.getLastPayments(userId, number);
     }
 
+    public PaymentWS getUserPaymentInstrument(Integer userId) {
+        return session.getUserPaymentInstrument(userId);
+    }
+
     public Integer[] getAllInvoices(Integer userId) {
         return session.getAllInvoices(userId);
     }

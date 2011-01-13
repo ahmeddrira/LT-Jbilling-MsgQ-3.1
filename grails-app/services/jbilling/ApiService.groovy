@@ -283,7 +283,11 @@ class ApiService implements IWebServicesSessionBean {
     public Integer[] getLastPayments(Integer userId, Integer number) {
         return webServicesSession.getLastPayments(userId, number)
     }
-	
+
+    public PaymentWS getUserPaymentInstrument(Integer userId) {
+        return webServicesSession.getUserPaymentInstrument(userId)
+    }
+
 	public BigDecimal getTotalRevenueByUser (Integer userId) {
 		return webServicesSession.getTotalRevenueByUser(userId);
 	}

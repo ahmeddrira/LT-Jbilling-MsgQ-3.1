@@ -186,7 +186,12 @@ class PaymentController {
         def invoices = getUnpaidInvoices(user.userId)
         def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
 
-        // todo: set user's preferred payment instrument
+        // set default payment instrument for new payments
+        if (!params.id) {
+            def instrument = webServicesSession.getUserPaymentInstrument(user.userId)
+            payment.setCreditCard(instrument?.creditCard)
+            payment.setAch(instrument?.ach)
+        }
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 

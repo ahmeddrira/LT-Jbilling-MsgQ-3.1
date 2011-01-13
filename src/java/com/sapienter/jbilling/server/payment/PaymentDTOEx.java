@@ -52,7 +52,8 @@ public class PaymentDTOEx extends PaymentDTO {
     private PaymentAuthorizationDTO authorization = null; // useful in refuds
 
     public PaymentDTOEx(PaymentDTO dto) {
-        userId = dto.getBaseUser().getId();
+        if (dto.getBaseUser() != null)
+            userId = dto.getBaseUser().getId();
         
         setId(dto.getId());
         setCurrency(dto.getCurrency());

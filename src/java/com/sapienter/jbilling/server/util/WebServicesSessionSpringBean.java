@@ -1467,7 +1467,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         PaymentBL payment = new PaymentBL();
         return payment.getManyWS(userId, number, languageId);
     }
-    
+
+    public PaymentWS getUserPaymentInstrument(Integer userId) throws SessionInternalError {
+        PaymentDTO instrument;
+        try {
+            instrument = PaymentBL.findPaymentInstrument(getCallerCompanyId(), userId);
+        } catch (PluggableTaskException e) {
+            throw new SessionInternalError("Exception occurred fetching payment info plug-in.", e);
+        } catch (TaskException e) {
+            throw new SessionInternalError("Exception occurred with plug-in when fetching payment instrument.", e);
+        }
+
+        return PaymentBL.getWS(new PaymentDTOEx(instrument));
+    }
+
     public BigDecimal getTotalRevenueByUser (Integer userId) throws SessionInternalError {
     	return new PaymentDAS().findTotalRevenueByUser(userId);
     }    

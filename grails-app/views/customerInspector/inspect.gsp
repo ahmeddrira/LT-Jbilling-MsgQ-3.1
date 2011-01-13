@@ -109,7 +109,6 @@
                 </div>
             </div>
 
-            <div>
             <!-- notes -->
             <div id="notes" class="form-columns">
                 <label><g:message code="prompt.notes"/></label>
@@ -119,13 +118,13 @@
             <!-- buttons -->
             <div>
                 <div class="btn-row">
-                    <g:link controller="user" action="list" id="${user.id}" class="submit user"><span>View Customer</span></g:link>
-                    <g:link controller="invoice" action="user" id="${user.id}" class="submit invoice"><span>View Invoices</span></g:link>
-                    <g:link controller="payment" action="user" id="${user.id}" class="submit payment"><span>View Payments</span></g:link>
-                    <g:link controller="order" action="user" id="${user.id}" class="submit order"><span>View Orders</span></g:link>
+                    <g:link controller="user" action="list" id="${user.id}" class="submit user"><span><g:message code="customer.view.customers.button"/></span></g:link>
+                    <g:link controller="invoice" action="user" id="${user.id}" class="submit invoice"><span><g:message code="customer.view.invoices.button"/></span></g:link>
+                    <g:link controller="payment" action="user" id="${user.id}" class="submit payment"><span><g:message code="customer.view.payments.button"/></span></g:link>
+                    <g:link controller="order" action="user" id="${user.id}" class="submit order"><span><g:message code="customer.view.orders.button"/></span></g:link>
                 </div>
                 <div class="btn-row">
-                    <g:link controller="user" action="edit" id="${user.id}" class="submit edit"><span>Edit Customer</span></g:link>
+                    <g:link controller="user" action="edit" id="${user.id}" class="submit edit"><span><g:message code="customer.edit.customer.button"/></span></g:link>
                     <g:link controller="payment" action="edit" params="[userId: user.id]" class="submit payment"><span><g:message code="button.create.payment"/></span></g:link>
                     <g:link controller="order" action="edit" params="[userId: user.id]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>
                 </div>
@@ -252,7 +251,6 @@
                         <table cellpadding="0" cellspacing="0" class="innerTable">
                             <thead class="innerHeader">
                             <tr>
-                                <th><g:message code="invoice.label.id"/></th>
                                 <th><g:message code="label.gui.description"/></th>
                                 <th><g:message code="label.gui.quantity"/></th>
                                 <th><g:message code="label.gui.price"/></th>
@@ -262,9 +260,6 @@
                             <tbody>
                                 <g:each var="invoiceLine" in="${invoice.invoiceLines}">
                                     <tr>
-                                        <td class="innerContent">
-                                            <g:link controller="invoice" action="list" id="${invoice.id}">${invoice.id}</g:link>
-                                        </td>
                                         <td class="innerContent">
                                             ${invoiceLine.description}
                                         </td>

@@ -107,7 +107,7 @@
                             </table>
 
                             <div class="btn-row">
-                                <a onclick="clearInvoiceSelection();" class="submit delete"><span>Clear Selection</span></a>
+                                <a onclick="clearInvoiceSelection();" class="submit delete"><span><g:message code="button.clear"/></span></a>
                             </div>
 
                         </div>

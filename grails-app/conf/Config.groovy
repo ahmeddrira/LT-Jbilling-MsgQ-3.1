@@ -67,7 +67,7 @@ log4j = {
         console name:"CONSOLE", layout:pattern(conversionPattern: "%d{ABSOLUTE} %-5p [%c{1}] %m%n")
         rollingFile name:"serverAppender", datepattern: "'.'yyyy-MM-dd", file: "logs/server.log", layout:pattern(conversionPattern: "%d %-5r %-5p [%c] (%t:%x) %m%n")
         rollingFile name:"jbillingAppender", datepattern: "'.'yyyy-MM-dd", file: "logs/jbilling.log", layout:pattern(conversionPattern: "%d %-5p [%c] %m%n")
-        rollingFile name:"SQL-FILE", datepattern: "'.'yyyy-MM-dd", file: "logs/sql.log", layout:pattern(conversionPattern: "%d %-5r %-5p [%c] (%t:%x) %m%n")
+        rollingFile name:"hibernateAppender", datepattern: "'.'yyyy-MM-dd", file: "logs/sql.log", layout:pattern(conversionPattern: "%d %-5r %-5p [%c] (%t:%x) %m%n")
     }
     
     debug jbillingAppender:'com.sapienter.jbilling'
@@ -76,7 +76,22 @@ log4j = {
 	debug jbillingAppender:'grails.app.service'
 	debug jbillingAppender:'grails.app.tagLib'
     info jbillingAppender:'com.sapienter.jbilling.client.authentication.CompanyUserRememberMeFilter'
-    // debug SQL-FILE:'org.hibernate.SQL'
+    
+    /*
+     * Hibernate logging:
+     * org.hibernate.SQL           Log all SQL DML statements as they are executed
+     * org.hibernate.type          Log all JDBC parameters
+     * org.hibernate.tool.hbm2ddl  Log all SQL DDL statements as they are executed
+     * org.hibernate.pretty        Log the state of all entities (max 20 entities) associated with the session at flush time
+     * org.hibernate.cache         Log all second-level cache activity
+     * org.hibernate.transaction   Log transaction related activity
+     * org.hibernate.jdbc          Log all JDBC resource acquisition
+     * org.hibernate.hql.ast.AST   Log HQL and SQL ASTs during query parsing
+     * org.hibernate.secure        Log all JAAS authorization requests
+     * org.hibernate               Log everything. This is a lot of information but it is useful for troubleshooting
+     */
+    
+    //debug hibernateAppender:'org.hibernate.SQL'
     
     root {
         info 'CONSOLE','serverAppender'

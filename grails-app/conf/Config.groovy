@@ -73,6 +73,8 @@ log4j = {
     debug jbillingAppender:'com.sapienter.jbilling'
 	info jbillingAppender:'grails.app'
 	debug jbillingAppender:'grails.app.controller'
+	debug jbillingAppender:'grails.app.service'
+	debug jbillingAppender:'grails.app.tagLib'
     info jbillingAppender:'com.sapienter.jbilling.client.authentication.CompanyUserRememberMeFilter'
     // debug SQL-FILE:'org.hibernate.SQL'
     

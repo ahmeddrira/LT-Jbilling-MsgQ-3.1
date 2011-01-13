@@ -58,7 +58,7 @@
             <tbody>
                 <tr>
                     <td><g:message code="payment.date"/></td>
-                    <td class="value"><g:formatDate date="${selected.paymentDate}" formatName="date.format"/></td>
+                    <td class="value"><g:formatDate date="${selected.paymentDate ?: selected.createDatetime}" formatName="date.format"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="payment.amount"/></td>
@@ -85,7 +85,7 @@
                 </tr>
                 <tr>
                     <td><g:message code="payment.attempt"/></td>
-                    <td class="value">${selected.attempt}</td>
+                    <td class="value">${selected.attempt ?: 0}</td>
                 </tr>
                 <tr>
                     <td><g:message code="payment.is.preauth"/></td>
@@ -143,16 +143,24 @@
                 <tbody>
                     <tr>
                         <td><g:message code="payment.credit.card.name"/></td>
-                        <td class="value">${creditCard.rawName}</td>
+                        <td class="value">${creditCard.name}</td>
                     </tr>
                     <tr>
                         <td><g:message code="payment.credit.card.type"/></td>
                         <td class="value">${selected.paymentMethod.getDescription(session['language_id'])}</td>
                     </tr>
                     <tr>
-                        <!-- todo: Check preference for credit card hiding. Mask CC number if preference set -->
                         <td><g:message code="payment.credit.card.number"/></td>
-                        <td class="value">${creditCard.rawNumber}</td>
+                        <td class="value">
+                            %{-- obscure credit card by default, or if the preference is explicitly set --}%
+                            <g:if test="${preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
+                                <g:set var="creditCardNumber" value="${creditCard.number.replaceAll('^\\d{12}','************')}"/>
+                                ${creditCardNumber}
+                            </g:if>
+                            <g:else>
+                                ${creditCard.number}
+                            </g:else>
+                        </td>
                     </tr>
                     <tr>
                         <td><g:message code="payment.credit.card.expiry"/></td>

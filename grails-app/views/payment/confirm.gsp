@@ -171,7 +171,15 @@
                                     <g:applyLayout name="form/text">
                                         <content tag="label"><g:message code="prompt.credit.card"/></content>
                                         <content tag="label.for">creditCard.number</content>
-                                        <span>${creditCard?.number}</span>
+
+                                        %{-- obscure credit card by default, or if the preference is explicitly set --}%
+                                        <g:if test="${preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
+                                            <g:set var="creditCardNumber" value="${creditCard.number.replaceAll('^\\d{12}','************')}"/>
+                                            <span>${creditCardNumber}</span>
+                                        </g:if>
+                                        <g:else>
+                                            <span>${creditCard?.number}</span>
+                                        </g:else>
                                         <g:hiddenField name="creditCard.number" value="${creditCard?.number}" />
                                     </g:applyLayout>
 

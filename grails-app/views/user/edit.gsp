@@ -316,6 +316,7 @@
 
                 <!-- box text -->
                 <div class="box-text">
+                    <label><g:message code="customer.detail.note.title"/></label>
                     <g:textArea name="user.notes" value="${user?.notes}" rows="5" cols="60"/>
                 </div>
 

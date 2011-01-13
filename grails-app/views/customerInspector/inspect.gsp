@@ -28,12 +28,12 @@
             <div class="form-columns">
                 <div class="column">
                     <g:applyLayout name="form/text">
-                        <content tag="label">Login</content>
+                        <content tag="label"><g:message code="customer.detail.user.username"/></content>
                         <span>${user.userName}</span>
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
-                        <content tag="label">Phone</content>
+                        <content tag="label"><g:message code="customer.detail.contact.telephone"/></content>
                         <span>
                             <g:if test="${contact?.phoneCountryCode}">${contact?.phoneCountryCode}.</g:if>
                             <g:if test="${contact?.phoneAreaCode}">${contact?.phoneAreaCode}.</g:if>
@@ -42,7 +42,7 @@
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
-                        <content tag="label">Fax</content>
+                        <content tag="label"><g:message code="customer.detail.contact.fax"/></content>
                         <span>
                             <g:if test="${contact?.faxCountryCode}">${contact?.faxCountryCode}.</g:if>
                             <g:if test="${contact?.faxAreaCode}">${contact?.faxAreaCode}.</g:if>
@@ -51,22 +51,22 @@
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
-                        <content tag="label">Email</content>
-                        <span>${contact?.email}</span>
+                        <content tag="label"><g:message code="customer.detail.user.email"/></content>
+                        <span><a href="mailto:${contact?.email}">${contact?.email}</a></span>
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
-                        <content tag="label">Status</content>
+                        <content tag="label"><g:message code="customer.detail.user.status"/></content>
                         <span>${user.userStatus.getDescription(session['language_id'])}</span>
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
-                        <content tag="label">Subscriber Status</content>
+                        <content tag="label"><g:message code="customer.detail.user.subscriber.status"/></content>
                         <span>${user.subscriberStatus.getDescription(session['language_id'])}</span>
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
-                        <content tag="label">Next Invoice Date</content>
+                        <content tag="label"><g:message code="customer.detail.user.next.invoice.date"/></content>
 
                         <g:if test="${cycle}">
                             <g:set var="nextInvoiceDate" value="${cycle?.getNextBillableDay() ?: cycle?.getActiveSince() ?: cycle?.getCreateDate()}"/>
@@ -80,12 +80,12 @@
 
                 <div class="column">
                     <g:applyLayout name="form/text">
-                        <content tag="label">Number</content>
+                        <content tag="label"><g:message code="customer.detail.user.user.id"/></content>
                         <span>${user.id}</span>
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
-                        <content tag="label">Type</content>
+                        <content tag="label"><g:message code="customer.detail.user.type"/></content>
                         <g:set var="mainRole" value="${user.roles.asList()?.min{ it.id }}"/>
                         <span title="${mainRole.getDescription(session['language_id'])}">${mainRole.getTitle(session['language_id'])}</span>
                     </g:applyLayout>
@@ -98,20 +98,25 @@
                     </g:each>
 
                     <g:applyLayout name="form/text">
-                        <content tag="label">Balance</content>
+                        <content tag="label"><g:message code="customer.detail.payment.lifetime.revenue"/></content>
+                        <span><g:formatNumber number="${revenue}" type="currency" currencyCode="${user.currency.code}"/></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="customer.detail.payment.amount.owed"/></content>
                         <span><g:formatNumber number="${new UserBL().getBalance(user.id)}" type="currency" currencyCode="${user.currency.code}"/></span>
                     </g:applyLayout>
                 </div>
             </div>
 
-            <div class="form-columns">
-                <div class="row">
+            <div>
+                <div class="btn-row">
                     <g:link controller="user" action="list" id="${user.id}" class="submit user"><span>View Customer</span></g:link>
                     <g:link controller="invoice" action="user" id="${user.id}" class="submit invoice"><span>View Invoices</span></g:link>
                     <g:link controller="payment" action="user" id="${user.id}" class="submit payment"><span>View Payments</span></g:link>
                     <g:link controller="order" action="user" id="${user.id}" class="submit order"><span>View Prders</span></g:link>
                 </div>
-                <div class="row">
+                <div class="btn-row">
                     <g:link controller="user" action="edit" id="${user.id}" class="submit edit"><span>Edit Customer</span></g:link>
                     <g:link controller="payment" action="edit" params="[userId: user.id]" class="submit payment"><span><g:message code="button.create.payment"/></span></g:link>
                     <g:link controller="order" action="edit" params="[userId: user.id]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>
@@ -121,31 +126,12 @@
             <!-- address -->
             <div id="address" class="box-cards">
                 <div class="box-cards-title">
-                    <a class="btn-open"><span>Address</span></a>
+                    <a class="btn-open"><span><g:message code="customer.inspect.address.title"/></span></a>
                 </div>
                 <div class="box-card-hold">
-                    <table class="dataTable" cellspacing="0" cellpadding="0">
-                        <tbody>
-                            <tr>
-                                <td>Address</td>
-                                <td class="value">${contact?.address1} ${contact?.address2}</td>
-                            </tr>
-                            <tr>
-                                <td>City</td>
-                                <td class="value">${contact?.city}</td>
-
-                                <td>State/Province</td>
-                                <td class="value">${contact?.stateProvince}</td>
-
-                                <td>Postal Code</td>
-                                <td class="value">${contact?.postalCode}</td>
-                            </tr>
-                            <tr>
-                                <td>Country</td>
-                                <td class="value">${contact?.countryCode}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="form-columns">
+                        <g:render template="address" model="[contact: contact]"/>
+                    </div>
                 </div>
             </div>
 
@@ -154,12 +140,14 @@
             <g:if test="${contacts}">
                 <div id="extra-contacts" class="box-cards">
                     <div class="box-cards-title">
-                        <a class="btn-open"><span>Extra Contact</span></a>
+                        <a class="btn-open"><span><g:message code="customer.inspect.extra.contact.title"/></span></a>
                     </div>
                     <div class="box-card-hold">
-                        <g:each var="extraContact" in="${contacts}">
-                            <g:render template="address" model="[contact: extraContact]"/>
-                        </g:each>
+                        <div class="form-columns">
+                            <g:each var="extraContact" in="${contacts}">
+                                <g:render template="address" model="[contact: extraContact]"/>
+                            </g:each>
+                        </div>
                     </div>
                 </div>
             </g:if>
@@ -167,10 +155,11 @@
             <!-- notes -->
             <div id="notes" class="box-cards">
                 <div class="box-cards-title">
-                    <a class="btn-open"><span>Notes</span></a>
+                    <a class="btn-open"><span><g:message code="customer.inspect.notes.title"/></span></a>
                 </div>
                 <div class="box-card-hold">
                     <div class="box-text">
+                        <label><g:message code="customer.detail.note.title"/></label>
                         <ul>
                             <li><p>${customer?.notes}</p></li>
                         </ul>
@@ -178,23 +167,165 @@
                 </div>
             </div>
 
+            <!-- last payment -->
+            <g:if test="${payment}">
+                <div id="payment" class="box-cards">
+                    <div class="box-cards-title">
+                        <a class="btn-open"><span><g:message code="customer.inspect.last.payment.title"/></span></a>
+                    </div>
+                    <div class="box-card-hold">
+                        <div class="form-columns">
+                            <g:render template="payment" model="[payment: payment]"/>
+                        </div>
+                    </div>
+                </div>
+            </g:if>
+
+            <!-- last invoice -->
+            <g:if test="${invoice}">
+                <div id="invoice" class="box-cards">
+                    <div class="box-cards-title">
+                        <a class="btn-open"><span><g:message code="customer.inspect.last.invoice.title"/></span></a>
+                    </div>
+                    <div class="box-card-hold">
+
+                        <div class="form-columns">
+                            <table cellpadding="0" cellspacing="0" class="dataTable">
+                                <tbody>
+                                    <tr>
+                                        <td><g:message code="invoice.label.id"/></td>
+                                        <td class="value"><g:link controller="invoice" action="list" id="${invoice.id}">${invoice.id}</g:link></td>
+
+                                        <td><g:message code="invoice.label.date"/></td>
+                                        <td class="value"><g:formatDate date="${invoice.createDatetime}"/></td>
+
+                                        <td><g:message code="invoice.amount.date"/></td>
+                                        <td class="value"><g:formatNumber number="${invoice.total}" type="currency" currencyCode="${invoice.currency.code}"/></td>
+
+                                        <td><g:message code="invoice.label.delegation"/></td>
+                                        <td class="value">
+                                            <g:each var="delegated" in="${invoice.invoices}" status="i">
+                                                <g:link controller="invoice" action="list" id="${delegated.id}">${delgated.id}</g:link>
+                                                <g:if test="${i < invoice.invoices.size()-1}">, </g:if>
+                                            </g:each>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><g:message code="invoice.label.status"/></td>
+                                        <td class="value">
+                                            <g:if test="${invoice.invoiceStatus.id == Constants.INVOICE_STATUS_UNPAID}">
+                                                <g:link controller="payment" action="edit" params="[userId: user.id, invoiceId: invoice.id]" title="${message(code: 'invoice.pay.link')}">
+                                                    ${invoice.invoiceStatus.getDescription(session['language_id'])}
+                                                </g:link>
+                                            </g:if>
+                                            <g:else>
+                                                ${invoice.invoiceStatus.getDescription(session['language_id'])}
+                                            </g:else>
+                                        </td>
+
+                                        <td><g:message code="invoice.label.duedate"/></td>
+                                        <td class="value"><g:formatDate date="${invoice.dueDate}"/></td>
+
+                                        <td><g:message code="invoice.label.balance"/></td>
+                                        <td class="value"><g:formatNumber number="${invoice.balance}" type="currency" currencyCode="${invoice.currency.code}"/></td>
+
+                                        <td><g:message code="invoice.label.orders"/></td>
+                                        <td class="value">
+                                            <g:each var="process" in="${invoice.orderProcesses}" status="i">
+                                                <g:link controller="order" action="list" id="${process.purchaseOrder.id}">${process.purchaseOrder.id}</g:link>
+                                                <g:if test="${i < invoice.orderProcesses.size()-1}">, </g:if>
+                                            </g:each>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><g:message code="invoice.label.payment.attempts"/></td>
+                                        <td class="value">${invoice.paymentAttempts}</td>
+
+                                        <td><g:message code="invoice.label.gen.date"/></td>
+                                        <td class="value"><g:formatDate date="${invoice.createTimestamp}"/></td>
+
+                                        <td><g:message code="invoice.label.carried.bal"/></td>
+                                        <td class="value"><g:formatNumber number="${invoice.carriedBalance}" type="currency" currencyCode="${invoice.currency.code}"/></td>
+
+                                        <!-- spacer -->
+                                        <td></td><td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <table cellpadding="0" cellspacing="0" class="innerTable">
+                            <thead class="innerHeader">
+                            <tr>
+                                <th><g:message code="invoice.label.id"/></th>
+                                <th><g:message code="label.gui.description"/></th>
+                                <th><g:message code="label.gui.quantity"/></th>
+                                <th><g:message code="label.gui.price"/></th>
+                                <th><g:message code="label.gui.amount"/></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <g:each var="invoiceLine" in="${invoice.invoiceLines}">
+                                    <tr>
+                                        <td class="innerContent">
+                                            <g:link controller="invoice" action="list" id="${invoice.id}">${invoice.id}</g:link>
+                                        </td>
+                                        <td class="innerContent">
+                                            ${invoiceLine.description}
+                                        </td>
+
+                                        <td class="innerContent">
+                                            <g:formatNumber number="${invoiceLine.quantity}"/>
+                                        </td>
+                                        <td class="innerContent">
+                                            <g:formatNumber number="${invoiceLine.price}" type="currency" currencyCode="${invoice.currency.code}"/>
+                                        </td>
+                                        <td class="innerContent">
+                                            <g:formatNumber number="${invoiceLine.amount}" type="currency" currencyCode="${invoice.currency.code}"/>
+                                        </td>
+                                    </tr>
+                                </g:each>
+                            </tbody>
+                        </table>
+
+                        <g:if test="${invoice.paymentMap}">
+                            <div class="box-cards">
+                                <div class="box-cards-title">
+                                    <span><g:message code="invoice.label.payment.refunds"/></span>
+                                </div>
+                                <div class="box-card-hold">
+
+                                    <g:each var="invoicePayment" in="${invoice.paymentMap}" status="i">
+                                        <g:render template="payment" model="[payment: invoicePayment.payment"/>
+                                        <g:if test="${i < invoice.paymentMap.size()-1}"><hr/></g:if>
+                                    </g:each>
+                                </div>
+                            </div>
+                        </g:if>
+
+                    </div>
+                </div>
+            </g:if>
+
             <!-- subscriptions -->
             <g:if test="${subscriptions}">
                 <div id="subscriptions" class="box-cards">
                     <div class="box-cards-title">
-                        <a class="btn-open"><span>Subscriptions</span></a>
+                        <a class="btn-open"><span><g:message code="customer.inspect.subscriptions.title"/></span></a>
                     </div>
                     <div class="box-card-hold">
 
                         <table cellpadding="0" cellspacing="0" class="innerTable">
                             <thead class="innerHeader">
                             <tr>
-                                <th>Order ID</th>
-                                <th>Description</th>
-                                <th>Period</th>
-                                <th>Qty</th>
-                                <th>Price</th>
-                                <th>Total</th>
+                                <th><g:message code="order.label.id"/></th>
+                                <th><g:message code="label.gui.description"/></th>
+                                <th><g:message code="label.gui.period"/></th>
+                                <th><g:message code="label.gui.quantity"/></th>
+                                <th><g:message code="label.gui.price"/></th>
+                                <th><g:message code="label.gui.amount"/></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -244,7 +375,15 @@
                             <div class="column">
                                 <g:applyLayout name="form/text">
                                     <content tag="label"><g:message code="prompt.credit.card"/></content>
-                                    <span>${creditCard.number}</span>
+
+                                    %{-- obscure credit card by default, or if the preference is explicitly set --}%
+                                    <g:if test="${preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
+                                        <g:set var="creditCardNumber" value="${creditCard.number.replaceAll('^\\d{12}','************')}"/>
+                                        ${creditCardNumber}
+                                    </g:if>
+                                    <g:else>
+                                        ${creditCard.number}
+                                    </g:else>
                                 </g:applyLayout>
 
                                 <g:applyLayout name="form/text">

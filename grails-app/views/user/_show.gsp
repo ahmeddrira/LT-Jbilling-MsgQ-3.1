@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
+<%@ page import="com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 <%--
   Shows details of a selected user.
@@ -39,24 +39,30 @@
         <strong><g:message code="customer.detail.user.title"/></strong>
     </div>
     <div class="box">
-        <dl>
-            <dt><g:message code="customer.detail.user.user.id"/></dt>
-            <dd>${selected.id}</dd>
-            <dt><g:message code="customer.detail.user.username"/></dt>
-            <dd>${selected.userName}</dd>
-            <dt><g:message code="customer.detail.user.status"/></dt>
-            <dd>${selected.userStatus.description}</dd>
-            <dt><g:message code="customer.detail.user.created.date"/></dt>
-            <dd><g:formatDate format="MMM-dd-yyyy" date="${selected.createDatetime}"/></dd>
-            <g:if test="${contact}">
-            <dt><g:message code="customer.detail.user.email"/></dt>
-            <dd><a href="mailto:${contact.email}">${contact.email}</a></dd>
-            </g:if>
-            <dt>&nbsp;</dt>
-            <dd>
-                <g:link controller="customerInspector" action="inspect" id="${selected.id}">Inspect Customer ${selected.id}</g:link>
-            </dd>
-        </dl>
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><g:message code="customer.detail.user.user.id"/></td>
+                    <td class="value"><g:link controller="customerInspector" action="inspect" id="${selected.id}" title="${message(code: 'customer.inspect.link')}">${selected.id}</g:link></td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.user.username"/></td>
+                    <td class="value">${selected.userName}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.user.status"/></td>
+                    <td class="value">${selected.userStatus.description}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.user.created.date"/></td>
+                    <td class="value"><g:formatDate format="MMM-dd-yyyy" date="${selected.createDatetime}"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.user.email"/></td>
+                    <td class="value"><a href="mailto:${contact?.email}">${contact?.email}</a></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <!-- user payment details -->
@@ -77,13 +83,23 @@
             <dt><g:message code="customer.detail.payment.amount.owed"/></dt>
             <dd><g:formatNumber number="${new UserBL().getBalance(selected.id)}" type="currency" currencyCode="${selected.currency.code}"/> &nbsp;</dd>
             <dt><g:message code="customer.detail.payment.lifetime.revenue"/></dt>
-            <dd>&nbsp;</dd>
+            <dd><g:formatNumber number="${revenue}" type="currency" currencyCode="${selected.currency.code}"/></dd>
         </dl>
 
         <g:set var="card" value="${selected.creditCards ? selected.creditCards.asList().first() : null}"/>
         <dl class="other">
             <dt><g:message code="customer.detail.payment.credit.card"/></dt>
-            <dd>${card?.number} &nbsp;</dd>
+            <dd>
+                %{-- obscure credit card by default, or if the preference is explicitly set --}%
+                <g:if test="${card?.number && preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
+                    <g:set var="creditCardNumber" value="${card.number.replaceAll('^\\d{12}','************')}"/>
+                    ${creditCardNumber}
+                </g:if>
+                <g:else>
+                    ${card?.number}
+                </g:else>
+                &nbsp;
+            </dd>
             <dt><g:message code="customer.detail.payment.credit.card.expiry"/></dt>
             <dd><g:formatDate format="MMM-dd-yyyy" date="${card?.ccExpiry}"/> &nbsp;</dd>
         </dl>

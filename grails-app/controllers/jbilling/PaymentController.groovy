@@ -37,6 +37,8 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS
 import com.sapienter.jbilling.server.util.db.CurrencyDTO
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import com.sapienter.jbilling.common.Util
+import com.sapienter.jbilling.common.Constants
 
 /**
  * PaymentController 
@@ -228,7 +230,9 @@ class PaymentController {
                 def invoiceId = params.int('invoiceId')
                 log.debug("creating payment ${payment} for invoice ${invoiceId}")
 
-                if (params.processNow) {
+                if (params.boolean('processNow')) {
+                    log.debug("processing payment in real time")
+
                     def authorization = webServicesSession.processPayment(payment, invoiceId)
                     payment.id = authorization.paymentId
 
@@ -241,7 +245,9 @@ class PaymentController {
                         flash.args = [ payment.id, authorization.responseMessage ]
                     }
 
+
                 } else {
+                    log.debug("entering payment")
                     payment.id = webServicesSession.applyPayment(payment, invoiceId)
 
                     flash.info = 'payment.entered'
@@ -269,7 +275,7 @@ class PaymentController {
     def bindPayment(PaymentWS payment, GrailsParameterMap params) {
         bindData(payment, params, 'payment')
 
-        payment.isRefund = params.isRefund ? 1 : 0
+        payment.isRefund = params.boolean('isRefund') ? 1 : 0
 
         // bind credit card object if parameters present
         if (params.creditCard.any { key, value -> value }) {
@@ -277,6 +283,8 @@ class PaymentController {
             bindData(creditCard, params, 'creditCard')
             bindExpiryDate(creditCard, params)
             payment.setCreditCard(creditCard)
+
+            payment.setMethodId(Util.getPaymentMethod(creditCard.number))
         }
 
         // bind ach object if parameters present
@@ -284,6 +292,8 @@ class PaymentController {
             def ach = new AchDTO()
             bindData(ach, params, 'ach')
             payment.setAch(ach)
+
+            payment.setMethodId(Constants.PAYMENT_METHOD_ACH)
         }
 
         // bind cheque object if parameters present
@@ -291,6 +301,8 @@ class PaymentController {
             def cheque = new PaymentInfoChequeDTO()
             bindData(cheque, params, 'cheque')
             payment.setCheque(cheque)
+
+            payment.setMethodId(Constants.PAYMENT_METHOD_CHEQUE)
         }
 
         return payment

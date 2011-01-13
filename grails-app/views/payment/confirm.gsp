@@ -51,11 +51,9 @@
                                     </td>
                                     <td class="innerContent">
                                         <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
-                                        <g:hiddenField name="invoice-${invoice.id}-amount" value="${formatNumber(number: invoice.total, formatName: 'money.format')}"/>
                                     </td>
                                     <td class="innerContent">
                                         <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
-                                        <g:hiddenField name="invoice-${invoice.id}-balance" value="${formatNumber(number: invoice.balance, formatName: 'money.format')}"/>
                                     </td>
                                     <td class="innerContent">
                                         <g:formatDate date="${invoice.dueDate}"/>
@@ -115,8 +113,8 @@
                             <content tag="label"><g:message code="payment.date"/></content>
                             <content tag="label.for">payment.paymentDate</content>
                             <g:set var="paymentDate" value="${payment?.paymentDate ?: new Date()}"/>
-                            <span><g:formatDate date="${paymentDate}" formatName="date.format"/></span>
-                            <g:hiddenField class="field" name="payment.paymentDate" value="${paymentDate}"/>
+                            <span><g:formatDate date="${paymentDate}"/></span>
+                            <g:hiddenField class="field" name="payment.paymentDate" value="${formatDate(date: paymentDate)}"/>
                         </g:applyLayout>
 
                         <g:hiddenField name="isRefund" value="${payment?.isRefund}"/>

@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
+<%@ page import="com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 <%--
   Shows details of a selected user.
@@ -59,7 +59,7 @@
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.user.email"/></td>
-                    <td class="value"><a href="mailto:${contact.email}">${contact.email}</a></td>
+                    <td class="value"><a href="mailto:${contact?.email}">${contact?.email}</a></td>
                 </tr>
             </tbody>
         </table>
@@ -89,7 +89,17 @@
         <g:set var="card" value="${selected.creditCards ? selected.creditCards.asList().first() : null}"/>
         <dl class="other">
             <dt><g:message code="customer.detail.payment.credit.card"/></dt>
-            <dd>${card?.number} &nbsp;</dd>
+            <dd>
+                %{-- obscure credit card by default, or if the preference is explicitly set --}%
+                <g:if test="${card?.number && preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
+                    <g:set var="creditCardNumber" value="${card.number.replaceAll('^\\d{12}','************')}"/>
+                    ${creditCardNumber}
+                </g:if>
+                <g:else>
+                    ${card?.number}
+                </g:else>
+                &nbsp;
+            </dd>
             <dt><g:message code="customer.detail.payment.credit.card.expiry"/></dt>
             <dd><g:formatDate format="MMM-dd-yyyy" date="${card?.ccExpiry}"/> &nbsp;</dd>
         </dl>

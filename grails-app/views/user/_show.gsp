@@ -73,36 +73,56 @@
         <g:set var="invoice" value="${selected.invoices ? selected.invoices.asList().first() : null}"/>
         <g:set var="payment" value="${selected.payments ? selected.payments.asList().first() : null}"/>
 
-        <dl class="other other2">
-            <dt><g:message code="customer.detail.payment.invoiced.date"/></dt>
-            <dd><g:formatDate format="MMM-dd-yyyy" date="${invoice?.createDatetime}"/> &nbsp;</dd>
-            <dt><g:message code="customer.detail.payment.due.date"/></dt>
-            <dd><g:formatDate format="MMM-dd-yyyy" date="${invoice?.dueDate}"/> &nbsp;</dd>
-            <dt><g:message code="customer.detail.payment.invoiced.amount"/></dt>
-            <dd><g:formatNumber number="${invoice?.total}" type="currency" currencyCode="${selected.currency.code}"/> &nbsp;</dd>
-            <dt><g:message code="customer.detail.payment.amount.owed"/></dt>
-            <dd><g:formatNumber number="${new UserBL().getBalance(selected.id)}" type="currency" currencyCode="${selected.currency.code}"/> &nbsp;</dd>
-            <dt><g:message code="customer.detail.payment.lifetime.revenue"/></dt>
-            <dd><g:formatNumber number="${revenue}" type="currency" currencyCode="${selected.currency.code}"/></dd>
-        </dl>
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><g:message code="customer.detail.payment.invoiced.date"/></td>
+                    <td class="value"><g:formatDate format="MMM-dd-yyyy" date="${invoice?.createDatetime}"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.payment.due.date"/></td>
+                    <td class="value"><g:formatDate format="MMM-dd-yyyy" date="${invoice?.dueDate}"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.payment.invoiced.amount"/></td>
+                    <td class="value"><g:formatNumber number="${invoice?.total}" type="currency" currencyCode="${selected.currency.code}"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.payment.amount.owed"/></td>
+                    <td class="value"><g:formatNumber number="${new UserBL().getBalance(selected.id)}" type="currency" currencyCode="${selected.currency.code}"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.payment.lifetime.revenue"/></td>
+                    <td class="value"><g:formatNumber number="${revenue}" type="currency" currencyCode="${selected.currency.code}"/></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr/>
 
         <g:set var="card" value="${selected.creditCards ? selected.creditCards.asList().first() : null}"/>
-        <dl class="other">
-            <dt><g:message code="customer.detail.payment.credit.card"/></dt>
-            <dd>
-                %{-- obscure credit card by default, or if the preference is explicitly set --}%
-                <g:if test="${card?.number && preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
-                    <g:set var="creditCardNumber" value="${card.number.replaceAll('^\\d{12}','************')}"/>
-                    ${creditCardNumber}
-                </g:if>
-                <g:else>
-                    ${card?.number}
-                </g:else>
-                &nbsp;
-            </dd>
-            <dt><g:message code="customer.detail.payment.credit.card.expiry"/></dt>
-            <dd><g:formatDate format="MMM-dd-yyyy" date="${card?.ccExpiry}"/> &nbsp;</dd>
-        </dl>
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><g:message code="customer.detail.payment.credit.card"/></td>
+                    <td class="value">
+                        %{-- obscure credit card by default, or if the preference is explicitly set --}%
+                        <g:if test="${card?.number && preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
+                            <g:set var="creditCardNumber" value="${card.number.replaceAll('^\\d{12}','************')}"/>
+                            ${creditCardNumber}
+                        </g:if>
+                        <g:else>
+                            ${card?.number}
+                        </g:else>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><g:message code="customer.detail.payment.credit.card.expiry"/></td>
+                    <td class="value"><g:formatDate format="MMM-dd-yyyy" date="${card?.ccExpiry}"/></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <!-- contact details -->    
@@ -111,24 +131,39 @@
     </div>
     <g:if test="${contact}">
     <div class="box">
-        <dl>
-            <dt><g:message code="customer.detail.contact.telephone"/></dt>
-            <dd>
-                <g:if test="${contact.phoneCountryCode}">${contact.phoneCountryCode}.</g:if>
-                <g:if test="${contact.phoneAreaCode}">${contact.phoneAreaCode}.</g:if>
-                ${contact.phoneNumber} &nbsp;
-            </dd>
-            <dt><g:message code="customer.detail.contact.address"/></dt>
-            <dd>${contact.address1} ${contact.address2} &nbsp;</dd>
-            <dt><g:message code="customer.detail.contact.city"/></dt>
-            <dd>${contact.city} &nbsp;</dd>
-            <dt><g:message code="customer.detail.contact.state"/></dt>
-            <dd>${contact.stateProvince} &nbsp;</dd>
-            <dt><g:message code="customer.detail.contact.country"/></dt>
-            <dd>${contact.countryCode} &nbsp;</dd>
-            <dt><g:message code="customer.detail.contact.zip"/></dt>
-            <dd>${contact.postalCode} &nbsp;</dd>
-        </dl>
+
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><g:message code="customer.detail.contact.telephone"/></td>
+                    <td class="value">
+                        <g:if test="${contact.phoneCountryCode}">${contact.phoneCountryCode}.</g:if>
+                        <g:if test="${contact.phoneAreaCode}">${contact.phoneAreaCode}.</g:if>
+                        ${contact.phoneNumber}
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.address"/></td>
+                    <td class="value">${contact.address1} ${contact.address2}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.city"/></td>
+                    <td class="value">${contact.city}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.state"/></td>
+                    <td class="value">${contact.stateProvince}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.country"/></td>
+                    <td class="value">${contact.countryCode}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.zip"/></td>
+                    <td class="value">${contact.postalCode}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     </g:if>
 

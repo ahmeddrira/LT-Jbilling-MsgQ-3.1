@@ -54,7 +54,18 @@ table {
 	border-collapse:collapse;
 }
 hr {
+    display: block;
+    position: relative;
+    padding: 0;
+    margin: 8px auto;
     width: 90%;
+    clear: both;
+    border: none;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #fafafa;
+    font-size: 1px;
+    line-height: 0;
+    overflow: visible;
 }
 #header {
 	height:123px;
@@ -1055,6 +1066,14 @@ ul.cloud li a {
 	text-align:right;
 	font-size:12px;
 	line-height:24px;
+}
+.form-columns p.description {
+    float: none;
+    width: auto;
+    margin-left: 170px;
+    padding-bottom: 10px;
+    font-size: 14px;
+    text-align: left;
 }
 .form-columns ul {
     margin: 4px 0 0 0;

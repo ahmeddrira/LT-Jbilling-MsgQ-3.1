@@ -110,11 +110,19 @@
             </div>
 
             <div>
+            <!-- notes -->
+            <div id="notes" class="form-columns">
+                <label><g:message code="prompt.notes"/></label>
+                <p class="description">${customer?.notes}</p>
+            </div>
+
+            <!-- buttons -->
+            <div>
                 <div class="btn-row">
                     <g:link controller="user" action="list" id="${user.id}" class="submit user"><span>View Customer</span></g:link>
                     <g:link controller="invoice" action="user" id="${user.id}" class="submit invoice"><span>View Invoices</span></g:link>
                     <g:link controller="payment" action="user" id="${user.id}" class="submit payment"><span>View Payments</span></g:link>
-                    <g:link controller="order" action="user" id="${user.id}" class="submit order"><span>View Prders</span></g:link>
+                    <g:link controller="order" action="user" id="${user.id}" class="submit order"><span>View Orders</span></g:link>
                 </div>
                 <div class="btn-row">
                     <g:link controller="user" action="edit" id="${user.id}" class="submit edit"><span>Edit Customer</span></g:link>
@@ -151,21 +159,6 @@
                     </div>
                 </div>
             </g:if>
-
-            <!-- notes -->
-            <div id="notes" class="box-cards">
-                <div class="box-cards-title">
-                    <a class="btn-open"><span><g:message code="customer.inspect.notes.title"/></span></a>
-                </div>
-                <div class="box-card-hold">
-                    <div class="box-text">
-                        <label><g:message code="customer.detail.note.title"/></label>
-                        <ul>
-                            <li><p>${customer?.notes}</p></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
 
             <!-- last payment -->
             <g:if test="${payment}">

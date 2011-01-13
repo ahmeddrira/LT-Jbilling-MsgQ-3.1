@@ -49,7 +49,11 @@ class InvoiceController {
 		}
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 		log.info "found invoices [${invoices?.size()}]"
-		[invoices:invoices, filters:filters]
+		if (params.applyFilter) {
+            render template: 'lists', model: [invoices:invoices, filters:filters]
+		} else {
+			[invoices:invoices, filters:filters]
+		}
 	}
 
 	def getInvoices(filters) {
@@ -152,7 +156,7 @@ class InvoiceController {
 				user= webServicesSession.getUserWS(invoice?.getUserId())
 				
 				log.info "Found invoice ${invoice?.number}, Loading..."
-				log.info "Found user ${user}"
+				log.info "Found user ${user?.contact?.firstName}"
 				
 				payments= new ArrayList<PaymentWS>(invoice?.payments?.length)
 				for(Integer pid: invoice?.payments) {

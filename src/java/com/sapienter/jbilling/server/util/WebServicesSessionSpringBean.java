@@ -2202,7 +2202,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     	//validation
     	if (!ConfigurationBL.validate(ws)) {
-    		throw new SessionInternalError("Invalid nextRunDate.");
+    		throw new SessionInternalError("Error: Invalid Next Run Date.");
     	}
         BillingProcessConfigurationDTO dto = ConfigurationBL.getDTO(ws);
 

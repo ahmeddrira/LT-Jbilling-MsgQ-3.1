@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.process;
 
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
@@ -208,13 +209,30 @@ public class ConfigurationBL {
     			//if status is not failed i.e. for the same date, if the process is either running or finished
     			if (!Constants.PROCESS_RUN_STATUS_FAILED.equals(run.getStatus()) )
     			{
-    				return false;
+    				SessionInternalError exception = new SessionInternalError("BillingProcess.nextRunDate validation error.");
+    	            String messages[] = new String[1];
+    	            messages[0] = new String("BillingProcessConfigurationWS,nextRunDate,billing.configuration.error.unique.nextrundate,");
+    	            exception.setErrorMessages(messages);
+    	            throw exception;
     			}
     		}
     	}
-    	//Greater than the latest successful one
-
+    	BillingProcessDTO process= null;
+    	try {
+    		process= new BillingProcessDAS().find(new BillingProcessBL().getLast(ws.getEntityId()));
+    	} catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
     	
+    	//The nextRunDate must be greater than the latest successful one
+    	if (!process.getBillingDate().before(ws.getNextRunDate())) {
+			SessionInternalError exception = new SessionInternalError("BillingProcess.nextRunDate validation error1.");
+			String messages[] = new String[1];
+			messages[0] = new String("BillingProcessConfigurationWS,nextRunDate,billing.configuration.error.past.nextrundate,"+process.getBillingDate());
+			exception.setErrorMessages(messages);
+			throw exception;
+		}
+
     	return retValue;
     }
     

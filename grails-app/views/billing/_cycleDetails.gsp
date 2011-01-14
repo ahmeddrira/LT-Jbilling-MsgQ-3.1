@@ -1,13 +1,13 @@
 <%@page import="com.sapienter.jbilling.server.process.BillingProcessBL;com.sapienter.jbilling.common.CommonConstants;com.sapienter.jbilling.server.util.Util"%>
-
+<g:set var="dtFmt" value="${new java.text.SimpleDateFormat('dd-MMM-yyyy')}"/>
 <div class="table-info" >
     <em><g:message code="billing.details.label.process.id"/>: 
         <strong> ${process.id} </strong> 
     </em> 
     <em><g:message code="billing.details.label.start.date"/>: 
-        <strong> ${new java.text.SimpleDateFormat("dd-MMM-yyyy").format(process.billingDate)} </strong></em> 
+        <strong> ${dtFmt.format(process.billingDate)} </strong></em> 
     <em><g:message code="billing.details.label.end.date"/>: 
-        <strong> ${new java.text.SimpleDateFormat("dd-MMM-yyyy").format(BillingProcessBL.getEndOfProcessPeriod(process))}</strong></em> 
+        <strong> ${dtFmt.format(BillingProcessBL.getEndOfProcessPeriod(process))}</strong></em> 
     <em><g:message code="billing.details.label.number.runs" />: 
         <strong>${process?.processRuns?.size()} </strong></em>
 </div>
@@ -88,10 +88,17 @@
             <td></td>
             <td></td>
             <td></td>
-            <td><strong>${ttlInvcd}<!-- Total Invoiced --></strong></td>
-            <td class="col01"><em>${ttlSuccessAmt}</em></td>
+            <td><strong><!-- Total Invoiced -->
+                    ${Util.formatMoney( ttlInvcd ?: ("0.0" as BigDecimal),
+                        session["user_id"], 1, false)?.substring(2)}
+	        </strong></td>
+            <td class="col01"><em>
+                    ${Util.formatMoney( ttlSuccessAmt ?: ("0.0" as BigDecimal),
+                        session["user_id"], 1, false)?.substring(2)}
+            </em></td>
             <td></td>
-            <td><strong>${ttlFailedAmt}</strong></td>
+            <td><strong>${Util.formatMoney( ttlFailedAmt ?: ("0.0" as BigDecimal),
+                        session["user_id"], 1, false)?.substring(2)}</strong></td>
             <td></td>
         </tr>
     </g:each>

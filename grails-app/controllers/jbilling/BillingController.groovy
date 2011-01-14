@@ -149,7 +149,7 @@ class BillingController {
 			log.info "2. ${row[1]}"
 			log.info "---------------------------------"
 		}
-		
+		recentItemService.addRecentItem(processId, RecentItemType.BILLINGPROCESS)
 		[process:process, countAndSumByCurrency: countAndSumByCurrency, mapOfPaymentListByCurrency: mapOfPaymentListByCurrency, failedAmountsByCurrency: failedAmountsByCurrency] 
 	}
 

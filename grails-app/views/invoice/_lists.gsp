@@ -11,7 +11,7 @@
 	<div class="table-scroll">
 		<table id="invoices" cellspacing="0" cellpadding="0">
 			<thead>
-	            <th><g:message code="label.gui.date"/></th>
+	            <th ><g:message code="label.gui.date"/></th>
 	            <th class="small"><g:message code="invoice.label.duedate"/></th>
 	            <th class="small"><g:message code="invoice.label.id"/></th>
 	            <th class="small">#</th> <!-- # for Invoice Number -->
@@ -23,7 +23,7 @@
 	        <tbody>
 			<g:each var="inv" in="${invoices}">
 				<tr id="product-${inv.id}"  class="${invoice?.id == inv.id ? 'active' : ''}">
-	            	<td class="medium">
+	            	<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 			     			before="register(this);" onSuccess="render(data, next);">
 							<strong>
@@ -31,7 +31,7 @@
 							</strong>
 						</g:remoteLink>
 					</td>
-					<td class="medium">
+					<td class="small">
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 			     			before="register(this);" onSuccess="render(data, next);">
 							<strong>
@@ -55,7 +55,7 @@
 							</strong>
 						</g:remoteLink>
 					</td>
-					<td class="large">
+					<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 				     			before="register(this);" onSuccess="render(data, next);">
 							<strong>
@@ -63,7 +63,7 @@
 							</strong>
 						</g:remoteLink>
 					</td>
-					<td class="medium">
+					<td class="small">
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 				     			before="register(this);" onSuccess="render(data, next);">
 							<strong>
@@ -77,7 +77,7 @@
 							</strong>
 						</g:remoteLink>
 					</td>
-					<td class="medium">
+					<td class="small">
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 				     			before="register(this);" onSuccess="render(data, next);">
 							<strong>

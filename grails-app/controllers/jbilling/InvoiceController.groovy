@@ -1,5 +1,7 @@
 package jbilling
 
+import grails.plugins.springsecurity.Secured;
+
 import javax.servlet.ServletOutputStream
 
 import grails.converters.JSON
@@ -12,7 +14,13 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.common.SessionInternalError;
 
-
+/**
+* BillingController
+*
+* @author Vikas Bodani
+* @since 
+*/
+@Secured(['isAuthenticated()'])
 class InvoiceController {
 	
 	Integer languageId= session["language_id"]
@@ -214,6 +222,20 @@ class InvoiceController {
 		redirect (action:list, params:[id:userId])
 	}
 	
+	def notifyInvoiceByEmail = {
+		Integer invId= params.id as Integer
+		log.info "invoice.sendInvoiceByEmail ${invId}"
+		try {
+			webServicesSession.notifyInvoiceByEmail(invId)
+			flash.message = 'invoice.prompt.success.email.invoice'
+		} catch (Exception e) { 
+			log.error e.getMessage()
+			flash.error= 'invoice.prompt.failure.email.invoice'
+			flash.args= params.id 
+		}
+		redirect(action: 'showListAndInvoice', params:[id:invId])
+	}
+	
 	def downloadPdf = {
 		log.info 'calling downloadPdf'
 		Integer invId= params.id as Integer
@@ -255,4 +277,5 @@ class InvoiceController {
 		}
 		redirect(action: 'showListAndInvoice', params:[id:invId])
 	}
+	
 }

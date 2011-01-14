@@ -213,7 +213,7 @@ public class WSSecurityMethodMapper {
         UPDATE_ORDER_LINE_PROVISIONING  ("updateOrderAndLineProvisioningStatus", 0, Type.ORDER),
         UPDATE_LINE_PROVISIONING        ("updateLineProvisioningStatus", 0, Type.ORDER_LINE),
         SAVE_CUSTOMER_NOTES             ("saveCustomerNotes", 0, Type.USER),
-        
+        NOTIFY_INVOICE_BY_EMAIL         ("notifyInvoiceByEmail", 0, Type.INVOICE),
         DELETE_PLUGIN                   ("deletePlugin", 1, Type.PLUG_IN);
         
         private Method method;

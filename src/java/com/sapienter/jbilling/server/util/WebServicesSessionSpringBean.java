@@ -82,6 +82,7 @@ import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.MediationResult;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.order.IOrderSessionBean;
@@ -286,6 +287,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         	ids.add(wsdto);
         }
         return ids.toArray(new InvoiceWS[ids.size()]);
+    }
+    
+    public void notifyInvoiceByEmail(Integer invoiceId) {
+    	INotificationSessionBean notificationSession = 
+	            (INotificationSessionBean) Context.getBean(
+	            Context.Name.NOTIFICATION_SESSION);
+	    Boolean result = notificationSession.emailInvoice(invoiceId);
     }
     
     public Integer[] getAllInvoices(Integer userId) {

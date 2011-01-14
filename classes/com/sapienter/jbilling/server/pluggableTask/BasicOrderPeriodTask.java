@@ -148,7 +148,8 @@ public class BasicOrderPeriodTask
                             .intValue());
                     Date cycleEnds = cal.getTime();
                     if (cal.getTime().after(firstBillableDate)
-                            && !cal.getTime().after(viewLimit)) {
+                            && (!cal.getTime().after(viewLimit) ||
+                                (order.getActiveUntil() != null && !order.getActiveUntil().after(viewLimit)))) {
                         // calculate the days for this cycle
                         PeriodOfTime cycle = new PeriodOfTime(cycleStarts, cycleEnds, 0, 0);
                         // not crete this period

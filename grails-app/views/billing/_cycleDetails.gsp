@@ -30,46 +30,68 @@
     </thead>
     <tbody>
     <g:each var="run" in="${process.processRuns}">
-        <g:set var="dateFormat" value="${new java.text.SimpleDateFormat('dd MMM yyyy')}"/>
-        <g:set var="timeFormat" value="${new java.text.SimpleDateFormat('hh:mm:ss a')}"/>
-        <g:set var="flashTotal" value="${new BigDecimal(0)}"/>
-        <%--
-        <g:each var="prttl" in="${process.processRuns.processRunTotals}">
-            ${prttl[0].currency.getDescription(session.language_id)}
-        </g:each>
-         --%>
-        <tr>
-            <td class="col02">${dateFormat.format(run.started)}<br>${timeFormat.format(run.started) }</td>
-            <td>${dateFormat.format(run.finished)}<br>${timeFormat.format(run.finished) }</td>
-            <td>
-                <g:if test="${run.paymentFinished != null}">
-                    ${dateFormat.format(run?.paymentFinished)}<br>${timeFormat.format(run?.paymentFinished)}
+        <g:set var="dtFmt" value="${new java.text.SimpleDateFormat('dd MMM yyyy')}"/>
+        <g:set var="timeFmt" value="${new java.text.SimpleDateFormat('hh:mm:ss a')}"/>
+        <g:set var="ttlInvcd" value="${new BigDecimal(0)}"/>
+        <g:set var="ttlSuccessAmt" value="${new BigDecimal(0)}"/>
+        <g:set var="ttlFailedAmt" value="${new BigDecimal(0)}"/>
+        
+        <g:each status="idx" var="cur" in="${countAndSumByCurrency}">
+            <tr>
+                <g:if test="${idx == 0}">
+                    <td class="col02">${dtFmt.format(run.started)}<br>${timeFmt.format(run.started) }</td>
+                    <td>${dtFmt.format(run.finished)}<br>${timeFmt.format(run.finished) }</td>
+                    <td>
+                        <g:if test="${run.paymentFinished != null}">
+                            ${dtFmt.format(run?.paymentFinished)}<br>${timeFmt.format(run?.paymentFinished)}
+                        </g:if>
+                    </td>
+                    <td>${run?.status?.getDescription(session.language_id) }</td>
+                    <td>${run?.invoicesGenerated}</td>
                 </g:if>
-            </td>
-            <td>${run?.status?.getDescription(session.language_id) }</td>
-            <td>${run?.invoicesGenerated}</td>
-            <td></td>
-            <td class="col01">
-                <em>$ 90.65</em> <em>$ 8807.10</em> 
-                <em>$5307.70</em> <em>$ 10063.64</em>
-            </td>
-            <td>
-                <em>Discovery</em> <em>Visa</em> 
-                <em>Mastercard</em> <em>Amex</em>
-            </td>
-            <td></td>
-            <td>US Dollar</td>
-        </tr>
+                <g:else>
+                    <td class="col02"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </g:else>
+                
+                <td></td>
+                <td class="col01">
+                    <g:each var="pymArr" in="${mapOfPaymentListByCurrency?.get( cur[2]?.getId() as Integer )}">
+                        <!-- Compute Total Paid (Sum of all successful payments for all currencies) -->
+                        <g:set var="ttlSuccessAmt" value="${(ttlSuccessAmt as BigDecimal).add( (pymArr as Object[])[1] as BigDecimal )}"/>
+                        <em>${Util.formatMoney( ((pymArr as Object[])[1] as BigDecimal) ?: ("0.0" as BigDecimal),
+                                session["user_id"], cur[2]?.getId() as Integer, false)?.substring(2)}</em>
+                    </g:each>
+                </td>
+                <td>
+                    <g:each var="pymArr" in="${mapOfPaymentListByCurrency?.get(cur[2]?.getId() as Integer)}">
+                        <em>${(pymArr as Object[])[0]?.getDescription(session.language_id)}</em>
+                    </g:each>
+                </td>
+                <td></td>
+                <td>${cur[2]?.getDescription(session.language_id)}</td>
+            </tr>
+            <g:set var="ttlInvcd" value="${(ttlInvcd as BigDecimal).add(cur[1] as BigDecimal)}"/>
+        </g:each>
+        
+        <!-- Compute Total Not Paid (Sum of all failed payments) -->
+        <g:each var="failedAmt" in="${failedAmountsByCurrency}">
+            <g:set var="ttlFailedAmt" value="${(ttlFailedAmt as BigDecimal).add(failedAmt as BigDecimal)}"/>
+        </g:each>
+        
         <tr class="bg">
             <td class="col02"></td>
             <td></td>
             <td></td>
             <td></td>
             <td></td>
-            <td><strong>$ 67796.61</strong></td>
-            <td class="col01"><em>$ 43527.64</em></td>
+            <td><strong>${ttlInvcd}<!-- Total Invoiced --></strong></td>
+            <td class="col01"><em>${ttlSuccessAmt}</em></td>
             <td></td>
-            <td><strong>$ 24269.01</strong></td>
+            <td><strong>${ttlFailedAmt}</strong></td>
             <td></td>
         </tr>
     </g:each>

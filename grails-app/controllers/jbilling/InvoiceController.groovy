@@ -1,5 +1,7 @@
 package jbilling
 
+import grails.plugins.springsecurity.Secured;
+
 import javax.servlet.ServletOutputStream
 
 import grails.converters.JSON
@@ -12,7 +14,13 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.common.SessionInternalError;
 
-
+/**
+* BillingController
+*
+* @author Vikas Bodani
+* @since 
+*/
+@Secured(['isAuthenticated()'])
 class InvoiceController {
 	
 	Integer languageId= session["language_id"]

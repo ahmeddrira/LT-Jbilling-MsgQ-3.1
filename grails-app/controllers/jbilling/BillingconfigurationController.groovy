@@ -1,9 +1,17 @@
 package jbilling
 
+import grails.plugins.springsecurity.Secured;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.common.SessionInternalError;
 import java.text.SimpleDateFormat;
 
+/**
+* BillingController
+*
+* @author Vikas Bodani
+* @since 11/01/11
+*/
+@Secured(['isAuthenticated()'])
 class BillingconfigurationController {
 
 	def webServicesSession

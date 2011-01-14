@@ -33,7 +33,8 @@ enum RecentItemType {
     PRODUCT     ("product", "show", null, "icon13.gif", "recent.item.product.title"),
     CUSTOMER    ("user", "list", null, "icon12.gif", "recent.item.customer.title"),
     PAYMENT     ("payment", "list", null, "icon11.gif", "recent.item.payment.title"),
-    PLUGIN      ("plugin", "list", null, "icon13.gif", "recent.item.plugin.title");
+    PLUGIN      ("plugin", "list", null, "icon13.gif", "recent.item.plugin.title"),
+	BILLINGPROCESS ("billing", "show", null, "icon13.gif", "recent.item.billing.process.title");
 
     String controller
     String action

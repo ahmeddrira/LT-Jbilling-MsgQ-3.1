@@ -20,7 +20,7 @@ package jbilling
  */
 
 enum SearchType {
-    CUSTOMERS, ORDERS, INVOICES, PAYMENTS
+    CUSTOMERS, ORDERS, INVOICES, PAYMENTS, BILLINGPROCESS
 }
 
 class SearchCommand {
@@ -67,6 +67,11 @@ class SearchController {
                 filterService.setFilter(FilterType.PAYMENT, filter)
                 redirect(controller: 'payment', action: 'list', id: cmd.id)
                 break
+				
+			case SearchType.BILLINGPROCESS:
+				filterService.setFilter(FilterType.BILLINGPROCESS, filter)
+				redirect(controller: 'billing', action: 'index', id: cmd.id)
+				break
         }
     }
 }

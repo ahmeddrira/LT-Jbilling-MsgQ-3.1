@@ -214,6 +214,20 @@ class InvoiceController {
 		redirect (action:list, params:[id:userId])
 	}
 	
+	def notifyInvoiceByEmail = {
+		Integer invId= params.id as Integer
+		log.info "invoice.sendInvoiceByEmail ${invId}"
+		try {
+			webServicesSession.notifyInvoiceByEmail(invId)
+			flash.message = 'invoice.prompt.success.email.invoice'
+		} catch (Exception e) { 
+			log.error e.getMessage()
+			flash.error= 'invoice.prompt.failure.email.invoice'
+			flash.args= params.id 
+		}
+		redirect(action: 'showListAndInvoice', params:[id:invId])
+	}
+	
 	def downloadPdf = {
 		log.info 'calling downloadPdf'
 		Integer invId= params.id as Integer
@@ -255,4 +269,5 @@ class InvoiceController {
 		}
 		redirect(action: 'showListAndInvoice', params:[id:invId])
 	}
+	
 }

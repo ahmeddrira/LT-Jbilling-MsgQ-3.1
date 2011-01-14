@@ -16,10 +16,5 @@
     <g:render template="list" model="[lstBillingProcesses: lstBillingProcesses, dataHashMap:dataHashMap]"/>
 </content>
 
-<%--
-	<g:render template="/layouts/includes/filters"/>
-	<g:render template="list" model="[lstBillingProcesses: lstBillingProcesses, dataHashMap:dataHashMap]"/> 
- --%>
-
 </body>
 </html>

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import com.sapienter.jbilling.server.process.BillingProcessRunTotalDTOEx;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
+import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 
@@ -81,14 +82,25 @@ class BillingController {
 	}
 
 
-	def show = { render "Billing Process Details screen." }
+	def show = { 
+		log.info "BillingController.show - ID: ${params.id}"
+		
+		BillingProcessDTO process = new BillingProcessDAS().find(params.id.toInteger());
+		
+		for (ProcessRunDTO run: process.processRuns) {
+			log.info "${run.finished}"
+			log.info "${run.paymentFinished}"
+		}
+		[process:process] 
+	}
 
 	def runBilling = {
 
-		render "run billing if not already running"
+		
 		//check if billing is already running
 		//new BillingProcessDAS().isPresent(entityId, 0, config.getNextRunDate()) != null) {
 		//if not, run billing now
 		//else show message
+		render "run billing if not already running"
 	}
 }

@@ -20,6 +20,11 @@
 		<table class="dataTable">
 			<tr><td><g:message code="invoice.label.id"/>:</td><td class="value">${invoice.id}</td></tr>
 			<tr><td><g:message code="invoice.label.number"/>:</td><td class="value">${invoice.number}</td></tr>
+            <tr><td><g:message code="invoice.label.user.id"/>:</td><td class="value">
+                <g:link controller="user" action="list" id="${user?.id}">
+                    ${user?.id}
+                </g:link>
+            </td></tr>
 			<tr><td><g:message code="invoice.label.status"/>:</td><td class="value">${invoice.statusDescr}</td></tr>
 			<tr><td><g:message code="invoice.label.date"/>:</td><td class="value">${Util.formatDate(invoice.createDateTime, session["user_id"])}</td></tr>
 			<tr><td><g:message code="invoice.label.duedate"/>:</td><td class="value">${Util.formatDate(invoice.dueDate, session["user_id"])}</td></tr>
@@ -70,11 +75,16 @@
 	</div>
 
 	<div class="btn-box">
-		<a onclick="" class="submit"><span><g:message code="button.invoice.pay"/></span></a>
-		<!-- <a onclick="" class="submit"><span><g:message code="button.invoice.sendEmail"/></span></a> --> 
-		<a href="${createLink (action: 'downloadPdf', id: invoice.id)}" class="submit">
-			<span><g:message code="button.invoice.downloadPdf"/></span>
-		</a>
+        <div class="row">
+    		<a href="${createLink (controller: 'payment', action: 'edit', params: [userId: user?.id, invoiceId: invoice.id])}" class="submit payment">
+                <span><g:message code="button.invoice.pay"/></span></a>
+    		<a href="${createLink (action: 'downloadPdf', id: invoice.id)}" class="submit save">
+    			<span><g:message code="button.invoice.downloadPdf"/></span></a>
+        </div>
+        <div class="row">
+            <a href="${createLink (action: 'notifyInvoiceByEmail', id: invoice.id)}" class="submit emailinvoice">
+                <span><g:message code="button.invoice.sendEmail"/></span></a>
+        </div>
 	</div>
 
 	<!-- Payments & Refunds Info -->

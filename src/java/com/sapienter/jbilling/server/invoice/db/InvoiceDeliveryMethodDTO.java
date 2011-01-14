@@ -58,7 +58,6 @@ public class InvoiceDeliveryMethodDTO implements Serializable {
     private int id;
     private Set<CompanyDTO> entities = new HashSet<CompanyDTO>(0);
     private Set<CustomerDTO> customers = new HashSet<CustomerDTO>(0);
-    private int versionNum;
 
     public InvoiceDeliveryMethodDTO() {
     }
@@ -102,16 +101,6 @@ public class InvoiceDeliveryMethodDTO implements Serializable {
 
     public void setCustomers(Set<CustomerDTO> customers) {
         this.customers = customers;
-    }
-    
-    @Version
-    @Column(name="OPTLOCK")
-    public int getVersionNum() {
-        return versionNum;
-    }
-
-    public void setVersionNum(int versionNum) {
-        this.versionNum = versionNum;
     }
 
 }

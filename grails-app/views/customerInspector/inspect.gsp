@@ -33,6 +33,11 @@
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
+                        <content tag="label">Last Login</content>
+                        <span><g:formatDate date="${user.lastLogin}"/></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.contact.telephone"/></content>
                         <span>
                             <g:if test="${contact?.phoneCountryCode}">${contact?.phoneCountryCode}.</g:if>
@@ -66,15 +71,18 @@
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
-                        <content tag="label"><g:message code="customer.detail.user.next.invoice.date"/></content>
+                        <content tag="label"><g:message code="prompt.user.language"/></content>
+                        <span>${user.language.getDescription()}</span>
+                    </g:applyLayout>
 
-                        <g:if test="${cycle}">
-                            <g:set var="nextInvoiceDate" value="${cycle?.getNextBillableDay() ?: cycle?.getActiveSince() ?: cycle?.getCreateDate()}"/>
-                            <span><g:formatDate date="${nextInvoiceDate}"/></span>
-                        </g:if>
-                        <g:else>
-                            <g:message code="prompt.no.active.orders"/>
-                        </g:else>
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.user.currency"/></content>
+                        <span>${user.currency.getDescription(session['language_id'])}</span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.exclude.ageing"/></content>
+                        <span><g:formatBoolean boolean="${customer?.excludeAging > 0}"/></span>
                     </g:applyLayout>
                 </div>
 
@@ -90,12 +98,32 @@
                         <span title="${mainRole.getDescription(session['language_id'])}">${mainRole.getTitle(session['language_id'])}</span>
                     </g:applyLayout>
 
-                    <g:each var="ccf" in="${contact?.fields?.sort{ it.id }}">
+                    <g:applyLayout name="form/text">
+                        <content tag="label">Partner ID</content>
+                        <span>${user.partner?.id}</span>
+                    </g:applyLayout>
+
+                    <!-- custom contact fields -->
+                    <g:each var="ccf" in="${contactFields?.sort{ it.id }}">
+                        <g:set var="field" value="${contact?.fields?.find{ it.type.id == ccf.id }}"/>
+
                         <g:applyLayout name="form/text">
-                            <content tag="label"><g:message code="${ccf.type.promptKey}"/></content>
-                            <span>${ccf.content}</span>
+                            <content tag="label"><g:message code="${ccf.promptKey}"/></content>
+                            <span>${field?.content}</span>
                         </g:applyLayout>
                     </g:each>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="customer.detail.user.next.invoice.date"/></content>
+
+                        <g:if test="${cycle}">
+                            <g:set var="nextInvoiceDate" value="${cycle?.getNextBillableDay() ?: cycle?.getActiveSince() ?: cycle?.getCreateDate()}"/>
+                            <span><g:formatDate date="${nextInvoiceDate}"/></span>
+                        </g:if>
+                        <g:else>
+                            <g:message code="prompt.no.active.orders"/>
+                        </g:else>
+                    </g:applyLayout>
 
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.payment.lifetime.revenue"/></content>
@@ -115,10 +143,84 @@
                 <p class="description">${customer?.notes}</p>
             </div>
 
+            <!-- separator -->
+            <div class="form-columns">
+                <hr/>
+            </div>
+
+            <!-- account hierarchy -->
+            <div class="form-columns">
+                <div class="column">
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.parent.id"/></content>
+                        <span>
+                            <g:link controller="user" action="subaccounts" id="${customer?.parent?.id}">${customer?.parent?.id}</g:link>
+                        </span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.is.parent"/></content>
+                        <span><g:formatBoolean boolean="${customer?.isParent > 0}"/></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.invoice.if.child"/></content>
+                        <span><g:formatBoolean boolean="${customer?.invoiceChild > 0}"/></span>
+                    </g:applyLayout>
+                </div>
+                <div class="column">
+                    <!-- list of direct sub-accounts -->
+                    <g:each var="account" in="${customer.children}">
+                        <g:applyLayout name="form/text">
+                            <content tag="label">User ${account.id}</content>
+                            <span>
+                                <g:link controller="user" action="list" id="${account.id}">${account.userName}</g:link>
+                            </span>
+                        </g:applyLayout>
+                    </g:each>
+                </div>
+            </div>
+
+            <!-- separator -->
+            <div class="form-columns">
+                <hr/>
+            </div>
+
+            <!-- dynamic balance and invoice delivery -->
+            <div class="form-columns">
+                <div class="column">
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.balance.type"/></content>
+                        <span><g:message code="customer.balance.type.${customer?.balanceType ?: 0}"/></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.credit.limit"/></content>
+                        <span><g:formatNumber number="${customer?.creditLimit}" formatName="money.format"/></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.auto.recharge"/></content>
+                        <span><g:formatNumber number="${customer?.autoRecharge}" formatName="money.format"/></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.dynamic.balance"/></content>
+                        <span><g:formatNumber number="${customer?.dynamicBalance}" formatName="money.format"/></span>
+                    </g:applyLayout>
+                </div>
+                <div class="column">
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.invoice.delivery.method"/></content>
+                        <span><g:message code="customer.invoice.delivery.method.${customer?.invoiceDeliveryMethod?.id ?: 1}"/></span>
+                    </g:applyLayout>
+                </div>
+            </div>
+
             <!-- buttons -->
-            <div>
+            <div style="margin: 20px 0;">
                 <div class="btn-row">
-                    <g:link controller="user" action="list" id="${user.id}" class="submit user"><span><g:message code="customer.view.customers.button"/></span></g:link>
+                    <g:link controller="user" action="list" id="${user.id}" class="submit user"><span><g:message code="customer.view.customer.button"/></span></g:link>
                     <g:link controller="invoice" action="user" id="${user.id}" class="submit invoice"><span><g:message code="customer.view.invoices.button"/></span></g:link>
                     <g:link controller="payment" action="user" id="${user.id}" class="submit payment"><span><g:message code="customer.view.payments.button"/></span></g:link>
                     <g:link controller="order" action="user" id="${user.id}" class="submit order"><span><g:message code="customer.view.orders.button"/></span></g:link>

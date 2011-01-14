@@ -37,8 +37,14 @@
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="prompt.customer.number"/></content>
 
-                            <g:if test="${user}"><span>${user?.userId}</span></g:if>
-                            <g:else><em><g:message code="prompt.id.new"/></em></g:else>
+                            <g:if test="${user}">
+                                <span>
+                                    <g:link controller="customerInspector" action="inspect" id="${user.userId}" title="${message(code: 'customer.inspect.link')}">${user.userId}</g:link>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <em><g:message code="prompt.id.new"/></em>
+                            </g:else>
 
                             <g:hiddenField name="user.userId" value="${user?.userId}"/>
                         </g:applyLayout>
@@ -101,12 +107,29 @@
                                     optionKey="id" optionValue="description" value="${user?.currencyId}" />
                         </g:applyLayout>
 
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.parent.id"/></content>
+                            <content tag="label.for">user.parentId</content>
+                            <g:passwordField class="field" name="user.parentId" value="${user?.parentId}"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/checkbox">
+                            <content tag="label"><g:message code="prompt.allow.sub.accounts"/></content>
+                            <content tag="label.for">user.isParent</content>
+                            <g:checkBox class="cb checkbox" name="user.isParent" checked="${user?.isParent}"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/checkbox">
+                            <content tag="label"><g:message code="prompt.invoice.if.child"/></content>
+                            <content tag="label.for">user.invoiceChild</content>
+                            <g:checkBox class="cb checkbox" name="user.invoiceChild" checked="${user?.invoiceChild}"/>
+                        </g:applyLayout>
+
                         <g:applyLayout name="form/checkbox">
                             <content tag="label"><g:message code="prompt.exclude.ageing"/></content>
                             <content tag="label.for">excludeFromAgeing</content>
                             <g:checkBox class="cb checkbox" name="excludeFromAgeing" />
                         </g:applyLayout>
-
                     </div>
 
                     <!-- contact information column -->
@@ -203,12 +226,76 @@
                             <g:textField class="field" name="contact.countryCode" value="${contact?.countryCode}" />
                         </g:applyLayout>
 
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.partner.id"/></content>
+                            <content tag="label.for">user.partnerId</content>
+                            <g:textField class="field" name="user.partnerId" value="${user?.partnerId}"/>
+                        </g:applyLayout>
+
+                        <!-- custom contact fields -->
+                        <g:each var="ccf" in="${company.contactFieldTypes.sort{ it.id }}">
+                            <g:set var="fieldIndex" value="${contact?.fieldIDs?.findIndexOf{ it == ccf.id }}"/>
+                            <g:set var="fieldValue" value="${contact?.fieldValues?.getAt(fieldIndex)}"/>
+
+                            <g:applyLayout name="form/input">
+                                <content tag="label"><g:message code="${ccf.promptKey}"/></content>
+                                <g:textField class="field" name="contactField.${ccf.id}" value="${fieldValue}"/>
+                            </g:applyLayout>
+                        </g:each>
+
                         <g:applyLayout name="form/checkbox">
                             <content tag="label"><g:message code="prompt.include.in.notifications"/></content>
-                            <content tag="label.for">includeInNotifications</content>
-                            <g:checkBox class="cb checkbox" name="includeInNotifications"/>
+                            <content tag="label.for">contact.include</content>
+                            <g:checkBox class="cb checkbox" name="contact.include" checked="${contact?.include > 0}"/>
                         </g:applyLayout>
                     </div>
+                </div>
+
+                <!-- separator -->
+                <div class="form-columns">
+                    <hr/>
+                </div>
+
+                <!-- dynamic balance and invoice delivery -->
+                <div class="form-columns">
+                    <div class="column">
+                        <g:applyLayout name="form/select">
+                            <content tag="label"><g:message code="prompt.balance.type"/><content>
+                            <content tag="label.for">user.balanceType</content>
+                            <g:select from="[Constants.BALANCE_NO_DYNAMIC, Constants.BALANCE_PRE_PAID, Constants.BALANCE_CREDIT_LIMIT]"
+                                      valueMessagePrefix="customer.balance.type"
+                                      name="user.balanceType"
+                                      value="${user?.balanceType}"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.credit.limit"/></content>
+                            <content tag="label.for">user.creditLimit</content>
+                            <g:textField class="field" name="user.creditLimit" value="${formatNumber(number: user?.getCreditLimitAsDecimal(), formatName: 'money.format')}"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.auto.recharge"/></content>
+                            <content tag="label.for">user.autoRecharge</content>
+                            <g:textField class="field" name="user.autoRecharge" value="${formatNumber(number: user?.getAutoRechargeAsDecimal(), formatName: 'money.format')}"/>
+                        </g:applyLayout>
+                    </div>
+
+                    <div class="column">
+                        <g:applyLayout name="form/select">
+                            <content tag="label"><g:message code="prompt.invoice.delivery.method"/></content>
+                            <content tag="label.for">user.invoiceDeliveryMethodId</content>
+                            <g:select from="${company.invoiceDeliveryMethods.sort{ it.id }}"
+                                      optionKey="id"
+                                      valueMessagePrefix="customer.invoice.delivery.method"
+                                      name="user.invoiceDeliveryMethodId"/>
+                        </g:applyLayout>
+                    </div>
+                </div>
+
+                <!-- spacer -->
+                <div>
+                    <br/>&nbsp;
                 </div>
 
                 <!-- credit card -->
@@ -225,7 +312,15 @@
                                 <g:applyLayout name="form/input">
                                     <content tag="label"><g:message code="prompt.credit.card"/></content>
                                     <content tag="label.for">creditCard.number</content>
-                                    <g:textField class="field" name="creditCard.number" value="${creditCard?.number}" />
+
+                                    %{-- obscure credit card by default, or if the preference is explicitly set --}%
+                                    <g:if test="${creditCard && preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
+                                        <g:set var="creditCardNumber" value="${creditCard.number.replaceAll('^\\d{12}','************')}"/>
+                                        <g:textField class="field" name="creditCard.number" value="${creditCardNumber}" />
+                                    </g:if>
+                                    <g:else>
+                                        <g:textField class="field" name="creditCard.number" value="${creditCard?.number}" />
+                                    </g:else>
                                 </g:applyLayout>
 
                                 <g:applyLayout name="form/input">

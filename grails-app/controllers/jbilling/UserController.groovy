@@ -137,14 +137,14 @@ class UserController {
      */
     def edit = {
         def user = params.id ? webServicesSession.getUserWS(params.int('id')) : null
+        def company = CompanyDTO.get(session['company_id'])
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
 
-        [ user: user, currencies: currencies ]
+        [ user: user, company: company, currencies: currencies ]
     }
 
-    // todo: handle "exclude from aging" flag from edit screen
-    // todo: handle "include contact in notifications" flag from edit screen
+    // todo: handle "exclude from aging" customer flag from edit screen - update UserWS
 
     /**
      * Validate and save a user.
@@ -154,8 +154,16 @@ class UserController {
         user.setMainRoleId(Constants.TYPE_CUSTOMER)
         bindData(user, params, 'user')
 
+        // bind contact and custom contact fields
         def contact = new ContactWS()
         bindData(contact, params, 'contact')
+        contact.fieldIDs = new Integer[params.contactField.size()]
+        contact.fieldValues = new Integer[params.contactField.size()]
+        params.contactField.eachWithIndex { id, value, i ->
+            log.debug("custom contact field ${id} = ${value}")
+            contact.fieldIDs[i] = id
+            contact.fieldValues[i] = value
+        }
         user.setContact(contact)
 
         // bind credit card object if parameters present
@@ -163,7 +171,10 @@ class UserController {
             def creditCard = new CreditCardDTO()
             bindData(creditCard, params, 'creditCard')
             bindExpiryDate(creditCard, params)
-            user.setCreditCard(creditCard)
+
+            // update credit card only if not obscured
+            if (!creditCard.number.startsWith('*'))
+                user.setCreditCard(creditCard)
         }
 
         // bind ach object if parameters present
@@ -227,7 +238,9 @@ class UserController {
             }
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            render view: 'edit', model: [ user: user, currencies: currencies ]
+
+            def company = CompanyDTO.get(session['company_id'])
+            render view: 'edit', model: [ user: user, company: company, currencies: currencies ]
             return
         }
 

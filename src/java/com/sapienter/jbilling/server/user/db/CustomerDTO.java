@@ -39,6 +39,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDAS;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.Constants;
@@ -138,6 +139,10 @@ public class CustomerDTO  implements java.io.Serializable {
         setCurrentOrderId(user.getMainOrderId());
         if (user.getCreditCard() != null) {
             setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_CC);
+        }
+
+        if (user.getInvoiceDeliveryMethodId() != null) {
+            setInvoiceDeliveryMethod(new InvoiceDeliveryMethodDAS().find(user.getInvoiceDeliveryMethodId()));
         }
 
         setBalanceType(user.getBalanceType() == null ? Constants.BALANCE_NO_DYNAMIC : user.getBalanceType());

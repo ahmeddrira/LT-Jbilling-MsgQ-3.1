@@ -95,6 +95,7 @@ public class UserWS implements WSSecured, Serializable {
     private Integer automaticPaymentType;
     private String companyName;
 
+    private Integer invoiceDeliveryMethodId;
     private Integer dueDateUnitId;
     private Integer dueDateValue;
     private Date nextInvoiceDate;
@@ -491,6 +492,14 @@ public class UserWS implements WSSecured, Serializable {
 	public void setCompanyName(String companyName) {
 		this.companyName = companyName;
 	}
+
+    public Integer getInvoiceDeliveryMethodId() {
+        return invoiceDeliveryMethodId;
+    }
+
+    public void setInvoiceDeliveryMethodId(Integer invoiceDeliveryMethodId) {
+        this.invoiceDeliveryMethodId = invoiceDeliveryMethodId;
+    }
 
     public Integer getDueDateUnitId() {
         return dueDateUnitId;

@@ -285,11 +285,11 @@
                         <g:applyLayout name="form/select">
                             <content tag="label"><g:message code="prompt.invoice.delivery.method"/></content>
                             <content tag="label.for">user.invoiceDeliveryMethodId</content>
-                            <!-- todo invoice delivery method -->
                             <g:select from="${company.invoiceDeliveryMethods.sort{ it.id }}"
                                       optionKey="id"
                                       valueMessagePrefix="customer.invoice.delivery.method"
-                                      name="user.invoiceDeliveryMethodId"/>
+                                      name="user.invoiceDeliveryMethodId"
+                                      value="${user?.invoiceDeliveryMethodId}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/text">

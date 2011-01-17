@@ -76,6 +76,7 @@ public class UserWS implements WSSecured, Serializable {
     private Integer mainRoleId = null;
     private Integer statusId = null;
     private Integer subscriberStatusId = null;
+    private Integer customerId = null;
     private Integer partnerId = null;
     private Integer parentId = null;
     private Boolean isParent = null;
@@ -125,6 +126,7 @@ public class UserWS implements WSSecured, Serializable {
         subscriberStatusId = dto.getSubscriptionStatusId();
 
         if (dto.getCustomer() != null) {
+            customerId = dto.getCustomer().getId();
             partnerId = (dto.getCustomer().getPartner() == null) ? null : dto.getCustomer().getPartner().getId();
             parentId = (dto.getCustomer().getParent() == null) ? null : dto.getCustomer().getParent().getBaseUser().getId();
             mainOrderId = dto.getCustomer().getCurrentOrderId();
@@ -251,6 +253,14 @@ public class UserWS implements WSSecured, Serializable {
 
     public void setSubscriberStatusId(Integer subscriberStatusId) {
         this.subscriberStatusId = subscriberStatusId;
+    }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
 
     public Integer getParentId() {

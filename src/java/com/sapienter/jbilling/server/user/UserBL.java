@@ -191,20 +191,18 @@ public class UserBL extends ResultList
                 dto.getCurrencyId())) {
             user.setCurrency(new CurrencyDAS().find(dto.getCurrencyId()));
         }
+
         if (dto.getCustomer() != null) {
             if (dto.getCustomer().getInvoiceDeliveryMethod() != null) {
-                // this is not nullable
-                user.getCustomer().setInvoiceDeliveryMethod(
-                        dto.getCustomer().getInvoiceDeliveryMethod());
+                user.getCustomer().setInvoiceDeliveryMethod(dto.getCustomer().getInvoiceDeliveryMethod());
             }
-            user.getCustomer().setDueDateUnitId(
-                    dto.getCustomer().getDueDateUnitId());
-            user.getCustomer().setDueDateValue(
-                    dto.getCustomer().getDueDateValue());
+
+            user.getCustomer().setDueDateUnitId(dto.getCustomer().getDueDateUnitId());
+            user.getCustomer().setDueDateValue(dto.getCustomer().getDueDateValue());
             user.getCustomer().setDfFm(dto.getCustomer().getDfFm());
+
             if (dto.getCustomer().getPartner() != null) {
-                user.getCustomer().setPartner(
-                        dto.getCustomer().getPartner());
+                user.getCustomer().setPartner(dto.getCustomer().getPartner());
             } else {
                 user.getCustomer().setPartner(null);
             }
@@ -213,6 +211,10 @@ public class UserBL extends ResultList
             user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
+
+            user.getCustomer().setIsParent(dto.getCustomer().getIsParent());
+            user.getCustomer().setParent(dto.getCustomer().getParent());
+            user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
 
             // update the main order
             if (dto.getCustomer().getCurrentOrderId() != null) {

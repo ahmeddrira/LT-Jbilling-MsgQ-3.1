@@ -175,6 +175,9 @@
         <div class="row">
             <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
             <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
+            <g:if test="${customer?.isParent > 0}">
+                <g:link action="edit" params="[parentId: selected.id]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
+            </g:if>
         </div>
     </div>
 

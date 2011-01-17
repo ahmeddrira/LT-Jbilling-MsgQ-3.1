@@ -52,7 +52,7 @@
                         <g:applyLayout name="form/select">
                             <content tag="label"><g:message code="prompt.customer.type"/></content>
                             <content tag="label.for">user.mainRoleId</content>
-                            <g:selectRoles name="user.mainRoleId" value="${user?.mainRoleId}" languageId="${session['language_id']}" />
+                            <g:selectRoles name="user.mainRoleId" value="${user?.mainRoleId ?: Constants.TYPE_CUSTOMER}" languageId="${session['language_id']}" />
                         </g:applyLayout>
 
                         <g:applyLayout name="form/input">
@@ -107,11 +107,20 @@
                                     optionKey="id" optionValue="description" value="${user?.currencyId}" />
                         </g:applyLayout>
 
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.parent.id"/></content>
-                            <content tag="label.for">user.parentId</content>
-                            <g:passwordField class="field" name="user.parentId" value="${user?.parentId}"/>
-                        </g:applyLayout>
+                        <g:if test="${parent?.customerId}">
+                            <g:applyLayout name="form/text">
+                                <content tag="label"><g:message code="prompt.parent.id"/></content>
+                                <g:link action="list" id="${parent.userId}">${parent.userId} ${parent.userName}</g:link>
+                                <g:hiddenField class="field" name="user.parentId" value="${parent.userId}"/>
+                            </g:applyLayout>
+                        </g:if>
+                        <g:else>
+                            <g:applyLayout name="form/input">
+                                <content tag="label"><g:message code="prompt.parent.id"/></content>
+                                <content tag="label.for">user.parentId</content>
+                                <g:textField class="field" name="user.parentId" value="${user?.parentId}"/>
+                            </g:applyLayout>
+                        </g:else>
 
                         <g:applyLayout name="form/checkbox">
                             <content tag="label"><g:message code="prompt.allow.sub.accounts"/></content>
@@ -137,7 +146,7 @@
                         <g:set var="contact" value="${user?.contact}"/>
                         <g:hiddenField name="contact.id" value="${contact?.id}"/>
 
-                        <g:set var="contactTypes" value="${ContactTypeDTO.findAllByEntity(new CompanyDTO(session['company_id']))}"/>
+                        <g:set var="contactTypes" value="${company.contactTypes.asList()}"/>
 
                         <g:if test="${contactTypes.size > 1}">
                             <g:applyLayout name="form/select">
@@ -271,13 +280,13 @@
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.credit.limit"/></content>
                             <content tag="label.for">user.creditLimit</content>
-                            <g:textField class="field" name="user.creditLimit" value="${formatNumber(number: user?.getCreditLimitAsDecimal(), formatName: 'money.format')}"/>
+                            <g:textField class="field" name="user.creditLimit" value="${formatNumber(number: user?.getCreditLimitAsDecimal() ?: 0, formatName: 'money.format')}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.auto.recharge"/></content>
                             <content tag="label.for">user.autoRecharge</content>
-                            <g:textField class="field" name="user.autoRecharge" value="${formatNumber(number: user?.getAutoRechargeAsDecimal(), formatName: 'money.format')}"/>
+                            <g:textField class="field" name="user.autoRecharge" value="${formatNumber(number: user?.getAutoRechargeAsDecimal() ?: 0, formatName: 'money.format')}"/>
                         </g:applyLayout>
                     </div>
 

@@ -172,9 +172,9 @@
                     <!-- list of direct sub-accounts -->
                     <g:each var="account" in="${customer?.children}">
                         <g:applyLayout name="form/text">
-                            <content tag="label">User ${account.id}</content>
+                            <content tag="label"><g:message code="customer.subaccount.title" args="[ account.baseUser.id ]"/></content>
                             <span>
-                                <g:link controller="user" action="list" id="${account.id}">${account.userName}</g:link>
+                                <g:link controller="user" action="list" id="${account.baseUser.id}">${account.baseUser.userName}</g:link>
                             </span>
                         </g:applyLayout>
                     </g:each>

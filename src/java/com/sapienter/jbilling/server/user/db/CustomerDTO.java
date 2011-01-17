@@ -370,8 +370,8 @@ public class CustomerDTO  implements java.io.Serializable {
     public String toString() {
         return "CustomerDTO{" +
                 "id=" + id +
-                ", baseUser.userId=" + baseUser.getUserId() +
-                ", baseUser.userName=" + baseUser.getUserName() +
+                ", baseUser.userId=" + (baseUser != null ? baseUser.getUserId() : null) +
+                ", baseUser.userName=" + (baseUser != null ? baseUser.getUserName() : null) +
                 ", dynamicBalance = " + this.dynamicBalance +
                 ", credit limit = " + this.creditLimit +
                 '}';

@@ -48,6 +48,24 @@ public final class CustomerBL extends ResultList implements CustomerSQL {
         return customer;
     }
 
+    /**
+     * Searches through parent customers (including this customer) looking for a
+     * customer with "invoice if child" set to true. If no parent account is explicitly
+     * invoiceable, the top/root parent will be returned.
+     *
+     * @return invoiceable customer account
+     */
+    public CustomerDTO getInvoicableParent() {
+        CustomerDTO parent = customer;
+
+        while (parent.getInvoiceChild() == null || parent.getInvoiceChild() != 1) {
+            if (parent.getParent() == null) break;
+            parent = parent.getParent();
+        }
+
+        return parent;
+    }
+
     public CachedRowSet getList(int entityID, Integer userRole,
             Integer userId) 
             throws SQLException, Exception{

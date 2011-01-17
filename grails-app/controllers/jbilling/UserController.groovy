@@ -184,8 +184,6 @@ class UserController {
         user.setMainRoleId(Constants.TYPE_CUSTOMER)
         bindData(user, params, 'user')
 
-        log.debug("Parent ID: ${user.parentId}")
-
         // bind contact and custom contact fields
         def contact = new ContactWS()
         bindData(contact, params, 'contact')

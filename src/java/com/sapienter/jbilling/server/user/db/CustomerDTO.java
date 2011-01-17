@@ -124,25 +124,31 @@ public class CustomerDTO  implements java.io.Serializable {
     
     public CustomerDTO(UserWS user) {
         setBaseUser(new UserDAS().find(user.getUserId()));
+
         if (user.getPartnerId() != null) {
             setPartner(new PartnerDAS().find(user.getPartnerId()));
         }
+
         if (user.getParentId() != null) {
             setParent(new CustomerDTO(user.getParentId()));
         }
+
         if (user.getIsParent() != null) {
             setIsParent(user.getIsParent().booleanValue() ? 1 : 0);
         }
+
         if (user.getInvoiceChild() != null) {
             setInvoiceChild(user.getInvoiceChild() ? 1 : 0);
         }
+
         setCurrentOrderId(user.getMainOrderId());
         if (user.getCreditCard() != null) {
             setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_CC);
         }
 
         if (user.getInvoiceDeliveryMethodId() != null) {
-            setInvoiceDeliveryMethod(new InvoiceDeliveryMethodDAS().find(user.getInvoiceDeliveryMethodId()));
+            InvoiceDeliveryMethodDTO deliveryMethod = new InvoiceDeliveryMethodDAS().find(user.getInvoiceDeliveryMethodId());
+            setInvoiceDeliveryMethod(deliveryMethod);
         }
 
         setBalanceType(user.getBalanceType() == null ? Constants.BALANCE_NO_DYNAMIC : user.getBalanceType());
@@ -180,8 +186,9 @@ public class CustomerDTO  implements java.io.Serializable {
     public void setBaseUser(UserDTO baseUser) {
         this.baseUser = baseUser;
     }
-@ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="invoice_delivery_method_id", nullable=false)
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "invoice_delivery_method_id", nullable = false)
     public InvoiceDeliveryMethodDTO getInvoiceDeliveryMethod() {
         return this.invoiceDeliveryMethod;
     }
@@ -189,7 +196,8 @@ public class CustomerDTO  implements java.io.Serializable {
     public void setInvoiceDeliveryMethod(InvoiceDeliveryMethodDTO invoiceDeliveryMethod) {
         this.invoiceDeliveryMethod = invoiceDeliveryMethod;
     }
-@ManyToOne(fetch=FetchType.LAZY)
+
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="partner_id")
     public Partner getPartner() {
         return this.partner;

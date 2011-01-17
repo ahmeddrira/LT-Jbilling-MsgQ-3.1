@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
+<%@ page import="com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 <%--
   Shows details of a selected user.
@@ -61,6 +61,23 @@
                     <td><g:message code="customer.detail.user.email"/></td>
                     <td class="value"><a href="mailto:${contact?.email}">${contact?.email}</a></td>
                 </tr>
+
+                <g:if test="${customer.parent}">
+                    <tr>
+                        <td><g:message code="customer.invoice.if.child.label"/></td>
+                        <td class="value">
+                            <g:if test="${customer.invoiceChild}">
+                                <g:message code="customer.invoice.if.child.true"/>
+                            </g:if>
+                            <g:else>
+                                <g:set var="parent" value="${new CustomerBL(customer.id).getInvoicableParent()}"/>
+                                <g:link action="list" id="${parent.baseUser.id}">
+                                    <g:message code="customer.invoice.if.child.false" args="[ parent.baseUser.id ]"/>
+                                </g:link>
+                            </g:else>
+                        </td>
+                    </tr>
+                </g:if>
             </tbody>
         </table>
     </div>
@@ -77,7 +94,19 @@
             <tbody>
                 <tr>
                     <td><g:message code="customer.detail.payment.invoiced.date"/></td>
-                    <td class="value"><g:formatDate format="MMM-dd-yyyy" date="${invoice?.createDatetime}"/></td>
+                    <td class="value">
+                        <g:link controller="invoice" action="list" id="${invoice?.id}">
+                            <g:formatDate format="MMM-dd-yyyy" date="${invoice?.createDatetime}"/>
+                        </g:link>
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.payment.paid.date"/></td>
+                    <td class="value">
+                        <g:link controller="payment" action="list" id="${payment?.id}">
+                            <g:formatDate format="MMM-dd-yyyy" date="${payment?.paymentDate ?: payment?.createDatetime}"/>
+                        </g:link>
+                    </td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.due.date"/></td>
@@ -86,6 +115,19 @@
                 <tr>
                     <td><g:message code="customer.detail.payment.invoiced.amount"/></td>
                     <td class="value"><g:formatNumber number="${invoice?.total}" type="currency" currencyCode="${selected.currency.code}"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="invoice.label.status"/></td>
+                    <td class="value">
+                        <g:if test="${invoice?.invoiceStatus?.id == Constants.INVOICE_STATUS_UNPAID}">
+                            <g:link controller="payment" action="edit" params="[userId: selected.id, invoiceId: invoice.id]" title="${message(code: 'invoice.pay.link')}">
+                                ${invoice.invoiceStatus.getDescription(session['language_id'])}
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            ${invoice?.invoiceStatus?.getDescription(session['language_id'])}
+                        </g:else>
+                    </td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.amount.owed"/></td>

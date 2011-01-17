@@ -36,8 +36,11 @@ import java.util.List;
 
 import javax.naming.NamingException;
 
+import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDAS;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
@@ -212,9 +215,13 @@ public class UserBL extends ResultList
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
 
+            // set the sub-account fields
             user.getCustomer().setIsParent(dto.getCustomer().getIsParent());
-            user.getCustomer().setParent(dto.getCustomer().getParent());
-            user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
+            if (dto.getCustomer().getParent() != null) {
+                // the API accepts the user ID of the parent instead of the customer ID
+                user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
+                user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
+            }
 
             // update the main order
             if (dto.getCustomer().getCurrentOrderId() != null) {
@@ -222,6 +229,8 @@ public class UserBL extends ResultList
                 order.setMainSubscription(executorId);
             }
         }
+
+        new UserDAS().flush();
 
         eLogger.audit(executorId,
                       user.getId(),
@@ -314,24 +323,29 @@ public class UserBL extends ResultList
                     dto.getPassword(), dto.getLanguageId(),
                     roles, dto.getCurrencyId(),
                     dto.getStatusId(), dto.getSubscriptionStatusId());
+
             user.setCustomer(new CustomerDAS().create());
             user.getCustomer().setBaseUser(user);
-            user.getCustomer().setReferralFeePaid(dto.getCustomer().
-                    getReferralFeePaid());
+            user.getCustomer().setReferralFeePaid(dto.getCustomer().getReferralFeePaid());
+
             if (partner != null) {
                 user.getCustomer().setPartner(partner.getEntity());
             }
+
             // set the sub-account fields
             user.getCustomer().setIsParent(dto.getCustomer().getIsParent());
             if (dto.getCustomer().getParent() != null) {
+                // the API accepts the user ID of the parent instead of the customer ID
                 user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
                 user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
             }
+
             // set dynamic balance fields
             user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setDynamicBalance(dto.getCustomer().getDynamicBalance());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
+
         } else { // all the rest
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(),
                     dto.getLanguageId(), roles, dto.getCurrencyId(),

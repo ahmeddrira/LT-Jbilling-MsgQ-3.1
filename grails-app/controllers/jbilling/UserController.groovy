@@ -160,8 +160,7 @@ class UserController {
         contact.fieldIDs = new Integer[params.contactField.size()]
         contact.fieldValues = new Integer[params.contactField.size()]
         params.contactField.eachWithIndex { id, value, i ->
-            log.debug("custom contact field ${id} = ${value}")
-            contact.fieldIDs[i] = id
+            contact.fieldIDs[i] = id.toInteger()
             contact.fieldValues[i] = value
         }
         user.setContact(contact)

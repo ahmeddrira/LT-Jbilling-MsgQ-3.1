@@ -413,7 +413,6 @@ public class ContactBL {
                     contactFieldDas.find(field.getId()).setContent(field.getContent());
                 } else {
                     // it is un update, but don't know the field id
-                    LOG.debug("Finding custom contact field for type " + type + " and contact " + contact.getId());
                     ContactFieldDTO aField = contactFieldDas.findByType(Integer.valueOf(type), contact.getId());
                     if (aField != null) {
                         aField.setContent(field.getContent());

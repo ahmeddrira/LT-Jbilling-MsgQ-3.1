@@ -56,11 +56,10 @@ class CustomerInspectorController {
             contact.setContactTypeDescr(contactType?.getDescription(session['language_id'].toInteger()))
         }
 
-        // custom contact fields
-        def contactFields = CompanyDTO.get(session['company_id']).getContactFieldTypes()
-
         // used to find the next invoice date
         def cycle = new OrderDAS().findEarliestActiveOrder(user.id)
+
+        def company = CompanyDTO.get(session['company_id'])
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
@@ -70,8 +69,8 @@ class CustomerInspectorController {
                 invoice: invoice,
                 payment: payment,
                 subscriptions: subscriptions,
+                company: company,
                 currencies: currencies,
-                contactFields: contactFields,
                 cycle: cycle,
                 revenue: revenue
         ]

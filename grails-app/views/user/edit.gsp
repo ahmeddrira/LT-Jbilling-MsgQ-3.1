@@ -285,10 +285,28 @@
                         <g:applyLayout name="form/select">
                             <content tag="label"><g:message code="prompt.invoice.delivery.method"/></content>
                             <content tag="label.for">user.invoiceDeliveryMethodId</content>
+                            <!-- todo invoice delivery method -->
                             <g:select from="${company.invoiceDeliveryMethods.sort{ it.id }}"
                                       optionKey="id"
                                       valueMessagePrefix="customer.invoice.delivery.method"
                                       name="user.invoiceDeliveryMethodId"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="prompt.due.date.override"/></content>
+                            <content tag="label.for">user.dueDateValue</content>
+
+                            <div class="inp-bg inp4">
+                                <g:textField class="field" name="user.dueDateValue" value="${user?.dueDateValue}"/>
+                            </div>
+
+                            <div class="select4">
+                                <g:select from="${company.orderPeriods.collect{ it.periodUnit }}"
+                                        optionKey="id"
+                                        optionValue="description"
+                                        name="user.dueDateUnitId"
+                                        value="${user?.dueDateUnitId}"/>
+                            </div>
                         </g:applyLayout>
                     </div>
                 </div>

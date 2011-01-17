@@ -104,7 +104,7 @@
                     </g:applyLayout>
 
                     <!-- custom contact fields -->
-                    <g:each var="ccf" in="${contactFields?.sort{ it.id }}">
+                    <g:each var="ccf" in="${company.contactFieldTypes?.sort{ it.id }}">
                         <g:set var="field" value="${contact?.fields?.find{ it.type.id == ccf.id }}"/>
 
                         <g:applyLayout name="form/text">
@@ -213,6 +213,14 @@
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="prompt.invoice.delivery.method"/></content>
                         <span><g:message code="customer.invoice.delivery.method.${customer?.invoiceDeliveryMethod?.id ?: 0}"/></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.due.date.override"/></content>
+                        <g:if test="${customer?.dueDateValue}">
+                            <g:set var="periodUnit" value="${company.orderPeriods.find{ it.periodUnit.id == customer?.dueDateUnitId }}"/>
+                            <span>${customer?.dueDateValue} ${periodUnit.getDescription(session['language_id'])}</span>
+                        </g:if>
                     </g:applyLayout>
                 </div>
             </div>

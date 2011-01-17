@@ -15,6 +15,6 @@
 --%>
 
 <div class="row">
-    <label><g:pageProperty name="page.label"/></label>
+    <label for="${pageProperty(name: 'page.label.for')}"><g:pageProperty name="page.label"/></label>
     <span><g:layoutBody/></span>
 </div>

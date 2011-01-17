@@ -148,6 +148,9 @@ public class CustomerDTO  implements java.io.Serializable {
         setNotes(user.getNotes() == null ? "" : user.getNotes());
         setAutoPaymentType(user.getAutomaticPaymentType());
 
+        setDueDateUnitId(user.getDueDateUnitId());
+        setDueDateValue(user.getDueDateValue());
+
         setExcludeAging(user.getExcludeAgeing() != null && user.getExcludeAgeing() ? 1 : 0);
         
         LOG.debug("Customer created with auto-recharge: " + getAutoRecharge() + " incoming var, " + user.getAutoRecharge());

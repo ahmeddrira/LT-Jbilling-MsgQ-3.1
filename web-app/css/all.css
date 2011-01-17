@@ -1151,7 +1151,24 @@ ul.cloud li a {
 	background:url(../images/bg-input06.gif) no-repeat;
 }
 .form-columns .inp4 input.field {
+    margin: 3px;
 	width:72px;
+}
+.form-columns .select2 select {
+    margin: 3px;
+    width:22px;
+}
+.form-columns .select3 select {
+    margin: 3px;
+    width:64px;
+}
+.form-columns .select4 {
+    width: 72px;
+    float: left;
+}
+.form-columns .select4 select {
+    margin: 3px;
+    width: 72px;
 }
 .form-columns select {
 	float:left;

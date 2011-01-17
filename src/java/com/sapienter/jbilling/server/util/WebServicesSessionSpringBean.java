@@ -2231,6 +2231,23 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         Billing process
      */
 
+    public boolean isBillingRunning() {
+    	IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.isBillingRunning();
+	}
+    
+    public void triggerBillingAsync(final Date runDate) {
+    	Thread t =new Thread(new Runnable(){
+	   		IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+		    public void run()
+		    {
+		    	 processBean.trigger(runDate);
+		    }
+	    });
+	 
+	    t.start();
+    }
+    
     public boolean triggerBilling(Date runDate) {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
         return processBean.trigger(runDate);

@@ -4,6 +4,7 @@ import grails.plugins.springsecurity.Secured;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.common.SessionInternalError;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
 * BillingController
@@ -23,7 +24,12 @@ class BillingconfigurationController {
 		
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 		def configuration= webServicesSession.getBillingProcessConfiguration()
-		[configuration:configuration]
+		boolean isBillingRunning= webServicesSession.isBillingRunning()
+		//if (isBillingRunning)
+		//{
+		//	flash.message = 'prompt.billing.running'
+		//}
+		[configuration:configuration, isBillingRunning: isBillingRunning]
 	}
 	
 	def saveConfig = {
@@ -55,4 +61,25 @@ class BillingconfigurationController {
 		
 		redirect action: index
 	}
+	
+	def runBilling = {
+		
+		//TODO Check if billing is already running. We may add a method
+		//to IBillingProcessSessionBean that returns true/false
+		
+		try {
+			if (!webServicesSession.isBillingRunning()) {
+				webServicesSession.triggerBillingAsync(new Date())
+				flash.message = 'prompt.billing.trigger'
+			} else {
+				flash.error = 'prompt.billing.already.running'
+			}
+		} catch (Exception e) {
+			//e.printStackTrace()
+			log.error e.getMessage()
+			flash.error = 'error.billing.trigger'
+		}
+		redirect action: 'index'
+	}
+	
 }

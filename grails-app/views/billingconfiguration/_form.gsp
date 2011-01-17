@@ -130,7 +130,11 @@
                 <div class="btn-box">
                        	<a onclick="$('#save-billing-form').submit();" class="submit save"><span><g:message code="button.save"/></span></a>
                        	<g:link controller="config" action="index" class="submit cancel"><span><g:message code="button.cancel"/></span></g:link>
-                       	<g:link controller="billing" action="runBilling" class="submit "><span><g:message code="button.run.billing"/></span></g:link>
+                        <g:if test="${isBillingRunning}">
+                        </g:if>
+                        <g:else>
+                           	<g:link controller="billingconfiguration" action="runBilling" class="submit "><span><g:message code="button.run.billing"/></span></g:link>
+                        </g:else>
                 </div>
             <script type="text/javascript">
             function numericOnly(event) {

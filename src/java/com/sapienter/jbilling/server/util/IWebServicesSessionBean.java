@@ -211,6 +211,8 @@ public interface IWebServicesSessionBean {
         Billing process
      */
 
+    public boolean isBillingRunning();
+    public void triggerBillingAsync(final Date runDate);
     public boolean triggerBilling(Date runDate);
     public void triggerAgeing(Date runDate);
 

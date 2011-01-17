@@ -986,6 +986,10 @@ public class UserBL extends ResultList
                 new PaymentDAS().findTotalBalanceByUser(userId));
     }
 
+    public BigDecimal getTotalOwed(Integer userId) {
+        return new InvoiceDAS().findTotalAmountOwed(userId);
+    }
+
     public UserTransitionResponseWS[] getUserTransitionsByDate(Integer entityId,
             Date from, Date to) {
         try {

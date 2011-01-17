@@ -131,7 +131,7 @@
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.amount.owed"/></td>
-                    <td class="value"><g:formatNumber number="${new UserBL().getBalance(selected.id)}" type="currency" currencyCode="${selected.currency.code}"/></td>
+                    <td class="value"><g:formatNumber number="${new UserBL().getTotalOwed(selected.id)}" type="currency" currencyCode="${selected.currency.code}"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.lifetime.revenue"/></td>

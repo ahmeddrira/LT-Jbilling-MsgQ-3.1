@@ -140,14 +140,15 @@ public class CustomerDTO  implements java.io.Serializable {
             setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_CC);
         }
 
-        setBalanceType(user.getBalanceType() == null ? Constants.BALANCE_NO_DYNAMIC :
-            user.getBalanceType());
+        setBalanceType(user.getBalanceType() == null ? Constants.BALANCE_NO_DYNAMIC : user.getBalanceType());
         setCreditLimit(user.getCreditLimit() == null ? null : new BigDecimal(user.getCreditLimit()));
         setDynamicBalance(user.getDynamicBalance() == null ? null : new BigDecimal(user.getDynamicBalance()));        
         setAutoRecharge(user.getAutoRecharge() == null ? null : new BigDecimal(user.getAutoRecharge()));
 
         setNotes(user.getNotes() == null ? "" : user.getNotes());
         setAutoPaymentType(user.getAutomaticPaymentType());
+
+        setExcludeAging(user.getExcludeAgeing() != null && user.getExcludeAgeing() ? 1 : 0);
         
         LOG.debug("Customer created with auto-recharge: " + getAutoRecharge() + " incoming var, " + user.getAutoRecharge());
     }

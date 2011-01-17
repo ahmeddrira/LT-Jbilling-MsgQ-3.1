@@ -76,6 +76,7 @@ class UserController {
                 eq('company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
             }
+            order('id', 'asc')
         }
 
         def selected = params.id ? UserDTO.get(params.int("id")) : null
@@ -125,10 +126,28 @@ class UserController {
      * Updates the notes for the given user id.
      */
     def saveNotes = {
-        webServicesSession.saveCustomerNotes(params.int('id'), params.notes);
+        webServicesSession.saveCustomerNotes(params.int('id'), params.notes)
 
         def user = UserDTO.get(params.int('id'))
         render template: 'show', model: [ selected: user ]
+    }
+
+    /**
+     * Delete the given user id.
+     */
+    def delete = {
+        if (params.id) {
+            webServicesSession.deleteUser(params.int('id'))
+
+            log.debug("Deleted user ${params.id}.")
+
+            flash.message = 'customer.deleted'
+            flash.args = [ params.id ]
+        }
+
+        // render the partial user list
+        params.applyFilter = true
+        list()
     }
 
     /**
@@ -143,8 +162,6 @@ class UserController {
 
         [ user: user, company: company, currencies: currencies ]
     }
-
-    // todo: handle "exclude from aging" customer flag from edit screen - update UserWS
 
     /**
      * Validate and save a user.

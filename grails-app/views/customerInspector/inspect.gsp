@@ -170,7 +170,7 @@
                 </div>
                 <div class="column">
                     <!-- list of direct sub-accounts -->
-                    <g:each var="account" in="${customer.children}">
+                    <g:each var="account" in="${customer?.children}">
                         <g:applyLayout name="form/text">
                             <content tag="label">User ${account.id}</content>
                             <span>
@@ -212,7 +212,7 @@
                 <div class="column">
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="prompt.invoice.delivery.method"/></content>
-                        <span><g:message code="customer.invoice.delivery.method.${customer?.invoiceDeliveryMethod?.id ?: 1}"/></span>
+                        <span><g:message code="customer.invoice.delivery.method.${customer?.invoiceDeliveryMethod?.id ?: 0}"/></span>
                     </g:applyLayout>
                 </div>
             </div>

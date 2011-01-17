@@ -80,6 +80,7 @@ public class UserWS implements WSSecured, Serializable {
     private Integer parentId = null;
     private Boolean isParent = null;
     private Boolean invoiceChild = null;
+    private Boolean excludeAgeing = null;
     private Integer mainOrderId = null;
     private String[] blacklistMatches = null;
     private Boolean userIdBlacklisted = null;
@@ -132,6 +133,7 @@ public class UserWS implements WSSecured, Serializable {
             invoiceChild = dto.getCustomer().getInvoiceChild() == null
                            ? false
                            : dto.getCustomer().getInvoiceChild().equals(new Integer(1));
+            excludeAgeing = dto.getCustomer().getExcludeAging() == 1;
             childIds = new Integer[dto.getCustomer().getChildren().size()];
             int index = 0;
             for (CustomerDTO customer : dto.getCustomer().getChildren()) {
@@ -279,6 +281,14 @@ public class UserWS implements WSSecured, Serializable {
 
     public void setInvoiceChild(Boolean invoiceChild) {
         this.invoiceChild = invoiceChild;
+    }
+
+    public Boolean getExcludeAgeing() {
+        return excludeAgeing;
+    }
+
+    public void setExcludeAgeing(Boolean excludeAgeing) {
+        this.excludeAgeing = excludeAgeing;
     }
 
     public Date getCreateDatetime() {

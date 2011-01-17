@@ -127,8 +127,8 @@
 
                         <g:applyLayout name="form/checkbox">
                             <content tag="label"><g:message code="prompt.exclude.ageing"/></content>
-                            <content tag="label.for">excludeFromAgeing</content>
-                            <g:checkBox class="cb checkbox" name="excludeFromAgeing" />
+                            <content tag="label.for">user.excludeAgeing</content>
+                            <g:checkBox class="cb checkbox" name="user.excludeAgeing" checked="${user?.excludeAgeing}"/>
                         </g:applyLayout>
                     </div>
 
@@ -161,13 +161,13 @@
                         </g:applyLayout>
 
                         <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.firstName"/></content>
+                            <content tag="label"><g:message code="prompt.first.name"/></content>
                             <content tag="label.for">contact.firstName</content>
                             <g:textField class="field" name="contact.firstName" value="${contact?.firstName}" />
                         </g:applyLayout>
 
                         <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.lastName"/></content>
+                            <content tag="label"><g:message code="prompt.last.name"/></content>
                             <content tag="label.for">contact.lastName</content>
                             <g:textField class="field" name="contact.lastName" value="${contact?.lastName}" />
                         </g:applyLayout>
@@ -260,7 +260,7 @@
                 <div class="form-columns">
                     <div class="column">
                         <g:applyLayout name="form/select">
-                            <content tag="label"><g:message code="prompt.balance.type"/><content>
+                            <content tag="label"><g:message code="prompt.balance.type"/></content>
                             <content tag="label.for">user.balanceType</content>
                             <g:select from="[Constants.BALANCE_NO_DYNAMIC, Constants.BALANCE_PRE_PAID, Constants.BALANCE_CREDIT_LIMIT]"
                                       valueMessagePrefix="customer.balance.type"

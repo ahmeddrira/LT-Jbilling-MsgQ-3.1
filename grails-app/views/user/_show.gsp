@@ -14,7 +14,7 @@
     <!-- user notes -->
     <div class="heading">
         <strong>
-            <g:if test="${contact && (contact.firstName || contact.lastName)}">
+            <g:if test="${contact?.firstName || contact?.lastName}">
                 ${contact.firstName} ${contact.lastName}
             </g:if>
             <g:else>
@@ -26,7 +26,7 @@
     <div class="box edit">
         <g:remoteLink action="show" id="${selected.id}" params="[template: 'notes']" before="register(this);" onSuccess="render(data, next);" class="edit"/>
         <strong><g:message code="customer.detail.note.title"/></strong>
-        <g:if test="${customer && customer.notes}">
+        <g:if test="${customer?.notes}">
             <p>${customer.notes}</p>
         </g:if>
         <g:else>
@@ -62,7 +62,7 @@
                     <td class="value"><a href="mailto:${contact?.email}">${contact?.email}</a></td>
                 </tr>
 
-                <g:if test="${customer.parent}">
+                <g:if test="${customer?.parent}">
                     <tr>
                         <td><g:message code="customer.invoice.if.child.label"/></td>
                         <td class="value">

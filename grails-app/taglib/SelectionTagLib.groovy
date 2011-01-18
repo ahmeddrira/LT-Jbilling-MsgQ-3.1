@@ -67,6 +67,7 @@ class SelectionTagLib {
 		Integer langId= attrs.languageId?.toInteger();
 		String name= attrs.name;
 		String value = attrs.value?.toString()
+        String cssClass = attrs.cssClass?.toString()
 
 		log.info "Value of tagName=" + name + " is " + value
 		
@@ -80,7 +81,7 @@ class SelectionTagLib {
 			list.add(sarr)
 		}
 		
-		out << render(template:"/selectTag", model:[name:name, list:list, value:value])
+		out << render(template:"/selectTag", model:[name:name, list:list, value:value, cssClass: cssClass])
 	}
 
 	def periodUnit = { attrs, body ->

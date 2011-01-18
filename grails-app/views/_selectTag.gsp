@@ -1,4 +1,4 @@
-<select name="${name}" id="${name}">
+<select name="${name}" id="${name}" class="${cssClass}">
 	<g:each var="sarr" in="${list}" status="idx">
 		<g:if test="${value == sarr[0]}">
 			<option selected value="${sarr[0]}">${sarr[1]}</option>

@@ -44,8 +44,8 @@ public class PriceModelWS implements Serializable {
     private Integer id;
     private String type;
     private Map<String, String> attributes = new HashMap<String, String>();
-    private BigDecimal rate;
-    private BigDecimal includedQuantity;
+    private String rate;
+    private String includedQuantity;
     private Integer currencyId;
 
     public PriceModelWS() {
@@ -54,8 +54,9 @@ public class PriceModelWS implements Serializable {
     public PriceModelWS(PriceModelDTO model) {
         this.id = model.getId();
         this.attributes = new HashMap<String,String>(model.getAttributes());
-        this.rate = model.getRate();
-        this.includedQuantity = model.getIncludedQuantity();
+
+        setRate(model.getRate());
+        setIncludedQuantity(model.getIncludedQuantity());
 
         if (model.getType() != null ) this.type = model.getType().name();
         if (model.getCurrency() != null) this.currencyId = model.getCurrency().getId();
@@ -89,20 +90,36 @@ public class PriceModelWS implements Serializable {
         this.attributes.put(name, value);
     }
 
-    public BigDecimal getRate() {
+    public String getRate() {
         return rate;
     }
 
-    public void setRate(BigDecimal rate) {
+    public BigDecimal getRateAsDecimal() {
+        return rate != null ? new BigDecimal(rate) : null;
+    }
+
+    public void setRate(String rate) {
         this.rate = rate;
     }
 
-    public BigDecimal getIncludedQuantity() {
+    public void setRate(BigDecimal rate) {
+        this.rate = (rate != null ? rate.toString() : null);
+    }
+
+    public String getIncludedQuantity() {
         return includedQuantity;
     }
 
-    public void setIncludedQuantity(BigDecimal includedQuantity) {
+    public BigDecimal getIncludedQuantityAsDecimal() {
+        return includedQuantity != null ? new BigDecimal(includedQuantity) : null;
+    }
+
+    public void setIncludedQuantity(String includedQuantity) {
         this.includedQuantity = includedQuantity;
+    }
+
+    public void setIncludedQuantity(BigDecimal includedQuantity) {
+        this.includedQuantity = (includedQuantity != null ? includedQuantity.toString() : null);
     }
 
     public Integer getCurrencyId() {

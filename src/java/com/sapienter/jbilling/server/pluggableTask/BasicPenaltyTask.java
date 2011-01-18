@@ -19,17 +19,6 @@
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import org.apache.log4j.Logger;
-
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
@@ -48,6 +37,15 @@ import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import org.apache.log4j.Logger;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * @author Emil
@@ -65,7 +63,7 @@ import com.sapienter.jbilling.server.util.Constants;
  * not payable, not paid, delegated and paid partialy after due date -> penalty on total
  * not payable, not paid, delegated and paid before due date -> nothing
  * not payable, not paid, delegated and paid partialy before due date -> penalty on balance
- * 
+ *
  * The one situation NOT considered is if many invoices get delegated to
  * a single one. This shouldn't happend becasue when an invoice is generated it will
  * inherit the previous one automaticaly
@@ -74,14 +72,14 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
 
     private static final Logger LOG = Logger.getLogger(BasicPenaltyTask.class);
 
-    public static final ParameterDescription PARAMETER_ITEM = 
+    public static final ParameterDescription PARAMETER_ITEM =
     	new ParameterDescription("item", true, ParameterDescription.Type.STR);
-    public static final ParameterDescription PARAMETER_AGEING_STEP = 
+    public static final ParameterDescription PARAMETER_AGEING_STEP =
     	new ParameterDescription("ageing_step", true, ParameterDescription.Type.STR);
 
 
     //initializer for pluggable params
-    { 
+    {
     	descriptions.add(PARAMETER_ITEM);
         descriptions.add(PARAMETER_AGEING_STEP);
 	}
@@ -92,7 +90,7 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
     @SuppressWarnings("unchecked")
     private static final Class<Event> events[] = new Class[] {
             NewUserStatusEvent.class
-    }; 
+    };
 
     public Class<Event>[] getSubscribedEvents() { return events; }
 
@@ -135,7 +133,7 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
     }
 
     /**
-     * @see IInternalEventsTask#process(com.sapienter.jbilling.server.system.event.Event) 
+     * @see IInternalEventsTask#process(com.sapienter.jbilling.server.system.event.Event)
      *
      * @param event event to process
      * @throws PluggableTaskException
@@ -201,7 +199,7 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
         OrderPeriodDTO period = new OrderPeriodDTO();
         period.setId(Constants.ORDER_PERIOD_ONCE);
         summary.setOrderPeriod(period);
-        
+
         OrderBillingTypeDTO type = new OrderBillingTypeDTO();
         type.setId(Constants.ORDER_BILLING_PRE_PAID);
         summary.setOrderBillingType(type);
@@ -231,7 +229,7 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
 
     /**
      * Returns a calculated penalty fee for the users current owing balance and
-     * the configured penalty item. 
+     * the configured penalty item.
      *
      * @param invoice overdue invoice
      * @param item penalty item
@@ -246,10 +244,12 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
             base = base.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
             base = base.multiply(item.getEntity().getPercentage());
             return base;
-            
+
         } else if (base.compareTo(BigDecimal.ZERO) > 0) {
+            // price for a single penalty item.
             return item.getPrice(invoice.getBaseUser().getId(),
                                           invoice.getCurrency().getId(),
+                                          BigDecimal.ONE,
                                           invoice.getBaseUser().getEntity().getId());
         } else {
             return BigDecimal.ZERO;
@@ -264,7 +264,7 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
      * @return description
      * @throws PluggableTaskException thrown if locale could not be determined
      */
-    public String getInvoiceDelegatedDescription(InvoiceDTO invoice) throws PluggableTaskException {        
+    public String getInvoiceDelegatedDescription(InvoiceDTO invoice) throws PluggableTaskException {
         Locale locale;
         try {
             UserBL userBl = new UserBL(invoice.getBaseUser());

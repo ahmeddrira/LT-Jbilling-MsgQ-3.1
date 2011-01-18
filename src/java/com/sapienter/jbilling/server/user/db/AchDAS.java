@@ -24,7 +24,7 @@ import com.sapienter.jbilling.server.util.db.AbstractDAS;
 public class AchDAS extends AbstractDAS<AchDTO> {
 
     public AchDTO create(UserDTO baseUser, String abaRouting, String bankAccount,
-            Integer accountType, String bankName, String accountName) {
+            Integer accountType, String bankName, String accountName, String gatewayKey) {
         
         AchDTO ach = new AchDTO();
         ach.setBaseUser(baseUser);
@@ -33,7 +33,7 @@ public class AchDAS extends AbstractDAS<AchDTO> {
         ach.setAccountType(accountType);
         ach.setBankName(bankName);
         ach.setAccountName(accountName);
-        
+        ach.setGatewayKey(gatewayKey);
         return save(ach);
     }
 

@@ -32,15 +32,15 @@ import javax.validation.constraints.Digits;
 @XmlType(name = "ach")
 public class AchDTO
    extends java.lang.Object
-   implements java.io.Serializable 
+   implements java.io.Serializable
 {
    private java.lang.Integer id;
    private boolean idHasBeenSet = false;
-   
+
    @Digits(integer=16, fraction=0, message="validation.error.not.a.number")
    private java.lang.String abaRouting;
    private boolean abaRoutingHasBeenSet = false;
-   
+
    @Digits(integer=16, fraction=0, message="validation.error.not.a.number")
    private java.lang.String bankAccount;
    private boolean bankAccountHasBeenSet = false;
@@ -50,6 +50,8 @@ public class AchDTO
    private boolean bankNameHasBeenSet = false;
    private java.lang.String accountName;
    private boolean accountNameHasBeenSet = false;
+   private java.lang.String gatewayKey;
+   private boolean gatewayKeyHasBeenSet = false;
 
    private java.lang.Integer pk;
 
@@ -71,6 +73,8 @@ public class AchDTO
       bankNameHasBeenSet = true;
       this.accountName = accountName;
       accountNameHasBeenSet = true;
+      this.gatewayKey = gatewayKey;
+      gatewayKeyHasBeenSet = true;
       pk = this.getId();
    }
 
@@ -89,6 +93,8 @@ public class AchDTO
       bankNameHasBeenSet = true;
       this.accountName = otherValue.accountName;
       accountNameHasBeenSet = true;
+      this.gatewayKey = otherValue.gatewayKey;
+      gatewayKeyHasBeenSet = true;
 
       pk = this.getId();
    }
@@ -198,11 +204,31 @@ public class AchDTO
       return accountNameHasBeenSet;
    }
 
+   public String getGatewayKey() {
+    return this.gatewayKey;
+   }
+
+   public void setGatewayKey(String gatewayKey) {
+    this.gatewayKey = gatewayKey;
+    gatewayKeyHasBeenSet = true;
+   }
+
+   public boolean gatewayKeyHasBeenSet() {
+    return gatewayKeyHasBeenSet;
+   }
+
+   public boolean useGatewayKey() {
+    return (getGatewayKey() != null);
+   }
+
    public String toString()
    {
       StringBuffer str = new StringBuffer("{");
 
-      str.append("id=" + getId() + " " + "abaRouting=" + getAbaRouting() + " " + "bankAccount=" + getBankAccount() + " " + "accountType=" + getAccountType() + " " + "bankName=" + getBankName() + " " + "accountName=" + getAccountName());
+      str.append("id=" + getId() + " " + "abaRouting=" + getAbaRouting() + " "
+              + "bankAccount=" + getBankAccount() + " " + "accountType=" + getAccountType()
+              + " " + "bankName=" + getBankName() + " " + "accountName=" + getAccountName()
+              + " " + "gatewayKey=" + getGatewayKey());
       str.append('}');
 
       return(str.toString());

@@ -74,7 +74,7 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
         }
     }
-
+    
     public void testOwingBalance() {
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -930,6 +930,7 @@ Ch8: no applicable orders
             newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
             newUser.setCurrencyId(currencyId);
             newUser.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+            newUser.setInvoiceChild(new Boolean(false));
             
             // add a contact
             ContactWS contact = new ContactWS();
@@ -1820,6 +1821,32 @@ Ch8: no applicable orders
         assertEquals("Auto payment type should be set to ACH",
         		Constants.AUTO_PAYMENT_TYPE_ACH, 
         		api.getAutoPaymentType(newUser.getUserId()));
+    }
+    
+    //test to ensure if the Invoice If Child field gets updated successfully via API.
+    public void testUpdateInvoiceChild() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        System.out.println("Parent user parent(43)");
+        UserWS user = createUser(true, 43, null);
+        //userId
+        Integer userId = user.getUserId();
+        
+        boolean flag= user.getInvoiceChild();
+        //set the field
+        user.setInvoiceChild(!user.getInvoiceChild());
+
+        //Save
+        api.updateUser(user);
+
+        //get user again
+        user = api.getUserWS(userId);
+        assertEquals("Successfully updated invoiceChild: ", new Boolean(!flag), user.getInvoiceChild());
+        
+        System.out.println("Testing " + !flag + " equals " + user.getInvoiceChild());
+
+        //cleanup
+        api.deleteUser(user.getUserId());
     }
 
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {

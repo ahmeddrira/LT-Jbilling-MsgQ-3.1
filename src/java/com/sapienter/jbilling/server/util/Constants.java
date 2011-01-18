@@ -130,25 +130,25 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_MEDIATION_RECORD_STATUS = "mediation_record_status";
     public static final String TABLE_PROCESS_RUN_STATUS = "process_run_status";
     public static final String TABLE_NOTIFICATION_CATEGORY = "notification_category";
-                
+
     // order line types
     public static final Integer ORDER_LINE_TYPE_ITEM = new Integer(1);
     public static final Integer ORDER_LINE_TYPE_TAX = new Integer(2);
     public static final Integer ORDER_LINE_TYPE_PENALTY = new Integer(3);
-    
+
     // order periods. This are those NOT related with any single entity
     public static final Integer ORDER_PERIOD_ONCE = new Integer(1);
-    
+
     // period unit types
     public static final Integer PERIOD_UNIT_MONTH = new Integer(1);
     public static final Integer PERIOD_UNIT_WEEK = new Integer(2);
     public static final Integer PERIOD_UNIT_DAY = new Integer(3);
     public static final Integer PERIOD_UNIT_YEAR= new Integer(4);
-    
+
     // order billing types
     public static final Integer ORDER_BILLING_PRE_PAID = new Integer(1);
     public static final Integer ORDER_BILLING_POST_PAID = new Integer(2);
-    
+
     // pluggable tasks categories
     public static final Integer PLUGGABLE_TASK_PROCESSING_ORDERS = new Integer(1);
     public static final Integer PLUGGABLE_TASK_ORDER_FILTER = new Integer(2);
@@ -173,29 +173,30 @@ public final class Constants implements CommonConstants {
     public static final Integer PLUGGABLE_TASK_MEDIATION_ERROR_HANDLER = new Integer(21);
     public static final Integer PLUGGABLE_TASK_SCHEDULED = new Integer(22);
     public static final Integer PLUGGABLE_TASK_RULES_GENERATOR = new Integer(23);
-    
+
     // pluggable task types (belongs to a category)
     public static final Integer PLUGGABLE_TASK_T_PAPER_INVOICE = new Integer(12);
-    
+
     // invoice line types
-    public static final Integer INVOICE_LINE_TYPE_ITEM = new Integer(1);
+    public static final Integer INVOICE_LINE_TYPE_ITEM_RECURRING = new Integer(1);
     public static final Integer INVOICE_LINE_TYPE_TAX = new Integer(2);
     public static final Integer INVOICE_LINE_TYPE_DUE_INVOICE = new Integer(3);
     public static final Integer INVOICE_LINE_TYPE_PENALTY = new Integer(4);
     public static final Integer INVOICE_LINE_TYPE_SUB_ACCOUNT = new Integer(5);
-    
+    public static final Integer INVOICE_LINE_TYPE_ITEM_ONETIME = new Integer(6);
+
     // permission types - this should be moved to PermissionConstant.java
     public static final Integer PERMISSION_TYPE_MENU= new Integer(1);
-    
+
     // languages - when the project is a big company, we can do this right ! :p
     public static final Integer LANGUAGE_ENGLISH_ID = new Integer(1);
     public static final String LANGUAGE_ENGLISH_STR = "English";
     public static final Integer LANGUAGE_SPANISH_ID = new Integer(2);
-    public static final String LANGUAGE_SPANISH_STR = "Spanish";    
+    public static final String LANGUAGE_SPANISH_STR = "Spanish";
 
     public static final Integer ORDER_PROCESS_ORIGIN_PROCESS = new Integer(1);
     public static final Integer ORDER_PROCESS_ORIGIN_MANUAL = new Integer(2);
-    
+
     //Notification Preference Types
     public static final Integer PREFERENCE_TYPE_SELF_DELIVER_PAPER_INVOICES = new Integer(13);
     public static final Integer PREFERENCE_TYPE_INCLUDE_CUSTOMER_NOTES = new Integer(14);
@@ -205,7 +206,7 @@ public final class Constants implements CommonConstants {
     public static final Integer PREFERENCE_TYPE_USE_INVOICE_REMINDERS = new Integer(21);
     public static final Integer PREFERENCE_TYPE_NO_OF_DAYS_INVOICE_GEN_1_REMINDER = new Integer(22);
     public static final Integer PREFERENCE_TYPE_NO_OF_DAYS_NEXT_REMINDER = new Integer(23);
-    
+
     //Jbilling Table Ids
     public static final Integer ENTITY_TABLE_ID = new Integer(5);
 }

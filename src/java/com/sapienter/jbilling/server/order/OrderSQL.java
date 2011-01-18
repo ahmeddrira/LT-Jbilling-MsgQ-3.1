@@ -79,10 +79,9 @@ public interface OrderSQL {
         "  and (notification_step is null or notification_step < ?)";
     
     static final String getLatest =
-        "select max(id) " +
-        "  from purchase_order " +
-        " where user_id = ?" +
-        "   and deleted = 0";
+    	"select id from purchase_order where " +
+    	"create_datetime = (select max(create_datetime) " +
+    	"from purchase_order where user_id = ? and deleted = 0)";
     
     static final String getLatestByItemType =
         "select max(purchase_order.id) " +

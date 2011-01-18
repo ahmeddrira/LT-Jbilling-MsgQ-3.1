@@ -19,20 +19,15 @@
 */
 package com.sapienter.jbilling.server.order.db;
 
-import com.sapienter.jbilling.server.customer.CustomerBL;
 import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
-
-import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import org.joda.time.DateMidnight;
 
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 public class OrderLineDAS extends AbstractDAS<OrderLineDTO> {
@@ -64,6 +59,25 @@ public class OrderLineDAS extends AbstractDAS<OrderLineDTO> {
         Query query = getSession().createQuery(hql);
         query.setParameter("item", itemId);
         query.setParameter("user", userId);
+
+        return query.list();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<OrderLineDTO> findRecurringByUser(Integer userId) {
+        final String hql =
+                "select line "
+                        + "  from OrderLineDTO line "
+                        + "where line.deleted = 0 "
+                        + "  and line.purchaseOrder.baseUserByUserId.id = :userId "
+                        + "  and line.purchaseOrder.orderPeriod.id != :period "
+                        + "  and line.purchaseOrder.orderStatus.id = :status "
+                        + "  and line.purchaseOrder.deleted = 0 ";
+
+        Query query = getSession().createQuery(hql);
+        query.setParameter("userId", userId);
+        query.setParameter("period", Constants.ORDER_PERIOD_ONCE);
+        query.setParameter("status", Constants.ORDER_STATUS_ACTIVE);
 
         return query.list();
     }

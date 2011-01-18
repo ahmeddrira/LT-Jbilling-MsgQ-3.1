@@ -20,25 +20,6 @@
 
 package com.sapienter.jbilling.server.user;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
-import java.util.Set;
-
-
-import org.apache.log4j.Logger;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -62,17 +43,34 @@ import com.sapienter.jbilling.server.util.audit.db.EventLogDAS;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
+import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Random;
+import java.util.Set;
 
 /**
  *
  * This is the session facade for the user. All interaction from the client
- * to the server is made through calls to the methods of this class. This 
+ * to the server is made through calls to the methods of this class. This
  * class uses helper classes (Business Logic -> BL) for the real logic.
  *
- * Had to implement IUserSessionBean to stop Spring related 
- * ClassCastExceptions when getting the bean. 
+ * Had to implement IUserSessionBean to stop Spring related
+ * ClassCastExceptions when getting the bean.
  *
  * @author emilc
  */
@@ -88,22 +86,22 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
 
     // -------------------------------------------------------------------------
     // Methods
-    // -------------------------------------------------------------------------  
+    // -------------------------------------------------------------------------
 
     /**
-    * @return the populated userDTO if ok, or null if fails.
-    * @param clientUser The userDTO with the username and password to authenticate
-    */
+     * @return the populated userDTO if ok, or null if fails.
+     * @param clientUser The userDTO with the username and password to authenticate
+     */
     @Deprecated
-    public Integer authenticate(UserDTOEx clientUser) 
+    public Integer authenticate(UserDTOEx clientUser)
             throws SessionInternalError {
         Integer result = Constants.AUTH_WRONG_CREDENTIALS;
         try {
-            LOG.debug("Authentication of " + clientUser.getUserName() + 
-                    " password = [" + clientUser.getPassword() + "]" +
-                    " entity = " + clientUser.getEntityId());
-            UserDTOEx dbUser = DTOFactory.getUserDTO(clientUser.getUserName(), 
-                    clientUser.getEntityId());
+            LOG.debug("Authentication of " + clientUser.getUserName() +
+                      " password = [" + clientUser.getPassword() + "]" +
+                      " entity = " + clientUser.getEntityId());
+            UserDTOEx dbUser = DTOFactory.getUserDTO(clientUser.getUserName(),
+                                                     clientUser.getEntityId());
             if (dbUser == null) return result; // username is wrong (not found in DB)
             LOG.debug("DB password is [" + dbUser.getPassword() + "]");
             // the permissions and menu will get loaded only for
@@ -124,7 +122,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             // internal error has happened.
             throw new SessionInternalError(e);
         }
-        
+
         LOG.debug("result is " + result);
         return result;
     }
@@ -142,7 +140,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             throw new SessionInternalError(e);
         }
     }
-    
+
     /**
      * This returns more than a DTOEx, it includes the permissions and menu that
      * the GUI needs
@@ -160,28 +158,28 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             retValue.setMenu(bl.getMenu(retValue.getAllPermissions()));
         } catch (Exception e) {
             throw new SessionInternalError(e);
-        } 
-        
+        }
+
         return retValue;
     }
 
     /**
-     * @return the new user id if everthing ok, or null if the username is already 
+     * @return the new user id if everthing ok, or null if the username is already
      * taken, any other problems go as an exception
      */
-    public Integer create(UserDTOEx newUser, ContactDTOEx contact) 
+    public Integer create(UserDTOEx newUser, ContactDTOEx contact)
             throws SessionInternalError {
         try {
             UserBL bl = new UserBL();
             if (!bl.exists(newUser.getUserName(), newUser.getEntityId())) {
-                
+
                 ContactBL cBl = new ContactBL();
-                
+
                 Integer userId = bl.create(newUser);
                 if (userId != null) {
                     // children inherit the contact of the parent user
-                    if (newUser.getCustomer() != null && 
-                            newUser.getCustomer().getParent() != null) {
+                    if (newUser.getCustomer() != null &&
+                        newUser.getCustomer().getParent() != null) {
                         cBl.setFromChild(userId);
                         contact = cBl.getDTO();
                         LOG.debug("Using parent's contact " + contact.getId());
@@ -193,26 +191,26 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
                 }
                 return userId;
             }
-            
+
             return null;
-            
+
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
 
-    public Integer createEntity(ContactDTO contact, UserDTOEx user, 
-            Integer pack, Boolean config, String language,
-            ContactDTO paymentContact)
+    public Integer createEntity(ContactDTO contact, UserDTOEx user,
+                                Integer pack, Boolean config, String language,
+                                ContactDTO paymentContact)
             throws SessionInternalError {
         try {
             // start by creating the new entity
             EntityBL bl = new EntityBL();
             Integer languageId = new LanguageDAS().findByCode(language).getId();
             Integer entityId = bl.create(user, contact, languageId);
-            
+
             final String notCryptedPassword = user.getPassword();
-            
+
             if (paymentContact != null) {
                 // now a new customer for Sapienter
                 user.setEntityId(new Integer(1));
@@ -226,7 +224,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
                     }
                 }
                 createCreditCard(newUserId, user.getCreditCard());
-                
+
                 String params[] = new String[6];
                 params[0] = contact.getFirstName();
                 params[1] = contact.getLastName();
@@ -234,26 +232,26 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
                 params[3] = notCryptedPassword;
                 params[4] = entityId.toString();
                 params[5] = entityId.toString();
-                NotificationBL.sendSapienterEmail(entityId, "signup.welcome", 
-                        null, params);
+                NotificationBL.sendSapienterEmail(entityId, "signup.welcome",
+                                                  null, params);
             }
-            
+
             return entityId;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
-  
-    public UserDTO getUserDTO(String userName, Integer entityId) 
+
+    public UserDTO getUserDTO(String userName, Integer entityId)
             throws SessionInternalError {
         UserDTO dto = null;
         try {
             UserBL user = new UserBL(userName, entityId);
             dto = user.getDto();
-        } catch (Exception e) { 
+        } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-        
+
         return dto;
     }
 
@@ -262,7 +260,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         try {
             UserBL user = new UserBL(userId);
             return user.getEntity().getCustomer().getNotes();
-        } catch (Exception e) { 
+        } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
@@ -272,22 +270,22 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         try {
             UserBL user = new UserBL(userId);
             return user.getLocale();
-        } catch (Exception e) { 
+        } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
-   
+
     public void setCustomerNotes(Integer userId, String notes)
             throws SessionInternalError {
         try {
             UserBL user = new UserBL(userId);
             user.getEntity().getCustomer().setNotes(notes);
-        } catch (Exception e) { 
+        } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
 
-    public void delete(Integer executorId, Integer userId) 
+    public void delete(Integer executorId, Integer userId)
             throws SessionInternalError {
         if (userId == null) {
             throw new SessionInternalError("userId can't be null");
@@ -300,7 +298,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         }
     }
 
-    public void delete(String userName, Integer entityId) 
+    public void delete(String userName, Integer entityId)
             throws SessionInternalError {
         if (userName == null) {
             throw new SessionInternalError("userId can't be null");
@@ -315,10 +313,10 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
 
 
     /**
-     * @param userId The user that is doing this change, it could be
+     * @param executorId The user that is doing this change, it could be
      * the same user or someone else in behalf.
      */
-    public void update(Integer executorId, UserDTOEx dto) 
+    public void update(Integer executorId, UserDTOEx dto)
             throws SessionInternalError {
         try {
             UserBL bl = new UserBL(dto.getUserId());
@@ -328,7 +326,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         }
     }
 
-    public void updatePartner(Integer executorId, Partner dto) 
+    public void updatePartner(Integer executorId, Partner dto)
             throws SessionInternalError {
         try {
             PartnerBL bl = new PartnerBL(dto.getId());
@@ -338,8 +336,8 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         }
     }
 
-    public void updatePartnerRanges(Integer executorId, Integer partnerId, 
-            PartnerRange[] ranges) 
+    public void updatePartnerRanges(Integer executorId, Integer partnerId,
+                                    PartnerRange[] ranges)
             throws SessionInternalError {
         try {
             PartnerBL bl = new PartnerBL(partnerId);
@@ -360,20 +358,20 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             throw new SessionInternalError("Customer primary contact");
         }
     }
-    
+
     public void setPrimaryContact(ContactDTOEx dto, Integer userId)
             throws SessionInternalError {
         try {
             ContactBL cbl = new ContactBL();
-            
+
             cbl.updatePrimaryForUser(dto, userId);
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    }                    
+    }
 
-     public ContactDTOEx getContactDTO(Integer userId, Integer contactTypeId)
-             throws SessionInternalError {
+    public ContactDTOEx getContactDTO(Integer userId, Integer contactTypeId)
+            throws SessionInternalError {
         ContactBL bl = new ContactBL();
         bl.set(userId, contactTypeId);
         if (bl.getEntity() != null) {
@@ -381,21 +379,21 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         } else {
             return getVoidContactDTO(new UserDAS().find(userId).getCompany().getId());
         }
-     }
- 
-      public ContactDTOEx getVoidContactDTO(Integer entityId)
-              throws SessionInternalError {
-         try {
-             ContactBL bl = new ContactBL();
-             return bl.getVoidDTO(entityId);
-         } catch (Exception e) {
-             throw new SessionInternalError(e);
-         } 
-      }
+    }
 
-     public void setContact(ContactDTOEx dto, Integer userId, Integer 
-             contactTypeId)
-             throws SessionInternalError {
+    public ContactDTOEx getVoidContactDTO(Integer entityId)
+            throws SessionInternalError {
+        try {
+            ContactBL bl = new ContactBL();
+            return bl.getVoidDTO(entityId);
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
+
+    public void setContact(ContactDTOEx dto, Integer userId, Integer
+            contactTypeId)
+            throws SessionInternalError {
         try {
             ContactBL cbl = new ContactBL();
 
@@ -403,11 +401,11 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    }                    
+    }
 
-     public boolean addContact(ContactDTOEx dto, String username,
-             Integer entityId)
-             throws SessionInternalError {
+    public boolean addContact(ContactDTOEx dto, String username,
+                              Integer entityId)
+            throws SessionInternalError {
         try {
             UserBL user = new UserBL(username, entityId);
             ContactBL cbl = new ContactBL();
@@ -416,23 +414,23 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    }                    
+    }
 
-    public UserDTOEx getUserDTOEx(Integer userId) 
+    public UserDTOEx getUserDTOEx(Integer userId)
             throws SessionInternalError {
         UserDTOEx dto = null;
-        
+
         try {
             dto = DTOFactory.getUserDTOEx(userId);
             dto.touch();
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-        
+
         return dto;
     }
-    
-    public Boolean isParentCustomer(Integer userId) 
+
+    public Boolean isParentCustomer(Integer userId)
             throws SessionInternalError {
         try {
             UserBL user = new UserBL(userId);
@@ -448,7 +446,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
     }
 
     // Check if there is any Active Children under this client
-    public Boolean hasSubAccounts(Integer userId) 
+    public Boolean hasSubAccounts(Integer userId)
             throws SessionInternalError {
         try {
             boolean hasSubAccounts = false;
@@ -465,11 +463,11 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             throw new SessionInternalError(e);
         }
     }
-    
-    public UserDTOEx getUserDTOEx(String userName, Integer entityId) 
+
+    public UserDTOEx getUserDTOEx(String userName, Integer entityId)
             throws SessionInternalError{
         UserDTOEx dto = null;
-        
+
         try {
             UserBL bl = new UserBL();
             bl.set(userName, entityId);
@@ -478,17 +476,17 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-        
+
         return dto;
     }
-    
-    public CurrencyDTO getCurrency(Integer userId) 
+
+    public CurrencyDTO getCurrency(Integer userId)
             throws SessionInternalError{
         return new UserDAS().find(userId).getCurrency();
     }
 
     public Integer createCreditCard(Integer userId,
-            CreditCardDTO dto) throws SessionInternalError {
+                                    CreditCardDTO dto) throws SessionInternalError {
         try {
             // add the base user to the given CreditCardDTO
             UserDTO user = new UserDAS().find(userId);
@@ -497,25 +495,25 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             // create the cc record
             CreditCardBL ccBL = new CreditCardBL();
             ccBL.create(dto);
-            
+
             user.getCreditCards().add(ccBL.getEntity());
             new UserDAS().save(user);
-            
+
             return ccBL.getEntity().getId();
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
-    
+
     /**
      * This actually creates a credit card record for a user without it,
      * or updates an existing one.
      * Since now we are only supporting one cc per user, this will
-     * just get the first cc and update it (it could have deleted 
+     * just get the first cc and update it (it could have deleted
      * all of them and create one, but it was too crapy).
      */
     public void updateCreditCard(Integer executorId, Integer userId,
-            CreditCardDTO dto) throws SessionInternalError {
+                                 CreditCardDTO dto) throws SessionInternalError {
         try {
             // find this user and get the first cc
             UserBL userBL = new UserBL(userId);
@@ -524,19 +522,19 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             throw new SessionInternalError(e);
         }
     }
-    
+
     public void updateCreditCard(String username, Integer entityId,
-            CreditCardDTO dto) throws SessionInternalError {
+                                 CreditCardDTO dto) throws SessionInternalError {
         try {
             UserBL userBL = new UserBL(username, entityId);
             updateCreditCard(userBL.getEntity(), dto, null);
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    } 
-    
-    private void updateCreditCard(UserDTO user, 
-            CreditCardDTO dto, Integer executorId) 
+    }
+
+    private void updateCreditCard(UserDTO user,
+                                  CreditCardDTO dto, Integer executorId)
             throws SessionInternalError {
         // find this user and get the first cc
 
@@ -546,11 +544,11 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             userBL.set(user);
             // if it starts with a *, it is passing a masked cc, which means no update
             if (dto != null && (dto.getNumber() == null || dto.getNumber().charAt(0) != '*')) { // it is providing a new cc
-                
+
                 if (!userBL.getEntity().getCreditCards().isEmpty()) {
-                    
+
                     CreditCardBL ccBL = new CreditCardBL(((CreditCardDTO)
-                            userBL.getEntity().getCreditCards().iterator().next()).getId());
+                                                                  userBL.getEntity().getCreditCards().iterator().next()).getId());
                     ccBL.update(executorId, dto, user.getId());
                 } else { // this is really a create
                     createCreditCard(user.getUserId(), dto);
@@ -562,16 +560,16 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             throw new SessionInternalError(e);
         }
 
-    }   
+    }
 
-    public void setAuthPaymentType(Integer userId, Integer newMethod, 
-            Boolean use) 
+    public void setAuthPaymentType(Integer userId, Integer newMethod,
+                                   Boolean use)
             throws SessionInternalError {
         try {
             UserBL user = new UserBL(userId);
             if (user.getEntity().getCustomer() == null) {
                 LOG.warn("Trying to update the automatic payment type of a " +
-                        "non customer");
+                         "non customer");
                 return;
             }
             Integer method = user.getEntity().getCustomer().
@@ -581,15 +579,15 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
                 user.getEntity().getCustomer().setAutoPaymentType(newMethod);
             }
             // it has this method, and doesn't want to use it any more
-            if (method != null && method.equals(newMethod) && 
-                    !use.booleanValue()) {
+            if (method != null && method.equals(newMethod) &&
+                !use.booleanValue()) {
                 user.getEntity().getCustomer().setAutoPaymentType(null);
             }
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
-    
+
     public Integer getAuthPaymentType(Integer userId)
             throws SessionInternalError {
         try {
@@ -600,7 +598,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             } else {
                 // this will be necessary as long as non-customers can have
                 // a credit card
-                method = new Integer(0); 
+                method = new Integer(0);
             }
             return method;
         } catch (Exception e) {
@@ -617,7 +615,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             throw new SessionInternalError(e);
         }
     }
-    
+
     public AchDTO getACH(Integer userId)
             throws SessionInternalError {
         try {
@@ -626,9 +624,9 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             if (ach.size() > 0) {
                 AchBL bl = new AchBL(((AchDTO)ach.toArray()[0]).getId());
                 return bl.getDTO();
-            } 
+            }
             return null;
-            
+
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
@@ -640,7 +638,8 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             UserBL user = new UserBL(userId);
             Set<AchDTO> ach = user.getEntity().getAchs();
             if (ach.size() > 0) {
-                AchBL bl = new AchBL(((AchDTO)ach.toArray()[0]).getId());
+                AchDTO _achDTO= (AchDTO)ach.toArray()[0];
+                AchBL bl = new AchBL((_achDTO).getId());
                 bl.delete(executorId);
             }
         } catch (Exception e) {
@@ -652,7 +651,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
      * Since now we are only supporting one cc per user, this will
      * just get the first cc .
      */
-    public CreditCardDTO getCreditCard(Integer userId) 
+    public CreditCardDTO getCreditCard(Integer userId)
             throws SessionInternalError {
         CreditCardDTO retValue;
         try {
@@ -660,7 +659,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             UserBL userBL = new UserBL(userId);
             if (!userBL.getEntity().getCreditCards().isEmpty()) {
                 CreditCardBL ccBL = new CreditCardBL(((CreditCardDTO)
-                        userBL.getEntity().getCreditCards().toArray()[0]).getId());
+                                                              userBL.getEntity().getCreditCards().toArray()[0]).getId());
                 retValue = ccBL.getDTO();
             } else { // return a blank one
                 retValue = null;
@@ -668,14 +667,14 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-        
+
         return retValue;
     }
-    
+
     /**
      * @return The path or url of the css to use for the given entity
      */
-    public String getEntityPreference(Integer entityId, Integer preferenceId) 
+    public String getEntityPreference(Integer entityId, Integer preferenceId)
             throws SessionInternalError {
         try {
             String result = null;
@@ -683,7 +682,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             try {
                 preference.set(entityId, preferenceId);
                 result = preference.getValueAsString();
-            } catch (EmptyResultDataAccessException e) { 
+            } catch (EmptyResultDataAccessException e) {
                 // it is missing, so it will pick up the default
             }
 
@@ -691,26 +690,26 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
                 result = preference.getDefaultAsString(preferenceId);
                 LOG.debug("Using default");
             }
-            
+
             if (result == null) {
                 LOG.warn("Preference " + preferenceId + " does not have a " +
-                        " default.");
+                         " default.");
             }
-        
+
             LOG.debug("result for " + preferenceId + " =" + result);
-            return result;    
+            return result;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
-    
+
     /**
      * Get the entity's contact information
      * @param entityId
      * @return
      * @throws SessionInternalError
      */
-    public ContactDTOEx getEntityContact(Integer entityId) 
+    public ContactDTOEx getEntityContact(Integer entityId)
             throws SessionInternalError {
         try {
             ContactBL bl = new ContactBL();
@@ -721,14 +720,14 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             throw new SessionInternalError("Customer primary contact");
         }
     }
-    
+
     /**
-     * 
+     *
      * @param entityId
      * @return
      * @throws SessionInternalError
      */
-    public Integer getEntityPrimaryContactType(Integer entityId) 
+    public Integer getEntityPrimaryContactType(Integer entityId)
             throws SessionInternalError {
         try {
             ContactBL contact = new ContactBL();
@@ -742,17 +741,17 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
      * This is really an entity level class, there is no user involved.
      * This means that the lookup of parameters will be based on the table
      * entity.
-     * 
+     *
      * @param ids
      * An array of the parameter ids that will be looked up and returned in
      * the hashtable
      * @return
      * The paramteres in "id - value" pairs. The value is of type String
-     */    
-    public HashMap getEntityParameters(Integer entityId, Integer[] ids) 
+     */
+    public HashMap getEntityParameters(Integer entityId, Integer[] ids)
             throws SessionInternalError {
         HashMap retValue = new HashMap();
-        
+
         try {
             PreferenceBL preference = new PreferenceBL();
             for (int f = 0; f < ids.length; f++) {
@@ -761,34 +760,34 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
                     retValue.put(ids[f], preference.getValueAsString());
                 } catch (EmptyResultDataAccessException e1) {
                     // use a default
-                    retValue.put(ids[f], 
-                            preference.getDefaultAsString(ids[f]));
+                    retValue.put(ids[f],
+                                 preference.getDefaultAsString(ids[f]));
                 }
-            }        
+            }
             return retValue;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
-    
+
     /**
      * @param entityId
      * @param params
      * @throws SessionInternalError
      */
-    public void setEntityParameters(Integer entityId, HashMap params) 
+    public void setEntityParameters(Integer entityId, HashMap params)
             throws SessionInternalError {
         try {
             PreferenceBL preference = new PreferenceBL();
             for (Iterator it = params.keySet().iterator(); it.hasNext();) {
                 Integer preferenceId = (Integer) it.next();
-                
+
                 Object value = params.get(preferenceId);
                 if (value != null) {
                     if (value instanceof Integer) {
-                        preference.createUpdateForEntity(entityId, preferenceId, 
-                                (Integer) value, null, null);
-                        
+                        preference.createUpdateForEntity(entityId, preferenceId,
+                                                         (Integer) value, null, null);
+
                     } else if (value instanceof String) {
                         preference.createUpdateForEntity(entityId, preferenceId, null, (String) value, null);
                     } else if (value instanceof Float) {
@@ -798,8 +797,8 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
                     }
 
                 } else {
-                    preference.createUpdateForEntity(entityId, preferenceId, null, 
-                            null, null);
+                    preference.createUpdateForEntity(entityId, preferenceId, null,
+                                                     null, null);
                 }
             }
         } catch (Exception e) {
@@ -807,8 +806,8 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         }
     }
 
-    public void updatePreference(Integer userId, Integer typeId, Integer intValue, String strValue, BigDecimal decimalValue) 
-        throws SessionInternalError {
+    public void updatePreference(Integer userId, Integer typeId, Integer intValue, String strValue, BigDecimal decimalValue)
+            throws SessionInternalError {
         try {
             LOG.debug("updating preference " + typeId + " for user " + userId);
             PreferenceBL preference = new PreferenceBL();
@@ -816,9 +815,9 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-        
+
     }
-    
+
     /**
      * This now only working with String parameters
      *
@@ -844,7 +843,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
      * Marks as deleted all the credit cards associated with this user
      * and removes the relationship
      */
-    public void deleteCreditCard(Integer executorId, Integer userId) 
+    public void deleteCreditCard(Integer executorId, Integer userId)
             throws SessionInternalError {
         try {
             // find this user and get the first cc
@@ -852,40 +851,40 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             Iterator it = userBL.getEntity().getCreditCards().iterator();
             while (it.hasNext()) {
                 CreditCardBL bl = new CreditCardBL(((CreditCardDTO)
-                        it.next()).getId());
+                                                            it.next()).getId());
                 bl.delete(executorId);
-            } 
+            }
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
 
-    public void setUserStatus(Integer executorId, Integer userId, 
-            Integer statusId) 
+    public void setUserStatus(Integer executorId, Integer userId,
+                              Integer statusId)
             throws SessionInternalError {
         try {
             AgeingBL age = new AgeingBL();
-            age.setUserStatus(executorId, userId, statusId, 
-                    Calendar.getInstance().getTime());
+            age.setUserStatus(executorId, userId, statusId,
+                              Calendar.getInstance().getTime());
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    }   
-    
-    public String getWelcomeMessage(Integer entityId, Integer languageId, 
-            Integer statusId) 
+    }
+
+    public String getWelcomeMessage(Integer entityId, Integer languageId,
+                                    Integer statusId)
             throws SessionInternalError {
         String retValue;
         try {
             AgeingBL age = new AgeingBL();
             LOG.debug("Getting welcome message for " + entityId +
-                    " language " + languageId + " status " + statusId);
+                      " language " + languageId + " status " + statusId);
             retValue = age.getWelcome(entityId, languageId, statusId);
             //log.debug("welcome = " + retValue);
             if (retValue == null) {
                 LOG.warn("No message found. Looking for active status");
-                retValue = age.getWelcome(entityId, languageId, 
-                        UserDTOEx.STATUS_ACTIVE);
+                retValue = age.getWelcome(entityId, languageId,
+                                          UserDTOEx.STATUS_ACTIVE);
                 if (retValue == null) {
                     LOG.warn("Using welcome default");
                     retValue = "Welcome!";
@@ -894,15 +893,15 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-        
+
         return retValue;
-    }   
+    }
 
     /**
-    * Describes the instance and its content for debugging purpose
-    *
-    * @return Debugging information about the instance and its content
-    */
+     * Describes the instance and its content for debugging purpose
+     *
+     * @return Debugging information about the instance and its content
+     */
     public String toString() {
         return "UserSessionBean [ " + " ]";
     }
@@ -913,7 +912,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
      * process the payout
      * @param today
      */
-    public void processPayouts(Date today) 
+    public void processPayouts(Date today)
             throws SessionInternalError {
         try {
             JNDILookup jndi = JNDILookup.getFactory();
@@ -934,7 +933,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
     }
 
     @Transactional( propagation = Propagation.REQUIRES_NEW )
-    public void processPayout(Integer partnerId) 
+    public void processPayout(Integer partnerId)
             throws SessionInternalError {
         try {
             LOG.debug("Processing partner " + partnerId);
@@ -943,10 +942,10 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    } 
+    }
 
-    public PartnerPayout calculatePayout(Integer partnerId, Date start, 
-            Date end, Integer currencyId) 
+    public PartnerPayout calculatePayout(Integer partnerId, Date start,
+                                         Date end, Integer currencyId)
             throws SessionInternalError {
         try {
             PartnerBL partnerBL = new PartnerBL(partnerId);
@@ -959,17 +958,17 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    } 
+    }
 
-    public Partner getPartnerDTO(Integer partnerId) 
+    public Partner getPartnerDTO(Integer partnerId)
             throws SessionInternalError {
         PartnerBL partnerBL = new PartnerBL(partnerId);
         Partner retValue = partnerBL.getDTO();
         retValue.touch();
         return retValue;
-    } 
+    }
 
-    public PartnerPayout getPartnerLastPayoutDTO(Integer partnerId) 
+    public PartnerPayout getPartnerLastPayoutDTO(Integer partnerId)
             throws SessionInternalError {
         try {
             PartnerBL partnerBL = new PartnerBL();
@@ -977,9 +976,9 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    } 
+    }
 
-    public PartnerPayout getPartnerPayoutDTO(Integer payoutId) 
+    public PartnerPayout getPartnerPayoutDTO(Integer payoutId)
             throws SessionInternalError {
         try {
             PartnerBL partnerBL = new PartnerBL();
@@ -988,9 +987,9 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    } 
+    }
 
-    public Date[] getPartnerPayoutDates(Integer partnerId) 
+    public Date[] getPartnerPayoutDates(Integer partnerId)
             throws SessionInternalError {
         try {
             PartnerBL partnerBL = new PartnerBL(partnerId);
@@ -998,9 +997,9 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    } 
-    
-    public void notifyCreditCardExpiration(Date today) 
+    }
+
+    public void notifyCreditCardExpiration(Date today)
             throws SessionInternalError {
         try {
             Calendar cal = Calendar.getInstance();
@@ -1012,10 +1011,10 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    } 
+    }
 
-    public void setUserBlacklisted(Integer executorId, Integer userId, 
-            Boolean isBlacklisted) throws SessionInternalError {
+    public void setUserBlacklisted(Integer executorId, Integer userId,
+                                   Boolean isBlacklisted) throws SessionInternalError {
         try {
             UserBL bl = new UserBL(userId);
             bl.setUserBlacklisted(executorId, isBlacklisted);
@@ -1025,21 +1024,21 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
     }
 
     /**
-     * @throws NumberFormatException 
-     * @throws NotificationNotFoundException 
-     * @throws SessionInternalError 
+     * @throws NumberFormatException
+     * @throws NotificationNotFoundException
+     * @throws SessionInternalError
      */
     @Deprecated
-    public void sendLostPassword(String entityId, String username) 
-            throws NumberFormatException, SessionInternalError, 
-            NotificationNotFoundException {
+    public void sendLostPassword(String entityId, String username)
+            throws NumberFormatException, SessionInternalError,
+                   NotificationNotFoundException {
         UserBL user = new UserBL(username, Integer.valueOf(entityId));
 
-        user.sendLostPassword(Integer.valueOf(entityId), user.getEntity().getUserId(),  user.getEntity().getLanguageIdField()); 
+        user.sendLostPassword(Integer.valueOf(entityId), user.getEntity().getUserId(),  user.getEntity().getLanguageIdField());
     }
 
     @Deprecated
-   public boolean isPasswordExpired(Integer userId) {
+    public boolean isPasswordExpired(Integer userId) {
         UserBL user;
         user = new UserBL(userId);
         return user.isPasswordExpired();

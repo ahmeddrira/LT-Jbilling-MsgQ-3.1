@@ -179,13 +179,15 @@ public class RefundOnCancelTask extends PluggableTask implements IInternalEvents
             newLine.setDescription(item.getDescription(userBL.getEntity().getLanguageIdField()));
             newLine.setItem(item);
             newLine.setOrderLineType(new OrderLineTypeDAS().find(Constants.ORDER_LINE_TYPE_ITEM));
+            newLine.setQuantity(1);
+            newLine.setPurchaseOrder(newOrder);
+
             try {
-                newLine.setPrice(new ItemBL(itemId).getPrice(userId, entityId));
+                newLine.setPrice(new ItemBL(itemId).getPrice(userId, newLine.getQuantity(), entityId));
             } catch (Exception e) {
                 throw new SessionInternalError("Error when doing credit", RefundOnCancelTask.class, e);
             }
-            newLine.setQuantity(1);
-            newLine.setPurchaseOrder(newOrder);
+
             newOrder.getLines().add(newLine);
         }
 

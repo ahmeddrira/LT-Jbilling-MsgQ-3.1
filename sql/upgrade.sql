@@ -307,6 +307,125 @@ alter table process_run_user ADD CONSTRAINT process_run_user_FK_2 FOREIGN KEY (u
 ALTER TABLE payment_authorization ALTER COLUMN transaction_id TYPE character varying(40);
 -- alter table payment_authorization modify transaction_id varchar(40); -- mysql
 
+-- plans and pricing models
+CREATE TABLE price_model (
+    id integer NOT NULL,
+    strategy_type varchar(20) NOT NULL,
+    rate numeric(22,10) NOT NULL,
+    included_quantity integer,
+    currency_id integer NOT NULL,
+    PRIMARY KEY (id)
+);
+ALTER TABLE price_model ADD CONSTRAINT price_model_currency_id_FK FOREIGN KEY (currency_id) REFERENCES currency (id);
+
+insert into jbilling_table (id, name) values (93, 'price_model');
+insert into jbilling_seqs (name, next_id) values ('price_model', 1);
+
+DROP TABLE IF EXISTS price_model_attribute;
+CREATE TABLE price_model_attribute (
+    price_model_id integer NOT NULL,
+    attribute_name varchar(255) NOT NULL,
+    attribute_value varchar(255),
+    PRIMARY KEY (price_model_id, attribute_name)
+);
+ALTER TABLE price_model_attribute ADD CONSTRAINT price_model_attr_model_id_FK FOREIGN KEY (price_model_id) REFERENCES price_model (id);
+
+insert into jbilling_table (id, name) values (94, 'price_model_attribute');
+
+DROP TABLE IF EXISTS plan;
+CREATE TABLE plan (
+    id integer NOT NULL,
+    item_id integer NOT NULL,
+    description varchar(255),
+    PRIMARY KEY (id)
+);
+ALTER TABLE plan ADD CONSTRAINT plan_item_id_FK FOREIGN KEY (item_id) REFERENCES item (id);
+
+insert into jbilling_table (id, name) values (95, 'plan');
+insert into jbilling_seqs (name, next_id) values ('plan', 1);
+
+DROP TABLE IF EXISTS plan_item;
+CREATE TABLE plan_item (
+    id integer NOT NULL,
+    plan_id integer,
+    item_id integer NOT NULL,
+    price_model_id integer NOT NULL,
+    precedence integer NOT NULL,
+    PRIMARY KEY (id)
+);
+CREATE INDEX plan_item_precedence_i ON plan_item (item_id);
+CREATE INDEX plan_item_item_id_i ON plan_item (precedence);
+ALTER TABLE plan_item ADD CONSTRAINT plan_item_item_id_FK FOREIGN KEY (item_id) REFERENCES item (id);
+ALTER TABLE plan_item ADD CONSTRAINT plan_item_plan_id_FK FOREIGN KEY (plan_id) REFERENCES plan (id);
+ALTER TABLE plan_item ADD CONSTRAINT plan_item_price_model_id_FK FOREIGN KEY (price_model_id) REFERENCES price_model (id);
+
+insert into jbilling_table (id, name) values (96, 'plan_item');
+insert into jbilling_seqs (name, next_id) values ('plan_item', 1);
+
+DROP TABLE IF EXISTS customer_price;
+CREATE TABLE customer_price (
+    plan_item_id integer NOT NULL,
+    user_id integer NOT NULL,
+    create_datetime timestamp NOT NULL DEFAULT 0,
+    PRIMARY KEY (plan_item_id, user_id)
+);
+ALTER TABLE customer_price ADD CONSTRAINT customer_price_plan_item_id_FK FOREIGN KEY (plan_item_id) REFERENCES plan_item (id);
+ALTER TABLE customer_price ADD CONSTRAINT customer_price_user_id_FK FOREIGN KEY (user_id) REFERENCES base_user (id);
+
+insert into jbilling_table (id, name) values (97, 'customer_price');
+
+-- migrate item price to default item price_model
+-- change insert sub-query "where currency_id = 1" to your primary currency id
+-- postgresql
+ALTER TABLE item add column price_model_id integer;
+ALTER TABLE price_model add column tmp_item_id integer;
+insert into price_model (id, strategy_type, tmp_item_id, rate, currency_id) (select distinct on (item_id) id, 'METERED', item_id, price, currency_id from item_price where currency_id = 1);
+update item i set price_model_id = m.id from price_model m where m.tmp_item_id = i.id
+ALTER TABLE price_model drop column tmp_item_id;
+-- mysql
+-- ALTER TABLE item add column price_model_id integer;
+-- ALTER TABLE price_model add column tmp_item_id integer;
+-- insert into price_model (id, strategy_type, tmp_item_id, rate, currency_id) (select id, 'METERED', item_id, price, currency_id from item_price where currency_id = 1 group by item_id order by id);
+-- update item, price_model set item.price_model_id = price_model.id where item.id = price_model.tmp_item_id;
+-- ALTER TABLE price_model drop column tmp_item_id;
+
+-- reset jbilling_seqs for price_model after inserting default item price_model
+update jbilling_seqs set next_id = (select round(max(id)/100)+1 from price_model) where name = 'price_model';
+
+-- drop legacy item_price table
+DROP TABLE IF EXISTS item_price;
+delete from jbilling_table where name = 'item_price';
+delete from jbilling_seqs where name = 'item_price';
+
+-- price model pricing plug-ins
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (79, 14, 'com.sapienter.jbilling.server.pricing.tasks.PriceModelPricingTask', 0);
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (80, 14, 'com.sapienter.jbilling.server.pricing.tasks.TieredPriceModelPricingTask', 0);
+
+-- external ACH storage plug-in
+insert into pluggable_task_type  (id, category_id, class_name, min_parameters) values (84, 17, 'com.sapienter.jbilling.server.payment.tasks.SaveACHExternallyTask', 1);
+
+-- Modified size of ACH records to allow encryption
+alter table ach alter column aba_routing type character varying(40); -- postgresql
+alter table ach alter column bank_account type character varying(60); -- postgresql
+-- alter table ach modify aba_routing varchar(40); -- mysql
+-- alter table ach modify bank_account varchar(60); -- mysql
+
+-- payment authorization transaction id
+ALTER TABLE payment_authorization ALTER COLUMN transaction_id TYPE character varying(40); -- postgresql
+-- alter table payment_authorization modify transaction_id varchar(40); -- mysql
+
+-- ach external storage gateway_key
+alter table ach add column gateway_key varchar(100) default null;
+
+-- one-time / recurring invoice line types
+insert into invoice_line_type (id, description, order_position) values (6, 'item one-time', 3);
+update invoice_line_type set description = 'item recurring' where id = 1;
+update invoice_line_type set order_position = 4 where id = 4;
+update invoice_line_type set order_position = 5 where id = 5;
+update invoice_line_type set order_position = 6 where id = 2;
+
+-- new billing process filter task 
+insert into pluggable_task_type values (84, 20, 'com.sapienter.jbilling.server.process.task.BillableUserOrdersBillingProcessFilterTask', 0);
 
 --Database changes required for Notifications Screen, gui branch
 create table notification_category (

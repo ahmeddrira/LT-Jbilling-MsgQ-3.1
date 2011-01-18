@@ -289,6 +289,10 @@ public class MaintainAction extends Action {
                                     userForm.get("chbx_excludeAging")).booleanValue() 
                                         ? 1 : 0));
 
+                        dto.getCustomer().setInvoiceChild(new Integer(((Boolean)
+                                userForm.get("chbx_invoiceChild")).booleanValue() 
+                                    ? 1 : 0));
+                        
                         dto.getCustomer().setBalanceType((Integer) userForm.get("balance_type"));
                         String cl = (String) userForm.get("credit_limit");
                         dto.getCustomer().setCreditLimit(cl.trim().length() == 0 ? null :

@@ -20,11 +20,6 @@
 
 package com.sapienter.jbilling.server.payment.tasks;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
 import com.sapienter.jbilling.server.payment.IExternalCreditCardStorage;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
@@ -39,28 +34,27 @@ import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.event.NewContactEvent;
 import com.sapienter.jbilling.server.user.event.NewCreditCardEvent;
+import org.apache.log4j.Logger;
+
+import static com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription.Type.*;
 
 /**
  * Internal Event Plugin designed to save a unique "gateway key" returned by the configured IExternalCreditCardStorage
  * task instead of the complete credit card number.
  *
  * This plugin subscribes to both NewCreditCardEvent and NewContactEvent. For NewContactEvent, this plugin
- * will only invoke the external save logic for new contacts matching the configured "contactType" id. 
+ * will only invoke the external save logic for new contacts matching the configured "contactType" id.
  */
 public class SaveCreditCardExternallyTask extends PluggableTask implements IInternalEventsTask {
     private static final Logger LOG = Logger.getLogger(SaveCreditCardExternallyTask.class);
 
-    private static final ParameterDescription PARAM_CONTACT_TYPE = 
-    	new ParameterDescription("contactType", true, ParameterDescription.Type.STR);
-    private static final ParameterDescription PARAM_EXTERNAL_SAVING_PLUGIN_ID = 
-    	new ParameterDescription("externalSavingPluginId", true, ParameterDescription.Type.STR);
-    private static final ParameterDescription PARAM_REMOVE_ON_FAIL = 
-    	new ParameterDescription("removeOnFail", false, ParameterDescription.Type.STR);
-    private static final ParameterDescription PARAM_OBSCURE_ON_FAIL = 
-    	new ParameterDescription("obscureOnFail", false, ParameterDescription.Type.STR);
-    
+    private static final ParameterDescription PARAM_CONTACT_TYPE = new ParameterDescription("contactType", true, INT);
+    private static final ParameterDescription PARAM_EXTERNAL_SAVING_PLUGIN_ID = new ParameterDescription("externalSavingPluginId", true, INT);
+    private static final ParameterDescription PARAM_REMOVE_ON_FAIL = new ParameterDescription("removeOnFail", false, BOOLEAN);
+    private static final ParameterDescription PARAM_OBSCURE_ON_FAIL = new ParameterDescription("obscureOnFail", false, BOOLEAN);
+
     //initializer for pluggable params
-    { 
+    {
     	descriptions.add(PARAM_CONTACT_TYPE);
         descriptions.add(PARAM_EXTERNAL_SAVING_PLUGIN_ID);
         descriptions.add(PARAM_OBSCURE_ON_FAIL);
@@ -95,8 +89,7 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
                 if (parameters.get(PARAM_CONTACT_TYPE.getName()) == null) {
                     contactType = 1; // default if not configured
                 } else {
-                    contactType = Integer.parseInt(
-                    		parameters.get(PARAM_CONTACT_TYPE.getName()).toString());
+                    contactType = Integer.parseInt(parameters.get(PARAM_CONTACT_TYPE.getName()));
                 }
             } catch (NumberFormatException e) {
                 throw new PluggableTaskException("Configured contactType must be an integer!", e);
@@ -115,8 +108,7 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
     public Integer getExternalSavingPluginId() throws PluggableTaskException {
         if (externalSavingPluginId == null) {
             try {
-                externalSavingPluginId = Integer.parseInt(
-                		parameters.get(PARAM_EXTERNAL_SAVING_PLUGIN_ID.getName()).toString());
+                externalSavingPluginId = Integer.parseInt(parameters.get(PARAM_EXTERNAL_SAVING_PLUGIN_ID.getName()));
             } catch (NumberFormatException e) {
                 throw new PluggableTaskException("Configured externalSavingPluginId must be an integer!", e);
             }
@@ -140,7 +132,7 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
 
             // only save credit cards associated with users
             if (!ev.getCreditCard().getBaseUsers().isEmpty()) {
-                String gateWayKey = externalCCStorage.storeCreditCard(null, ev.getCreditCard());
+                String gateWayKey = externalCCStorage.storeCreditCard(null, ev.getCreditCard(), null);
                 updateCreditCard(ev.getCreditCard(), gateWayKey);
             } else {
                 LOG.debug("Credit card is not associated with a user (card for payment) - can't save through gateway.");
@@ -160,7 +152,7 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
 
                 if (creditCard != null) {
                     // credit card has changed or was not previously obscured
-                    String gateWayKey = externalCCStorage.storeCreditCard(contact, creditCard);
+                    String gateWayKey = externalCCStorage.storeCreditCard(contact, creditCard, null);
                     updateCreditCard(creditCard, gateWayKey);
                 } else {
                     /*  call the external store without a credit card. It's possible the payment gateway
@@ -168,7 +160,7 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
                         data? We'll leave it open ended so we don't restrict possible client implementations.
                      */
                     LOG.warn("Cannot determine credit card for storage, invoking external store with contact only");
-                    String gateWayKey = externalCCStorage.storeCreditCard(contact, null);
+                    String gateWayKey = externalCCStorage.storeCreditCard(contact, null, null);
                     updateCreditCard(creditCard, gateWayKey);
                 }
             }

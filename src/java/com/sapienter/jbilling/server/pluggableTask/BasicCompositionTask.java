@@ -45,7 +45,6 @@ import com.sapienter.jbilling.server.process.PeriodOfTime;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
-import com.sapienter.jbilling.server.util.Util;
 
 /**
  * This task will copy all the lines on the orders and invoices
@@ -107,8 +106,7 @@ public class BasicCompositionTask extends PluggableTask
                     // interests, then recalculate taxes, etc...
                     // now the whole orders is just copied. 
                     InvoiceLineDTO invoiceLine = null;
-                    if (orderLine.getOrderLineType().getId() ==
-                            Constants.ORDER_LINE_TYPE_ITEM) {
+                    if (orderLine.getOrderLineType().getId() == Constants.ORDER_LINE_TYPE_ITEM) {
                         String desc;
                         try {
                             desc = composeDescription(userId, order,
@@ -119,10 +117,15 @@ public class BasicCompositionTask extends PluggableTask
                         }
                         Integer type;
                         if (userId.equals(order.getUser().getId())) {
-                            type = Constants.INVOICE_LINE_TYPE_ITEM;
+                            if (Constants.ORDER_PERIOD_ONCE.equals(order.getPeriodId())) {
+                                type = Constants.INVOICE_LINE_TYPE_ITEM_ONETIME;
+                            } else {
+                                type = Constants.INVOICE_LINE_TYPE_ITEM_RECURRING;
+                            }
                         } else {
                             type = Constants.INVOICE_LINE_TYPE_SUB_ACCOUNT;
                         }
+
                         BigDecimal periodAmount = calculatePeriodAmount(orderLine.getAmount(), period);
                         invoiceLine = new InvoiceLineDTO(null, desc, periodAmount, orderLine.getPrice(),
                                                          orderLine.getQuantity(), type, 0,

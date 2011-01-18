@@ -76,6 +76,8 @@ import org.springframework.util.StopWatch;
 public class MediationSessionBean implements IMediationSessionBean {
     private static final Logger LOG = Logger.getLogger(MediationSessionBean.class);
 
+    private static StopWatch stopWatch = null;
+
     /**
      * Trigger the mediation process. Only one mediation process can be running at any given
      * time, this method will not start an additional mediation process if one is already running.
@@ -142,7 +144,7 @@ public class MediationSessionBean implements IMediationSessionBean {
                 throw new SessionInternalError("Could not instantiate mediation reader plug-in.", e);
             }
 
-            // read records and normalize using the MediationProcess plug-in 
+            // read records and normalize using the MediationProcess plug-in
             if (reader.validate(errorMessages)) {
                 /*
                     Catch exceptions and log errors instead of re-throwing as SessionInternalError
@@ -150,10 +152,16 @@ public class MediationSessionBean implements IMediationSessionBean {
                     process can be "completed" by setting the end date.
                  */
                 try {
+                    stopWatch = new StopWatch();
+                    stopWatch.start("Reading records");
                     for (List<Record> thisGroup : reader) {
+                        stopWatch.stop();
                         LOG.debug("Now processing " + thisGroup.size() + " records.");
                         local.normalizeRecordGroup(processTask, executorId, process, thisGroup, entityId, cfg);
-                    }                          
+                        LOG.debug(stopWatch.prettyPrint());
+                        stopWatch = new StopWatch();
+                        stopWatch.start("Reading records");
+                    }
                 } catch (TaskException e) {
                     LOG.error("Exception occurred processing mediation records.", e);
                 } catch (Throwable t) {
@@ -198,7 +206,7 @@ public class MediationSessionBean implements IMediationSessionBean {
         process.setOrdersAffected(0);
         process = processDAS.save(process);
         processDAS.flush();
-        
+
         return process;
     }
 
@@ -320,7 +328,7 @@ public class MediationSessionBean implements IMediationSessionBean {
 
     public boolean hasBeenProcessed(MediationProcess process, Record record) {
         MediationRecordDAS recordDas = new MediationRecordDAS();
-        
+
         // validate that this group has not been already processed
         if (recordDas.processed(record.getKey())) {
             LOG.debug("Detected duplicated of record: " + record.getKey());
@@ -346,8 +354,7 @@ public class MediationSessionBean implements IMediationSessionBean {
                                      MediationProcess process, List<Record> thisGroup, Integer entityId,
                                      MediationConfiguration cfg) throws TaskException {
 
-        StopWatch groupWatch = new StopWatch("group full watch");
-        groupWatch.start();
+        stopWatch.start("Pre-processing");
 
         LOG.debug("Normalizing " + thisGroup.size() + " records ...");
 
@@ -366,15 +373,16 @@ public class MediationSessionBean implements IMediationSessionBean {
         ArrayList<MediationResult> results = new ArrayList<MediationResult>(0);
 
         // call the plug-in to resolve these records
-        StopWatch rulesWatch = new StopWatch("rules watch");
-        rulesWatch.start();
-            processTask.process(thisGroup, results, cfg.getName());
-        rulesWatch.stop();
+        stopWatch.stop();
+        stopWatch.start("Processing");
+        processTask.process(thisGroup, results, cfg.getName());
+        stopWatch.stop();
+        stopWatch.start("Post-Processing");
 
         LOG.debug("Processing " + thisGroup.size()
-                + " records took: " + rulesWatch.getTotalTimeMillis() + "ms,"
-                + " or " + new Double(thisGroup.size()) / rulesWatch.getTotalTimeMillis() * 1000D + " records/sec");
-        
+                + " records took: " + stopWatch.getLastTaskTimeMillis() + "ms,"
+                + " or " + new Double(thisGroup.size()) / stopWatch.getLastTaskTimeMillis() * 1000D + " records/sec");
+
         // go over the results
         for (MediationResult result : results) {
             if (!result.isDone()) {
@@ -435,13 +443,12 @@ public class MediationSessionBean implements IMediationSessionBean {
             }
         }
 
-        groupWatch.stop();
-        LOG.debug("Processing the group took: " + groupWatch.getTotalTimeMillis() + "ms");
+        stopWatch.stop();
     }
 
     public void saveEventRecordLines(List<OrderLineDTO> newLines, MediationRecordDTO record, Date eventDate,
                                      String description) {
-        
+
         MediationRecordLineDAS mediationRecordLineDas = new MediationRecordLineDAS();
 
         for (OrderLineDTO line : newLines) {
@@ -468,7 +475,7 @@ public class MediationSessionBean implements IMediationSessionBean {
         }
         return events;
     }
-    
+
     public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
         return new MediationRecordDAS().findByProcess(mediationProcessId);
     }

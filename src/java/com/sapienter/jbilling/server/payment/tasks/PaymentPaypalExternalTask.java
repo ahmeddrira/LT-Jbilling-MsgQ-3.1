@@ -51,6 +51,7 @@ import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
@@ -65,15 +66,15 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
     private static final Logger LOG = Logger.getLogger(PaymentPaypalExternalTask.class);
 
     /* Plugin parameters */
-    public static final ParameterDescription PARAMETER_PAYPAL_USER_ID = 
+    public static final ParameterDescription PARAMETER_PAYPAL_USER_ID =
     	new ParameterDescription("PaypalUserId", true, ParameterDescription.Type.STR);
-    public static final ParameterDescription PARAMETER_PAYPAL_PASSWORD = 
+    public static final ParameterDescription PARAMETER_PAYPAL_PASSWORD =
     	new ParameterDescription("PaypalPassword", true, ParameterDescription.Type.STR);
-    public static final ParameterDescription PARAMETER_PAYPAL_SIGNATURE = 
+    public static final ParameterDescription PARAMETER_PAYPAL_SIGNATURE =
     	new ParameterDescription("PaypalSignature", true, ParameterDescription.Type.STR);
-    public static final ParameterDescription PARAMETER_PAYPAL_ENVIRONMENT = 
+    public static final ParameterDescription PARAMETER_PAYPAL_ENVIRONMENT =
     	new ParameterDescription("PaypalEnvironment", false, ParameterDescription.Type.STR);
-    public static final ParameterDescription PARAMETER_PAYPAL_SUBJECT = 
+    public static final ParameterDescription PARAMETER_PAYPAL_SUBJECT =
     	new ParameterDescription("PaypalSubject", false, ParameterDescription.Type.STR);
 
     public String getUserId() throws PluggableTaskException {
@@ -97,7 +98,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
     }
 
     //initializer for pluggable params
-    { 
+    {
     	descriptions.add(PARAMETER_PAYPAL_USER_ID);
         descriptions.add(PARAMETER_PAYPAL_PASSWORD);
         descriptions.add(PARAMETER_PAYPAL_SIGNATURE);
@@ -179,7 +180,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
      * Returns the name of this payment processor.
      * @return payment processor name
      */
-    private String getProcessorName() { 
+    private String getProcessorName() {
         return "PayPal";
     }
 
@@ -357,7 +358,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
 
     private boolean doProcess(PaymentDTOEx payment, PaymentAction paymentAction, boolean updateKey)
             throws PluggableTaskException {
-        
+
         if(isRefund(payment)) {
             return doRefund(payment).shouldCallOtherProcessors();
         }
@@ -407,14 +408,14 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
 
     public boolean confirmPreAuth(PaymentAuthorizationDTO auth, PaymentDTOEx payment)
             throws PluggableTaskException {
-        
+
         LOG.debug("Confirming pre-authorization for " + getProcessorName() + " gateway");
         if (!getProcessorName().equals(auth.getProcessor())) {
             /*  let the processor be called and fail, so the caller can do something
                 about it: probably re-call this payment task as a new "process()" run */
             LOG.warn("The processor of the pre-auth is not " + getProcessorName() + ", is " + auth.getProcessor());
         }
-        
+
         CreditCardDTO card = payment.getCreditCard();
         if (card == null) {
             throw new PluggableTaskException("Credit card is required, capturing payment: " + payment.getId());
@@ -430,7 +431,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
         return doCapture(payment, auth).shouldCallOtherProcessors();
     }
 
-    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard) {
+    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
         LOG.debug("Storing creadit card info within " + getProcessorName() + " gateway");
         UserDTO user;
         if (contact != null) {
@@ -480,5 +481,13 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
             LOG.error("Could not process external storage payment", e);
             return null;
         }
+    }
+
+    /**
+     *
+     */
+    public String deleteCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
+        //noop
+        return null;
     }
 }

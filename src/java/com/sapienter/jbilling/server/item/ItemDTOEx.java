@@ -20,14 +20,12 @@
 
 package com.sapienter.jbilling.server.item;
 
-import com.sapienter.jbilling.server.item.validator.ItemPrices;
 import com.sapienter.jbilling.server.item.validator.ItemTypes;
+import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.security.WSSecured;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.Digits;
 
 import java.io.Serializable;
@@ -48,6 +46,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer hasDecimals;
     private Integer deleted;
     private Integer entityId;
+    private PriceModelWS defaultPrice;
 
     // *** ItemDTOEx ***
     @NotNull @Size (min=1,max=100, message="validation.error.size,1,100")
@@ -58,8 +57,9 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer currencyId = null;
     private String price = null;
     private Integer orderLineTypeId = null;
-    @ItemPrices
-    private List<ItemPriceDTOEx> prices = null;
+
+    public ItemDTOEx() {
+    }
 
     public ItemDTOEx(Integer id,String number, Integer entity, String description, Integer manualPrice,
                      Integer deleted, Integer currencyId, BigDecimal price, BigDecimal percentage,
@@ -70,9 +70,6 @@ public class ItemDTOEx implements WSSecured, Serializable {
         setCurrencyId(currencyId);
         setPrice(price);
         setOrderLineTypeId(orderLineTypeId);
-    }
-
-    public ItemDTOEx() {
     }
 
     public ItemDTOEx(Integer id, String number, BigDecimal percentage, Integer priceManual, Integer hasDecimals,
@@ -235,12 +232,12 @@ public class ItemDTOEx implements WSSecured, Serializable {
         this.price = (price != null ? price.toString() : null);
     }
 
-    public List<ItemPriceDTOEx> getPrices() {
-        return prices;
+    public PriceModelWS getDefaultPrice() {
+        return defaultPrice;
     }
 
-    public void setPrices(List<ItemPriceDTOEx> prices) {
-        this.prices = prices;
+    public void setDefaultPrice(PriceModelWS defaultPrice) {
+        this.defaultPrice = defaultPrice;
     }
 
     public Integer getOwningEntityId() {

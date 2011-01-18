@@ -276,12 +276,12 @@
 		 	<logic:equal name='<%=Constants.PAGE_USER_DTO%>'  
 			 		property="customer.invoiceChild" 
 			 		scope="page" value="1">
-			 		<bean:message key="all.prompt.yes"/>
+			 		<input type="checkbox" checked="checked" name="chbx_invoiceChild"/>
 		 	</logic:equal>
 		 	<logic:equal name='<%=Constants.PAGE_USER_DTO%>'  
 			 		property="customer.invoiceChild" 
 			 		scope="page" value="0">
-			 		<bean:message key="all.prompt.no"/>
+			 		<input type="checkbox" name="chbx_invoiceChild"/>
 		 	</logic:equal>
 			 </td>
 		</tr>

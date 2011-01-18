@@ -36,6 +36,7 @@ public class PricingResult extends Result {
     private final Integer userId;
     private final Integer currencyId;
     private BigDecimal price;
+    private BigDecimal quantity;
     private long pricingFieldsResultId;
 
     public PricingResult(Integer itemId, Integer userId, Integer currencyId) {
@@ -43,6 +44,13 @@ public class PricingResult extends Result {
         this.userId = userId;
         this.currencyId = currencyId;
     }
+
+    public PricingResult(Integer itemId, BigDecimal quantity, Integer userId, Integer currencyId) {
+        this.itemId = itemId;
+        this.quantity = quantity;
+        this.userId = userId;
+        this.currencyId = currencyId;
+    }    
 
     public Integer getCurrencyId() {
         return currencyId;
@@ -67,6 +75,14 @@ public class PricingResult extends Result {
 
     public void setPrice(String price) {
         setPrice(new BigDecimal(price));
+    }
+
+    public BigDecimal getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity;
     }
 
     public long getPricingFieldsResultId() {

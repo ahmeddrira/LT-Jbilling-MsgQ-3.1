@@ -1,17 +1,20 @@
 package Mediation
 
-import com.sapienter.jbilling.server.item.PricingField
-import com.sapienter.jbilling.server.mediation.task.MediationResult
-import com.sapienter.jbilling.server.user.UserBL
-import com.sapienter.jbilling.server.order.OrderLineBL
-import com.sapienter.jbilling.server.order.OrderBL
+import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.mediation.task.MediationResult;
+import com.sapienter.jbilling.server.mediation.cache.PricingFinder;
+import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.order.OrderLineBL;
+import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.user.db.CompanyDTO
-import com.sapienter.jbilling.server.order.db.OrderLineDTO
-import com.sapienter.jbilling.server.item.tasks.PricingResult
-import com.sapienter.jbilling.server.item.tasks.SubscriptionResult
-import com.sapienter.jbilling.server.order.db.OrderDAS
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.item.tasks.PricingResult;
+import com.sapienter.jbilling.server.item.tasks.SubscriptionResult;
+import com.sapienter.jbilling.server.order.db.OrderDAS;
+
 import org.apache.log4j.Logger;
+
 import java.util.List;
 import java.math.BigDecimal;
 
@@ -38,10 +41,14 @@ function OrderLineDTO newLine(Integer itemId, BigDecimal quantity) {
     return line;
 }
 
-function PricingResult priceRequest(Integer itemId, MediationResult result) {
+function PricingResult priceRequest(Integer itemId, MediationResult result, String numberCalled) {
     PricingResult pricing = new PricingResult(itemId, result.getUserId(),
             result.getCurrencyId());
     pricing.setPricingFieldsResultId(result.getId());
+    # New Code for Issue- 509
+    PricingFinder finder= PricingFinder.getInstance();
+    #LOG.debug("Pricing Finder " + finder +  " and number called is " + numberCalled);
+    pricing.setPrice(finder.getPriceForDestination(numberCalled));
     return pricing;
  }
 
@@ -125,13 +132,14 @@ when
     $result : MediationResult(step == MediationResult.STEP_4_RESOLVE_ITEM)
     $quantity : PricingField( name == "duration", resultId == $result.id)
     not ( OrderLineDTO( itemId == 2900 ) from $result.lines ) // not needed, since the step is imediatelly changed in this case
+    $dst : PricingField( name == "dst", resultId == $result.id)
 then
     $result.getLines().add(newLine(2900, new BigDecimal($quantity.getStrValue())));
     $result.setStep(MediationResult.STEP_5_PRICING);
     update( $result );
     LOG.debug("Added line with item 2900 for quantity " + $quantity);
-    
-    PricingResult request = priceRequest(2800, $result); // because it will be converted to this...
+    LOG.debug("Number called is " + $dst.getStrValue());
+    PricingResult request = priceRequest(2800, $result, $dst.getStrValue()); // because it will be converted to this...
     insert( request );
     LOG.debug("Price request " + request + " record " + $result.getRecordKey());
 end

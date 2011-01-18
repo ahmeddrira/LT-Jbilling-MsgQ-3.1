@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.item;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
@@ -123,7 +124,8 @@ public final class ItemListBL extends ResultList
                 columns[2] = "%";
                 columns[3] = item.getPercentage();
             } else {
-                columns[3] = itemBL.getPrice(userId, entityID);
+                // default price of 1 unit for the order list
+                columns[3] = itemBL.getPrice(userId, BigDecimal.ONE, entityID);
                 columns[2] = itemBL.getPriceCurrencySymbol(); 
             }
             result.getLines().add(columns);

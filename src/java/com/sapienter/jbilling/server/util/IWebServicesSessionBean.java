@@ -185,7 +185,7 @@ public interface IWebServicesSessionBean {
     public Integer[] getUserInvoicesByDate(Integer userId, String since, String until) throws SessionInternalError;
 
     public byte[] getPaperInvoicePDF(Integer invoiceId) throws SessionInternalError;
-    public void removePaymentLink(Integer invoiceId, Integer paymentId) throws SessionInternalError;
+
 
     /*
         Payments
@@ -201,6 +201,9 @@ public interface IWebServicesSessionBean {
     public Integer createPayment(PaymentWS payment);
     public void updatePayment(PaymentWS payment);
     public void deletePayment(Integer paymentId);
+
+    public void removePaymentLink(Integer invoiceId, Integer paymentId) throws SessionInternalError;
+    public void createPaymentLink(Integer invoiceId, Integer paymentId);
 
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) throws SessionInternalError;
     public Integer applyPayment(PaymentWS payment, Integer invoiceId) throws SessionInternalError;

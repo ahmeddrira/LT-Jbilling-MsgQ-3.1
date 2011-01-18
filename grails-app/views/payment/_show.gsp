@@ -35,14 +35,14 @@
                 <g:if test="${contact?.firstName || contact?.lastName}">
                 <tr>
                     <td><g:message code="prompt.customer.name"/></td>
-                    <td class="value">${contact.firstName} ${contact.lastName} &nbsp;</td>
+                    <td class="value">${contact.firstName} ${contact.lastName}</td>
                 </tr>
                 </g:if>
 
                 <g:if test="${contact?.organizationName}">
                 <tr>
                     <td><g:message code="prompt.organization.name"/></td>
-                    <td class="value">${contact.organizationName} &nbsp;</td>
+                    <td class="value">${contact.organizationName}</td>
                 </tr>
                 </g:if>
 
@@ -62,7 +62,7 @@
                 </tr>
                 <tr>
                     <td><g:message code="payment.amount"/></td>
-                    <td class="value"><g:formatNumber number="${selected.amount}" type="currency" currencyCode="${selected.currencyDTO.code}"/> &nbsp;</td>
+                    <td class="value"><g:formatNumber number="${selected.amount}" type="currency" currencyCode="${selected.currencyDTO.code}"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="payment.result"/></td>
@@ -81,7 +81,16 @@
                 </tr>
                 <tr>
                     <td><g:message code="payment.balance"/></td>
-                    <td class="value"><g:formatNumber number="${selected.balance}" type="currency" currencyCode="${selected.currencyDTO.code}"/> &nbsp;</td>
+                    <td class="value">
+                        <g:formatNumber number="${selected.balance}" type="currency" currencyCode="${selected.currencyDTO.code}"/>
+                        <g:if test="${selected.balance.compareTo(BigDecimal.ZERO) > 0}">
+                            &nbsp; - &nbsp;
+                            <g:link controller="payment" action="link" id="${selected.id}">
+                                Pay Invoice
+                            </g:link>
+                        </g:if>
+
+                    </td>
                 </tr>
                 <tr>
                     <td><g:message code="payment.attempt"/></td>
@@ -89,7 +98,7 @@
                 </tr>
                 <tr>
                     <td><g:message code="payment.is.preauth"/></td>
-                    <td class="value"><em><g:formatBoolean boolean="${selected.isPreauth > 0}"/> &nbsp;</em></td>
+                    <td class="value"><em><g:formatBoolean boolean="${selected.isPreauth > 0}"/></em></td>
                 </tr>
             </tbody>
         </table>

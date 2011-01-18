@@ -76,7 +76,10 @@ class PaymentController {
                 offset: params.offset
         ) {
             createAlias('baseUser', 'u')
-            createAlias('invoicesMap', 'i', Criteria.LEFT_JOIN)
+
+            // create alias only if applying invoice filters to prevent duplicate results
+            if (filters.find{ it.field.startsWith('i.') && it.value })
+                createAlias('invoicesMap', 'i', Criteria.LEFT_JOIN)
 
             and {
                 filters.each { filter ->
@@ -150,6 +153,46 @@ class PaymentController {
         // render the partial payments list
         params.applyFilter = true
         list()
+    }
+
+    /**
+     * Shows the payment link screen for the given payment ID showing a list of un-paid invoices
+     * that the payment can be applied to.
+     */
+    def link = {
+        def payment = webServicesSession.getPayment(params.int('id'))
+        def user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
+        def invoices = getUnpaidInvoices(user.userId)
+
+        render view: 'link', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, invoiceId: params.invoiceId ]
+    }
+
+    /**
+     * Applies a given payment ID to the given invoice ID.
+     */
+    def applyPayment = {
+        def payment = webServicesSession.getPayment(params.int('id'))
+
+        if (payment && params.invoiceId) {
+            try {
+                log.debug("appling payment ${payment} to invoice ${params.invoiceId}")
+                webServicesSession.createPaymentLink(params.int('invoiceId'), payment.id)
+
+                flash.message = 'payment.link.success'
+                flash.args = [ payment.id, params.invoiceId ]
+
+            } catch (SessionInternalError e) {
+                viewUtils.resolveException(flash, session.local, e)
+                link()
+                return
+            }
+
+        } else {
+            flash.warn = 'payment.link.failed'
+            flash.args = [ payment.id, params.invoiceId ]
+        }
+
+        redirect action: list, id: payment.id
     }
 
     /**

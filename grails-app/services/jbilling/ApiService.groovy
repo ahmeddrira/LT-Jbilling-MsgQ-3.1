@@ -95,10 +95,6 @@ class ApiService implements IWebServicesSessionBean {
     public byte[] getPaperInvoicePDF(Integer invoiceId) {
         return webServicesSession.getPaperInvoicePDF(invoiceId)
     }
-	
-	public void removePaymentLink(Integer invoiceId, Integer paymentId) {
-		webServicesSession.removePaymentLink (invoiceId, paymentId)
-	}
 
     public void deleteInvoice(Integer invoiceId) {
         webServicesSession.deleteInvoice(invoiceId)
@@ -266,6 +262,14 @@ class ApiService implements IWebServicesSessionBean {
 
     public void deletePayment(Integer paymentId) {
         webServicesSession.deletePayment(paymentId);
+    }
+
+    public void removePaymentLink(Integer invoiceId, Integer paymentId) {
+        webServicesSession.removePaymentLink (invoiceId, paymentId)
+    }
+
+    void createPaymentLink(Integer invoiceId, Integer paymentId) {
+        webServicesSession.createPaymentLink(invoiceId, paymentId);
     }
 
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) {

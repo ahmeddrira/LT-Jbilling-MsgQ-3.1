@@ -258,6 +258,14 @@ public class SpringAPI implements JbillingAPI {
         return session.getUsersNotInStatus(statusId);
     }
 
+    public void createPaymentLink(Integer invoiceId, Integer paymentId) {
+        session.createPaymentLink(invoiceId, paymentId);
+    }
+
+    public void removePaymentLink(Integer invoiceId, Integer paymentId) {
+        session.removePaymentLink(invoiceId, paymentId);
+    }
+
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) {
         return session.payInvoice(invoiceId);
     }

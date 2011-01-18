@@ -408,16 +408,35 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
     
     /**
+     * Un-links a payment from an invoice, effectivley making the invoice "unpaid" by
+     * removing the payment balance.
+     *
+     * If either invoiceId or paymentId parameters are null, no operation will be performed.
+     *
      * @param invoiceId target Invoice
      * @param paymentId payment to be unlink 
      */
     public void removePaymentLink(Integer invoiceId, Integer paymentId) {
-		PaymentBL paymentBl =new PaymentBL(paymentId);
-		boolean result= paymentBl.unLinkFromInvoice(invoiceId);
-		if (!result) {
+		if (invoiceId == null || paymentId == null)
+            return;
+
+        boolean result= new PaymentBL(paymentId).unLinkFromInvoice(invoiceId);
+        if (!result)
 			throw new SessionInternalError("Unable to find the Invoice Id " + invoiceId + " linked to Payment Id " + paymentId);
-		}
 	}
+
+    /**
+     * Applies an existing payment to an invoice.
+     *
+     * If either invoiceId or paymentId parameters are null, no operation will be performed.
+     *
+     * @param invoiceId target invoice
+     * @param paymentId payment to apply
+     */
+    public void createPaymentLink(Integer invoiceId, Integer paymentId) {
+        IPaymentSessionBean session = Context.getBean(Context.Name.PAYMENT_SESSION);
+        session.applyPayment(paymentId, invoiceId);
+    }
 
     /**
      * Deletes an invoice 
@@ -1371,8 +1390,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         //TODO Validate that the user ID of the payment is the same as the
         // owner of the invoice
         payment.setIsRefund(new Integer(0));
-        IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(
-                Context.Name.PAYMENT_SESSION);
+        IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
         return session.applyPayment(new PaymentDTOEx(payment), invoiceId);
     }
 

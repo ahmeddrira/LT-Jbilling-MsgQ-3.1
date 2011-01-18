@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.contact.db.ContactDTO; com.sapienter.jbilling.server.util.Util"%>
+<%@ page import="com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.contact.db.ContactDTO; com.sapienter.jbilling.server.util.Util"%>
 
 <html>
 <head>
@@ -29,7 +29,7 @@
                 <div class="column">
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.user.username"/></content>
-                        <span>${user.userName}</span>
+                        <span><g:link controller="user" action="list" id="${user.id}">${user.userName}</g:link></span>
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
@@ -89,7 +89,7 @@
                 <div class="column">
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.user.user.id"/></content>
-                        <span>${user.id}</span>
+                        <span><g:link controller="user" action="list" id="${user.id}">${user.id}</g:link></span>
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
@@ -154,7 +154,7 @@
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="prompt.parent.id"/></content>
                         <span>
-                            <g:link controller="user" action="subaccounts" id="${customer?.parent?.id}">${customer?.parent?.id}</g:link>
+                            <g:link action="inspect" id="${customer?.parent?.baseUser?.id}">${customer?.parent?.baseUser?.id}</g:link>
                         </span>
                     </g:applyLayout>
 
@@ -167,6 +167,23 @@
                         <content tag="label"><g:message code="prompt.invoice.if.child"/></content>
                         <span><g:formatBoolean boolean="${customer?.invoiceChild > 0}"/></span>
                     </g:applyLayout>
+
+                    <g:if test="${customer?.parent}">
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="customer.invoice.if.child.label"/></content>
+                            <span>
+                                    <g:if test="${customer.invoiceChild > 0}">
+                                        <g:message code="customer.invoice.if.child.true"/>
+                                    </g:if>
+                                    <g:else>
+                                        <g:set var="parent" value="${new CustomerBL(customer.id).getInvoicableParent()}"/>
+                                        <g:link action="inspect" id="${customer.parent.baseUser.id}">
+                                            <g:message code="customer.invoice.if.child.false" args="[ parent.baseUser.id ]"/>
+                                        </g:link>
+                                    </g:else>
+                            </span>
+                        </g:applyLayout>
+                    </g:if>
                 </div>
                 <div class="column">
                     <!-- list of direct sub-accounts -->
@@ -174,7 +191,7 @@
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="customer.subaccount.title" args="[ account.baseUser.id ]"/></content>
                             <span>
-                                <g:link controller="user" action="list" id="${account.baseUser.id}">${account.baseUser.userName}</g:link>
+                                <g:link action="inspect" id="${account.baseUser.id}">${account.baseUser.userName}</g:link>
                             </span>
                         </g:applyLayout>
                     </g:each>
@@ -228,14 +245,14 @@
             <!-- buttons -->
             <div style="margin: 20px 0;">
                 <div class="btn-row">
-                    <g:link controller="user" action="list" id="${user.id}" class="submit user"><span><g:message code="customer.view.customer.button"/></span></g:link>
-                    <g:link controller="invoice" action="user" id="${user.id}" class="submit invoice"><span><g:message code="customer.view.invoices.button"/></span></g:link>
+                    <g:link controller="auditLog" action="user" id="${user.id}" class="submit show"><span><g:message code="customer.view.audit.log.button"/></span></g:link>
+                    <g:link controller="invoice" action="user" id="${user.id}" class="submit show"><span><g:message code="customer.view.invoices.button"/></span></g:link>
                     <g:link controller="payment" action="user" id="${user.id}" class="submit payment"><span><g:message code="customer.view.payments.button"/></span></g:link>
                     <g:link controller="order" action="user" id="${user.id}" class="submit order"><span><g:message code="customer.view.orders.button"/></span></g:link>
                 </div>
                 <div class="btn-row">
                     <g:link controller="user" action="edit" id="${user.id}" class="submit edit"><span><g:message code="customer.edit.customer.button"/></span></g:link>
-                    <g:link controller="payment" action="edit" params="[userId: user.id]" class="submit payment"><span><g:message code="button.create.payment"/></span></g:link>
+                    <g:link controller="payment" action="edit" params="[userId: user.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
                     <g:link controller="order" action="edit" params="[userId: user.id]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>
                 </div>
             </div>

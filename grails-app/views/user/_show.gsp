@@ -66,7 +66,7 @@
                     <tr>
                         <td><g:message code="customer.invoice.if.child.label"/></td>
                         <td class="value">
-                            <g:if test="${customer.invoiceChild}">
+                            <g:if test="${customer.invoiceChild > 0}">
                                 <g:message code="customer.invoice.if.child.true"/>
                             </g:if>
                             <g:else>

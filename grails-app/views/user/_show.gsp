@@ -212,7 +212,7 @@
     <div class="btn-box">
         <div class="row">
             <a href="#" class="submit order"><span><g:message code="button.create.order"/></span></a>
-            <g:link controller="payment" action="edit" params="[userId: selected.id]" class="submit payment"><span><g:message code="button.create.payment"/></span></g:link>
+            <g:link controller="payment" action="edit" params="[userId: selected.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
         </div>
         <div class="row">
             <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>

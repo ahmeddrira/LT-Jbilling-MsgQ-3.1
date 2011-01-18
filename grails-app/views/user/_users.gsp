@@ -101,8 +101,8 @@
 </g:if>
 
 <div class="btn-box">
-    <g:if test="${parentId}">
-        <g:link action="edit" params="[parentId: parentId]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
+    <g:if test="${parent?.customer?.isParent > 0}">
+        <g:link action="edit" params="[parentId: parent.id]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
     </g:if>
     <g:else>
         <g:link action='edit' class="submit add"><span><g:message code="button.create"/></span></g:link>

@@ -108,30 +108,24 @@ class UserController {
      * Fetches a list of sub-accounts for the given user id and renders the user list "_table.gsp" template.
      */
     def subaccounts = {
-        if (params.id) {
+        params.max = params?.max?.toInteger() ?: pagination.max
+        params.offset = params?.offset?.toInteger() ?: pagination.offset
 
-            params.max = params?.max?.toInteger() ?: pagination.max
-            params.offset = params?.offset?.toInteger() ?: pagination.offset
-
-            def children = UserDTO.createCriteria().list(
-                    max:    params.max,
-                    offset: params.offset
-            ) {
-                customer {
-                    parent {
-                        eq('baseUser.id', params.int('id'))
-                    }
+        def children = UserDTO.createCriteria().list(
+                max:    params.max,
+                offset: params.offset
+        ) {
+            customer {
+                parent {
+                    eq('baseUser.id', params.int('id'))
                 }
             }
-
-            if (!children.isEmpty()) {
-                render template: 'users', model: [users: children, parentId: params.id]
-            } else {
-                flash.info = 'customer.no.subaccount.warning'
-                flash.args = [ params.id ]
-                render status: 404, text: 'error', contentType: 'text/html'  // 404 not found
-            }
         }
+
+        def parent = UserDTO.get(params.int('id'))
+        System.out.println("Parent id: " + params.id + "  = " + parent)
+
+        render template: 'users', model: [ users: children, parent: parent ]
     }
 
     /**

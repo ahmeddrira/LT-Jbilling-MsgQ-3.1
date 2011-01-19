@@ -138,6 +138,7 @@ public class PriceModelWS implements Serializable {
                 + ", attributes=" + attributes
                 + ", rate=" + rate
                 + ", includedQuantity=" + includedQuantity
+                + ", currencyId=" + currencyId
                 + '}';
     }
 }

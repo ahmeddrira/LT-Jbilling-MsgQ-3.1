@@ -9,6 +9,7 @@ import com.sapienter.jbilling.server.item.db.ItemDTO
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import grails.plugins.springsecurity.Secured
+import com.sapienter.jbilling.server.pricing.PriceModelWS
 
 @Secured(['isAuthenticated()'])
 class ProductController {
@@ -277,18 +278,19 @@ class ProductController {
      */
     def saveProduct = {
         def product = new ItemDTOEx()
-        bindData(product, params, "product")
+        bindData(product, params, 'product')
 
         // bind parameters with odd types (integer booleans, string integers  etc.)
         product.priceManual = params.priceManual ? 1 : 0
         product.hasDecimals = params.hasDecimals ? 1 : 0
         product.percentage = !params.percentage?.equals('') ? params.percentage : null
 
-        // bind prices
-        def prices = params.prices.collect { currencyId, price ->
-            new ItemPriceDTOEx(null, !price?.equals('') ? price.toBigDecimal() : null, currencyId.toInteger())
-        }
-        product.prices = prices
+        // bind default price model
+        def priceModel = new PriceModelWS()
+        bindData(priceModel, params, 'price')
+        product.defaultPrice = priceModel
+
+        log.debug("default item price model ${priceModel}")
 
         // save or update
         try{

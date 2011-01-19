@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.util.Util"%>
+<%@ page import="com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy; com.sapienter.jbilling.server.util.Util"%>
 
 <%--
   Product details template. This template shows a product and all the relevant product details.
@@ -23,10 +23,20 @@
 			<dt><g:message code="product.detail.percentage"/></dt>
 			<dd>${selectedProduct.percentage ?: '-'} &nbsp;</dd>
 
-			<g:each var="price" in="${selectedProduct.itemPrices}">
-				<dt>${price.currencyDTO.code}:&nbsp;</dt>
-                <dd><g:formatNumber number="${price.price}" type="currency" currencyCode="${price.currencyDTO.code}"/> &nbsp;</dd>
-			</g:each>
+            <g:if test="${selectedProduct.defaultPrice}">
+                <dt>${selectedProduct.defaultPrice.currency.code}</dt>
+                <dd><g:formatNumber number="${selectedProduct.defaultPrice.rate}" type="currency" currencyCode="${selectedProduct.defaultPrice.currency.code}"/></dd>
+
+                <g:if test="${selectedProduct.defaultPrice.type != PriceModelStrategy.METERED}">
+                    <dt>Pricing Strategy</dt>
+                    <dd><g:message code="price.strategy.${selectedProduct.defaultPrice.type}"/></dd>
+
+                    <g:if test="${selectedProduct.defaultPrice.type.strategy.isGraduated()}">
+                        <dt>Included Quantity</dt>
+                        <dd><g:formatNumber number="${selectedProduct.defaultPrice.includedQuantity}" formatName="money.format"/></dd>
+                    </g:if>
+                </g:if>
+            </g:if>
 
             <br/>
 

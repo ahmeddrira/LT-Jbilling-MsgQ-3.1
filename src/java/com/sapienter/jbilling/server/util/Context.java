@@ -69,6 +69,7 @@ public class Context {
 
         // cache
         CACHE                           ("cacheProviderFacade"),
+        CACHE_MODEL_READONLY            ("cacheModelReadOnly"),
         CACHE_MODEL_RW                  ("cacheModelPTDTO"),
         CACHE_FLUSH_MODEL_RW            ("flushModelPTDTO"),
 

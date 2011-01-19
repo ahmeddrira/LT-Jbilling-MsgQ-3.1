@@ -91,8 +91,8 @@ public class PriceModelDTO implements Serializable {
         setId(ws.getId());
         setType(PriceModelStrategy.valueOf(ws.getType()));
         setAttributes(new HashMap<String,String>(ws.getAttributes()));
-        setRate(ws.getRate());
-        setIncludedQuantity(ws.getIncludedQuantity());
+        setRate(ws.getRateAsDecimal());
+        setIncludedQuantity(ws.getIncludedQuantityAsDecimal());
         setCurrency(currency);
     }
 

@@ -172,8 +172,9 @@ insert into jbilling_seqs values ('mediation_record', (select round(max(id)/100)
 update pluggable_task_type set min_parameters = 2 where class_name = 'com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask';
 insert into pluggable_task_type  (id, category_id, class_name, min_parameters) values (76, 6, 'com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask', 2);
 
--- mediation process scheduled task
-insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (77, 22, 'com.sapienter.jbilling.server.mediation.task.MediationProcessTask', 0);
+-- mediation and billing process scheduled task
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (81, 22, 'com.sapienter.jbilling.server.mediation.task.MediationProcessTask', 0);
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (82, 22, 'com.sapienter.jbilling.server.billing.task.BillingProcessTask', 0);
 
 -- Changed price, amount, quantity, rate, percentage fields to decimal
 -- postgresql
@@ -265,6 +266,7 @@ alter table ach alter column aba_routing type character varying(40); -- postgres
 alter table ach alter column bank_account type character varying(60); -- postgresql
 -- alter table ach modify aba_routing varchar(40); -- mysql
 -- alter table ach modify bank_account varchar(60); -- mysql
+
 -- new generate rules plug-in category
 insert into pluggable_task_type_category values (23, 'Rules Generator', 'com.sapienter.jbilling.server.rule.task.IRulesGenerator');
 insert into pluggable_task_type values (78, 23, 'com.sapienter.jbilling.server.rule.task.VelocityRulesGeneratorTask', 2);
@@ -318,7 +320,7 @@ CREATE TABLE price_model (
 );
 ALTER TABLE price_model ADD CONSTRAINT price_model_currency_id_FK FOREIGN KEY (currency_id) REFERENCES currency (id);
 
-insert into jbilling_table (id, name) values (93, 'price_model');
+insert into jbilling_table (id, name) values (94, 'price_model');
 insert into jbilling_seqs (name, next_id) values ('price_model', 1);
 
 DROP TABLE IF EXISTS price_model_attribute;
@@ -330,7 +332,7 @@ CREATE TABLE price_model_attribute (
 );
 ALTER TABLE price_model_attribute ADD CONSTRAINT price_model_attr_model_id_FK FOREIGN KEY (price_model_id) REFERENCES price_model (id);
 
-insert into jbilling_table (id, name) values (94, 'price_model_attribute');
+insert into jbilling_table (id, name) values (95, 'price_model_attribute');
 
 DROP TABLE IF EXISTS plan;
 CREATE TABLE plan (
@@ -341,7 +343,7 @@ CREATE TABLE plan (
 );
 ALTER TABLE plan ADD CONSTRAINT plan_item_id_FK FOREIGN KEY (item_id) REFERENCES item (id);
 
-insert into jbilling_table (id, name) values (95, 'plan');
+insert into jbilling_table (id, name) values (96, 'plan');
 insert into jbilling_seqs (name, next_id) values ('plan', 1);
 
 DROP TABLE IF EXISTS plan_item;
@@ -359,20 +361,20 @@ ALTER TABLE plan_item ADD CONSTRAINT plan_item_item_id_FK FOREIGN KEY (item_id) 
 ALTER TABLE plan_item ADD CONSTRAINT plan_item_plan_id_FK FOREIGN KEY (plan_id) REFERENCES plan (id);
 ALTER TABLE plan_item ADD CONSTRAINT plan_item_price_model_id_FK FOREIGN KEY (price_model_id) REFERENCES price_model (id);
 
-insert into jbilling_table (id, name) values (96, 'plan_item');
+insert into jbilling_table (id, name) values (97, 'plan_item');
 insert into jbilling_seqs (name, next_id) values ('plan_item', 1);
 
 DROP TABLE IF EXISTS customer_price;
 CREATE TABLE customer_price (
     plan_item_id integer NOT NULL,
     user_id integer NOT NULL,
-    create_datetime timestamp NOT NULL DEFAULT 0,
+    create_datetime timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
     PRIMARY KEY (plan_item_id, user_id)
 );
 ALTER TABLE customer_price ADD CONSTRAINT customer_price_plan_item_id_FK FOREIGN KEY (plan_item_id) REFERENCES plan_item (id);
 ALTER TABLE customer_price ADD CONSTRAINT customer_price_user_id_FK FOREIGN KEY (user_id) REFERENCES base_user (id);
 
-insert into jbilling_table (id, name) values (97, 'customer_price');
+insert into jbilling_table (id, name) values (98, 'customer_price');
 
 -- migrate item price to default item price_model
 -- change insert sub-query "where currency_id = 1" to your primary currency id
@@ -425,7 +427,7 @@ update invoice_line_type set order_position = 5 where id = 5;
 update invoice_line_type set order_position = 6 where id = 2;
 
 -- new billing process filter task 
-insert into pluggable_task_type values (84, 20, 'com.sapienter.jbilling.server.process.task.BillableUserOrdersBillingProcessFilterTask', 0);
+insert into pluggable_task_type values (85, 20, 'com.sapienter.jbilling.server.process.task.BillableUserOrdersBillingProcessFilterTask', 0);
 
 --Database changes required for Notifications Screen, gui branch
 create table notification_category (

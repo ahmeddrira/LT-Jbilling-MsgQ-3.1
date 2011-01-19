@@ -59,7 +59,7 @@ public class AchDTO
    {
    }
 
-   public AchDTO( java.lang.Integer id,java.lang.String abaRouting,java.lang.String bankAccount,java.lang.Integer accountType,java.lang.String bankName,java.lang.String accountName )
+   public AchDTO( java.lang.Integer id,java.lang.String abaRouting,java.lang.String bankAccount,java.lang.Integer accountType,java.lang.String bankName,java.lang.String accountName, String gatewayKey)
    {
       this.id = id;
       idHasBeenSet = true;

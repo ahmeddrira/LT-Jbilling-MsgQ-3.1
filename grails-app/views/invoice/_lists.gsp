@@ -22,7 +22,7 @@
 	        
 	        <tbody>
 			<g:each var="inv" in="${invoices}">
-				<tr id="product-${inv.id}"  class="${invoice?.id == inv.id ? 'active' : ''}">
+				<tr id="invoice-${inv.id}"  class="${invoice?.id == inv.id ? 'active' : ''}">
 	            	<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 			     			before="register(this);" onSuccess="render(data, next);">
@@ -100,6 +100,6 @@
 
 <g:if test="${invoices?.totalCount > params.max}">
     <div class="pager-box">
-        <util:remotePaginate controller="invoice" action="list" params="[applyFilter: true]" total="${invoices.totalCount}" update="column2"/>
+        <util:remotePaginate controller="invoice" action="list" params="[applyFilter: true]" total="${invoices.totalCount}" update="column1"/>
     </div>
 </g:if>

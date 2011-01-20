@@ -87,6 +87,18 @@ public class Util {
                 bundle.getString("format.date"));
         return df.format(date);
     }
+    
+    public static String formatDate(Date date, Locale locale) {
+    	if (null == date) 
+    	{
+    		return "";
+    	}
+    	ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", 
+                locale);
+        SimpleDateFormat df = new SimpleDateFormat(
+                bundle.getString("format.date"));
+        return df.format(date);
+    }
 
     public static String formatMoney(BigDecimal number, Integer userId, Integer currencyId, boolean forEmail)
             throws SessionInternalError {

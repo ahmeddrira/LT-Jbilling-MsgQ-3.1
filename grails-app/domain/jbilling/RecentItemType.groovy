@@ -29,7 +29,7 @@ package jbilling
 enum RecentItemType {
 
     INVOICE     ("invoice", "list", null, "icon09.gif", "recent.item.invoice.title"),
-    ORDER       ("order", "list", null, "icon10.gif", "recent.item.order.title"),
+    ORDER       ("order", "showListAndOrder", null, "icon10.gif", "recent.item.order.title"),
     PRODUCT     ("product", "show", null, "icon13.gif", "recent.item.product.title"),
     CUSTOMER    ("user", "list", null, "icon12.gif", "recent.item.customer.title"),
     PAYMENT     ("payment", "list", null, "icon11.gif", "recent.item.payment.title"),

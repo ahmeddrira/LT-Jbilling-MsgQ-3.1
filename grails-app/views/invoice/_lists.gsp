@@ -100,6 +100,6 @@
 
 <g:if test="${invoices?.totalCount > params.max}">
     <div class="pager-box">
-        <util:remotePaginate controller="invoice" action="list" params="[applyFilter: true]" total="${invoces.totalCount}" update="column2"/>
+        <util:remotePaginate controller="invoice" action="list" params="[applyFilter: true]" total="${invoices.totalCount}" update="column2"/>
     </div>
 </g:if>

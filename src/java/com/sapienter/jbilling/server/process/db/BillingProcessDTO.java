@@ -181,7 +181,6 @@ public class BillingProcessDTO implements Serializable {
     // this is useful for the cascade, but any call to it will be very expensive and even
     // inacurate. Use InvoiceDAS.findByProcess instead
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "billingProcess")
-    @Fetch( FetchMode.JOIN)
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     public Set<InvoiceDTO> getInvoices() {
         return this.invoices;

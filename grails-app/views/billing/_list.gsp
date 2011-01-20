@@ -36,8 +36,8 @@
 	</div>
 </div>
 
-<g:if test="${BillingProcessDTO.count() > params.max}">
+<g:if test="${lstBillingProcesses?.totalCount > params.max}">
     <div class="pager-box">
-        <util:remotePaginate controller="billing" action="index" params="[applyFilter: true]" total="${BillingProcessDTO.count()}" update="column1"/>
+        <util:remotePaginate controller="billing" action="index" params="[applyFilter: true]" total="${lstBillingProcesses?.totalCount}" update="column1"/>
     </div>
 </g:if>

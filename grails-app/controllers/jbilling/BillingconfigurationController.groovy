@@ -64,9 +64,6 @@ class BillingconfigurationController {
 	
 	def runBilling = {
 		
-		//TODO Check if billing is already running. We may add a method
-		//to IBillingProcessSessionBean that returns true/false
-		
 		try {
 			if (!webServicesSession.isBillingRunning()) {
 				webServicesSession.triggerBillingAsync(new Date())
@@ -75,9 +72,8 @@ class BillingconfigurationController {
 				flash.error = 'prompt.billing.already.running'
 			}
 		} catch (Exception e) {
-			//e.printStackTrace()
 			log.error e.getMessage()
-			flash.error = 'error.billing.trigger'
+			viewUtils.resolveException(flash, session.locale, e);
 		}
 		redirect action: 'index'
 	}

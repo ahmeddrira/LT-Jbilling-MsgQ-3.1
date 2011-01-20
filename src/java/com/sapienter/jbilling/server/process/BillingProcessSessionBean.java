@@ -819,4 +819,11 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
         runBL.setProcess(billingProcessId);
         return runBL.addProcessRunUser(userId, status).getId();
     }
+    
+    /**
+     * Returns true if the Billing Process is running.
+     */
+    public boolean isBillingRunning() {
+    	return running.get();
+    }
 }

@@ -1,5 +1,7 @@
 package jbilling
 
+import java.util.Date;
+
 import com.sapienter.jbilling.server.entity.AchDTO
 import com.sapienter.jbilling.server.entity.CreditCardDTO
 import com.sapienter.jbilling.server.invoice.InvoiceWS
@@ -397,6 +399,14 @@ class ApiService implements IWebServicesSessionBean {
         Billing process
      */
 
+	public boolean isBillingRunning() {
+		return webServicesSession.isBillingProcessRunning()
+	}
+	
+	public void triggerBillingAsync(final Date runDate) {
+		webServicesSession.triggerBillingAsync(runDate)
+	}
+	
     public boolean triggerBilling(Date runDate) {
         return webServicesSession.triggerBilling(runDate)
     }

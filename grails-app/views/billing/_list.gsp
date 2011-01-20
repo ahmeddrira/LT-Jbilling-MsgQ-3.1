@@ -16,24 +16,18 @@
 	
 			<tbody>
 				<g:each var="dto" in="${lstBillingProcesses}">
-                    <g:link  action="show" id="${dto.id}">
+                    <g:link action="show" id="${dto.id}">
     					<tr id="process-${dto.id}" class="${selected?.id == dto.id ? 'active' : ''}">
-    						
-    							<td class="small">${dto.id}</td>
-    						
-    							<td class="medium">
-    								${new java.text.SimpleDateFormat("dd-MMM-yyyy").format(dto.billingDate)}
-    							</td>
-    						
-    							<td class="small">${dataHashMap[dto.id][0]}</td>
-    						
-    							<td class="small">
-    								${Util.formatMoney(new BigDecimal(dataHashMap[dto.id][1]?:"0.0"),
-    									session["user_id"],dataHashMap[dto.id][2].id, false)?.substring(2)}
-    							</td>
-    						
-    							<td class="small">${dataHashMap[dto.id][2].code}</td>
-                                
+							<td class="small">${dto.id}</td>
+							<td class="medium">
+								${new java.text.SimpleDateFormat("dd-MMM-yyyy").format(dto.billingDate)}
+							</td>
+							<td class="small">${dataHashMap[dto.id][0]}</td>
+							<td class="small">
+								${Util.formatMoney(new BigDecimal(dataHashMap[dto.id][1]?:"0.0"),
+									session["user_id"],dataHashMap[dto.id][2].id, false)?.substring(2)}
+							</td>
+							<td class="small">${dataHashMap[dto.id][2].code}</td>
     					</tr>
                     </g:link>
 				</g:each>
@@ -42,8 +36,8 @@
 	</div>
 </div>
 
-<g:if test="${BillingProcessDTO.count() > params.max}">
+<g:if test="${lstBillingProcesses?.totalCount > params.max}">
     <div class="pager-box">
-        <util:remotePaginate controller="billing" action="index" params="[applyFilter: true]" total="${BillingProcessDTO.count()}" update="column1"/>
+        <util:remotePaginate controller="billing" action="index" params="[applyFilter: true]" total="${lstBillingProcesses?.totalCount}" update="column1"/>
     </div>
 </g:if>

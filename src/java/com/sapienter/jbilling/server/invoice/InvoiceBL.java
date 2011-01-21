@@ -364,6 +364,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
 
         // now delete the invoice itself
         getHome().delete(invoice);
+        getHome().flush();
     }
 
     public void update(NewInvoiceDTO addition) {

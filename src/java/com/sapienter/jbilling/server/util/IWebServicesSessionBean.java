@@ -176,6 +176,7 @@ public interface IWebServicesSessionBean {
     public void deleteInvoice(Integer invoiceId);
 
     public InvoiceWS[] getAllInvoicesForUser(Integer userId);
+    public void notifyInvoiceByEmail(Integer invoiceId) ;
     public Integer[] getAllInvoices(Integer userId);
     public InvoiceWS getLatestInvoice(Integer userId) throws SessionInternalError;
     public Integer[] getLastInvoices(Integer userId, Integer number) throws SessionInternalError;
@@ -184,7 +185,7 @@ public interface IWebServicesSessionBean {
     public Integer[] getUserInvoicesByDate(Integer userId, String since, String until) throws SessionInternalError;
 
     public byte[] getPaperInvoicePDF(Integer invoiceId) throws SessionInternalError;
-    public void removePaymentLink(Integer invoiceId, Integer paymentId) throws SessionInternalError;
+
 
     /*
         Payments
@@ -195,9 +196,14 @@ public interface IWebServicesSessionBean {
     public Integer[] getLastPayments(Integer userId, Integer number) throws SessionInternalError;
     public BigDecimal getTotalRevenueByUser (Integer userId) throws SessionInternalError;
 
+    public PaymentWS getUserPaymentInstrument(Integer userId) throws SessionInternalError;
+
     public Integer createPayment(PaymentWS payment);
     public void updatePayment(PaymentWS payment);
     public void deletePayment(Integer paymentId);
+
+    public void removePaymentLink(Integer invoiceId, Integer paymentId) throws SessionInternalError;
+    public void createPaymentLink(Integer invoiceId, Integer paymentId);
 
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) throws SessionInternalError;
     public Integer applyPayment(PaymentWS payment, Integer invoiceId) throws SessionInternalError;
@@ -208,6 +214,8 @@ public interface IWebServicesSessionBean {
         Billing process
      */
 
+    public boolean isBillingRunning();
+    public void triggerBillingAsync(final Date runDate);
     public boolean triggerBilling(Date runDate);
     public void triggerAgeing(Date runDate);
 

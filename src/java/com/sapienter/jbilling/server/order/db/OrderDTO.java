@@ -690,9 +690,12 @@ public class OrderDTO implements java.io.Serializable {
         for (OrderProcessDTO process: getOrderProcesses()) {
             process.getPeriodStart();
         }
-        getOrderBillingType().getId();
-        getOrderPeriod().getId();
-        getOrderStatus().getId();
+        if (getOrderBillingType() != null)
+            getOrderBillingType().getId();
+        if (getOrderPeriod() != null)
+            getOrderPeriod().getId();
+        if (getOrderStatus() != null)
+            getOrderStatus().getId();
     }
     
     public String toString() {

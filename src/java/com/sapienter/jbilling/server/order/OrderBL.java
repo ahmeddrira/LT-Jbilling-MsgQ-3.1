@@ -19,32 +19,12 @@
 */
 package com.sapienter.jbilling.server.order;
 
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.List;
-
-import javax.naming.NamingException;
-
-import org.apache.log4j.Logger;
-
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
-
-import sun.jdbc.rowset.CachedRowSet;
-
 import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
+import com.sapienter.jbilling.server.item.PlanBL;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager;
@@ -90,8 +70,25 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+import sun.jdbc.rowset.CachedRowSet;
+
+import javax.naming.NamingException;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Emil
@@ -153,23 +150,23 @@ public class OrderBL extends ResultList
 
     public OrderWS getWS(Integer languageId) {
         OrderWS retValue = new OrderWS(order.getId(), order.getBillingTypeId(),
-                order.getNotify(), order.getActiveSince(), order.getActiveUntil(),
-                order.getCreateDate(), order.getNextBillableDay(),
-                order.getCreatedBy(), order.getStatusId(), order.getDeleted(),
-                order.getCurrencyId(), order.getLastNotified(),
-                order.getNotificationStep(), order.getDueDateUnitId(),
-                order.getDueDateValue(), order.getAnticipatePeriods(),
-                order.getDfFm(), order.getIsCurrent(), order.getNotes(),
-                order.getNotesInInvoice(), order.getOwnInvoice(),
-                order.getOrderPeriod().getId(),
-                order.getBaseUserByUserId().getId(),
-                order.getVersionNum(), order.getCycleStarts());
+                                       order.getNotify(), order.getActiveSince(), order.getActiveUntil(),
+                                       order.getCreateDate(), order.getNextBillableDay(),
+                                       order.getCreatedBy(), order.getStatusId(), order.getDeleted(),
+                                       order.getCurrencyId(), order.getLastNotified(),
+                                       order.getNotificationStep(), order.getDueDateUnitId(),
+                                       order.getDueDateValue(), order.getAnticipatePeriods(),
+                                       order.getDfFm(), order.getIsCurrent(), order.getNotes(),
+                                       order.getNotesInInvoice(), order.getOwnInvoice(),
+                                       order.getOrderPeriod().getId(),
+                                       order.getBaseUserByUserId().getId(),
+                                       order.getVersionNum(), order.getCycleStarts());
 
         retValue.setTotal(order.getTotal());
 
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
-        
+
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
         for (Iterator it = order.getLines().iterator(); it.hasNext();) {
             OrderLineDTO line = (OrderLineDTO) it.next();
@@ -192,13 +189,22 @@ public class OrderBL extends ResultList
         try {
             PluggableTaskManager<IItemPurchaseManager> taskManager =
                     new PluggableTaskManager<IItemPurchaseManager>(entityId,
-                    Constants.PLUGGABLE_TASK_ITEM_MANAGER);
+                                                                   Constants.PLUGGABLE_TASK_ITEM_MANAGER);
             IItemPurchaseManager myTask = taskManager.getNextClass();
 
             while (myTask != null) {
                 myTask.addItem(itemID, quantity, language, userId, entityId, currencyId, order, records);
                 myTask = taskManager.getNextClass();
             }
+
+            // If customer is adding a plan item to the recurring order, and the customer does not
+            // already hold a subscription to the plan, subscribe the customer and add all the plan
+            // prices to the customer price map
+            if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+                if (!PlanBL.isSubscribed(userId, itemID))
+                    PlanBL.subscribe(userId, itemID);
+            }
+
         } catch (PluggableTaskException e) {
             throw new SessionInternalError("Item Manager task error", OrderBL.class, e);
         } catch (TaskException e) {
@@ -242,12 +248,15 @@ public class OrderBL extends ResultList
         order.setDeleted(1);
 
         eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
-                Constants.TABLE_PUCHASE_ORDER, order.getId(),
-                EventLogger.MODULE_ORDER_MAINTENANCE,
-                EventLogger.ROW_DELETED, null,
-                null, null);
+                      Constants.TABLE_PUCHASE_ORDER, order.getId(),
+                      EventLogger.MODULE_ORDER_MAINTENANCE,
+                      EventLogger.ROW_DELETED, null,
+                      null, null);
 
-
+        // remove customer plan subscriptions for this order
+        if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+            removeCustomerPlans(order.getLines(), order.getUserId());
+        }
     }
 
     /**
@@ -262,6 +271,7 @@ public class OrderBL extends ResultList
         order.setBaseUserByUserId(user.find(order.getBaseUserByUserId().getId()));
         // some things can't be null, otherwise hibernate complains
         order.setDefaults();
+        order.touch();
 
         try {
             PluggableTaskManager taskManager = new PluggableTaskManager(
@@ -276,7 +286,7 @@ public class OrderBL extends ResultList
         } catch (PluggableTaskException e) {
             LOG.fatal("Problems handling order processing task.", e);
             throw new SessionInternalError("Problems handling order " +
-                    "processing task.");
+                                           "processing task.");
         } catch (TaskException e) {
             if (e.getCause() instanceof ItemDecimalsException) {
                 throw (ItemDecimalsException) e.getCause();
@@ -287,7 +297,7 @@ public class OrderBL extends ResultList
     }
 
     public Integer create(Integer entityId, Integer userAgentId,
-            OrderDTO orderDto) throws SessionInternalError {
+                          OrderDTO orderDto) throws SessionInternalError {
         try {
             // if the order is a one-timer, force pre-paid to avoid any
             // confusion
@@ -316,7 +326,20 @@ public class OrderBL extends ResultList
                 }
             }
             orderDto.setDefaults();
+
+            // subscribe customer to plan items
+            if (orderDto.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+                // copy lines to a temp list and populate item from DB so that we can process
+                // plans and avoid a LIE exception since we don't know where the DTO has come from.
+                List<OrderLineDTO> lines = new ArrayList<OrderLineDTO>(orderDto.getLines());
+                for (OrderLineDTO line : lines)
+                    line.setItem(new ItemBL(line.getItemId()).getEntity());
+
+                addCustomerPlans(lines, orderDto.getUserId());
+            }
+
             order = orderDas.save(orderDto);
+
             // link the lines to the new order
             for (OrderLineDTO line : order.getLines()) {
                 line.setPurchaseOrder(order);
@@ -337,8 +360,8 @@ public class OrderBL extends ResultList
 
             // add a log row for convenience
             eLogger.auditBySystem(entityId, order.getBaseUserByUserId().getId(),
-                    Constants.TABLE_PUCHASE_ORDER, order.getId(),
-                    EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
+                                  Constants.TABLE_PUCHASE_ORDER, order.getId(),
+                                  EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
 
             EventManager.process(new NewOrderEvent(entityId, order));
         } catch (Exception e) {
@@ -363,13 +386,13 @@ public class OrderBL extends ResultList
         // update it
         order.setActiveUntil(to);
 
-        // if the new active until is earlier than the next invoice date, we have a 
+        // if the new active until is earlier than the next invoice date, we have a
         // period already invoice being cancelled
         if (isDateInvoiced(to)) {
             // pass the new order, rather than the existing one. Otherwise, the exsiting gets
             // and changes overwritten by the data of the new order.
             EventManager.process(new PeriodCancelledEvent(newOrder,
-                    order.getBaseUserByUserId().getCompany().getId(), executorId));
+                                                          order.getBaseUserByUserId().getCompany().getId(), executorId));
         }
     }
 
@@ -382,10 +405,10 @@ public class OrderBL extends ResultList
      * still 'mutating'.
      */
     public List<NewQuantityEvent> checkOrderLineQuantities(List<OrderLineDTO> oldLines,
-            List<OrderLineDTO> newLines, Integer entityId, Integer orderId, boolean sendEvents) {
+                                                           List<OrderLineDTO> newLines, Integer entityId, Integer orderId, boolean sendEvents) {
 
         List<NewQuantityEvent> retValue = new ArrayList<NewQuantityEvent>();
-        // NewQuantityEvent is generated when an order line and it's quantity 
+        // NewQuantityEvent is generated when an order line and it's quantity
         // has changed, including from >0 to 0 (deleted) and 0 to >0 (added).
         // First, copy and sort new and old order lines by order line id.
         List<OrderLineDTO> oldOrderLines = new ArrayList(oldLines);
@@ -414,7 +437,7 @@ public class OrderBL extends ResultList
         Iterator<OrderLineDTO> itOldLines = oldOrderLines.iterator();
         Iterator<OrderLineDTO> itNewLines = newOrderLines.iterator();
 
-        // Step through the sorted order lines, checking if it exists only in 
+        // Step through the sorted order lines, checking if it exists only in
         // one, the other or both. If both, then check if quantity has changed.
         OrderLineDTO currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
         OrderLineDTO currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
@@ -425,13 +448,13 @@ public class OrderBL extends ResultList
                 // order line has been deleted
                 LOG.debug("Deleted order line. Order line Id: " + oldLineId);
                 retValue.add(new NewQuantityEvent(entityId, currentOldLine.getQuantity(), BigDecimal.ZERO,
-                                                          orderId, currentOldLine, null));
+                                                  orderId, currentOldLine, null));
                 currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
             } else if (oldLineId > newLineId) {
                 // order line has been added
                 LOG.debug("Added order line. Order line Id: " + newLineId);
                 retValue.add(new NewQuantityEvent(entityId, BigDecimal.ZERO, currentNewLine.getQuantity(),
-                                                          orderId, currentNewLine, null));
+                                                  orderId, currentNewLine, null));
                 currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
             } else {
                 // order line exists in both, so check quantity
@@ -439,9 +462,9 @@ public class OrderBL extends ResultList
                 BigDecimal newLineQuantity = currentNewLine.getQuantity();
                 if (oldLineQuantity.compareTo(newLineQuantity) != 0) {
                     LOG.debug("Order line quantity changed. Order line Id: " +
-                            oldLineId);
+                              oldLineId);
                     retValue.add(new NewQuantityEvent(entityId, oldLineQuantity, newLineQuantity, orderId,
-                                                              currentOldLine, currentNewLine));
+                                                      currentOldLine, currentNewLine));
                 }
                 currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
                 currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
@@ -451,20 +474,20 @@ public class OrderBL extends ResultList
         while (currentOldLine != null) {
             LOG.debug("Deleted order line. Order line id: " + currentOldLine.getId());
             retValue.add(new NewQuantityEvent(entityId, currentOldLine.getQuantity(), BigDecimal.ZERO, orderId,
-                                                      currentOldLine, null));
+                                              currentOldLine, null));
             currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
         }
         while (currentNewLine != null) {
             LOG.debug("Added order line. Order line id: " + currentNewLine.getId());
             retValue.add(new NewQuantityEvent(entityId, BigDecimal.ZERO, currentNewLine.getQuantity(), orderId,
-                                                      currentNewLine, null));
+                                              currentNewLine, null));
             currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
         }
 
         if (sendEvents) {
             for (NewQuantityEvent event: retValue) {
-               EventManager.process(event);
-           }
+                EventManager.process(event);
+            }
         }
 
         return retValue;
@@ -523,18 +546,18 @@ public class OrderBL extends ResultList
          */
 
         // get new quantity events as necessary
-         List<NewQuantityEvent> events = checkOrderLineQuantities(order.getLines(), dto.getLines(),
-                order.getBaseUserByUserId().getCompany().getId(), 
-                order.getId(), false); // do not send them now, it will be done later when the order is saved
+        List<NewQuantityEvent> events = checkOrderLineQuantities(order.getLines(), dto.getLines(),
+                                                                 order.getBaseUserByUserId().getCompany().getId(),
+                                                                 order.getId(), false); // do not send them now, it will be done later when the order is saved
+
+
+        // Determine if the item of the order changes and, if it is,
+        // LOG a subscription change event.
+        LOG.info("Order lines: " + order.getLines().size() + "  --> new Order: " + dto.getLines().size());
 
         OrderLineDTO oldLine = null;
         int nonDeletedLines = 0;
-        // Determine if the item of the order changes and, if it is,
-        // LOG a subscription change event.
-        LOG.info("Order lines: " + order.getLines().size() + "  --> new Order: " +
-                dto.getLines().size());
-        if (dto.getLines().size() == 1 &&
-                order.getLines().size() >= 1) {
+        if (dto.getLines().size() == 1 && order.getLines().size() >= 1) {
             // This event needs to LOG the old item id and description, so
             // it can only happen when updating orders with only one line.
 
@@ -548,7 +571,13 @@ public class OrderBL extends ResultList
             }
         }
 
+        // add new customer plan subscriptions
+        if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+            addCustomerPlans(dto.getLines(), order.getUserId());
+        }
+
         // now update this order's lines
+        List<OrderLineDTO> oldLines = new ArrayList<OrderLineDTO>(order.getLines());
         order.getLines().clear();
         order.getLines().addAll(dto.getLines());
         for (OrderLineDTO line : order.getLines()) {
@@ -557,7 +586,13 @@ public class OrderBL extends ResultList
             // new lines need createDatetime set
             line.setDefaults();
         }
+
         order = orderDas.save(order);
+
+        // remove old customer plan subscriptions
+        if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+            removeCustomerPlans(oldLines, order.getUserId());
+        }
 
         if (oldLine != null && nonDeletedLines == 1) {
             OrderLineDTO newLine = null;
@@ -570,47 +605,94 @@ public class OrderBL extends ResultList
             if (newLine != null && !oldLine.getItemId().equals(newLine.getItemId())) {
                 if (executorId != null) {
                     eLogger.audit(executorId,
-                            order.getBaseUserByUserId().getId(),
-                            Constants.TABLE_ORDER_LINE,
-                            newLine.getId(), EventLogger.MODULE_ORDER_MAINTENANCE,
-                            EventLogger.ORDER_LINE_UPDATED, oldLine.getId(),
-                            oldLine.getDescription(),
-                            null);
+                                  order.getBaseUserByUserId().getId(),
+                                  Constants.TABLE_ORDER_LINE,
+                                  newLine.getId(), EventLogger.MODULE_ORDER_MAINTENANCE,
+                                  EventLogger.ORDER_LINE_UPDATED, oldLine.getId(),
+                                  oldLine.getDescription(),
+                                  null);
                 } else {
                     // it is the mediation process
                     eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(),
-                            order.getBaseUserByUserId().getId(),
-                            Constants.TABLE_ORDER_LINE,
-                            newLine.getId(), EventLogger.MODULE_ORDER_MAINTENANCE,
-                            EventLogger.ORDER_LINE_UPDATED, oldLine.getId(),
-                            oldLine.getDescription(),
-                            null);
+                                          order.getBaseUserByUserId().getId(),
+                                          Constants.TABLE_ORDER_LINE,
+                                          newLine.getId(), EventLogger.MODULE_ORDER_MAINTENANCE,
+                                          EventLogger.ORDER_LINE_UPDATED, oldLine.getId(),
+                                          oldLine.getDescription(),
+                                          null);
                 }
             }
         }
 
         if (executorId != null) {
             eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
-                    Constants.TABLE_PUCHASE_ORDER, order.getId(),
-                    EventLogger.MODULE_ORDER_MAINTENANCE,
-                    EventLogger.ROW_UPDATED, null,
-                    null, null);
+                          Constants.TABLE_PUCHASE_ORDER, order.getId(),
+                          EventLogger.MODULE_ORDER_MAINTENANCE,
+                          EventLogger.ROW_UPDATED, null,
+                          null, null);
         } else {
             eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(),
-                    order.getBaseUserByUserId().getId(),
-                    Constants.TABLE_PUCHASE_ORDER,
-                    order.getId(),
-                    EventLogger.MODULE_ORDER_MAINTENANCE,
-                    EventLogger.ROW_UPDATED, null,
-                    null, null);
+                                  order.getBaseUserByUserId().getId(),
+                                  Constants.TABLE_PUCHASE_ORDER,
+                                  order.getId(),
+                                  EventLogger.MODULE_ORDER_MAINTENANCE,
+                                  EventLogger.ROW_UPDATED, null,
+                                  null, null);
         }
 
-        // last, once the order is saved and all done, send out the 
+        // last, once the order is saved and all done, send out the
         // order modified events
         for (NewQuantityEvent event: events) {
             EventManager.process(event);
         }
 
+    }
+
+    /**
+     * Subscribes the given user to any plans held by the given list of order lines,
+     * if the user does not already have a subscription.
+     *
+     * should be called before an order is modified in the persistence context.
+     *
+     * @param lines lines to process
+     * @param userId user id of customer to subscribe
+     */
+    public void addCustomerPlans(List<OrderLineDTO> lines, Integer userId) {
+        LOG.debug("Processing " + lines.size() + " order line(s), adding plans to user " + userId);
+        for (OrderLineDTO line : lines) {
+            // subscribe customer to plan if they haven't already been subscribed.
+            if (!line.getItem().getPlans().isEmpty()) {
+                if (!PlanBL.isSubscribed(userId, line.getItemId())) {
+                    LOG.debug("Subscribing user " + userId + " to plan item " + line.getItemId());
+                    PlanBL.subscribe(userId, line.getItemId());
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Un-subscribes the given user to any plans held by the list of order lines. The customer
+     * is un-subscribed only if there are no other orders subscribing the user to the plan.
+     *
+     * should be called after an order is modified in the persistence context.
+     *
+     * @param lines lines to process
+     * @param userId user id of customer to subscribe
+     */
+    public void removeCustomerPlans(List<OrderLineDTO> lines, Integer userId) {
+        LOG.debug("Processing " + lines.size() + " order line(s), removing plans from user " + userId);
+        for (OrderLineDTO line : lines) {
+            // make sure the customer is not subscribed to the plan after deleting the order. If the customer
+            // is still subscribed it means another order has a subscription item for this plan, so we should
+            // leave the prices in place.
+            if (!line.getItem().getPlans().isEmpty()) {
+                if (!PlanBL.isSubscribed(userId, line.getItemId())) {
+                    LOG.debug("Un-subscribing user " + userId + " from plan item " + line.getItemId());
+                    PlanBL.unsubscribe(userId, line.getItemId());
+                }
+            }
+        }
     }
 
     private void updateEndOfOrderProcess(Date newDate) {
@@ -621,7 +703,7 @@ public class OrderBL extends ResultList
         }
         if (order.getActiveUntil() != null) {
             process = orderDas.findProcessByEndDate(order.getId(),
-                    order.getActiveUntil());
+                                                    order.getActiveUntil());
         }
         if (process != null) {
             LOG.debug("Updating process id " + process.getId());
@@ -629,7 +711,7 @@ public class OrderBL extends ResultList
 
         } else {
             LOG.debug("Did not find any process for order " + order.getId() +
-                    " and date " + order.getActiveUntil());
+                      " and date " + order.getActiveUntil());
         }
     }
 
@@ -639,29 +721,29 @@ public class OrderBL extends ResultList
         }
         // only if the new date is in the future
         if (order.getNextBillableDay() == null ||
-                newDate.after(order.getNextBillableDay())) {
+            newDate.after(order.getNextBillableDay())) {
             // this audit can be added to the order details screen
             // otherwise the user can't account for the lost time
             eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
-                    Constants.TABLE_PUCHASE_ORDER, order.getId(),
-                    EventLogger.MODULE_ORDER_MAINTENANCE,
-                    EventLogger.ORDER_NEXT_BILL_DATE_UPDATED, null,
-                    null, order.getNextBillableDay());
+                          Constants.TABLE_PUCHASE_ORDER, order.getId(),
+                          EventLogger.MODULE_ORDER_MAINTENANCE,
+                          EventLogger.ORDER_NEXT_BILL_DATE_UPDATED, null,
+                          null, order.getNextBillableDay());
             // update the period of the latest invoice as well
             updateEndOfOrderProcess(newDate);
             // do the actual update
             order.setNextBillableDay(newDate);
         } else {
             LOG.info("order " + order.getId() +
-                    " next billable day not updated from " +
-                    order.getNextBillableDay() + " to " + newDate);
+                     " next billable day not updated from " +
+                     order.getNextBillableDay() + " to " + newDate);
         }
     }
 
     /**
      * Method lookUpEditable.
      * Gets the row from order_line_type for the type specifed
-     * @param type 
+     * @param type
      * The order line type to look.
      * @return Boolean
      * If it is editable or not
@@ -688,12 +770,12 @@ public class OrderBL extends ResultList
     }
 
     public CachedRowSet getList(Integer entityID, Integer userRole,
-            Integer userId)
+                                Integer userId)
             throws SQLException, Exception {
 
         if (userRole.equals(Constants.TYPE_INTERNAL) ||
-                userRole.equals(Constants.TYPE_ROOT) ||
-                userRole.equals(Constants.TYPE_CLERK)) {
+            userRole.equals(Constants.TYPE_ROOT) ||
+            userRole.equals(Constants.TYPE_CLERK)) {
             prepareStatement(OrderSQL.listInternal);
             cachedResults.setInt(1, entityID.intValue());
         } else if (userRole.equals(Constants.TYPE_PARTNER)) {
@@ -705,7 +787,7 @@ public class OrderBL extends ResultList
             cachedResults.setInt(1, userId.intValue());
         } else {
             throw new Exception("The orders list for the type " + userRole +
-                    " is not supported");
+                                " is not supported");
         }
 
         execute();
@@ -774,18 +856,18 @@ public class OrderBL extends ResultList
         }
         if (executorId != null) {
             eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
-                    Constants.TABLE_PUCHASE_ORDER, order.getId(),
-                    EventLogger.MODULE_ORDER_MAINTENANCE,
-                    EventLogger.ORDER_STATUS_CHANGE,
-                    order.getStatusId(), null, null);
+                          Constants.TABLE_PUCHASE_ORDER, order.getId(),
+                          EventLogger.MODULE_ORDER_MAINTENANCE,
+                          EventLogger.ORDER_STATUS_CHANGE,
+                          order.getStatusId(), null, null);
         } else {
             eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(),
-                    order.getBaseUserByUserId().getId(),
-                    Constants.TABLE_PUCHASE_ORDER,
-                    order.getId(),
-                    EventLogger.MODULE_ORDER_MAINTENANCE,
-                    EventLogger.ORDER_STATUS_CHANGE,
-                    order.getStatusId(), null, null);
+                                  order.getBaseUserByUserId().getId(),
+                                  Constants.TABLE_PUCHASE_ORDER,
+                                  order.getId(),
+                                  EventLogger.MODULE_ORDER_MAINTENANCE,
+                                  EventLogger.ORDER_STATUS_CHANGE,
+                                  order.getStatusId(), null, null);
 
         }
         NewStatusEvent event = new NewStatusEvent(
@@ -798,55 +880,53 @@ public class OrderBL extends ResultList
     /**
      * To be called from the http api, this simply looks for lines
      * in the order that lack some fields, it finds that info based
-     * in the item. 
-     * @param dto
+     * in the item.
+     *
+     * @param dto order with lines to pricess
+     * @param entityId entity id
      */
-    public void fillInLines(OrderDTO dto, Integer entityId)
-            throws NamingException, SessionInternalError {
-        /*
-         * now go over the order lines
-         */
+    public void fillInLines(OrderDTO dto, Integer entityId) throws NamingException, SessionInternalError {
         ItemBL itemBl = new ItemBL();
+
+        // iterate over order lines
         for (OrderLineDTO line : dto.getLines()) {
             itemBl.set(line.getItemId());
-            Integer languageId = itemBl.getEntity().getEntity().
-                    getLanguageId();
-            // this is needed for the basic pluggable task to work
+            Integer languageId = itemBl.getEntity().getEntity().getLanguageId();
+
+            // populate the basic item price and item description
             ItemDAS itemDas = new ItemDAS();
             line.setItem(itemDas.find(line.getItemId()));
             if (line.getPrice() == null) {
-                line.setPrice(itemBl.getPrice(dto.getUserId(),
-                        dto.getCurrencyId(), entityId));
+                line.setPrice(itemBl.getPrice(dto.getUserId(), dto.getCurrencyId(), line.getQuantity(), entityId));
             }
             if (line.getDescription() == null) {
-                line.setDescription(itemBl.getEntity().getDescription(
-                        languageId));
+                line.setDescription(itemBl.getEntity().getDescription(languageId));
             }
         }
     }
 
     private void audit(Integer executorId, Date date) {
         eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
-                Constants.TABLE_PUCHASE_ORDER, order.getId(),
-                EventLogger.MODULE_ORDER_MAINTENANCE,
-                EventLogger.ROW_UPDATED, null,
-                null, date);
+                      Constants.TABLE_PUCHASE_ORDER, order.getId(),
+                      EventLogger.MODULE_ORDER_MAINTENANCE,
+                      EventLogger.ROW_UPDATED, null,
+                      null, date);
     }
 
     private void audit(Integer executorId, Integer in) {
         eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
-                Constants.TABLE_PUCHASE_ORDER, order.getId(),
-                EventLogger.MODULE_ORDER_MAINTENANCE,
-                EventLogger.ROW_UPDATED, in,
-                null, null);
+                      Constants.TABLE_PUCHASE_ORDER, order.getId(),
+                      EventLogger.MODULE_ORDER_MAINTENANCE,
+                      EventLogger.ROW_UPDATED, in,
+                      null, null);
     }
 
     public static boolean validate(OrderWS dto) {
         boolean retValue = true;
 
         if (dto.getUserId() == null || dto.getPeriod() == null ||
-                dto.getBillingTypeId() == null ||
-                dto.getOrderLines() == null) {
+            dto.getBillingTypeId() == null ||
+            dto.getOrderLines() == null) {
             retValue = false;
         } else {
             for (int f = 0; f < dto.getOrderLines().length; f++) {
@@ -863,7 +943,7 @@ public class OrderBL extends ResultList
         boolean retValue = true;
 
         if (dto.getTypeId() == null ||
-                dto.getDescription() == null || dto.getQuantity() == null) {
+            dto.getDescription() == null || dto.getQuantity() == null) {
             retValue = false;
         }
 
@@ -910,7 +990,7 @@ public class OrderBL extends ResultList
 
             if (!config) {
                 LOG.warn("Preference missing to send a notification for " +
-                        "entity " + ent.getId());
+                         "entity " + ent.getId());
                 continue;
             }
 
@@ -947,23 +1027,23 @@ public class OrderBL extends ResultList
 
                 if (days == -1) {
                     throw new SessionInternalError("There are no more steps " +
-                            "configured, but the order was selected. Order " +
-                            " id = " + orderId);
+                                                   "configured, but the order was selected. Order " +
+                                                   " id = " + orderId);
                 }
 
                 // check that this order requires a notification
                 cal.setTime(today);
                 cal.add(Calendar.DAY_OF_MONTH, days);
                 if (activeUntil.compareTo(today) >= 0 &&
-                        activeUntil.compareTo(cal.getTime()) <= 0) {
+                    activeUntil.compareTo(cal.getTime()) <= 0) {
                     /*/ ok
-                    LOG.debug("Selecting order " + orderId + " today = " + 
+                    LOG.debug("Selecting order " + orderId + " today = " +
                     today + " active unitl = " + activeUntil +
                     " days = " + days);
                      */
                 } else {
                     /*
-                    LOG.debug("Skipping order " + orderId + " today = " + 
+                    LOG.debug("Skipping order " + orderId + " today = " +
                     today + " active unitl = " + activeUntil +
                     " days = " + days);
                      */
@@ -984,7 +1064,7 @@ public class OrderBL extends ResultList
                             order.getActiveUntil(),
                             user.getEntity().getUserId(),
                             order.getTotal(), order.getCurrencyId());
-                    // update the order record only if the message is sent 
+                    // update the order record only if the message is sent
                     if (notificationSess.notify(user.getEntity(), message).
                             booleanValue()) {
                         // if in the last step, turn the notification off, so
@@ -998,7 +1078,7 @@ public class OrderBL extends ResultList
 
                 } catch (NotificationNotFoundException e) {
                     LOG.warn("Without a message to send, this entity can't" +
-                            " notify about orders. Skipping");
+                             " notify about orders. Skipping");
                     break;
                 }
 
@@ -1030,7 +1110,7 @@ public class OrderBL extends ResultList
         PreferenceBL preference = new PreferenceBL();
         try {
             preference.set(order.getUser().getEntity().getId(),
-                    Constants.PREFERENCE_USE_DF_FM);
+                           Constants.PREFERENCE_USE_DF_FM);
         } catch (EmptyResultDataAccessException e) {
             // no problem go ahead use the defualts
         }
@@ -1075,7 +1155,7 @@ public class OrderBL extends ResultList
 
     public boolean isDateInvoiced(Date date) {
         return date != null && order.getNextBillableDay() != null &&
-                date.before(order.getNextBillableDay());
+               date.before(order.getNextBillableDay());
     }
 
     public Integer[] getListIds(Integer userId, Integer number, Integer entityId) {
@@ -1174,9 +1254,9 @@ public class OrderBL extends ResultList
             return null;
         }
         OrderLineWS retValue = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
-                line.getAmount(), line.getQuantity(), line.getPrice() == null ? null : line.getPrice(), line.getCreateDatetime(),
-                line.getDeleted(), line.getOrderLineType().getId(), line.getEditable(),
-                line.getPurchaseOrder().getId(), null, line.getVersionNum(), line.getProvisioningStatusId(), line.getProvisioningRequestId());
+                                               line.getAmount(), line.getQuantity(), line.getPrice() == null ? null : line.getPrice(), line.getCreateDatetime(),
+                                               line.getDeleted(), line.getOrderLineType().getId(), line.getEditable(),
+                                               line.getPurchaseOrder().getId(), null, line.getVersionNum(), line.getProvisioningStatusId(), line.getProvisioningRequestId());
         return retValue;
     }
 
@@ -1213,6 +1293,10 @@ public class OrderBL extends ResultList
         return dto;
     }
 
+    public List<OrderLineDTO> getRecurringOrderLines(Integer userId) {
+        return orderLineDAS.findRecurringByUser(userId);
+    }
+
     public OrderLineDTO getRecurringOrderLine(Integer userId, Integer itemId) {
         return orderLineDAS.findRecurringByUserItem(userId, itemId);
     }
@@ -1224,7 +1308,7 @@ public class OrderBL extends ResultList
     public List<OrderLineDTO> getOnetimeOrderLines(Integer userId, Integer itemId, Integer months) {
         return orderLineDAS.findOnetimeByUserItem(userId, itemId, months);
     }
-    
+
     public List<OrderLineDTO> getOnetimeOrderLinesByParent(Integer parentUserId, Integer itemId, Integer months) {
         return orderLineDAS.findOnetimeByParentUserItem(parentUserId, itemId, months);
     }
@@ -1249,7 +1333,7 @@ public class OrderBL extends ResultList
         }
     }
 
-   /**
+    /**
      * Returns the current one-time order for this user for the given date.
      */
     public OrderDTO getCurrentOrder(Integer userId, Date date) {
@@ -1268,7 +1352,7 @@ public class OrderBL extends ResultList
      * @return
      */
     public static OrderDTO getOrCreateCurrentOrder(Integer userId, Date eventDate,
-            Integer currencyId, boolean persist) {
+                                                   Integer currencyId, boolean persist) {
         CurrentOrder co = new CurrentOrder(userId, eventDate);
 
         Integer currentOrderId = co.getCurrent();
@@ -1276,7 +1360,7 @@ public class OrderBL extends ResultList
             // this is almost an error, put them in a new order?
             currentOrderId = co.create(eventDate, currencyId, new UserBL().getEntityId(userId));
             LOG.warn("Created current one-time order without a suitable main " +
-                    "subscription order:" + currentOrderId);
+                     "subscription order:" + currentOrderId);
         }
 
         OrderDAS orderDas = new OrderDAS();
@@ -1301,10 +1385,10 @@ public class OrderBL extends ResultList
         Integer oldCurrent = order.getUser().getCustomer().getCurrentOrderId();
         if (oldCurrent == null || !oldCurrent.equals(order.getId())) {
             eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
-                    Constants.TABLE_PUCHASE_ORDER, order.getId(),
-                    EventLogger.MODULE_ORDER_MAINTENANCE,
-                    EventLogger.ORDER_MAIN_SUBSCRIPTION_UPDATED, oldCurrent,
-                    null, null);
+                          Constants.TABLE_PUCHASE_ORDER, order.getId(),
+                          EventLogger.MODULE_ORDER_MAINTENANCE,
+                          EventLogger.ORDER_MAIN_SUBSCRIPTION_UPDATED, oldCurrent,
+                          null, null);
             // this is the new subscription order
             order.getUser().getCustomer().setCurrentOrderId(order.getId());
             // if there was an old one
@@ -1327,10 +1411,10 @@ public class OrderBL extends ResultList
         // it is removing the main subscription
         if (order.getIsCurrent().intValue() == 1) {
             eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
-                    Constants.TABLE_PUCHASE_ORDER, order.getId(),
-                    EventLogger.MODULE_ORDER_MAINTENANCE,
-                    EventLogger.ORDER_MAIN_SUBSCRIPTION_UPDATED, null,
-                    null, null);
+                          Constants.TABLE_PUCHASE_ORDER, order.getId(),
+                          EventLogger.MODULE_ORDER_MAINTENANCE,
+                          EventLogger.ORDER_MAIN_SUBSCRIPTION_UPDATED, null,
+                          null, null);
             // this is the new subscription order
             order.getUser().getCustomer().setCurrentOrderId(null);
             order.setIsCurrent(0);
@@ -1405,10 +1489,10 @@ public class OrderBL extends ResultList
 
         // add a log for provisioning module
         eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(),
-                order.getBaseUserByUserId().getId(),
-                Constants.TABLE_ORDER_LINE, orderLineId,
-                EventLogger.MODULE_PROVISIONING, EventLogger.PROVISIONING_STATUS_CHANGE,
-                oldStatus, null, null);
+                              order.getBaseUserByUserId().getId(),
+                              Constants.TABLE_ORDER_LINE, orderLineId,
+                              EventLogger.MODULE_PROVISIONING, EventLogger.PROVISIONING_STATUS_CHANGE,
+                              oldStatus, null, null);
     }
 
     public static OrderDTO createAsWithLine(OrderDTO order, Integer itemId, Double quantity) {

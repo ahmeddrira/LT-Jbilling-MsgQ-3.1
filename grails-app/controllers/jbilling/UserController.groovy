@@ -76,6 +76,7 @@ class UserController {
                 eq('company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
             }
+            order('id', 'asc')
         }
 
         def selected = params.id ? UserDTO.get(params.int("id")) : null
@@ -107,28 +108,52 @@ class UserController {
      * Fetches a list of sub-accounts for the given user id and renders the user list "_table.gsp" template.
      */
     def subaccounts = {
-        if (params["id"]) {
-            UserDTO user = UserDTO.get(params.int("id"))
-            def children = user?.customer?.children?.collect{ it.baseUser }
+        params.max = params?.max?.toInteger() ?: pagination.max
+        params.offset = params?.offset?.toInteger() ?: pagination.offset
 
-            if (!children.isEmpty()) {
-                render template: 'users', model:[users: children]
-            } else {
-                flash.info = 'customer.no.subaccount.warning'
-                flash.args = [user.id]
-                render template: '/layouts/includes/messages'
+        def children = UserDTO.createCriteria().list(
+                max:    params.max,
+                offset: params.offset
+        ) {
+            customer {
+                parent {
+                    eq('baseUser.id', params.int('id'))
+                }
             }
         }
+
+        def parent = UserDTO.get(params.int('id'))
+        System.out.println("Parent id: " + params.id + "  = " + parent)
+
+        render template: 'users', model: [ users: children, parent: parent ]
     }
 
     /**
      * Updates the notes for the given user id.
      */
     def saveNotes = {
-        webServicesSession.saveCustomerNotes(params.int('id'), params.notes);
+        webServicesSession.saveCustomerNotes(params.int('id'), params.notes)
 
         def user = UserDTO.get(params.int('id'))
         render template: 'show', model: [ selected: user ]
+    }
+
+    /**
+     * Delete the given user id.
+     */
+    def delete = {
+        if (params.id) {
+            webServicesSession.deleteUser(params.int('id'))
+
+            log.debug("Deleted user ${params.id}.")
+
+            flash.message = 'customer.deleted'
+            flash.args = [ params.id ]
+        }
+
+        // render the partial user list
+        params.applyFilter = true
+        list()
     }
 
     /**
@@ -137,14 +162,13 @@ class UserController {
      */
     def edit = {
         def user = params.id ? webServicesSession.getUserWS(params.int('id')) : null
+        def parent = params.parentId ? webServicesSession.getUserWS(params.int('parentId')) : null
+        def company = CompanyDTO.get(session['company_id'])
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
 
-        [ user: user, currencies: currencies ]
+        [ user: user, parent: parent, company: company, currencies: currencies ]
     }
-
-    // todo: handle "exclude from aging" flag from edit screen
-    // todo: handle "include contact in notifications" flag from edit screen
 
     /**
      * Validate and save a user.
@@ -154,8 +178,15 @@ class UserController {
         user.setMainRoleId(Constants.TYPE_CUSTOMER)
         bindData(user, params, 'user')
 
+        // bind contact and custom contact fields
         def contact = new ContactWS()
         bindData(contact, params, 'contact')
+        contact.fieldIDs = new Integer[params.contactField.size()]
+        contact.fieldValues = new Integer[params.contactField.size()]
+        params.contactField.eachWithIndex { id, value, i ->
+            contact.fieldIDs[i] = id.toInteger()
+            contact.fieldValues[i] = value
+        }
         user.setContact(contact)
 
         // bind credit card object if parameters present
@@ -163,7 +194,10 @@ class UserController {
             def creditCard = new CreditCardDTO()
             bindData(creditCard, params, 'creditCard')
             bindExpiryDate(creditCard, params)
-            user.setCreditCard(creditCard)
+
+            // update credit card only if not obscured
+            if (!creditCard.number.startsWith('*'))
+                user.setCreditCard(creditCard)
         }
 
         // bind ach object if parameters present
@@ -227,7 +261,9 @@ class UserController {
             }
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            render view: 'edit', model: [ user: user, currencies: currencies ]
+
+            def company = CompanyDTO.get(session['company_id'])
+            render view: 'edit', model: [ user: user, company: company, currencies: currencies ]
             return
         }
 

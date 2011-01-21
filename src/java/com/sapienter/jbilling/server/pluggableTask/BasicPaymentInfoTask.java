@@ -103,7 +103,7 @@ public class BasicPaymentInfoTask
                     retValue = new PaymentDTOEx();
                     retValue.setAch(new AchDTO(0, ach.getAbaRouting(),
                             ach.getBankAccount(), ach.getAccountType(),
-                            ach.getBankName(), ach.getAccountName()));
+                            ach.getBankName(), ach.getAccountName(), ach.getGatewayKey()));
                     retValue.setPaymentMethod(new PaymentMethodDAS().find(Constants.PAYMENT_METHOD_ACH));
                 }
             }

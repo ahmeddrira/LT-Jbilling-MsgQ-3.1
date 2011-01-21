@@ -21,6 +21,7 @@ package com.sapienter.jbilling.server.payment;
 
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.AchDTO;
 
 public interface IExternalCreditCardStorage {
 
@@ -37,7 +38,22 @@ public interface IExternalCreditCardStorage {
      *
      * @param contact ContactDTO from NewContactEvent, may be null if triggered by NewCreditCardEvent
      * @param creditCard credit card to store, may be null if triggered by NewContactEvent without credit card.
+     * @param ach ach to store
      * @return gateway key of stored credit card, null if storage failed
      */
-    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard);
+    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach);
+    
+    /**
+     * Delete the existing credit card details or the Ach payment details.
+     * 
+     * This method should return null for storage failures, so that the
+     * {@link com.sapienter.jbilling.server.payment.tasks.SaveCreditCardExternallyTask }
+     * can perform failure handling.
+     *
+     * @param contact contact to process
+     * @param creditCard credit card to process
+     * @param ach ach to process
+     * @return resulting unique gateway key for the credit card/contact
+     */
+    public String deleteCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach);
 }

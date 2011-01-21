@@ -20,8 +20,13 @@
 package com.sapienter.jbilling.server.user.db;
 
 
-import java.util.HashSet;
-import java.util.Set;
+import com.sapienter.jbilling.common.Constants;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDAS;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
+import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.partner.db.PartnerDAS;
+import org.apache.log4j.Logger;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -38,18 +43,9 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
-
-import org.apache.log4j.Logger;
-
-import com.sapienter.jbilling.common.Constants;
-import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
-import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.server.user.event.DynamicBalanceChangeEvent;
-import com.sapienter.jbilling.server.user.partner.db.Partner;
-import com.sapienter.jbilling.server.user.partner.db.PartnerDAS;
-import com.sapienter.jbilling.server.system.event.EventManager;
-
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @TableGenerator(
@@ -59,34 +55,34 @@ import java.math.BigDecimal;
         valueColumnName = "next_id",
         pkColumnValue="customer",
         allocationSize = 100
-        )
+)
 // No cache, mutable and critical
 @Table(name="customer")
-public class CustomerDTO  implements java.io.Serializable {
+public class CustomerDTO implements java.io.Serializable {
 
     private static final Logger LOG = Logger.getLogger(CustomerDTO.class);
 
-     private int id;
-     private UserDTO baseUser;
-     private InvoiceDeliveryMethodDTO invoiceDeliveryMethod;
-     private Partner partner;
-     private Integer referralFeePaid;
-     private String notes;
-     private Integer autoPaymentType;
-     private Integer dueDateUnitId;
-     private Integer dueDateValue;
-     private Integer dfFm;
-     private CustomerDTO parent;
-     private Set<CustomerDTO> children = new HashSet<CustomerDTO>(0);
-     private Integer isParent;
-     private int excludeAging;
-     private Integer invoiceChild;
-     private Integer currentOrderId;
-     private int balanceType = Constants.BALANCE_NO_DYNAMIC;
-     private BigDecimal dynamicBalance;
-     private BigDecimal autoRecharge;
-     private BigDecimal creditLimit;
-     private int versionNum;
+    private int id;
+    private UserDTO baseUser;
+    private InvoiceDeliveryMethodDTO invoiceDeliveryMethod;
+    private Partner partner;
+    private Integer referralFeePaid;
+    private String notes;
+    private Integer autoPaymentType;
+    private Integer dueDateUnitId;
+    private Integer dueDateValue;
+    private Integer dfFm;
+    private CustomerDTO parent;
+    private Set<CustomerDTO> children = new HashSet<CustomerDTO>(0);
+    private Integer isParent;
+    private int excludeAging;
+    private Integer invoiceChild;
+    private Integer currentOrderId;
+    private int balanceType = Constants.BALANCE_NO_DYNAMIC;
+    private BigDecimal dynamicBalance;
+    private BigDecimal autoRecharge;
+    private BigDecimal creditLimit;
+    private int versionNum;
 
     public CustomerDTO() {
     }
@@ -94,15 +90,15 @@ public class CustomerDTO  implements java.io.Serializable {
     public CustomerDTO(int id) {
         this.id = id;
     }
-    
+
     public CustomerDTO(int id, InvoiceDeliveryMethodDTO invoiceDeliveryMethod, int excludeAging) {
         this.id = id;
         this.invoiceDeliveryMethod = invoiceDeliveryMethod;
         this.excludeAging = excludeAging;
     }
 
-    public CustomerDTO(int id, UserDTO baseUser, InvoiceDeliveryMethodDTO invoiceDeliveryMethod, Partner partner, 
-            Integer referralFeePaid, String notes, Integer autoPaymentType, Integer dueDateUnitId, 
+    public CustomerDTO(int id, UserDTO baseUser, InvoiceDeliveryMethodDTO invoiceDeliveryMethod, Partner partner,
+            Integer referralFeePaid, String notes, Integer autoPaymentType, Integer dueDateUnitId,
             Integer dueDateValue, Integer dfFm, CustomerDTO parent, Integer isParent, int excludeAging, Integer invoiceChild, Integer currentOrderId) {
        this.id = id;
        this.baseUser = baseUser;
@@ -120,184 +116,203 @@ public class CustomerDTO  implements java.io.Serializable {
        this.invoiceChild = invoiceChild;
        this.currentOrderId = currentOrderId;
     }
-    
+
     public CustomerDTO(UserWS user) {
         setBaseUser(new UserDAS().find(user.getUserId()));
+
         if (user.getPartnerId() != null) {
             setPartner(new PartnerDAS().find(user.getPartnerId()));
         }
+
         if (user.getParentId() != null) {
             setParent(new CustomerDTO(user.getParentId()));
         }
+
         if (user.getIsParent() != null) {
             setIsParent(user.getIsParent().booleanValue() ? 1 : 0);
         }
+
         if (user.getInvoiceChild() != null) {
             setInvoiceChild(user.getInvoiceChild() ? 1 : 0);
         }
-        setCurrentOrderId(user.getMainOrderId());
+
         if (user.getCreditCard() != null) {
             setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_CC);
         }
 
-        setBalanceType(user.getBalanceType() == null ? Constants.BALANCE_NO_DYNAMIC :
-            user.getBalanceType());
+        if (user.getInvoiceDeliveryMethodId() != null) {
+            InvoiceDeliveryMethodDTO deliveryMethod = new InvoiceDeliveryMethodDAS().find(user.getInvoiceDeliveryMethodId());
+            setInvoiceDeliveryMethod(deliveryMethod);
+        }
+
+        setCurrentOrderId(user.getMainOrderId());
+
+        setBalanceType(user.getBalanceType() == null ? Constants.BALANCE_NO_DYNAMIC : user.getBalanceType());
         setCreditLimit(user.getCreditLimit() == null ? null : new BigDecimal(user.getCreditLimit()));
-        setDynamicBalance(user.getDynamicBalance() == null ? null : new BigDecimal(user.getDynamicBalance()));        
+        setDynamicBalance(user.getDynamicBalance() == null ? null : new BigDecimal(user.getDynamicBalance()));
         setAutoRecharge(user.getAutoRecharge() == null ? null : new BigDecimal(user.getAutoRecharge()));
 
         setNotes(user.getNotes() == null ? "" : user.getNotes());
         setAutoPaymentType(user.getAutomaticPaymentType());
-        
+
+        setDueDateUnitId(user.getDueDateUnitId());
+        setDueDateValue(user.getDueDateValue());
+
+        setExcludeAging(user.getExcludeAgeing() != null && user.getExcludeAgeing() ? 1 : 0);
+
         LOG.debug("Customer created with auto-recharge: " + getAutoRecharge() + " incoming var, " + user.getAutoRecharge());
     }
-   
-    @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="customer_GEN")
-    @Column(name="id", unique=true, nullable=false)
+
+    @Id @GeneratedValue(strategy = GenerationType.TABLE, generator = "customer_GEN")
+    @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return this.id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
-    @OneToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="user_id")
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     public UserDTO getBaseUser() {
         return this.baseUser;
     }
-    
+
     public void setBaseUser(UserDTO baseUser) {
         this.baseUser = baseUser;
     }
-@ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="invoice_delivery_method_id", nullable=false)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "invoice_delivery_method_id", nullable = false)
     public InvoiceDeliveryMethodDTO getInvoiceDeliveryMethod() {
         return this.invoiceDeliveryMethod;
     }
-    
+
     public void setInvoiceDeliveryMethod(InvoiceDeliveryMethodDTO invoiceDeliveryMethod) {
         this.invoiceDeliveryMethod = invoiceDeliveryMethod;
     }
-@ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="partner_id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_id")
     public Partner getPartner() {
         return this.partner;
     }
-    
+
     public void setPartner(Partner partner) {
         this.partner = partner;
     }
-    
-    @Column(name="referral_fee_paid")
+
+    @Column(name = "referral_fee_paid")
     public Integer getReferralFeePaid() {
         return this.referralFeePaid;
     }
-    
+
     public void setReferralFeePaid(Integer referralFeePaid) {
         this.referralFeePaid = referralFeePaid;
     }
-    
-    @Column(name="notes", length=1000)
+
+    @Column(name = "notes", length = 1000)
     public String getNotes() {
         return this.notes;
     }
-    
+
     public void setNotes(String notes) {
         this.notes = notes;
     }
-    
-    @Column(name="auto_payment_type")
+
+    @Column(name = "auto_payment_type")
     public Integer getAutoPaymentType() {
         return this.autoPaymentType;
     }
-    
+
     public void setAutoPaymentType(Integer autoPaymentType) {
         this.autoPaymentType = autoPaymentType;
     }
-    
-    @Column(name="due_date_unit_id")
+
+    @Column(name = "due_date_unit_id")
     public Integer getDueDateUnitId() {
         return this.dueDateUnitId;
     }
-    
+
     public void setDueDateUnitId(Integer dueDateUnitId) {
         this.dueDateUnitId = dueDateUnitId;
     }
-    
-    @Column(name="due_date_value")
+
+    @Column(name = "due_date_value")
     public Integer getDueDateValue() {
         return this.dueDateValue;
     }
-    
+
     public void setDueDateValue(Integer dueDateValue) {
         this.dueDateValue = dueDateValue;
     }
-    
-    @Column(name="df_fm")
+
+    @Column(name = "df_fm")
     public Integer getDfFm() {
         return this.dfFm;
     }
-    
+
     public void setDfFm(Integer dfFm) {
         this.dfFm = dfFm;
     }
 
-    @OneToMany(fetch=FetchType.LAZY, mappedBy="parent")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
     public Set<CustomerDTO> getChildren() {
         return children;
     }
+
     public void setChildren(Set<CustomerDTO> children) {
         this.children = children;
     }
 
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinColumn(name="parent_id")
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
     public CustomerDTO getParent() {
         return this.parent;
     }
+
     public void setParent(CustomerDTO parent) {
         this.parent = parent;
     }
 
-    @Column(name="is_parent")
+    @Column(name = "is_parent")
     public Integer getIsParent() {
         return this.isParent;
     }
-    
+
     public void setIsParent(Integer isParent) {
         this.isParent = isParent;
     }
-    
-    @Column(name="exclude_aging", nullable=false)
+
+    @Column(name = "exclude_aging", nullable = false)
     public int getExcludeAging() {
         return this.excludeAging;
     }
-    
+
     public void setExcludeAging(int excludeAging) {
         this.excludeAging = excludeAging;
     }
-    
-    @Column(name="invoice_child")
+
+    @Column(name = "invoice_child")
     public Integer getInvoiceChild() {
         return this.invoiceChild;
     }
-    
+
     public void setInvoiceChild(Integer invoiceChild) {
         this.invoiceChild = invoiceChild;
     }
-    
-    @Column(name="current_order_id")
+
+    @Column(name = "current_order_id")
     public Integer getCurrentOrderId() {
         return this.currentOrderId;
     }
-    
+
     public void setCurrentOrderId(Integer currentOrderId) {
         this.currentOrderId = currentOrderId;
     }
 
-    @Column(name="balance_type")
+    @Column(name = "balance_type")
     public int getBalanceType() {
         return balanceType;
     }
@@ -310,7 +325,7 @@ public class CustomerDTO  implements java.io.Serializable {
     public BigDecimal getAutoRecharge() {
         if (autoRecharge == null)
             return BigDecimal.ZERO;
-                                                           
+
         return autoRecharge;
     }
 
@@ -318,7 +333,7 @@ public class CustomerDTO  implements java.io.Serializable {
         this.autoRecharge = autoRecharge;
     }
 
-    @Column(name="credit_limit")
+    @Column(name = "credit_limit")
     public BigDecimal getCreditLimit() {
         if (creditLimit == null) {
             return BigDecimal.ZERO;
@@ -330,7 +345,16 @@ public class CustomerDTO  implements java.io.Serializable {
         this.creditLimit = creditLimit;
     }
 
-    @Column(name="dynamic_balance")
+    @Transient
+    public Set<CustomerPriceDTO> getPrices() {
+        return getBaseUser().getPrices();
+    }
+
+    public void setPrices(Set<CustomerPriceDTO> prices) {
+        this.getBaseUser().setPrices(prices);
+    }
+
+    @Column(name = "dynamic_balance")
     public BigDecimal getDynamicBalance() {
         if (dynamicBalance == null) {
             return BigDecimal.ZERO;
@@ -343,10 +367,11 @@ public class CustomerDTO  implements java.io.Serializable {
     }
 
     @Version
-    @Column(name="OPTLOCK")
+    @Column(name = "OPTLOCK")
     public Integer getVersionNum() {
         return versionNum;
     }
+
     public void setVersionNum(Integer versionNum) {
         this.versionNum = versionNum;
     }
@@ -360,12 +385,12 @@ public class CustomerDTO  implements java.io.Serializable {
     @Override
     public String toString() {
         return "CustomerDTO{" +
-                "id=" + id +
-                ", baseUser.userId=" + baseUser.getUserId() +
-                ", baseUser.userName=" + baseUser.getUserName() +
-                ", dynamicBalance = " + this.dynamicBalance +
-                ", credit limit = " + this.creditLimit +
-                '}';
+               "id=" + id +
+               ", baseUser.userId=" + (baseUser != null ? baseUser.getUserId() : null) +
+               ", baseUser.userName=" + (baseUser != null ? baseUser.getUserName() : null) +
+               ", dynamicBalance = " + this.dynamicBalance +
+               ", credit limit = " + this.creditLimit +
+               '}';
     }
 }
 

@@ -49,7 +49,7 @@ import java.util.Comparator;
 import org.apache.commons.digester.Digester;
 
 public abstract class AbstractFileReader extends AbstractReader {
-    
+
     private String directory;
     private String suffix;
     private boolean rename;
@@ -63,37 +63,37 @@ public abstract class AbstractFileReader extends AbstractReader {
 
     public AbstractFileReader() {
     }
-    
-    public static final ParameterDescription PARAMETER_FORMAT_FILE = 
+
+    public static final ParameterDescription PARAMETER_FORMAT_FILE =
     	new ParameterDescription("format_file", true, ParameterDescription.Type.STR);
-    
+
     // optionals
-    public static final ParameterDescription PARAMETER_FORMAT_DIRECTORY = 
+    public static final ParameterDescription PARAMETER_FORMAT_DIRECTORY =
     	new ParameterDescription("format_directory", false, ParameterDescription.Type.STR);
-    
+
     public static final ParameterDescription PARAMETER_DIRECTORY =
     	new ParameterDescription("directory", false, ParameterDescription.Type.STR);
-    
+
     public static final ParameterDescription PARAMETER_SUFFIX =
     	new ParameterDescription("suffix", false, ParameterDescription.Type.STR);
-    
+
     public static final ParameterDescription PARAMETER_RENAME =
     	new ParameterDescription("rename", false, ParameterDescription.Type.STR);
-    
+
     public static final ParameterDescription PARAMETER_DATE_FORMAT =
     	new ParameterDescription("date_format", false, ParameterDescription.Type.STR);
-    
+
     public static final ParameterDescription PARAMETER_REMOVE_QUOTE =
     	new ParameterDescription("removeQuote", false, ParameterDescription.Type.STR);
-    
+
     public static final ParameterDescription PARAMETER_AUTO_ID =
     	new ParameterDescription("autoID", false, ParameterDescription.Type.STR);
-    
+
     public static final ParameterDescription PARAMETER_BUFFER_SIZE =
     	new ParameterDescription("buffer_size", false, ParameterDescription.Type.STR);
-    
+
     //initializer for pluggable params
-    { 
+    {
     	descriptions.add(PARAMETER_FORMAT_FILE);
         descriptions.add(PARAMETER_FORMAT_DIRECTORY);
         descriptions.add(PARAMETER_DIRECTORY);
@@ -104,32 +104,32 @@ public abstract class AbstractFileReader extends AbstractReader {
 		descriptions.add(PARAMETER_AUTO_ID);
 		descriptions.add(PARAMETER_BUFFER_SIZE);
     }
-    
+
     @Override
     public boolean validate(List<String> messages) {
-        boolean retValue = super.validate(messages); 
+        boolean retValue = super.validate(messages);
 
         String formatFile = (String) parameters.get(PARAMETER_FORMAT_FILE.getName());
         if (formatFile == null) {
             messages.add("parameter format_file is required");
             return false;
         }
-        
-        String formatDirectory = ((String) parameters.get(PARAMETER_FORMAT_DIRECTORY.getName()) == null) 
+
+        String formatDirectory = ((String) parameters.get(PARAMETER_FORMAT_DIRECTORY.getName()) == null)
             ? Util.getSysProp("base_dir") + "mediation" : (String) parameters.get(PARAMETER_FORMAT_DIRECTORY.getName());
 
         formatFileName = formatDirectory + "/" + formatFile;
-        
+
         // optionals
-        directory = ((String) parameters.get(PARAMETER_DIRECTORY.getName()) == null) 
+        directory = ((String) parameters.get(PARAMETER_DIRECTORY.getName()) == null)
                 ? Util.getSysProp("base_dir") + "mediation" : (String) parameters.get(PARAMETER_DIRECTORY.getName());
-        suffix = ((String) parameters.get(PARAMETER_SUFFIX.getName()) == null) 
+        suffix = ((String) parameters.get(PARAMETER_SUFFIX.getName()) == null)
                 ? "ALL" : (String) parameters.get(PARAMETER_SUFFIX.getName());
-        rename = Boolean.parseBoolean(((String) parameters.get(PARAMETER_RENAME.getName() ) == null) 
+        rename = Boolean.parseBoolean(((String) parameters.get(PARAMETER_RENAME.getName() ) == null)
                 ? "false" : (String) parameters.get(PARAMETER_RENAME.getName()));
-        dateFormat = new SimpleDateFormat(((String) parameters.get(PARAMETER_DATE_FORMAT.getName()) == null) 
+        dateFormat = new SimpleDateFormat(((String) parameters.get(PARAMETER_DATE_FORMAT.getName()) == null)
                 ? "yyyyMMdd-HHmmss" : (String) parameters.get(PARAMETER_DATE_FORMAT.getName()));
-        removeQuote = ( parameters.get(PARAMETER_REMOVE_QUOTE.getName()) == null ) 
+        removeQuote = ( parameters.get(PARAMETER_REMOVE_QUOTE.getName()) == null )
                 ? true : Boolean.parseBoolean((String) parameters.get(PARAMETER_REMOVE_QUOTE.getName()));
         autoID = (parameters.get(PARAMETER_AUTO_ID.getName()) == null)
                 ? false : new Boolean(parameters.get(PARAMETER_AUTO_ID.getName())).booleanValue();
@@ -144,7 +144,7 @@ public abstract class AbstractFileReader extends AbstractReader {
         LOG.debug("Started with " + " directory: " + directory + " suffix " + suffix + " rename " +
                 rename + " date  format " + dateFormat.toPattern() + " removeQuote " + removeQuote +
                 " autoID " + autoID);
-       
+
         return retValue;
     }
     protected Format getFormat() throws IOException, SAXException {
@@ -182,7 +182,7 @@ public abstract class AbstractFileReader extends AbstractReader {
             throw new SessionInternalError(e);
         }
     }
-    
+
     /**
      * This sorts the files so the oldest is processed first, and the newest last
      */
@@ -194,7 +194,7 @@ public abstract class AbstractFileReader extends AbstractReader {
         private BufferedReader reader = null;
         private int counter;
         protected final Format format;
-        
+
         protected Reader() throws FileNotFoundException, IOException, SAXException {
             files = new File(directory).listFiles(new FileFilter() {
                 public boolean accept(File pathname) {
@@ -212,7 +212,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                     return new Long(o1.lastModified()).compareTo(o2.lastModified());
                 }
             });
-            
+
             if (!nextReader()) {
                 LOG.info("No files found to process");
                 format = null;
@@ -223,7 +223,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                 records = new ArrayList<Record>(getBatchSize());
             }
         }
-       
+
         /**
          * Get the next set or records
          * @return true if there are some, otherwise false
@@ -232,7 +232,7 @@ public abstract class AbstractFileReader extends AbstractReader {
             if (reader == null) {
                 return false;
             }
-            
+
             records.clear();
             String line = readLine();
             int startedAt = 0;
@@ -281,7 +281,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                 throw new SessionInternalError(e);
             }
         }
-        
+
         /**
          * Returns the records read since the last call to 'hasNext'
          */
@@ -298,9 +298,9 @@ public abstract class AbstractFileReader extends AbstractReader {
             String tokens[] = splitFields(line);
             if (tokens.length != format.getFields().size() && !autoID) {
                 throw new SessionInternalError("Mismatch of number of fields between " +
-                        "the format and the file for line " + line + " Expected " + 
+                        "the format and the file for line " + line + " Expected " +
                         format.getFields().size() + " found " + tokens.length);
-                
+
             }
             // remove quotes if needed
             if (removeQuote) {
@@ -315,7 +315,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                     }
                 }
             }
-            
+
             // create the record
             Record record = new Record();
             int tkIdx = 0;
@@ -324,12 +324,13 @@ public abstract class AbstractFileReader extends AbstractReader {
                 if (autoID && field.getIsKey()) {
                     record.addField(new PricingField(field.getName(),
                                 files[fileIndex].getName() + "-" + counter ), field.getIsKey());
+                    tkIdx++;
                     continue;
                 }
-                
+
                 switch (PricingField.mapType(field.getType())) {
                     case STRING:
-                        record.addField(new PricingField(field.getName(), 
+                        record.addField(new PricingField(field.getName(),
                                 tokens[tkIdx++]), field.getIsKey());
                         break;
                     case INTEGER:
@@ -344,7 +345,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                                 record.addField(new PricingField(field.getName(), intStr.length() > 0 ?
                                         Integer.valueOf(intStr.trim()) : null), field.getIsKey());
                             } catch (NumberFormatException e) {
-                                throw new SessionInternalError("Converting to integer " + field + 
+                                throw new SessionInternalError("Converting to integer " + field +
                                         " line " + line, AbstractFileReader.class, e);
                             }
                         }
@@ -356,7 +357,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                                     dateFormat.parse(dateStr) : null), field.getIsKey());
                         } catch (ParseException e) {
                             throw new SessionInternalError("Using format: " + dateFormat + "[" +
-                                    parameters.get(PARAMETER_DATE_FORMAT.getName()) + "]", 
+                                    parameters.get(PARAMETER_DATE_FORMAT.getName()) + "]",
                                     AbstractFileReader.class,e);
                         }
                         break;
@@ -365,18 +366,22 @@ public abstract class AbstractFileReader extends AbstractReader {
                         record.addField(new PricingField(field.getName(), floatStr.length() > 0 ?
                                 new BigDecimal(floatStr) : null), field.getIsKey());
                         break;
+                    case BOOLEAN:
+                        boolean value = "true".equalsIgnoreCase(tokens[tkIdx++].trim());
+                        record.addField(new PricingField(field.getName(), value), field.getIsKey());
+                        break;
                 }
             }
-            
+
             record.setPosition(counter);
             return record;
         }
-        
+
         private boolean nextReader() throws FileNotFoundException {
             if (reader != null) { // first call
                 fileIndex++;
             }
-            
+
             if (files.length > fileIndex) { // any more to process ?
                 if (bufferSize > 0) {
                     reader = new BufferedReader(new java.io.FileReader(files[fileIndex]), bufferSize);
@@ -386,17 +391,17 @@ public abstract class AbstractFileReader extends AbstractReader {
                 LOG.debug("Now processing file " + files[fileIndex].getName());
                 return true;
             }
-            
+
             reader = null;
             return false;
         }
-        
+
         public void remove() {
             // needed to comply with Iterator only
             throw new SessionInternalError("remove not supported");
         }
     }
-    
+
     /**
      * Chars 'H', 'M' and 'S' have to be grouped or the behaviour will be unexpected
      * @param content
@@ -406,7 +411,7 @@ public abstract class AbstractFileReader extends AbstractReader {
     public static int convertDuration(String content, String format) {
         int totalSeconds = 0;
         // hours
-        
+
         try {
             try {
                 totalSeconds += Integer.valueOf(content.substring(format.indexOf('H'),
@@ -432,7 +437,7 @@ public abstract class AbstractFileReader extends AbstractReader {
             throw new SessionInternalError("converting duration format " + format + " content " + content,
                     AbstractFileReader.class, e);
         }
-        
+
         return totalSeconds;
     }
 

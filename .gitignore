@@ -1,26 +1,31 @@
 # build artifacts
-target/
 build/
+target/
 resources/
-TEST*.xml
-
-# environment specific config files
-src/java/jbilling.properties
 
 # temp files
 activemq-data/
 tmp/
 logs/
-nullmediation/
 *.log
 *~
 .ant-targets*.xml
+TEST*.xml
 
 # external libraries
 libs/
+
+# environment specific config files
+src/java/jbilling.properties
 
 # project files
 .idea/
 *.iml
 .project
+.classpath
+.settings
+
+# local git configuration
+.gitattributes
+
 

@@ -69,10 +69,14 @@ public class Context {
 
         // cache
         CACHE                           ("cacheProviderFacade"),
-        CACHE_MODEL_ITEM_PRICE          ("cacheModelItemPrice"),
-        CACHE_FLUSH_MODEL_ITEM_PRICE    ("flushModelItemPrice"),
+        CACHE_MODEL_READONLY            ("cacheModelReadOnly"),
         CACHE_MODEL_RW                  ("cacheModelPTDTO"),
         CACHE_FLUSH_MODEL_RW            ("flushModelPTDTO"),
+
+        // HSQLDB data loader cache
+        MEMCACHE_DATASOURCE                 ("memcacheDataSource"),
+        PRICING_FINDER                      ("pricingFinder"),
+        NANPA_CALL_IDENTIFICATION_FINDER    ("callIdentificationFinder"),
 
         // jms
         JMS_TEMPLATE                            ("jmsTemplate"),

@@ -19,17 +19,11 @@
 */
 package com.sapienter.jbilling.server.user.db;
 
-import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDTO;
-import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.payment.db.PaymentDTO;
-import com.sapienter.jbilling.server.report.db.ReportUserDTO;
-import com.sapienter.jbilling.server.user.partner.db.Partner;
-import com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO;
-import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
-import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
-import com.sapienter.jbilling.server.util.db.LanguageDTO;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -48,10 +42,18 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentDTO;
+import com.sapienter.jbilling.server.report.db.ReportUserDTO;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO;
+import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
+import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
 @Entity
 @TableGenerator(
@@ -61,9 +63,9 @@ import java.util.Set;
         valueColumnName = "next_id",
         pkColumnValue="base_user",
         allocationSize = 10
-)
-@Table(name = "base_user")
+        )
 // No cache, mutable and critical
+@Table(name = "base_user")
 public class UserDTO implements Serializable {
 
     private int id;
@@ -102,6 +104,7 @@ public class UserDTO implements Serializable {
     private Set<NotificationMessageArchDTO> notificationMessageArchs = new HashSet<NotificationMessageArchDTO>(0);
     private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
     private Set<InvoiceDTO> invoices = new HashSet<InvoiceDTO>(0);
+    private Set<CustomerPriceDTO> prices = new HashSet<CustomerPriceDTO>(0);
 
     public UserDTO() {
     }
@@ -118,13 +121,13 @@ public class UserDTO implements Serializable {
     }
 
     public UserDTO(int id, CurrencyDTO currencyDTO, CompanyDTO entity, SubscriberStatusDTO subscriberStatus,
-                   UserStatusDTO userStatus, LanguageDTO language, String password, short deleted, Date createDatetime,
-                   Date lastStatusChange, Date lastLogin, String userName, int failedAttempts, Set<PaymentDTO> payments,
-                   Set<AchDTO> achs, Set<PermissionUserDTO> permissionUsers, Set<ReportUserDTO> reportUsers,
-                   Set<Partner> partnersForRelatedClerk, CustomerDTO customer, Partner partnersForUserId,
-                   Set<OrderDTO> purchaseOrdersForCreatedBy, Set<OrderDTO> purchaseOrdersForUserId,
-                   Set<CreditCardDTO> creditCards, Set<NotificationMessageArchDTO> notificationMessageArchs, Set<RoleDTO> roles,
-                   Set<EventLogDTO> eventLogs, Set<InvoiceDTO> invoices) {
+            UserStatusDTO userStatus, LanguageDTO language, String password, short deleted, Date createDatetime,
+            Date lastStatusChange, Date lastLogin, String userName, int failedAttempts, Set<PaymentDTO> payments,
+            Set<AchDTO> achs, Set<PermissionUserDTO> permissionUsers, Set<ReportUserDTO> reportUsers,
+            Set<Partner> partnersForRelatedClerk, CustomerDTO customer, Partner partnersForUserId,
+            Set<OrderDTO> purchaseOrdersForCreatedBy, Set<OrderDTO> purchaseOrdersForUserId,
+            Set<CreditCardDTO> creditCards, Set<NotificationMessageArchDTO> notificationMessageArchs, Set<RoleDTO> roles,
+            Set<EventLogDTO> eventLogs, Set<InvoiceDTO> invoices) {
         this.id = id;
         this.currencyDTO = currencyDTO;
         this.company = entity;
@@ -542,6 +545,15 @@ public class UserDTO implements Serializable {
 
     public void setInvoices(Set<InvoiceDTO> invoices) {
         this.invoices = invoices;
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id.baseUser")
+    public Set<CustomerPriceDTO> getPrices() {
+        return prices;
+    }
+
+    public void setPrices(Set<CustomerPriceDTO> prices) {
+        this.prices = prices;
     }
 
     @Version

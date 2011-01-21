@@ -1,5 +1,7 @@
 package jbilling
 
+import java.util.Date;
+
 import com.sapienter.jbilling.server.entity.AchDTO
 import com.sapienter.jbilling.server.entity.CreditCardDTO
 import com.sapienter.jbilling.server.invoice.InvoiceWS
@@ -64,6 +66,10 @@ class ApiService implements IWebServicesSessionBean {
 	public InvoiceWS[] getAllInvoicesForUser(Integer userId) {
 		return WebServicesSession.getAllInvoicesForUser(userId)
 	}
+	
+	public void notifyInvoiceByEmail(Integer invoiceId) {
+		webServicesSession.notifyInvoiceByEmail (invoiceId)
+	}
     public Integer[] getAllInvoices(Integer userId) {
         return webServicesSession.getAllInvoices(userId)
     }
@@ -91,10 +97,6 @@ class ApiService implements IWebServicesSessionBean {
     public byte[] getPaperInvoicePDF(Integer invoiceId) {
         return webServicesSession.getPaperInvoicePDF(invoiceId)
     }
-	
-	public void removePaymentLink(Integer invoiceId, Integer paymentId) {
-		webServicesSession.removePaymentLink (invoiceId, paymentId)
-	}
 
     public void deleteInvoice(Integer invoiceId) {
         webServicesSession.deleteInvoice(invoiceId)
@@ -264,6 +266,14 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.deletePayment(paymentId);
     }
 
+    public void removePaymentLink(Integer invoiceId, Integer paymentId) {
+        webServicesSession.removePaymentLink (invoiceId, paymentId)
+    }
+
+    void createPaymentLink(Integer invoiceId, Integer paymentId) {
+        webServicesSession.createPaymentLink(invoiceId, paymentId);
+    }
+
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) {
         return webServicesSession.payInvoice(invoiceId)
     }
@@ -283,7 +293,11 @@ class ApiService implements IWebServicesSessionBean {
     public Integer[] getLastPayments(Integer userId, Integer number) {
         return webServicesSession.getLastPayments(userId, number)
     }
-	
+
+    public PaymentWS getUserPaymentInstrument(Integer userId) {
+        return webServicesSession.getUserPaymentInstrument(userId)
+    }
+
 	public BigDecimal getTotalRevenueByUser (Integer userId) {
 		return webServicesSession.getTotalRevenueByUser(userId);
 	}
@@ -385,6 +399,14 @@ class ApiService implements IWebServicesSessionBean {
         Billing process
      */
 
+	public boolean isBillingRunning() {
+		return webServicesSession.isBillingProcessRunning()
+	}
+	
+	public void triggerBillingAsync(final Date runDate) {
+		webServicesSession.triggerBillingAsync(runDate)
+	}
+	
     public boolean triggerBilling(Date runDate) {
         return webServicesSession.triggerBilling(runDate)
     }

@@ -36,7 +36,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import java.util.ArrayList;
 
 public class PaymentDTOEx extends PaymentDTO {
-    
+
     private Integer userId = null;
     private PaymentInfoChequeDTO cheque = null;
     private AchDTO ach = null;
@@ -52,8 +52,9 @@ public class PaymentDTOEx extends PaymentDTO {
     private PaymentAuthorizationDTO authorization = null; // useful in refuds
 
     public PaymentDTOEx(PaymentDTO dto) {
-        userId = dto.getBaseUser().getId();
-        
+        if (dto.getBaseUser() != null)
+            userId = dto.getBaseUser().getId();
+
         setId(dto.getId());
         setCurrency(dto.getCurrency());
         setAmount(dto.getAmount());
@@ -80,7 +81,7 @@ public class PaymentDTOEx extends PaymentDTO {
         }
         setPaymentPeriod(dto.getPaymentPeriod());
         setPaymentNotes(dto.getPaymentNotes());
-        
+
         invoiceIds = new ArrayList<Integer>();
         paymentMaps = new ArrayList();
     }
@@ -99,15 +100,15 @@ public class PaymentDTOEx extends PaymentDTO {
         setUpdateDatetime(dto.getUpdateDatetime());
         setPaymentPeriod(dto.getPaymentPeriod());
         setPaymentNotes(dto.getPaymentNotes());
-       
+
         if (dto.getMethodId() != null)
             setPaymentMethod(new PaymentMethodDTO(dto.getMethodId()));
 
         if (dto.getResultId() != null)
         setPaymentResult(new PaymentResultDAS().find(dto.getResultId()));
-        
+
         userId = dto.getUserId();
-        
+
         if (dto.getCheque() != null) {
             PaymentInfoChequeDTO chqDTO = new PaymentInfoChequeDTO();
             chqDTO.setBank(dto.getCheque().getBank());
@@ -118,15 +119,15 @@ public class PaymentDTOEx extends PaymentDTO {
         } else {
             cheque = null;
         }
-        
+
         if (dto.getCreditCard() != null) {
             creditCard = new CreditCardDTO(dto.getCreditCard());
         } else {
             creditCard = null;
         }
-        
+
         method = dto.getMethod();
-        
+
         if (dto.getAch() != null) {
             AchDTO achDTO = new AchDTO();
             achDTO.setAbaRouting(dto.getAch().getAbaRouting());
@@ -134,33 +135,34 @@ public class PaymentDTOEx extends PaymentDTO {
             achDTO.setAccountType(dto.getAch().getAccountType());
             achDTO.setBankAccount(dto.getAch().getBankAccount());
             achDTO.setBankName(dto.getAch().getBankName());
+            achDTO.setGatewayKey(dto.getAch().getGatewayKey());
             achDTO.setId(dto.getAch().getId());
-            ach = achDTO;
+            this.ach = achDTO;
         } else {
-            ach = null;
+            this.ach = null;
         }
 
         invoiceIds = new ArrayList<Integer>();
         paymentMaps = new ArrayList();
-        
+
         if (dto.getInvoiceIds() != null) {
             for (int f = 0; f < dto.getInvoiceIds().length; f++) {
                 invoiceIds.add(dto.getInvoiceIds()[f]);
             }
         }
-        
+
         if (dto.getPaymentId() != null) {
             payment = new PaymentDTOEx();
             payment.setId(dto.getPaymentId());
         } else {
             payment = null;
         }
-        
+
         authorization = new PaymentAuthorizationDAS().find(dto.getAuthorizationId());
-            
-    }    
+
+    }
     /**
-     * 
+     *
      */
     public PaymentDTOEx() {
         super();
@@ -182,7 +184,7 @@ public class PaymentDTOEx extends PaymentDTO {
 //            Integer methodId, Integer resultId, Integer isRefund,
 //            Integer isPreauth, Integer currencyId, BigDecimal balance) {
 //        super(id, amount, balance, createDateTime, updateDateTime,
-//                paymentDate, attempt, deleted, methodId, resultId, isRefund, 
+//                paymentDate, attempt, deleted, methodId, resultId, isRefund,
 //                isPreauth, currencyId, null, null);
 //        invoiceIds = new ArrayList<Integer>();
 //        paymentMaps = new ArrayList();
@@ -199,17 +201,17 @@ public class PaymentDTOEx extends PaymentDTO {
 
     public boolean validate() {
         boolean retValue = true;
-        
+
         // check some mandatory fields
         if (getPaymentMethod() == null || getPaymentResult() == null) {
             retValue = false;
         }
-        
+
         return retValue;
     }
-    
+
     public String toString() {
-        
+
         StringBuffer maps = new StringBuffer();
         if (paymentMaps != null) {
             for (int f = 0; f < paymentMaps.size(); f++) {
@@ -227,13 +229,13 @@ public class PaymentDTOEx extends PaymentDTO {
                     + creditCard.getCcType() + " " + "deleted="
                     + creditCard.getDeleted() + " " + "securityCode="
                     + creditCard.getSecurityCode());
-        }        
+        }
         cc.append('}');
 
-        
-        return super.toString() + " credit card:" + cc.toString() + 
+
+        return super.toString() + " credit card:" + cc.toString() +
             " cheque:" + cheque + " payment maps:" + maps.toString();
-    } 
+    }
     /**
      * @return
      */
@@ -248,7 +250,7 @@ public class PaymentDTOEx extends PaymentDTO {
         userId = integer;
     }
 
- 
+
     /**
      * @return
      */
@@ -324,7 +326,7 @@ public class PaymentDTOEx extends PaymentDTO {
      * @return
      */
     public PaymentAuthorizationDTO getAuthorization() {
-        Logger.getLogger(PaymentDTOEx.class).debug("Returning " + 
+        Logger.getLogger(PaymentDTOEx.class).debug("Returning " +
                 authorization + " for payemnt " + getId());
         return authorization;
     }
@@ -377,11 +379,11 @@ public class PaymentDTOEx extends PaymentDTO {
         this.ach = ach;
     }
     public List getPaymentMaps() {
-        Logger.getLogger(PaymentDTOEx.class).debug("Returning " + 
+        Logger.getLogger(PaymentDTOEx.class).debug("Returning " +
                 paymentMaps.size() + " elements in the map");
         return paymentMaps;
     }
-    
+
     public void addPaymentMap(PaymentInvoiceMapDTOEx map) {
         Logger.getLogger(PaymentDTOEx.class).debug("Adding map to the vector ");
         paymentMaps.add(map);

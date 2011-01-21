@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
+<%@ page import="com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 <%--
   Shows details of a selected user.
@@ -14,7 +14,7 @@
     <!-- user notes -->
     <div class="heading">
         <strong>
-            <g:if test="${contact && (contact.firstName || contact.lastName)}">
+            <g:if test="${contact?.firstName || contact?.lastName}">
                 ${contact.firstName} ${contact.lastName}
             </g:if>
             <g:else>
@@ -26,7 +26,7 @@
     <div class="box edit">
         <g:remoteLink action="show" id="${selected.id}" params="[template: 'notes']" before="register(this);" onSuccess="render(data, next);" class="edit"/>
         <strong><g:message code="customer.detail.note.title"/></strong>
-        <g:if test="${customer && customer.notes}">
+        <g:if test="${customer?.notes}">
             <p>${customer.notes}</p>
         </g:if>
         <g:else>
@@ -61,6 +61,23 @@
                     <td><g:message code="customer.detail.user.email"/></td>
                     <td class="value"><a href="mailto:${contact?.email}">${contact?.email}</a></td>
                 </tr>
+
+                <g:if test="${customer?.parent}">
+                    <tr>
+                        <td><g:message code="customer.invoice.if.child.label"/></td>
+                        <td class="value">
+                            <g:if test="${customer.invoiceChild > 0}">
+                                <g:message code="customer.invoice.if.child.true"/>
+                            </g:if>
+                            <g:else>
+                                <g:set var="parent" value="${new CustomerBL(customer.id).getInvoicableParent()}"/>
+                                <g:link action="list" id="${parent.baseUser.id}">
+                                    <g:message code="customer.invoice.if.child.false" args="[ parent.baseUser.id ]"/>
+                                </g:link>
+                            </g:else>
+                        </td>
+                    </tr>
+                </g:if>
             </tbody>
         </table>
     </div>
@@ -73,36 +90,81 @@
         <g:set var="invoice" value="${selected.invoices ? selected.invoices.asList().first() : null}"/>
         <g:set var="payment" value="${selected.payments ? selected.payments.asList().first() : null}"/>
 
-        <dl class="other other2">
-            <dt><g:message code="customer.detail.payment.invoiced.date"/></dt>
-            <dd><g:formatDate format="MMM-dd-yyyy" date="${invoice?.createDatetime}"/> &nbsp;</dd>
-            <dt><g:message code="customer.detail.payment.due.date"/></dt>
-            <dd><g:formatDate format="MMM-dd-yyyy" date="${invoice?.dueDate}"/> &nbsp;</dd>
-            <dt><g:message code="customer.detail.payment.invoiced.amount"/></dt>
-            <dd><g:formatNumber number="${invoice?.total}" type="currency" currencyCode="${selected.currency.code}"/> &nbsp;</dd>
-            <dt><g:message code="customer.detail.payment.amount.owed"/></dt>
-            <dd><g:formatNumber number="${new UserBL().getBalance(selected.id)}" type="currency" currencyCode="${selected.currency.code}"/> &nbsp;</dd>
-            <dt><g:message code="customer.detail.payment.lifetime.revenue"/></dt>
-            <dd><g:formatNumber number="${revenue}" type="currency" currencyCode="${selected.currency.code}"/></dd>
-        </dl>
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><g:message code="customer.detail.payment.invoiced.date"/></td>
+                    <td class="value">
+                        <g:link controller="invoice" action="list" id="${invoice?.id}">
+                            <g:formatDate format="MMM-dd-yyyy" date="${invoice?.createDatetime}"/>
+                        </g:link>
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.payment.paid.date"/></td>
+                    <td class="value">
+                        <g:link controller="payment" action="list" id="${payment?.id}">
+                            <g:formatDate format="MMM-dd-yyyy" date="${payment?.paymentDate ?: payment?.createDatetime}"/>
+                        </g:link>
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.payment.due.date"/></td>
+                    <td class="value"><g:formatDate format="MMM-dd-yyyy" date="${invoice?.dueDate}"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.payment.invoiced.amount"/></td>
+                    <td class="value"><g:formatNumber number="${invoice?.total}" type="currency" currencyCode="${selected.currency.code}"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="invoice.label.status"/></td>
+                    <td class="value">
+                        <g:if test="${invoice?.invoiceStatus?.id == Constants.INVOICE_STATUS_UNPAID}">
+                            <g:link controller="payment" action="edit" params="[userId: selected.id, invoiceId: invoice.id]" title="${message(code: 'invoice.pay.link')}">
+                                ${invoice.invoiceStatus.getDescription(session['language_id'])}
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            ${invoice?.invoiceStatus?.getDescription(session['language_id'])}
+                        </g:else>
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.payment.amount.owed"/></td>
+                    <td class="value"><g:formatNumber number="${new UserBL().getTotalOwed(selected.id)}" type="currency" currencyCode="${selected.currency.code}"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.payment.lifetime.revenue"/></td>
+                    <td class="value"><g:formatNumber number="${revenue}" type="currency" currencyCode="${selected.currency.code}"/></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr/>
 
         <g:set var="card" value="${selected.creditCards ? selected.creditCards.asList().first() : null}"/>
-        <dl class="other">
-            <dt><g:message code="customer.detail.payment.credit.card"/></dt>
-            <dd>
-                %{-- obscure credit card by default, or if the preference is explicitly set --}%
-                <g:if test="${card?.number && preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
-                    <g:set var="creditCardNumber" value="${card.number.replaceAll('^\\d{12}','************')}"/>
-                    ${creditCardNumber}
-                </g:if>
-                <g:else>
-                    ${card?.number}
-                </g:else>
-                &nbsp;
-            </dd>
-            <dt><g:message code="customer.detail.payment.credit.card.expiry"/></dt>
-            <dd><g:formatDate format="MMM-dd-yyyy" date="${card?.ccExpiry}"/> &nbsp;</dd>
-        </dl>
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><g:message code="customer.detail.payment.credit.card"/></td>
+                    <td class="value">
+                        %{-- obscure credit card by default, or if the preference is explicitly set --}%
+                        <g:if test="${card?.number && preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
+                            <g:set var="creditCardNumber" value="${card.number.replaceAll('^\\d{12}','************')}"/>
+                            ${creditCardNumber}
+                        </g:if>
+                        <g:else>
+                            ${card?.number}
+                        </g:else>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><g:message code="customer.detail.payment.credit.card.expiry"/></td>
+                    <td class="value"><g:formatDate format="MMM-dd-yyyy" date="${card?.ccExpiry}"/></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <!-- contact details -->    
@@ -111,34 +173,64 @@
     </div>
     <g:if test="${contact}">
     <div class="box">
-        <dl>
-            <dt><g:message code="customer.detail.contact.telephone"/></dt>
-            <dd>
-                <g:if test="${contact.phoneCountryCode}">${contact.phoneCountryCode}.</g:if>
-                <g:if test="${contact.phoneAreaCode}">${contact.phoneAreaCode}.</g:if>
-                ${contact.phoneNumber} &nbsp;
-            </dd>
-            <dt><g:message code="customer.detail.contact.address"/></dt>
-            <dd>${contact.address1} ${contact.address2} &nbsp;</dd>
-            <dt><g:message code="customer.detail.contact.city"/></dt>
-            <dd>${contact.city} &nbsp;</dd>
-            <dt><g:message code="customer.detail.contact.state"/></dt>
-            <dd>${contact.stateProvince} &nbsp;</dd>
-            <dt><g:message code="customer.detail.contact.country"/></dt>
-            <dd>${contact.countryCode} &nbsp;</dd>
-            <dt><g:message code="customer.detail.contact.zip"/></dt>
-            <dd>${contact.postalCode} &nbsp;</dd>
-        </dl>
+
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><g:message code="customer.detail.contact.telephone"/></td>
+                    <td class="value">
+                        <g:if test="${contact.phoneCountryCode}">${contact.phoneCountryCode}.</g:if>
+                        <g:if test="${contact.phoneAreaCode}">${contact.phoneAreaCode}.</g:if>
+                        ${contact.phoneNumber}
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.address"/></td>
+                    <td class="value">${contact.address1} ${contact.address2}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.city"/></td>
+                    <td class="value">${contact.city}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.state"/></td>
+                    <td class="value">${contact.stateProvince}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.country"/></td>
+                    <td class="value">${contact.countryCode}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.zip"/></td>
+                    <td class="value">${contact.postalCode}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     </g:if>
 
     <div class="btn-box">
         <div class="row">
             <a href="#" class="submit order"><span><g:message code="button.create.order"/></span></a>
-            <g:link controller="payment" action="edit" params="[userId: selected.id]" class="submit payment"><span><g:message code="button.create.payment"/></span></g:link>
+            <g:link controller="payment" action="edit" params="[userId: selected.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
         </div>
         <div class="row">
             <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+            <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
+            <g:if test="${customer?.isParent > 0}">
+                <g:link action="edit" params="[parentId: selected.id]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
+            </g:if>
         </div>
     </div>
+
+    <g:render template="/confirm"
+              model="['message': 'customer.delete.confirm',
+                      'controller': 'user',
+                      'action': 'delete',
+                      'id': selected.id,
+                      'ajax': true,
+                      'update': 'column1',
+                      'onYes': 'closePanel(\'#column2\')'
+                     ]"/>
+
 </div>

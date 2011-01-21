@@ -20,22 +20,6 @@
 
 package com.sapienter.jbilling.server.payment;
 
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.persistence.EntityNotFoundException;
-
-import org.apache.log4j.Logger;
-import org.springframework.dao.EmptyResultDataAccessException;
-
-import sun.jdbc.rowset.CachedRowSet;
-
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceIdComparator;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
@@ -74,8 +58,23 @@ import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
+import sun.jdbc.rowset.CachedRowSet;
+
+import javax.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 public class PaymentBL extends ResultList implements PaymentSQL {
+
+    private static final Logger LOG = Logger.getLogger(PaymentBL.class);
 
     private PaymentDAS paymentDas = null;
     private PaymentInfoChequeDAS chequeDas = null;
@@ -83,7 +82,6 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     private PaymentMethodDAS methodDas = null;
     private PaymentInvoiceMapDAS mapDas = null;
     private PaymentDTO payment = null;
-    private static final Logger LOG = Logger.getLogger(PaymentBL.class);
     private EventLogger eLogger = null;
 
     public PaymentBL(Integer paymentId) {
@@ -130,7 +128,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     }
 
     public String getMethodDescription(PaymentMethodDTO method, Integer languageId) {
-        // load directly from the DB, otherwise proxies get in the way 
+        // load directly from the DB, otherwise proxies get in the way
         return new PaymentMethodDAS().find(method.getId()).getDescription(languageId);
     }
 
@@ -158,7 +156,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
 
         if (dto.getCreditCard() != null) {
-            dto.getCreditCard().getPayments().add(payment); // back reference to payment  
+            dto.getCreditCard().getPayments().add(payment); // back reference to payment
             CreditCardBL cc = new CreditCardBL();
             cc.create(dto.getCreditCard());
 
@@ -166,6 +164,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
 
         if (dto.getAch() != null) {
+            dto.getAch().getPayments().add(payment); // back reference to payment
             AchBL achBl = new AchBL();
             achBl.create(dto.getAch());
             payment.setAch(achBl.getEntity());
@@ -191,13 +190,13 @@ public class PaymentBL extends ResultList implements PaymentSQL {
 // the payment period length this payment was expected to last
         if (dto.getPaymentPeriod() != null){
             payment.setPaymentPeriod(dto.getPaymentPeriod());
-            
+
         }
         // the notes related to this payment
         if (dto.getPaymentNotes() != null){
             payment.setPaymentNotes(dto.getPaymentNotes());
         }
-        
+
         dto.setId(payment.getId());
         dto.setCurrency(payment.getCurrency());
         paymentDas.save(payment);
@@ -224,7 +223,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     /**
      * Updates a payment record, including related cheque or credit card
      * records. Only valid for entered payments not linked to an invoice.
-     * 
+     *
      * @param dto
      *            The DTO with all the information of the new payment record.
      */
@@ -237,7 +236,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
 
         // we better log this, so this change can be traced
-        eLogger.audit(executorId, payment.getBaseUser().getId(), 
+        eLogger.audit(executorId, payment.getBaseUser().getId(),
                 Constants.TABLE_PAYMENT, payment.getId(),
                 EventLogger.MODULE_PAYMENT_MAINTENANCE,
                 EventLogger.ROW_UPDATED, null, payment.getAmount().toString(),
@@ -268,7 +267,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         // the payment period length this payment was expected to last
         if (dto.getPaymentPeriod() != null){
             payment.setPaymentPeriod(dto.getPaymentPeriod());
-            
+
         }
         // the notes related to this payment
         if (dto.getPaymentNotes() != null){
@@ -281,7 +280,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
      * information to get the payment processed. If a call fails because of the
      * availability of the processor, it will try with the next task. Otherwise
      * it will return the result of the process (approved or declined).
-     * 
+     *
      * @return the constant of the result allowing for the caller to attempt it
      *         again with different payment information (like another cc number)
      */
@@ -443,17 +442,17 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         if (payment.getPartnerPayouts().size() > 0) {
             dto.setPayoutId(((PartnerPayout) payment.getPartnerPayouts().toArray()[0]).getId());
         }
-        
+
         // the payment period length this payment was expected to last
         if (payment.getPaymentPeriod() != null){
             dto.setPaymentPeriod(payment.getPaymentPeriod());
-            
+
         }
         // the notes related to this payment
         if (payment.getPaymentNotes() != null){
             dto.setPaymentNotes(payment.getPaymentNotes());
         }
-        
+
         return dto;
     }
 
@@ -464,17 +463,23 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         ws.setAttempt(dto.getAttempt());
         ws.setBalance(dto.getBalance());
         ws.setCreateDatetime(dto.getCreateDatetime());
-        ws.setCurrencyId(dto.getCurrency().getId());
         ws.setDeleted(dto.getDeleted());
         ws.setIsPreauth(dto.getIsPreauth());
         ws.setIsRefund(dto.getIsRefund());
-        ws.setMethodId(dto.getPaymentMethod().getId());
         ws.setPaymentDate(dto.getPaymentDate());
         ws.setUpdateDatetime(dto.getUpdateDatetime());
-        ws.setResultId(dto.getPaymentResult().getId());
         ws.setPaymentNotes(dto.getPaymentNotes());
         ws.setPaymentPeriod(dto.getPaymentPeriod());
-        
+
+        if (dto.getCurrency() != null)
+            ws.setCurrencyId(dto.getCurrency().getId());
+
+        if (dto.getPaymentMethod() != null)
+            ws.setMethodId(dto.getPaymentMethod().getId());
+
+        if (dto.getPaymentResult() != null)
+            ws.setResultId(dto.getPaymentResult().getId());
+
         if (dto.getCreditCard() != null) {
             com.sapienter.jbilling.server.entity.CreditCardDTO ccDTO = new com.sapienter.jbilling.server.entity.CreditCardDTO();
             ccDTO.setDeleted(dto.getCreditCard().getDeleted());
@@ -511,6 +516,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             achDTO.setAccountType(dto.getAch().getAccountType());
             achDTO.setBankAccount(dto.getAch().getBankAccount());
             achDTO.setBankName(dto.getAch().getBankName());
+            achDTO.setGatewayKey(dto.getAch().getGatewayKey());
             achDTO.setId(dto.getAch().getId());
             ws.setAch(achDTO);
         } else {
@@ -585,7 +591,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
 
     /**
      * Does the actual work of deleteing the payment
-     * 
+     *
      * @throws SessionInternalError
      */
     public void delete() throws SessionInternalError {
@@ -808,14 +814,14 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             MessageDTO message = notif.getPaymentMessage(entityId, info,
                     new Integer(info.getPaymentResult().getId()).equals(Constants.RESULT_OK));
 
-            INotificationSessionBean notificationSess = 
+            INotificationSessionBean notificationSess =
                     (INotificationSessionBean) Context.getBean(
                     Context.Name.NOTIFICATION_SESSION);
             notificationSess.notify(info.getUserId(), message);
         } catch (NotificationNotFoundException e1) {
             // won't send anyting because the entity didn't specify the
             // notification
-            LOG.warn("Can not notify a customer about a payment " + 
+            LOG.warn("Can not notify a customer about a payment " +
                     "beacuse the entity lacks the notification. " +
                     "entity = " + entityId);
         }
@@ -846,7 +852,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             }
 
             // log that this was deleted, otherwise there will be no trace
-            eLogger.info(invoice.getBaseUser().getEntity().getId(), 
+            eLogger.info(invoice.getBaseUser().getEntity().getId(),
                     payment.getBaseUser().getId(), mapId,
                     EventLogger.MODULE_PAYMENT_MAINTENANCE,
                     EventLogger.ROW_DELETED,
@@ -866,12 +872,12 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     }
 
     /**
-     * This method removes the link between this payment and the 
+     * This method removes the link between this payment and the
      * <i>invoiceId</i> of the Invoice
      * @param invoiceId Invoice Id to be unlinked from this payment
      */
     public boolean unLinkFromInvoice(Integer invoiceId) {
-    	
+
     	InvoiceDTO invoice= new InvoiceDAS().find(invoiceId);
 		Iterator<PaymentInvoiceMapDTO> it = invoice.getPaymentMap().iterator();
 		boolean bSucceeded= false;
@@ -886,7 +892,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
         return bSucceeded;
     }
-    
+
     public PaymentInvoiceMapDTOEx getMapDTO(Integer mapId) {
         // find the map
         PaymentInvoiceMapDTO map = mapDas.find(mapId);

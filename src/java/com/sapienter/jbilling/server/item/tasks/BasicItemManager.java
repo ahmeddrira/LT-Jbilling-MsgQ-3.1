@@ -44,15 +44,12 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
             Integer userId, Integer entityId, Integer currencyId,
             OrderDTO newOrder, List<Record> records) throws TaskException {
         
-        addItem(itemID, new BigDecimal(quantity), language, userId, entityId, currencyId,
-            newOrder, records);
+        addItem(itemID, new BigDecimal(quantity), language, userId, entityId, currencyId, newOrder, records);
     }
     
     public void addItem(Integer itemID, BigDecimal quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
             OrderDTO newOrder, List<Record> records) throws TaskException {
-
-
 
         // Validate decimal quantity with the item
         if (quantity.remainder(Constants.BIGDECIMAL_ONE).compareTo(BigDecimal.ZERO) > 0) {        
@@ -76,6 +73,7 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
         myLine.setQuantity(quantity);
         populateOrderLine(language, userId, entityId, currencyId, myLine, records);
         myLine.setDefaults();
+
         if (line == null) { // not yet there
             newOrder.getLines().add(myLine);
             myLine.setPurchaseOrder(newOrder);
@@ -100,9 +98,9 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
      * @param currencyId
      * @param line
      */
-    public void populateOrderLine(Integer language, Integer userId, 
-            Integer entityId, Integer currencyId, OrderLineDTO line, 
-            List<Record> records) {
+    public void populateOrderLine(Integer language, Integer userId, Integer entityId, Integer currencyId,
+                                  OrderLineDTO line, List<Record> records) {
+
         ItemBL itemBL = new ItemBL(line.getItemId());
         if (records != null) {
             List<PricingField> fields = new ArrayList<PricingField>();
@@ -111,8 +109,9 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
             }
             itemBL.setPricingFields(fields);
         }
-        item = itemBL.getDTO(language, userId, entityId, 
-                currencyId);
+
+        // get ItemDTO with price populated for the quantity being purchased
+        item = itemBL.getDTO(language, userId, entityId, currencyId, line.getQuantity());
 
         Boolean editable = OrderBL.lookUpEditable(item.getOrderLineTypeId());
 

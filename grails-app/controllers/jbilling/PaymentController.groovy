@@ -37,6 +37,8 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS
 import com.sapienter.jbilling.server.util.db.CurrencyDTO
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import com.sapienter.jbilling.common.Util
+import com.sapienter.jbilling.common.Constants
 
 /**
  * PaymentController 
@@ -74,7 +76,10 @@ class PaymentController {
                 offset: params.offset
         ) {
             createAlias('baseUser', 'u')
-            createAlias('invoicesMap', 'i', Criteria.LEFT_JOIN)
+
+            // create alias only if applying invoice filters to prevent duplicate results
+            if (filters.find{ it.field.startsWith('i.') && it.value })
+                createAlias('invoicesMap', 'i', Criteria.LEFT_JOIN)
 
             and {
                 filters.each { filter ->
@@ -151,6 +156,46 @@ class PaymentController {
     }
 
     /**
+     * Shows the payment link screen for the given payment ID showing a list of un-paid invoices
+     * that the payment can be applied to.
+     */
+    def link = {
+        def payment = webServicesSession.getPayment(params.int('id'))
+        def user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
+        def invoices = getUnpaidInvoices(user.userId)
+
+        render view: 'link', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, invoiceId: params.invoiceId ]
+    }
+
+    /**
+     * Applies a given payment ID to the given invoice ID.
+     */
+    def applyPayment = {
+        def payment = webServicesSession.getPayment(params.int('id'))
+
+        if (payment && params.invoiceId) {
+            try {
+                log.debug("appling payment ${payment} to invoice ${params.invoiceId}")
+                webServicesSession.createPaymentLink(params.int('invoiceId'), payment.id)
+
+                flash.message = 'payment.link.success'
+                flash.args = [ payment.id, params.invoiceId ]
+
+            } catch (SessionInternalError e) {
+                viewUtils.resolveException(flash, session.local, e)
+                link()
+                return
+            }
+
+        } else {
+            flash.warn = 'payment.link.failed'
+            flash.args = [ payment.id, params.invoiceId ]
+        }
+
+        redirect action: list, id: payment.id
+    }
+
+    /**
      * Un-links the given payment ID from the given invoice ID and re-renders
      * the "show payment" view panel.
      */
@@ -184,7 +229,12 @@ class PaymentController {
         def invoices = getUnpaidInvoices(user.userId)
         def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
 
-        // todo: set user's preferred payment instrument
+        // set default payment instrument for new payments
+        if (!params.id) {
+            def instrument = webServicesSession.getUserPaymentInstrument(user.userId)
+            payment.setCreditCard(instrument?.creditCard)
+            payment.setAch(instrument?.ach)
+        }
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
@@ -228,7 +278,9 @@ class PaymentController {
                 def invoiceId = params.int('invoiceId')
                 log.debug("creating payment ${payment} for invoice ${invoiceId}")
 
-                if (params.processNow) {
+                if (params.boolean('processNow')) {
+                    log.debug("processing payment in real time")
+
                     def authorization = webServicesSession.processPayment(payment, invoiceId)
                     payment.id = authorization.paymentId
 
@@ -241,7 +293,9 @@ class PaymentController {
                         flash.args = [ payment.id, authorization.responseMessage ]
                     }
 
+
                 } else {
+                    log.debug("entering payment")
                     payment.id = webServicesSession.applyPayment(payment, invoiceId)
 
                     flash.info = 'payment.entered'
@@ -269,7 +323,7 @@ class PaymentController {
     def bindPayment(PaymentWS payment, GrailsParameterMap params) {
         bindData(payment, params, 'payment')
 
-        payment.isRefund = params.isRefund ? 1 : 0
+        payment.isRefund = params.boolean('isRefund') ? 1 : 0
 
         // bind credit card object if parameters present
         if (params.creditCard.any { key, value -> value }) {
@@ -277,6 +331,8 @@ class PaymentController {
             bindData(creditCard, params, 'creditCard')
             bindExpiryDate(creditCard, params)
             payment.setCreditCard(creditCard)
+
+            payment.setMethodId(Util.getPaymentMethod(creditCard.number))
         }
 
         // bind ach object if parameters present
@@ -284,6 +340,8 @@ class PaymentController {
             def ach = new AchDTO()
             bindData(ach, params, 'ach')
             payment.setAch(ach)
+
+            payment.setMethodId(Constants.PAYMENT_METHOD_ACH)
         }
 
         // bind cheque object if parameters present
@@ -291,6 +349,8 @@ class PaymentController {
             def cheque = new PaymentInfoChequeDTO()
             bindData(cheque, params, 'cheque')
             payment.setCheque(cheque)
+
+            payment.setMethodId(Constants.PAYMENT_METHOD_CHEQUE)
         }
 
         return payment

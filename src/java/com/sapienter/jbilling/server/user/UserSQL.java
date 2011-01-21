@@ -107,7 +107,19 @@ public interface UserSQL {
         "   AND cf.content = ?" +
         "   AND a.deleted = 0" +
         " ORDER BY 1";
-    
+
+    static final String findByCustomFieldLike=
+        "SELECT a.id " +
+        "  FROM base_user a, contact c, contact_field cf " +
+        " WHERE c.user_id = a.id " +
+        "    AND c.id = cf.contact_id " +
+        "    AND cf.type_id = ? " +
+        "   AND a.entity_id = ?" +
+        "   AND cf.content like ?" +
+        "   AND a.deleted = 0" +
+        " ORDER BY 1";
+
+
     static final String findByCreditCard = 
         "SELECT a.id " +
         "  FROM base_user a, user_credit_card_map m, credit_card c " + 

@@ -122,8 +122,8 @@ public class ContactDTOEx extends ContactDTO implements Serializable  {
         }
         fieldsTable = new Hashtable<String, ContactFieldDTO>();
         for(int f = 0; f < ws.getFieldIDs().length; f++) {
-            fieldsTable.put(String.valueOf(ws.getFieldIDs()[f]), new ContactFieldDTO(0, new ContactFieldTypeDTO(
-                    ws.getFieldIDs()[f]), null, ws.getFieldValues()[f]));
+
+            fieldsTable.put(String.valueOf(ws.getFieldIDs()[f]), new ContactFieldDTO(0, new ContactFieldTypeDTO(ws.getFieldIDs()[f]), null, ws.getFieldValues()[f]));
         }
     }
 

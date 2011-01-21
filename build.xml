@@ -159,6 +159,12 @@
             <include name="PricingRules.drl"/>
         </rulebase>
         <rulebase srcdir="${source.rules.dir}"
+                  tofile="${build.resources.dir}/rules/PriceModelRules.pkg"
+                  classpathref="drools.compile.classpath"
+                  binformat="package">
+            <include name="PriceModelRules.drl" />
+        </rulebase>
+        <rulebase srcdir="${source.rules.dir}"
                   tofile="${build.resources.dir}/rules/provisioning_commands.pkg"
                   classpathref="drools.compile.classpath"
                   binformat="package">

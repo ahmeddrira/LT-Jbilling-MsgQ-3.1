@@ -25,29 +25,20 @@ import com.sapienter.jbilling.server.item.PricingField;
 import java.util.ArrayList;
 
 public class Record {
-    private List<PricingField> fields = null;
-    private int position;
-    private StringBuffer key = null;
-    
+    private StringBuffer key = new StringBuffer();
+    private int position = 1;
+    private List<PricingField> fields = new ArrayList<PricingField>();
+
     public Record() {
-        fields = new ArrayList<PricingField>();
-        key = new StringBuffer(100);
     }
-    
+
     public int getPosition() {
         return position;
-    }
-    
-    public void addField(PricingField field, boolean isKey) {
-        fields.add(field);
-        if (isKey) {
-            key.append(field.getValue().toString());
-        }
     }
 
     public void setPosition(int position) {
         this.position = position;
-        for (PricingField field: fields) {
+        for (PricingField field : fields) {
             field.setPosition(position);
         }
     }
@@ -55,19 +46,30 @@ public class Record {
     public List<PricingField> getFields() {
         return fields;
     }
-    
+
+    public void setFields(List<PricingField> fields) {
+        this.fields = fields;
+    }
+
+    public void addField(PricingField field, boolean isKey) {
+        fields.add(field);
+        if (isKey) {
+            key.append(field.getValue().toString());
+        }
+    }
+
     public String getKey() {
         return key.toString();
     }
- 
+
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        
-        sb.append("record=position: " + position + "\n");
-        sb.append("key=" + getKey() + "\n");
-        for (PricingField field: fields) {
-            sb.append("field: " + field + "\n");
-        }
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Record");
+        sb.append("{key=").append(key);
+        sb.append(", position=").append(position);
+        sb.append(", fields=").append(fields);
+        sb.append('}');
         return sb.toString();
     }
 }

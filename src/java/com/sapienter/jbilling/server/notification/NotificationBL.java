@@ -63,6 +63,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
 import org.hibernate.collection.PersistentSet;
 
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -680,17 +681,20 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             ContactDTOEx to, String message1, String message2, Integer entityId,
             String username, String password) throws FileNotFoundException,
             SessionInternalError {
-        JasperPrint report = generatePaperInvoice(design, useSqlQuery, invoice,
-                from, to, message1, message2, entityId, username, password);
+
+        JasperPrint report = generatePaperInvoice(design, useSqlQuery, invoice, from, to, message1, message2, entityId,
+                                                  username, password);
+
         String fileName = null;
         try {
             fileName = com.sapienter.jbilling.common.Util
                     .getSysProp("base_dir")
-                    + "invoices/"
-                    + entityId
-                    + "-"
-                    + invoice.getId()
-                    + "-invoice.pdf";
+                       + "invoices/"
+                       + entityId
+                       + "-"
+                       + invoice.getId()
+                       + "-invoice.pdf";
+
             JasperExportManager.exportReportToPdfFile(report, fileName);
         } catch (JRException e) {
             LOG.error("Exception generating paper invoice", e);
@@ -704,15 +708,13 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             String username, String password) throws FileNotFoundException,
             SessionInternalError {
         try {
-            // This is needed for JasperRerpots to work, for some twisted
-            // XWindows issue
+            // This is needed for JasperRerpots to work, for some twisted XWindows issue
             System.setProperty("java.awt.headless", "true");
-            String designFile = com.sapienter.jbilling.common.Util
-                    .getSysProp("base_dir")
-                    + "designs/" + design + ".jasper";
+            String designFile = com.sapienter.jbilling.common.Util.getSysProp("base_dir")
+                                + "designs/" + design + ".jasper";
+
             File compiledDesign = new File(designFile);
-            LOG.debug("Generating paper invoice with design file : "
-                    + designFile);
+            LOG.debug("Generating paper invoice with design file : " + designFile);
             FileInputStream stream = new FileInputStream(compiledDesign);
             Locale locale = (new UserBL(invoice.getUserId())).getLocale();
 
@@ -724,40 +726,31 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             parameters.put("entityAddress", printable(from.getAddress1()));
             parameters.put("entityPostalCode", printable(from.getPostalCode()));
             parameters.put("entityCity", printable(from.getCity()));
-            parameters
-                    .put("entityProvince", printable(from.getStateProvince()));
-            parameters.put("customerOrganization", printable(to
-                    .getOrganizationName()));
-            parameters.put("customerName", printable(to.getFirstName()) + " "
-                    + printable(to.getLastName()));
+            parameters.put("entityProvince", printable(from.getStateProvince()));
+            parameters.put("customerOrganization", printable(to.getOrganizationName()));
+            parameters.put("customerName", printable(to.getFirstName(), to.getLastName()));
             parameters.put("customerAddress", printable(to.getAddress1()));
             parameters.put("customerPostalCode", printable(to.getPostalCode()));
             parameters.put("customerCity", printable(to.getCity()));
-            parameters
-                    .put("customerProvince", printable(to.getStateProvince()));
+            parameters.put("customerProvince", printable(to.getStateProvince()));
             parameters.put("customerUsername", username);
             parameters.put("customerPassword", password);
             parameters.put("customerId", invoice.getUserId().toString());
-            parameters.put("invoiceDate", Util.formatDate(invoice
-                    .getCreateDatetime(), invoice.getUserId()));
-            parameters.put("invoiceDueDate", Util.formatDate(invoice
-                    .getDueDate(), invoice.getUserId()));
-            LOG.debug("m1 = " + message1 + " m2 = " + message2);
-            System.out.println("m1 = " + message1 + " m2 = " + message2);
-            if (message1 == null || message1.length() == 0) {
-                message1 = " ";
-            }
-            parameters.put("customerMessage1", message1);
-            if (message2 == null || message2.length() == 0) {
-                message2 = " ";
-            }
-            parameters.put("customerMessage2", message2);
+            parameters.put("invoiceDate", Util.formatDate(invoice.getCreateDatetime(), invoice.getUserId()));
+            parameters.put("invoiceDueDate", Util.formatDate(invoice.getDueDate(), invoice.getUserId()));
 
+            // customer message
+            LOG.debug("m1 = " + message1 + " m2 = " + message2);
+            parameters.put("customerMessage1", printable(message1));
+            parameters.put("customerMessage2", printable(message2));
+
+            // invoice notes stripped of html line breaks
             String notes = invoice.getCustomerNotes();
             if (notes != null) {
                 notes = notes.replaceAll("<br/>", "\r\n");
             }
             parameters.put("notes", notes);
+
             // now some info about payments
             try {
                 InvoiceBL invoiceBL = new InvoiceBL(invoice.getId());
@@ -865,9 +858,12 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             // at last, generate the report
             JasperPrint report = null;
             if (useSqlQuery) {
-                Connection conn = ((DataSource) Context.getBean(
-                        Context.Name.DATA_SOURCE)).getConnection();
-                report = JasperFillManager.fillReport(stream, parameters, conn);
+                DataSource dataSource = (DataSource) Context.getBean(Context.Name.DATA_SOURCE);
+                Connection connection = DataSourceUtils.getConnection(dataSource);
+
+                report = JasperFillManager.fillReport(stream, parameters, connection);
+
+                DataSourceUtils.releaseConnection(connection, dataSource);
             } else {
                 JRBeanCollectionDataSource data = 
                         new JRBeanCollectionDataSource(lines);
@@ -888,6 +884,24 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             return "";
         }
         return str;
+    }
+
+    /**
+     * Safely concatenates 2 strings together with a blank space (" "). Null strings
+     * are handled safely, and no extra concatenated character will be added if one
+     * string is null.
+     *
+     * @param str
+     * @param str2
+     * @return concatenated, printable string
+     */
+    private static String printable(String str, String str2) {
+        StringBuilder builder = new StringBuilder();
+        
+        if (str != null) builder.append(str).append(" ");
+        if (str2 != null) builder.append(str2);
+        
+        return builder.toString();
     }
 
     public static void sendSapienterEmail(Integer entityId, String messageKey,

@@ -32,6 +32,7 @@ import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import org.apache.log4j.Logger;
 
@@ -162,7 +163,7 @@ public class PaymentWorldPayExternalTask extends PaymentWorldPayBaseTask impleme
      * Creates a payment of zero dollars and returns the RBC WorldPay ORDER_ID as the gateway
      * key to be stored for future transactions.
      */
-    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard) {
+    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
         UserDTO user;
         if (contact != null) {
             UserBL bl = new UserBL(contact.getUserId());
@@ -216,6 +217,14 @@ public class PaymentWorldPayExternalTask extends PaymentWorldPayBaseTask impleme
 
     }
 
+    /**
+     * 
+     */
+    public String deleteCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
+        //noop
+        return null;
+    }
+    
     @Override // implements abstract method
     public NVPList buildRequest(PaymentDTOEx payment, SvcType transaction) throws PluggableTaskException {
         NVPList request = new NVPList();

@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.contact.db.ContactDTO; com.sapienter.jbilling.server.util.Util"%>
+<%@ page import="com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.contact.db.ContactDTO; com.sapienter.jbilling.server.util.Util"%>
 
 <html>
 <head>
@@ -29,7 +29,12 @@
                 <div class="column">
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.user.username"/></content>
-                        <span>${user.userName}</span>
+                        <span><g:link controller="user" action="list" id="${user.id}">${user.userName}</g:link></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label">Last Login</content>
+                        <span><g:formatDate date="${user.lastLogin}"/></span>
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
@@ -66,6 +71,49 @@
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.user.language"/></content>
+                        <span>${user.language.getDescription()}</span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.user.currency"/></content>
+                        <span>${user.currency.getDescription(session['language_id'])}</span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.exclude.ageing"/></content>
+                        <span><g:formatBoolean boolean="${customer?.excludeAging > 0}"/></span>
+                    </g:applyLayout>
+                </div>
+
+                <div class="column">
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="customer.detail.user.user.id"/></content>
+                        <span><g:link controller="user" action="list" id="${user.id}">${user.id}</g:link></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="customer.detail.user.type"/></content>
+                        <g:set var="mainRole" value="${user.roles.asList()?.min{ it.id }}"/>
+                        <span title="${mainRole.getDescription(session['language_id'])}">${mainRole.getTitle(session['language_id'])}</span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label">Partner ID</content>
+                        <span>${user.partner?.id}</span>
+                    </g:applyLayout>
+
+                    <!-- custom contact fields -->
+                    <g:each var="ccf" in="${company.contactFieldTypes?.sort{ it.id }}">
+                        <g:set var="field" value="${contact?.fields?.find{ it.type.id == ccf.id }}"/>
+
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="${ccf.promptKey}"/></content>
+                            <span>${field?.content}</span>
+                        </g:applyLayout>
+                    </g:each>
+
+                    <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.user.next.invoice.date"/></content>
 
                         <g:if test="${cycle}">
@@ -76,26 +124,6 @@
                             <g:message code="prompt.no.active.orders"/>
                         </g:else>
                     </g:applyLayout>
-                </div>
-
-                <div class="column">
-                    <g:applyLayout name="form/text">
-                        <content tag="label"><g:message code="customer.detail.user.user.id"/></content>
-                        <span>${user.id}</span>
-                    </g:applyLayout>
-
-                    <g:applyLayout name="form/text">
-                        <content tag="label"><g:message code="customer.detail.user.type"/></content>
-                        <g:set var="mainRole" value="${user.roles.asList()?.min{ it.id }}"/>
-                        <span title="${mainRole.getDescription(session['language_id'])}">${mainRole.getTitle(session['language_id'])}</span>
-                    </g:applyLayout>
-
-                    <g:each var="ccf" in="${contact?.fields?.sort{ it.id }}">
-                        <g:applyLayout name="form/text">
-                            <content tag="label"><g:message code="${ccf.type.promptKey}"/></content>
-                            <span>${ccf.content}</span>
-                        </g:applyLayout>
-                    </g:each>
 
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.payment.lifetime.revenue"/></content>
@@ -109,16 +137,122 @@
                 </div>
             </div>
 
-            <div>
+            <!-- notes -->
+            <div id="notes" class="form-columns">
+                <label><g:message code="prompt.notes"/></label>
+                <p class="description">${customer?.notes}</p>
+            </div>
+
+            <!-- separator -->
+            <div class="form-columns">
+                <hr/>
+            </div>
+
+            <!-- account hierarchy -->
+            <div class="form-columns">
+                <div class="column">
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.parent.id"/></content>
+                        <span>
+                            <g:link action="inspect" id="${customer?.parent?.baseUser?.id}">${customer?.parent?.baseUser?.id}</g:link>
+                        </span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.is.parent"/></content>
+                        <span><g:formatBoolean boolean="${customer?.isParent > 0}"/></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.invoice.if.child"/></content>
+                        <span><g:formatBoolean boolean="${customer?.invoiceChild > 0}"/></span>
+                    </g:applyLayout>
+
+                    <g:if test="${customer?.parent}">
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="customer.invoice.if.child.label"/></content>
+                            <span>
+                                    <g:if test="${customer.invoiceChild > 0}">
+                                        <g:message code="customer.invoice.if.child.true"/>
+                                    </g:if>
+                                    <g:else>
+                                        <g:set var="parent" value="${new CustomerBL(customer.id).getInvoicableParent()}"/>
+                                        <g:link action="inspect" id="${customer.parent.baseUser.id}">
+                                            <g:message code="customer.invoice.if.child.false" args="[ parent.baseUser.id ]"/>
+                                        </g:link>
+                                    </g:else>
+                            </span>
+                        </g:applyLayout>
+                    </g:if>
+                </div>
+                <div class="column">
+                    <!-- list of direct sub-accounts -->
+                    <g:each var="account" in="${customer?.children}">
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="customer.subaccount.title" args="[ account.baseUser.id ]"/></content>
+                            <span>
+                                <g:link action="inspect" id="${account.baseUser.id}">${account.baseUser.userName}</g:link>
+                            </span>
+                        </g:applyLayout>
+                    </g:each>
+                </div>
+            </div>
+
+            <!-- separator -->
+            <div class="form-columns">
+                <hr/>
+            </div>
+
+            <!-- dynamic balance and invoice delivery -->
+            <div class="form-columns">
+                <div class="column">
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.balance.type"/></content>
+                        <span><g:message code="customer.balance.type.${customer?.balanceType ?: 0}"/></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.credit.limit"/></content>
+                        <span><g:formatNumber number="${customer?.creditLimit}" formatName="money.format"/></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.auto.recharge"/></content>
+                        <span><g:formatNumber number="${customer?.autoRecharge}" formatName="money.format"/></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.dynamic.balance"/></content>
+                        <span><g:formatNumber number="${customer?.dynamicBalance}" formatName="money.format"/></span>
+                    </g:applyLayout>
+                </div>
+                <div class="column">
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.invoice.delivery.method"/></content>
+                        <span><g:message code="customer.invoice.delivery.method.${customer?.invoiceDeliveryMethod?.id ?: 0}"/></span>
+                    </g:applyLayout>
+
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="prompt.due.date.override"/></content>
+                        <g:if test="${customer?.dueDateValue}">
+                            <g:set var="periodUnit" value="${company.orderPeriods.find{ it.periodUnit.id == customer?.dueDateUnitId }}"/>
+                            <span>${customer?.dueDateValue} ${periodUnit.getDescription(session['language_id'])}</span>
+                        </g:if>
+                    </g:applyLayout>
+                </div>
+            </div>
+
+            <!-- buttons -->
+            <div style="margin: 20px 0;">
                 <div class="btn-row">
-                    <g:link controller="user" action="list" id="${user.id}" class="submit user"><span>View Customer</span></g:link>
-                    <g:link controller="invoice" action="user" id="${user.id}" class="submit invoice"><span>View Invoices</span></g:link>
-                    <g:link controller="payment" action="user" id="${user.id}" class="submit payment"><span>View Payments</span></g:link>
-                    <g:link controller="order" action="user" id="${user.id}" class="submit order"><span>View Prders</span></g:link>
+                    <g:link controller="auditLog" action="user" id="${user.id}" class="submit show"><span><g:message code="customer.view.audit.log.button"/></span></g:link>
+                    <g:link controller="invoice" action="user" id="${user.id}" class="submit show"><span><g:message code="customer.view.invoices.button"/></span></g:link>
+                    <g:link controller="payment" action="user" id="${user.id}" class="submit payment"><span><g:message code="customer.view.payments.button"/></span></g:link>
+                    <g:link controller="order" action="user" id="${user.id}" class="submit order"><span><g:message code="customer.view.orders.button"/></span></g:link>
                 </div>
                 <div class="btn-row">
-                    <g:link controller="user" action="edit" id="${user.id}" class="submit edit"><span>Edit Customer</span></g:link>
-                    <g:link controller="payment" action="edit" params="[userId: user.id]" class="submit payment"><span><g:message code="button.create.payment"/></span></g:link>
+                    <g:link controller="user" action="edit" id="${user.id}" class="submit edit"><span><g:message code="customer.edit.customer.button"/></span></g:link>
+                    <g:link controller="payment" action="edit" params="[userId: user.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
                     <g:link controller="order" action="edit" params="[userId: user.id]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>
                 </div>
             </div>
@@ -151,21 +285,6 @@
                     </div>
                 </div>
             </g:if>
-
-            <!-- notes -->
-            <div id="notes" class="box-cards">
-                <div class="box-cards-title">
-                    <a class="btn-open"><span><g:message code="customer.inspect.notes.title"/></span></a>
-                </div>
-                <div class="box-card-hold">
-                    <div class="box-text">
-                        <label><g:message code="customer.detail.note.title"/></label>
-                        <ul>
-                            <li><p>${customer?.notes}</p></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
 
             <!-- last payment -->
             <g:if test="${payment}">
@@ -259,7 +378,6 @@
                         <table cellpadding="0" cellspacing="0" class="innerTable">
                             <thead class="innerHeader">
                             <tr>
-                                <th><g:message code="invoice.label.id"/></th>
                                 <th><g:message code="label.gui.description"/></th>
                                 <th><g:message code="label.gui.quantity"/></th>
                                 <th><g:message code="label.gui.price"/></th>
@@ -269,9 +387,6 @@
                             <tbody>
                                 <g:each var="invoiceLine" in="${invoice.invoiceLines}">
                                     <tr>
-                                        <td class="innerContent">
-                                            <g:link controller="invoice" action="list" id="${invoice.id}">${invoice.id}</g:link>
-                                        </td>
                                         <td class="innerContent">
                                             ${invoiceLine.description}
                                         </td>

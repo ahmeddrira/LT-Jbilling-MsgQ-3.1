@@ -212,7 +212,11 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
             line.setQuantity(quantity);
             
             ItemBL itemBL = new ItemBL(itemId);
-            line.setPrice(itemBL.getPrice(getOrder().getBaseUserByUserId().getId(), getOrder().getCurrencyId(), getEntityId()));
+            line.setPrice(itemBL.getPrice(getOrder().getBaseUserByUserId().getId(),
+                                          getOrder().getCurrencyId(),
+                                          quantity,
+                                          getEntityId()));
+            
             OrderBL orderBL = new OrderBL(feeOrder);
             try {
                 orderBL.recalculate(getEntityId());

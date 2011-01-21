@@ -107,7 +107,7 @@
                             </table>
 
                             <div class="btn-row">
-                                <a onclick="clearInvoiceSelection();" class="submit clear"><span>Clear Selection</span></a>
+                                <a onclick="clearInvoiceSelection();" class="submit delete"><span><g:message code="button.clear"/></span></a>
                             </div>
 
                         </div>
@@ -285,6 +285,22 @@
                             </div>
                         </div>
                     </div>
+
+                    <g:if test="${isNew && payment?.creditCard}">
+                        <script type="text/javascript">
+                            /*
+                                Clear the default credit card ID if any of the input fields are
+                                changed when creating a new payment.
+                             */
+                            $(function() {
+                                $('#creditCard :input').change(function() {
+                                    $('#creditCard\\.id').val('');
+                                    $('#creditCard :input').unbind('change');
+                                });
+                            });
+                        </script>
+                    </g:if>
+
                 </g:if>
 
                 <!-- ach -->
@@ -340,6 +356,22 @@
                             </div>
                         </div>
                     </div>
+
+                    <g:if test="${isNew && payment?.ach}">
+                        <script type="text/javascript">
+                            /*
+                                Clear the default ach ID if any of the input fields are
+                                changed when creating a new payment.
+                             */
+                            $(function() {
+                                $('#ach :input').change(function() {
+                                    $('#ach\\.id').val('');
+                                    $('#ach :input').unbind('change');
+                                });
+                            });
+                        </script>
+                    </g:if>
+
                 </g:if>
 
                 <!-- cheque -->

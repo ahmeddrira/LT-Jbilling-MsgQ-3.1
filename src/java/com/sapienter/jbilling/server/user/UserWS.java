@@ -76,10 +76,12 @@ public class UserWS implements WSSecured, Serializable {
     private Integer mainRoleId = null;
     private Integer statusId = null;
     private Integer subscriberStatusId = null;
+    private Integer customerId = null;
     private Integer partnerId = null;
     private Integer parentId = null;
     private Boolean isParent = null;
     private Boolean invoiceChild = null;
+    private Boolean excludeAgeing = null;
     private Integer mainOrderId = null;
     private String[] blacklistMatches = null;
     private Boolean userIdBlacklisted = null;
@@ -93,7 +95,10 @@ public class UserWS implements WSSecured, Serializable {
     private String notes;
     private Integer automaticPaymentType;
     private String companyName;
-    
+
+    private Integer invoiceDeliveryMethodId;
+    private Integer dueDateUnitId;
+    private Integer dueDateValue;
     private Date nextInvoiceDate;
     
     public UserWS() {
@@ -110,7 +115,6 @@ public class UserWS implements WSSecured, Serializable {
         userName = dto.getUserName();
         failedAttempts = dto.getFailedAttempts();
         languageId = dto.getLanguageId();
-
         creditCard = dto.getCreditCard() == null ? null : dto.getCreditCard().getOldDTO();
         ach = dto.getAch() == null ? null : dto.getAch().getOldDTO();
         role = dto.getMainRoleStr();
@@ -120,24 +124,23 @@ public class UserWS implements WSSecured, Serializable {
         role = dto.getMainRoleStr();
         statusId = dto.getStatusId();
         subscriberStatusId = dto.getSubscriptionStatusId();
+
         if (dto.getCustomer() != null) {
+            customerId = dto.getCustomer().getId();
             partnerId = (dto.getCustomer().getPartner() == null) ? null : dto.getCustomer().getPartner().getId();
-            parentId = (dto.getCustomer().getParent() == null)
-                       ? null
-                       : dto.getCustomer().getParent().getBaseUser().getId();
+            parentId = (dto.getCustomer().getParent() == null) ? null : dto.getCustomer().getParent().getBaseUser().getId();
             mainOrderId = dto.getCustomer().getCurrentOrderId();
-            isParent = dto.getCustomer().getIsParent() == null
-                       ? false
-                       : dto.getCustomer().getIsParent().equals(new Integer(1));
-            invoiceChild = dto.getCustomer().getInvoiceChild() == null
-                           ? false
-                           : dto.getCustomer().getInvoiceChild().equals(new Integer(1));
+            isParent = dto.getCustomer().getIsParent() != null && dto.getCustomer().getIsParent().equals(1);
+            invoiceChild = dto.getCustomer().getInvoiceChild() != null && dto.getCustomer().getInvoiceChild().equals(1);
+            excludeAgeing = dto.getCustomer().getExcludeAging() == 1;
+
             childIds = new Integer[dto.getCustomer().getChildren().size()];
             int index = 0;
             for (CustomerDTO customer : dto.getCustomer().getChildren()) {
                 childIds[index] = customer.getBaseUser().getId();
                 index++;
             }
+
             balanceType = dto.getCustomer().getBalanceType();
 
             setDynamicBalance(dto.getCustomer().getDynamicBalance());
@@ -146,11 +149,15 @@ public class UserWS implements WSSecured, Serializable {
 
             setNotes(dto.getCustomer().getNotes());
             setAutomaticPaymentType(dto.getCustomer().getAutoPaymentType());
+
+            dueDateUnitId = dto.getCustomer().getDueDateUnitId();
+            dueDateValue = dto.getCustomer().getDueDateValue();
         }
-        blacklistMatches = dto.getBlacklistMatches() != null ? dto.getBlacklistMatches().toArray(new String[0]) : null;
+
+        blacklistMatches = dto.getBlacklistMatches() != null ? dto.getBlacklistMatches().toArray(new String[dto.getBlacklistMatches().size()]) : null;
         userIdBlacklisted = dto.getUserIdBlacklisted();
-        if (null != dto.getCompany())
-        {
+
+        if (null != dto.getCompany()) {
         	companyName= dto.getCompany().getDescription();
         }
         
@@ -167,15 +174,6 @@ public class UserWS implements WSSecured, Serializable {
         	}
         }        
     }
-
-    
-    public Date getNextInvoiceDate() {
-		return nextInvoiceDate;
-	}
-
-	public void setNextInvoiceDate(Date nextInvoiceDate) {
-		this.nextInvoiceDate = nextInvoiceDate;
-	}
 
 	public Integer getPartnerId() {
         return partnerId;
@@ -257,6 +255,14 @@ public class UserWS implements WSSecured, Serializable {
         this.subscriberStatusId = subscriberStatusId;
     }
 
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
+    }
+
     public Integer getParentId() {
         return parentId;
     }
@@ -279,6 +285,14 @@ public class UserWS implements WSSecured, Serializable {
 
     public void setInvoiceChild(Boolean invoiceChild) {
         this.invoiceChild = invoiceChild;
+    }
+
+    public Boolean getExcludeAgeing() {
+        return excludeAgeing;
+    }
+
+    public void setExcludeAgeing(Boolean excludeAgeing) {
+        this.excludeAgeing = excludeAgeing;
     }
 
     public Date getCreateDatetime() {
@@ -487,6 +501,38 @@ public class UserWS implements WSSecured, Serializable {
 
 	public void setCompanyName(String companyName) {
 		this.companyName = companyName;
+	}
+
+    public Integer getInvoiceDeliveryMethodId() {
+        return invoiceDeliveryMethodId;
+    }
+
+    public void setInvoiceDeliveryMethodId(Integer invoiceDeliveryMethodId) {
+        this.invoiceDeliveryMethodId = invoiceDeliveryMethodId;
+    }
+
+    public Integer getDueDateUnitId() {
+        return dueDateUnitId;
+    }
+
+    public void setDueDateUnitId(Integer dueDateUnitId) {
+        this.dueDateUnitId = dueDateUnitId;
+    }
+
+    public Integer getDueDateValue() {
+        return dueDateValue;
+    }
+
+    public void setDueDateValue(Integer dueDateValue) {
+        this.dueDateValue = dueDateValue;
+    }
+
+    public Date getNextInvoiceDate() {
+		return nextInvoiceDate;
+	}
+
+	public void setNextInvoiceDate(Date nextInvoiceDate) {
+		this.nextInvoiceDate = nextInvoiceDate;
 	}
 
 	/**

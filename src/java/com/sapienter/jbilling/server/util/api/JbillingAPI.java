@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.util.api;
 
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
@@ -176,10 +177,14 @@ public interface JbillingAPI {
     public PaymentWS getPayment(Integer paymentId);
     public PaymentWS getLatestPayment(Integer userId);
     public Integer[] getLastPayments(Integer userId, Integer number);
+    public PaymentWS getUserPaymentInstrument(Integer userId);
 
     public Integer createPayment(PaymentWS payment);
     public void updatePayment(PaymentWS payment);
     public void deletePayment(Integer paymentId);
+
+    public void removePaymentLink(Integer invoiceId, Integer paymentId);
+    public void createPaymentLink(Integer invoiceId, Integer paymentId);
 
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId);
     public Integer applyPayment(PaymentWS payment, Integer invoiceId);

@@ -1,5 +1,7 @@
 package jbilling
 
+import grails.plugins.springsecurity.Secured;
+
 import javax.servlet.ServletOutputStream
 
 import grails.converters.JSON
@@ -12,7 +14,13 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.common.SessionInternalError;
 
-
+/**
+* BillingController
+*
+* @author Vikas Bodani
+* @since 
+*/
+@Secured(['isAuthenticated()'])
 class InvoiceController {
 	
 	Integer languageId= session["language_id"]
@@ -24,32 +32,28 @@ class InvoiceController {
     def filterService
     def recentItemService
 	def breadcrumbService
-	def filters 
-	
+
     def index = {
         redirect action: list, params: params
     }
 
 	def list = {
 
-		def invoices;
-		log.info "Invoice 'list' method, userid=[${params.id}], "
-		try {
-			filters = filterService.getFilters(FilterType.INVOICE, params)
-			log.info "Filters are ${filters}"
-			if ( params["id"] && params["id"].matches("^[0-9]+") ) {
-				def invId= Integer.parseInt(params["id"])
-				redirect(action: 'show', params:[id:invId])
-			} else {
-				invoices= getInvoices(filters)
-			}
-		} catch (Exception e) {
-			flash.message = 'invoices.empty'
-			flash.args= [params["id"]]
+		if (params.id) {
+			redirect (action: 'show', params: [id: params.id as Integer])
 		}
+		
+		def filters = filterService.getFilters(FilterType.INVOICE, params)
+		
+		def invoiceList= getInvoices(filters)
+
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
-		log.info "found invoices [${invoices?.size()}]"
-		[invoices:invoices, filters:filters]
+		log.debug "Found ${invoiceList?.size()} invoices."
+		if (params.applyFilter) {
+			render template: 'lists', model: [invoices:invoiceList, filters:filters]
+		} else {
+			[invoices:invoiceList, filters:filters]
+		}
 	}
 
 	def getInvoices(filters) {
@@ -87,7 +91,7 @@ class InvoiceController {
 		try {
 		def invId= params.id as Integer
 		
-		log.info "showListAndInvoice(${invId}) called.."
+		log.debug "showListAndInvoice(${invId}) called.."
 		
 		def filters = filterService.getFilters(FilterType.INVOICE, params)
 		def invoices= getInvoices(filters)
@@ -95,8 +99,8 @@ class InvoiceController {
 		def invoice= webServicesSession.getInvoiceWS(invId)
 		def user= webServicesSession.getUserWS(invoice?.getUserId())
 		
-		log.info "Found invoice ${invoice?.number}, Loading..."
-		log.info "Found user ${user}"
+		log.debug "Found invoice ${invoice?.number}, Loading..."
+		log.debug "Found user ${user}"
 		
 		def payments= new ArrayList<PaymentWS>(invoice?.payments?.length)
 		for(Integer pid: invoice?.payments) {
@@ -114,7 +118,7 @@ class InvoiceController {
 		if (delegatedInvoices.length() > 0 ) {
 			delegatedInvoices= delegatedInvoices.substring(3)
 		}
-		log.info "rendering view showListAndInvoice"
+		log.debug "rendering view showListAndInvoice"
 		
 		render view: 'showListAndInvoice', model:[invoices:invoices, totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
 		}catch (Exception e) {
@@ -136,14 +140,14 @@ class InvoiceController {
     }
 
 	def show = {
-		log.info "method invoice.show for id ${params.id} & userId ${params.userId}"
+		log.debug "method invoice.show for id ${params.id} & userId ${params.userId}"
 		InvoiceWS invoice;
 		UserWS user;
 		List<PaymentWS> payments;
 		BigDecimal totalRevenue;
 		String delegatedInvoices= ""
 		
-		log.info "Show Invoice |${params.id}|"
+		log.debug "Show Invoice |${params.id}|"
 		
 		if (params["id"] && params["id"].matches("^[0-9]+")) {
 			
@@ -152,7 +156,7 @@ class InvoiceController {
 			recentItemService.addRecentItem(invId, RecentItemType.INVOICE)
 			breadcrumbService.addBreadcrumb(controllerName, actionName, null, invId)
 
-			log.info "Template: ${params.template}"
+			log.debug "Template: ${params.template}"
 			if (params.template != 'show') {
 				redirect(action: 'showListAndInvoice', params:[id:invId])
 			} 
@@ -161,8 +165,8 @@ class InvoiceController {
 				invoice= webServicesSession.getInvoiceWS(invId)
 				user= webServicesSession.getUserWS(invoice?.getUserId())
 				
-				log.info "Found invoice ${invoice?.number}, Loading..."
-				log.info "Found user ${user}"
+				log.debug "Found invoice ${invoice?.number}, Loading..."
+				log.debug "Found user ${user?.contact?.firstName}"
 				
 				payments= new ArrayList<PaymentWS>(invoice?.payments?.length)
 				for(Integer pid: invoice?.payments) {
@@ -191,7 +195,7 @@ class InvoiceController {
 	
 	def delete = {
 		
-		log.info "Delete params= id: ${params.id} , for userId: ${params._userId}"
+		log.debug "Delete params= id: ${params.id} , for userId: ${params._userId}"
 		int invoiceId =params["id"]?.toInteger()
 		int userId= params._userId?.toInteger()
 		if (invoiceId) {
@@ -200,7 +204,7 @@ class InvoiceController {
 				flash.message = 'invoice.delete.success'
 				flash.args= [invoiceId]
 			}  catch (Exception e) {
-				log.info (e.getMessage())
+				log.debug (e.getMessage())
 				flash.error = 'error.invoice.delete'
 				flash.args= [params["id"]]
 				redirect(action: 'list', params:[id:userId])
@@ -210,12 +214,26 @@ class InvoiceController {
 		redirect (action:list, params:[id:userId])
 	}
 	
+	def notifyInvoiceByEmail = {
+		Integer invId= params.id as Integer
+		log.debug "invoice.sendInvoiceByEmail ${invId}"
+		try {
+			webServicesSession.notifyInvoiceByEmail(invId)
+			flash.message = 'invoice.prompt.success.email.invoice'
+		} catch (Exception e) { 
+			log.error e.getMessage()
+			flash.error= 'invoice.prompt.failure.email.invoice'
+			flash.args= params.id 
+		}
+		redirect(action: 'showListAndInvoice', params:[id:invId])
+	}
+	
 	def downloadPdf = {
-		log.info 'calling downloadPdf'
+		log.debug 'calling downloadPdf'
 		Integer invId= params.id as Integer
 		try { 
 			byte[] pdfBytes= webServicesSession.getPaperInvoicePDF(invId)
-			log.info "Byte Size ${pdfBytes.length}"
+			log.debug "Byte Size ${pdfBytes.length}"
 			
 			ServletOutputStream servletOutputStream = response.outputStream
 			
@@ -238,7 +256,7 @@ class InvoiceController {
 		
 		Integer invId= params.id as Integer
 		Integer paymentId= params.paymentId as Integer
-		log.info "Parameters[Invoice Id: ${invId}, Payment Id: ${paymentId}"
+		log.debug "Parameters[Invoice Id: ${invId}, Payment Id: ${paymentId}"
 		
 		try {
 			webServicesSession.removePaymentLink(invId, paymentId)
@@ -251,4 +269,5 @@ class InvoiceController {
 		}
 		redirect(action: 'showListAndInvoice', params:[id:invId])
 	}
+	
 }

@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
@@ -53,10 +54,10 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterD
 
 
 public abstract class PluggableTask {
-	
+
     public static final SimpleDateFormat PARAMETER_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd-HHmm");
 
-    protected HashMap<String, String> parameters = null;
+    protected Map<String, String> parameters = null;
     private Integer entityId = null;
     private PluggableTaskDTO task = null;
     protected Hashtable<Object, FactHandle> handlers = null;
@@ -66,9 +67,9 @@ public abstract class PluggableTask {
     private static HashMap<Integer, KnowledgeAgent> knowledgeBasesCache = new HashMap<Integer, KnowledgeAgent>();
     private static AtomicBoolean isRulesChangeScanerStarted = new AtomicBoolean(false);
 
-    
+
     public final List<ParameterDescription> descriptions = new ArrayList<ParameterDescription>();
-    
+
     public List<ParameterDescription> getParameterDescriptions() {
         return descriptions;
     }
@@ -77,11 +78,11 @@ public abstract class PluggableTask {
         return entityId;
     }
 
-    protected void setEntityId(Integer entityId) {
+    public void setEntityId(Integer entityId) {
         this.entityId = entityId;
     }
 
-    protected Integer getTaskId() {
+    public Integer getTaskId() {
         return task.getId();
     }
 
@@ -160,7 +161,7 @@ public abstract class PluggableTask {
     protected Boolean getParameter(String key, Boolean defaultValue) {
         Object value = parameters.get(key);
         return value != null ? ((String) value).equalsIgnoreCase("true") : defaultValue;
-    }    
+    }
 
     /**
      * Returns the plug-in parameter value as a Date value if it exists, or
@@ -337,18 +338,33 @@ public abstract class PluggableTask {
             ResourceFactory.getResourceChangeScannerService().start();
         }
     }
-	
-	public boolean validate() {
-		if (getParameterDescriptions() != null) {
-			// validate that those required are present
-			for (ParameterDescription param: getParameterDescriptions()) {
-			    if (param.isRequired()) {
-				    if(parameters == null || !parameters.containsKey(param.getName())) {
-				        return false;
-				    }
-			    }
-			}
-		}
-		return true;
-	}
+
+    public boolean validate() {
+        if (getParameterDescriptions() != null) {
+            // validate that those required are present
+            for (ParameterDescription param: getParameterDescriptions()) {
+                if (param.isRequired()) {
+                    if(parameters == null || !parameters.containsKey(param.getName())) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * The getter and setter methods for the class field parameters
+     * is provided only for the sole purpose of injecting a pluggable
+     * task via spring configuration for tests that run without the
+     * jbilling running.
+     * @return
+     */
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
 }

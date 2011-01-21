@@ -33,6 +33,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sapienter.jbilling.common.Util;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionError;
@@ -56,6 +57,9 @@ import com.sapienter.jbilling.server.util.Context;
  * Preferences - Java - Code Style - Code Templates
  */
 public final class DownloadAction extends Action {
+
+    private static final String INVOICES_DIRNAME = "invoices/";
+    private static final String INVOICE_PATH = Util.getSysProp("base_dir") + INVOICES_DIRNAME;
 
     Logger log;
     private Date dateFrom;
@@ -105,10 +109,8 @@ public final class DownloadAction extends Action {
             }
 
             try {
-                IInvoiceSessionBean invoiceSession = (IInvoiceSessionBean) 
-                        Context.getBean(Context.Name.INVOICE_SESSION);
-                String filename = invoiceSession.generatePDFFile(map,
-                        getServlet().getServletContext().getRealPath("/_FILE_NAME_"));
+				IInvoiceSessionBean invoiceSession = (IInvoiceSessionBean) Context.getBean(Context.Name.INVOICE_SESSION);
+				String filename = invoiceSession.generatePDFFile(map, INVOICE_PATH + "_FILE_NAME_");
 
                 if (filename == null) {
                     ActionMessages messages = new ActionMessages();
@@ -117,7 +119,9 @@ public final class DownloadAction extends Action {
                     saveMessages(request, messages);
                     return mapping.findForward("form");
                 } else {
-                    request.setAttribute("filename", filename);
+                    // download via the resources FileSystemProxyServlet
+                    String downloadPath = "resources/" + INVOICES_DIRNAME + filename;
+                    request.setAttribute("filename", downloadPath);
                     return mapping.findForward("done");
                 }
 

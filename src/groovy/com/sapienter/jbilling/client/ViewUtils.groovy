@@ -20,9 +20,9 @@ class ViewUtils {
 	 * @return
 	 * true if there are validation errors, otherwise false
 	 */
-	boolean resolveException(GrailsFlashScope flash, Locale locale, SessionInternalError exception) {
+	boolean resolveException(GrailsFlashScope flash, Locale locale, Exception exception) {
 		List<String> messages = new ArrayList<String>();
-		if (exception.getErrorMessages()?.length > 0) {
+		if (exception instanceof SessionInternalError && exception.getErrorMessages()?.length > 0) {
 			for (String message : exception.getErrorMessages()) {
 				List<String> fields = message.split(",");
 				String type = messageSource.getMessage("bean." + fields[0], null, locale);
@@ -49,5 +49,7 @@ class ViewUtils {
         
 		return false;
 	}
+	
+	
 	
 }

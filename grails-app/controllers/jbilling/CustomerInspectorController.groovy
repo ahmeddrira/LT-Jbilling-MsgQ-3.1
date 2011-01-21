@@ -16,13 +16,14 @@ import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.order.db.OrderDAS
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO
-import com.sapienter.jbilling.server.payment.db.PaymentDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentDTO
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 class CustomerInspectorController {
 	
 	IWebServicesSessionBean webServicesSession
-	ViewUtils viewUtils
-	def filterService
+
+    def breadcrumbService
 
 	def index = { 
 		redirect action: 'inspect', params: params
@@ -34,7 +35,7 @@ class CustomerInspectorController {
         if (!user) {
             flash.error = 'no.user.found'
             flash.args = [ params.id ]
-            return
+            return // todo: show generic error page
         }
 
         def revenue =  webServicesSession.getTotalRevenueByUser(user.id)
@@ -58,12 +59,17 @@ class CustomerInspectorController {
         // used to find the next invoice date
         def cycle = new OrderDAS().findEarliestActiveOrder(user.id)
 
+        def company = CompanyDTO.get(session['company_id'])
+
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
+
         [
                 user: user,
                 contacts: contacts,
                 invoice: invoice,
                 payment: payment,
                 subscriptions: subscriptions,
+                company: company,
                 currencies: currencies,
                 cycle: cycle,
                 revenue: revenue

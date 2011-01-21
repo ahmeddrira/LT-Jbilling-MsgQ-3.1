@@ -52,7 +52,10 @@
         <mapping package="com.sapienter.jbilling.server.item.db" />
         <mapping class="com.sapienter.jbilling.server.item.db.ItemDTO" />
         <mapping class="com.sapienter.jbilling.server.item.db.ItemTypeDTO" />
-        <mapping class="com.sapienter.jbilling.server.item.db.ItemPriceDTO" />
+        <mapping class="com.sapienter.jbilling.server.item.db.PlanDTO" />
+        <mapping class="com.sapienter.jbilling.server.item.db.PlanItemDTO" />
+        <mapping package="com.sapienter.jbilling.server.pricing.db" />
+        <mapping class="com.sapienter.jbilling.server.pricing.db.PriceModelDTO" />
         <mapping package="com.sapienter.jbilling.server.payment.blacklist.db" />
         <mapping class="com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO" />
         <mapping package="com.sapienter.jbilling.server.payment.db" />
@@ -90,6 +93,8 @@
         <mapping class="com.sapienter.jbilling.server.user.db.CompanyDTO" />
         <mapping class="com.sapienter.jbilling.server.user.db.UserDTO" />
         <mapping class="com.sapienter.jbilling.server.user.db.CustomerDTO" />
+        <mapping class="com.sapienter.jbilling.server.user.db.CustomerPriceDTO" />
+        <mapping class="com.sapienter.jbilling.server.user.db.CustomerPricePK" />
         <mapping package="com.sapienter.jbilling.server.invoice.db" />
         <mapping class="com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO" />
         <mapping class="com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO" />

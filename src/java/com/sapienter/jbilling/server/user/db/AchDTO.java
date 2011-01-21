@@ -55,6 +55,7 @@ public class AchDTO implements Serializable {
     private String accountName;
     private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
     private int versionNum;
+    private String gatewayKey;
 
     public AchDTO() {
     }
@@ -67,21 +68,23 @@ public class AchDTO implements Serializable {
         this.bankName = other.getBankName();
         setAccountName(other.getAccountName());
         this.payments = other.payments;
+        this.gatewayKey= other.getGatewayKey();
     }
 
     public AchDTO(int id, String abaRouting, String bankAccount,
-            int accountType, String bankName, String accountName) {
+            int accountType, String bankName, String accountName, String gatewayKey) {
         this.id = id;
         setAbaRouting(abaRouting);
         setBankAccount(bankAccount);
         this.accountType = accountType;
         this.bankName = bankName;
         setAccountName(accountName);
+        this.gatewayKey= gatewayKey;
     }
 
     public AchDTO(int id, UserDTO baseUser, String abaRouting,
             String bankAccount, int accountType, String bankName,
-            String accountName, Set<PaymentDTO> payments) {
+            String accountName, String gatewayKey, Set<PaymentDTO> payments) {
         this.id = id;
         this.baseUser = baseUser;
         setAbaRouting(abaRouting);
@@ -90,6 +93,7 @@ public class AchDTO implements Serializable {
         this.bankName = bankName;
         setAccountName(accountName);
         this.payments = payments;
+        this.gatewayKey= gatewayKey;
     }
     
     public AchDTO(com.sapienter.jbilling.server.entity.AchDTO oldDTO) {
@@ -99,6 +103,7 @@ public class AchDTO implements Serializable {
         this.accountType = oldDTO.getAccountType();
         this.bankName = oldDTO.getBankName();
         setAccountName(oldDTO.getAccountName());
+        this.gatewayKey= oldDTO.getGatewayKey();
     }
     
     public AchDTO(com.sapienter.jbilling.server.entity.AchDTO oldDTO, UserDTO baseUser) {
@@ -221,6 +226,19 @@ public class AchDTO implements Serializable {
     public void setRawAccountName(String accountName) {
         this.accountName = accountName;
     }
+    
+    @Column(name = "gateway_key", nullable = true, length = 100)
+    public String getGatewayKey() {
+        return this.gatewayKey;
+    }
+    
+    public void setGatewayKey(String gatewayKey) {
+        this.gatewayKey = gatewayKey;
+    }
+        
+    public boolean useGatewayKey() {
+        return (this.gatewayKey != null);
+    }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "ach")
     public Set<PaymentDTO> getPayments() {
@@ -263,6 +281,6 @@ public class AchDTO implements Serializable {
     public com.sapienter.jbilling.server.entity.AchDTO getOldDTO() {
         return new com.sapienter.jbilling.server.entity.AchDTO(
                 getId(), getAbaRouting(), getBankAccount(), getAccountType(),
-                getBankName(), getAccountName());
+                getBankName(), getAccountName(), getGatewayKey());
     }
 }

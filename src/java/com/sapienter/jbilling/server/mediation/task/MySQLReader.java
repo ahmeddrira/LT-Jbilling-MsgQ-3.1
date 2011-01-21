@@ -22,29 +22,28 @@ package com.sapienter.jbilling.server.mediation.task;
 
 import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 
+import static com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription.Type.*;
+
 /**
  * MySQLReader provides a driver string and constructs a url string
  * from plug-in parameters for use by JDBCReader.
  */
 public class MySQLReader extends JDBCReader {
-	
-	protected static final ParameterDescription PARAM_HOST = 
-		new ParameterDescription("host", true, ParameterDescription.Type.STR);
-	protected static final ParameterDescription PARAM_PORT = 
-		new ParameterDescription("port", true, ParameterDescription.Type.STR);
-    
-    
+
+	protected static final ParameterDescription PARAM_HOST = new ParameterDescription("host", true, STR);
+	protected static final ParameterDescription PARAM_PORT = new ParameterDescription("port", true, STR);
+
+    // initializer for pluggable params
 	{
 		descriptions.add(PARAM_HOST);
 		descriptions.add(PARAM_PORT);
 	}
 
     public MySQLReader() {
-        super();
     }
 
     @Override
-    public String getDriver() {
+    public String getDriverClassName() {
         return "com.mysql.jdbc.Driver";
     }
 
@@ -53,17 +52,14 @@ public class MySQLReader extends JDBCReader {
         String host = (String) parameters.get(PARAM_HOST.getName());
         String port = (String) parameters.get(PARAM_PORT.getName());
 
-        String url = "jdbc:mysql://";
+        StringBuilder url = new StringBuilder();
+        url.append("jdbc:mysql://");
 
-        if (host != null) {
-            url += host;
-        }
-        if (port != null) {
-            url += ":" + port;
-        }
+        if (host != null) url.append(host);
+        if (port != null) url.append(":").append(port);
 
-        url += "/" + getDatabaseName();
+        url.append("/").append(getDatabaseName());
 
-        return url;
+        return url.toString();
     }
 }

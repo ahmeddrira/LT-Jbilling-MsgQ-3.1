@@ -224,8 +224,15 @@
             <classpath refid="compile.classpath"/>
             <classpath refid="test.classpath"/>
         </javac>
-        
+
+        <!-- jbilling properties for plug-in tests -->
         <copy file="${source.java.dir}/jbilling.properties" todir="${build.test.dir}"/>
+
+        <!-- files for cache testing -->
+        <copy file="${source.spring.descriptor.dir}/jbilling-caching.xml" todir="${build.test.dir}"/>
+        <copy todir="${build.resources.dir}/mediation">
+            <fileset dir="${source.mediation.descriptor.dir}" includes="RateCard.*"/>
+        </copy>
 
         <!-- run unit tests -->
         <mkdir dir="${build.test-results.dir}/unit/xml"/>

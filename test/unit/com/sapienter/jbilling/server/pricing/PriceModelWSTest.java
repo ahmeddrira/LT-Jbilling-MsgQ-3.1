@@ -60,8 +60,8 @@ public class PriceModelWSTest extends TestCase {
 
         assertEquals(dto.getId(), ws.getId());
         assertEquals(PriceModelWS.PLAN_TYPE_METERED, ws.getType());
-        assertEquals(dto.getRate(), ws.getRate());
-        assertEquals(dto.getIncludedQuantity(), ws.getIncludedQuantity());
+        assertEquals(dto.getRate(), ws.getRateAsDecimal());
+        assertEquals(dto.getIncludedQuantity(), ws.getIncludedQuantityAsDecimal());
         assertEquals(dto.getCurrency().getId(), ws.getCurrencyId().intValue());
 
         assertNotSame(dto.getAttributes(), ws.getAttributes());

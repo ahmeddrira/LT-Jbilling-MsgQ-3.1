@@ -140,8 +140,8 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
 
         assertEquals(ws.getId(), dto.getId());
         assertEquals(PriceModelStrategy.METERED, dto.getType());
-        assertEquals(ws.getRate(), dto.getRate());
-        assertEquals(ws.getIncludedQuantity(), dto.getIncludedQuantity());
+        assertEquals(ws.getRateAsDecimal(), dto.getRate());
+        assertEquals(ws.getIncludedQuantityAsDecimal(), dto.getIncludedQuantity());
 
         assertNotSame(ws.getAttributes(), dto.getAttributes());
         assertEquals(PriceModelDTO.ATTRIBUTE_WILDCARD, dto.getAttributes().get("null_attr"));

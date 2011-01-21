@@ -34,9 +34,9 @@ public class JDBCReaderTest extends TestCase {
     private JdbcTemplate jdbcTemplate;
 
     // plug-in parameters
-    private static Map<String, Object> parameters;
+    private static Map<String, String> parameters;
     static {
-        parameters = new HashMap<String, Object>();
+        parameters = new HashMap<String, String>();
         parameters.put("database_name", DATABASE_NAME);
         parameters.put("table_name", TABLE_NAME);
         parameters.put("url", URL);

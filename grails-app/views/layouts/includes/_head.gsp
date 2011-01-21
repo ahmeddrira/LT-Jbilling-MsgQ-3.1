@@ -44,6 +44,7 @@
     });
 </script>
 
+<g:javascript library="datatable"/>
 <g:javascript library="clearinput"/>
 <g:javascript library="slideBlock"/>
 <g:javascript library="main"/>

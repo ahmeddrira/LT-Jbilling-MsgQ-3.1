@@ -21,6 +21,8 @@
 package jbilling
 
 import grails.plugins.springsecurity.Secured
+import com.sapienter.jbilling.server.item.db.ItemDTO
+import com.sapienter.jbilling.server.user.db.CompanyDTO
 
 /**
  * OrderController
@@ -30,6 +32,13 @@ import grails.plugins.springsecurity.Secured
  */
 @Secured(['isAuthenticated()'])
 class OrderController {
+
+    static pagination = [ max: 25, offset: 0 ]
+
+    def filterService
+    def recentItemService
+    def breadcrumbService
+    def messageSource
 
     def index = { }
 
@@ -42,7 +51,35 @@ class OrderController {
     }
 
     def products = {
-        render template: 'products'
+        def company = CompanyDTO.get(session['company_id'])
+
+        params.max = params?.max?.toInteger() ?: pagination.max
+        params.offset = params?.offset?.toInteger() ?: pagination.offset
+
+        def products = ItemDTO.createCriteria().list(
+                max:    params.max,
+                offset: params.offset
+        ) {
+            and {
+                if (params.filterBy && params.filterBy != message(code: 'products.filter.by.default')) {
+                    or {
+                        eq('id', params.int('filterBy'))
+                        ilike('internalNumber', "%${params.filterBy}%")
+                    }
+                }
+
+                if (params.typeId) {
+                    itemTypes {
+                        eq('id', params.int('typeId'))
+                    }
+                }
+
+                eq('deleted', 0)
+                eq('entity', company)
+            }
+        }
+
+        render template: 'products', model: [ company: company, products: products ]
     }
 
 }

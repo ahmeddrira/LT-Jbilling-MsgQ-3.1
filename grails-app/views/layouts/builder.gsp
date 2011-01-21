@@ -15,14 +15,14 @@
         <div class="columns-holder">
             <g:render template="/layouts/includes/messages"/>
 
-            <div class="column panel">
+            <div class="column panel" id="column1">
                 <div class="column-hold">
                     <g:pageProperty name="page.builder"/>
                 </div>
             </div>
 
             <div class="column panel">
-                <div class="column-hold">
+                <div class="column-hold" id="column2">
                     <g:pageProperty name="page.review"/>
                 </div>
             </div>

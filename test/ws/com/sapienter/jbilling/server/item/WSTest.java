@@ -333,7 +333,7 @@ public class WSTest  extends TestCase {
 
             // verify that default item price is in AUD
             assertEquals("Default price in AUD", 11, item.getDefaultPrice().getCurrencyId().intValue());
-            assertEquals("Default price in AUD", new BigDecimal("15.00"), item.getDefaultPrice().getRate());
+            assertEquals("Default price in AUD", new BigDecimal("15.00"), item.getDefaultPrice().getRateAsDecimal());
 
     	} catch (Exception e) {
     		e.printStackTrace();

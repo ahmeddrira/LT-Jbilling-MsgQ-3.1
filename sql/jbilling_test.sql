@@ -10574,6 +10574,7 @@ COPY event_log_message (id) FROM stdin;
 31
 32
 33
+34
 \.
 
 
@@ -11441,6 +11442,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 14	2800	description	1	Long Distance Call
 14	2801	description	1	Long Distance Call - Included
 14	2900	description	1	Long distance call - Generic
+14	3000	description	1	Crazy Brian's Discount Plan
 92	1	description	1	Running
 92	2	description	1	Finished: successful
 92	3	description	1	Finished: failed
@@ -11704,19 +11706,20 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 3	DP-3	1	\N	0	0	0	1	3
 4	01	2	\N	0	0	0	1	4
 24	F-1	1	\N	0	0	0	1	14
-240	DP-4	1	\N	0	0	0	2	140
 250	PL-01	1	\N	0	0	0	2	150
 251	ST-01	1	\N	0	0	0	2	151
 270	FE-01	1	\N	0	0	0	2	152
 2600	DR-01	1	\N	0	0	0	2	1600
 2601	DR--02	1	\N	0	0	0	2	1601
 2602	DR-03	1	\N	0	0	0	2	1602
-2700	LD-A	1	\N	0	0	0	5	1700
+2700	LD-A	1	\N	0	0	0	5	1701
 2701	LD-B	1	\N	0	0	0	4	1703
 2702	LD-1000	1	\N	0	0	0	4	1705
-2800	CALL-LD	1	\N	0	0	1	4	1800
-2801	CALL-LD-INCLUDE	1	\N	0	0	1	4	1802
+2800	CALL-LD	1	\N	0	0	1	4	1801
+2801	CALL-LD-INCLUDE	1	\N	0	0	1	4	1803
 2900	CALL-LD-GEN	1	\N	0	0	0	2	1900
+3000	PL-02	1	\N	0	0	0	4	2001
+240	DP-4	1	\N	0	0	0	2	2003
 \.
 
 
@@ -11731,6 +11734,7 @@ COPY item_type (id, entity_id, description, order_line_type_id, optlock) FROM st
 22	1	Fees	3	1
 2200	1	Long Distance Plans	1	0
 2201	1	Calls	1	0
+2300	1	Plans	1	0
 \.
 
 
@@ -11758,6 +11762,7 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 2800	2201
 2801	2201
 2900	2201
+3000	2300
 \.
 
 
@@ -11794,6 +11799,10 @@ subscriber_status	7
 order_line_provisioning_status	1
 balance_type	0
 invoice_status	4
+mediation_record	1
+invoice_delivery_method	1
+order_line_type	1
+order_line_type	1
 order_billing_type	1
 order_billing_type	1
 menu_option	1
@@ -11807,22 +11816,24 @@ currency	1
 report_type	1
 report_type	1
 payment_method	1
+payment_method	1
 payment_result	1
 payment_result	1
-event_log_module	1
 event_log_module	1
 event_log_message	1
 event_log_message	1
 preference_type	1
+preference_type	1
+notification_message_type	1
 notification_message_type	1
 role	1
 role	1
 country	3
 country	3
 list_entity	1
+list_entity	1
 permission	2
 permission	2
-list_field_entity	1
 list_field_entity	1
 currency_exchange	3
 currency_exchange	3
@@ -11841,33 +11852,37 @@ contact_type	1
 contact_type	1
 contact_map	7910
 contact_map	7910
+period_unit	1
+period_unit	1
+payment_info_cheque	17
 payment_info_cheque	17
 report_field	18
 report_field	18
 billing_process	2
-period_unit	1
-period_unit	1
-process_run	1
-invoice_delivery_method	1
-order_line_type	1
-process_run	1
-order_line_type	1
-preference_type	1
-list_entity	1
 billing_process	2
+process_run	1
+process_run	1
 process_run_total	1
 process_run_total	1
 preference	5
 preference	5
 notification_message	1
-notification_message_section	1
+notification_message	1
 notification_message_section	1
 notification_message_line	1
 notification_message_line	1
 ageing_entity_step	1
 ageing_entity_step	1
-item_type	23
-item_type	23
+item_type	24
+item_type	24
+item	31
+item	31
+event_log	467
+event_log	467
+purchase_order	1079
+purchase_order	1079
+order_line	2081
+order_line	2081
 invoice	86
 invoice	86
 invoice_line	87
@@ -11876,8 +11891,10 @@ order_process	86
 payment	19
 payment	19
 base_user	1079
+base_user	1079
 customer	1070
 customer	1070
+contact	1131
 contact	1131
 contact_field	2026
 contact_field	2026
@@ -11893,56 +11910,44 @@ generic_status	1
 generic_status	1
 promotion	1
 promotion	1
-mediation_record	1
-event_log	469
-event_log	469
-permission_type	1
-permission_type	1
-invoice_delivery_method	1
-payment_method	1
-notification_message_type	1
-billing_process_configuration	1
-payment_info_cheque	17
-notification_message	1
-item	30
-item	30
-purchase_order	1079
-purchase_order	1079
-order_line	2081
-order_line	2081
-order_process	86
-base_user	1079
-contact	1131
-payment_invoice	1
-ach	1
-ach	1
-partner_payout	1
-partner_payout	1
-process_run_total_pm	1
-process_run_total_pm	1
-report_user	1
-report_user	1
-payment_authorization	1
-payment_authorization	1
-paper_invoice_batch	1
-paper_invoice_batch	1
-notification_message_arch	1
-notification_message_arch	1
-notification_message_arch_line	1
-pluggable_task_parameter	8309
-notification_message_arch_line	1
-mediation_process	1
-mediation_process	1
-mediation_record_line	1
-mediation_record_line	1
 filter	1
 filter_set	1
-pluggable_task	606
 recent_item	1
 breadcrumb	1
 plan	1
 plan_item	1
-price_model	20
+permission_type	1
+permission_type	1
+invoice_delivery_method	1
+event_log_module	1
+list_field_entity	1
+pluggable_task_parameter	8313
+billing_process_configuration	1
+price_model	21
+pluggable_task	606
+notification_message_section	1
+order_process	86
+payment_invoice	1
+mediation_process	1
+mediation_process	1
+ach	1
+ach	1
+partner_payout	1
+partner_payout	1
+process_run_total_pm	1
+process_run_total_pm	1
+report_user	1
+report_user	1
+payment_authorization	1
+payment_authorization	1
+paper_invoice_batch	1
+paper_invoice_batch	1
+notification_message_arch	1
+notification_message_arch	1
+notification_message_arch_line	1
+notification_message_arch_line	1
+mediation_record_line	1
+mediation_record_line	1
 \.
 
 
@@ -15600,19 +15605,20 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id) FROM 
 3	METERED	15.0000000000	\N	1
 4	METERED	12.9899997711	\N	1
 14	METERED	5.0000000000	\N	1
-140	METERED	15.0000000000	\N	11
 150	METERED	0.0000000000	\N	1
 151	METERED	15.0000000000	\N	1
 152	METERED	10.0000000000	\N	1
 1600	METERED	0.0000000000	\N	1
 1601	METERED	0.0000000000	\N	1
 1602	METERED	3.5000000000	\N	1
-1700	METERED	27.7299995422	\N	11
+1701	METERED	25.0000000000	\N	1
 1703	METERED	40.0000000000	\N	1
 1705	METERED	30.0000000000	\N	1
-1800	METERED	0.0000000000	\N	11
-1802	METERED	0.0000000000	\N	11
+1801	METERED	0.0000000000	\N	1
+1803	METERED	0.0000000000	\N	1
 1900	METERED	0.0000000000	\N	1
+2001	METERED	99.9900000000	\N	1
+2003	METERED	15.0000000000	\N	11
 \.
 
 

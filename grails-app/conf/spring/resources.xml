@@ -22,7 +22,7 @@
           scope="singleton"
           init-method="init"
           destroy-method="destroy"/>
-    
+
     <!-- Session Facade beans, used mostly for transaction control and other AOP -->
     <bean id="itemSession" class="com.sapienter.jbilling.server.item.ItemSessionBean"/>
     <bean id="notificationSession" class="com.sapienter.jbilling.server.notification.NotificationSessionBean"/>
@@ -36,8 +36,7 @@
     <bean id="mediationSession" class="com.sapienter.jbilling.server.mediation.MediationSessionBean"/>
     <bean id="reportSession" class="com.sapienter.jbilling.server.report.ReportSessionBean"/>
     <bean id="billingProcessSession" class="com.sapienter.jbilling.server.process.BillingProcessSessionBean"/>
-    <bean id="provisioningProcessSession"
-          class="com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionBean"/>
+    <bean id="provisioningProcessSession" class="com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionBean"/>
 
     <!-- The web services API, which is used as main service in the GUI -->
     <bean id="webServicesSession" class="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean">
@@ -123,7 +122,7 @@
     <bean id="webServicesSecurityAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
         <property name="advice" ref="webServicesSecurityAdvice"/>
         <property name="pattern" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean.*"/>
-    </bean>    
+    </bean>
 
     <!-- Exception Advice for WebServicesSessionBean -->
     <!-- Re-throws all exceptions as SessionInternalErrors. -->
@@ -140,15 +139,15 @@
         <property name="advice" ref="webServicesLogAdvice"/>
         <property name="pattern" value="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean.*"/>
     </bean>
-    
+
     <!--
           ***************************************************
           *              Validation                         *
           ***************************************************
     -->
-    
+
     <bean id="validator"
-         class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+          class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
     </bean>
 
     <!-- Validation for WebServicesSessionBean -->
@@ -167,7 +166,6 @@
         <property name="advice" ref="webServicesValidationAdvice"/>
         <property name="pattern" value="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean.*"/>
     </bean>
-    
 
 
     <!--
@@ -188,7 +186,7 @@
 
     <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
         <property name="connectionFactory">
-            <ref local="jmsConnectionFactory" />
+            <ref local="jmsConnectionFactory"/>
         </property>
     </bean>
 
@@ -208,7 +206,8 @@
     <!-- Message driven beans -->
     <bean id="processPaymentMDB" class="com.sapienter.jbilling.server.payment.event.ProcessPaymentMDB"/>
     <bean id="provisioningCommandsMDB" class="com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsMDB"/>
-    <bean id="testExternalProvisioningMDB" class="com.sapienter.jbilling.server.provisioning.TestExternalProvisioningMDB"/>
+    <bean id="testExternalProvisioningMDB"
+          class="com.sapienter.jbilling.server.provisioning.TestExternalProvisioningMDB"/>
     <bean id="externalProvisioningMDB" class="com.sapienter.jbilling.server.provisioning.ExternalProvisioningMDB"/>
 
     <!-- Queue listeners -->
@@ -222,7 +221,6 @@
         <jms:listener ref="provisioningCommandsMDB" destination="topic.jbilling.provisioningCommandsReply"/>
         <jms:listener ref="testExternalProvisioningMDB" destination="topic.jbilling.provisioningCommandsReply"/>
     </jms:listener-container>
-
 
 
     <!--
@@ -373,5 +371,111 @@
 
   <bean id="cai" class="com.sapienter.jbilling.server.provisioning.task.TestCommunication"/>
   <bean id="mmsc" class="com.sapienter.jbilling.server.provisioning.task.TestMMSCCommunication"/>
+
+    <!--
+          ***************************************************
+          *         HSQLDB In-memory Cache                  *
+          ***************************************************
+    -->
+
+    <!-- HSQLDB in-memory database -->
+    <bean id="memcacheDataSource"
+          class="org.springframework.jdbc.datasource.SingleConnectionDataSource"
+          lazy-init="true">
+        <property name="url" value="jdbc:hsqldb:mem:cacheDB"/>
+        <property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
+        <property name="username" value="sa"/>
+        <property name="password" value=""/>
+    </bean>
+
+    <bean id="memcacheTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="memcacheDataSource"/>
+    </bean>
+
+    <bean id="memcacheTransactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="transactionManager" ref="memcacheTransactionManager"/>
+    </bean>
+
+    <bean id="memcacheJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="memcacheDataSource"/>
+    </bean>
+
+    <!-- Example JDBC Reader for cache loading -->
+    <!--
+     <bean id="jdbcReader"
+         class="com.sapienter.jbilling.server.mediation.task.StatelessJDBCReader">
+         <property name="parameters">
+             <map>
+                 <entry key="url" value="jdbc:postgresql://localhost:5432/jbilling_test" />
+                 <entry key="driver" value="org.postgresql.Driver" />
+                 <entry key="username" value="jbilling" />
+                 <entry key="password" value="" />
+                 <entry key="table_name" value="cdr" />
+                 <entry key="batch_size" value="100" />
+             </map>
+         </property>
+     </bean>
+      -->
+
+    <bean id="pricingFileReader"
+          class="com.sapienter.jbilling.server.mediation.task.SeparatorFileReader">
+        <property name="parameters">
+             <map>
+                <entry key="format_file" value="RateCard.xml"/>
+                <entry key="suffix" value="cvs"/>
+             </map>
+        </property>
+    </bean>
+
+    <bean id="pricingLoader"
+          class="com.sapienter.jbilling.server.mediation.cache.BasicLoaderImpl" lazy-init="true" init-method="init">
+        <property name="jdbcTemplate" ref="memcacheJdbcTemplate"/>
+        <property name="transactionTemplate" ref="memcacheTransactionTemplate"/>
+        <property name="reader" ref="pricingFileReader"/>
+        <property name="indexColumnNames" value="dgts"/>
+    </bean>
+
+    <bean id="pricingFinder" class="com.sapienter.jbilling.server.mediation.cache.PricingFinder" init-method="init">
+        <constructor-arg ref="memcacheJdbcTemplate"/>
+        <constructor-arg ref="pricingLoader"/>
+    </bean>
+
+    <!-- NANPA call identification data -->
+    <bean id="callIdentificationReader"
+          class="com.sapienter.jbilling.server.mediation.task.StatelessJDBCReader"
+          lazy-init="true">
+        <property name="parameters">
+            <map>
+                <entry key="url" value="jdbc:mysql://localhost:3306/jbilling_test"/>
+                <entry key="driver" value="com.mysql.jdbc.Driver"/>
+                <entry key="username" value="jbilling"/>
+                <entry key="password" value="password"/>
+                <entry key="table_name" value="rate_center_table"/>
+                <entry key="batch_size" value="100"/>
+            </map>
+        </property>
+        <property name="entityId" value="1"/>
+    </bean>
+
+    <bean id="callIdentificationLoader"
+          class="com.sapienter.jbilling.server.mediation.cache.BasicLoaderImpl"
+          init-method="init"
+          lazy-init="true">
+        <property name="jdbcTemplate" ref="memcacheJdbcTemplate"/>
+        <property name="transactionTemplate" ref="memcacheTransactionTemplate"/>
+        <property name="reader" ref="callIdentificationReader"/>
+        <property name="tableName" value="rate_center_table"/>
+        <property name="indexName" value="rate_center_idx"/>
+        <property name="indexColumnNames" value="intl_code,ocn,rate_center"/>
+    </bean>
+
+    <bean id="callIdentificationFinder"
+          class="com.sapienter.jbilling.server.mediation.cache.NANPACallIdentificationFinder"
+          init-method="init"
+          lazy-init="true">
+        <constructor-arg ref="memcacheJdbcTemplate"/>
+        <constructor-arg ref="callIdentificationLoader"/>
+    </bean>
+
 
 </beans>

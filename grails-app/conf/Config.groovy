@@ -66,8 +66,8 @@ log4j = {
     appenders {
         console name:"CONSOLE", layout:pattern(conversionPattern: "%d{ABSOLUTE} %-5p [%c{1}] %m%n")
         rollingFile name:"serverAppender", datepattern: "'.'yyyy-MM-dd", file: "logs/server.log", layout:pattern(conversionPattern: "%d %-5r %-5p [%c] (%t:%x) %m%n")
-        rollingFile name:"jbillingAppender", datepattern: "'.'yyyy-MM-dd", file: "logs/jbilling.log", layout:pattern(conversionPattern: "%d %-5p [%c] %m%n")
-        rollingFile name:"hibernateAppender", datepattern: "'.'yyyy-MM-dd", file: "logs/sql.log", layout:pattern(conversionPattern: "%d %-5r %-5p [%c] (%t:%x) %m%n")
+        rollingFile name:"jbillingAppender", datepattern: "'.'yyyy-MM-dd", file: "logs/jbilling.log", layout:pattern(conversionPattern: "%d %-5p [%c] %m%n"), append:false
+        rollingFile name:"hibernateAppender", datepattern: "'.'yyyy-MM-dd", file: "logs/sql.log", layout:pattern(conversionPattern: "%d %-5r %-5p [%c] (%t:%x) %m%n"), append:false
     }
     
     debug jbillingAppender:'com.sapienter.jbilling'
@@ -91,7 +91,9 @@ log4j = {
      * org.hibernate               Log everything. This is a lot of information but it is useful for troubleshooting
      */
     
+    // use the hibernateAppender. If you use the jBillingAppender, some entries are not logged :( (bug?)
     //debug hibernateAppender:'org.hibernate.SQL'
+    //debug hibernateAppender:'org.hibernate.SQL.type'
     
     root {
         info 'CONSOLE','serverAppender'

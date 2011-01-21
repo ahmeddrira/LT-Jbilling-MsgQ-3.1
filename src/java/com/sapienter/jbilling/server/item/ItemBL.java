@@ -162,7 +162,7 @@ public class ItemBL {
                 " price = " + dto.getPrice());
         ItemPriceDAS itemPriceDas = new ItemPriceDAS();
         // may be there's just one simple price
-        if (dto.getPrices() == null) {
+        if (dto.getPrices() == null || dto.getPrices().size() == 0) {
             if (dto.getPrice() != null) {
                 List prices = new ArrayList();
                 // get the defualt currency of the entity

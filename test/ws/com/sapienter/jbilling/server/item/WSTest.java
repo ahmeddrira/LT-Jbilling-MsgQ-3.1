@@ -34,6 +34,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.Constants;
@@ -55,6 +56,7 @@ public class WSTest  extends TestCase {
             ItemDTOEx newItem = new ItemDTOEx();
             newItem.setDescription("an item from ws");
             newItem.setPrice(new BigDecimal("29.5"));
+            newItem.setNumber("WS-001");
             
             
             Integer types[] = new Integer[1];
@@ -62,7 +64,7 @@ public class WSTest  extends TestCase {
             newItem.setTypes(types);
             newItem.setPriceManual(new Integer(0));
             
-            System.out.println("Creating item ...");
+            System.out.println("Creating item ..." + newItem);
             Integer ret = api.createItem(newItem);
             assertNotNull("The item was not created", ret);
             System.out.println("Done!");

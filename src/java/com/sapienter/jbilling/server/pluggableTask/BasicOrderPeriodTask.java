@@ -87,7 +87,7 @@ public class BasicOrderPeriodTask
                 "order " + order.getId());
         }
         
-        // it's important to trucate this date
+        // it's important to truncate this date
         
         return Util.truncateDate(retValue);
     }
@@ -135,7 +135,7 @@ public class BasicOrderPeriodTask
             if (order.getBillingTypeId().compareTo(
                     Constants.ORDER_BILLING_POST_PAID) == 0 ) {
                 // this will move on time from the start of the billing period
-                // to the closest muliple period that doesn't go beyond the 
+                // to the closest multiple period that doesn't go beyond the 
                 // visibility date
                 
                 while (cal.getTime().compareTo(viewLimit) < 0
@@ -174,7 +174,7 @@ public class BasicOrderPeriodTask
                  
                 // bring the date until it goes over the view limit
                 // (or it reaches the expiration).
-                // This then takes all previos periods that should've been billed
+                // This then takes all previous periods that should've been billed
                 // by previous processes
                 Date myStart = firstBillableDate;
                 while (cal.getTime().compareTo(viewLimit) < 0 &&

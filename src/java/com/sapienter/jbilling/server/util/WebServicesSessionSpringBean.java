@@ -175,18 +175,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     /**
-     * Validates that the caller is a root user. If the user is not found this method will
-     * throw the standard Hibernate ObjectNotFoundException.
-     */
-    private void validateCaller() {
-        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
-        
-        UserBL bl = new UserBL();
-        bl.setRoot(details.getUsername());
-        bl.getEntityId(bl.getEntity().getUserId());
-    }
-
-    /**
      * Returns the user ID of the authenticated user account making the web service call.
      *
      * @return caller user ID
@@ -780,8 +768,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public CreateResponseWS create(UserWS user, OrderWS order)
             throws SessionInternalError {
-
-        validateCaller();
 
         CreateResponseWS retValue = new CreateResponseWS();
 
@@ -1478,9 +1464,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public Integer createItem(ItemDTOEx item) throws SessionInternalError {
         ItemBL itemBL = new ItemBL();
         ItemDTO dto = itemBL.getDTO(item);
-        //if (!ItemBL.validate(dto)) {
-        //    throw new SessionInternalError("invalid argument");
-        //}
         // get the info from the caller
         UserBL bl = new UserBL(getCallerId());
         Integer languageId = bl.getEntity().getLanguageIdField();

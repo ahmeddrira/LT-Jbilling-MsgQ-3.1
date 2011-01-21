@@ -33,6 +33,7 @@ import javax.validation.constraints.Digits;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -56,10 +57,10 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer[] types = null;
     private String promoCode = null;
     private Integer currencyId = null;
+    @Digits(integer=30, fraction=10, message="validation.error.not.a.number")
     private String price = null;
     private Integer orderLineTypeId = null;
-    @ItemPrices
-    private List<ItemPriceDTOEx> prices = null;
+    private List<ItemPriceDTOEx> prices = new ArrayList<ItemPriceDTOEx>();
 
     public ItemDTOEx(Integer id,String number, Integer entity, String description, Integer manualPrice,
                      Integer deleted, Integer currencyId, BigDecimal price, BigDecimal percentage,
@@ -232,7 +233,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     }
 
     public void setPrice(BigDecimal price) {
-        this.price = (price != null ? price.toString() : null);
+        setPrice((price != null ? price.toString() : null));
     }
 
     public List<ItemPriceDTOEx> getPrices() {
@@ -332,11 +333,38 @@ public class ItemDTOEx implements WSSecured, Serializable {
 
     @Override
     public String toString() {
-        StringBuffer str = new StringBuffer("{");
-
-        str.append("id=" + getId() + " " + "number=" + getNumber() + " " + "percentage=" + getPercentage() + " " + "priceManual=" + getPriceManual() + " " + "hasDecimals=" + getHasDecimals() + " " + "deleted=" + getDeleted() + " " + "entityId=" + getEntityId());
-        str.append('}');
-
-        return(str.toString());
+        StringBuilder builder = new StringBuilder();
+        builder.append("ItemDTOEx [currencyId=");
+        builder.append(currencyId);
+        builder.append(", deleted=");
+        builder.append(deleted);
+        builder.append(", description=");
+        builder.append(description);
+        builder.append(", entityId=");
+        builder.append(entityId);
+        builder.append(", hasDecimals=");
+        builder.append(hasDecimals);
+        builder.append(", id=");
+        builder.append(id);
+        builder.append(", number=");
+        builder.append(number);
+        builder.append(", orderLineTypeId=");
+        builder.append(orderLineTypeId);
+        builder.append(", percentage=");
+        builder.append(percentage);
+        builder.append(", price=");
+        builder.append(price);
+        builder.append(", priceManual=");
+        builder.append(priceManual);
+        builder.append(", prices=");
+        builder.append(prices);
+        builder.append(", promoCode=");
+        builder.append(promoCode);
+        builder.append(", types=");
+        builder.append(Arrays.toString(types));
+        builder.append("]");
+        return builder.toString();
     }
+
+
 }

@@ -354,8 +354,6 @@ public class ItemDTOEx implements WSSecured, Serializable {
         builder.append(price);
         builder.append(", priceManual=");
         builder.append(priceManual);
-        builder.append(", prices=");
-        builder.append(prices);
         builder.append(", promoCode=");
         builder.append(promoCode);
         builder.append(", types=");

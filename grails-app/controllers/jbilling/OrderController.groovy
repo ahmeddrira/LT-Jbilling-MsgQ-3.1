@@ -5,6 +5,7 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.user.UserWS;
 
 /**
  * 
@@ -53,9 +54,10 @@ class OrderController {
 		
 		Integer _orderId= params.id as Integer
 		OrderWS order= webServicesSession.getOrder(_orderId)
+		UserWS user= webServicesSession.getUserWS(order.getUserId())
 		recentItemService.addRecentItem(_orderId, RecentItemType.ORDER)
 		
-		render template:'order', model: [order: order, filters:filters]
+		render template:'order', model: [order: order, user:user]
 	}
 	
 	def showListAndOrder = {
@@ -92,6 +94,7 @@ class OrderController {
 				}
 				eq('deleted', 0)
 			}
+			order("id", "desc")
 		}
 	}
 	

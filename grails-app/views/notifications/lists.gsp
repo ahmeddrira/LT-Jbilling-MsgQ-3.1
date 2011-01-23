@@ -1,11 +1,11 @@
 <g:form>
 	<g:hiddenField name="selectedId" value="0" />
-	<div class="heading table-heading">
-	    <strong class="first"><g:message code="title.notification"/></strong>
-	    <strong style="width:20%"><g:message code="title.notification.active"/></strong>
+	<div class="heading">
+	    <strong><g:message code="title.notification"/></strong>
+	    <strong><g:message code="title.notification.active"/></strong>
 	</div>
 	
-	<div class="table-box">
+	<div class="box">
 		<ul>
 			<g:each in="${lst}" status="idx" var="dto">
 				<li>

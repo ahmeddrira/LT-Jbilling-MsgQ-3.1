@@ -219,12 +219,20 @@
     <target name="test-unit" depends="test.init" description="Run all class level unit tests and generate testing reports.">
         <javac srcdir="${source.test.dir}/unit"
                destdir="${build.test.dir}"
-               debug="true" deprecation="false" nowarn="true" fork="true">
+               debug="true" deprecation="false" nowarn="true" fork="true"
+               includeantruntime="false">
             <classpath refid="compile.classpath"/>
             <classpath refid="test.classpath"/>
         </javac>
-        
+
+        <!-- jbilling properties for plug-in tests -->
         <copy file="${source.java.dir}/jbilling.properties" todir="${build.test.dir}"/>
+
+        <!-- files for cache testing -->
+        <copy file="${source.spring.descriptor.dir}/jbilling-caching.xml" todir="${build.test.dir}"/>
+        <copy todir="${build.resources.dir}/mediation">
+            <fileset dir="${source.mediation.descriptor.dir}" includes="RateCard.*"/>
+        </copy>
 
         <!-- run unit tests -->
         <mkdir dir="${build.test-results.dir}/unit/xml"/>
@@ -257,7 +265,8 @@
 	        <javac srcdir="${source.test.dir}/ws"
                    destdir="${build.test.dir}"
                    includes="RemotingTest.java"
-                   debug="true" deprecation="false" nowarn="true" fork="true">
+                   debug="true" deprecation="false" nowarn="true" fork="true"
+                   includeantruntime="false">
                 <classpath refid="compile.classpath"/>
                 <classpath refid="test.classpath"/>
 	        </javac>
@@ -293,7 +302,8 @@
     <target name="test-ws" depends="test.init" description="Run all web service tests and generate testing reports.">
         <javac srcdir="${source.test.ws.dir}"
                destdir="${build.test.dir}"
-               debug="true" deprecation="false" nowarn="true" fork="true">
+               debug="true" deprecation="false" nowarn="true" fork="true"
+               includeantruntime="false">
             <classpath refid="compile.classpath"/>
             <classpath refid="test.classpath"/>
         </javac>
@@ -340,7 +350,8 @@
     <target name="test-integration" depends="test.init" description="Run all integration tests and generate testing reports.">
         <javac srcdir="${source.test.integration.dir}"
                destdir="${build.test.dir}"
-               debug="true" deprecation="false" nowarn="true" fork="true">
+               debug="true" deprecation="false" nowarn="true" fork="true"
+               includeantruntime="false">
 
             <src path="${source.test.ws.dir}"/> <!-- todo: integration uses some support classes from ws tests, refactor -->
             <classpath refid="compile.classpath"/>

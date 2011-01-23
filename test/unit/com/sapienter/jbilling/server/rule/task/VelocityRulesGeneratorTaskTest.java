@@ -42,11 +42,11 @@ public class VelocityRulesGeneratorTaskTest extends TestCase {
 
     // set plug-in parameters
     static {
-        HashMap<String, Object> parameters = new HashMap<String, Object>();
+        HashMap<String, String> parameters = new HashMap<String, String>();
 
         // rules digester config
         String config = System.getProperty("user.dir") + "/descriptors/rules/rules-generator-config.xml";
-        parameters.put(AbstractGeneratorTask.PARAM_CONFIG_FILENAME, config);
+        parameters.put(AbstractGeneratorTask.PARAM_CONFIG_FILENAME.getName(), config);
 
         // output file
         try {
@@ -55,11 +55,11 @@ public class VelocityRulesGeneratorTaskTest extends TestCase {
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
-        parameters.put(AbstractGeneratorTask.PARAM_OUTPUT_FILENAME, outputFile.getAbsolutePath());
+        parameters.put(AbstractGeneratorTask.PARAM_OUTPUT_FILENAME.getName(), outputFile.getAbsolutePath());
 
         // rules velocity template
         String template = System.getProperty("user.dir") + "/descriptors/rules/rules-generator-template-unit-test.vm";
-        parameters.put(VelocityRulesGeneratorTask.PARAM_TEMPLATE_FILENAME, template);
+        parameters.put(VelocityRulesGeneratorTask.PARAM_TEMPLATE_FILENAME.getName(), template);
         task.setParameters(parameters);
     }
 

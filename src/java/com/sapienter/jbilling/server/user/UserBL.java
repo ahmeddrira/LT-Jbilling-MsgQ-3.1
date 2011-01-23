@@ -236,8 +236,6 @@ public class UserBL extends ResultList implements UserSQL {
             }
         }
 
-        new UserDAS().flush();
-
         eLogger.audit(executorId,
                       user.getId(),
                       Constants.TABLE_BASE_USER,

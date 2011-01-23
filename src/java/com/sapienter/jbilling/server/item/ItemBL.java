@@ -205,7 +205,7 @@ public class ItemBL {
             types.add(typeBl.getEntity());
         }
     }
-
+    
     public void delete(Integer executorId) {
         item.setDeleted(new Integer(1));
         itemDas.flush();

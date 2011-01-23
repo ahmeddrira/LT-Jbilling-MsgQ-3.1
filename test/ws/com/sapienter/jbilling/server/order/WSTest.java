@@ -885,7 +885,7 @@ public class WSTest  extends TestCase {
             order = api.getOrder(orderId);
 
             // check order was modified
-            assertEquals("Order was changed by rules", "Modified by rules.", 
+            assertEquals("Order was changed by rules", "Modified by rules.",
                     order.getNotes());
             OrderLineWS[] orderLines = order.getOrderLines();
             assertEquals("Only 1 order line", 1, orderLines.length);
@@ -1408,7 +1408,7 @@ public class WSTest  extends TestCase {
             api.generateRules(xml);
 
             // wait for packages to be rescanned
-            pause(5500);
+            pause(10000); // DROOLS rescans every 5 seconds, give it 10 to find the change and load it
 
             // create order with 1 line and invoice
             OrderWS order = createMockOrder(USER_ID, 1, new BigDecimal("5.00"));

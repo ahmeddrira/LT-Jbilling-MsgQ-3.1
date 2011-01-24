@@ -3,7 +3,7 @@
 <div class="column-hold">
 
     <div class="heading">
-        <strong><g:message code="order.label.details"/>&nbsp;${order?.id}</strong>
+        <strong><g:message code="order.label.details"/>&nbsp;<em>${order?.id}</em></strong>
     </div>
     
     <!-- Order Details -->

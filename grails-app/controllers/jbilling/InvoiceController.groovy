@@ -40,7 +40,7 @@ class InvoiceController {
 	def list = {
 
 		if (params.id) {
-			redirect (action: 'show', params: [id: params.id as Integer])
+			redirect (action: 'showListAndInvoice', params: [id: params.id as Integer])
 		}
 		
 		def filters = filterService.getFilters(FilterType.INVOICE, params)
@@ -157,9 +157,9 @@ class InvoiceController {
 			breadcrumbService.addBreadcrumb(controllerName, actionName, null, invId)
 
 			log.debug "Template: ${params.template}"
-			if (params.template != 'show') {
-				redirect(action: 'showListAndInvoice', params:[id:invId])
-			} 
+			//if (params.template != 'show') {
+			//	redirect(action: 'showListAndInvoice', params:[id:invId])
+			//} 
 			
 			try {
 				invoice= webServicesSession.getInvoiceWS(invId)
@@ -190,7 +190,7 @@ class InvoiceController {
 			}
 		}		
 		
-		render template: "show", model:[totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
+		render template: params.template ?: 'show', model:[totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
 	}
 	
 	def delete = {

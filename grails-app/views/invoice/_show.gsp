@@ -5,26 +5,35 @@
 <div class="column-hold">
 
 	<div class="heading">
-		<strong><g:message code="invoice.label.details"/> -
-			<g:if test="${user?.contact && (user.contact.firstName || user.contact.lastName)}">
-                ${user.contact.firstName} ${user.contact.lastName}
-            </g:if>
-            <g:else>
-                ${user?.userName}
-            </g:else>
+		<strong><g:message code="invoice.label.details"/> <em>${invoice?.id}</em>
 		</strong>
 	</div>
 
 	<!-- Invoice details -->
 	<div class="box">
 		<table class="dataTable">
-			<tr><td><g:message code="invoice.label.id"/>:</td><td class="value">${invoice.id}</td></tr>
-			<tr><td><g:message code="invoice.label.number"/>:</td><td class="value">${invoice.number}</td></tr>
+            <tr><td><strong>
+                    <g:if test="${user?.contact?.firstName || user?.contact?.lastName}">
+                        ${user.contact.firstName}&nbsp;${user.contact.lastName}
+                    </g:if>
+                    <g:else>
+                        ${user?.userName}
+                    </g:else>
+                </strong><br>
+                <em>${user?.contact?.organizationName}</em>
+            </td></tr>
             <tr><td><g:message code="invoice.label.user.id"/>:</td><td class="value">
                 <g:link controller="user" action="list" id="${user?.id}">
                     ${user?.id}
                 </g:link>
             </td></tr>
+            <tr><td><g:message code="invoice.label.user.name"/>:</td>
+                <td class="value">${user?.userName}</td>
+            </tr>
+        </table>
+        <table class="dataTable">
+			<tr><td><g:message code="invoice.label.id"/>:</td><td class="value">${invoice.id}</td></tr>
+			<tr><td><g:message code="invoice.label.number"/>:</td><td class="value">${invoice.number}</td></tr>
 			<tr><td><g:message code="invoice.label.status"/>:</td><td class="value">${invoice.statusDescr}</td></tr>
 			<tr><td><g:message code="invoice.label.date"/>:</td><td class="value">${Util.formatDate(invoice.createDateTime, session["user_id"])}</td></tr>
 			<tr><td><g:message code="invoice.label.duedate"/>:</td><td class="value">${Util.formatDate(invoice.dueDate, session["user_id"])}</td></tr>

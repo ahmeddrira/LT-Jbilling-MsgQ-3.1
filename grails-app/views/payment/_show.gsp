@@ -27,27 +27,29 @@
         <!-- user details -->
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>
-                <tr>
-                    <td><g:message code="payment.user.id"/></td>
-                    <td class="value">${selected.baseUser.id}</td>
-                </tr>
-
                 <g:if test="${contact?.firstName || contact?.lastName}">
-                <tr>
-                    <td><g:message code="prompt.customer.name"/></td>
-                    <td class="value">${contact.firstName} ${contact.lastName}</td>
-                </tr>
+                    <tr>
+                        <td><g:message code="prompt.customer.name"/></td>
+                        <td class="value">${contact.firstName} ${contact.lastName}</td>
+                    </tr>
                 </g:if>
 
                 <g:if test="${contact?.organizationName}">
-                <tr>
-                    <td><g:message code="prompt.organization.name"/></td>
-                    <td class="value">${contact.organizationName}</td>
-                </tr>
+                    <tr>
+                        <td><g:message code="prompt.organization.name"/></td>
+                        <td class="value">${contact.organizationName}</td>
+                    </tr>
                 </g:if>
-
                 <tr>
-                    <td><g:message code="prompt.login.name"/></td>
+                    <td><g:message code="payment.user.id"/></td>
+                    <td class="value">
+                        <g:link controller="user" action="list" id="${selected?.baseUser?.id}">
+                            ${selected.baseUser.id}
+                        </g:link>
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:message code="payment.label.user.name"/></td>
                     <td class="value">${selected.baseUser.userName}</td>
                 </tr>
             </tbody>

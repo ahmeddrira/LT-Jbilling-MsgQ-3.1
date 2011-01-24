@@ -36,6 +36,18 @@
         </g:applyLayout>
 
         <g:applyLayout name="form/date">
+            <content tag="label">Active Since</content>
+            <content tag="label.for">activeSince</content>
+            <g:textField class="field" name="cycleEnd"/>
+        </g:applyLayout>
+
+        <g:applyLayout name="form/date">
+            <content tag="label">Active Until</content>
+            <content tag="label.for">activeUntil</content>
+            <g:textField class="field" name="activeUntil"/>
+        </g:applyLayout>
+
+        <g:applyLayout name="form/date">
             <content tag="label">Cycle Start</content>
             <content tag="label.for">cycleStart</content>
             <g:textField class="field" name="cycleStart"/>
@@ -45,12 +57,6 @@
             <content tag="label">Cycle End</content>
             <content tag="label.for">cycleEnd</content>
             <g:textField class="field" name="cycleEnd"/>
-        </g:applyLayout>
-
-        <g:applyLayout name="form/date">
-            <content tag="label">Active Until</content>
-            <content tag="label.for">activeUntil</content>
-            <g:textField class="field" name="activeUntil"/>
         </g:applyLayout>
 
         <g:applyLayout name="form/checkbox">

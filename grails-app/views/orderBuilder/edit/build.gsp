@@ -13,8 +13,8 @@
     <content tag="builder">
         <div id="builder-tabs">
             <ul>
-                <li><a href="${createLink(action: 'details')}">Details</a></li>
-                <li><a href="${createLink(action: 'products')}">Products</a></li>
+                <li><a href="${createLink(action: 'edit', event: 'details')}">Details</a></li>
+                <li><a href="${createLink(action: 'edit', event: 'products')}">Products</a></li>
             </ul>
         </div>
     </content>

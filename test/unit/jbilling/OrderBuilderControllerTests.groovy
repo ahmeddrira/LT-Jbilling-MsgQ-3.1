@@ -2,7 +2,7 @@ package jbilling
 
 import grails.test.*
 
-class OrderControllerTests extends ControllerUnitTestCase {
+class OrderBuilderControllerTests extends ControllerUnitTestCase {
     protected void setUp() {
         super.setUp()
     }

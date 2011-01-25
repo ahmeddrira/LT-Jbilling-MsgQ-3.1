@@ -1056,8 +1056,8 @@ ul.cloud li a {
 #review-box .box-text {
     background-color: #fdfdfd;
     border: 1px solid #eee;
-    height: 100px;
     font-size: 14px;
+    height: auto;
     margin: 30px auto 5px;
 }
 ul#order-lines {
@@ -1075,10 +1075,15 @@ ul#order-lines {
 }
 #order-lines li.editor {
     margin-bottom: 7px;
+    display: none;
+}
+#order-lines li.open {
+    display: block;
 }
 #order-lines li.active, #order-lines li.line:hover {
     background: url(../images/bg-gradient2.gif) right -1px repeat-x;
     border: 1px dashed #c1c1c1;
+    cursor: pointer;
 }
 #order-lines li.active span {
     font-weight: normal;

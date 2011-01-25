@@ -31,6 +31,7 @@ import com.sapienter.jbilling.server.order.db.OrderBillingTypeDTO
 import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO
 import com.sapienter.jbilling.server.order.OrderLineWS
+import com.sapienter.jbilling.common.SessionInternalError
 
 /**
  * OrderController
@@ -45,6 +46,8 @@ class OrderBuilderController {
 
     def webServicesSession
     def messageSource
+    def viewUtils
+
     def breadcrumbService
 
     def index = {
@@ -53,8 +56,8 @@ class OrderBuilderController {
 
     def editFlow = {
         /**
-         * Initializes the order builder, putting necessary data into the flow context
-         * so that it can be referenced later.
+         * Initializes the order builder, putting necessary data into the flow and conversation
+         * contexts so that it can be referenced later.
          */
         initialize {
             action {
@@ -74,9 +77,8 @@ class OrderBuilderController {
 
                 // available order periods
                 def company = CompanyDTO.get(session['company_id'])
-                def orderPeriods = company.orderPeriods
-                orderPeriods.add(new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE))
-                orderPeriods.sort{ it.id }
+                def orderPeriods = company.orderPeriods.collect { new OrderPeriodDTO(it.id) } << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE)
+                orderPeriods.sort { it.id }
 
                 // available order types
                 def orderBillingTypes = [
@@ -84,8 +86,18 @@ class OrderBuilderController {
                         new OrderBillingTypeDTO(Constants.ORDER_BILLING_POST_PAID)
                 ]
 
-                // objects added to the 'flow' scope are available for duration of the builder conversation
-                [ company: company, orderPeriods: orderPeriods, orderBillingTypes: orderBillingTypes, user: user, contact: contact, order: order ]
+                // todo: create/edit order breadcrumbs
+
+                // model scope for this flow
+                flow.company = company;
+                flow.orderPeriods = orderPeriods
+                flow.orderBillingTypes = orderBillingTypes
+                flow.user = user
+                flow.contact = contact
+
+                // conversation scope
+                conversation.order = order
+                conversation.products = []
             }
             on("success").to("build")
         }
@@ -133,25 +145,13 @@ class OrderBuilderController {
                 }
 
                 params.template = 'products'
-                [ products: products ]
+                conversation.products = products
             }
             on("success").to("build")
         }
 
         /**
-         * Updates the main order attributes (period, billing type, active dates etc.) and
-         * renders the order review panel.
-         */
-        updateOrder {
-            action {
-                bindData(flow.order, params)
-                params.template = 'review'
-            }
-            on("success").to("build")
-        }
-
-        /**
-         * Adds a product to the order as a new order line.
+         * Adds a product to the order as a new order line and renders the review panel.
          */
         addOrderLine {
             action {
@@ -162,15 +162,68 @@ class OrderBuilderController {
                 line.itemId = params.int('id')
                 line.useItem = true
 
-                // add to order lines
-                def order = flow.order
-
+                // add line to order
+                def order = conversation.order
                 def lines = order.orderLines as List
                 lines.add(line)
                 order.orderLines = lines.toArray()
 
+                // rate order and render the review pane
                 params.template = 'review'
-                [ order: webServicesSession.rateOrder(order) ]
+                params.newLineIndex = lines.size() - 1
+                conversation.order = webServicesSession.rateOrder(order)
+
+                log.debug("New order line added to index: ${params.newLineIndex}")
+            }
+            on("success").to("build")
+        }
+
+        /**
+         * Updates an order line  and renders the review panel.
+         */
+        updateOrderLine {
+            action {
+                def order = conversation.order
+
+                def index = params.int('index')
+                def line = order.orderLines[index]
+                bindData(line, params["line-${index}"])
+                order.orderLines[index] = line
+
+                params.template = 'review'
+                conversation.order = webServicesSession.rateOrder(order)
+            }
+            on("success").to("build")
+        }
+
+        /**
+         * Removes a line from the order and renders the review panel.
+         */
+        removeOrderLine {
+            action {
+                def order = conversation.order
+
+                def index = params.int('index')
+                def lines = order.orderLines as List
+                lines.remove(index)
+                order.orderLines = lines.toArray()
+
+                params.template = 'review'
+                conversation.order = webServicesSession.rateOrder(order)
+            }
+            on("success").to("build")
+        }
+
+        /**
+         * Updates order attributes (period, billing type, active dates etc.) and
+         * renders the order review panel.
+         */
+        updateOrder {
+            action {
+                bindData(conversation.order, params)
+
+                params.template = 'review'
+                conversation.order = webServicesSession.rateOrder(conversation.order)
             }
             on("success").to("build")
         }
@@ -186,9 +239,12 @@ class OrderBuilderController {
         build {
             on("details").to("showDetails")
             on("products").to("showProducts")
+            on("addLine").to("addOrderLine")
+            on("updateLine").to("updateOrderLine")
+            on("removeLine").to("removeOrderLine")
             on("update").to("updateOrder")
-            on("add").to("addOrderLine")
             on("save").to("saveOrder")
+            on("cancel").to("finish")
         }
 
         /**
@@ -196,13 +252,19 @@ class OrderBuilderController {
          */
         saveOrder {
             action {
-
+                try {
+                    webServicesSession.createOrder(conversation.order)
+                } catch (SessionInternalError e) {
+                    viewUtils.resolveException(flash, session.locale, e);
+                    error()
+                }
             }
+            on("error").to("build")
             on("success").to("finish")
         }
 
         finish {
-            redirect controller: 'order', action: 'list', id: flow?.order?.id
+            redirect controller: 'order', action: 'list', id: conversation?.order?.id
         }
     }
 

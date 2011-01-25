@@ -49,18 +49,18 @@
                 <g:each var="product" in="${products}">
                     <tr>
                         <td>
-                            <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'add']" update="column2" method="GET">
+                            <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'addLine']" update="column2" method="GET">
                                 <strong>${product.getDescription(session['language_id'])}</strong>
                                 <em><g:message code="product.id.label" args="[product.id]"/></em>
                             </g:remoteLink>
                         </td>
                         <td class="small">
-                            <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'add']" update="column2" method="GET">
+                            <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'addLine']" update="column2" method="GET">
                                 <span>${product.internalNumber}</span>
                             </g:remoteLink>
                         </td>
                         <td class="medium">
-                            <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'add']" update="column2" method="GET">
+                            <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'addLine']" update="column2" method="GET">
                                 <g:if test="${product.percentage}">
                                     %<g:formatNumber number="${product.percentage}" formatName="money.format"/>
                                 </g:if>

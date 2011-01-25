@@ -188,7 +188,6 @@ class OrderBuilderController {
             on("products").to("showProducts")
             on("update").to("updateOrder")
             on("add").to("addOrderLine")
-
             on("save").to("saveOrder")
         }
 

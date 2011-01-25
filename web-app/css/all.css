@@ -1053,6 +1053,13 @@ ul.cloud li a {
     font-style: italic;
     padding: 0 7px;
 }
+#review-box .box-text {
+    background-color: #fdfdfd;
+    border: 1px solid #eee;
+    height: 100px;
+    font-size: 14px;
+    margin: 30px auto 5px;
+}
 ul#order-lines {
     width: 85%;
     margin: 0 auto;

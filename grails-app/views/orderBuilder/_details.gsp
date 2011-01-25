@@ -80,10 +80,11 @@
 
     <script type="text/javascript">
         $(function() {
-            $('#order-details-form :checkbox, #order-details-form select').change(function() {
+            $('#order-details-form').find(':text.hasDatepicker, select, :checkbox').change(function() {
                 $('#order-details-form').submit();
             });
-            $('#order-details-form :input').not(':password,:checkbox,:radio,select').blur(function() {
+
+            $('#order-details-form').find('textarea,:text').not('.hasDatepicker').blur(function() {
                 $('#order-details-form').submit();
             });
         });

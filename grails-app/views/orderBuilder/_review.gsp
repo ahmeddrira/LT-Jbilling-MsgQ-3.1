@@ -13,6 +13,7 @@
         <g:hiddenField name="execution" value="${flowExecutionKey}"/>
 
         <div class="box no-heading">
+
             <!-- order header -->
             <div class="header">
                 <div class="column">
@@ -79,8 +80,10 @@
 
             <!-- order notes -->
             <g:if test="${order.notes}">
-                <div class="notes">
-                    <p class="description">${order.notes}</p>
+                <div class="box-text">
+                    <ul>
+                        <li><p>${order.notes}</p></li>
+                    </ul>
                 </div>
             </g:if>
         </div>

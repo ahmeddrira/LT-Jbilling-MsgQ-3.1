@@ -28,6 +28,7 @@ import com.sapienter.jbilling.server.item.PlanBL;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager;
+import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
@@ -174,6 +175,8 @@ public class OrderBL extends ResultList
                 lines.add(getOrderLineWS(line.getId()));
             }
         }
+        
+        retValue.setGeneratedInvoices(new InvoiceBL().DTOtoWS(new ArrayList(order.getInvoices())));
         retValue.setOrderLines(new OrderLineWS[lines.size()]);
         lines.toArray(retValue.getOrderLines());
         return retValue;

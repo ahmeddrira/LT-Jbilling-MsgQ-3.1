@@ -6,6 +6,9 @@ import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.order.db.OrderDAS;
+import com.sapienter.jbilling.client.util.Constants;
+
 
 /**
  * 
@@ -52,11 +55,15 @@ class OrderController {
 	
 	def show = {
 		
+		for (OrderDTO dto: OrderDTO.list()) {
+			log.debug "Order Id: ${dto.getId()} Invoices: ${dto.getInvoices().size()}."
+		}
+		
 		Integer _orderId= params.id as Integer
 		OrderWS order= webServicesSession.getOrder(_orderId)
 		UserWS user= webServicesSession.getUserWS(order.getUserId())
 		recentItemService.addRecentItem(_orderId, RecentItemType.ORDER)
-		
+		log.debug "Invoices Generated: ${order.getGeneratedInvoices()}"
 		render template:'order', model: [order: order, user:user]
 	}
 	
@@ -96,6 +103,27 @@ class OrderController {
 			}
 			order("id", "desc")
 		}
+	}
+	
+	def applyToInvoice = {
+		render 'applyToInvoice'
+	}
+	
+	def generateInvoice = {
+		log.debug 'generateInvoice for order ${params.id}'
+		
+		OrderDTO order= new OrderDAS().find(params.int('id'))
+		if (!order.getStatusId().equals(
+			Constants.ORDER_STATUS_ACTIVE)) {
+			flash.error ='order.error.geninvoice.inactive'
+			redirect (action: 'showListAndOrder', params: [id: params.id as Integer])
+		}
+		
+		Integer invoiceID= webServicesSession.createInvoiceFromOrder(order.getId(), null)
+		
+		flash.message ='order.geninvoice.success'
+		flash.args = [order.getId()]
+		redirect controller: 'invoice', action: 'showListAndInvoice', params: [id: invoiceID]
 	}
 	
 }

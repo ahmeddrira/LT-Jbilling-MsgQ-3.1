@@ -25,12 +25,13 @@
  */
 package com.sapienter.jbilling.server.order;
 
-import com.sapienter.jbilling.server.security.WSSecured;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
+
+import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.security.WSSecured;
 
 /**
  * @author Emil
@@ -63,6 +64,7 @@ public class OrderWS implements WSSecured, Serializable {
     private Integer notesInInvoice;
     private OrderLineWS orderLines[] = null;
     private String pricingFields = null;
+    private InvoiceWS[] generatedInvoices= null;
 
     // balances
     private String total;
@@ -111,7 +113,15 @@ public class OrderWS implements WSSecured, Serializable {
         setCycleStarts(cycleStarts);
     }
 
-    public Integer getId() {
+    public InvoiceWS[] getGeneratedInvoices() {
+		return generatedInvoices;
+	}
+
+	public void setGeneratedInvoices(InvoiceWS[] generatedInvoices) {
+		this.generatedInvoices = generatedInvoices;
+	}
+
+	public Integer getId() {
         return id;
     }
 

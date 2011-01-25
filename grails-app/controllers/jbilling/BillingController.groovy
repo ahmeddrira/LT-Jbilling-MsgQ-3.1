@@ -27,11 +27,16 @@ class BillingController {
 	def breadcrumbService
 	def filterService
 
+	def index = {
+		redirect action: list, params: params
+	}
+	
+	
 	/*
 	 * Renders/display list of Billing Processes Ordered by Process Id descending
 	 * so that the lastest process shows first.
 	 */
-	def index = {
+	def list = {
 
 		Map dataHashMap = new HashMap()
 		Iterator iter= null

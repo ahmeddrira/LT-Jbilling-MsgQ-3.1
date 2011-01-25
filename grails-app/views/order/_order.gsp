@@ -131,35 +131,56 @@
     </div>
     
     <!-- Invoices Generated -->
-    <%-- 
-    <div class="heading">
-        <strong><g:message code="order.label.invoices.generated"/></strong>
-    </div>
-    
-    <div class="box">
-        <table class="innerTable" >
-            <thead class="innerHeader">
-                 <tr>
-                    <th></th>
-                 </tr>
-            </thead>
-        </table>
-    </div>
-    --%>
+    <g:if test="${order?.generatedInvoices}">
+        <div class="heading">
+            <strong><g:message code="order.label.invoices.generated"/></strong>
+        </div>
+        
+        <div class="box">
+            <table class="innerTable" >
+                <thead class="innerHeader">
+                     <tr>
+                        <th><g:message code="order.invoices.period.start"/></th>
+                        <th><g:message code="order.invoices.period.end"/></th>
+                        <th><g:message code="order.invoices.periods.included"/></th>
+                        <th><g:message code="order.invoices.id"/></th>
+                        <th><g:message code="order.invoices.date"/></th>
+                        <th><g:message code="order.invoices.total"/></th>
+                        <th><g:message code="order.invoices.origin"/></th>
+                     </tr>
+                </thead>
+                <tbody>
+                     <g:each var="invoice" in="${order.generatedInvoices}" status="idx">
+                         <tr>
+                            <td class="innerContent"></td>
+                            <td class="innerContent"></td>
+                            <td class="innerContent"></td>
+                            <td class="innerContent">${invoice.id}</td>
+                            <td class="innerContent">
+                                <g:formatDate format="dd-MMM-yyyy HH:mm:ss A" date="${invoice.createDateTime}"/>
+                            </td>
+                            <td class="innerContent">${invoice.total }</td>
+                            <td class="innerContent"></td>
+                         </tr>
+                     </g:each>
+                </tbody>
+            </table>
+        </div>
+    </g:if>
     
     <div class="btn-box">
         <div class="row">
-            <a onclick="javascript: void(0)" class="submit">
+            <a href="${createLink (action: 'generateInvoice', params: [id: order?.id])}" class="submit order">
                 <span><g:message code="order.button.generate"/></span>
             </a>
         </div>
         <div class="row">
-            <a onclick="javascript: void(0)" class="submit">
+            <a href="${createLink (action: 'applyToInvoice', params: [id: order?.id])}" class="submit order">
                 <span><g:message code="order.button.apply"/></span>
             </a>
-            <a onclick="javascript: void(0)" class="submit">
-                <span><g:message code="order.button.edit"/></span>
-            </a>
+            <a href="${createLink (controller: 'orderbuilder', action: 'edit', params: [id: order?.id])}" class="submit edit">
+                <span><g:message code="order.button.edit"/>
+            </span></a>
         </div>
     </div>
 </div>

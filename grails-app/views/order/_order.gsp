@@ -58,7 +58,7 @@
                     </g:else>
                 </td>
             </tr>
-            <tr><td><g:message code="order.label.period"/>:</td><td class="value">${order.period}</td></tr>
+            <tr><td><g:message code="order.label.period"/>:</td><td class="value">${order.periodStr}</td></tr>
             <tr><td><g:message code="order.label.total"/>:</td>
                     <td class="value">${Util.formatMoney(order.total as BigDecimal,
                         session["user_id"],
@@ -175,10 +175,10 @@
             </a>
         </div>
         <div class="row">
-            <a href="${createLink (action: 'applyToInvoice', params: [id: order?.id])}" class="submit order">
-                <span><g:message code="order.button.apply"/></span>
+            <a href="${createLink (action: 'applyToInvoice', params: [id: order?.id, userId: user?.id])}" class="submit order">
+                <span><g:message code="order.button.apply.invoice"/></span>
             </a>
-            <a href="${createLink (controller: 'orderbuilder', action: 'edit', params: [id: order?.id])}" class="submit edit">
+            <a href="${createLink (controller: 'orderBuilder', action: 'edit', params: [id: order?.id])}" class="submit edit">
                 <span><g:message code="order.button.edit"/>
             </span></a>
         </div>

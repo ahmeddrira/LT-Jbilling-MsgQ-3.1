@@ -43,7 +43,7 @@ class FilterFactory {
         ],
         ORDER: [
             new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.EQ, field: 'baseUserByUserId.id', template: 'id', visible: true),
-			new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.EQ, field: 'baseUserByUserId.userName', template: 'id', visible: true),
+			new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.LIKE, field: 'baseUserByUserId.userName', template: 'customer/login', visible: true),
 			new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.DATE_BETWEEN, field: 'activeSince', template: 'created', visible: true),
 			new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDate', template: 'created', visible: true)
         ],

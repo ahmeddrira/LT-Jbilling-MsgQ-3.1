@@ -16,13 +16,13 @@
             <g:hiddenField name="execution" value="${flowExecutionKey}"/>
 
             <g:applyLayout name="form/input">
-                <content tag="label">Filter By</content>
+                <content tag="label"><g:message code="filters.title"/></content>
                 <content tag="label.for">filterBy</content>
                 <g:textField name="filterBy" class="field default" placeholder="${message(code: 'products.filter.by.default')}" value="${params.filterBy}"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/select">
-                <content tag="label">Product Category</content>
+                <content tag="label"><g:message code="order.label.products.category"/></content>
                 <content tag="label.for">typeId</content>
                 <g:select name="typeId" from="${company.itemTypes.sort{ it.id }}"
                           noSelection="['': message(code: 'filters.item.type.empty')]"
@@ -35,7 +35,6 @@
             $(function() {
                 $('#filterBy').blur(function() { $('#filter-form').submit(); });
                 $('#typeId').change(function() { $('#filter-form').submit(); });
-
                 placeholder();
             });
         </script>

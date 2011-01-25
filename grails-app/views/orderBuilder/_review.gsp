@@ -9,14 +9,15 @@
 
 <div id="review-box">
     <g:formRemote name="filter-form" url="[action: 'edit']" update="column2" method="GET">
-        <g:hiddenField name="_eventId" value="updateOrder"/>
+        <g:hiddenField name="_eventId" value="updateLine"/>
         <g:hiddenField name="execution" value="${flowExecutionKey}"/>
 
         <div class="box no-heading">
             <!-- order header -->
             <div class="header">
                 <div class="column">
-                    <h1><g:message code="order.review.id" args="[ order.id ?: '' ]"/></h1>
+                    <h1><g:message code="order.review.id" args="[order.id ?: '']"/></h1>
+
                     <h3>
                         <g:if test="${contact?.firstName || contact?.lastName}">
                             ${contact.firstName} ${contact.lastName}
@@ -24,8 +25,11 @@
                         <g:else>
                             ${user.userName}
                         </g:else>
-                        <g:if test="${contact}"><em>${contact.organizationName}</em></g:if>
                     </h3>
+
+                    <g:if test="${contact.organizationName}">
+                        <h3>${contact.organizationName}</h3>
+                    </g:if>
                 </div>
 
                 <div class="column">
@@ -36,12 +40,17 @@
                         <g:set var="orderBillingType" value="${orderBillingTypes.find{ order.billingTypeId == it.id }}"/>
                         ${orderBillingType?.getDescription(session['language_id'])}
                     </h2>
+
                     <h3 class="right capitalize">
-                        <g:formatDate date="${order.activeSince ?: order.createDate}"/>
+                        <g:set var="activeSince" value="${formatDate(date: order.activeSince ?: order.createDate)}"/>
+                        <g:set var="activeUntil" value="${formatDate(date: order.activeUntil)}"/>
+
                         <g:if test="${order.activeUntil}">
-                            <span>to</span>
-                            <g:formatDate date="${order.activeUntil}"/>
+                            <g:message code="order.review.active.date.range" args="[activeSince, activeUntil]"/>
                         </g:if>
+                        <g:else>
+                            <g:message code="order.review.active.since" args="[activeSince]"/>
+                        </g:else>
                     </h3>
                 </div>
 
@@ -57,7 +66,7 @@
                 </g:each>
 
                 <g:if test="${!order.orderLines}">
-                    <li><em><g:message code="no.order.lines"/></em></li>
+                    <li><em><g:message code="order.review.no.order.lines"/></em></li>
                 </g:if>
             </ul>
 

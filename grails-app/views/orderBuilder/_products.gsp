@@ -1,5 +1,12 @@
 <%@ page import="com.sapienter.jbilling.server.user.db.CompanyDTO; com.sapienter.jbilling.server.item.db.ItemTypeDTO" %>
 
+<%--
+  Shows the product list and provides some basic filtering capabilities.
+
+  @author Brian Cowdery
+  @since 23-Jan-2011
+--%>
+
 <div id="product-box">
 
     <!-- filter -->
@@ -43,19 +50,25 @@
                 <g:each var="product" in="${products}">
                     <tr>
                         <td>
-                            <strong>${product.getDescription(session['language_id'])}</strong>
-                            <em><g:message code="product.id.label" args="[product.id]"/></em>
+                            <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'add']" update="column2" method="GET">
+                                <strong>${product.getDescription(session['language_id'])}</strong>
+                                <em><g:message code="product.id.label" args="[product.id]"/></em>
+                            </g:remoteLink>
                         </td>
                         <td class="small">
-                            <span>${product.internalNumber}</span>
+                            <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'add']" update="column2" method="GET">
+                                <span>${product.internalNumber}</span>
+                            </g:remoteLink>
                         </td>
                         <td class="medium">
-                            <g:if test="${product.percentage}">
-                                %<g:formatNumber number="${product.percentage}" formatName="money.format"/>
-                            </g:if>
-                            <g:else>
-                                <g:formatNumber number="${product.defaultPrice?.rate}" type="currency" currencyCode="${product.defaultPrice?.currency?.code}"/>
-                            </g:else>
+                            <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'add']" update="column2" method="GET">
+                                <g:if test="${product.percentage}">
+                                    %<g:formatNumber number="${product.percentage}" formatName="money.format"/>
+                                </g:if>
+                                <g:else>
+                                    <g:formatNumber number="${product.defaultPrice?.rate}" type="currency" currencyCode="${product.defaultPrice?.currency?.code}"/>
+                                </g:else>
+                            </g:remoteLink>
                         </td>
                     </tr>
                 </g:each>

@@ -57,6 +57,12 @@ h1, h2, h3 {
     margin: 0;
     padding: 0;
 }
+h1.right, h2.right, h3.right {
+    text-align: right;
+}
+h1.capitalize, h2.capitalize, h3.capitalize {
+    text-transform: capitalize;
+}
 hr {
     display: block;
     position: relative;
@@ -1039,9 +1045,6 @@ ul.cloud li a {
 #review-box .header {
     width: 90%;
     margin: 0 auto 13px;
-}
-#review-box .header h3, #review-box .header h2{
-    text-align: right;
 }
 #review-box .header h2 { font-size: 16px; }
 #review-box .header h3 { font-size: 12px; }

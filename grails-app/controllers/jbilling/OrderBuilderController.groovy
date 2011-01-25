@@ -25,6 +25,12 @@ import com.sapienter.jbilling.server.item.db.ItemDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.order.OrderWS
 import com.sapienter.jbilling.server.user.db.UserDTO
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO
+import com.sapienter.jbilling.server.order.db.OrderBillingTypeDTO
+import com.sapienter.jbilling.server.util.Constants
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO
+import com.sapienter.jbilling.server.order.OrderLineWS
 
 /**
  * OrderController
@@ -52,41 +58,50 @@ class OrderBuilderController {
          */
         initialize {
             action {
-                log.debug("Initializing builder")
-
-                def company = CompanyDTO.get(session['company_id'])
-                def user = UserDTO.get(params.int('userId'))
                 def order = params.id ? webServicesSession.getOrder(params.int('id')) : new OrderWS()
+                def user = UserDTO.get(order?.userId ?: params.int('userId'))
+                def contact = ContactDTO.findByUserId(order?.userId ?: user.id)
 
-                // available in the 'flow' scope for duration of the builder
-                [ company: company, user: user, order: order ]
+                // set sensible defaults for new orders
+                if (!order.id || order.id == 0) {
+                    order.userId        = user.id
+                    order.currencyId    = user.currency.id
+                    order.period        = Constants.ORDER_PERIOD_ONCE
+                    order.billingTypeId = Constants.ORDER_BILLING_POST_PAID
+                    order.activeSince   = new Date()
+                    order.orderLines    = []
+                }
+
+                // available order periods
+                def company = CompanyDTO.get(session['company_id'])
+                def orderPeriods = company.orderPeriods
+                orderPeriods.add(new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE))
+                orderPeriods.sort{ it.id }
+
+                // available order types
+                def orderBillingTypes = [
+                        new OrderBillingTypeDTO(Constants.ORDER_BILLING_PRE_PAID),
+                        new OrderBillingTypeDTO(Constants.ORDER_BILLING_POST_PAID)
+                ]
+
+                // objects added to the 'flow' scope are available for duration of the builder conversation
+                [ company: company, orderPeriods: orderPeriods, orderBillingTypes: orderBillingTypes, user: user, contact: contact, order: order ]
             }
             on("success").to("build")
         }
 
         /**
-         * Renders the order details tab panel
+         * Renders the order details tab panel.
          */
         showDetails {
             action {
                 params.template = 'details'
             }
-            on("success").to("render")
-        }
-
-        updateDetails {
-            action {
-                def order = flow.order
-
-                // update order details
-
-                [ order: order ]
-            }
-            on("success").to("render")
+            on("success").to("build")
         }
 
         /**
-         * Renders the product list tab panel, filtering the product list by the given criteria
+         * Renders the product list tab panel, filtering the product list by the given criteria.
          */
         showProducts {
             action {
@@ -102,6 +117,7 @@ class OrderBuilderController {
                             or {
                                 eq('id', params.int('filterBy'))
                                 ilike('internalNumber', "%${params.filterBy}%")
+                                // todo: filter by item description (maybe use sql restriction?)
                             }
                         }
 
@@ -116,49 +132,68 @@ class OrderBuilderController {
                     }
                 }
 
-                log.debug "rendering products list"
-
                 params.template = 'products'
                 [ products: products ]
             }
-            on("success").to("render")
+            on("success").to("build")
         }
-
-        addProduct {
-            action {
-                // add the selected product to the order.
-                // re-render the order review template with the new product added and the line editor opened.
-            }
-            on("success").to("render")
-        }
-
-        // TODO: we can put some magic in the build.gsp view to merge these two view actions.
 
         /**
-         * Renders a partial view template for AJAX requests (workaround for the lack of AJAX support in webflow).
+         * Updates the main order attributes (period, billing type, active dates etc.) and
+         * renders the order review panel.
          */
-        render {
-            flow
-            on("save").to("save")
-            on("details").to("showDetails")
-            on("products").to("showProducts")
+        updateOrder {
+            action {
+                bindData(flow.order, params)
+                params.template = 'review'
+            }
+            on("success").to("build")
         }
 
         /**
-         * Shows the order builder. This is the "waiting" state that branches out to
-         * the rest of the flow. All AJAX actions and other states that build on order
-         * should return here when complete.
+         * Adds a product to the order as a new order line.
+         */
+        addOrderLine {
+            action {
+                // build line
+                def line = new OrderLineWS()
+                line.typeId = Constants.ORDER_LINE_TYPE_ITEM
+                line.quantity = BigDecimal.ONE
+                line.itemId = params.int('id')
+                line.useItem = true
+
+                // add to order lines
+                def order = flow.order
+                def lines = order.orderLines as List
+                lines.add(line)
+                order.orderLines = lines.toArray()
+
+                params.template = 'review'
+                [ order: webServicesSession.rateOrder(order) ]
+            }
+            on("success").to("build")
+        }
+
+        /**
+         * Shows the order builder. This is the "waiting" state that branches out to the rest
+         * of the flow. All AJAX actions and other states that build on the order should
+         * return here when complete.
+         *
+         * If the parameter 'template' is set, then a partial view template will be rendered instead
+         * of the complete 'build.gsp' page view (workaround for the lack of AJAX support in web-flow).
          */
         build {
-            on("save").to("save")
             on("details").to("showDetails")
             on("products").to("showProducts")
+            on("update").to("updateOrder")
+            on("add").to("addOrderLine")
+            on("save").to("saveOrder")
         }
 
         /**
          * Saves the order and exits the builder flow.
          */
-        save {
+        saveOrder {
             action {
 
             }

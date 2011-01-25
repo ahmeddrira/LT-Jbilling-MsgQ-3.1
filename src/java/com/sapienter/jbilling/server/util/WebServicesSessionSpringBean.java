@@ -1948,6 +1948,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
+        retValue.setTotal(order.getTotal());
 
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
         for (Iterator<OrderLineDTO> it = order.getLines().iterator(); it.hasNext();) {

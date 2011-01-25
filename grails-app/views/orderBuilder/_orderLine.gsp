@@ -2,10 +2,6 @@
 <%--
   Renders an OrderLineWS as an editable row for the order builder preview pane.
 
-    when line is clicked, toggle editor
-    when save is clicked, submit edit form and re-render
-    when remove is clicked, remove line and re-render
-
   @author Brian Cowdery
   @since 24-Jan-2011
 --%>

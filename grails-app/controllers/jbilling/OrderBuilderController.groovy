@@ -32,6 +32,7 @@ import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO
 import com.sapienter.jbilling.server.order.OrderLineWS
 import com.sapienter.jbilling.common.SessionInternalError
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 /**
  * OrderController
@@ -52,6 +53,44 @@ class OrderBuilderController {
 
     def index = {
         redirect action: 'edit'
+    }
+
+    /**
+     * Get a filtered list of products
+     *
+     * @param company company
+     * @param params parameter map containing filter criteria
+     * @return filtered list of products
+     */
+    def getProducts(CompanyDTO company, GrailsParameterMap params) {
+        params.max = params?.max?.toInteger() ?: pagination.max
+        params.offset = params?.offset?.toInteger() ?: pagination.offset
+
+        def products = ItemDTO.createCriteria().list(
+                max:    params.max,
+                offset: params.offset
+        ) {
+            and {
+                if (params.filterBy && params.filterBy != message(code: 'products.filter.by.default')) {
+                    or {
+                        eq('id', params.int('filterBy'))
+                        ilike('internalNumber', "%${params.filterBy}%")
+                        // todo: filter by item description (maybe use sql restriction?)
+                    }
+                }
+
+                if (params.typeId) {
+                    itemTypes {
+                        eq('id', params.int('typeId'))
+                    }
+                }
+
+                eq('deleted', 0)
+                eq('entity', company)
+            }
+        }
+
+        return products
     }
 
     def editFlow = {
@@ -97,7 +136,7 @@ class OrderBuilderController {
 
                 // conversation scope
                 conversation.order = order
-                conversation.products = []
+                conversation.products = getProducts(company, params)
             }
             on("success").to("build")
         }
@@ -117,35 +156,8 @@ class OrderBuilderController {
          */
         showProducts {
             action {
-                params.max = params?.max?.toInteger() ?: pagination.max
-                params.offset = params?.offset?.toInteger() ?: pagination.offset
-
-                def products = ItemDTO.createCriteria().list(
-                        max:    params.max,
-                        offset: params.offset
-                ) {
-                    and {
-                        if (params.filterBy && params.filterBy != message(code: 'products.filter.by.default')) {
-                            or {
-                                eq('id', params.int('filterBy'))
-                                ilike('internalNumber', "%${params.filterBy}%")
-                                // todo: filter by item description (maybe use sql restriction?)
-                            }
-                        }
-
-                        if (params.typeId) {
-                            itemTypes {
-                                eq('id', params.int('typeId'))
-                            }
-                        }
-
-                        eq('deleted', 0)
-                        eq('entity', flow.company)
-                    }
-                }
-
                 params.template = 'products'
-                conversation.products = products
+                conversation.products = getProducts(flow.company, params)
             }
             on("success").to("build")
         }
@@ -253,7 +265,14 @@ class OrderBuilderController {
         saveOrder {
             action {
                 try {
-                    webServicesSession.createOrder(conversation.order)
+                    def order = conversation.order
+
+                    if (!order.id || order.id == 0) {
+                        webServicesSession.createOrder(order)
+                    } else {
+                        webServicesSession.updateOrder(order)
+                    }
+
                 } catch (SessionInternalError e) {
                     viewUtils.resolveException(flash, session.locale, e);
                     error()

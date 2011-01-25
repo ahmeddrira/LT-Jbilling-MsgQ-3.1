@@ -11,21 +11,23 @@
 --%>
 
 <g:if test="${params.template}">
+    <!-- render the template -->
     <g:render template="${params.template}"/>
 </g:if>
 
 <g:else>
-<html>
-<head>
-    <meta name="layout" content="builder"/>
+    <!-- render the main builder view -->
+    <html>
+    <head>
+        <meta name="layout" content="builder"/>
 
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#builder-tabs').tabs();
-        });
-    </script>
-</head>
-<body>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#builder-tabs').tabs();
+            });
+        </script>
+    </head>
+    <body>
     <content tag="builder">
         <div id="builder-tabs">
             <ul>
@@ -38,6 +40,6 @@
     <content tag="review">
         <g:render template="review"/>
     </content>
-</body>
-</html>
+    </body>
+    </html>
 </g:else>

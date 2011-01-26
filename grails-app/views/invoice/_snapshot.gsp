@@ -28,7 +28,9 @@
     </div>
     
     <div class="btn-row">
-        <a href="${createLink (controller: 'order', action: 'apply', params: [id: session['applyToInvoiceOrderId'], invoiceId: invoice.id])}" class="submit payment">
+        <a href="${createLink (controller: 'order', action: 'apply', params: [id: session['applyToInvoiceOrderId'], invoiceId: invoice.id])}" class="submit okay">
             <span><g:message code="order.button.apply"/></span></a>
+        <a href="${createLink (controller: 'order', action: 'showListAndOrder', params: [id: session['applyToInvoiceOrderId']])}" class="submit cancel">
+            <span><g:message code="button.cancel"/></span></a>
     </div>
 </div>

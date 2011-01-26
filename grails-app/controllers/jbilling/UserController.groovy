@@ -21,7 +21,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 @Secured(['isAuthenticated()'])
 class UserController {
 
-    static pagination = [ max: 25, offset: 0 ]
+    static pagination = [ max: 10, offset: 0 ]
 
     IWebServicesSessionBean webServicesSession
     ViewUtils viewUtils

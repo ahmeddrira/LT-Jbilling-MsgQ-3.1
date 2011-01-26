@@ -710,9 +710,8 @@ hr {
 .pager-box {
     overflow:hidden;
     height:1%;
-    padding:6px;
+    padding: 10px;
     background:#f6f6f6;
-    border-top: 1px solid #bbb;
     border-right: 1px solid #bbb;
     border-left: 1px solid #bbb;
     text-align:center;
@@ -730,6 +729,12 @@ hr {
 }
 .pager-box a.nextLink {
 
+}
+.pager-box .left {
+    text-align: left;
+}
+.pager-box .right {
+    text-align: right;
 }
 .btn-box {
 	overflow:hidden;
@@ -776,14 +781,8 @@ hr {
 	white-space:nowrap;
 }
 /* list tables */
-.table-scroll {
-    overflow: auto;
-    height: 631px;
-}
 .table-box {
-    position: relative;
     margin: 0 auto;
-    padding-top: 30px;
 	border:solid #bbb;
 	border-width:0 1px;
 }
@@ -803,20 +802,13 @@ hr {
     border:1px solid #1b437d;
     width: 100%;
     height: 30px;
-    position: absolute;
-    top: 0;
-    left: 0;
     text-align: right;
 }
 .table-box thead th {
     color: #fff;
     text-align: left;
     padding: 4px 9px;
-
-    display: inline-block;
 }
-.table-box thead th:first-child, .table-box thead th.first  { float: left; }
-.table-box thead th:last-child, .table-box thead th.last { padding-right: 16px; } /* compensate for scrollbar */
 
 .table-box .large { width: 300px; }
 .table-box .medium2 { width: 150px; }

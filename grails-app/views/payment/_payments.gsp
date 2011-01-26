@@ -69,7 +69,12 @@
 
 <g:if test="${payments?.totalCount > params.max}">
     <div class="pager-box">
-        <util:remotePaginate controller="payment" action="list" params="[applyFilter: true]" total="${payments.totalCount}" update="column1"/>
+        <div class="row left">
+            <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], update: 'column1']"/>
+        </div>
+        <div class="row">
+            <util:remotePaginate controller="payment" action="list" params="[applyFilter: true]" total="${payments.totalCount}" update="column1"/>
+        </div>
     </div>
 </g:if>
 

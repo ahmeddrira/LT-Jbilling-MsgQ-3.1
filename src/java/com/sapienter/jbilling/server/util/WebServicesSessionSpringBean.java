@@ -1889,14 +1889,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         OrderDTO dto = orderBL.getDTO(order);
         LOG.debug("Order has " + order.getOrderLines().length + " lines");
 
-        // make sure this shows as a new order, not as an update
-        dto.setId(null);
-        dto.setVersionNum(null);
-        for (OrderLineDTO line : dto.getLines()) {
-            line.setId(0);
-            line.setVersionNum(null);
-        }
-
         LOG.info("before cycle start");
         // set a default cycle starts if needed (obtained from the main
         // subscription order, if it exists)
@@ -1924,6 +1916,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         if (create) {
             LOG.debug("creating order");
+
+            dto.setId(null);
+            dto.setVersionNum(null);
+            for (OrderLineDTO line : dto.getLines()) {
+                line.setId(0);
+                line.setVersionNum(null);
+            }
+
             Integer id = orderBL.create(entityId, executorId, dto);
             orderBL.set(id);
             return orderBL.getWS(languageId);

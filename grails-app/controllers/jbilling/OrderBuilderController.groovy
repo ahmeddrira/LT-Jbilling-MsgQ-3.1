@@ -33,6 +33,7 @@ import com.sapienter.jbilling.server.user.contact.db.ContactDTO
 import com.sapienter.jbilling.server.order.OrderLineWS
 import com.sapienter.jbilling.common.SessionInternalError
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import com.sapienter.jbilling.server.item.db.ItemDAS
 
 /**
  * OrderController
@@ -76,7 +77,6 @@ class OrderBuilderController {
                     or {
                         eq('id', params.int('filterBy'))
                         ilike('internalNumber', "%${params.filterBy}%")
-                        // todo: filter by product description
                     }
                 }
 
@@ -92,7 +92,30 @@ class OrderBuilderController {
             order('id', 'asc')
         }
 
-        return products
+        // if no results found, try filtering by description
+        if (!products && params.filterBy) {
+            products = ItemDTO.createCriteria().list(
+                    max:    params.max,
+                    offset: params.offset
+            ) {
+                and {
+                    eq('deleted', 0)
+                    eq('entity', company)
+                }
+                order('id', 'asc')
+            }
+
+            /*
+                Collections.#findAll() changes the collection type and looses the queries totalCount needed
+                for pagination. Keep it in a separate variable before filtering by description.
+             */
+            return [
+                totalCount: products.totalCount,
+                list: products.findAll { it.getDescription().toLowerCase().contains(params.filterBy.toLowerCase()) }
+            ]
+        }
+
+        return [ list: products, totalCount: products.totalCount ]
     }
 
     def editFlow = {

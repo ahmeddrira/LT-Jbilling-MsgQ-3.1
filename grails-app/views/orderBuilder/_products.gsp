@@ -46,7 +46,7 @@
             <table id="products" cellspacing="0" cellpadding="0">
                 <tbody>
 
-                <g:each var="product" in="${products}">
+                <g:each var="product" in="${products?.list}">
                     <tr>
                         <td>
                             <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'addLine']" update="column2" method="GET">

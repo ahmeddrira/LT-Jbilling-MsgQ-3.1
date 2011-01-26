@@ -143,27 +143,20 @@
             <table class="innerTable" >
                 <thead class="innerHeader">
                      <tr>
-                        <th><g:message code="order.invoices.period.start"/></th>
-                        <th><g:message code="order.invoices.period.end"/></th>
-                        <th><g:message code="order.invoices.periods.included"/></th>
                         <th><g:message code="order.invoices.id"/></th>
                         <th><g:message code="order.invoices.date"/></th>
                         <th><g:message code="order.invoices.total"/></th>
-                        <th><g:message code="order.invoices.origin"/></th>
                      </tr>
                 </thead>
                 <tbody>
                      <g:each var="invoice" in="${order.generatedInvoices}" status="idx">
                          <tr>
-                            <td class="innerContent"></td>
-                            <td class="innerContent"></td>
-                            <td class="innerContent"></td>
-                            <td class="innerContent">${invoice.id}</td>
+                            <td class="innerContent"><g:link controller="invoice" action="list" id="${invoice.id}">${invoice.id}</g:link></td>
                             <td class="innerContent">
-                                <g:formatDate format="dd-MMM-yyyy HH:mm:ss A" date="${invoice.createDateTime}"/>
+                                <g:formatDate format="dd-MMM-yyyy HH:mm:ss a" date="${invoice?.createDateTime}"/>
                             </td>
-                            <td class="innerContent">${invoice.total }</td>
-                            <td class="innerContent"></td>
+                            <td class="innerContent">${Util.formatMoney(new BigDecimal(invoice.total ?: "0.0"),
+                                session["user_id"],invoice?.currencyId, false)}</td>
                          </tr>
                      </g:each>
                 </tbody>

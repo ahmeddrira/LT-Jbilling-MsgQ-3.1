@@ -74,7 +74,7 @@ class OrderController {
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, _orderId)
 		recentItemService.addRecentItem(_orderId, RecentItemType.ORDER)
 		
-		log.debug "Invoices Generated: ${order.getGeneratedInvoices()}"
+		log.debug "Invoices Generated: ${order.getGeneratedInvoices().size()}"
 		render template:'order', model: [order: order, user:user]
 	}
 	

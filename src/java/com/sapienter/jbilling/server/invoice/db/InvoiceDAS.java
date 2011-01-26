@@ -240,6 +240,16 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         return criteria.list();
 
     }
+    
+    public Collection<InvoiceDTO> findAllApplicableInvoicesByUser(Integer userId) {
+
+        Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
+        criteria.add(Restrictions.eq("baseUser.id", userId));
+        criteria.add(Restrictions.eq("deleted", 0));
+        criteria.add(Restrictions.eq("isReview", 0));
+        criteria.setProjection(Projections.id()).addOrder(Order.desc("id"));
+        return criteria.list();
+    }    
 
     public InvoiceDTO create(Integer userId, NewInvoiceDTO invoice,
             BillingProcessDTO process) {

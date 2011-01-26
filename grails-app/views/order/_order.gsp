@@ -1,4 +1,5 @@
 <%@ page import="com.sapienter.jbilling.server.util.Util" %>
+<%@ page import="com.sapienter.jbilling.client.util.Constants" %>
 
 <div class="column-hold">
 
@@ -64,6 +65,8 @@
                         session["user_id"],
                         order.currencyId, 
                         false)?.substring(3)}</td></tr>
+            <tr><td><g:message code="order.label.status"/>:</td>
+                <td class="value">${order?.statusStr}</td></tr>
         </table>
     </div>
     
@@ -170,14 +173,15 @@
     
     <div class="btn-box">
         <div class="row">
-            <a href="${createLink (action: 'generateInvoice', params: [id: order?.id])}" class="submit order">
-                <span><g:message code="order.button.generate"/></span>
-            </a>
-        </div>
-        <div class="row">
-            <a href="${createLink (action: 'applyToInvoice', params: [id: order?.id, userId: user?.id])}" class="submit order">
-                <span><g:message code="order.button.apply.invoice"/></span>
-            </a>
+            <g:if test="${Constants.ORDER_STATUS_ACTIVE == order.statusId}">
+                <a href="${createLink (action: 'generateInvoice', params: [id: order?.id])}" class="submit order">
+                    <span><g:message code="order.button.generate"/></span>
+                </a>
+                </div><div class="row">
+                <a href="${createLink (action: 'applyToInvoice', params: [id: order?.id, userId: user?.id])}" class="submit order">
+                    <span><g:message code="order.button.apply.invoice"/></span>
+                </a>
+            </g:if>
             <a href="${createLink (controller: 'orderBuilder', action: 'edit', params: [id: order?.id])}" class="submit edit">
                 <span><g:message code="order.button.edit"/>
             </span></a>

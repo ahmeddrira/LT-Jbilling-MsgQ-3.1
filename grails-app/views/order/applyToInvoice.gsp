@@ -38,7 +38,7 @@
 
     <div class="heading">
         <strong>
-            <g:message code="order.label.apply.to.invoice"/>
+            <g:message code="order.label.apply.to.invoice" args="[orderId]"/>
         </strong>
     </div>
 

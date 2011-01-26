@@ -153,6 +153,7 @@ class BillingController {
 			log.debug "---------------------------------"
 		}
 		recentItemService.addRecentItem(processId, RecentItemType.BILLINGPROCESS)
+		breadcrumbService.addBreadcrumb(controllerName, actionName, null, processId)
 		[process:process, countAndSumByCurrency: countAndSumByCurrency, mapOfPaymentListByCurrency: mapOfPaymentListByCurrency, failedAmountsByCurrency: failedAmountsByCurrency] 
 	}
 

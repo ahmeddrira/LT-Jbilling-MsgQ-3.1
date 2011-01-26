@@ -166,6 +166,7 @@ public class OrderBL extends ResultList
         retValue.setTotal(order.getTotal());
 
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
+        retValue.setStatusStr(order.getOrderStatus().getDescription(languageId));
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
 
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();

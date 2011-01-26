@@ -1,5 +1,8 @@
 package jbilling
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import grails.plugins.springsecurity.Secured;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.OrderWS;
@@ -12,7 +15,10 @@ import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 
 
@@ -110,8 +116,17 @@ class OrderController {
 		}
 	}
 	
+	/**
+	* Convenience shortcut, this action shows all invoices for the given user id.
+	*/
+   def user = {
+	   def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUserByUserId.id', template: 'id', visible: true, integerValue: params.int('id'))
+	   filterService.setFilter(FilterType.ORDER, filter)
+	   redirect action: 'list'
+   }
+	
 	def generateInvoice = {
-		log.debug 'generateInvoice for order ${params.id}'
+		log.debug "generateInvoice for order ${params.id}"
 		
 		OrderDTO order= new OrderDAS().find(params.int('id'))
 		if (!order.getStatusId().equals(
@@ -133,7 +148,7 @@ class OrderController {
 		log.debug "ApplyToInvoice: Found ${invoices?.size()} invoices for User ${params.userId}"
 
 		if (!invoices || invoices.size() == 0) {
-			flash.error = 'order.error.unpaid.invoices.not.found'
+			flash.error = 'order.error.invoices.not.found'
 			flash.args = [params.userId]
 			redirect (action: 'showListAndOrder', params: [id: params.id as Integer]) 
 		}
@@ -142,35 +157,54 @@ class OrderController {
 	}
 
 	def apply = {
-		log.debug 'apply: for order ${params.id}'
+		log.debug "apply: for order ${params.id}"
+		Integer invoiceID= params.int('invoiceId')
 		
-		OrderDTO order= new OrderDAS().find(params.int('id'))
-		if (!order.getStatusId().equals(
-			Constants.ORDER_STATUS_ACTIVE)) {
+		try {
+			OrderDTO order= new OrderDAS().find(params.int('id'))
+			if (!order.getStatusId().equals(
+				Constants.ORDER_STATUS_ACTIVE)) {
+				throw new Exception('order.error.status.not.active')
+			} else if ( !invoiceID ) {
+				throw new Exception('order.error.invoice.is.null')
+			}
+			
+			def invoice= webServicesSession.createInvoiceFromOrder(order.getId(), invoiceID)
+			if ( !invoice ) {
+				throw new Exception('order.error.apply.invoice')
+			}
+			flash.message = 'order.succcessfully.applied.to.invoice'
+			flash.args = [params.id, invoice]
+		} catch (SessionInternalError e){
 			flash.error ='order.error.apply.invoice'
-			redirect (action: 'showListAndOrder', params: [id: params.id as Integer])
+			viewUtils.resolveException(flash, session.locale, e);
+		} catch (Exception e) {
+			log.error e
+			flash.error= e.getMessage()
 		}
-		
-		Integer invoiceID= webServicesSession.createInvoiceFromOrder(order.getId(), params.int('invoiceId'))
-		flash.message = 'order.succcessfully.applied.to.invoice'
-		flash.args = [params.id, invoiceId]
-		redirect (action: 'list', params: [id: params.id])
+		redirect (action: 'showListAndOrder', params: [id: params.id as Integer])
 	}
 	
 	def getApplicableInvoices(Integer userId) {
 		
 		CustomerDTO payingUser
-		List<InvoiceWS> invoices
-		
+		Integer _userId
 		UserDTO user= new UserDAS().find(userId)
 		if (user.getCustomer()?.getParent()) {
 			payingUser= new CustomerBL(user.getCustomer().getId()).getInvoicableParent()
-			invoices= webServicesSession.getAllInvoicesForUser(payingUser.getBaseUser().getId())
+			_userId=payingUser.getBaseUser().getId()
 		} else {
-			invoices= webServicesSession.getAllInvoicesForUser(user.getId())
+			_userId= user.getId()
+		}
+		InvoiceDAS das= new InvoiceDAS()
+		List invoices =  new ArrayList()
+		for (Iterator it= das.findAllApplicableInvoicesByUser(_userId ).iterator(); it.hasNext();) {
+			invoices.add InvoiceBL.getWS(das.find (it.next()))
 		}
 		
-		return invoices;
+		log.debug "Found ${invoices.size()} for user ${_userId}"
+		
+		invoices as List
 	}
 	
 	def getCurrencies() {

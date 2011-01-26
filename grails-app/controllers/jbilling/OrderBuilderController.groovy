@@ -66,6 +66,7 @@ class OrderBuilderController {
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset
 
+        // filter on item type, item id and internal number
         def products = ItemDTO.createCriteria().list(
                 max:    params.max,
                 offset: params.offset
@@ -75,7 +76,7 @@ class OrderBuilderController {
                     or {
                         eq('id', params.int('filterBy'))
                         ilike('internalNumber', "%${params.filterBy}%")
-                        // todo: filter by item description (maybe use sql restriction?)
+                        // todo: filter by product description
                     }
                 }
 
@@ -88,6 +89,7 @@ class OrderBuilderController {
                 eq('deleted', 0)
                 eq('entity', company)
             }
+            order('id', 'asc')
         }
 
         return products
@@ -114,6 +116,11 @@ class OrderBuilderController {
                     order.orderLines    = []
                 }
 
+                // add breadcrumb for order editing
+                if (params.id) {
+                    breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
+                }
+
                 // available order periods
                 def company = CompanyDTO.get(session['company_id'])
                 def orderPeriods = company.orderPeriods.collect { new OrderPeriodDTO(it.id) } << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE)
@@ -124,8 +131,6 @@ class OrderBuilderController {
                         new OrderBillingTypeDTO(Constants.ORDER_BILLING_PRE_PAID),
                         new OrderBillingTypeDTO(Constants.ORDER_BILLING_POST_PAID)
                 ]
-
-                // todo: create/edit order breadcrumbs
 
                 // model scope for this flow
                 flow.company = company;
@@ -232,10 +237,15 @@ class OrderBuilderController {
          */
         updateOrder {
             action {
-                bindData(conversation.order, params)
+                def order = conversation.order
+                bindData(order, params)
+
+                // one time orders are ALWAYS post-paid
+                if (order.period == Constants.ORDER_PERIOD_ONCE)
+                    order.billingTypeId = Constants.ORDER_BILLING_POST_PAID
 
                 params.template = 'review'
-                conversation.order = webServicesSession.rateOrder(conversation.order)
+                conversation.order = webServicesSession.rateOrder(order)
             }
             on("success").to("build")
         }
@@ -256,8 +266,17 @@ class OrderBuilderController {
             on("removeLine").to("removeOrderLine")
             on("update").to("updateOrder")
             on("save").to("saveOrder")
+            // on("save").to("beforeSave")
             on("cancel").to("finish")
         }
+
+        // example action that can display an extra page BEFORE the order is saved.
+        /*
+        beforeSave {
+            on("save").to("saveOrder")
+            on("cancel").to("finish")
+        }
+        */
 
         /**
          * Saves the order and exits the builder flow.
@@ -270,6 +289,7 @@ class OrderBuilderController {
                     if (!order.id || order.id == 0) {
                         webServicesSession.createOrder(order)
                     } else {
+                        // todo: rate order clears the order and order line ID's. Fix rate order before we can update!
                         webServicesSession.updateOrder(order)
                     }
 

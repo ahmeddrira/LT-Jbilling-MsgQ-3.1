@@ -24,8 +24,14 @@
         </span>
         <span class="qty-price">
             <g:set var="quantity" value="${formatNumber(number: line.getQuantityAsDecimal(), formatName: quantityNumberFormat)}"/>
-            <g:set var="price" value="${formatNumber(number: line.getPriceAsDecimal(), type: 'currency', currencyCode: user.currency.code)}"/>
-            <g:message code="order.review.quantity.by.price" args="[quantity, price]"/>
+            <g:if test="${product.percentage}">
+                <g:set var="percentage" value="%${formatNumber(number: product.percentage)}"/>
+                <g:message code="order.review.quantity.by.price" args="[quantity, percentage]"/>
+            </g:if>
+            <g:else>
+                <g:set var="price" value="${formatNumber(number: line.getPriceAsDecimal(), type: 'currency', currencyCode: user.currency.code)}"/>
+                <g:message code="order.review.quantity.by.price" args="[quantity, price]"/>
+            </g:else>
         </span>
     </li>
 

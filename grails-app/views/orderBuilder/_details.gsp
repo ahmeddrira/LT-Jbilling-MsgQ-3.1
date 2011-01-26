@@ -17,18 +17,18 @@
                 <content tag="label"><g:message code="order.label.period"/></content>
                 <content tag="label.for">period</content>
                 <g:select from="${orderPeriods}"
-                          optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
-                          name="period"
-                          value="${order?.period}"/>
+                        optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
+                        name="period"
+                        value="${order?.period}"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/select">
                 <content tag="label"><g:message code="order.label.billing.type"/></content>
                 <content tag="label.for">billingTypeId</content>
                 <g:select from="${orderBillingTypes}"
-                          optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
-                          name="billingTypeId"
-                          value="${order?.billingTypeId}"/>
+                        optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
+                        name="billingTypeId"
+                        value="${order?.billingTypeId}"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/date">
@@ -80,11 +80,20 @@
 
     <script type="text/javascript">
         $(function() {
+            $('#period').change(function() {
+                if ($(this).val() == ${Constants.ORDER_PERIOD_ONCE}) {
+                    $('#billingTypeId').val(${Constants.ORDER_BILLING_POST_PAID});
+                    $('#billingTypeId').attr('disabled', true);
+                } else {
+                    $('#billingTypeId').attr('disabled', '');
+                }
+            }).change();
+
             $('#order-details-form').find(':text.hasDatepicker, select, :checkbox').change(function() {
                 $('#order-details-form').submit();
             });
 
-            $('#order-details-form').find('textarea,:text').not('.hasDatepicker').blur(function() {
+            $('#order-details-form').find('textarea, :text').not('.hasDatepicker').blur(function() {
                 $('#order-details-form').submit();
             });
         });

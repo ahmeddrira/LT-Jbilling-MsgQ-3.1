@@ -29,7 +29,7 @@ package jbilling
  * @author Brian Cowdery
  * @since 14-Dec-2010
  */
-class Breadcrumb {
+class Breadcrumb implements Serializable {
 
     static transients = [ "messageCode" ]
 

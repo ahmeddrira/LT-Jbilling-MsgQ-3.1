@@ -176,7 +176,8 @@ public class OrderBL extends ResultList
                 lines.add(getOrderLineWS(line.getId()));
             }
         }
-        
+        //this will initialized Generated Invoices in the OrderDTO instance
+        order.addExtraFields(languageId);
         retValue.setGeneratedInvoices(new InvoiceBL().DTOtoWS(new ArrayList(order.getInvoices())));
         retValue.setOrderLines(new OrderLineWS[lines.size()]);
         lines.toArray(retValue.getOrderLines());

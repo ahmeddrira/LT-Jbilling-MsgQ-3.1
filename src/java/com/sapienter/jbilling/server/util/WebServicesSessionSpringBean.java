@@ -1875,6 +1875,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         // we'll need the langauge later
         bl.set(order.getUserId());
         Integer languageId = bl.getEntity().getLanguageIdField();
+
         // see if the related items should provide info
         try {
             processItemLine(order.getOrderLines(), languageId, entityId,
@@ -1920,6 +1921,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         orderBL.set(dto);
         orderBL.recalculate(entityId);
+
         if (create) {
             LOG.debug("creating order");
             Integer id = orderBL.create(entityId, executorId, dto);
@@ -1946,6 +1948,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
+        retValue.setTotal(order.getTotal());
 
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
         for (Iterator<OrderLineDTO> it = order.getLines().iterator(); it.hasNext();) {

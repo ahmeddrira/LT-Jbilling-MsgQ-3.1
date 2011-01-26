@@ -11,11 +11,11 @@
 
 <link rel="shortcut icon" href="${resource(dir:'images', file:'favicon.ico')}" type="image/x-icon" />
 
-<link media="all" rel="stylesheet" href="${resource(dir:'css', file:'all.css')}" type="text/css" />
-<!--[if lt IE 8]><link rel="stylesheet" href="${resource(dir:'css', file:'lt7.css')}" type="text/css" media="screen"/><![endif]-->
-
 <g:javascript library="jquery" plugin="jquery"/>
 <jqui:resources themeCss="${resource(dir:'jquery-ui/themes/jbilling/jquery-ui-1.8.7.custom.css')}" />
+
+<link media="all" rel="stylesheet" href="${resource(dir:'css', file:'all.css')}" type="text/css" />
+<!--[if lt IE 8]><link rel="stylesheet" href="${resource(dir:'css', file:'lt7.css')}" type="text/css" media="screen"/><![endif]-->
 
 <script type="text/javascript">
     function renderMessages() {
@@ -44,6 +44,7 @@
     });
 </script>
 
+<g:javascript library="datatable"/>
 <g:javascript library="clearinput"/>
 <g:javascript library="slideBlock"/>
 <g:javascript library="main"/>

@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.util.db;
 
 import com.sapienter.jbilling.server.util.Context;
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 import org.springmodules.cache.CachingModel;
 import org.springmodules.cache.provider.CacheProviderFacade;
@@ -34,6 +35,8 @@ import java.io.Serializable;
  * @author emilc
  */
 public abstract class AbstractGenericStatusDAS<T> extends AbstractDAS<T> {
+
+    private static final Logger LOG = Logger.getLogger(AbstractGenericStatusDAS.class);
 
     private CacheProviderFacade cache;
     private CachingModel cacheModel;
@@ -60,7 +63,8 @@ public abstract class AbstractGenericStatusDAS<T> extends AbstractDAS<T> {
             T value = (T) cache.getFromCache(getCacheKey(statusId), cacheModel);
             if (value == null) {
                 value = findByCriteriaSingle(Restrictions.eq("id", statusId));
-                cache.putInCache(getCacheKey(statusId), cacheModel, value);
+                if (value != null)
+                    cache.putInCache(getCacheKey(statusId), cacheModel, value);
             }            
             return value;
         }

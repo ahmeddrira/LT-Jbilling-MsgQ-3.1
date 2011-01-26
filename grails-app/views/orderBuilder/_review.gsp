@@ -1,3 +1,4 @@
+<%@ page import="com.sapienter.jbilling.common.Constants" %>
 
 <%--
   Renders an OrderWS as a quick preview of the order being built. This view also allows

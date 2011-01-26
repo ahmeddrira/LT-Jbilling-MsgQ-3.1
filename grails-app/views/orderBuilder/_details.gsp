@@ -17,18 +17,27 @@
                 <content tag="label"><g:message code="order.label.period"/></content>
                 <content tag="label.for">period</content>
                 <g:select from="${orderPeriods}"
-                        optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
-                        name="period"
-                        value="${order?.period}"/>
+                          optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
+                          name="period"
+                          value="${order?.period}"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/select">
                 <content tag="label"><g:message code="order.label.billing.type"/></content>
                 <content tag="label.for">billingTypeId</content>
                 <g:select from="${orderBillingTypes}"
-                        optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
-                        name="billingTypeId"
-                        value="${order?.billingTypeId}"/>
+                          optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
+                          name="billingTypeId"
+                          value="${order?.billingTypeId}"/>
+            </g:applyLayout>
+
+            <g:applyLayout name="form/select">
+                <content tag="label"><g:message code="order.label.status"/></content>
+                <content tag="label.for">statusId</content>
+                <g:select from="${orderStatuses}"
+                          optionKey="statusValue" optionValue="${{it.getDescription(session['language_id'])}}"
+                          name="statusId"
+                          value="${order?.statusId}"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/date">

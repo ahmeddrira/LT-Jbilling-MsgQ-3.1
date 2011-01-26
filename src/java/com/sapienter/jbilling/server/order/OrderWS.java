@@ -31,22 +31,34 @@ import java.util.Arrays;
 import java.util.Date;
 
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.order.validator.DateRange;
 import com.sapienter.jbilling.server.security.WSSecured;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Emil
  */
+
+@DateRange(start = "activeSince", end = "activeUntil", message = "validation.activeUntil.before.activeSince")
 public class OrderWS implements WSSecured, Serializable {
 
     private Integer id;
+    @NotNull(message = "validation.error.null.status")
     private Integer statusId;
     private Integer isCurrent;
+    @NotNull(message = "validation.error.null.user.id")
     private Integer userId = null;
+    @NotNull(message = "validation.error.null.currency")
     private Integer currencyId = null;
+    @NotNull(message = "validation.error.null.billing.type")
     private Integer billingTypeId;
+    @NotNull(message = "validation.error.null.period")
     private Integer period = null;
     private Date createDate;
     private Integer createdBy;
+    @NotNull(message = "validation.error.null.activeSince")
     private Date activeSince;
     private Date activeUntil;
     private Date cycleStarts;
@@ -62,6 +74,7 @@ public class OrderWS implements WSSecured, Serializable {
     private Integer ownInvoice;
     private String notes;
     private Integer notesInInvoice;
+    @NotNull(message = "validation.error.null.lines") @Valid
     private OrderLineWS orderLines[] = null;
     private String pricingFields = null;
     private InvoiceWS[] generatedInvoices= null;

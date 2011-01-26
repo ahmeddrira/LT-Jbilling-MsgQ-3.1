@@ -6,7 +6,7 @@
   @since 24-Jan-2011
 --%>
 
-<g:set var="product" value="${products.find{ it.id == line.itemId}}"/>
+<g:set var="product" value="${products?.list?.find{ it.id == line.itemId}}"/>
 <g:set var="quantityNumberFormat" value="${product.hasDecimals ? 'money.format' : 'default.number.format'}"/>
 <g:set var="editable" value="${index == params.int('newLineIndex')}"/>
 

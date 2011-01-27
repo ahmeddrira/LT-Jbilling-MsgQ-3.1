@@ -1052,6 +1052,13 @@ ul.cloud li a {
     height: auto;
     margin: 30px auto 5px;
 }
+#review-box .msg-box {
+    margin: 0 0 10px;
+}
+#review-box .msg-box ul {
+    list-style-position: outside;
+    margin-left: 0;
+}
 ul#order-lines {
     width: 85%;
     margin: 0 auto;

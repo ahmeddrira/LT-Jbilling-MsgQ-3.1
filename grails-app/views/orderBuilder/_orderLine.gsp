@@ -6,8 +6,8 @@
   @since 24-Jan-2011
 --%>
 
-<g:set var="product" value="${products?.list?.find{ it.id == line.itemId}}"/>
-<g:set var="quantityNumberFormat" value="${product.hasDecimals ? 'money.format' : 'default.number.format'}"/>
+<g:set var="product" value="${products?.find{ it.id == line.itemId}}"/>
+<g:set var="quantityNumberFormat" value="${product?.hasDecimals ? 'money.format' : 'default.number.format'}"/>
 <g:set var="editable" value="${index == params.int('newLineIndex')}"/>
 
 <g:formRemote name="line-${index}-update-form" url="[action: 'edit']" update="column2" method="GET">
@@ -24,7 +24,7 @@
         </span>
         <span class="qty-price">
             <g:set var="quantity" value="${formatNumber(number: line.getQuantityAsDecimal(), formatName: quantityNumberFormat)}"/>
-            <g:if test="${product.percentage}">
+            <g:if test="${product?.percentage}">
                 <g:set var="percentage" value="%${formatNumber(number: product.percentage)}"/>
                 <g:message code="order.review.quantity.by.price" args="[quantity, percentage]"/>
             </g:if>
@@ -44,7 +44,7 @@
                     <g:textField name="line-${index}.quantity" class="field" value="${formatNumber(number: line.getQuantityAsDecimal() ?: BigDecimal.ONE, formatName: quantityNumberFormat)}"/>
                 </g:applyLayout>
 
-                <g:if test="${product.priceManual > 0}">
+                <g:if test="${product?.priceManual > 0}">
                     <g:applyLayout name="form/input">
                         <content tag="label"><g:message code="order.label.price.with.currency" args="[user.currency.code]"/></content>
                         <content tag="label.for">line-${index}.price</content>

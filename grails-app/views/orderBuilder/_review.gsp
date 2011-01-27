@@ -9,6 +9,22 @@
 --%>
 
 <div id="review-box">
+
+    <!-- error messages -->
+    <div id="messages">
+        <g:if test="${errorMessages}">
+            <div class="msg-box error">
+                <ul>
+                    <g:each var="message" in="${errorMessages}">
+                        <li>${message}</li>
+                    </g:each>
+                </ul>
+            </div>
+
+            <g:set var="errorMessages" value=""/>
+        </g:if>
+    </div>
+
     <div class="box no-heading">
 
         <!-- order header -->

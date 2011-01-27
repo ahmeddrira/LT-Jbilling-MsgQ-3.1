@@ -46,8 +46,6 @@ import java.math.RoundingMode
 @Secured(['isAuthenticated()'])
 class OrderBuilderController {
 
-    static pagination = [ max: 25, offset: 0 ]
-
     def webServicesSession
     def messageSource
     def viewUtils
@@ -66,14 +64,8 @@ class OrderBuilderController {
      * @return filtered list of products
      */
     def getProducts(CompanyDTO company, GrailsParameterMap params) {
-        params.max = params?.max?.toInteger() ?: pagination.max
-        params.offset = params?.offset?.toInteger() ?: pagination.offset
-
         // filter on item type, item id and internal number
-        def products = ItemDTO.createCriteria().list(
-                max:    params.max,
-                offset: params.offset
-        ) {
+        def products = ItemDTO.createCriteria().list() {
             and {
                 if (params.filterBy && params.filterBy != message(code: 'products.filter.by.default')) {
                     or {
@@ -96,28 +88,18 @@ class OrderBuilderController {
 
         // if no results found, try filtering by description
         if (!products && params.filterBy) {
-            products = ItemDTO.createCriteria().list(
-                    max:    params.max,
-                    offset: params.offset
-            ) {
+            products = ItemDTO.createCriteria().list() {
                 and {
                     eq('deleted', 0)
                     eq('entity', company)
                 }
                 order('id', 'asc')
+            }.findAll {
+                it.getDescription(session['language_id']).toLowerCase().contains(params.filterBy.toLowerCase())
             }
-
-            /*
-                Collections.#findAll() changes the collection type and looses the queries totalCount needed
-                for pagination. Keep it in a separate variable before filtering by description.
-             */
-            return [
-                totalCount: products.totalCount,
-                list: products.findAll { it.getDescription().toLowerCase().contains(params.filterBy.toLowerCase()) }
-            ]
         }
 
-        return [ list: products, totalCount: products.totalCount ]
+        return products
     }
 
     def editFlow = {
@@ -149,9 +131,8 @@ class OrderBuilderController {
 
                 // available order periods, statuses and order types
                 def company = CompanyDTO.get(session['company_id'])
-
+                def itemTypes = company.itemTypes.sort{ it.id }
                 def orderStatuses = OrderStatusDTO.list()
-
                 def orderPeriods = company.orderPeriods.collect { new OrderPeriodDTO(it.id) } << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE)
                 orderPeriods.sort { it.id }
 
@@ -162,6 +143,7 @@ class OrderBuilderController {
 
                 // model scope for this flow
                 flow.company = company
+                flow.itemTypes = itemTypes
                 flow.orderStatuses = orderStatuses
                 flow.orderPeriods = orderPeriods
                 flow.orderBillingTypes = orderBillingTypes
@@ -190,6 +172,10 @@ class OrderBuilderController {
          */
         showProducts {
             action {
+                // filter using the first item type by default
+                if (params.typeId == null)
+                    params.typeId = flow.itemTypes?.asList()?.first()?.id
+
                 params.template = 'products'
                 conversation.products = getProducts(flow.company, params)
             }
@@ -215,11 +201,14 @@ class OrderBuilderController {
                 order.orderLines = lines.toArray()
 
                 // rate order and render the review pane
-                params.template = 'review'
-                params.newLineIndex = lines.size() - 1
-                conversation.order = webServicesSession.rateOrder(order)
+                try {
+                    conversation.order = webServicesSession.rateOrder(order)
+                } catch (SessionInternalError e) {
+                    viewUtils.resolveException(flow, session.locale, e)
+                }
 
-                log.debug("New order line added to index: ${params.newLineIndex}")
+                params.newLineIndex = lines.size() - 1
+                params.template = 'review'
             }
             on("success").to("build")
         }
@@ -236,8 +225,13 @@ class OrderBuilderController {
                 def line = order.orderLines[index]
                 bindData(line, params["line-${index}"])
 
+                // must have a quantity
+                if (!line.quantity) {
+                    line.quantity = BigDecimal.ONE
+                }
+
                 // if product does not support decimals, drop scale of the given quantity
-                def product = conversation.products?.list?.find{ it.id == line.itemId }
+                def product = conversation.products?.find{ it.id == line.itemId }
                 if (product.hasDecimals == 0) {
                     line.quantity = line.getQuantityAsDecimal().setScale(0, RoundingMode.HALF_UP)
                 }
@@ -245,13 +239,13 @@ class OrderBuilderController {
                 // add line to order
                 order.orderLines[index] = line
 
-                params.template = 'review'
-
                 try {
                     conversation.order = webServicesSession.rateOrder(order)
                 } catch (SessionInternalError e) {
-                    viewUtils.resolveException(flash, session.locale, e)
+                    viewUtils.resolveException(flow, session.locale, e)
                 }
+
+                params.template = 'review'
             }
             on("success").to("build")
         }
@@ -268,8 +262,13 @@ class OrderBuilderController {
                 lines.remove(index)
                 order.orderLines = lines.toArray()
 
+                try {
+                    conversation.order = webServicesSession.rateOrder(order)
+                } catch (SessionInternalError e) {
+                    viewUtils.resolveException(flow, session.locale, e)
+                }
+
                 params.template = 'review'
-                conversation.order = webServicesSession.rateOrder(order)
             }
             on("success").to("build")
         }
@@ -287,13 +286,13 @@ class OrderBuilderController {
                 if (order.period == Constants.ORDER_PERIOD_ONCE)
                     order.billingTypeId = Constants.ORDER_BILLING_POST_PAID
 
-                params.template = 'review'
-
                 try {
                     conversation.order = webServicesSession.rateOrder(order)
                 } catch (SessionInternalError e) {
-                    viewUtils.resolveException(flash, session.locale, e)
+                    viewUtils.resolveException(flow, session.locale, e)
                 }
+
+                params.template = 'review'
             }
             on("success").to("build")
         }
@@ -335,13 +334,16 @@ class OrderBuilderController {
                     def order = conversation.order
 
                     if (!order.id || order.id == 0) {
-                        webServicesSession.createOrder(order)
+                        log.debug("creating order ${order}")
+                        order.id = webServicesSession.createOrder(order)
+
                     } else {
+                        log.debug("saving changes to order ${order.id}")
                         webServicesSession.updateOrder(order)
                     }
 
                 } catch (SessionInternalError e) {
-                    viewUtils.resolveException(flash, session.locale, e)
+                    viewUtils.resolveException(flow, session.locale, e)
                     error()
                 }
             }
@@ -350,7 +352,7 @@ class OrderBuilderController {
         }
 
         finish {
-            redirect controller: 'order', action: 'list', id: conversation?.order?.id
+            redirect controller: 'order', action: 'list', id: conversation.order?.id
         }
     }
 

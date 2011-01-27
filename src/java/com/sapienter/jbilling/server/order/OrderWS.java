@@ -33,6 +33,7 @@ import java.util.Date;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.validator.DateRange;
 import com.sapienter.jbilling.server.security.WSSecured;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -74,7 +75,7 @@ public class OrderWS implements WSSecured, Serializable {
     private Integer ownInvoice;
     private String notes;
     private Integer notesInInvoice;
-    @NotNull(message = "validation.error.null.lines") @Valid
+    @NotEmpty(message = "validation.error.empty.lines") @Valid
     private OrderLineWS orderLines[] = null;
     private String pricingFields = null;
     private InvoiceWS[] generatedInvoices= null;

@@ -24,7 +24,7 @@
             <g:applyLayout name="form/select">
                 <content tag="label"><g:message code="order.label.products.category"/></content>
                 <content tag="label.for">typeId</content>
-                <g:select name="typeId" from="${company.itemTypes.sort{ it.id }}"
+                <g:select name="typeId" from="${itemTypes}"
                           noSelection="['': message(code: 'filters.item.type.empty')]"
                           optionKey="id" optionValue="description"
                           value="${params.typeId}"/>
@@ -46,7 +46,7 @@
             <table id="products" cellspacing="0" cellpadding="0">
                 <tbody>
 
-                <g:each var="product" in="${products?.list}">
+                <g:each var="product" in="${products}">
                     <tr>
                         <td>
                             <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'addLine']" update="column2" method="GET">
@@ -76,12 +76,5 @@
             </table>
         </div>
     </div>
-
-    <!-- pager -->
-    <g:if test="${products?.totalCount > params.int('max')}">
-        <div class="pager-box">
-            <util:remotePaginate action="products" total="${products.totalCount}" update="columns1"/>
-        </div>
-    </g:if>
 
 </div>

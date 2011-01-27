@@ -17,41 +17,36 @@
 <link media="all" rel="stylesheet" href="${resource(dir:'css', file:'all.css')}" type="text/css" />
 <!--[if lt IE 8]><link rel="stylesheet" href="${resource(dir:'css', file:'lt7.css')}" type="text/css" media="screen"/><![endif]-->
 
-<script type="text/javascript">
-    function renderMessages() {
-        $.ajax({
-            url: "${resource(dir:'')}/messages",
-            global: false,
-            async: false,
-            success: function(data) { $("#messages").replaceWith(data); }
+<g:if test="${ajaxListeners == null || ajaxListeners}">
+    <script type="text/javascript">
+        function renderMessages() {
+            $.ajax({
+                url: "${resource(dir:'')}/messages",
+                global: false,
+                async: false,
+                success: function(data) { $("#messages").replaceWith(data); }
+            });
+        }
+
+        function renderBreadcrumbs() {
+            $.ajax({
+                url: "${resource(dir:'')}/breadcrumb",
+                global: false,
+                success: function(data) { $("#breadcrumbs").replaceWith(data); }
+           });
+        }
+
+        $(document).ajaxSuccess(function(e, xhr, settings) {
+            renderMessages();
+            renderBreadcrumbs();
         });
-    }
-
-    function renderBreadcrumbs() {
-        $.ajax({
-            url: "${resource(dir:'')}/breadcrumb",
-            global: false,
-            success: function(data) { $("#breadcrumbs").replaceWith(data); }
-       });
-    }
-
-    $(document).ajaxSuccess(function(e, xhr, settings) {
-        renderMessages();
-        renderBreadcrumbs();
-    });
-    $(document).ajaxError(function(e, xhr, settings) {
-        renderMessages();
-    });
-</script>
+        $(document).ajaxError(function(e, xhr, settings) {
+            renderMessages();
+        });
+    </script>
+</g:if>
 
 <g:javascript library="datatable"/>
 <g:javascript library="clearinput"/>
 <g:javascript library="slideBlock"/>
 <g:javascript library="main"/>
-
-%{-- disable form style replacement javascript --%}
-%{--
-<g:javascript library="form"/>
-<g:javascript library="checkbox"/>
---}%
-

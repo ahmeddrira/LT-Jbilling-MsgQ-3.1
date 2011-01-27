@@ -24,6 +24,7 @@
  */
 package com.sapienter.jbilling.server.util;
 
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -158,6 +159,10 @@ import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+
+import com.sapienter.jbilling.server.process.AgeingBL;
+import com.sapienter.jbilling.server.process.AgeingDTOEx;
+
 
 
 @Transactional( propagation = Propagation.REQUIRED )
@@ -2225,7 +2230,31 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         sess.setAuthPaymentType(userId, autoPaymentType, use);
     }
 
+    public AgeingDTOEx[] getAgeingConfiguration(Integer languageId) throws SessionInternalError {
+	    try {
+		    IBillingProcessSessionBean processSession = 
+		    	(IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+		    return processSession.getAgeingSteps(getCallerCompanyId(), getCallerLanguageId(), languageId);
+	    } catch (Exception e) {
+	    	throw new SessionInternalError(e);
+	    }
+    }
 
+    public void saveAgeingConfiguration(AgeingDTOEx[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError { 
+	    try {
+		    IBillingProcessSessionBean processSession = 
+		    (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+		    processSession.setAgeingSteps (getCallerCompanyId(), languageId, new AgeingBL().validate(steps));
+		
+		    // update the grace period in another call
+		    IUserSessionBean userSession = (IUserSessionBean) Context.getBean(Context.Name.USER_SESSION);
+		    userSession.setEntityParameter(getCallerCompanyId(), 
+		    Constants.PREFERENCE_GRACE_PERIOD, null, gracePeriod, null);
+	    } catch (Exception e) {
+	    	throw new SessionInternalError(e);
+	    }
+    }
+    
     /*
         Billing process
      */

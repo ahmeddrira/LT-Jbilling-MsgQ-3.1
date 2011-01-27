@@ -21,7 +21,10 @@
 package jbilling
 
 import grails.plugins.springsecurity.Secured
-
+import com.sapienter.jbilling.server.process.AgeingDTOEx;
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.client.util.Constants;
+ 
 /**
  * ConfigurationController 
  *
@@ -31,10 +34,48 @@ import grails.plugins.springsecurity.Secured
 @Secured(['isAuthenticated()'])
 class ConfigController {
 
-    def recentItemService
     def breadcrumbService
-
+	def webServicesSession
+	def viewUtils
+	def userSession
+	
     def index = {
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
     }
+	
+	def aging = {
+		log.debug "config.aging ${session['language_id']}"
+		AgeingDTOEx[] array= webServicesSession.getAgeingConfiguration(session['language_id'] as Integer)
+		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
+		def gracePeriod= userSession.getEntityPreference(session['company_id'] as Integer, Constants.PREFERENCE_GRACE_PERIOD)
+		[ageingSteps: array, gracePeriod:gracePeriod]
+	}
+	
+	def saveAging = {
+		
+		def cnt = params.recCnt.toInteger()
+		log.debug "Records Count: ${cnt}"
+		
+		AgeingDTOEx[] array= new AgeingDTOEx[cnt]
+		for (int i=0; i < cnt; i++) {
+			log.debug "${params['obj[' + i + '].statusId']}"
+			AgeingDTOEx dtoEx= new AgeingDTOEx()
+			bindData(dtoEx, params["obj["+i+"]"])
+			array[i]= dtoEx
+		}
+		
+		for (AgeingDTOEx dto: array) { 
+			log.debug "Printing: ${dto.toString()}"
+		}
+		try {
+			webServicesSession.saveAgeingConfiguration(array, params.int('gracePeriod'), session['language_id'] as Integer)
+			flash.message= 'config.ageing.updated'
+		} catch (SessionInternalError e){
+			viewUtils.resolveException(flash, session.locale, e);
+		} catch (Exception e) {
+			log.error e.getMessage()
+			flash.error = 'config.error.saving.ageing'
+		}
+		redirect (action: 'aging')
+	}
 }

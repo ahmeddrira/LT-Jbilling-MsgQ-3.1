@@ -123,4 +123,11 @@ public class AgeingDTOEx extends AgeingEntityStepDTO {
         this.canLogin = canLogin;
     }
 
+	public String toString() {
+		return "AgeingDTOEx [statusId=" + statusId + ", statusStr=" + statusStr
+				+ ", welcomeMessage=" + welcomeMessage
+				+ ", failedLoginMessage=" + failedLoginMessage + ", inUse="
+				+ inUse + "]";
+	}
+
 }

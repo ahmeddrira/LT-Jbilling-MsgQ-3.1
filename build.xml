@@ -37,7 +37,7 @@
     </path>    
 
     <path id="drools.classpath">
-        <fileset dir="${libs.dir}/drools">
+        <fileset dir="${drools.dir}">
             <include name="**/*.jar"/>
         </fileset>
     </path>

@@ -33,6 +33,9 @@ import com.sapienter.jbilling.server.user.contact.db.ContactDTO
 import com.sapienter.jbilling.server.order.OrderLineWS
 import com.sapienter.jbilling.common.SessionInternalError
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import com.sapienter.jbilling.server.item.db.ItemDAS
+import com.sapienter.jbilling.server.order.db.OrderStatusDTO
+import java.math.RoundingMode
 
 /**
  * OrderController
@@ -76,7 +79,6 @@ class OrderBuilderController {
                     or {
                         eq('id', params.int('filterBy'))
                         ilike('internalNumber', "%${params.filterBy}%")
-                        // todo: filter by product description
                     }
                 }
 
@@ -92,7 +94,30 @@ class OrderBuilderController {
             order('id', 'asc')
         }
 
-        return products
+        // if no results found, try filtering by description
+        if (!products && params.filterBy) {
+            products = ItemDTO.createCriteria().list(
+                    max:    params.max,
+                    offset: params.offset
+            ) {
+                and {
+                    eq('deleted', 0)
+                    eq('entity', company)
+                }
+                order('id', 'asc')
+            }
+
+            /*
+                Collections.#findAll() changes the collection type and looses the queries totalCount needed
+                for pagination. Keep it in a separate variable before filtering by description.
+             */
+            return [
+                totalCount: products.totalCount,
+                list: products.findAll { it.getDescription().toLowerCase().contains(params.filterBy.toLowerCase()) }
+            ]
+        }
+
+        return [ list: products, totalCount: products.totalCount ]
     }
 
     def editFlow = {
@@ -110,6 +135,7 @@ class OrderBuilderController {
                 if (!order.id || order.id == 0) {
                     order.userId        = user.id
                     order.currencyId    = user.currency.id
+                    order.statusId      = Constants.ORDER_STATUS_ACTIVE
                     order.period        = Constants.ORDER_PERIOD_ONCE
                     order.billingTypeId = Constants.ORDER_BILLING_POST_PAID
                     order.activeSince   = new Date()
@@ -121,19 +147,22 @@ class OrderBuilderController {
                     breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
                 }
 
-                // available order periods
+                // available order periods, statuses and order types
                 def company = CompanyDTO.get(session['company_id'])
+
+                def orderStatuses = OrderStatusDTO.list()
+
                 def orderPeriods = company.orderPeriods.collect { new OrderPeriodDTO(it.id) } << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE)
                 orderPeriods.sort { it.id }
 
-                // available order types
                 def orderBillingTypes = [
                         new OrderBillingTypeDTO(Constants.ORDER_BILLING_PRE_PAID),
                         new OrderBillingTypeDTO(Constants.ORDER_BILLING_POST_PAID)
                 ]
 
                 // model scope for this flow
-                flow.company = company;
+                flow.company = company
+                flow.orderStatuses = orderStatuses
                 flow.orderPeriods = orderPeriods
                 flow.orderBillingTypes = orderBillingTypes
                 flow.user = user
@@ -202,13 +231,27 @@ class OrderBuilderController {
             action {
                 def order = conversation.order
 
+                // update line
                 def index = params.int('index')
                 def line = order.orderLines[index]
                 bindData(line, params["line-${index}"])
+
+                // if product does not support decimals, drop scale of the given quantity
+                def product = conversation.products?.list?.find{ it.id == line.itemId }
+                if (product.hasDecimals == 0) {
+                    line.quantity = line.getQuantityAsDecimal().setScale(0, RoundingMode.HALF_UP)
+                }
+
+                // add line to order
                 order.orderLines[index] = line
 
                 params.template = 'review'
-                conversation.order = webServicesSession.rateOrder(order)
+
+                try {
+                    conversation.order = webServicesSession.rateOrder(order)
+                } catch (SessionInternalError e) {
+                    viewUtils.resolveException(flash, session.locale, e)
+                }
             }
             on("success").to("build")
         }
@@ -245,7 +288,12 @@ class OrderBuilderController {
                     order.billingTypeId = Constants.ORDER_BILLING_POST_PAID
 
                 params.template = 'review'
-                conversation.order = webServicesSession.rateOrder(order)
+
+                try {
+                    conversation.order = webServicesSession.rateOrder(order)
+                } catch (SessionInternalError e) {
+                    viewUtils.resolveException(flash, session.locale, e)
+                }
             }
             on("success").to("build")
         }
@@ -270,7 +318,7 @@ class OrderBuilderController {
             on("cancel").to("finish")
         }
 
-        // example action that can display an extra page BEFORE the order is saved.
+        // example action that displays a page BEFORE the order is saved.
         /*
         beforeSave {
             on("save").to("saveOrder")
@@ -289,12 +337,11 @@ class OrderBuilderController {
                     if (!order.id || order.id == 0) {
                         webServicesSession.createOrder(order)
                     } else {
-                        // todo: rate order clears the order and order line ID's. Fix rate order before we can update!
                         webServicesSession.updateOrder(order)
                     }
 
                 } catch (SessionInternalError e) {
-                    viewUtils.resolveException(flash, session.locale, e);
+                    viewUtils.resolveException(flash, session.locale, e)
                     error()
                 }
             }

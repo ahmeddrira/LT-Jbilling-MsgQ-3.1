@@ -412,7 +412,7 @@ public class AgeingBL {
         return ageing.getWelcomeMessage(languageId);
     }
     
-    public AgeingDTOEx[] getSteps(Integer entityId, 
+	public AgeingDTOEx[] getSteps(Integer entityId, 
             Integer executorLanguageId, Integer languageId) 
             throws NamingException {
         AgeingDTOEx[] result  = new AgeingDTOEx[
@@ -446,6 +446,50 @@ public class AgeingBL {
         
         return result;
     }
+	
+	public AgeingDTOEx[] validate(AgeingDTOEx[] steps) { 
+		
+        int lastSelected = 0;
+        for (int f = 1; f < steps.length; f++) {
+            AgeingDTOEx line = steps[f];
+            if (line.getInUse().booleanValue()) {
+                lastSelected = f;
+            }
+        }
+        for (int f = 0; f < steps.length; f++) {
+        	//Active Step cannot be set to not-in-use
+	        if (steps[f].getStatusId().equals(UserDTOEx.STATUS_ACTIVE)) {
+	            steps[f].setInUse(new Boolean(true));
+	        }
+	        if (steps[f].getInUse().booleanValue()) {
+	        	//if the Step is not deleted, welcome message may not be null
+                if (!steps[f].getStatusId().equals(UserDTOEx.STATUS_DELETED) && 
+                        steps[f].getWelcomeMessage() == null ) {
+                	SessionInternalError exception = new SessionInternalError("Validation of new plug-in");
+                	exception.setErrorMessages(new String[] {
+                        	"AgeingDTOEx,welcomeMessage,config.ageing.error.null.message," + null});
+                	throw exception;
+                }
+                //for inUse steps (NOT ACTIVE or DELETE Step) , days may not be zero
+                if ( ! ( steps[f].getStatusId().equals(UserDTOEx.STATUS_ACTIVE) ||
+                		steps[f].getStatusId().equals(UserDTOEx.STATUS_DELETED) ) 
+                		&& f != lastSelected ) {
+                	
+                	if (steps[f].getDays() <= 0 ) {
+                		SessionInternalError exception = new SessionInternalError("Days cannot be zero for an 'in use' step.");
+                    	exception.setErrorMessages(new String[] {
+                            	"AgeingDTOEx,days,config.ageing.error.zero.days," + 0});
+                    	throw exception;
+                	}
+                }
+                //set days to zero by default for the last Selected Step
+                if (f == lastSelected ) {
+                	steps[f].setDays(0);
+                }
+	        }
+        }
+        return steps;
+	}
     
     public void setSteps(Integer entityId, Integer languageId, 
             AgeingDTOEx[] steps) throws NamingException {

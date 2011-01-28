@@ -22,8 +22,8 @@ $(function() {
         //alert( $(this).parent().parent().find(":input[type=checkbox]").is(':checked'));
         if ($(this).val() > 0 ) {
             $(this).parent().parent().find(':input[type=checkbox]').attr('checked', true);
-        } else {
-        	$(this).parent().parent().find(':input[type=checkbox]').attr('checked', false);
+        //} else {
+        	//$(this).parent().parent().find(':input[type=checkbox]').attr('checked', false);
         }
     });
 });

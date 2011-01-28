@@ -21,7 +21,7 @@
 package jbilling
 
 import grails.plugins.springsecurity.Secured
-import com.sapienter.jbilling.server.process.AgeingDTOEx;
+import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.client.util.Constants;
  
@@ -45,7 +45,7 @@ class ConfigController {
 	
 	def aging = {
 		log.debug "config.aging ${session['language_id']}"
-		AgeingDTOEx[] array= webServicesSession.getAgeingConfiguration(session['language_id'] as Integer)
+		AgeingWS[] array= webServicesSession.getAgeingConfiguration(session['language_id'] as Integer)
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 		def gracePeriod= userSession.getEntityPreference(session['company_id'] as Integer, Constants.PREFERENCE_GRACE_PERIOD)
 		[ageingSteps: array, gracePeriod:gracePeriod]
@@ -56,15 +56,15 @@ class ConfigController {
 		def cnt = params.recCnt.toInteger()
 		log.debug "Records Count: ${cnt}"
 		
-		AgeingDTOEx[] array= new AgeingDTOEx[cnt]
+		AgeingWS[] array= new AgeingWS[cnt]
 		for (int i=0; i < cnt; i++) {
 			log.debug "${params['obj[' + i + '].statusId']}"
-			AgeingDTOEx dtoEx= new AgeingDTOEx()
-			bindData(dtoEx, params["obj["+i+"]"])
-			array[i]= dtoEx
+			AgeingWS ws= new AgeingWS()
+			bindData(ws, params["obj["+i+"]"])
+			array[i]= ws
 		}
 		
-		for (AgeingDTOEx dto: array) { 
+		for (AgeingWS dto: array) { 
 			log.debug "Printing: ${dto.toString()}"
 		}
 		try {

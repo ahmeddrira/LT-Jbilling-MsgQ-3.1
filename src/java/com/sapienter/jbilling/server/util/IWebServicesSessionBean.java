@@ -43,7 +43,7 @@ import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
-import com.sapienter.jbilling.server.process.AgeingDTOEx;
+import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
@@ -214,8 +214,8 @@ public interface IWebServicesSessionBean {
     public Integer applyPayment(PaymentWS payment, Integer invoiceId) throws SessionInternalError;
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId);
 
-    public AgeingDTOEx[] getAgeingConfiguration(Integer languageId) throws SessionInternalError ;
-    public void saveAgeingConfiguration(AgeingDTOEx[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError;
+    public AgeingWS[] getAgeingConfiguration(Integer languageId) throws SessionInternalError ;
+    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError;
     
     /*
         Billing process

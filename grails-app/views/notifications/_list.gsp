@@ -9,7 +9,7 @@
         </thead>
         <tbody>
 		<g:each in="${lstByCategory}" status="idx" var="dto">
-			<tr>
+			<tr class="${dto.id == messageTypeId ? 'active' : ''}">
     			<td><g:remoteLink breadcrumb="id" class="cell" action="show" id="${dto.id}" params="['template': 'show']"
     	                   before="register(this);" onSuccess="render(data, next);">
     				    <strong>${dto.getDescription(languageId)}</strong></g:remoteLink></td>

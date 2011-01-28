@@ -447,7 +447,7 @@ public class AgeingBL {
         return result;
     }
 	
-	public AgeingDTOEx[] validate(AgeingDTOEx[] steps) { 
+	public AgeingDTOEx[] validate(AgeingDTOEx[] steps) throws SessionInternalError { 
 		
         int lastSelected = 0;
         for (int f = 1; f < steps.length; f++) {
@@ -467,7 +467,7 @@ public class AgeingBL {
                         steps[f].getWelcomeMessage() == null ) {
                 	SessionInternalError exception = new SessionInternalError("Validation of new plug-in");
                 	exception.setErrorMessages(new String[] {
-                        	"AgeingDTOEx,welcomeMessage,config.ageing.error.null.message," + null});
+                        	"AgeingWS,welcomeMessage,config.ageing.error.null.message," + null});
                 	throw exception;
                 }
                 //for inUse steps (NOT ACTIVE or DELETE Step) , days may not be zero
@@ -476,15 +476,21 @@ public class AgeingBL {
                 		&& f != lastSelected ) {
                 	
                 	if (steps[f].getDays() <= 0 ) {
-                		SessionInternalError exception = new SessionInternalError("Days cannot be zero for an 'in use' step.");
+                		SessionInternalError exception = new SessionInternalError("Days cannot be zero for an 'in use' step");
                     	exception.setErrorMessages(new String[] {
-                            	"AgeingDTOEx,days,config.ageing.error.zero.days," + 0});
+                            	"AgeingWS,days,config.ageing.error.zero.days," + 0});
                     	throw exception;
                 	}
                 }
                 //set days to zero by default for the last Selected Step
                 if (f == lastSelected ) {
-                	steps[f].setDays(0);
+                	if (steps[f].getDays() > 0) {
+	                	SessionInternalError exception = new SessionInternalError("The days for the last selected step has to be 0");
+	                	exception.setErrorMessages(new String[] {
+	                        	"AgeingWS,days,config.ageing.error.lastDay," + steps[f].getDays()});
+	                	throw exception;
+                	}
+                	else {steps[f].setDays(0);}
                 }
 	        }
         }
@@ -536,4 +542,18 @@ public class AgeingBL {
         }
     }
 
+    public AgeingWS getWS(AgeingDTOEx dto) { 
+    	return null == dto ? null : new AgeingWS(dto);
+    }
+    
+    public AgeingDTOEx getDTOEx(AgeingWS ws) {
+    	AgeingDTOEx dto= new AgeingDTOEx();
+    	dto.setStatusId(ws.getStatusId());
+    	dto.setStatusStr(ws.getStatusStr());
+    	dto.setInUse(null == ws.getInUse() ? Boolean.FALSE : ws.getInUse());
+    	dto.setDays(null == ws.getDays() ? 0 : ws.getDays().intValue());
+    	dto.setWelcomeMessage(ws.getWelcomeMessage());
+	    dto.setFailedLoginMessage(ws.getFailedLoginMessage());
+	    return dto;
+    }
 }

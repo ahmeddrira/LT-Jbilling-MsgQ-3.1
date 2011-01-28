@@ -11,8 +11,8 @@
     <table id="users" cellspacing="0" cellpadding="0">
         <thead>
             <tr>
-                <th>Type</th>
-                <th class="small">Primary</th>
+                <th><g:message code="contact.type.th.type"/></th>
+                <th class="small"><g:message code="contact.type.th.primary"/></th>
             </tr>
         </thead>
 

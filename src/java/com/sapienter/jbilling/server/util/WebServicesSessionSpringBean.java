@@ -40,6 +40,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.sapienter.jbilling.server.user.ContactTypeWS;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.util.db.LanguageDAS;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
@@ -601,6 +605,48 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         Integer executorId = getCallerId();
         bl.set(userId);
         bl.delete(executorId);
+    }
+
+    /**
+     * Fetches the ContactTypeWS for the given contact type ID. The returned WS object
+     * contains a list of international descriptions for all available languages.
+     *
+     * @param contactTypeId contact type ID
+     * @return contact type WS object
+     * @throws SessionInternalError
+     */
+    public ContactTypeWS getContactTypeWS(Integer contactTypeId) throws SessionInternalError {
+        ContactTypeDTO contactType = new ContactTypeDAS().find(contactTypeId);
+        List<LanguageDTO> languages = new LanguageDAS().findAll();
+
+        return new ContactTypeWS(contactType, languages);
+    }
+
+    /**
+     * Creates a new contact type from the given WS object. This method also stores the international
+     * description for each description/language in the WS object.
+     *
+     * @param contactType contact type WS
+     * @return ID of created contact type
+     * @throws SessionInternalError
+     */
+    public Integer createContactTypeWS(ContactTypeWS contactType) throws SessionInternalError {
+        ContactTypeDTO dto = new ContactTypeDTO();
+        dto.setEntity(new CompanyDTO(getCallerCompanyId()));
+        dto.setIsPrimary(contactType.getPrimary());
+
+        ContactTypeDAS contactTypeDas = new ContactTypeDAS();
+        dto = contactTypeDas.save(dto);
+
+        for (InternationalDescriptionWS description : contactType.getDescriptions()) {
+            dto.setDescription(description.getContent(), description.getLanguageId());
+        }
+
+        // flush changes to the DB & clear cache
+        contactTypeDas.flush();
+        contactTypeDas.clear();
+
+        return dto.getId();
     }
 
     public void updateUserContact(Integer userId, Integer typeId, ContactWS contact) throws SessionInternalError {

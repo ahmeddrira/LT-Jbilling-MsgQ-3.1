@@ -52,7 +52,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class AgeingEntityStepDTO extends AbstractDescription implements Serializable {
 
-    private int id;
+    private Integer id;
     private CompanyDTO company;
     private UserStatusDTO userStatus;
     private int days;
@@ -61,12 +61,12 @@ public class AgeingEntityStepDTO extends AbstractDescription implements Serializ
     public AgeingEntityStepDTO() {
     }
 
-    public AgeingEntityStepDTO(int id, int days) {
+    public AgeingEntityStepDTO(Integer id, int days) {
         this.id = id;
         this.days = days;
     }
 
-    public AgeingEntityStepDTO(int id, CompanyDTO entity,
+    public AgeingEntityStepDTO(Integer id, CompanyDTO entity,
             UserStatusDTO userStatus, int days) {
         this.id = id;
         this.company = entity;
@@ -82,11 +82,11 @@ public class AgeingEntityStepDTO extends AbstractDescription implements Serializ
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "ageing_entity_step_GEN")
     @Column(name = "id", unique = true, nullable = false)
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

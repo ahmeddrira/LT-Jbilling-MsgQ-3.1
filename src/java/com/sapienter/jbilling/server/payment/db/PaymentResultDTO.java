@@ -43,7 +43,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class PaymentResultDTO extends AbstractDescription implements Serializable {
 
-    private int id;
+    private Integer id;
     private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
 
     public PaymentResultDTO() {
@@ -65,11 +65,11 @@ public class PaymentResultDTO extends AbstractDescription implements Serializabl
 
     @Id
     @Column(name = "id", unique = true, nullable = false)
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

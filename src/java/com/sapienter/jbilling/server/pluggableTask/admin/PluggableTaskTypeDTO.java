@@ -73,7 +73,7 @@ public class PluggableTaskTypeDTO extends AbstractDescription implements Seriali
         return Constants.TABLE_PLUGGABLE_TASK_TYPE;
     }
 
-    public int getId() {
+    public Integer getId() {
         return pk;
     }
 

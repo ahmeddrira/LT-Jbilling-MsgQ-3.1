@@ -25,6 +25,10 @@ import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.util.db.LanguageDTO
+import com.sapienter.jbilling.server.user.ContactTypeWS
+import com.sapienter.jbilling.server.util.db.InternationalDescription
+import com.sapienter.jbilling.server.util.InternationalDescriptionWS
+import com.sapienter.jbilling.common.SessionInternalError
 
 /**
  * ContactTypeConfigController 
@@ -62,7 +66,7 @@ class ContactTypeConfigController {
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
-        [ types: types, selected: selected ]
+        [ types: types, selected: selected, languages: languages ]
     }
 
     /**
@@ -70,35 +74,40 @@ class ContactTypeConfigController {
      */
     def show = {
         def selected = ContactTypeDTO.get(params.int('id'))
-        def languages = LanguageDTO.list()
-
         render template: 'show', model: [ selected: selected, languages: languages ]
     }
 
     /**
-     * Get the contact type to be edited and show the "_edit.gsp" panel.
+     * Show the "_edit.gsp" panel to create a new contact.
      */
     def edit = {
-        def selected = ContactTypeDTO.get(params.int('id'))
-        def languages = LanguageDTO.list()
-
-        render template: 'edit', model: [ selected: selected, languages: languages ]
+        render template: 'edit', model: [ languages: languages ]
     }
 
     /**
      * Saves a new contact type.
      */
     def save = {
-        def contactType = new ContactTypeDTO()
-        contactType.isPrimary = params.isPrimary
-        contactType.entity = new CompanyDTO(session['company_id'])
-
-        log.debug("contact type: ${contactType}")
+        def contactType = new ContactTypeWS()
+        contactType.companyId = session['company_id']
+        contactType.primary = params.int('isPrimary')
 
         params.language.each { id, value ->
-            log.debug("language: ${id} = '${value}'")
+            contactType.descriptions.add(new InternationalDescriptionWS(id as Integer, value))
+        }
+
+        try {
+            log.debug("creating new contact type ${contactType}")
+            contactType.id = webServicesSession.createContactTypeWS(contactType)
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e)
         }
 
         redirect action: list, id: contactType.id
+    }
+
+    def getLanguages() {
+        return LanguageDTO.list()
     }
 }

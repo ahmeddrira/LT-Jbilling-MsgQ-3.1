@@ -19,7 +19,7 @@
         <fieldset>
             <div class="form-columns">
                 <g:applyLayout name="form/text">
-                    <content tag="label">Primary Contact</content>
+                    <content tag="label"><g:message code="contact.type.label.primary"/></content>
                     <g:formatBoolean boolean="${selected?.isPrimary > 0}"/>
                 </g:applyLayout>
 

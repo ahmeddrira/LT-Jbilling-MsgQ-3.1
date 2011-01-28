@@ -14,7 +14,7 @@
 <content tag="column2">
     <g:if test="${selected}">
         <!-- show selected contact type -->
-        <g:render template="edit" model="['selected': selected]"/>
+        <g:render template="show" model="['selected': selected]"/>
     </g:if>
 </content>
 

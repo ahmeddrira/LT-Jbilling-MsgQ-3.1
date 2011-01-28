@@ -30,8 +30,6 @@ import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
  */
 public class InternationalDescriptionWS {
 
-    private Integer tableId;
-    private Integer foreignId;
     private String psudoColumn;
     private Integer languageId;
     private String content;
@@ -45,9 +43,7 @@ public class InternationalDescriptionWS {
         this.content = content;
     }
 
-    public InternationalDescriptionWS(Integer tableId, Integer foreignId, String psudoColumn, Integer languageId, String content) {
-        this.tableId = tableId;
-        this.foreignId = foreignId;
+    public InternationalDescriptionWS(String psudoColumn, Integer languageId, String content) {
         this.psudoColumn = psudoColumn;
         this.languageId = languageId;
         this.content = content;
@@ -55,29 +51,26 @@ public class InternationalDescriptionWS {
 
     public InternationalDescriptionWS(InternationalDescriptionDTO description) {
         if (description.getId() != null) {
-            this.tableId = description.getId().getTableId();
-            this.foreignId = description.getId().getForeignId();
             this.psudoColumn = description.getId().getPsudoColumn();
             this.languageId = description.getId().getLanguageId();
         }
         this.content = description.getContent();
     }
 
-
-    public Integer getTableId() {
-        return tableId;
+    /**
+     * Alias for {@link #getPsudoColumn()}
+     * @return psudo-column label
+     */
+    public String getLabel() {
+        return getPsudoColumn();
     }
 
-    public void setTableId(Integer tableId) {
-        this.tableId = tableId;
-    }
-
-    public Integer getForeignId() {
-        return foreignId;
-    }
-
-    public void setForeignId(Integer foreignId) {
-        this.foreignId = foreignId;
+    /**
+     * Alias for {@link #setPsudoColumn(String)}
+     * @param label psudo-column label string
+     */
+    public void setLabel(String label) {
+        setPsudoColumn(label);
     }
 
     public String getPsudoColumn() {
@@ -107,8 +100,6 @@ public class InternationalDescriptionWS {
     @Override
     public String toString() {
         return "InternationalDescriptionWS{"
-               + "tableId=" + tableId
-               + ", foreignId=" + foreignId
                + ", psudoColumn='" + psudoColumn + '\''
                + ", languageId=" + languageId
                + ", content='" + content + '\''

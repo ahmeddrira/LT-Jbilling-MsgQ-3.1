@@ -45,7 +45,7 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
 public class OrderLineTypeDTO extends AbstractDescription implements java.io.Serializable {
 
 
-     private int id;
+     private Integer id;
      private Integer editable;
      private Set<OrderLineDTO> orderLineDTOs = new HashSet<OrderLineDTO>(0);
 
@@ -65,11 +65,11 @@ public class OrderLineTypeDTO extends AbstractDescription implements java.io.Ser
    
     @Id 
     @Column(name="id", unique=true, nullable=false)
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
     
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
     

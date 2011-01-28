@@ -38,6 +38,7 @@ import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
+import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
@@ -308,6 +309,14 @@ public class SpringAPI implements JbillingAPI {
 
     public void updateUserContact(Integer userId, Integer typeId, ContactWS contact) {
         session.updateUserContact(userId, typeId, contact);
+    }
+
+    public ContactTypeWS getContactTypeWS(Integer contactTypeId) {
+        return session.getContactTypeWS(contactTypeId);
+    }
+
+    public Integer createContactTypeWS(ContactTypeWS contactType) {
+        return session.createContactTypeWS(contactType);
     }
 
     public Integer[] getUsersByCreditCard(String number) {

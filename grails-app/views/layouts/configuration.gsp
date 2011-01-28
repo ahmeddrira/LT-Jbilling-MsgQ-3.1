@@ -107,6 +107,11 @@
                             <g:message code="configuration.menu.users"/>
                         </g:link>
                     </li>
+                    <li class="${pageProperty(name: 'page.menu.item') == 'contactType' ? 'active' : ''}">
+                        <g:link controller="contactTypeConfig">
+                            <g:message code="configuration.menu.contactType"/>
+                        </g:link>
+                    </li>
                 </ul>
             </div>
 

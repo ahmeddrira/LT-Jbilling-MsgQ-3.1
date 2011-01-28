@@ -28,9 +28,9 @@ import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import com.sapienter.jbilling.server.mediation.RecordCountWS
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.util.PreferenceWS
-import com.sapienter.jbilling.server.order.OrderProcessWS;
+import com.sapienter.jbilling.server.order.OrderProcessWS
+import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.process.AgeingDTOEx;
-
 
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
@@ -117,6 +117,14 @@ class ApiService implements IWebServicesSessionBean {
 
     public void deleteUser(Integer userId) {
         webServicesSession.deleteUser(userId)
+    }
+
+    public ContactTypeWS getContactTypeWS(Integer contactTypeId) {
+        return webServicesSession.getContactTypeWS(contactTypeId);
+    }
+
+    public Integer createContactTypeWS(ContactTypeWS contactType) {
+        return webServicesSession.createContactTypeWS(contactType);
     }
 
     public void updateUserContact(Integer userId, Integer typeId, ContactWS contact) {

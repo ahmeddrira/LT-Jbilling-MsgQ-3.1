@@ -45,7 +45,7 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
 public class OrderBillingTypeDTO extends AbstractDescription implements java.io.Serializable {
 
 
-     private int id;
+     private Integer id;
      private Set<OrderDTO> orderDTOs = new HashSet<OrderDTO>(0);
 
     public OrderBillingTypeDTO() {
@@ -67,11 +67,11 @@ public class OrderBillingTypeDTO extends AbstractDescription implements java.io.
     
     @Id 
     @Column(name="id", unique=true, nullable=false)
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
     
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="orderBillingType")

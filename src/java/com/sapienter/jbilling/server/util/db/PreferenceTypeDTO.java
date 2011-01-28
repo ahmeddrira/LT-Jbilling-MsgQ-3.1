@@ -43,7 +43,7 @@ import com.sapienter.jbilling.server.util.Constants;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class PreferenceTypeDTO extends AbstractDescription implements java.io.Serializable {
 
-    private int id;
+    private Integer id;
     private Integer intDefValue;
     private String strDefValue;
     private BigDecimal floatDefValue;
@@ -52,11 +52,11 @@ public class PreferenceTypeDTO extends AbstractDescription implements java.io.Se
     public PreferenceTypeDTO() {
     }
 
-    public PreferenceTypeDTO(int id) {
+    public PreferenceTypeDTO(Integer id) {
         this.id = id;
     }
 
-    public PreferenceTypeDTO(int id, Integer intDefValue, String strDefValue, BigDecimal floatDefValue,
+    public PreferenceTypeDTO(Integer id, Integer intDefValue, String strDefValue, BigDecimal floatDefValue,
                              Set<PreferenceDTO> preferences) {
         this.id = id;
         this.intDefValue = intDefValue;
@@ -67,11 +67,11 @@ public class PreferenceTypeDTO extends AbstractDescription implements java.io.Se
 
     @Id
     @Column(name="id", unique=true, nullable=false)
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -42,7 +42,7 @@ import javax.persistence.Transient;
 @Table(name = "menu_option")
 public class MenuOptionDTO extends AbstractDescription implements java.io.Serializable {
 
-    private int id;
+    private Integer id;
     private MenuOptionDTO menuOption;
     private String link;
     private int levelField;
@@ -74,11 +74,11 @@ public class MenuOptionDTO extends AbstractDescription implements java.io.Serial
 
     @Id
     @Column(name = "id", unique = true, nullable = false)
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

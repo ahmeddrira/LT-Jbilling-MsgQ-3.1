@@ -710,3 +710,6 @@ create table breadcrumb (
 );
 
 insert into jbilling_seqs (name, next_id) values ('breadcrumb', 1);
+
+-- ID generator for new contact types
+insert into jbilling_seqs (name, next_id) values ('contact_type', 10);

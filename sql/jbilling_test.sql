@@ -11948,6 +11948,7 @@ notification_message_arch_line	1
 notification_message_arch_line	1
 mediation_record_line	1
 mediation_record_line	1
+contact_type	10
 \.
 
 

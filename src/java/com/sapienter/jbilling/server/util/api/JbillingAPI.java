@@ -20,7 +20,6 @@
 
 package com.sapienter.jbilling.server.util.api;
 
-import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
@@ -38,6 +37,7 @@ import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
+import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
@@ -45,7 +45,6 @@ import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -62,6 +61,9 @@ public interface JbillingAPI {
 
     public ContactWS[] getUserContactsWS(Integer userId);
     public void updateUserContact(Integer userId, Integer typeId, ContactWS contact);
+
+    public ContactTypeWS getContactTypeWS(Integer contactTypeId);
+    public Integer createContactTypeWS(ContactTypeWS contactType);
 
     public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard);
     public void updateAch(Integer userId, AchDTO ach);

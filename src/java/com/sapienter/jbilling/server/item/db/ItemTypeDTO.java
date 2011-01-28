@@ -61,7 +61,7 @@ public class ItemTypeDTO extends AbstractDescription
         implements java.io.Serializable {
 
 
-    private int id;
+    private Integer id;
     private CompanyDTO entity;
     private String description;
     private int orderLineTypeId;
@@ -71,17 +71,17 @@ public class ItemTypeDTO extends AbstractDescription
     public ItemTypeDTO() {
     }
 
-    public ItemTypeDTO(int id) {
+    public ItemTypeDTO(Integer id) {
         this.id = id;
     }
 
-    public ItemTypeDTO(int id, CompanyDTO entity, int orderLineTypeId) {
+    public ItemTypeDTO(Integer id, CompanyDTO entity, int orderLineTypeId) {
         this.id = id;
         this.entity = entity;
         this.orderLineTypeId = orderLineTypeId;
     }
 
-    public ItemTypeDTO(int id, CompanyDTO entity, String description, int orderLineTypeId, Set<ItemDTO> items) {
+    public ItemTypeDTO(Integer id, CompanyDTO entity, String description, int orderLineTypeId, Set<ItemDTO> items) {
        this.id = id;
        this.entity = entity;
        this.description = description;
@@ -96,11 +96,11 @@ public class ItemTypeDTO extends AbstractDescription
 
     @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="item_type_GEN")
     @Column(name="id", unique=true, nullable=false)
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
     
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

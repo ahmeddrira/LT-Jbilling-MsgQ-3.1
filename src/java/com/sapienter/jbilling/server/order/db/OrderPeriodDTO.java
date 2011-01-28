@@ -60,7 +60,7 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
 public class OrderPeriodDTO extends AbstractDescription implements java.io.Serializable {
 
 
-     private int id;
+     private Integer id;
      private CompanyDTO company;
      private PeriodUnitDTO periodUnitDTO;
      private Integer value;
@@ -71,10 +71,10 @@ public class OrderPeriodDTO extends AbstractDescription implements java.io.Seria
      }
 
     
-    public OrderPeriodDTO(int id) {
+    public OrderPeriodDTO(Integer id) {
         this.id = id;
     }
-    public OrderPeriodDTO(int id, CompanyDTO entity, PeriodUnitDTO periodUnitDTO, Integer value, Set<OrderDTO> orderDTOs) {
+    public OrderPeriodDTO(Integer id, CompanyDTO entity, PeriodUnitDTO periodUnitDTO, Integer value, Set<OrderDTO> orderDTOs) {
        this.id = id;
        this.company = entity;
        this.periodUnitDTO = periodUnitDTO;
@@ -89,11 +89,11 @@ public class OrderPeriodDTO extends AbstractDescription implements java.io.Seria
    
     @Id  @GeneratedValue(strategy=GenerationType.TABLE, generator="order_period_GEN") 
     @Column(name="id", unique=true, nullable=false)
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
     
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
     @ManyToOne(fetch=FetchType.LAZY)

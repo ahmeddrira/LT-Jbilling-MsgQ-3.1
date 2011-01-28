@@ -50,11 +50,11 @@ public class PluggableTaskTypeCategoryDTO extends AbstractDescription implements
     }
 
 
-    public int getId() {
+    public Integer getId() {
         return Id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         Id = id;
     }
 

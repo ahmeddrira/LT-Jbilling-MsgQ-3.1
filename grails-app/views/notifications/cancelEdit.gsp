@@ -22,7 +22,7 @@
 </content>
 
 <content tag="column1">
-    <g:render template="lists" model="['lst': lst, 'languageId':languageId, 'entityId':entityId]"/> 
+    <g:render template="lists" model="['lst': lst]"/> 
 </content>
 
 <content tag="column2">

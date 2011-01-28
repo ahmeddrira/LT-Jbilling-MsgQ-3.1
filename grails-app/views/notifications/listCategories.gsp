@@ -26,5 +26,10 @@
     <g:render template="categories" model="['lst': lst]"/>
 </content>
 
+<g:if test="${selected}">
+    <content tag="column2">
+        <g:render template="list" model="['lstByCategory': lstByCategory]"/>
+    </content>
+</g:if>
 </body>
 </html>

@@ -18,6 +18,14 @@ $(function() {
 	$(".numericOnly").keydown(function(event){
     	numericOnly(event);
     });
+    $(".numericOnly").change(function (event){
+        //alert( $(this).parent().parent().find(":input[type=checkbox]").is(':checked'));
+        if ($(this).val() > 0 ) {
+            $(this).parent().parent().find(':input[type=checkbox]').attr('checked', true);
+        } else {
+        	$(this).parent().parent().find(':input[type=checkbox]').attr('checked', false);
+        }
+    });
 });
 </script>
 

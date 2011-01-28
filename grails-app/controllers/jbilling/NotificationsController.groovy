@@ -70,8 +70,8 @@ class NotificationsController {
 		NotificationMessageTypeDTO typeDto= NotificationMessageTypeDTO.findById(messageTypeId)
 		NotificationMessageDTO dto=null
 		for (NotificationMessageDTO messageDTO: typeDto.getNotificationMessages()) {
-			if (messageDTO?.getEntity()?.getId() == entityId
-			&& messageDTO.getLanguage().getId()== _languageId) {
+			if (messageDTO?.getEntity()?.getId()?.equals(entityId) 
+				&& messageDTO.getLanguage().getId().equals(_languageId)) {
 				dto= messageDTO;
 				break;
 			}
@@ -223,7 +223,11 @@ class NotificationsController {
 		}
 		
 		log.debug  "Id is=" + params.id
-		Integer messageTypeId= params.id.toInteger()
+		Integer messageTypeId= params.id?.toInteger()
+		
+		if (!messageTypeId) {
+			redirect action: 'listCategories'
+		}
 		
 		Integer _languageId= session['language_id']
 		if (params.get('language.id')) {
@@ -237,13 +241,14 @@ class NotificationsController {
 		NotificationMessageTypeDTO typeDto= NotificationMessageTypeDTO.findById(messageTypeId)
 		NotificationMessageDTO dto=null
 		for (NotificationMessageDTO messageDTO: typeDto.getNotificationMessages()) {
-			if (messageDTO?.getEntity()?.getId() == entityId
-			&& messageDTO.getLanguage().getId()== _languageId) {
+			if (messageDTO?.getEntity()?.getId().equals(entityId)
+			&& messageDTO.getLanguage().getId().equals(_languageId)) {
 				dto= messageDTO;
 				break;
 			}
 		}
-		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
+		breadcrumbService.addBreadcrumb(controllerName, actionName, null, messageTypeId)
+		
 		[dto:dto, messageTypeId: messageTypeId, languageId:_languageId, entityId:entityId, askPreference:askPreference]
 	}
 	
@@ -333,9 +338,10 @@ class NotificationsController {
 		NotificationMessageTypeDTO typeDto= NotificationMessageTypeDTO.findById( Integer.parseInt (params["id"]) )
 		Integer entityId= webServicesSession.getCallerCompanyId()
 		NotificationMessageDTO dto=null
+		Integer languageId= session['language_id']
 		for (NotificationMessageDTO messageDTO: typeDto.getNotificationMessages()) {
-			if (messageDTO?.getEntity()?.getId() == entityId
-			&& messageDTO.getLanguage().getId()== languageId) {
+			if (messageDTO?.getEntity()?.getId().equals(entityId)
+			&& messageDTO.getLanguage().getId().equals(languageId)) {
 				dto= messageDTO;
 				break;
 			}
@@ -343,7 +349,7 @@ class NotificationsController {
 
 		def lstByCateg= NotificationMessageTypeDTO.findAllByCategory(new NotificationCategoryDTO(typeDto.getCategory().getId()))
 
-		[lstByCategory:lstByCateg, languageId:languageId, entityId:entityId, dto:dto, messageTypeId:typeDto.getId(), languageDto: LanguageDTO.findById(languageId)]
+		[lstByCategory:lstByCateg, entityId:entityId, dto:dto, messageTypeId:typeDto.getId(), languageDto: LanguageDTO.findById(languageId)]
 
 	}
 

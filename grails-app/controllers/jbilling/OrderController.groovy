@@ -84,8 +84,12 @@ class OrderController {
 		def orders = getFilteredOrders (filters)
 		Integer _orderId= params.id as Integer
 		OrderWS order= webServicesSession.getOrder(_orderId)
+		UserWS user= webServicesSession.getUserWS(order.getUserId())
+		
 		recentItemService.addRecentItem(_orderId, RecentItemType.ORDER)
-		render view: 'showListAndOrder', model:[orders:orders, order:order, filters:filters]
+		breadcrumbService.addBreadcrumb(controllerName, actionName, null, _orderId)
+		
+		render view: 'showListAndOrder', model:[orders:orders, order:order, user:user, filters:filters]
 	}
 	
 	def getFilteredOrders(filters) {

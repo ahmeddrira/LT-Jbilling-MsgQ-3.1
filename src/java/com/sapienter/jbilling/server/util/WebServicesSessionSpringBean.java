@@ -166,6 +166,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.process.AgeingDTOEx;
+import com.sapienter.jbilling.server.process.AgeingWS;
 
 
 
@@ -2276,21 +2277,32 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         sess.setAuthPaymentType(userId, autoPaymentType, use);
     }
 
-    public AgeingDTOEx[] getAgeingConfiguration(Integer languageId) throws SessionInternalError {
+    public AgeingWS[] getAgeingConfiguration(Integer languageId) throws SessionInternalError {
 	    try {
 		    IBillingProcessSessionBean processSession = 
 		    	(IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-		    return processSession.getAgeingSteps(getCallerCompanyId(), getCallerLanguageId(), languageId);
+		    AgeingDTOEx[] dtoArr= processSession.getAgeingSteps(getCallerCompanyId(), getCallerLanguageId(), languageId);
+		    AgeingWS[] wsArr= new AgeingWS[dtoArr.length];
+		    AgeingBL bl= new AgeingBL();
+		    for (int i = 0; i < wsArr.length; i++) {
+				wsArr[i]= bl.getWS(dtoArr[i]);
+			}
+		    return wsArr;
 	    } catch (Exception e) {
 	    	throw new SessionInternalError(e);
 	    }
     }
 
-    public void saveAgeingConfiguration(AgeingDTOEx[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError { 
+    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError { 
 	    try {
+	    	AgeingBL bl= new AgeingBL();
+	    	AgeingDTOEx[] dtoList= new AgeingDTOEx[steps.length];
+		    for (int i = 0; i < steps.length; i++) {
+		    	dtoList[i]= bl.getDTOEx(steps[i]);
+			}
 		    IBillingProcessSessionBean processSession = 
 		    (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-		    processSession.setAgeingSteps (getCallerCompanyId(), languageId, new AgeingBL().validate(steps));
+		    processSession.setAgeingSteps (getCallerCompanyId(), languageId, new AgeingBL().validate(dtoList));
 		
 		    // update the grace period in another call
 		    IUserSessionBean userSession = (IUserSessionBean) Context.getBean(Context.Name.USER_SESSION);

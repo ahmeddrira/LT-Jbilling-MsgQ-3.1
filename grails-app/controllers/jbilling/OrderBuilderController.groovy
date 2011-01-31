@@ -200,12 +200,15 @@ class OrderBuilderController {
                 lines.add(line)
                 order.orderLines = lines.toArray()
 
-                // rate order and render the review pane
-                try {
-                    conversation.order = webServicesSession.rateOrder(order)
-                } catch (SessionInternalError e) {
-                    viewUtils.resolveException(flow, session.locale, e)
+                // rate order
+                if (order.orderLines) {
+                    try {
+                        order = webServicesSession.rateOrder(order)
+                    } catch (SessionInternalError e) {
+                        viewUtils.resolveException(flow, session.locale, e)
+                    }
                 }
+                conversation.order = order
 
                 params.newLineIndex = lines.size() - 1
                 params.template = 'review'
@@ -239,11 +242,15 @@ class OrderBuilderController {
                 // add line to order
                 order.orderLines[index] = line
 
-                try {
-                    conversation.order = webServicesSession.rateOrder(order)
-                } catch (SessionInternalError e) {
-                    viewUtils.resolveException(flow, session.locale, e)
+                // rate order
+                if (order.orderLines) {
+                    try {
+                        order = webServicesSession.rateOrder(order)
+                    } catch (SessionInternalError e) {
+                        viewUtils.resolveException(flow, session.locale, e)
+                    }
                 }
+                conversation.order = order
 
                 params.template = 'review'
             }
@@ -262,11 +269,15 @@ class OrderBuilderController {
                 lines.remove(index)
                 order.orderLines = lines.toArray()
 
-                try {
-                    conversation.order = webServicesSession.rateOrder(order)
-                } catch (SessionInternalError e) {
-                    viewUtils.resolveException(flow, session.locale, e)
+                // rate order
+                if (order.orderLines) {
+                    try {
+                        order = webServicesSession.rateOrder(order)
+                    } catch (SessionInternalError e) {
+                        viewUtils.resolveException(flow, session.locale, e)
+                    }
                 }
+                conversation.order = order
 
                 params.template = 'review'
             }
@@ -286,11 +297,15 @@ class OrderBuilderController {
                 if (order.period == Constants.ORDER_PERIOD_ONCE)
                     order.billingTypeId = Constants.ORDER_BILLING_POST_PAID
 
-                try {
-                    conversation.order = webServicesSession.rateOrder(order)
-                } catch (SessionInternalError e) {
-                    viewUtils.resolveException(flow, session.locale, e)
+                // rate order
+                if (order.orderLines) {
+                    try {
+                        order = webServicesSession.rateOrder(order)
+                    } catch (SessionInternalError e) {
+                        viewUtils.resolveException(flow, session.locale, e)
+                    }
                 }
+                conversation.order = order
 
                 params.template = 'review'
             }

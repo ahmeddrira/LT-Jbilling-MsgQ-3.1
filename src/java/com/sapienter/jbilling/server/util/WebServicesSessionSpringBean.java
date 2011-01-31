@@ -41,7 +41,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.sapienter.jbilling.server.item.PlanBL;
+import com.sapienter.jbilling.server.item.PlanItemBL;
+import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.item.PlanWS;
+import com.sapienter.jbilling.server.item.db.PlanDTO;
+import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
+import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
@@ -2607,5 +2614,88 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public void deletePlugin(Integer id) {
         new PluggableTaskBL(id).delete(getCallerId());
+    }
+
+
+    /*
+        Plans and special pricing
+     */
+
+    public PlanWS getPlanWS(Integer planId) {
+        PlanBL bl = new PlanBL(planId);
+        return PlanBL.getWS(bl.getEntity());
+    }
+
+    public Integer createPlan(PlanWS plan) {
+        return new PlanBL().create(PlanBL.getDTO(plan));
+    }
+
+    public void updatePlan(PlanWS plan) {
+        PlanBL bl = new PlanBL(plan.getId());
+        bl.update(PlanBL.getDTO(plan));
+    }
+
+    public void deletePlan(Integer planId) {
+        new PlanBL(planId).delete();
+    }
+
+    public void addPlanPrice(Integer planId, PlanItemWS price) {
+        PlanBL bl = new PlanBL(planId);
+        bl.addPrice(PlanItemBL.getDTO(price));
+    }
+
+    public boolean isCustomerSubscribed(Integer planId, Integer userId) {
+        PlanBL bl = new PlanBL(planId);
+        return bl.isSubscribed(userId);
+    }
+
+    public Integer[] getSubscribedCustomers(Integer planId) {
+        List<CustomerDTO> customers = new PlanBL().getCustomersByPlan(planId);
+
+        int i = 0;
+        Integer[] customerIds = new Integer[customers.size()];
+        for (CustomerDTO customer : customers) {
+            customerIds[i++] = customer.getId();
+        }
+        return customerIds;
+    }
+
+    public Integer[] getPlansBySubscriptionItem(Integer itemId) {
+        List<PlanDTO> plans = new PlanBL().getPlansBySubscriptionItem(itemId);
+
+        int i = 0;
+        Integer[] planIds = new Integer[plans.size()];
+        for (PlanDTO plan : plans) {
+            planIds[i++] = plan.getId();
+        }
+        return planIds;
+    }
+
+    public Integer[] getPlansByAffectedItem(Integer itemId) {
+        List<PlanDTO> plans = new PlanBL().getPlansByAffectedItem(itemId);
+
+        int i = 0;
+        Integer[] planIds = new Integer[plans.size()];
+        for (PlanDTO plan : plans) {
+            planIds[i++] = plan.getId();
+        }
+        return planIds;
+    }
+
+    public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
+        CustomerPriceBL bl = new CustomerPriceBL(userId);
+        return PlanItemBL.getWS(bl.getPrice(itemId));
+    }
+
+    public PlanItemWS[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
+        List<PlanItemDTO> prices = new CustomerPriceBL(userId).getPricesByAttributes(itemId, attrs);
+        List<PlanItemWS> ws = PlanItemBL.getWS(prices);
+        return ws.toArray(new PlanItemWS[ws.size()]);
+    }
+
+    public PlanItemWS[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
+        List<PlanItemDTO> prices = new CustomerPriceBL(userId).getPricesByWildcardAttributes(itemId, attrs);
+        List<PlanItemWS> ws = PlanItemBL.getWS(prices);
+        return ws.toArray(new PlanItemWS[ws.size()]);
     }
 }

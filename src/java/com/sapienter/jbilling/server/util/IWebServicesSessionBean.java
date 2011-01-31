@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.util;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.jws.WebService;
 
@@ -31,6 +32,8 @@ import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
+import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
 import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
@@ -272,20 +275,45 @@ public interface IWebServicesSessionBean {
     /*
         Utilities
      */
+
     public void generateRules(String rulesData) throws SessionInternalError;
-    
+
+
     /*
         Notifications
     */
+
     public void createUpdateNofications(Integer messageId, MessageDTO dto);
 
     public void saveNotificationPreferences(PreferenceWS[] prefList);
     public void saveCustomerNotes(Integer userId, String notes);
-    
+
+
     /*
-     * Plug-ins
+        Plug-ins
      */
+
     public Integer createPlugin(PluggableTaskWS plugin);
     public void updatePlugin(PluggableTaskWS plugin);
     public void deletePlugin(Integer plugin);
+
+
+    /*
+        Plans and special pricing
+     */
+
+    public PlanWS getPlanWS(Integer planId);
+    public Integer createPlan(PlanWS plan);
+    public void updatePlan(PlanWS plan);
+    public void deletePlan(Integer planId);
+    public void addPlanPrice(Integer planId, PlanItemWS price);
+
+    public boolean isCustomerSubscribed(Integer planId, Integer userId);
+    public Integer[] getSubscribedCustomers(Integer planId);
+    public Integer[] getPlansBySubscriptionItem(Integer itemId);
+    public Integer[] getPlansByAffectedItem(Integer itemId);
+
+    public PlanItemWS getCustomerPrice(Integer userId, Integer itemId);
+    public PlanItemWS[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs);
+    public PlanItemWS[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs);
 }

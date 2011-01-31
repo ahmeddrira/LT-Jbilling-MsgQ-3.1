@@ -27,29 +27,43 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
+import javax.persistence.Version;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.AbstractDescription;
 
 @Entity
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@TableGenerator(name = "contact_field_type_GEN",
+        table = "jbilling_seqs",
+        pkColumnName = "name",
+        valueColumnName = "next_id",
+        pkColumnValue = "ageing_entity_step",
+        allocationSize = 10)
 @Table(name="contact_field_type")
-public class ContactFieldTypeDTO  implements java.io.Serializable {
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+public class ContactFieldTypeDTO extends AbstractDescription implements java.io.Serializable {
 
 
-     private int id;
-     private CompanyDTO entity;
-     private String promptKey;
-     private String dataType;
-     private Integer readOnly;
-     private Set<ContactFieldDTO> contactFields = new HashSet<ContactFieldDTO>(0);
+	private Integer id;
+	private CompanyDTO entity;
+	private String promptKey;
+	private String dataType;
+	private Integer readOnly;
+	private Set<ContactFieldDTO> contactFields = new HashSet<ContactFieldDTO>(0);
+	private int versionNum;
 
     public ContactFieldTypeDTO() {
     }
@@ -61,12 +75,12 @@ public class ContactFieldTypeDTO  implements java.io.Serializable {
     }
 
     
-    public ContactFieldTypeDTO(int id, String promptKey, String dataType) {
+    public ContactFieldTypeDTO(Integer id, String promptKey, String dataType) {
         this.id = id;
         this.promptKey = promptKey;
         this.dataType = dataType;
     }
-    public ContactFieldTypeDTO(int id, CompanyDTO entity, String promptKey, String dataType, Integer customerReadonly, Set<ContactFieldDTO> contactFields) {
+    public ContactFieldTypeDTO(Integer id, CompanyDTO entity, String promptKey, String dataType, Integer customerReadonly, Set<ContactFieldDTO> contactFields) {
        this.id = id;
        this.entity = entity;
        this.promptKey = promptKey;
@@ -75,14 +89,14 @@ public class ContactFieldTypeDTO  implements java.io.Serializable {
        this.contactFields = contactFields;
     }
    
-     @Id 
-    
+    @Id 
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "contact_field_type_GEN")
     @Column(name="id", unique=true, nullable=false)
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
     
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 @ManyToOne(fetch=FetchType.LAZY)
@@ -131,8 +145,27 @@ public class ContactFieldTypeDTO  implements java.io.Serializable {
         this.contactFields = contactFields;
     }
 
+    @Transient
+    protected String getTable() {
+        return Constants.TABLE_CONTACT_FIELD_TYPE;
+    }
 
+    @Version
+    @Column(name = "OPTLOCK")
+    public int getVersionNum() {
+        return versionNum;
+    }
 
+    public void setVersionNum(int versionNum) {
+        this.versionNum = versionNum;
+    }
+    
+	public String toString() {
+		return "ContactFieldTypeDTO [id=" + id + ", entity=" + entity
+				+ ", promptKey=" + promptKey + ", dataType=" + dataType
+				+ ", readOnly=" + readOnly + ", contactFields=" + contactFields
+				+ "]";
+	}
 
 }
 

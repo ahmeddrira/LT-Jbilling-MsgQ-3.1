@@ -162,12 +162,13 @@ class UserController {
      */
     def edit = {
         def user = params.id ? webServicesSession.getUserWS(params.int('id')) : null
+        def contacts = user ? webServicesSession.getUserContactsWS(user.userId) : null
         def parent = params.parentId ? webServicesSession.getUserWS(params.int('parentId')) : null
         def company = CompanyDTO.get(session['company_id'])
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
 
-        [ user: user, parent: parent, company: company, currencies: currencies ]
+        [ user: user, contacts: contacts, parent: parent, company: company, currencies: currencies ]
     }
 
     /**
@@ -178,9 +179,12 @@ class UserController {
         user.setMainRoleId(Constants.TYPE_CUSTOMER)
         bindData(user, params, 'user')
 
-        // bind contact and custom contact fields
+        def contactTypes = CompanyDTO.get(session['company_id']).contactTypes
+        def primaryContactTypeId = params.int('primaryContactTypeId')
+
+        // bind primary user contact and custom contact fields
         def contact = new ContactWS()
-        bindData(contact, params, 'contact')
+        bindData(contact, params, 'contact-' + params.primaryContactTypeId)
         contact.fieldIDs = new Integer[params.contactField.size()]
         contact.fieldValues = new Integer[params.contactField.size()]
         params.contactField.eachWithIndex { id, value, i ->
@@ -188,6 +192,17 @@ class UserController {
             contact.fieldValues[i] = value
         }
         user.setContact(contact)
+
+        log.debug("Primary contact: " + contact)
+
+        // bind secondary contact types
+        def contacts = contactTypes.findAll{ it.id != primaryContactTypeId }.collect{
+            def otherContact = new ContactWS()
+            bindData(otherContact, params, 'contact-' + it.id)
+            return otherContact;
+        }
+
+        log.debug("Secondary contacts: " + contacts)
 
         // bind credit card object if parameters present
         if (params.creditCard.any { key, value -> value }) {
@@ -218,14 +233,14 @@ class UserController {
                 // validate that the entered confirmation password matches the users existing password
                 if (!passwordEncoder.isPasswordValid(oldUser.password, params.oldPassword, null)) {
                     flash.error = 'customer.current.password.doesnt.match.existing'
-                    render view: 'edit', model: [ user: user, currencies: currencies ]
+                    render view: 'edit', model: [ user: user, contacts: contacts, currencies: currencies ]
                     return
                 }
             }
         } else {
             if (!params.newPassword) {
                 flash.error = 'customer.create.without.password'
-                render view: 'edit', model: [ user: user, currencies: currencies ]
+                render view: 'edit', model: [ user: user, contacts: contacts, currencies: currencies ]
                 return
             }
         }
@@ -236,12 +251,12 @@ class UserController {
 
         } else {
             flash.error = 'customer.passwords.dont.match'
-            render view: 'edit', model: [ user: user, currencies: currencies ]
+            render view: 'edit', model: [ user: user, contacts: contacts, currencies: currencies ]
             return
         }
 
-        // save or update
         try {
+            // save or update
             if (!oldUser) {
                 log.debug("creating user ${user}")
 
@@ -259,11 +274,19 @@ class UserController {
                 flash.message = 'customer.updated'
                 flash.args = [ user.userId ]
             }
+
+            // save secondary contacts
+            if (user.userId) {
+                contacts.each{
+                    webServicesSession.updateUserContact(user.userId, it.type, it);
+                }
+            }
+
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
 
             def company = CompanyDTO.get(session['company_id'])
-            render view: 'edit', model: [ user: user, company: company, currencies: currencies ]
+            render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
             return
         }
 

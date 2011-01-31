@@ -1,6 +1,6 @@
 /*
  jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
+ Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
  This file is part of jbilling.
 
@@ -26,40 +26,57 @@ import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
+import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.*;
+
 /**
- * Flat pricing strategy.
+ * Capped, graduated pricing strategy.
  *
- * Prices the item at $0/unit. Flat pricing assumes that the user has already paid for all
- * usage as part of the cost of the plan.
+ * Only usage over the included quantity, and under the set maximum total $ amount will be billed.
  *
  * @author Brian Cowdery
- * @since 05-08-2010
+ * @since 31/01/11
  */
-public class FlatPricingStrategy implements PricingStrategy {
+public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
 
-    public boolean isGraduated() { return false; }
-    public boolean requiresUsage() { return false; }
+    private static final List<AttributeDefinition> ATTRIBUTE_LIST = Arrays.asList(
+        new AttributeDefinition("max", DECIMAL, true)
+    );
 
-    public boolean hasRate() { return true; }
-    public BigDecimal getRate() { return BigDecimal.ZERO; }
-
+    @Override
     public List<AttributeDefinition> getAttributeDefinitions() {
-        return Collections.emptyList();
+        return ATTRIBUTE_LIST;
     }
 
     /**
-     * Sets the price to zero. The price for all usage is included in the cost of the
-     * monthly plan subscription, so the customer is not charged per unit.
+     * Graduated pricing strategy with a maximum total usage cap.
+     *
+     * @see GraduatedPricingStrategy
      *
      * @param result pricing result to apply pricing to
      * @param planPrice the plan price to apply
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
      */
+    @Override
     public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
-        result.setPrice(BigDecimal.ZERO);
+        if (usage == null || usage.getAmount() == null)
+            throw new IllegalArgumentException("Usage amount cannot be null for CappedGraduatedPricingStrategy.");
+
+        // apply price only if the total usage cap has not been reached
+        BigDecimal maximum = new BigDecimal(planPrice.getAttributes().get("max"));
+        if (usage.getAmount().compareTo(maximum) <= 0) {
+            super.applyTo(result, planPrice, quantity, usage);
+        }
+
+        // only bill up to the set maximum cap
+        if (result.getPrice() != null) {
+            BigDecimal total = quantity.multiply(result.getPrice());
+            if (total.compareTo(maximum) >= 0) {
+                // todo: calculate a unit price that brings us up to the maximum cap
+            }
+        }
     }
 }

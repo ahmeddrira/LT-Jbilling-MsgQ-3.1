@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.pricing.db;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
+import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
@@ -56,6 +57,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -159,6 +161,18 @@ public class PriceModelDTO implements Serializable {
     }
 
     /**
+     * Expected attributes.
+     *
+     * @return list of expected attributes
+     */
+    @Transient
+    public List<AttributeDefinition> getAttributeDefinitions() {
+        if (getStrategy() != null)
+            return getStrategy().getAttributeDefinitions();
+        return null;
+    }
+
+    /**
      * Returns the pricing rate. If the strategy type defines an overriding rate, the
      * strategy rate will be returned.
      *
@@ -216,7 +230,7 @@ public class PriceModelDTO implements Serializable {
      * @param usage total item usage for this billing period
      */
     @Transient
-    public void applyTo(PricingResult result, BigDecimal quantity, BigDecimal usage) {
+    public void applyTo(PricingResult result, BigDecimal quantity, Usage usage) {
         getType().getStrategy().applyTo(result, this, quantity, usage);
 
         // convert to PricingResult currency

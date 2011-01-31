@@ -21,9 +21,12 @@
 package com.sapienter.jbilling.server.pricing.strategy;
 
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
+import com.sapienter.jbilling.server.order.Usage;
+import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Interface for pricing strategies. All implemented strategies must be accessible via
@@ -66,6 +69,13 @@ public interface PricingStrategy {
      */
     public BigDecimal getRate();
 
+    /**
+     * Returns a list of attribute definitions for this pricing strategy. This method should
+     * return an empty list if there are no attributes.
+     *
+     * @return attribute definitions. empty list if none.
+     */
+    public List<AttributeDefinition> getAttributeDefinitions();
 
     /**
      * Applies the plan's pricing strategy to the given pricing request.
@@ -76,5 +86,5 @@ public interface PricingStrategy {
      * @param usage total item usage for this billing period
      * @throws IllegalArgumentException if strategy requires usage, and usage was given as null
      */
-    public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, BigDecimal usage);
+    public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, Usage usage);
 }

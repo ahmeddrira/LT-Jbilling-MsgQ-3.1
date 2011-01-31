@@ -59,7 +59,7 @@ then
             usage = getCurrentUsage($result.getUserId(), $result.getItemId());
         }
     
-        model.applyTo($result, $result.getQuantity(), (usage != null ? usage.getQuantity() : null));
+        model.applyTo($result, $result.getQuantity(), usage);
         LOG.debug("Applying price model: " + model);
     }
 end

@@ -21,11 +21,19 @@
 package com.sapienter.jbilling.server.pricing.strategy;
 
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
+import com.sapienter.jbilling.server.order.Usage;
+import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 
 /**
+ * Metered pricing strategy.
+ *
+ * Applies a set $/unit amount.
+ *
  * @author Brian Cowdery
  * @since 05-08-2010
  */
@@ -37,6 +45,10 @@ public class MeteredPricingStrategy implements PricingStrategy {
     public boolean hasRate() { return false; }
     public BigDecimal getRate() { return null; }
 
+    public List<AttributeDefinition> getAttributeDefinitions() {
+        return Collections.emptyList();
+    }
+
     /**
      * Sets the price to the plan rate.
      *
@@ -45,7 +57,7 @@ public class MeteredPricingStrategy implements PricingStrategy {
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
      */
-    public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, BigDecimal usage) {
+    public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
         result.setPrice(planPrice.getRate());
     }
 }

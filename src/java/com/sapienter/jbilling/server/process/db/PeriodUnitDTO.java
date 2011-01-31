@@ -45,7 +45,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class PeriodUnitDTO extends AbstractDescription implements java.io.Serializable {
 
-    private Integer id;
+    private int id;
     private Set<Partner> partners = new HashSet<Partner>(0);
     private Set<OrderPeriodDTO> orderPeriodDTOs = new HashSet<OrderPeriodDTO>(0);
     private Set<BillingProcessDTO> billingProcesses = new HashSet<BillingProcessDTO>(0);
@@ -54,11 +54,11 @@ public class PeriodUnitDTO extends AbstractDescription implements java.io.Serial
     public PeriodUnitDTO() {
     }
 
-    public PeriodUnitDTO(Integer id) {
+    public PeriodUnitDTO(int id) {
         this.id = id;
     }
 
-    public PeriodUnitDTO(Integer id, Set<Partner> partners, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<BillingProcessConfigurationDTO> billingProcessConfigurations) {
+    public PeriodUnitDTO(int id, Set<Partner> partners, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<BillingProcessConfigurationDTO> billingProcessConfigurations) {
         this.id = id;
         this.partners = partners;
         this.orderPeriodDTOs = orderPeriodDTOs;
@@ -73,11 +73,11 @@ public class PeriodUnitDTO extends AbstractDescription implements java.io.Serial
     
     @Id
     @Column(name = "id", unique = true, nullable = false)
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

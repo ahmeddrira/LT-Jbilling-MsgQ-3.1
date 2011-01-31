@@ -65,7 +65,7 @@ import java.util.Set;
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ItemDTO extends AbstractDescription {
 
-    private Integer id;
+    private int id;
     private CompanyDTO entity;
     private String internalNumber;
     private PriceModelDTO defaultPrice;
@@ -91,11 +91,11 @@ public class ItemDTO extends AbstractDescription {
     public ItemDTO() {
     }
 
-    public ItemDTO(Integer id) {
+    public ItemDTO(int id) {
         this.id = id;
     }
 
-    public ItemDTO(Integer id, String internalNumber, BigDecimal percentage, Integer priceManual,
+    public ItemDTO(int id, String internalNumber, BigDecimal percentage, Integer priceManual,
                    Integer hasDecimals, Integer deleted, CompanyDTO entity) {
         this.id = id;
         this.internalNumber = internalNumber;
@@ -106,14 +106,14 @@ public class ItemDTO extends AbstractDescription {
         this.entity = entity;
     }
 
-    public ItemDTO(Integer id, Integer priceManual, Integer deleted, Integer hasDecimals) {
+    public ItemDTO(int id, Integer priceManual, Integer deleted, Integer hasDecimals) {
         this.id = id;
         this.priceManual = priceManual;
         this.deleted = deleted;
         this.hasDecimals = hasDecimals;
     }
 
-    public ItemDTO(Integer id, CompanyDTO entity, String internalNumber, BigDecimal percentage, Integer priceManual,
+    public ItemDTO(int id, CompanyDTO entity, String internalNumber, BigDecimal percentage, Integer priceManual,
                    Integer deleted, Integer hasDecimals, Set<OrderLineDTO> orderLineDTOs, Set<ItemTypeDTO> itemTypes,
                    Set<InvoiceLineDTO> invoiceLines) {
         this.id = id;
@@ -129,7 +129,7 @@ public class ItemDTO extends AbstractDescription {
     }
 
     // ItemDTOEx
-    public ItemDTO(Integer id, String number, CompanyDTO entity, String description, Integer manualPrice, Integer deleted,
+    public ItemDTO(int id, String number, CompanyDTO entity, String description, Integer manualPrice, Integer deleted,
                    Integer currencyId, BigDecimal price, BigDecimal percentage, Integer orderLineTypeId,
                    Integer hasDecimals) {
         
@@ -147,11 +147,11 @@ public class ItemDTO extends AbstractDescription {
 
     @Id @GeneratedValue(strategy = GenerationType.TABLE, generator = "item_GEN")
     @Column(name = "id", unique = true, nullable = false)
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

@@ -31,7 +31,7 @@ public abstract class AbstractDescription implements Serializable {
 
     private String description = null;
 
-    abstract public Integer getId();
+    abstract public int getId();
     abstract protected String getTable();
 
     /**
@@ -45,7 +45,7 @@ public abstract class AbstractDescription implements Serializable {
         if (label == null || languageId == null)
             throw new SessionInternalError("Cannot find translation without label or language " + label + ":" + languageId);
 
-        if (getId() == null)
+        if (getId() == 0)
             return null;
 
         JbillingTableDAS tableDas = Context.getBean(Context.Name.JBILLING_TABLE_DAS);

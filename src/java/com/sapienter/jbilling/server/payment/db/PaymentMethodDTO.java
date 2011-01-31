@@ -47,7 +47,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class PaymentMethodDTO extends AbstractDescription implements Serializable {
 
-    private Integer id;
+    private int id;
     private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
     private Set<CompanyDTO> entities = new HashSet<CompanyDTO>(0);
     private Set<ProcessRunTotalPmDTO> processRunTotalPms = new HashSet<ProcessRunTotalPmDTO>(
@@ -56,11 +56,11 @@ public class PaymentMethodDTO extends AbstractDescription implements Serializabl
     public PaymentMethodDTO() {
     }
 
-    public PaymentMethodDTO(Integer id) {
+    public PaymentMethodDTO(int id) {
         setId(id);
     }
 
-    public PaymentMethodDTO(Integer id, Set<PaymentDTO> payments,
+    public PaymentMethodDTO(int id, Set<PaymentDTO> payments,
             Set<CompanyDTO> entities,
             Set<ProcessRunTotalPmDTO> processRunTotalPms) {
         this.id = id;
@@ -71,11 +71,11 @@ public class PaymentMethodDTO extends AbstractDescription implements Serializabl
 
     @Id
     @Column(name = "id", unique = true, nullable = false)
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

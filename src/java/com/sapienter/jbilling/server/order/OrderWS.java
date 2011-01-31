@@ -46,7 +46,6 @@ import javax.validation.constraints.NotNull;
 public class OrderWS implements WSSecured, Serializable {
 
     private Integer id;
-    @NotNull(message = "validation.error.null.status")
     private Integer statusId;
     private Integer isCurrent;
     @NotNull(message = "validation.error.null.user.id")
@@ -424,6 +423,7 @@ public class OrderWS implements WSSecured, Serializable {
         sb.append(", isCurrent=").append(isCurrent);
         sb.append(", statusStr='").append(statusStr).append('\'');
         sb.append(", periodStr='").append(periodStr).append('\'');
+        sb.append(", periodId=").append(period);
         sb.append(", billingTypeStr='").append(billingTypeStr).append('\'');
 
         sb.append(", lines=");

@@ -57,7 +57,7 @@ import com.sapienter.jbilling.server.util.db.NotificationCategoryDTO;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class NotificationMessageTypeDTO extends AbstractDescription implements Serializable {
 
-    private Integer id;
+    private int id;
     private NotificationCategoryDTO category;
     private Set<NotificationMessageDTO> notificationMessages = new HashSet<NotificationMessageDTO>(
             0);
@@ -80,11 +80,11 @@ public class NotificationMessageTypeDTO extends AbstractDescription implements S
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "notification_message_type_GEN")
     @Column(name = "id", unique = true, nullable = false)
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
     

@@ -44,19 +44,18 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class OrderLineTypeDTO extends AbstractDescription implements java.io.Serializable {
 
-
-     private Integer id;
-     private Integer editable;
-     private Set<OrderLineDTO> orderLineDTOs = new HashSet<OrderLineDTO>(0);
+    private int id;
+    private Integer editable;
+    private Set<OrderLineDTO> orderLineDTOs = new HashSet<OrderLineDTO>(0);
 
     public OrderLineTypeDTO() {
     }
 
-    
     public OrderLineTypeDTO(int id, Integer editable) {
         this.id = id;
         this.editable = editable;
     }
+
     public OrderLineTypeDTO(int id, Integer editable, Set<OrderLineDTO> orderLineDTOs) {
        this.id = id;
        this.editable = editable;
@@ -65,11 +64,11 @@ public class OrderLineTypeDTO extends AbstractDescription implements java.io.Ser
    
     @Id 
     @Column(name="id", unique=true, nullable=false)
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
     
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
     

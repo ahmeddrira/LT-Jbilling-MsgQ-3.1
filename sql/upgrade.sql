@@ -711,5 +711,10 @@ create table breadcrumb (
 
 insert into jbilling_seqs (name, next_id) values ('breadcrumb', 1);
 
--- ID generator for new contact types
-insert into jbilling_seqs (name, next_id) values ('contact_type', 10);
+-- contact type optlock
+alter table contact_type add column OPTLOCK int null;
+update contact_type set OPTLOCK = 0;
+alter table contact_type alter column OPTLOCK set not null;
+
+-- Orders should always have an active since date
+update purchase_order set active_since = date(create_datetime) where active_since is null;

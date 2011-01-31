@@ -53,7 +53,7 @@ import com.sapienter.jbilling.server.util.Constants;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class CurrencyDTO extends AbstractDescription  implements java.io.Serializable {
 
-    private Integer id;
+    private int id;
     private String symbol;
     private String code;
     private String countryCode;
@@ -82,14 +82,14 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.id = id;
     }
 
-    public CurrencyDTO(Integer id, String symbol, String code, String countryCode) {
+    public CurrencyDTO(int id, String symbol, String code, String countryCode) {
         this.id = id;
         this.symbol = symbol;
         this.code = code;
         this.countryCode = countryCode;
     }
 
-    public CurrencyDTO(Integer id, String symbol, String code, String countryCode, Set<CompanyDTO> entities,
+    public CurrencyDTO(int id, String symbol, String code, String countryCode, Set<CompanyDTO> entities,
                        Set<UserDTO> baseUsers, Set<OrderDTO> orderDTOs, Set<Partner> partners, Set<PaymentDTO> payments,
                        Set<CurrencyExchangeDTO> currencyExchanges, Set<CompanyDTO> entities_1, Set<InvoiceDTO> invoices,
                        Set<ProcessRunTotalDTO> processRunTotals) {
@@ -115,11 +115,11 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
 
     @Id
     @Column(name="id", unique=true, nullable=false)
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

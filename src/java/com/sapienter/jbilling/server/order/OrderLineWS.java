@@ -43,7 +43,6 @@ public class OrderLineWS implements Serializable {
     private Integer orderId;
     private String amount; // use strings instead of BigDecimal for WS compatibility
     @NotNull(message = "validation.error.null.quantity")
-    @Min(value = 1, message = "validation.error.quantity.least.one")
     private String quantity;
     private String price;
     private Date createDatetime;

@@ -43,7 +43,7 @@ import com.sapienter.jbilling.server.util.Constants;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class NotificationCategoryDTO extends AbstractDescription implements java.io.Serializable {
 
-    private Integer id;
+    private int id;
     private Set<NotificationMessageTypeDTO> messageTypes = new HashSet<NotificationMessageTypeDTO>(0);
 
     public NotificationCategoryDTO() {
@@ -66,11 +66,11 @@ public class NotificationCategoryDTO extends AbstractDescription implements java
 
     @Id
     @Column(name="id", unique=true, nullable=false)
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

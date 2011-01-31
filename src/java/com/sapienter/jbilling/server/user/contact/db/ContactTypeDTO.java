@@ -36,6 +36,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -57,19 +58,20 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ContactTypeDTO extends AbstractDescription implements java.io.Serializable {
 
-    private Integer id;
+    private int id;
     private CompanyDTO entity;
     private Integer isPrimary;
     private Set<ContactMapDTO> contactMaps = new HashSet<ContactMapDTO>(0);
+    private Integer versionNum;
 
     public ContactTypeDTO() {
     }
 
-    public ContactTypeDTO(Integer id) {
+    public ContactTypeDTO(int id) {
         this.id = id;
     }
 
-    public ContactTypeDTO(Integer id, CompanyDTO entity, Integer isPrimary, Set<ContactMapDTO> contactMaps) {
+    public ContactTypeDTO(int id, CompanyDTO entity, Integer isPrimary, Set<ContactMapDTO> contactMaps) {
         this.id = id;
         this.entity = entity;
         this.isPrimary = isPrimary;
@@ -79,11 +81,11 @@ public class ContactTypeDTO extends AbstractDescription implements java.io.Seria
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "contact_type_GEN")
     @Column(name = "id", unique = true, nullable = false)
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -113,6 +115,16 @@ public class ContactTypeDTO extends AbstractDescription implements java.io.Seria
 
     public void setContactMaps(Set<ContactMapDTO> contactMaps) {
         this.contactMaps = contactMaps;
+    }
+
+    @Version
+    @Column(name = "OPTLOCK")
+    public Integer getVersionNum() {
+        return versionNum;
+    }
+
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
     }
 
     @Transient

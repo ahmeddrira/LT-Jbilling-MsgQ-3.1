@@ -42,12 +42,13 @@ import javax.persistence.Transient;
 @Table(name = "menu_option")
 public class MenuOptionDTO extends AbstractDescription implements java.io.Serializable {
 
-    private Integer id;
+    private static final Logger LOG = Logger.getLogger(MenuOptionDTO.class);
+
+    private int id;
     private MenuOptionDTO menuOption;
     private String link;
     private int levelField;
     private Set<MenuOptionDTO> menuOptions = new HashSet<MenuOptionDTO>(0);
-    private static final Logger LOG = Logger.getLogger(MenuOptionDTO.class);
 
     public MenuOptionDTO() {
     }
@@ -58,8 +59,7 @@ public class MenuOptionDTO extends AbstractDescription implements java.io.Serial
         this.levelField = levelField;
     }
 
-    public MenuOptionDTO(int id, MenuOptionDTO menuOption, String link,
-            int levelField, Set<MenuOptionDTO> menuOptions) {
+    public MenuOptionDTO(int id, MenuOptionDTO menuOption, String link, int levelField, Set<MenuOptionDTO> menuOptions) {
         this.id = id;
         this.menuOption = menuOption;
         this.link = link;
@@ -74,11 +74,11 @@ public class MenuOptionDTO extends AbstractDescription implements java.io.Serial
 
     @Id
     @Column(name = "id", unique = true, nullable = false)
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

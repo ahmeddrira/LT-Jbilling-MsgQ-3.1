@@ -47,7 +47,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public abstract class AbstractGenericStatus extends AbstractDescription {
 
-    protected Integer id;
+    protected int id;
     protected Integer statusValue;
 
     @Id 
@@ -61,11 +61,11 @@ public abstract class AbstractGenericStatus extends AbstractDescription {
     }
 
     @Column(name="status_value", unique=true, nullable=false)
-    public Integer getId() {
+    public int getId() {
         return statusValue;
     }
     
-    public void setId(Integer statusValue) {
+    public void setId(int statusValue) {
         this.statusValue = statusValue;
     }
 }

@@ -53,7 +53,7 @@ public class RoleDTO extends AbstractDescription implements Serializable, Initia
     public static final String ROLE_AUTHORITY_PREFIX = "ROLE_";
     public static final Integer AUTHORITY_LANGUAGE_ID = 1; // authority values in english
 
-    private Integer id;
+    private int id;
     private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
     private Set<PermissionDTO> permissions = new HashSet<PermissionDTO>(0);
 
@@ -62,11 +62,11 @@ public class RoleDTO extends AbstractDescription implements Serializable, Initia
     public RoleDTO() {
     }
 
-    public RoleDTO(Integer id) {
+    public RoleDTO(int id) {
         this.id = id;
     }
 
-    public RoleDTO(Integer id, Set<UserDTO> baseUsers, Set<PermissionDTO> permissions) {
+    public RoleDTO(int id, Set<UserDTO> baseUsers, Set<PermissionDTO> permissions) {
         this.id = id;
         this.baseUsers = baseUsers;
         this.permissions = permissions;
@@ -74,11 +74,11 @@ public class RoleDTO extends AbstractDescription implements Serializable, Initia
 
     @Id
     @Column(name = "id", unique = true, nullable = false)
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

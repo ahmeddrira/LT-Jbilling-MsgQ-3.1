@@ -48,33 +48,32 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
 
 @Entity
 @TableGenerator(
-        name="order_period_GEN",
-        table="jbilling_seqs",
+        name = "order_period_GEN",
+        table = "jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
-        pkColumnValue="order_period",
+        pkColumnValue = "order_period",
         allocationSize = 100
-        )
-@Table(name="order_period")
+)
+@Table(name = "order_period")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class OrderPeriodDTO extends AbstractDescription implements java.io.Serializable {
 
+    private int id;
+    private CompanyDTO company;
+    private PeriodUnitDTO periodUnitDTO;
+    private Integer value;
+    private Set<OrderDTO> orderDTOs = new HashSet<OrderDTO>(0);
+    private Integer versionNum;
 
-     private Integer id;
-     private CompanyDTO company;
-     private PeriodUnitDTO periodUnitDTO;
-     private Integer value;
-     private Set<OrderDTO> orderDTOs = new HashSet<OrderDTO>(0);
-     private Integer versionNum;
+    public OrderPeriodDTO() {
+    }
 
-     public OrderPeriodDTO() {
-     }
-
-    
-    public OrderPeriodDTO(Integer id) {
+    public OrderPeriodDTO(int id) {
         this.id = id;
     }
-    public OrderPeriodDTO(Integer id, CompanyDTO entity, PeriodUnitDTO periodUnitDTO, Integer value, Set<OrderDTO> orderDTOs) {
+
+    public OrderPeriodDTO(int id, CompanyDTO entity, PeriodUnitDTO periodUnitDTO, Integer value, Set<OrderDTO> orderDTOs) {
        this.id = id;
        this.company = entity;
        this.periodUnitDTO = periodUnitDTO;
@@ -87,78 +86,88 @@ public class OrderPeriodDTO extends AbstractDescription implements java.io.Seria
         return Constants.TABLE_ORDER_PERIOD;
     }
    
-    @Id  @GeneratedValue(strategy=GenerationType.TABLE, generator="order_period_GEN") 
-    @Column(name="id", unique=true, nullable=false)
-    public Integer getId() {
+    @Id @GeneratedValue(strategy = GenerationType.TABLE, generator = "order_period_GEN")
+    @Column(name = "id", unique = true, nullable = false)
+    public int getId() {
         return this.id;
     }
-    
-    public void setId(Integer id) {
+
+    public void setId(int id) {
         this.id = id;
     }
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="entity_id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entity_id")
     public CompanyDTO getCompany() {
         return this.company;
     }
-    
+
     public void setCompany(CompanyDTO entity) {
         this.company = entity;
     }
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="unit_id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unit_id")
     public PeriodUnitDTO getPeriodUnit() {
         return this.periodUnitDTO;
     }
-    
+
     public void setPeriodUnit(PeriodUnitDTO periodUnitDTO) {
         this.periodUnitDTO = periodUnitDTO;
     }
-    
-    @Column(name="value")
+
+    @Column(name = "value")
     public Integer getValue() {
         return this.value;
     }
-    
+
     public void setValue(Integer value) {
         this.value = value;
     }
-   @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="orderPeriod")
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "orderPeriod")
     public Set<OrderDTO> getPurchaseOrders() {
         return this.orderDTOs;
     }
-    
+
     public void setPurchaseOrders(Set<OrderDTO> orderDTOs) {
         this.orderDTOs = orderDTOs;
     }
 
     @Version
-    @Column(name="OPTLOCK")
+    @Column(name = "OPTLOCK")
     public Integer getVersionNum() {
         return versionNum;
     }
+
     protected void setVersionNum(Integer versionNum) {
         this.versionNum = versionNum;
     }
 
+    @Override
     public String toString() {
-        return "OrderPeriodDTO:[" + 
-         " id=" + id +
-         " company=" + company +
-         " periodUnitDTO=" + periodUnitDTO + 
-         " value=" + value +
-         " versionNum=" + versionNum + "]";
+        return "OrderPeriodDTO:[" +
+               " id=" + id +
+               " company=" + company +
+               " periodUnitDTO=" + periodUnitDTO +
+               " value=" + value +
+               " versionNum=" + versionNum + "]";
     }
+
     // convenient methods for migration from entity beans
     @Transient
     public Integer getUnitId() {
-        return getPeriodUnit().getId();
+        if (getPeriodUnit() != null)
+            return getPeriodUnit().getId();
+
+        return null;
     }
+
     public void setUnitId(int id) {
         PeriodUnitDTO period = new PeriodUnitDTO(id);
         setPeriodUnit(period);
     }
-    
+
     public void touch() {
         getUnitId();
     }

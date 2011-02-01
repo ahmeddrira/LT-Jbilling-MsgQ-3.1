@@ -47,7 +47,7 @@
         <!-- list of item prices (ordered by precedence) -->
         <ul id="review-lines">
             <g:each var="planItem" status="index" in="${plan.planItems}">
-                <g:render template="planItemPrice" model="[ planItem: planItem, index: index ]"/>
+                <g:render template="priceLine" model="[ planItem: planItem, index: index ]"/>
             </g:each>
 
             <g:if test="${!plan.planItems}">

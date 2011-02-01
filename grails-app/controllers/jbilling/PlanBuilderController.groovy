@@ -29,6 +29,7 @@ import com.sapienter.jbilling.server.item.PlanWS
 import com.sapienter.jbilling.server.item.PlanItemWS
 import com.sapienter.jbilling.server.pricing.PriceModelWS
 import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy
+import com.sapienter.jbilling.server.item.CurrencyBL
 
 /**
  * Plan builder controller
@@ -108,6 +109,9 @@ class PlanBuilderController {
                 def company = CompanyDTO.get(session['company_id'])
                 def itemTypes = company.itemTypes.sort{ it.id }
 
+                def currencies = new CurrencyBL().getCurrencies(session['language_id'], session['company_id'])
+                currencies = currencies.findAll{ it.inUse }
+
                 // add breadcrumb for plan editing
                 if (params.id) {
                     breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
@@ -117,6 +121,7 @@ class PlanBuilderController {
                 flow.planItem = planItem
                 flow.company = company
                 flow.itemTypes = itemTypes
+                flow.currencies = currencies
 
                 // conversation scope
                 conversation.plan = plan
@@ -173,8 +178,28 @@ class PlanBuilderController {
             on("success").to("build")
         }
 
+        /**
+         * Updates a price and renders the review panel.
+         */
         updatePrice {
             action {
+                def plan = conversation.plan
+
+                // update plan item and price model
+                def index = params.int('index')
+                def planItem = plan.planItems[index]
+                bindData(planItem, params["price-${index}"])
+                bindData(planItem.model, params["model-${index}"])
+
+                // update the conversation object
+                plan.planItems[index] = planItem
+                conversation.plan = plan
+
+                // if changing the strategy, show the edited line again
+                if (params.update == 'strategy') {
+                    params.newLineIndex = index
+                }
+
                 params.template = 'review'
             }
             on("success").to("build")
@@ -185,8 +210,7 @@ class PlanBuilderController {
          */
         removePrice {
             action {
-                def index = params.int('index')
-                conversation.plan.planItems.remove(index)
+                conversation.plan.planItems.remove(params.int('index'))
                 params.template = 'review'
             }
             on("success").to("build")

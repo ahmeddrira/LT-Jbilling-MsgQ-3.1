@@ -37,7 +37,7 @@ class UserController {
 
     /**
      * Get a list of users and render the list page. If the "applyFilters" parameter is given, the
-     * partial "_table.gsp" template will be rendered instead of the complete user list.
+     * partial "_users.gsp" template will be rendered instead of the complete user list.
      */
     def list = {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)

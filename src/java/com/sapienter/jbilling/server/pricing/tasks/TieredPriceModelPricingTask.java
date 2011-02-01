@@ -132,7 +132,7 @@ public class TieredPriceModelPricingTask extends PriceModelPricingTask {
                 }
 
                 PricingResult result = new PricingResult(itemId, quantity, userId, currencyId);
-                model.applyTo(result, result.getQuantity(), (usage != null ? usage.getQuantity() : null));
+                model.applyTo(result, result.getQuantity(), usage);
                 return result.getPrice();
             }
         }

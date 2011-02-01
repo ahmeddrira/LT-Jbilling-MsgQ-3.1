@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.item.tasks.IPricing;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
+import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
@@ -242,7 +243,7 @@ public class ItemBL {
      * the users current usage in the pricing calculation.
      *
      * This method does not execute any pricing plug-ins and does not use quantity or usage
-     * values for {@link PriceModelDTO#applyTo(PricingResult, BigDecimal, BigDecimal)}
+     * values for {@link PriceModelDTO#applyTo(PricingResult, BigDecimal, Usage)}
      * price calculations.
      *
      * @param item item to price
@@ -251,8 +252,14 @@ public class ItemBL {
      */
     public BigDecimal getPriceByCurrency(ItemDTO item, Integer userId, Integer currencyId)  {
         if (item.getDefaultPrice() != null) {
+            // empty usage for default pricing
+            Usage usage = new Usage();
+            usage.setAmount(BigDecimal.ZERO);
+            usage.setQuantity(BigDecimal.ZERO);
+
+            // calculate default price from strategy
             PricingResult result = new PricingResult(item.getId(), userId, currencyId);
-            item.getDefaultPrice().applyTo(result, BigDecimal.ONE, BigDecimal.ZERO);
+            item.getDefaultPrice().applyTo(result, BigDecimal.ONE, usage);
             return result.getPrice();
         }
         return BigDecimal.ZERO;

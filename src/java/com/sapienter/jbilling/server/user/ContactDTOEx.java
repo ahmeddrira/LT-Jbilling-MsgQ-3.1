@@ -114,16 +114,19 @@ public class ContactDTOEx extends ContactDTO implements Serializable  {
         setCreateDate(ws.getCreateDate());
         setDeleted(ws.getDeleted());
         setInclude(ws.getInclude());
+
         // contacts from ws are always included in notifications
         setInclude(new Integer(1));
+
         // now add the custom fields
         if (ws.getFieldIDs() == null || ws.getFieldIDs().length == 0) {
             return;
         }
-        fieldsTable = new Hashtable<String, ContactFieldDTO>();
-        for(int f = 0; f < ws.getFieldIDs().length; f++) {
 
-            fieldsTable.put(String.valueOf(ws.getFieldIDs()[f]), new ContactFieldDTO(0, new ContactFieldTypeDTO(ws.getFieldIDs()[f]), null, ws.getFieldValues()[f]));
+        fieldsTable = new Hashtable<String, ContactFieldDTO>();
+        for (int f = 0; f < ws.getFieldIDs().length; f++) {
+            fieldsTable.put(String.valueOf(ws.getFieldIDs()[f]),
+                            new ContactFieldDTO(0, new ContactFieldTypeDTO(ws.getFieldIDs()[f]), null, ws.getFieldValues()[f]));
         }
     }
 

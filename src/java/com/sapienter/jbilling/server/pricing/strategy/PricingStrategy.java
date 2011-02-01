@@ -43,6 +43,7 @@ public interface PricingStrategy {
      *
      * @return true if strategy calculates graduated pricing.
      */
+    @Deprecated // included quantity from attributes
     public boolean isGraduated();
 
     /**

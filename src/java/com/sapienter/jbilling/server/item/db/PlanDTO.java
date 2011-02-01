@@ -156,11 +156,37 @@ public class PlanDTO implements Serializable {
     }
 
     public void setPlanItems(List<PlanItemDTO> planItems) {
+        for (PlanItemDTO planItem : planItems)
+            planItem.setPlan(this);
+
         this.planItems = planItems;
     }
 
     public void addPlanItem(PlanItemDTO planItem) {
+        planItem.setPlan(this);
         this.planItems.add(planItem);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PlanDTO planDTO = (PlanDTO) o;
+
+        if (description != null ? !description.equals(planDTO.description) : planDTO.description != null) return false;
+        if (id != null ? !id.equals(planDTO.id) : planDTO.id != null) return false;
+        if (item != null ? !item.equals(planDTO.item) : planDTO.item != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (item != null ? item.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        return result;
     }
 
     @Override

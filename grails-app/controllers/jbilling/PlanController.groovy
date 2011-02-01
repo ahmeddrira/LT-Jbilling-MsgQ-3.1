@@ -23,6 +23,7 @@ package jbilling
 import com.sapienter.jbilling.server.item.db.PlanDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import grails.plugins.springsecurity.Secured
+import com.sapienter.jbilling.server.item.CurrencyBL
 
 /**
  * PlanController

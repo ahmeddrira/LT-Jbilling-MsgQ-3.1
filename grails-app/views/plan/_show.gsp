@@ -51,7 +51,7 @@
     </div>
     <div class="box">
         <g:each var="planItem" status="index" in="${plan.planItems.sort{ it.precedence }}">
-            <table class="dataTable" cellspacing="0" cellpadding="0">
+            <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">
                 <tbody>
                     <tr>
                         <td><g:message code="product.id"/></td>
@@ -67,7 +67,7 @@
                         <td><g:message code="plan.model.type"/></td>
                         <td class="value">${planItem.model.type}</td>
                         <td><g:message code="plan.model.rate"/></td>
-                        <td class="value">${planItem.model.rate}</td>
+                        <td class="value"><g:formatNumber number="${planItem.model.rate}" type="currency" currencyCode="${planItem.model.currency.code}"/></td>
                     </tr>
                 </tbody>
             </table>

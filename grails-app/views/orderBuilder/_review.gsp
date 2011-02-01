@@ -74,7 +74,7 @@
         <hr/>
 
         <!-- list of order lines -->
-        <ul id="order-lines">
+        <ul id="review-lines">
             <g:each var="line" status="index" in="${order.orderLines}">
                 <g:render template="orderLine" model="[ line: line, index: index, user: user ]"/>
             </g:each>

@@ -22,7 +22,15 @@ package jbilling
 
 import com.sapienter.jbilling.server.item.db.PlanDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
+import grails.plugins.springsecurity.Secured
 
+/**
+ * PlanController
+ *
+ * @author Brian Cowdery
+ * @since 01-Feb-2011
+ */
+@Secured(['isAuthenticated()'])
 class PlanController {
 
     static pagination = [ max: 10, offset: 0 ]

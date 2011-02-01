@@ -45,6 +45,7 @@
             </fieldset>
         </g:form>
     </div>
+
     <ul class="top-nav">
         <%-- todo: great user using first name if available, add actions for account manipulation, training and help --%>
         <li><g:message code="topnav.greeting"/> <sec:loggedInUserInfo field="plainUsername"/></li>
@@ -53,36 +54,38 @@
         <li><a href="#"><img src="${resource(dir:'images', file:'icon27.gif')}" alt="help" /><g:message code="topnav.link.help"/></a></li>
         <li><g:link controller='logout'><img src="${resource(dir:'images', file:'icon28.gif')}" alt="logout" /><g:message code="topnav.link.logout"/></g:link></li>
     </ul>
+
     <div id="navigation">
         <%-- select the current menu item based on the controller name --%>
-        <%-- todo: update as controllers are written. many of the names here are my best-guess at what the controller names will be --%>
         <ul>
-            <li <g:if test="${controllerName == 'user'}">class="active"</g:if>>
+            <li class="${controllerName == 'user' ? 'active' : ''}">
                 <g:link controller="user"><span><g:message code="menu.link.customers"/></span><em></em></g:link>
             </li>
-            <li <g:if test="${controllerName == 'invoice'}">class="active"</g:if>>
+            <li class="${controllerName == 'invoice' ? 'active' : ''}">
                 <g:link controller="invoice"><span><g:message code="menu.link.invoices"/></span><em></em></g:link>
             </li>
-            <li <g:if test="${controllerName == 'payment'}">class="active"</g:if>>
+            <li class="${controllerName == 'payment' ? 'active' : ''}">
                 <g:link controller="payment"><span><g:message code="menu.link.payments.refunds"/></span><em></em></g:link>
             </li>
-            <li <g:if test="${controllerName == 'order'}">class="active"</g:if>>
+            <li class="${controllerName == 'order' ? 'active' : ''}">
                 <g:link controller="order"><span><g:message code="menu.link.orders"/></span><em></em></g:link>
             </li>
-            <li <g:if test="${controllerName == 'billing'}">class="active"</g:if>>
+            <li class="${controllerName == 'billing' ? 'active' : ''}">
                 <g:link controller="billing"><span><g:message code="menu.link.billing"/></span><em></em></g:link>
             </li>
-            <li <g:if test="${controllerName == 'mediation'}">class="active"</g:if>>
+            <li class="${controllerName == 'mediation' ? 'active' : ''}">
                 <g:link controller="mediation"><span><g:message code="menu.link.mediation"/></span><em></em></g:link>
             </li>
-            <li <g:if test="${controllerName == 'reports'}">class="active"</g:if>>
+            <li class="${controllerName == 'reports' ? 'active' : ''}">
                 <g:link controller="reports"><span><g:message code="menu.link.reports"/></span><em></em></g:link>
             </li>
-            <li <g:if test="${controllerName == 'product'}">class="active"</g:if>>
+            <li class="${controllerName == 'product' ? 'active' : ''}">
                 <g:link controller="product"><span><g:message code="menu.link.products"/></span><em></em></g:link>
             </li>
-            <li <g:if test="${controllerName == 'config' || controllerName == 'plugin' || controllerName == 'notifications' 
-                    || controllerName == 'billingconfiguration'}">class="active"</g:if>>
+            <li class="${controllerName == 'plan' ? 'active' : ''}">
+                <g:link controller="plan"><span><g:message code="menu.link.plans"/></span><em></em></g:link>
+            </li>
+            <li class="${controllerName == 'config' || controllerName == 'plugin' || controllerName == 'notifications' || controllerName == 'billingconfiguration' ? 'active' : ''}">
                 <g:link controller="config"><span><g:message code="menu.link.configuration"/></span><em></em></g:link>
             </li>
         </ul>

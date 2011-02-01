@@ -14,7 +14,7 @@ import com.sapienter.jbilling.server.pricing.PriceModelWS
 @Secured(['isAuthenticated()'])
 class ProductController {
 
-    static pagination = [ max: 25, offset: 0 ]
+    static pagination = [ max: 10, offset: 0 ]
 
     def webServicesSession
     def viewUtils

@@ -24,6 +24,7 @@
  */
 package com.sapienter.jbilling.server.util;
 
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -40,6 +41,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.sapienter.jbilling.server.user.ContactTypeWS;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.util.db.LanguageDAS;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
@@ -158,6 +163,11 @@ import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+
+import com.sapienter.jbilling.server.process.AgeingBL;
+import com.sapienter.jbilling.server.process.AgeingDTOEx;
+import com.sapienter.jbilling.server.process.AgeingWS;
+
 
 
 @Transactional( propagation = Propagation.REQUIRED )
@@ -603,6 +613,48 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         bl.delete(executorId);
     }
 
+    /**
+     * Fetches the ContactTypeWS for the given contact type ID. The returned WS object
+     * contains a list of international descriptions for all available languages.
+     *
+     * @param contactTypeId contact type ID
+     * @return contact type WS object
+     * @throws SessionInternalError
+     */
+    public ContactTypeWS getContactTypeWS(Integer contactTypeId) throws SessionInternalError {
+        ContactTypeDTO contactType = new ContactTypeDAS().find(contactTypeId);
+        List<LanguageDTO> languages = new LanguageDAS().findAll();
+
+        return new ContactTypeWS(contactType, languages);
+    }
+
+    /**
+     * Creates a new contact type from the given WS object. This method also stores the international
+     * description for each description/language in the WS object.
+     *
+     * @param contactType contact type WS
+     * @return ID of created contact type
+     * @throws SessionInternalError
+     */
+    public Integer createContactTypeWS(ContactTypeWS contactType) throws SessionInternalError {
+        ContactTypeDTO dto = new ContactTypeDTO();
+        dto.setEntity(new CompanyDTO(getCallerCompanyId()));
+        dto.setIsPrimary(contactType.getPrimary());
+
+        ContactTypeDAS contactTypeDas = new ContactTypeDAS();
+        dto = contactTypeDas.save(dto);
+
+        for (InternationalDescriptionWS description : contactType.getDescriptions()) {
+            dto.setDescription(description.getContent(), description.getLanguageId());
+        }
+
+        // flush changes to the DB & clear cache
+        contactTypeDas.flush();
+        contactTypeDas.clear();
+
+        return dto.getId();
+    }
+
     public void updateUserContact(Integer userId, Integer typeId, ContactWS contact) throws SessionInternalError {
         // todo: support multiple WS method param validations through WSSecurityMethodMapper
         ContactTypeDTO type = new ContactTypeDAS().find(typeId);
@@ -650,7 +702,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         // now update the contact info
         if (user.getContact() != null) {
-            new ContactBL().createUpdatePrimaryForUser(new ContactDTOEx(user.getContact()), user.getUserId(), entityId);
+            ContactDTOEx primaryContact = new ContactDTOEx(user.getContact());
+            new ContactBL().createUpdatePrimaryForUser(primaryContact, user.getUserId(), entityId);
         }
 
         // and the credit card
@@ -1875,6 +1928,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         // we'll need the langauge later
         bl.set(order.getUserId());
         Integer languageId = bl.getEntity().getLanguageIdField();
+
         // see if the related items should provide info
         try {
             processItemLine(order.getOrderLines(), languageId, entityId,
@@ -1887,14 +1941,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         OrderBL orderBL = new OrderBL();
         OrderDTO dto = orderBL.getDTO(order);
         LOG.debug("Order has " + order.getOrderLines().length + " lines");
-
-        // make sure this shows as a new order, not as an update
-        dto.setId(null);
-        dto.setVersionNum(null);
-        for (OrderLineDTO line : dto.getLines()) {
-            line.setId(0);
-            line.setVersionNum(null);
-        }
 
         LOG.info("before cycle start");
         // set a default cycle starts if needed (obtained from the main
@@ -1920,8 +1966,17 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         orderBL.set(dto);
         orderBL.recalculate(entityId);
+
         if (create) {
             LOG.debug("creating order");
+
+            dto.setId(null);
+            dto.setVersionNum(null);
+            for (OrderLineDTO line : dto.getLines()) {
+                line.setId(0);
+                line.setVersionNum(null);
+            }
+
             Integer id = orderBL.create(entityId, executorId, dto);
             orderBL.set(id);
             return orderBL.getWS(languageId);
@@ -1946,6 +2001,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
+        retValue.setTotal(order.getTotal());
 
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
         for (Iterator<OrderLineDTO> it = order.getLines().iterator(); it.hasNext();) {
@@ -2222,7 +2278,42 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         sess.setAuthPaymentType(userId, autoPaymentType, use);
     }
 
+    public AgeingWS[] getAgeingConfiguration(Integer languageId) throws SessionInternalError {
+	    try {
+		    IBillingProcessSessionBean processSession = 
+		    	(IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+		    AgeingDTOEx[] dtoArr= processSession.getAgeingSteps(getCallerCompanyId(), getCallerLanguageId(), languageId);
+		    AgeingWS[] wsArr= new AgeingWS[dtoArr.length];
+		    AgeingBL bl= new AgeingBL();
+		    for (int i = 0; i < wsArr.length; i++) {
+				wsArr[i]= bl.getWS(dtoArr[i]);
+			}
+		    return wsArr;
+	    } catch (Exception e) {
+	    	throw new SessionInternalError(e);
+	    }
+    }
 
+    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError { 
+	    try {
+	    	AgeingBL bl= new AgeingBL();
+	    	AgeingDTOEx[] dtoList= new AgeingDTOEx[steps.length];
+		    for (int i = 0; i < steps.length; i++) {
+		    	dtoList[i]= bl.getDTOEx(steps[i]);
+			}
+		    IBillingProcessSessionBean processSession = 
+		    (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+		    processSession.setAgeingSteps (getCallerCompanyId(), languageId, new AgeingBL().validate(dtoList));
+		
+		    // update the grace period in another call
+		    IUserSessionBean userSession = (IUserSessionBean) Context.getBean(Context.Name.USER_SESSION);
+		    userSession.setEntityParameter(getCallerCompanyId(), 
+		    Constants.PREFERENCE_GRACE_PERIOD, null, gracePeriod, null);
+	    } catch (Exception e) {
+	    	throw new SessionInternalError(e);
+	    }
+    }
+    
     /*
         Billing process
      */

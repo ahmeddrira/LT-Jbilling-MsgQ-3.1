@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -117,6 +118,7 @@ public class WSTest  extends TestCase {
         newOrder.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
         newOrder.setPeriod(new Integer(1)); // once
         newOrder.setCurrencyId(new Integer(1));
+        newOrder.setActiveSince(new Date());
         
         // now add some lines
         OrderLineWS lines[] = new OrderLineWS[2];

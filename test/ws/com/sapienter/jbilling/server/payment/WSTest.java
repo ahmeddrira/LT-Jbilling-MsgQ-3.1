@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 
 import junit.framework.TestCase;
 
@@ -197,6 +198,7 @@ public class WSTest extends TestCase {
                 order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
                 order.setPeriod(2);
                 order.setCurrencyId(new Integer(1));
+                order.setActiveSince(new Date());
 
                 // add a line
                 OrderLineWS lines[] = new OrderLineWS[1];
@@ -350,6 +352,7 @@ public class WSTest extends TestCase {
             order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
             order.setPeriod(2);
             order.setCurrencyId(new Integer(1));
+            order.setActiveSince(new Date());
 
             // add a line
             OrderLineWS lines[] = new OrderLineWS[1];

@@ -81,7 +81,7 @@ public class WSTest extends TestCase {
 
             System.out.println("Getting balance of user 2");
             UserWS ret = api.getUserWS(new Integer(2));
-            assertEquals("Balance of Gandlaf starts at 1376784.98", new BigDecimal("1376784.98"), ret.getOwingBalanceAsDecimal());
+            assertEquals("Balance of Gandlaf starts at 1377287.98", new BigDecimal("1377287.98"), ret.getOwingBalanceAsDecimal());
             System.out.println("Gandalf's balance: " + ret.getOwingBalance());
 
         } catch (Exception e) {
@@ -1016,6 +1016,7 @@ Ch8: no applicable orders
         newOrder.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
         newOrder.setPeriod(new Integer(1)); // once
         newOrder.setCurrencyId(new Integer(1));
+        newOrder.setActiveSince(new Date());
         
         // now add some lines
         OrderLineWS lines[] = new OrderLineWS[2];
@@ -1631,6 +1632,7 @@ Ch8: no applicable orders
         order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
         order.setPeriod(new Integer(1));
         order.setCurrencyId(new Integer(1));
+        order.setActiveSince(new Date());
         Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(2008, 9, 3);

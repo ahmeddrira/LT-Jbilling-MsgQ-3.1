@@ -20,7 +20,7 @@ class ViewUtils {
 	 * @return
 	 * true if there are validation errors, otherwise false
 	 */
-	boolean resolveException(GrailsFlashScope flash, Locale locale, Exception exception) {
+	boolean resolveException(flash, Locale locale, Exception exception) {
 		List<String> messages = new ArrayList<String>();
 		if (exception instanceof SessionInternalError && exception.getErrorMessages()?.length > 0) {
 			for (String message : exception.getErrorMessages()) {

@@ -28,6 +28,7 @@ import com.sapienter.jbilling.server.item.PlanBL;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager;
+import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
@@ -165,6 +166,7 @@ public class OrderBL extends ResultList
         retValue.setTotal(order.getTotal());
 
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
+        retValue.setStatusStr(order.getOrderStatus().getDescription(languageId));
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
 
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
@@ -174,6 +176,9 @@ public class OrderBL extends ResultList
                 lines.add(getOrderLineWS(line.getId()));
             }
         }
+        //this will initialized Generated Invoices in the OrderDTO instance
+        order.addExtraFields(languageId);
+        retValue.setGeneratedInvoices(new InvoiceBL().DTOtoWS(new ArrayList(order.getInvoices())));
         retValue.setOrderLines(new OrderLineWS[lines.size()]);
         lines.toArray(retValue.getOrderLines());
         return retValue;

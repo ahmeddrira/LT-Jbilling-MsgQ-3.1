@@ -48,15 +48,15 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 public abstract class AbstractGenericStatus extends AbstractDescription {
 
     protected int id;
-    protected int statusValue;
+    protected Integer statusValue;
 
     @Id 
     @Column(name="id", unique=true, nullable=false)
-    public int getPrimaryKey() {
+    public Integer getPrimaryKey() {
         return id;
     }
     
-    public void setPrimaryKey(int id) {
+    public void setPrimaryKey(Integer id) {
         this.id = id;
     }
 

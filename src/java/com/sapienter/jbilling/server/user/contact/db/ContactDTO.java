@@ -54,7 +54,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 public class ContactDTO  implements java.io.Serializable {
 
 
-     private int id;
+     private Integer id;
      private String organizationName;
      private String address1;
      private String address2;
@@ -85,12 +85,12 @@ public class ContactDTO  implements java.io.Serializable {
     }
 
     
-    public ContactDTO(int id, Date createDatetime, int deleted) {
+    public ContactDTO(Integer id, Date createDatetime, int deleted) {
         this.id = id;
         this.createDate = createDatetime;
         this.deleted = deleted;
     }
-    public ContactDTO(int id, String organizationName, String streetAddres1, String streetAddres2, String city, String stateProvince, String postalCode, String countryCode, String lastName, String firstName, String personInitial, String personTitle, Integer phoneCountryCode, Integer phoneAreaCode, String phonePhoneNumber, Integer faxCountryCode, Integer faxAreaCode, String faxPhoneNumber, String email, Date createDatetime, int deleted, Integer notificationInclude, Integer userId, ContactMapDTO contactMap, Set<ContactFieldDTO> contactFields) {
+    public ContactDTO(Integer id, String organizationName, String streetAddres1, String streetAddres2, String city, String stateProvince, String postalCode, String countryCode, String lastName, String firstName, String personInitial, String personTitle, Integer phoneCountryCode, Integer phoneAreaCode, String phonePhoneNumber, Integer faxCountryCode, Integer faxAreaCode, String faxPhoneNumber, String email, Date createDatetime, int deleted, Integer notificationInclude, Integer userId, ContactMapDTO contactMap, Set<ContactFieldDTO> contactFields) {
        this.id = id;
        this.organizationName = organizationName;
        this.address1 = streetAddres1;
@@ -149,11 +149,11 @@ public class ContactDTO  implements java.io.Serializable {
    
     @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="contact_GEN")
     @Column(name="id", unique=true, nullable=false)
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
     
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
     

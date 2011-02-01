@@ -1,4 +1,5 @@
 <%@ page import="com.sapienter.jbilling.server.util.Util" %>
+<%@ page import="com.sapienter.jbilling.client.util.Constants" %>
 
 <div class="column-hold">
 
@@ -58,12 +59,14 @@
                     </g:else>
                 </td>
             </tr>
-            <tr><td><g:message code="order.label.period"/>:</td><td class="value">${order.period}</td></tr>
+            <tr><td><g:message code="order.label.period"/>:</td><td class="value">${order.periodStr}</td></tr>
             <tr><td><g:message code="order.label.total"/>:</td>
                     <td class="value">${Util.formatMoney(order.total as BigDecimal,
                         session["user_id"],
                         order.currencyId, 
                         false)?.substring(3)}</td></tr>
+            <tr><td><g:message code="order.label.status"/>:</td>
+                <td class="value">${order?.statusStr}</td></tr>
         </table>
     </div>
     
@@ -131,35 +134,50 @@
     </div>
     
     <!-- Invoices Generated -->
-    <%-- 
-    <div class="heading">
-        <strong><g:message code="order.label.invoices.generated"/></strong>
-    </div>
-    
-    <div class="box">
-        <table class="innerTable" >
-            <thead class="innerHeader">
-                 <tr>
-                    <th></th>
-                 </tr>
-            </thead>
-        </table>
-    </div>
-    --%>
+    <g:if test="${order?.generatedInvoices}">
+        <div class="heading">
+            <strong><g:message code="order.label.invoices.generated"/></strong>
+        </div>
+        
+        <div class="box">
+            <table class="innerTable" >
+                <thead class="innerHeader">
+                     <tr>
+                        <th><g:message code="order.invoices.id"/></th>
+                        <th><g:message code="order.invoices.date"/></th>
+                        <th><g:message code="order.invoices.total"/></th>
+                     </tr>
+                </thead>
+                <tbody>
+                     <g:each var="invoice" in="${order.generatedInvoices}" status="idx">
+                         <tr>
+                            <td class="innerContent"><g:link controller="invoice" action="list" id="${invoice.id}">${invoice.id}</g:link></td>
+                            <td class="innerContent">
+                                <g:formatDate format="dd-MMM-yyyy HH:mm:ss a" date="${invoice?.createDateTime}"/>
+                            </td>
+                            <td class="innerContent">${Util.formatMoney(new BigDecimal(invoice.total ?: "0.0"),
+                                session["user_id"],invoice?.currencyId, false)}</td>
+                         </tr>
+                     </g:each>
+                </tbody>
+            </table>
+        </div>
+    </g:if>
     
     <div class="btn-box">
         <div class="row">
-            <a onclick="javascript: void(0)" class="submit">
-                <span><g:message code="order.button.generate"/></span>
-            </a>
-        </div>
-        <div class="row">
-            <a onclick="javascript: void(0)" class="submit">
-                <span><g:message code="order.button.apply"/></span>
-            </a>
-            <a onclick="javascript: void(0)" class="submit">
-                <span><g:message code="order.button.edit"/></span>
-            </a>
+            <g:if test="${Constants.ORDER_STATUS_ACTIVE == order.statusId}">
+                <a href="${createLink (action: 'generateInvoice', params: [id: order?.id])}" class="submit order">
+                    <span><g:message code="order.button.generate"/></span>
+                </a>
+                </div><div class="row">
+                <a href="${createLink (action: 'applyToInvoice', params: [id: order?.id, userId: user?.id])}" class="submit order">
+                    <span><g:message code="order.button.apply.invoice"/></span>
+                </a>
+            </g:if>
+            <a href="${createLink (controller: 'orderBuilder', action: 'edit', params: [id: order?.id])}" class="submit edit">
+                <span><g:message code="order.button.edit"/>
+            </span></a>
         </div>
     </div>
 </div>

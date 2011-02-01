@@ -158,11 +158,11 @@
 						<label><g:message code="title.notification.active"/>:</label>
 						<div class="checkboxArea">
 							<g:checkBox onchange="anychange(this)" name="useFlag"
-								checked="${(dto?.getUseFlag() > 0)}" class="cb"/>
+								checked="${(dto?.getUseFlag() > 0)}" class="cb checkbox"/>
 						</div>
 					</div>
 					<div class="row">
-						<label><g:message code="prompt.product.language" />:</label>						
+						<label><g:message code="prompt.product.language" />:</label>
 						<div style="width: 220px; " class="selectArea">
 							<g:select name="language.id"
 								from="${com.sapienter.jbilling.server.util.db.LanguageDTO.list()}"
@@ -172,7 +172,7 @@
 					</div>
 					<g:set var="flag" value="${true}" />
 					<div class="row">
-						<label><g:message code="prompt.edit.notification.subject" />:</label>												
+						<label><g:message code="prompt.edit.notification.subject" />:</label>
 						<div class="inp-bg">
 							<g:each in="${dto?.getNotificationMessageSections()}"
 								var="section">
@@ -331,8 +331,9 @@
 						</div>
 					</div>
 				</div>
-			</div>			
+			</div>
 		</fieldset>
+        <div class="row">&nbsp;</div>
 		<div class="btn-box">
 			<a href="javascript:void(0)" onclick="$('#notifications').submit();" class="submit save">
 				<span><g:message code="button.save"/></span></a>

@@ -31,6 +31,9 @@ import java.util.Date;
 
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 /**
  * @author Emil
  */
@@ -39,6 +42,7 @@ public class OrderLineWS implements Serializable {
     private int id;
     private Integer orderId;
     private String amount; // use strings instead of BigDecimal for WS compatibility
+    @NotNull(message = "validation.error.null.quantity")
     private String quantity;
     private String price;
     private Date createDatetime;
@@ -56,6 +60,7 @@ public class OrderLineWS implements Serializable {
     private ItemDTOEx itemDto = null;
     private Integer typeId = null;
     private Boolean useItem = null;
+    @NotNull(message = "validation.error.missing.item.id")
     private Integer itemId = null;
 
     public OrderLineWS() {

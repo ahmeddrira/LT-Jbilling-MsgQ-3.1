@@ -20,6 +20,7 @@
             </div>
         </div>
     </div>
+
     <div class="btn-box buttons">
         <ul>
             <li><a class="submit save" onclick="$('#notes-form').submit();"><span><g:message code="button.save"/></span></a></li>

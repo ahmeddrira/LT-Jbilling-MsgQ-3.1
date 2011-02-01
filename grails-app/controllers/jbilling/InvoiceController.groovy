@@ -120,6 +120,9 @@ class InvoiceController {
 		}
 		log.debug "rendering view showListAndInvoice"
 		
+		recentItemService.addRecentItem(invId, RecentItemType.INVOICE)
+		breadcrumbService.addBreadcrumb(controllerName, 'list', null, invId)
+		
 		render view: 'showListAndInvoice', model:[invoices:invoices, totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
 		}catch (Exception e) {
 			log.error e.getMessage()
@@ -152,17 +155,14 @@ class InvoiceController {
 		if (params["id"] && params["id"].matches("^[0-9]+")) {
 			
 			int invId= Integer.parseInt(params["id"])
-			
-			recentItemService.addRecentItem(invId, RecentItemType.INVOICE)
-			breadcrumbService.addBreadcrumb(controllerName, actionName, null, invId)
-
 			log.debug "Template: ${params.template}"
-			//if (params.template != 'show') {
-			//	redirect(action: 'showListAndInvoice', params:[id:invId])
-			//} 
-			
+
 			try {
 				invoice= webServicesSession.getInvoiceWS(invId)
+
+				//TODO handle this check appropriately
+				//if (!invoice) throw new Exception();
+				
 				user= webServicesSession.getUserWS(invoice?.getUserId())
 				
 				log.debug "Found invoice ${invoice?.number}, Loading..."
@@ -181,16 +181,30 @@ class InvoiceController {
 					temp= webServicesSession.getInvoiceWS(temp?.getDelegatedInvoiceId())
 				}
 				if (delegatedInvoices.length() > 0 )
+				{
 					delegatedInvoices= delegatedInvoices.substring(3)
+				}
+
+				recentItemService.addRecentItem(invId, RecentItemType.INVOICE)
+				breadcrumbService.addBreadcrumb(controllerName, 'list', null, invId)
+				
 			} catch (Exception e) {
 				log.error e.getMessage()
 				flash.error = 'error.invoice.details'
 				flash.args= [params["id"]]
-				redirect(action:'list')
+				render template: 'show'
 			}
 		}		
 		
 		render template: params.template ?: 'show', model:[totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
+	}
+	
+	def snapshot = {
+		if (params["id"] && params["id"].matches("^[0-9]+")) {
+			int invId= Integer.parseInt(params["id"])
+			InvoiceWS invoice= webServicesSession.getInvoiceWS(invId)
+			render template: 'snapshot', model: [invoice:invoice]
+		}
 	}
 	
 	def delete = {

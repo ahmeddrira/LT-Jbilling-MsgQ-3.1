@@ -33,13 +33,16 @@ package com.sapienter.jbilling.server.pricing.strategy;
 public enum PriceModelStrategy {
 
     /** Flat pricing strategy, always sets price to ZERO */
-    FLAT      (new FlatPricingStrategy()),
+    FLAT                (new FlatPricingStrategy()),
 
     /** Metered pricing strategy, sets a configurable $/unit rate */
-    METERED   (new MeteredPricingStrategy()),
+    METERED             (new MeteredPricingStrategy()),
 
     /** Graduated pricing strategy, allows a set number of included units before enforcing a $/unit rate */
-    GRADUATED (new GraduatedPricingStrategy());
+    GRADUATED           (new GraduatedPricingStrategy()),
+
+    /** Graduated pricing strategy with a maximum total usage $ cap */
+    CAPPED_GRADUATED    (new CappedGraduatedPricingStrategy());
 
     private final PricingStrategy strategy;
 

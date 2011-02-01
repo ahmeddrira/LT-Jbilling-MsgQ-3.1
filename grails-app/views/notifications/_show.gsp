@@ -9,89 +9,94 @@
 	</div>
 	
 	<div class="box">
-		<dl>
-		<dt><g:message code="title.notification.active" />:</dt>
-		<dd><g:if test="${(dto?.getUseFlag() > 0)}">
-				<g:message code="prompt.yes"/>
-			</g:if>
-			<g:else>
-				<g:message code="prompt.no"/>
-			</g:else>
-		</dd>
-
-		<dt><g:message code="prompt.product.language" />:</dt>
-		<dd>${languageDto.getDescription()}</dd>
-		
-		<g:set var="flag" value="${true}" />
-		<dt><g:message code="prompt.edit.notification.subject" />:</dt>
-		<dd>
-			<g:each in="${dto?.getNotificationMessageSections()}"
-				var="section">
-				<g:if test="${section.section == 1}">
-					<g:hiddenField
-						name="messageSections[${section.section}].id"
-						value="${section.id}" />
-					<g:hiddenField
-						name="messageSections[${section.section}].section"
-						value="${section.section}" />
-					<g:set var="tempContent" value="" />
-					<g:each in="${section.getNotificationMessageLines().sort{it.id}}"
-						var="line">
-						<g:set var="tempContent"
-							value="${tempContent=tempContent + line?.getContent()}" />
-					</g:each>
-					${tempContent}
-					<g:set var="flag" value="${false}" />
-				</g:if>
-			</g:each>
-		</dd>
-	
-		<g:set var="flag" value="${true}" />
-		<dt><g:message code="prompt.edit.notification.bodytext" />:</dt>
-		<dd><g:each in="${dto?.getNotificationMessageSections()}"
-				var="section">
-				<g:if test="${section.section == 2}">
-					<g:hiddenField
-						name="messageSections[${section.section}].id"
-						value="${section.id}" />
-					<g:hiddenField
-						name="messageSections[${section.section}].section"
-						value="${section.section}" />
-					<g:set var="tempContent" value="" />
-					<g:each in="${section.getNotificationMessageLines().sort{it.id}}"
-						var="line">
-						<g:set var="tempContent"
-							value="${tempContent=tempContent + line?.getContent()}" />
-					</g:each>
-					${tempContent}
-					<g:set var="flag" value="${false}" />
-				</g:if>
-			</g:each>
-		</dd>
-	
-		<g:set var="flag" value="${true}" />
-		<dt><g:message code="prompt.edit.notification.bodyhtml" />:</dt>
-		<dd><g:each in="${dto?.getNotificationMessageSections()}"
-				var="section">
-				<g:if test="${section?.section == 3}">
-					<g:hiddenField
-						name="messageSections[${section.section}].id"
-						value="${section?.id}" />
-					<g:hiddenField
-						name="messageSections[${section.section}].section"
-						value="${section?.section}" />
-					<g:set var="tempContent" value="" />
-					<g:each in="${section?.getNotificationMessageLines().sort{it.id}}"
-						var="line">
-						<g:set var="tempContent"
-							value="${tempContent=tempContent + line?.getContent()}" />
-					</g:each>
-					${tempContent}
-					<g:set var="flag" value="${false}" />
-				</g:if>
-			</g:each>
-		</dd>
-		</dl>
+		<table class="dataTable">
+            <tr>
+        		<td><g:message code="title.notification.active" />:</td>
+        		<td class="value"><g:if test="${(dto?.getUseFlag() > 0)}">
+        				<g:message code="prompt.yes"/>
+        			</g:if>
+        			<g:else>
+        				<g:message code="prompt.no"/>
+        			</g:else>
+        		</td>
+            </tr>
+            <tr>
+        		<td><g:message code="notification.label.language"/>:</td>
+        		<td class="value">${languageDto.getDescription()}</td>
+    		</tr>
+    		<g:set var="flag" value="${true}" />
+            <tr>
+    		<td><g:message code="prompt.edit.notification.subject" />:</td>
+    		<td class="value">
+    			<g:each in="${dto?.getNotificationMessageSections()}"
+    				var="section">
+    				<g:if test="${section.section == 1}">
+    					<g:hiddenField
+    						name="messageSections[${section.section}].id"
+    						value="${section.id}" />
+    					<g:hiddenField
+    						name="messageSections[${section.section}].section"
+    						value="${section.section}" />
+    					<g:set var="tempContent" value="" />
+    					<g:each in="${section.getNotificationMessageLines().sort{it.id}}"
+    						var="line">
+    						<g:set var="tempContent"
+    							value="${tempContent=tempContent + line?.getContent()}" />
+    					</g:each>
+    					${tempContent}
+    					<g:set var="flag" value="${false}" />
+    				</g:if>
+    			</g:each>
+    		</td></tr>
+    	
+    		<g:set var="flag" value="${true}" />
+            <tr>
+    		<td><g:message code="prompt.edit.notification.bodytext" />:</td>
+    		<td class="value"><g:each in="${dto?.getNotificationMessageSections()}"
+    				var="section">
+    				<g:if test="${section.section == 2}">
+    					<g:hiddenField
+    						name="messageSections[${section.section}].id"
+    						value="${section.id}" />
+    					<g:hiddenField
+    						name="messageSections[${section.section}].section"
+    						value="${section.section}" />
+    					<g:set var="tempContent" value="" />
+    					<g:each in="${section.getNotificationMessageLines().sort{it.id}}"
+    						var="line">
+    						<g:set var="tempContent"
+    							value="${tempContent=tempContent + line?.getContent()}" />
+    					</g:each>
+    					${tempContent}
+    					<g:set var="flag" value="${false}" />
+    				</g:if>
+    			</g:each>
+    		</td></tr>
+    	
+    		<g:set var="flag" value="${true}" />
+            <tr>
+    		<td><g:message code="prompt.edit.notification.bodyhtml" />:</td>
+    		<td class="value"><g:each in="${dto?.getNotificationMessageSections()}"
+    				var="section">
+    				<g:if test="${section?.section == 3}">
+    					<g:hiddenField
+    						name="messageSections[${section.section}].id"
+    						value="${section?.id}" />
+    					<g:hiddenField
+    						name="messageSections[${section.section}].section"
+    						value="${section?.section}" />
+    					<g:set var="tempContent" value="" />
+    					<g:each in="${section?.getNotificationMessageLines().sort{it.id}}"
+    						var="line">
+    						<g:set var="tempContent"
+    							value="${tempContent=tempContent + line?.getContent()}" />
+    					</g:each>
+    					${tempContent}
+    					<g:set var="flag" value="${false}" />
+    				</g:if>
+    			</g:each>
+    		</td></tr>
+    	</table>
 	</div>
 	
 	<div class="btn-box">

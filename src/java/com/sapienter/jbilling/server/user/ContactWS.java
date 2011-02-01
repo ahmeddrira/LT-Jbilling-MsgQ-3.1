@@ -36,14 +36,10 @@ import org.hibernate.validator.constraints.Email;
 
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 
-/**
- * @author Emil
- */
+/** @author Emil */
 public class ContactWS implements Serializable {
 
-	//@Min(value = 1, message = "validation.error.min,1", groups = UpdateValidationGroup.class)
-    //@Max(value = 0, message = "validation.error.max,0", groups = CreateValidationGroup.class)
-    private int id;
+    private Integer id;
     private String organizationName;
     private String address1;
     private String address2;
@@ -61,90 +57,33 @@ public class ContactWS implements Serializable {
     private Integer faxCountryCode;
     private Integer faxAreaCode;
     private String faxNumber;
-    @NotNull(message="validation.error.notnull")
-    @Email(message="validation.error.email")
+    @NotNull(message = "validation.error.notnull")
+    @Email(message = "validation.error.email")
     private String email;
     private Date createDate;
     private int deleted;
     private Integer include;
 
-    private Integer[] fieldIDs= null; 
+    private Integer[] fieldIDs = null;
     private String[] fieldNames = null;
     private String[] fieldValues = null;
     private Integer type = null; // the contact type
-    
-    private Integer contactTypeId= null;
-    private String contactTypeDescr= null;       
-    
-    public String getContactTypeDescr() {
-		return contactTypeDescr;
-	}
-	public void setContactTypeDescr(String contactTypeDescr) {
-		this.contactTypeDescr = contactTypeDescr;
-	}
-	public Integer[] getFieldIDs() {
-		return fieldIDs;
-	}
-	public void setFieldIDs(Integer[] fieldIDs) {
-		this.fieldIDs = fieldIDs;
-	}
-	public Integer getContactTypeId() {
-		return contactTypeId;
-	}
-	public void setContactTypeId(Integer contactTypeId) {
-		this.contactTypeId = contactTypeId;
-	}
-	public String[] getFieldNames() {
-        return fieldNames;
-    }
-    public void setFieldNames(String[] fieldNames) {
-        this.fieldNames = fieldNames;
-    }
-    public String[] getFieldValues() {
-        return fieldValues;
-    }
-    public void setFieldValues(String[] fieldValues) {
-        this.fieldValues = fieldValues;
-    }
-    /**
-     * 
-     */
+
+    private Integer contactTypeId = null;
+    private String contactTypeDescr = null;
+
     public ContactWS() {
         super();
     }
 
-    /**
-     * @param id
-     * @param organizationName
-     * @param address1
-     * @param address2
-     * @param city
-     * @param stateProvince
-     * @param postalCode
-     * @param countryCode
-     * @param lastName
-     * @param firstName
-     * @param initial
-     * @param title
-     * @param phoneCountryCode
-     * @param phoneAreaCode
-     * @param phoneNumber
-     * @param faxCountryCode
-     * @param faxAreaCode
-     * @param faxNumber
-     * @param email
-     * @param createDate
-     * @param deleted
-     * @param include
-     */
     public ContactWS(Integer id, String organizationName, String address1,
-            String address2, String city, String stateProvince,
-            String postalCode, String countryCode, String lastName,
-            String firstName, String initial, String title,
-            Integer phoneCountryCode, Integer phoneAreaCode,
-            String phoneNumber, Integer faxCountryCode, Integer faxAreaCode,
-            String faxNumber, String email, Date createDate, Integer deleted,
-            Integer include) {
+                     String address2, String city, String stateProvince,
+                     String postalCode, String countryCode, String lastName,
+                     String firstName, String initial, String title,
+                     Integer phoneCountryCode, Integer phoneAreaCode,
+                     String phoneNumber, Integer faxCountryCode, Integer faxAreaCode,
+                     String faxNumber, String email, Date createDate, Integer deleted,
+                     Integer include) {
         this.id = id;
         this.organizationName = organizationName;
         this.address1 = address1;
@@ -168,7 +107,7 @@ public class ContactWS implements Serializable {
         this.deleted = deleted;
         this.include = include;
     }
-    
+
     public ContactWS(ContactWS other) {
         setId(other.getId());
         setOrganizationName(other.getOrganizationName());
@@ -194,9 +133,6 @@ public class ContactWS implements Serializable {
         setInclude(other.getInclude());
     }
 
-    /**
-     * @param otherValue
-     */
     public ContactWS(ContactDTOEx other) {
         setId(other.getId());
         setOrganizationName(other.getOrganizationName());
@@ -225,168 +161,268 @@ public class ContactWS implements Serializable {
         fieldNames = new String[other.getFieldsTable().size()];
         fieldValues = new String[other.getFieldsTable().size()];
         int index = 0;
-        for (Iterator it = other.getFieldsTable().keySet().iterator();
-                it.hasNext();) {
+
+        for (Iterator it = other.getFieldsTable().keySet().iterator(); it.hasNext();) {
             fieldIDs[index] = new Integer((String) it.next());
-            ContactFieldDTO fieldDto = (ContactFieldDTO) other.
-                getFieldsTable().get(fieldIDs[index].toString());
-            fieldNames[index]= fieldDto.getType().getPromptKey();
+            ContactFieldDTO fieldDto = (ContactFieldDTO) other.getFieldsTable().get(fieldIDs[index].toString());
+            fieldNames[index] = fieldDto.getType().getPromptKey();
             fieldValues[index] = fieldDto.getContent();
             index++;
-        }        
+        }
+
         //set Contact Type Name
-        if ( null != other.getContactMap() && null != other.getContactMap().getContactType())
-        {
-        	setContactTypeId(other.getContactMap().getContactType().getId());
+        if (null != other.getContactMap() && null != other.getContactMap().getContactType()) {
+            setContactTypeId(other.getContactMap().getContactType().getId());
         }
     }
 
-    public String toString() {
-        String ret = super.toString();
-        ret += " type=" + getType(); 
-        if (fieldIDs != null) {
-            for (int f = 0; f < fieldIDs.length; f++) {
-                ret = ret + " " + fieldIDs[f] + "=" + fieldValues[f];
-            }
-        }
-        return ret;
-    }
-    public Integer getType() {
-        return type;
-    }
-    public void setType(Integer type) {
-        this.type = type;
-    }
-    public String getAddress1() {
-        return address1;
-    }
-    public void setAddress1(String address1) {
-        this.address1 = address1;
-    }
-    public String getAddress2() {
-        return address2;
-    }
-    public void setAddress2(String address2) {
-        this.address2 = address2;
-    }
-    public String getCity() {
-        return city;
-    }
-    public void setCity(String city) {
-        this.city = city;
-    }
-    public String getCountryCode() {
-        return countryCode;
-    }
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
-    public Date getCreateDate() {
-        return createDate;
-    }
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-    public int getDeleted() {
-        return deleted;
-    }
-    public void setDeleted(int deleted) {
-        this.deleted = deleted;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public Integer getFaxAreaCode() {
-        return faxAreaCode;
-    }
-    public void setFaxAreaCode(Integer faxAreaCode) {
-        this.faxAreaCode = faxAreaCode;
-    }
-    public Integer getFaxCountryCode() {
-        return faxCountryCode;
-    }
-    public void setFaxCountryCode(Integer faxCountryCode) {
-        this.faxCountryCode = faxCountryCode;
-    }
-    public String getFaxNumber() {
-        return faxNumber;
-    }
-    public void setFaxNumber(String faxNumber) {
-        this.faxNumber = faxNumber;
-    }
-    public String getFirstName() {
-        return firstName;
-    }
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-    public int getId() {
+    public Integer getId() {
         return id;
     }
-    public void setId(int id) {
+
+    public void setId(Integer id) {
         this.id = id;
     }
-    public Integer getInclude() {
-        return include;
-    }
-    public void setInclude(Integer include) {
-        this.include = include;
-    }
-    public String getInitial() {
-        return initial;
-    }
-    public void setInitial(String initial) {
-        this.initial = initial;
-    }
-    public String getLastName() {
-        return lastName;
-    }
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+
     public String getOrganizationName() {
         return organizationName;
     }
+
     public void setOrganizationName(String organizationName) {
         this.organizationName = organizationName;
     }
-    public Integer getPhoneAreaCode() {
-        return phoneAreaCode;
+
+    public String getAddress1() {
+        return address1;
     }
-    public void setPhoneAreaCode(Integer phoneAreaCode) {
-        this.phoneAreaCode = phoneAreaCode;
+
+    public void setAddress1(String address1) {
+        this.address1 = address1;
     }
-    public Integer getPhoneCountryCode() {
-        return phoneCountryCode;
+
+    public String getAddress2() {
+        return address2;
     }
-    public void setPhoneCountryCode(Integer phoneCountryCode) {
-        this.phoneCountryCode = phoneCountryCode;
+
+    public void setAddress2(String address2) {
+        this.address2 = address2;
     }
-    public String getPhoneNumber() {
-        return phoneNumber;
+
+    public String getCity() {
+        return city;
     }
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+
+    public void setCity(String city) {
+        this.city = city;
     }
-    public String getPostalCode() {
-        return postalCode;
-    }
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
+
     public String getStateProvince() {
         return stateProvince;
     }
+
     public void setStateProvince(String stateProvince) {
         this.stateProvince = stateProvince;
     }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getInitial() {
+        return initial;
+    }
+
+    public void setInitial(String initial) {
+        this.initial = initial;
+    }
+
     public String getTitle() {
         return title;
     }
+
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Integer getPhoneCountryCode() {
+        return phoneCountryCode;
+    }
+
+    public void setPhoneCountryCode(Integer phoneCountryCode) {
+        this.phoneCountryCode = phoneCountryCode;
+    }
+
+    public Integer getPhoneAreaCode() {
+        return phoneAreaCode;
+    }
+
+    public void setPhoneAreaCode(Integer phoneAreaCode) {
+        this.phoneAreaCode = phoneAreaCode;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Integer getFaxCountryCode() {
+        return faxCountryCode;
+    }
+
+    public void setFaxCountryCode(Integer faxCountryCode) {
+        this.faxCountryCode = faxCountryCode;
+    }
+
+    public Integer getFaxAreaCode() {
+        return faxAreaCode;
+    }
+
+    public void setFaxAreaCode(Integer faxAreaCode) {
+        this.faxAreaCode = faxAreaCode;
+    }
+
+    public String getFaxNumber() {
+        return faxNumber;
+    }
+
+    public void setFaxNumber(String faxNumber) {
+        this.faxNumber = faxNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public int getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(int deleted) {
+        this.deleted = deleted;
+    }
+
+    public Integer getInclude() {
+        return include;
+    }
+
+    public void setInclude(Integer include) {
+        this.include = include;
+    }
+
+    public Integer[] getFieldIDs() {
+        return fieldIDs;
+    }
+
+    public void setFieldIDs(Integer[] fieldIDs) {
+        this.fieldIDs = fieldIDs;
+    }
+
+    public String[] getFieldNames() {
+        return fieldNames;
+    }
+
+    public void setFieldNames(String[] fieldNames) {
+        this.fieldNames = fieldNames;
+    }
+
+    public String[] getFieldValues() {
+        return fieldValues;
+    }
+
+    public void setFieldValues(String[] fieldValues) {
+        this.fieldValues = fieldValues;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Integer getContactTypeId() {
+        return contactTypeId;
+    }
+
+    public void setContactTypeId(Integer contactTypeId) {
+        this.contactTypeId = contactTypeId;
+    }
+
+    public String getContactTypeDescr() {
+        return contactTypeDescr;
+    }
+
+    public void setContactTypeDescr(String contactTypeDescr) {
+        this.contactTypeDescr = contactTypeDescr;
+    }
+
+    @Override
+    public String toString() {
+        return "ContactWS{"
+               + "id=" + id
+               + ", type=" + type
+               + ", title='" + title + '\''
+               + ", lastName='" + lastName + '\''
+               + ", firstName='" + firstName + '\''
+               + ", initial='" + initial + '\''
+               + ", organization='" + organizationName + '\''
+               + ", address1='" + address1 + '\''
+               + ", address2='" + address2 + '\''
+               + ", city='" + city + '\''
+               + ", stateProvince='" + stateProvince + '\''
+               + ", postalCode='" + postalCode + '\''
+               + ", countryCode='" + countryCode + '\''
+               + ", phone='" + (phoneCountryCode != null ? phoneCountryCode : "")
+                             + (phoneAreaCode != null ? phoneAreaCode : "")
+                             + (phoneNumber != null ?  phoneNumber : "") + '\''
+               + ", fax='" + (faxCountryCode != null ? faxCountryCode : "")
+                           + (faxAreaCode != null ? faxAreaCode : "")
+                           + (faxNumber != null ? faxNumber : "") + '\''
+               + ", email='" + email + '\''
+               + '}';
     }
 }

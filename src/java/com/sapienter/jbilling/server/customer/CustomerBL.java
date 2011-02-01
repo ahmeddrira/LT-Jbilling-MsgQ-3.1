@@ -58,7 +58,7 @@ public final class CustomerBL extends ResultList implements CustomerSQL {
     public CustomerDTO getInvoicableParent() {
         CustomerDTO parent = customer;
 
-        while (parent.getInvoiceChild() == null || parent.getInvoiceChild() != 1) {
+        while (parent.getInvoiceChild() == null || !parent.getInvoiceChild().equals(new Integer(1))) {
             if (parent.getParent() == null) break;
             parent = parent.getParent();
         }

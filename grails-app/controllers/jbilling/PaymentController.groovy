@@ -49,7 +49,7 @@ import com.sapienter.jbilling.common.Constants
 @Secured(['isAuthenticated()'])
 class PaymentController {
 
-    static pagination = [ max: 25, offset: 0 ]
+    static pagination = [ max: 10, offset: 0 ]
 
     def webServicesSession
     def viewUtils

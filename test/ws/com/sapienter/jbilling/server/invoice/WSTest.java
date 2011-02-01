@@ -37,6 +37,7 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -169,6 +170,7 @@ public class WSTest extends TestCase {
             order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
             order.setPeriod(1); // once
             order.setCurrencyId(1);
+            order.setActiveSince(new Date());
 
             OrderLineWS line = new OrderLineWS();
             line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
@@ -270,6 +272,7 @@ public class WSTest extends TestCase {
         order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
         order.setPeriod(1); // once
         order.setCurrencyId(1);
+        order.setActiveSince(new Date());
 
         OrderLineWS line = new OrderLineWS();
         line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
@@ -353,6 +356,7 @@ public class WSTest extends TestCase {
         order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
         order.setPeriod(1); // once
         order.setCurrencyId(1);
+        order.setActiveSince(new Date());
 
         OrderLineWS line = new OrderLineWS();
         line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);

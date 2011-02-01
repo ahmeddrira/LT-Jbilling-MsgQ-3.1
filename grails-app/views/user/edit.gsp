@@ -18,6 +18,12 @@
                     $(':input.customer-field').attr('disabled', '')
                 }
             }).change();
+
+            $('#contactType').change(function() {
+                var selected = $('#contact-' + $(this).val());
+                $(selected).show();
+                $('div.contact').not(selected).hide();
+            }).change();
         });
     </script>
 </head>
@@ -126,6 +132,12 @@
                                     optionKey="id" optionValue="description" value="${user?.currencyId}" />
                         </g:applyLayout>
 
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.partner.id"/></content>
+                            <content tag="label.for">user.partnerId</content>
+                            <g:textField class="field" name="user.partnerId" value="${user?.partnerId}"/>
+                        </g:applyLayout>
+
                         <g:if test="${parent?.customerId}">
                             <g:applyLayout name="form/text">
                                 <content tag="label"><g:message code="prompt.parent.id"/></content>
@@ -162,15 +174,11 @@
 
                     <!-- contact information column -->
                     <div class="column">
-                        <g:set var="contact" value="${user?.contact}"/>
-                        <g:hiddenField name="contact.id" value="${contact?.id}"/>
-
                         <g:set var="contactTypes" value="${company.contactTypes.asList()}"/>
-
                         <g:if test="${contactTypes.size > 1}">
                             <g:applyLayout name="form/select">
                                 <content tag="label"><g:message code="prompt.contact.type"/></content>
-                                <g:select name="contact.type" from="${contactTypes}"
+                                <g:select name="contactType" from="${contactTypes}"
                                           optionKey="id" optionValue="description" value="${contact?.type}"  />
                             </g:applyLayout>
                         </g:if>
@@ -178,87 +186,23 @@
                             <g:applyLayout name="form/text">
                                 <content tag="label"><g:message code="prompt.contact.type"/></content>
                                 <span>${contact?.type ?: contactTypes?.get(0)}</span>
-                                <g:hiddenField name="contact.type" value="${contact?.type ?: contactTypes?.get(0)}"/>
                             </g:applyLayout>
                         </g:else>
 
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.organization.name"/></content>
-                            <content tag="label.for">contact.organizationName</content>
-                            <g:textField class="field" name="contact.organizationName" value="${contact?.organizationName}" />
-                        </g:applyLayout>
+                        <!-- show the user's primary contact -->
+                        <g:set var="primaryContactType" value="${contactTypes.find{ it.isPrimary > 0 }}"/>
+                        <g:hiddenField name="primaryContactTypeId" value="${primaryContactType.id}"/>
+                        <g:render template="contact" model="[contactType: primaryContactType, contact: user?.contact]"/>
 
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.first.name"/></content>
-                            <content tag="label.for">contact.firstName</content>
-                            <g:textField class="field" name="contact.firstName" value="${contact?.firstName}" />
-                        </g:applyLayout>
+                        <!-- other contact types as hidden blocks so that we can show/hide the selected type -->
+                        <g:each var="contactType" in="${contactTypes}">
+                            <g:if test="${contactType.isPrimary == 0}">
+                                <g:set var="contact" value="${contacts.find{ it.type == contactType.id }}"/>
+                                <g:render template="contact" model="[contactType: contactType, contact: contact]"/>
+                            </g:if>
+                        </g:each>
 
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.last.name"/></content>
-                            <content tag="label.for">contact.lastName</content>
-                            <g:textField class="field" name="contact.lastName" value="${contact?.lastName}" />
-                        </g:applyLayout>
-
-                        <g:applyLayout name="form/text">
-                            <content tag="label"><g:message code="prompt.phone.number"/></content>
-                            <content tag="label.for">contact.phoneCountryCode</content>
-                            <span>
-                                <g:textField class="field" name="contact.phoneCountryCode" value="${contact?.phoneCountryCode}" maxlength="3" size="2"/>
-                                -
-                                <g:textField class="field" name="contact.phoneAreaCode" value="${contact?.phoneAreaCode}" maxlength="5" size="3"/>
-                                -
-                                <g:textField class="field" name="contact.phoneNumber" value="${contact?.phoneNumber}" maxlength="10" size="8"/>
-                            </span>
-                        </g:applyLayout>
-
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.email"/></content>
-                            <content tag="label.for">contact.email</content>
-                            <g:textField class="field" name="contact.email" value="${contact?.email}" />
-                        </g:applyLayout>
-
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.address1"/></content>
-                            <content tag="label.for">contact.address1</content>
-                            <g:textField class="field" name="contact.address1" value="${contact?.address1}" />
-                        </g:applyLayout>
-
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.address2"/></content>
-                            <content tag="label.for">contact.address2</content>
-                            <g:textField class="field" name="contact.address2" value="${contact?.address2}" />
-                        </g:applyLayout>
-
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.city"/></content>
-                            <content tag="label.for">contact.city</content>
-                            <g:textField class="field" name="contact.city" value="${contact?.city}" />
-                        </g:applyLayout>
-
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.state"/></content>
-                            <content tag="label.for">contact.stateProvince</content>
-                            <g:textField class="field" name="contact.stateProvince" value="${contact?.stateProvince}" />
-                        </g:applyLayout>
-
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.zip"/></content>
-                            <content tag="label.for">contact.postalCode</content>
-                            <g:textField class="field" name="contact.postalCode" value="${contact?.postalCode}" />
-                        </g:applyLayout>
-
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.country"/></content>
-                            <content tag="label.for">contact.countryCode</content>
-                            <g:textField class="field" name="contact.countryCode" value="${contact?.countryCode}" />
-                        </g:applyLayout>
-
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.partner.id"/></content>
-                            <content tag="label.for">user.partnerId</content>
-                            <g:textField class="field" name="user.partnerId" value="${user?.partnerId}"/>
-                        </g:applyLayout>
+                        <br/>&nbsp;
 
                         <!-- custom contact fields -->
                         <g:each var="ccf" in="${company.contactFieldTypes.sort{ it.id }}">
@@ -270,12 +214,6 @@
                                 <g:textField class="field" name="contactField.${ccf.id}" value="${fieldValue}"/>
                             </g:applyLayout>
                         </g:each>
-
-                        <g:applyLayout name="form/checkbox">
-                            <content tag="label"><g:message code="prompt.include.in.notifications"/></content>
-                            <content tag="label.for">contact.include</content>
-                            <g:checkBox class="cb checkbox" name="contact.include" checked="${contact?.include > 0}"/>
-                        </g:applyLayout>
                     </div>
                 </div>
 

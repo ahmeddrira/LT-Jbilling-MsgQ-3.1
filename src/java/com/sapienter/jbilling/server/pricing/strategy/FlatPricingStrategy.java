@@ -21,11 +21,20 @@
 package com.sapienter.jbilling.server.pricing.strategy;
 
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
+import com.sapienter.jbilling.server.order.Usage;
+import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 
 /**
+ * Flat pricing strategy.
+ *
+ * Prices the item at $0/unit. Flat pricing assumes that the user has already paid for all
+ * usage as part of the cost of the plan.
+ *
  * @author Brian Cowdery
  * @since 05-08-2010
  */
@@ -37,6 +46,10 @@ public class FlatPricingStrategy implements PricingStrategy {
     public boolean hasRate() { return true; }
     public BigDecimal getRate() { return BigDecimal.ZERO; }
 
+    public List<AttributeDefinition> getAttributeDefinitions() {
+        return Collections.emptyList();
+    }
+
     /**
      * Sets the price to zero. The price for all usage is included in the cost of the
      * monthly plan subscription, so the customer is not charged per unit.
@@ -46,7 +59,7 @@ public class FlatPricingStrategy implements PricingStrategy {
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
      */
-    public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, BigDecimal usage) {
+    public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
         result.setPrice(BigDecimal.ZERO);
     }
 }

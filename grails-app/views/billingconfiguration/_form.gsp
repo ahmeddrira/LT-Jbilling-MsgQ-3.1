@@ -5,7 +5,7 @@
 <g:javascript library="ui.spinner"/>
 --%>
 
-<div class="form-edit">
+<div class="form-edit" style="width:650px">
 
     <div class="heading">
         <strong><g:message code="configuration.title.billing"/></strong>

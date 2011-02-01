@@ -43,8 +43,10 @@ import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
+import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
+import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
@@ -75,6 +77,9 @@ public interface IWebServicesSessionBean {
 
     public ContactWS[] getUserContactsWS(Integer userId) throws SessionInternalError;
     public void updateUserContact(Integer userId, Integer typeId, ContactWS contact) throws SessionInternalError;
+
+    public ContactTypeWS getContactTypeWS(Integer contactTypeId) throws SessionInternalError;
+    public Integer createContactTypeWS(ContactTypeWS contactType) throws SessionInternalError;
 
     public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard) throws SessionInternalError;
     public void updateAch(Integer userId, AchDTO ach) throws SessionInternalError;
@@ -209,7 +214,9 @@ public interface IWebServicesSessionBean {
     public Integer applyPayment(PaymentWS payment, Integer invoiceId) throws SessionInternalError;
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId);
 
-
+    public AgeingWS[] getAgeingConfiguration(Integer languageId) throws SessionInternalError ;
+    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError;
+    
     /*
         Billing process
      */

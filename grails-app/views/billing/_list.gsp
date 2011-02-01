@@ -9,7 +9,7 @@
 					<th class="small"><g:message code="label.billing.cycle.id" /></th>
 					<th class="medium"><g:message code="label.billing.cycle.date" /></th>
 					<th class="small"><g:message code="label.billing.invoice.count" /></th>
-					<th class="small"><g:message code="label.billing.total.invoiced" /></th>
+					<th class="medium"><g:message code="label.billing.total.invoiced" /></th>
 					<th class="small"><g:message code="label.billing.currency.code" /></th>
 				</tr>
 			</thead>
@@ -24,7 +24,7 @@
 							${new java.text.SimpleDateFormat("dd-MMM-yyyy").format(dto.billingDate)}
 						</td>
 						<td class="small">${dataHashMap[dto.id][0]}</td>
-						<td class="small">
+						<td class="medium">
 							${Util.formatMoney(new BigDecimal(dataHashMap[dto.id][1]?:"0.0"),
 								session["user_id"],dataHashMap[dto.id][2].id, false)?.substring(2)}
 						</td>

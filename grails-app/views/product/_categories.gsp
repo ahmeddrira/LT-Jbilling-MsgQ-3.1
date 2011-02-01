@@ -42,7 +42,12 @@
 
 <g:if test="${categories?.totalCount > params.max}">
     <div class="pager-box">
-        <util:remotePaginate controller="product" action="categories" total="${categories.totalCount}" update="column1"/>
+        <div class="row left">
+            <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], action: 'categories', update: 'column1']"/>
+        </div>
+        <div class="row">
+            <util:remotePaginate controller="product" action="categories" total="${categories.totalCount}" update="column1"/>
+        </div>
     </div>
 </g:if>
 

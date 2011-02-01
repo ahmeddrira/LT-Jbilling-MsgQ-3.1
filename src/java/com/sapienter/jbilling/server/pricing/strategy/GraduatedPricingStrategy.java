@@ -21,12 +21,20 @@
 package com.sapienter.jbilling.server.pricing.strategy;
 
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
+import com.sapienter.jbilling.server.order.Usage;
+import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collections;
+import java.util.List;
 
 /**
+ * Graduated pricing strategy.
+ *
+ * Only usage over the included quantity will be billed.
+ *
  * @author Brian Cowdery
  * @since 05-08-2010
  */
@@ -37,6 +45,10 @@ public class GraduatedPricingStrategy implements PricingStrategy {
 
     public boolean hasRate() { return false; }
     public BigDecimal getRate() { return null; }
+
+    public List<AttributeDefinition> getAttributeDefinitions() {
+        return Collections.emptyList();
+    }
 
     /**
      * Sets the price per minute to zero if the current total usage plus the quantity
@@ -58,14 +70,14 @@ public class GraduatedPricingStrategy implements PricingStrategy {
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
      */
-    public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, BigDecimal usage) {
-        if (usage == null)
-            throw new IllegalArgumentException("Usage cannot be null for GraduatedPricingStrategy.");
+    public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
+        if (usage == null || usage.getQuantity() == null)
+            throw new IllegalArgumentException("Usage quantity cannot be null for GraduatedPricingStrategy.");
 
 
-        BigDecimal total = quantity.add(usage);
+        BigDecimal total = quantity.add(usage.getQuantity());
 
-        if (usage.compareTo(planPrice.getIncludedQuantity()) >= 0) {
+        if (usage.getQuantity().compareTo(planPrice.getIncludedQuantity()) >= 0) {
             // included usage exceeded by current usage
             result.setPrice(planPrice.getRate());
 

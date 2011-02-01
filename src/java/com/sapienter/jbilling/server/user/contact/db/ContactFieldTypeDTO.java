@@ -50,36 +50,35 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
         table = "jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
-        pkColumnValue = "ageing_entity_step",
+        pkColumnValue = "contact_field_type",
         allocationSize = 10)
 @Table(name="contact_field_type")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ContactFieldTypeDTO extends AbstractDescription implements java.io.Serializable {
 
 
-	private Integer id;
+	private int id;
 	private CompanyDTO entity;
 	private String promptKey;
 	private String dataType;
 	private Integer readOnly;
 	private Set<ContactFieldDTO> contactFields = new HashSet<ContactFieldDTO>(0);
-	private int versionNum;
+	private Integer versionNum;
 
     public ContactFieldTypeDTO() {
     }
 
-    public ContactFieldTypeDTO(Integer id) {
-        if (id != null) {
-            this.id = id;
-        }
+    public ContactFieldTypeDTO(int id) {
+        this.id = id;
     }
 
     
-    public ContactFieldTypeDTO(Integer id, String promptKey, String dataType) {
+    public ContactFieldTypeDTO(int id, String promptKey, String dataType) {
         this.id = id;
         this.promptKey = promptKey;
         this.dataType = dataType;
     }
+    
     public ContactFieldTypeDTO(Integer id, CompanyDTO entity, String promptKey, String dataType, Integer customerReadonly, Set<ContactFieldDTO> contactFields) {
        this.id = id;
        this.entity = entity;
@@ -92,14 +91,15 @@ public class ContactFieldTypeDTO extends AbstractDescription implements java.io.
     @Id 
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "contact_field_type_GEN")
     @Column(name="id", unique=true, nullable=false)
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
     
     public void setId(Integer id) {
         this.id = id;
     }
-@ManyToOne(fetch=FetchType.LAZY)
+    
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id")
     public CompanyDTO getEntity() {
         return this.entity;
@@ -152,14 +152,15 @@ public class ContactFieldTypeDTO extends AbstractDescription implements java.io.
 
     @Version
     @Column(name = "OPTLOCK")
-    public int getVersionNum() {
+    public Integer getVersionNum() {
         return versionNum;
     }
 
-    public void setVersionNum(int versionNum) {
+    public void setVersionNum(Integer versionNum) {
         this.versionNum = versionNum;
     }
     
+    @Override
 	public String toString() {
 		return "ContactFieldTypeDTO [id=" + id + ", entity=" + entity
 				+ ", promptKey=" + promptKey + ", dataType=" + dataType

@@ -25,48 +25,30 @@ import java.util.List;
 import java.util.Set;
 
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.InternationalDescriptionWS;
-import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
 public class ContactFieldTypeWS  implements java.io.Serializable {
 
 
-	private int id;
+	private Integer id;
 	private Integer companyId;
 	private String promptKey;
 	private String dataType;
 	private Integer readOnly;
-	private Set<ContactFieldDTO> contactFields = new HashSet<ContactFieldDTO>(0);
 	private List<InternationalDescriptionWS> descriptions = new ArrayList<InternationalDescriptionWS>();
 
     public ContactFieldTypeWS() {
     	
     }
 
-    public ContactFieldTypeWS(ContactFieldTypeDTO contactFieldType, List<LanguageDTO> languages) {
-    	this.id = contactFieldType.getId();
-        this.dataType=contactFieldType.getDataType();
-        this.readOnly= contactFieldType.getReadOnly();
-
-        if (contactFieldType.getEntity() != null) {
-        	this.companyId = contactFieldType.getEntity().getId();
-        }
-
-        for(ContactFieldDTO dto: contactFieldType.getContactFields()) {
-        	contactFields.add(dto);
-        }
-
-        for (LanguageDTO language : languages) {
-            descriptions.add(new InternationalDescriptionWS(contactFieldType.getDescriptionDTO(language.getId())));
-        }
-    }
-
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -102,14 +84,6 @@ public class ContactFieldTypeWS  implements java.io.Serializable {
 		this.readOnly = readOnly;
 	}
 
-	public Set<ContactFieldDTO> getContactFields() {
-		return contactFields;
-	}
-
-	public void setContactFields(Set<ContactFieldDTO> contactFields) {
-		this.contactFields = contactFields;
-	}
-
 	public List<InternationalDescriptionWS> getDescriptions() {
 		return descriptions;
 	}
@@ -117,7 +91,38 @@ public class ContactFieldTypeWS  implements java.io.Serializable {
 	public void setDescriptions(List<InternationalDescriptionWS> descriptions) {
 		this.descriptions = descriptions;
 	}
-    
+
+	public InternationalDescriptionWS getDescription(Integer languageId) {
+        for (InternationalDescriptionWS description : descriptions)
+            if (description.getLanguageId().equals(languageId))
+                return description;
+        return null;
+    }
+	
+	@Override
+	public String toString() {
+		return "ContactFieldTypeWS [id=" + id + ", companyId=" + companyId
+				+ ", promptKey=" + promptKey + ", dataType=" + dataType
+				+ ", readOnly=" + readOnly + ", descriptions=" + descriptions + "]";
+	}
+	
+	public ContactFieldTypeDTO getDTO() { 
+		
+		ContactFieldTypeDTO dto= this.id == null ? new ContactFieldTypeDTO() : new ContactFieldTypeDAS().find(this.id);
+		if ( null != dto ) { 
+			dto.setDataType(this.dataType);
+			dto.setEntity(new CompanyDTO(this.companyId));
+			dto.setReadOnly(this.readOnly);
+			dto.setVersionNum(0);
+			//since Prompt key is not null
+			dto.setPromptKey("placeholder_text");
+			if (this.descriptions != null && this.descriptions.size() > 0 ) {
+				dto.setDescription(((InternationalDescriptionWS)this.descriptions.get(0)).getContent(), ((InternationalDescriptionWS)this.descriptions.get(0)).getLanguageId());
+			}
+		}
+		return dto;
+	}
+	
 }
 
 

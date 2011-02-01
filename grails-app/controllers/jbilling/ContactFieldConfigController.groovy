@@ -24,6 +24,7 @@ import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.util.db.LanguageDTO
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO
+import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS
 import com.sapienter.jbilling.server.util.db.InternationalDescription
 import com.sapienter.jbilling.server.util.InternationalDescriptionWS
 import com.sapienter.jbilling.common.SessionInternalError
@@ -34,6 +35,8 @@ import com.sapienter.jbilling.common.SessionInternalError
  * @author Vikas Bodani
  * @since 31-Jan-2011
  */
+
+
 @Secured(['isAuthenticated()'])
 class ContactFieldConfigController {
 	
@@ -67,8 +70,45 @@ class ContactFieldConfigController {
         [ types: types, selected: selected, languages: languages ]
     }
 	
-	def edit = {
+	def save = {
+		def cnt = params.recCnt.toInteger()
+		log.debug "Records Count: ${cnt}"
 		
+		List<ContactFieldTypeWS> fields= new ArrayList<ContactFieldTypeWS>(cnt+1);
+		for (int i=0; i < cnt; i++) {
+			ContactFieldTypeWS ws= new ContactFieldTypeWS()
+			bindData(ws, params["obj["+i+"]"])
+			log.debug "Params: ${params['obj[' + i + '].description']}"
+			InternationalDescriptionWS descr= 
+				new InternationalDescriptionWS(session['language_id'] as Integer, params['obj[' + i + '].description'] as String)
+			ws.descriptions.add descr
+			fields.add (ws)
+		}
+		
+		log.debug "${params.description} And ${params.dataType}"
+		if (params.description && params.dataType) {
+			ContactFieldTypeWS ws= new ContactFieldTypeWS()
+			bindData(ws, params);
+			InternationalDescriptionWS descr=
+			new InternationalDescriptionWS(session['language_id'] as Integer, params.description as String)
+			ws.descriptions.add(descr)
+			fields.add (ws)
+		}
+		
+		log.debug "Fields size= ${fields.size()}"
+		
+		for (ContactFieldTypeWS ws: fields) {
+			log.debug ws.toString()
+		}
+		
+		try {
+			webServicesSession.saveCustomContactFields((ContactFieldTypeWS[])fields.toArray())
+		} catch (SessionInternalError e) {
+			log.error e
+			viewUtils.resolveException(flash, session.locale, e)
+		}
+		flash.message = 'custom.fields.save.success'
+		redirect action: 'list'
 	}
 	
 	def getLanguages() {

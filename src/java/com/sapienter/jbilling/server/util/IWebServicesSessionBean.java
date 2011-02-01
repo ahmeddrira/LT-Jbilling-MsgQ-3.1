@@ -56,6 +56,7 @@ import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 
 /**
  * Web service bean interface. 
@@ -98,6 +99,8 @@ public interface IWebServicesSessionBean {
 
     public Integer getUserId(String username) throws SessionInternalError;
 
+    public void saveCustomContactFields(ContactFieldTypeWS[] fields) throws SessionInternalError;
+    
     @Deprecated
     public Integer authenticate(String username, String password) throws SessionInternalError;
 

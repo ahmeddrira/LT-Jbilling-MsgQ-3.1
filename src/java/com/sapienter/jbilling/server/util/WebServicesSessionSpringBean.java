@@ -175,7 +175,9 @@ import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.process.AgeingDTOEx;
 import com.sapienter.jbilling.server.process.AgeingWS;
 
-
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -809,6 +811,29 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
     }
 
+    public void saveCustomContactFields(ContactFieldTypeWS[] fields) throws SessionInternalError {
+    	try {
+    		ContactFieldTypeDAS das= new ContactFieldTypeDAS();
+    		for (ContactFieldTypeWS ws: fields) { 
+    			ContactFieldTypeDTO dto= ws.getId() == null ? new ContactFieldTypeDTO() : das.find(ws.getId());
+    			dto.setDataType(ws.getDataType());
+    			dto.setReadOnly(ws.getReadOnly());
+    			dto.setPromptKey("placeholder_text");
+    			dto.setEntity(new CompanyDTO(ws.getCompanyId()));
+    			dto.setVersionNum(new Integer(0));
+    			dto= das.save(dto);
+    			
+				for (InternationalDescriptionWS description : ws.getDescriptions()) {
+				    dto.setDescription(description.getContent(), description.getLanguageId());
+				}
+    			das.flush();
+    			das.clear();
+    		}
+    	}catch (Exception e) {
+    		throw new SessionInternalError(e);
+    	}
+    }
+    
     @Deprecated
     private Integer[] getByCCNumber(Integer entityId, String number) {
         List<Integer> usersIds = new CreditCardDAS().findByLastDigits(entityId, number);

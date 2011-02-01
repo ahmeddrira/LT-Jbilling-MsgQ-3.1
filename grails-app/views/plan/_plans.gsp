@@ -24,7 +24,7 @@
 
                     <td>
                         <g:remoteLink class="cell double" action="show" id="${plan.id}" before="register(this);" onSuccess="render(data, next);">
-                            <strong>${StringUtils.abbreviate(plan.description, 50)}</strong>
+                            <strong>${StringUtils.abbreviate(plan.description, 30)}</strong>
                             <em><g:message code="product.id.label" args="[plan.id]"/></em>
                         </g:remoteLink>
                     </td>
@@ -59,5 +59,5 @@
 </g:if>
 
 <div class="btn-box">
-    <g:link controller="planBuilder" action="edit" class="submit add"><span><g:message code="button.create"/></span></g:link>
+    <g:link controller="plan" action="create" class="submit add"><span><g:message code="button.create"/></span></g:link>
 </div>

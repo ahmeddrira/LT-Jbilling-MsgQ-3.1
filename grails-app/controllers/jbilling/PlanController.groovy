@@ -98,4 +98,12 @@ class PlanController {
         params.applyFilter = true
         list()
     }
+
+    /**
+     * Redirects to the user list and sets a flash message.
+     */
+    def create = {
+        flash.info = 'plan.select.product'
+        redirect controller: 'product', action: 'list'
+    }
 }

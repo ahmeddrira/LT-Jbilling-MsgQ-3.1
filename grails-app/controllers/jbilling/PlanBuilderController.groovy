@@ -28,7 +28,6 @@ import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.item.PlanWS
 import com.sapienter.jbilling.server.item.PlanItemWS
 import com.sapienter.jbilling.server.pricing.PriceModelWS
-import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy
 import com.sapienter.jbilling.server.item.CurrencyBL
 
 /**
@@ -105,6 +104,11 @@ class PlanBuilderController {
             action {
                 def plan = params.id ? webServicesSession.getPlanWS(params.int('id')) : new PlanWS()
                 def planItem = ItemDTO.get(plan?.getItemId() ?: params.int('itemId'))
+
+                // set plan subscription item for new plans
+                if (!plan.itemId) {
+                    plan.itemId = planItem.id
+                }
 
                 def company = CompanyDTO.get(session['company_id'])
                 def itemTypes = company.itemTypes.sort{ it.id }
@@ -191,6 +195,8 @@ class PlanBuilderController {
                 bindData(planItem, params["price-${index}"])
                 bindData(planItem.model, params["model-${index}"])
 
+                // todo: bind attributes
+
                 // update the conversation object
                 plan.planItems[index] = planItem
                 conversation.plan = plan
@@ -252,7 +258,16 @@ class PlanBuilderController {
         savePlan {
             action {
                 try {
-                    // todo: save or update plan
+                    def plan = conversation.plan
+
+                    if (!plan.id || plan.id == 0) {
+                        log.debug("creating plan ${plan}")
+                        plan.id = webServicesSession.createPlan(plan)
+
+                    } else {
+                        log.debug("saving changes to plan ${plan.id}")
+                        webServicesSession.updatePlan(plan)
+                    }
 
                 } catch (SessionInternalError e) {
                     viewUtils.resolveException(flow, session.locale, e)

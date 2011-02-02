@@ -67,6 +67,7 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_PLUGGABLE_TASK_PARAMETER = "pluggable_task_parameter";
     public static final String TABLE_CONTACT = "contact";
     public static final String TABLE_CONTACT_FIELD = "contact_field";
+    public static final String TABLE_CONTACT_FIELD_TYPE = "contact_field_type";
     public static final String TABLE_CONTACT_TYPE = "contact_type";
     public static final String TABLE_CONTACT_MAP = "contact_map";
     public static final String TABLE_INVOICE_LINE_TYPE = "invoice_line_type";

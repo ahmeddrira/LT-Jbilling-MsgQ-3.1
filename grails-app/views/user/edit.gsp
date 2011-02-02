@@ -210,7 +210,7 @@
                             <g:set var="fieldValue" value="${contact?.fieldValues?.getAt(fieldIndex)}"/>
 
                             <g:applyLayout name="form/input">
-                                <content tag="label"><g:message code="${ccf.promptKey}"/></content>
+                                <content tag="label"><g:message code="${ccf.getDescription(session['language_id'])}"/></content>
                                 <g:textField class="field" name="contactField.${ccf.id}" value="${fieldValue}"/>
                             </g:applyLayout>
                         </g:each>

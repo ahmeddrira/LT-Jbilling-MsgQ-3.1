@@ -20,7 +20,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
-
+import com.sapienter.jbilling.server.order.db.OrderStatusDAS;
 
 /**
  * 
@@ -51,7 +51,6 @@ class OrderController {
 		}
 		
 		def filters = filterService.getFilters(FilterType.ORDER, params)
-		
 		def orders = getFilteredOrders (filters)
 		
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
@@ -71,7 +70,7 @@ class OrderController {
 		OrderWS order= webServicesSession.getOrder(_orderId)
 		UserWS user= webServicesSession.getUserWS(order.getUserId())
 		
-		breadcrumbService.addBreadcrumb(controllerName, actionName, null, _orderId)
+		breadcrumbService.addBreadcrumb(controllerName, 'showListAndOrder', null, _orderId)
 		recentItemService.addRecentItem(_orderId, RecentItemType.ORDER)
 		
 		log.debug "Invoices Generated: ${order.getGeneratedInvoices().size()}"
@@ -93,6 +92,7 @@ class OrderController {
 	}
 	
 	def getFilteredOrders(filters) {
+		//def statuses= new OrderStatusDAS().findAll()
 		params.max = params?.max?.toInteger() ?: pagination.max
 		params.offset = params?.offset?.toInteger() ?: pagination.offset
 		
@@ -111,6 +111,9 @@ class OrderController {
 							case FilterConstraint.DATE_BETWEEN:
 								between(filter.field, filter.startDateValue, filter.endDateValue)
 								break
+							//case FilterConstraint.STATUS:
+							//	eq("orderStatus", statuses.find{ it.id == filter.integerValue })
+							//	break
 						}
 					}
 				}

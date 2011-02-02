@@ -30,9 +30,10 @@ import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.util.PreferenceWS
 import com.sapienter.jbilling.server.order.OrderProcessWS
 import com.sapienter.jbilling.server.user.ContactTypeWS;
-import com.sapienter.jbilling.server.process.AgeingWS
 import com.sapienter.jbilling.server.item.PlanWS
 import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.process.AgeingWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
@@ -149,6 +150,10 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getUserId(username)
     }
 
+	public void saveCustomContactFields(ContactFieldTypeWS[] fields) {
+		webServicesSession.saveCustomContactFields(fields)
+	}
+	
     public Integer[] getUsersInStatus(Integer statusId) {
         return webServicesSession.getUsersInStatus(statusId)
     }

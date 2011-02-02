@@ -85,7 +85,7 @@
             <li class="${controllerName == 'plan' ? 'active' : ''}">
                 <g:link controller="plan"><span><g:message code="menu.link.plans"/></span><em></em></g:link>
             </li>
-            <li class="${controllerName == 'config' || controllerName == 'plugin' || controllerName == 'notifications' || controllerName == 'billingconfiguration' ? 'active' : ''}">
+            <li class="${controllerName == 'config' || controllerName == 'plugin' || controllerName == 'notifications' || controllerName == 'billingconfiguration' || controllerName == 'contactFieldConfig' ? 'active' : ''}">
                 <g:link controller="config"><span><g:message code="menu.link.configuration"/></span><em></em></g:link>
             </li>
         </ul>

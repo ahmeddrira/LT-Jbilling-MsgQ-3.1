@@ -25,7 +25,7 @@ import com.sapienter.jbilling.server.item.db.ItemDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.order.OrderWS
 import com.sapienter.jbilling.server.user.db.UserDTO
-import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
+
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO
 import com.sapienter.jbilling.server.order.db.OrderBillingTypeDTO
 import com.sapienter.jbilling.server.util.Constants
@@ -33,7 +33,7 @@ import com.sapienter.jbilling.server.user.contact.db.ContactDTO
 import com.sapienter.jbilling.server.order.OrderLineWS
 import com.sapienter.jbilling.common.SessionInternalError
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import com.sapienter.jbilling.server.item.db.ItemDAS
+
 import com.sapienter.jbilling.server.order.db.OrderStatusDTO
 import java.math.RoundingMode
 
@@ -64,22 +64,26 @@ class OrderBuilderController {
      * @return filtered list of products
      */
     def getProducts(CompanyDTO company, GrailsParameterMap params) {
+        def filterBy = params['product.filterBy']
+        def typeId = params.int('product.typeId')
+
         // filter on item type, item id and internal number
         def products = ItemDTO.createCriteria().list() {
             and {
-                if (params.filterBy && params.filterBy != message(code: 'products.filter.by.default')) {
+                if (filterBy && filterBy != message(code: 'products.filter.by.default')) {
                     or {
                         eq('id', params.int('filterBy'))
-                        ilike('internalNumber', "%${params.filterBy}%")
+                        ilike('internalNumber', "%${filterBy}%")
                     }
                 }
 
-                if (params.typeId) {
+                if (typeId) {
                     itemTypes {
-                        eq('id', params.int('typeId'))
+                        eq('id', typeId)
                     }
                 }
 
+                isEmpty('plans')
                 eq('deleted', 0)
                 eq('entity', company)
             }
@@ -87,19 +91,73 @@ class OrderBuilderController {
         }
 
         // if no results found, try filtering by description
-        if (!products && params.filterBy) {
+        if (!products && filterBy) {
             products = ItemDTO.createCriteria().list() {
                 and {
+                    isEmpty('plans')
                     eq('deleted', 0)
                     eq('entity', company)
                 }
                 order('id', 'asc')
             }.findAll {
-                it.getDescription(session['language_id']).toLowerCase().contains(params.filterBy.toLowerCase())
+                it.getDescription(session['language_id']).toLowerCase().contains(filterBy.toLowerCase())
             }
         }
 
         return products
+    }
+
+    /**
+     * Get a filtered list of plans
+     *
+     * @param company company
+     * @param params parameter map containing filter criteria
+     * @return filtered list of products
+     */
+    def getPlans(CompanyDTO company, GrailsParameterMap params) {
+        def filterBy = params['plan.filterBy']
+        def typeId = params.int('plan.typeId')
+
+        // filter on item type, item id and internal number
+        def plans = ItemDTO.createCriteria().list() {
+            and {
+                if (filterBy && filterBy != message(code: 'products.filter.by.default')) {
+                    or {
+                        eq('id', params.int('filterBy'))
+                        ilike('internalNumber', "%${filterBy}%")
+                    }
+                }
+
+                if (typeId) {
+                    itemTypes {
+                        eq('id', typeId)
+                    }
+                }
+
+                isNotEmpty('plans')
+                eq('deleted', 0)
+                eq('entity', company)
+            }
+            order('id', 'asc')
+        }
+
+        log.debug("Found: ${plans.size()} plans")
+
+        // if no results found, try filtering by description
+        if (!plans && filterBy) {
+            plans = ItemDTO.createCriteria().list() {
+                and {
+                    isNotEmpty('plans')
+                    eq('deleted', 0)
+                    eq('entity', company)
+                }
+                order('id', 'asc')
+            }.findAll {
+                it.getDescription(session['language_id']).toLowerCase().contains(filterBy.toLowerCase())
+            }
+        }
+
+        return plans
     }
 
     def editFlow = {
@@ -153,6 +211,7 @@ class OrderBuilderController {
                 // conversation scope
                 conversation.order = order
                 conversation.products = getProducts(company, params)
+                conversation.plans = getPlans(company, params)
             }
             on("success").to("build")
         }
@@ -173,14 +232,26 @@ class OrderBuilderController {
         showProducts {
             action {
                 // filter using the first item type by default
-                if (params.typeId == null)
-                    params.typeId = flow.itemTypes?.asList()?.first()?.id
+                if (params['product.typeId'] == null)
+                    params['product.typeId'] = flow.itemTypes?.asList()?.first()?.id
 
                 params.template = 'products'
                 conversation.products = getProducts(flow.company, params)
             }
             on("success").to("build")
         }
+
+        /**
+         * Renders the plans list tab panel, filtering the plans list by the given criteria.
+         */
+        showPlans {
+            action {
+                params.template = 'plans'
+                conversation.plans = getPlans(flow.company, params)
+            }
+            on("success").to("build")
+        }
+
 
         /**
          * Adds a product to the order as a new order line and renders the review panel.
@@ -323,6 +394,7 @@ class OrderBuilderController {
         build {
             on("details").to("showDetails")
             on("products").to("showProducts")
+            on("plans").to("showPlans")
             on("addLine").to("addOrderLine")
             on("updateLine").to("updateOrderLine")
             on("removeLine").to("removeOrderLine")

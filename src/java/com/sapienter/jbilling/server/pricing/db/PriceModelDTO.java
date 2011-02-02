@@ -245,6 +245,34 @@ public class PriceModelDTO implements Serializable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PriceModelDTO that = (PriceModelDTO) o;
+
+        if (attributes != null ? !attributes.equals(that.attributes) : that.attributes != null) return false;
+        if (currency != null ? !currency.equals(that.currency) : that.currency != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (includedQuantity != null ? !includedQuantity.equals(that.includedQuantity) : that.includedQuantity != null) return false;
+        if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
+        if (type != that.type) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
+        result = 31 * result + (rate != null ? rate.hashCode() : 0);
+        result = 31 * result + (includedQuantity != null ? includedQuantity.hashCode() : 0);
+        result = 31 * result + (currency != null ? currency.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "PriceModelDTO{"
                + "id=" + id

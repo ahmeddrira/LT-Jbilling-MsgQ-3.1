@@ -14,8 +14,6 @@
     <g:hiddenField name="execution" value="${flowExecutionKey}"/>
 
     <g:hiddenField name="index" value="${index}"/>
-    <g:hiddenField name="update" value=""/>
-
 
     <!-- review line ${index} -->
     <li id="line-${index}" class="line ${editable ? 'active' : ''}">
@@ -80,12 +78,77 @@
                 </g:applyLayout>
 
                 <!-- attributes -->
-                <g:each var="attribute" status="attributeIndex" in="${strategy?.attributeDefinitions}">
-                    <g:applyLayout name="form/input">
-                        <content tag="label">${attribute.name}</content>
-                        <g:textField class="field" name="attribute-${attributeIndex}.value"/>
+                <div id="line-${index}-attributes">
+                <g:set var="attributeIndex" value="${0}"/>
+
+                    <!-- all attribute definitions -->
+                    <g:each var="definition" status="i" in="${strategy?.attributeDefinitions}">
+                        <g:set var="attributeIndex" value="${attributeIndex + 1}"/>
+                        <g:set var="attribute" value="${planItem.model.attributes.remove(definition.name)}"/>
+
+                        <g:applyLayout name="form/attribute">
+                            <g:if test="${attributeIndex == 1}">
+                                <content tag="label"><g:message code="plan.mode.attributes"/></content>
+                            </g:if>
+                            <content tag="name">
+                                <g:textField class="field" name="attribute.${attributeIndex}.name" value="${definition.name}" readonly="true"/>
+                            </content>
+                            <content tag="value">
+                                <g:textField class="field" name="attribute.${attributeIndex}.value" value="${attribute}"/>
+                            </content>
+                            <g:if test="${definition.required}">
+                                <span><g:message code="plan.model.attribute.required"/></span>
+                            </g:if>
+                        </g:applyLayout>
+                    </g:each>
+
+                    <!-- remaining attributes -->
+                    <g:each var="attribute" status="i" in="${planItem.model.attributes?.entrySet()}">
+                        <g:set var="attributeIndex" value="${attributeIndex + 1}"/>
+
+                        <g:applyLayout name="form/attribute">
+                            <g:if test="${attributeIndex == 1}">
+                                <content tag="label"><g:message code="plan.mode.attributes"/></content>
+                            </g:if>
+                            <content tag="name">
+                                <g:textField class="field" name="attribute.${attributeIndex}.name" value="${attribute.key}"/>
+                            </content>
+                            <content tag="value">
+                                <g:textField class="field" name="attribute.${attributeIndex}.value" value="${attribute.value}"/>
+                            </content>
+
+                            <g:remoteLink
+                                    class="field" title="${message(code: 'plan.remove.attribute.message')}"
+                                    action="edit" params="[_eventId: 'removeAttribute', index: index, attribute: attribute.key]"
+                                    update="column2" method="GET">
+                                <img src="${resource(dir:'images', file:'cross.png')}" alt="remove"/>
+                            </g:remoteLink>
+
+                        </g:applyLayout>
+                    </g:each>
+
+                    <!-- one empty row -->
+                    <g:set var="attributeIndex" value="${attributeIndex + 1}"/>
+                    <g:applyLayout name="form/attribute">
+                        <g:if test="${attributeIndex == 1}">
+                            <content tag="label"><g:message code="plan.mode.attributes"/></content>
+                        </g:if>
+                        <content tag="name">
+                            <g:textField class="field" name="attribute.${attributeIndex}.name"/>
+                        </content>
+                        <content tag="value">
+                            <g:textField class="field" name="attribute.${attributeIndex}.value"/>
+                        </content>
+
+                        <g:remoteLink
+                                class="field" title="${message(code: 'plan.new.attribute.message')}"
+                                action="edit" params="[_eventId: 'addAttribute', index: index, id: attributeIndex]"
+                                update="column2" method="GET">
+                            <img src="${resource(dir:'images', file:'add.png')}" alt="remove"/>
+                        </g:remoteLink>
+
                     </g:applyLayout>
-                </g:each>
+                </div>
             </div>
         </div>
 
@@ -97,12 +160,3 @@
         </div>
     </li>
 </g:formRemote>
-
-<script type="text/javascript">
-    $(function() {
-        $('#model-${index}\\.type').change(function() {
-            $('#price-${index}-update-form :input#update').val('strategy');
-            $('#price-${index}-update-form').submit();
-        });
-    });
-</script>

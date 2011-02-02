@@ -21,7 +21,6 @@
 package com.sapienter.jbilling.server.pricing.db;
 
 import com.sapienter.jbilling.server.item.CurrencyBL;
-import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
@@ -47,15 +46,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +78,6 @@ public class PriceModelDTO implements Serializable {
     private PriceModelStrategy type;
     private Map<String, String> attributes = new HashMap<String, String>();
     private BigDecimal rate;
-    private BigDecimal includedQuantity;
     private CurrencyDTO currency;
 
     public PriceModelDTO() {
@@ -92,9 +86,8 @@ public class PriceModelDTO implements Serializable {
     public PriceModelDTO(PriceModelWS ws, CurrencyDTO currency) {
         setId(ws.getId());
         setType(PriceModelStrategy.valueOf(ws.getType()));
-        setAttributes(new HashMap<String,String>(ws.getAttributes()));
+        setAttributes(new HashMap<String, String>(ws.getAttributes()));
         setRate(ws.getRateAsDecimal());
-        setIncludedQuantity(ws.getIncludedQuantityAsDecimal());
         setCurrency(currency);
     }
 
@@ -190,23 +183,6 @@ public class PriceModelDTO implements Serializable {
         this.rate = rate;
     }
 
-    /**
-     * Returns the pricing included quantity if using a graduated strategy type, if the set
-     * pricing strategy is not a graduated strategy, this method always returns zero.
-     *
-     * @see com.sapienter.jbilling.server.pricing.strategy.PricingStrategy#isGraduated()
-     *
-     * @return included quantity if strategy is graduated, zero if not.
-     */
-    @Column(name = "included_quantity", precision = 10, scale = 22)
-    public BigDecimal getIncludedQuantity() {        
-        return getStrategy() != null && getStrategy().isGraduated() ? includedQuantity : BigDecimal.ZERO;
-    }
-
-    public void setIncludedQuantity(BigDecimal includedQuantity) {
-        this.includedQuantity = includedQuantity;
-    }
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "currency_id", nullable = false)
     public CurrencyDTO getCurrency() {
@@ -254,7 +230,6 @@ public class PriceModelDTO implements Serializable {
         if (attributes != null ? !attributes.equals(that.attributes) : that.attributes != null) return false;
         if (currency != null ? !currency.equals(that.currency) : that.currency != null) return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (includedQuantity != null ? !includedQuantity.equals(that.includedQuantity) : that.includedQuantity != null) return false;
         if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
         if (type != that.type) return false;
 
@@ -267,7 +242,6 @@ public class PriceModelDTO implements Serializable {
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
         result = 31 * result + (rate != null ? rate.hashCode() : 0);
-        result = 31 * result + (includedQuantity != null ? includedQuantity.hashCode() : 0);
         result = 31 * result + (currency != null ? currency.hashCode() : 0);
         return result;
     }
@@ -279,7 +253,6 @@ public class PriceModelDTO implements Serializable {
                + ", type=" + type
                + ", attributes=" + attributes
                + ", rate=" + rate
-               + ", includedQuantity=" + includedQuantity
                + ", currencyId=" + (currency != null ? currency.getId() : null)
                + '}';
     }

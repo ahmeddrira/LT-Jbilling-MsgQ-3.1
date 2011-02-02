@@ -1,0 +1,122 @@
+/*
+ jBilling - The Enterprise Open Source Billing System
+ Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
+
+ This file is part of jbilling.
+
+ jbilling is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ jbilling is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.sapienter.jbilling.server.pricing.util;
+
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
+import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
+
+import java.math.BigDecimal;
+import java.util.Map;
+
+/**
+ * Simple utilities for parsing price model attributes.
+ *
+ * @author Brian Cowdery
+ * @since 02/02/11
+ */
+public class AttributeUtils {
+
+    /**
+     * Validates that all the required attributes of the given strategy are present and of the
+     * correct type.
+     *
+     * @param attributes attribute map
+     * @param strategy strategy to validate against
+     *
+     */
+    public static void validateAttributes(Map<String, String> attributes, PricingStrategy strategy) {
+        for (AttributeDefinition definition : strategy.getAttributeDefinitions()) {
+            String name = definition.getName();
+            String value = attributes.get(name);
+
+            // validate required attributes
+            if (definition.isRequired() && (value == null || value.trim().equals(""))) {
+                String klass = strategy.getClass().getSimpleName();
+                throw new SessionInternalError("Missing required attribute '" + name + "'",
+                                               new String[] { klass + "," + name + ",validation.error.is.required"});
+            }
+
+            // validate attribute types
+            switch (definition.getType()) {
+                case STRING:
+                    // a string is a string...
+                    break;
+                case INTEGER:
+                    AttributeUtils.parseInteger(value, name);
+                    break;
+                case DECIMAL:
+                    AttributeUtils.parseDecimal(value, name);
+                    break;
+            }
+        }
+    }
+
+    public static Integer getInteger(Map<String, String> attributes, String name) {
+        return parseInteger(attributes.get(name), name);
+    }
+
+    /**
+     * Parses the given value as an Integer. If the value cannot be parsed, an exception will be thrown.
+     *
+     * @param value value to parse
+     * @param name attribute name to use when building error messages (can be null)
+     * @return parsed integer
+     * @throws SessionInternalError if value cannot be parsed as an integer
+     */
+    public static Integer parseInteger(String value, String name) {
+        if (value != null) {
+            try {
+                return Integer.valueOf(value);
+            } catch (NumberFormatException e) {
+                throw new SessionInternalError("Cannot parse attribute value '" + value + "' as an integer.",
+                                               new String[] { "attribute," + name + ",validation.error.not.a.integer" });
+            }
+        }
+        return null;
+    }
+
+    public static BigDecimal getDecimal(Map<String, String> attributes, String name) {
+        return parseDecimal(attributes.get(name), name);
+    }
+
+    /**
+     * Parses the given value as a BigDecimal. If the value cannot be parsed, an exception will be thrown.
+     *
+     * @param value value to parse
+     * @param name attribute name to use when building error messages (can be null)
+     * @return parsed integer
+     * @throws SessionInternalError if value cannot be parsed as an BigDecimal
+     */
+    public static BigDecimal parseDecimal(String value, String name) {
+        if (value != null) {
+            try {
+                return new BigDecimal(value);
+            } catch (NumberFormatException e) {
+                throw new SessionInternalError("Cannot parse attribute value '" + value + "' as a decimal number.",
+                                               new String[] { "attribute," + name + ",validation.error.not.a.number" });
+            }
+        }
+        return null;
+    }
+
+
+}

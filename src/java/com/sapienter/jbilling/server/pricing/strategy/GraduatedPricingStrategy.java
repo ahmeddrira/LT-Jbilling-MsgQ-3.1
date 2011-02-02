@@ -24,11 +24,15 @@ import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
+import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.DECIMAL;
 
 /**
  * Graduated pricing strategy.
@@ -40,14 +44,15 @@ import java.util.List;
  */
 public class GraduatedPricingStrategy implements PricingStrategy {
 
-    public boolean isGraduated() { return true; }
-    public boolean requiresUsage() { return true; }
+    private static final List<AttributeDefinition> ATTRIBUTE_LIST = Arrays.asList(
+            new AttributeDefinition("included", DECIMAL, true)
+    );
 
     public boolean hasRate() { return false; }
     public BigDecimal getRate() { return null; }
 
     public List<AttributeDefinition> getAttributeDefinitions() {
-        return Collections.emptyList();
+        return ATTRIBUTE_LIST;
     }
 
     /**
@@ -74,17 +79,17 @@ public class GraduatedPricingStrategy implements PricingStrategy {
         if (usage == null || usage.getQuantity() == null)
             throw new IllegalArgumentException("Usage quantity cannot be null for GraduatedPricingStrategy.");
 
-
         BigDecimal total = quantity.add(usage.getQuantity());
+        BigDecimal included = AttributeUtils.getDecimal(planPrice.getAttributes(), "included");
 
-        if (usage.getQuantity().compareTo(planPrice.getIncludedQuantity()) >= 0) {
+        if (usage.getQuantity().compareTo(included) >= 0) {
             // included usage exceeded by current usage
             result.setPrice(planPrice.getRate());
 
-        } else if (total.compareTo(planPrice.getIncludedQuantity()) > 0) {
+        } else if (total.compareTo(included) > 0) {
             // current usage + purchased quantity exceeds included
             // determine the percentage rate for minutes used OVER the included.
-            BigDecimal rated = total.subtract(planPrice.getIncludedQuantity());
+            BigDecimal rated = total.subtract(included);
             BigDecimal percent = rated.divide(quantity, 2, RoundingMode.HALF_UP);
             result.setPrice(percent.multiply(planPrice.getRate()));
 

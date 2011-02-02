@@ -61,7 +61,7 @@ public class GraduatedPricingStrategyTest extends BigDecimalTestCase {
 
         BigDecimal rate = new BigDecimal("0.07");
         planPrice.setRate(rate);
-        planPrice.setIncludedQuantity(new BigDecimal(1000));
+        planPrice.addAttribute("included", "1000");
 
         // included minutes already exceeded by current usage
         PricingResult result = new PricingResult(1, 2, 3);
@@ -76,7 +76,7 @@ public class GraduatedPricingStrategyTest extends BigDecimalTestCase {
 
         BigDecimal rate = new BigDecimal("0.07");
         planPrice.setRate(rate);
-        planPrice.setIncludedQuantity(new BigDecimal(1000));
+        planPrice.addAttribute("included", "1000");
 
         // included minutes already exceeded by current usage
         PricingResult result = new PricingResult(1, 2, 3);
@@ -91,7 +91,7 @@ public class GraduatedPricingStrategyTest extends BigDecimalTestCase {
 
         BigDecimal rate = new BigDecimal("1.00"); // round numbers for easy math :)
         planPrice.setRate(rate);
-        planPrice.setIncludedQuantity(new BigDecimal(1000));
+        planPrice.addAttribute("included", "1000");
 
         // half of the call exceeds the included minutes
         // rate should be 50% of the plan rate

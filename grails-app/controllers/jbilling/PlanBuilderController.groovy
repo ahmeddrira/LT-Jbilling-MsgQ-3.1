@@ -31,6 +31,7 @@ import com.sapienter.jbilling.server.pricing.PriceModelWS
 import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.item.ItemDTOEx
 import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy
+import com.sapienter.jbilling.server.pricing.util.AttributeUtils
 
 /**
  * Plan builder controller
@@ -204,23 +205,39 @@ class PlanBuilderController {
                 // update plan item and price model
                 def index = params.int('index')
                 def planItem = plan.planItems[index]
+                def oldStrategy = planItem.type
                 bindData(planItem, params["price-${index}"])
                 bindData(planItem.model, params["model-${index}"])
 
-                // todo: bind attributes
+                // bind and validate attributes
+                planItem.model.attributes.clear()
+                params.attribute.each{ i, attr ->
+                    if (attr instanceof Map) {
+                        if (attr.name) {
+                            planItem.model.attributes.put(attr.name, attr.value)
+                        }
+                    }
+                }
+
+                try {
+                    def strategy = Enum.valueOf(PriceModelStrategy.class, planItem.model.type).getStrategy()
+                    AttributeUtils.validateAttributes(planItem.model.attributes, strategy)
+                } catch (SessionInternalError e) {
+                    viewUtils.resolveException(flow, session.locale, e)
+                }
 
                 // update the list
                 plan.planItems[index] = planItem
+                conversation.plan = plan
 
                 // if changing the strategy, show the edited line again
                 // otherwise re-order the list of lines by precedence
-                if (params.update == 'strategy') {
+                if (oldStrategy == params["model-${index}.type"]) {
                     params.newLineIndex = index
-                } else {
-                    plan.planItems = plan.planItems.sort{ it.precedence }.reverse()
-                }
 
-                conversation.plan = plan
+                } else {
+                    conversation.plan.planItems = conversation.plan.planItems.sort { it.precedence }.reverse()
+                }
                 params.template = 'review'
             }
             on("success").to("build")
@@ -233,6 +250,38 @@ class PlanBuilderController {
             action {
                 conversation.plan.planItems.remove(params.int('index'))
                 params.template = 'review'
+            }
+            on("success").to("build")
+        }
+
+        /**
+         * Adds a new attribute field to the plan price model, and renders the review panel.
+         * The rendered review panel will have the edited line open for further modification.
+         */
+        addAttribute {
+            action {
+                def index = params.int('index')
+                def attribute = message(code: 'plan.new.attribute.key', args: [ params.id ])
+                conversation.plan.planItems[index].model.attributes.put(attribute, '')
+
+                params.newLineIndex = index
+                params.template = 'review'
+            }
+            on("success").to("build")
+        }
+
+        /**
+         * Removes the given attribute name from a plan price model, and renders the review panel.
+         * The rendered review panel will have the edited line open for further modification.
+         */
+        removeAttribute {
+            action {
+                def index = params.int('index')
+                conversation.plan.planItems[index].model.attributes.remove(params.attribute)
+
+                params.newLineIndex = index
+                params.template = 'review'
+
             }
             on("success").to("build")
         }
@@ -271,6 +320,8 @@ class PlanBuilderController {
             on("addPrice").to("addPrice")
             on("updatePrice").to("updatePrice")
             on("removePrice").to("removePrice")
+            on("addAttribute").to("addAttribute")
+            on("removeAttribute").to("removeAttribute")
             on("update").to("updatePlan")
             on("save").to("savePlan")
             on("cancel").to("finish")

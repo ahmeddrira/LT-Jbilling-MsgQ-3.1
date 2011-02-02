@@ -23,6 +23,8 @@ package com.sapienter.jbilling.server.pricing.db;
 /**
  * Definition of attributes expected by a pricing strategy.
  *
+ * @see com.sapienter.jbilling.server.pricing.util.AttributeUtils
+ *
  * @author Brian Cowdery
  * @since 31/01/11
  */

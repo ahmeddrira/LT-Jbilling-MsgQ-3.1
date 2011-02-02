@@ -1191,6 +1191,11 @@ ul#review-lines {
     font-size: 14px;
     text-align: left;
 }
+.form-columns a.field {
+    position: relative;
+    top: 5px;
+    left: 5px;
+}
 .form-columns ul {
     margin: 4px 0 0 0;
 }
@@ -1212,6 +1217,7 @@ ul#review-lines {
 	float:left;
 	width:212px;
 	height:16px;
+    margin-right: 3px;
 	padding:4px 5px;
 	overflow:hidden;
 	outline:none;

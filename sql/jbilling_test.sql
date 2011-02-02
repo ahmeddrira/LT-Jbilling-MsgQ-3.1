@@ -414,16 +414,16 @@ DROP TABLE public.ach;
 DROP PROCEDURAL LANGUAGE plpgsql;
 DROP SCHEMA public;
 --
--- Name: public; Type: SCHEMA; Schema: -; Owner: jbilling
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
 CREATE SCHEMA public;
 
 
-ALTER SCHEMA public OWNER TO jbilling;
+ALTER SCHEMA public OWNER TO postgres;
 
 --
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: jbilling
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
 --
 
 COMMENT ON SCHEMA public IS 'standard public schema';
@@ -674,7 +674,8 @@ CREATE TABLE contact_field_type (
     entity_id integer,
     prompt_key character varying(50) NOT NULL,
     data_type character varying(10) NOT NULL,
-    customer_readonly smallint
+    customer_readonly smallint,
+    optlock integer NOT NULL
 );
 
 
@@ -6429,10 +6430,10 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 -- Data for Name: contact_field_type; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY contact_field_type (id, entity_id, prompt_key, data_type, customer_readonly) FROM stdin;
-1	1	partner.prompt.fee	string	1
-2	1	ccf.payment_processor	integer	1
-3	1	ccf.ip_address	string	1
+COPY contact_field_type (id, entity_id, prompt_key, data_type, customer_readonly, optlock) FROM stdin;
+1	1	partner.prompt.fee	string	1	0
+2	1	ccf.payment_processor	integer	1	0
+3	1	ccf.ip_address	string	1	0
 \.
 
 
@@ -11622,6 +11623,9 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	79	description	1	A scheduled task to execute the Mediation Process.
 24	80	title	1	Billing Process Task
 24	80	description	1	A scheduled task to execute the Billing Process.
+99	1	description	1	Referral Fee
+99	2	description	1	Payment Processor
+99	3	description	1	IP Address
 \.
 
 
@@ -11950,6 +11954,7 @@ notification_message_arch_line	1
 mediation_record_line	1
 mediation_record_line	1
 contact_type	10
+contact_field_type	1
 \.
 
 
@@ -12054,6 +12059,7 @@ COPY jbilling_table (id, name) FROM stdin;
 96	plan
 97	plan_item
 98	customer_price
+99	contact_field_type
 \.
 
 
@@ -22378,12 +22384,11 @@ ALTER TABLE ONLY user_role_map
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: jbilling
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM jbilling;
-GRANT ALL ON SCHEMA public TO jbilling;
+REVOKE ALL ON SCHEMA public FROM postgres;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 

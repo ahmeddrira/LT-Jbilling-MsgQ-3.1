@@ -29,6 +29,8 @@ import com.sapienter.jbilling.server.item.PlanWS
 import com.sapienter.jbilling.server.item.PlanItemWS
 import com.sapienter.jbilling.server.pricing.PriceModelWS
 import com.sapienter.jbilling.server.item.CurrencyBL
+import com.sapienter.jbilling.server.item.ItemDTOEx
+import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy
 
 /**
  * Plan builder controller
@@ -103,12 +105,7 @@ class PlanBuilderController {
         initialize {
             action {
                 def plan = params.id ? webServicesSession.getPlanWS(params.int('id')) : new PlanWS()
-                def planItem = ItemDTO.get(plan?.getItemId() ?: params.int('itemId'))
-
-                // set plan subscription item for new plans
-                if (!plan.itemId) {
-                    plan.itemId = planItem.id
-                }
+                def product = plan?.itemId ? webServicesSession.getItem(plan.itemId, session['user_id'], null) : new ItemDTOEx()
 
                 def company = CompanyDTO.get(session['company_id'])
                 def itemTypes = company.itemTypes.sort{ it.id }
@@ -116,19 +113,34 @@ class PlanBuilderController {
                 def currencies = new CurrencyBL().getCurrencies(session['language_id'], session['company_id'])
                 currencies = currencies.findAll{ it.inUse }
 
-                // add breadcrumb for plan editing
-                if (params.id) {
-                    breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
+                // subscription product defaults for new plans
+                if (!product.id || product.id == 0) {
+                    product.hasDecimals = 0
+                    product.priceManual = 0
+                    product.entityId = company.id
+                    product.types = [ itemTypes?.asList()?.first().id ]
+
+                    def priceModel = new PriceModelWS()
+                    priceModel.type = PriceModelStrategy.METERED
+                    priceModel.rate = BigDecimal.ZERO
+                    priceModel.currencyId = session['currency_id']
+
+                    product.defaultPrice = priceModel
                 }
 
+                log.debug("plan subscription product ${product}")
+
+                // add breadcrumb
+                breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
+
                 // model scope for this flow
-                flow.planItem = planItem
                 flow.company = company
                 flow.itemTypes = itemTypes
                 flow.currencies = currencies
 
                 // conversation scope
                 conversation.plan = plan
+                conversation.product = product
                 conversation.products = getProducts(company, params)
             }
             on("success").to("build")
@@ -197,15 +209,18 @@ class PlanBuilderController {
 
                 // todo: bind attributes
 
-                // update the conversation object
+                // update the list
                 plan.planItems[index] = planItem
-                conversation.plan = plan
 
                 // if changing the strategy, show the edited line again
+                // otherwise re-order the list of lines by precedence
                 if (params.update == 'strategy') {
                     params.newLineIndex = index
+                } else {
+                    plan.planItems = plan.planItems.sort{ it.precedence }.reverse()
                 }
 
+                conversation.plan = plan
                 params.template = 'review'
             }
             on("success").to("build")
@@ -227,7 +242,16 @@ class PlanBuilderController {
          */
         updatePlan {
             action {
-                bindData(conversation.plan, params)
+                bindData(conversation.plan, params, 'plan')
+                bindData(conversation.product, params, 'product')
+                bindData(conversation.product.defaultPrice, params, 'price')
+
+                conversation.product.priceManual = params.priceManual ? 1 : 0
+                conversation.product.types = [ params.int('productTypeId') ]
+
+                // sort prices by precedence
+                conversation.plan.planItems = conversation.plan.planItems.sort { it.precedence }.reverse()
+
                 params.template = 'review'
             }
             on("success").to("build")
@@ -259,12 +283,19 @@ class PlanBuilderController {
             action {
                 try {
                     def plan = conversation.plan
+                    def product = conversation.product
 
                     if (!plan.id || plan.id == 0) {
+                        log.debug("creating plan subscription item ${product}")
+                        product.id = plan.itemId = webServicesSession.createItem(product)
+
                         log.debug("creating plan ${plan}")
                         plan.id = webServicesSession.createPlan(plan)
 
                     } else {
+                        log.debug("saving changes to plan subscription item ${product.id}")
+                        webServicesSession.updateItem(product)
+
                         log.debug("saving changes to plan ${plan.id}")
                         webServicesSession.updatePlan(plan)
                     }

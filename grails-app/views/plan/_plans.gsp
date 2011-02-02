@@ -12,8 +12,8 @@
         <table id="plans" cellspacing="0" cellpadding="0">
             <thead>
                 <tr>
-                    <th><g:message code="plan.th.id"/></th>
-                    <th class="medium"><g:message code="plan.th.item"/></th>
+                    <th><g:message code="plan.th.name"/></th>
+                    <th class="medium"><g:message code="plan.th.item.number"/></th>
                     <th class="small"><g:message code="plan.th.prices"/></th>
                 </tr>
             </thead>
@@ -24,14 +24,13 @@
 
                     <td>
                         <g:remoteLink class="cell double" action="show" id="${plan.id}" before="register(this);" onSuccess="render(data, next);">
-                            <strong>${StringUtils.abbreviate(plan.description, 30)}</strong>
+                            <strong>${plan.item.description}</strong>
                             <em><g:message code="product.id.label" args="[plan.id]"/></em>
                         </g:remoteLink>
                     </td>
                     <td>
-                        <g:remoteLink class="cell double" action="show" id="${plan.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell" action="show" id="${plan.id}" before="register(this);" onSuccess="render(data, next);">
                             <strong>${plan.item.internalNumber}</strong>
-                            <em><g:message code="product.id.label" args="[plan.item.id]"/></em>
                         </g:remoteLink>
                     </td>
                     <td>
@@ -59,5 +58,5 @@
 </g:if>
 
 <div class="btn-box">
-    <g:link controller="plan" action="create" class="submit add"><span><g:message code="button.create"/></span></g:link>
+    <g:link controller="planBuilder" action="edit" class="submit add"><span><g:message code="button.create"/></span></g:link>
 </div>

@@ -87,9 +87,12 @@ class PlanController {
      */
     def delete = {
         if (params.id) {
-            webServicesSession.deletePlan(params.int('id'))
+            def plan = webServicesSession.getPlanWS(params.int('id'))
 
-            log.debug("Deleted plan ${params.id}.")
+            webServicesSession.deletePlan(plan.id)
+            webServicesSession.deleteItem(plan.itemId)
+
+            log.debug("Deleted plan ${params.id} and subscription product ${plan.itemId}.")
 
             flash.message = 'plan.deleted'
             flash.args = [ params.id ]
@@ -98,13 +101,5 @@ class PlanController {
         // render the partial plan list
         params.applyFilter = true
         list()
-    }
-
-    /**
-     * Redirects to the user list and sets a flash message.
-     */
-    def create = {
-        flash.info = 'plan.select.product'
-        redirect controller: 'product', action: 'list'
     }
 }

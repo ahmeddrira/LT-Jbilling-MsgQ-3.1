@@ -32,7 +32,7 @@
         <div id="builder-tabs">
             <ul>
                 <li><a href="${createLink(action: 'edit', event: 'details')}"><g:message code="plan.details.title"/></a></li>
-                <li><a href="${createLink(action: 'edit', event: 'products')}"><g:message code="plan.prices.title"/></a></li>
+                <li><a href="${createLink(action: 'edit', event: 'products')}"><g:message code="plan.products.title"/></a></li>
             </ul>
         </div>
     </content>

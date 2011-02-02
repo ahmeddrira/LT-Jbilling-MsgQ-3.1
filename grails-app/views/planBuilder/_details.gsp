@@ -33,19 +33,44 @@
         <g:hiddenField name="execution" value="${flowExecutionKey}"/>
 
         <div class="form-columns">
-            <g:applyLayout name="form/text">
-                <content tag="label"><g:message code="product.id"/></content>
-                ${planItem.id}
-            </g:applyLayout>
-
-            <g:applyLayout name="form/text">
+            <g:applyLayout name="form/input">
                 <content tag="label"><g:message code="product.internal.number"/></content>
-                ${planItem.internalNumber}
+                <content tag="label.for">product.number</content>
+                <g:textField class="field" name="product.number" value="${product?.number}" size="40"/>
             </g:applyLayout>
 
-            <g:applyLayout name="form/text">
-                <content tag="label"><g:message code="plan.item.description"/></content>
-                ${planItem.description}
+            <g:applyLayout name="form/input">
+                <content tag="label"><g:message code="product.description"/></content>
+                <content tag="label.for">product.description</content>
+                <g:textField class="field" name="product.description" value="${product?.description}" size="40"/>
+            </g:applyLayout>
+
+            <g:applyLayout name="form/select">
+                <content tag="label"><g:message code="product.type"/></content>
+                <content tag="label.for">product.types</content>
+                <g:select name="productTypeId" from="${itemTypes}"
+                          optionKey="id" optionValue="description"
+                          value="${product?.types?.getAt(0)}"/>
+            </g:applyLayout>
+
+            <g:applyLayout name="form/select">
+                <content tag="label"><g:message code="prompt.user.currency"/></content>
+                <content tag="label.for">price.currencyId</content>
+                <g:select name="price.currencyId" from="${currencies}"
+                          optionKey="id" optionValue="description"
+                          value="${product?.defaultPrice?.currencyId}" />
+            </g:applyLayout>
+
+            <g:applyLayout name="form/input">
+                <content tag="label"><g:message code="plan.model.rate"/></content>
+                <content tag="label.for">price.rate</content>
+                <g:textField class="field" name="price.rate" value="${formatNumber(number: product?.defaultPrice?.rate, formatName: 'money.format')}"/>
+            </g:applyLayout>
+
+            <g:applyLayout name="form/checkbox">
+                <content tag="label"><g:message code="product.allow.manual.pricing"/></content>
+                <content tag="label.for">priceManual</content>
+                <g:checkBox class="cb checkbox" name="priceManual" checked="${product?.priceManual > 0}"/>
             </g:applyLayout>
         </div>
 
@@ -54,7 +79,7 @@
         <div class="form-columns">
             <div class="box-text">
                 <label class="lb"><g:message code="plan.description"/></label>
-                <g:textArea name="description" rows="5" cols="60" value="${plan?.description}"/>
+                <g:textArea name="plan.description" rows="5" cols="60" value="${plan?.description}"/>
             </div>
         </div>
     </g:formRemote>

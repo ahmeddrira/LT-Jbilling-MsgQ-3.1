@@ -1094,6 +1094,10 @@ ul#review-lines {
     font-size: 14px;
     font-weight: bold;
 }
+#review-lines li .row span {
+    font-size: 12px;
+    font-weight: normal;
+}
 #review-lines span.description {
     padding-left: 3px;
 }

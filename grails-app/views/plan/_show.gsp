@@ -9,7 +9,7 @@
 
 <div class="column-hold">
     <div class="heading">
-	    <strong>${plan.id}</strong>
+	    <strong>${plan.item.internalNumber}</strong>
 	</div>
 
     <!-- plan details -->
@@ -21,22 +21,30 @@
                     <td class="value">${plan.id}</td>
                 </tr>
                 <tr>
-                    <td><g:message code="product.id"/></td>
-                    <td class="value">
-                        <g:link controller="product" action="show" id="${plan.item.id}">
-                            ${plan.item.id}
-                        </g:link>
-                    </td>
-                </tr>
-                <tr>
-                    <td><g:message code="product.internal.number"/></td>
+                    <td><g:message code="plan.item.internal.number"/></td>
                     <td class="value">${plan.item.internalNumber}</td>
                 </tr>
                 <tr>
                     <td><g:message code="plan.item.description"/></td>
                     <td class="value">${plan.item.description}</td>
                 </tr>
+
+                <g:if test="${plan.item.defaultPrice}">
+                    <tr>
+                        <td>${plan.item.defaultPrice.currency.code}</td>
+                        <td class="value">
+                            <g:formatNumber number="${plan.item.defaultPrice.rate}" type="currency" currencyCode="${plan.item.defaultPrice.currency.code}"/>
+                        </td>
+                    </tr>
+                </g:if>
             </tbody>
+        </table>
+
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tr>
+                <td><em><g:message code="product.detail.manual.pricing"/></em></td>
+                <td class="value"><em><g:formatBoolean boolean="${plan.item.priceManual > 0}"/></em></td>
+            </tr>
         </table>
 
         <p class="description">
@@ -50,32 +58,36 @@
         <strong><g:message code="plan.prices.title"/></strong>
     </div>
     <div class="box">
-        <g:each var="planItem" status="index" in="${plan.planItems.sort{ it.precedence }}">
-            <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">
-                <tbody>
-                    <tr>
-                        <td><g:message code="product.id"/></td>
-                        <td class="value">
-                            <g:link controller="product" action="show" id="${planItem.item.id}">
-                                ${planItem.item.id}
-                            </g:link>
-                        </td>
-                        <td><g:message code="product.internal.number"/></td>
-                        <td class="value">${planItem.item.internalNumber}</td>
-                    </tr>
-                    <tr>
-                        <td><g:message code="plan.model.type"/></td>
-                        <td class="value">${planItem.model.type}</td>
-                        <td><g:message code="plan.model.rate"/></td>
-                        <td class="value"><g:formatNumber number="${planItem.model.rate}" type="currency" currencyCode="${planItem.model.currency.code}"/></td>
-                    </tr>
-                </tbody>
-            </table>
+        <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">
+            <tbody>
 
-            <g:if test="${index < plan.planItems.size()-1}">
-                <hr/>
-            </g:if>
-        </g:each>
+            <g:each var="planItem" status="index" in="${plan.planItems.sort{ it.precedence }}">
+
+                <tr>
+                    <td><g:message code="product.id"/></td>
+                    <td class="value">
+                        <g:link controller="product" action="show" id="${planItem.item.id}">
+                            ${planItem.item.id}
+                        </g:link>
+                    </td>
+                    <td><g:message code="product.internal.number"/></td>
+                    <td class="value">${planItem.item.internalNumber}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="plan.model.type"/></td>
+                    <td class="value">${planItem.model.type}</td>
+                    <td><g:message code="plan.model.rate"/></td>
+                    <td class="value"><g:formatNumber number="${planItem.model.rate}" type="currency" currencyCode="${planItem.model.currency.code}"/></td>
+                </tr>
+
+                <g:if test="${index < plan.planItems.size()-1}">
+                    <tr><td colspan="4"><hr/></td></tr>
+                </g:if>
+
+            </g:each>
+
+            </tbody>
+        </table>
     </div>
     </g:if>
 

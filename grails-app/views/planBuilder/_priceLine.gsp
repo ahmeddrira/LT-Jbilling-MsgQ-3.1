@@ -19,11 +19,13 @@
 
     <!-- review line ${index} -->
     <li id="line-${index}" class="line ${editable ? 'active' : ''}">
+        <g:set var="currency" value="${currencies.find{ it.id == planItem.model.currencyId}}"/>
+
         <span class="description">
             ${planItem.precedence} &nbsp; ${product.description}
         </span>
         <span class="rate">
-            <g:formatNumber number="${planItem.model.getRateAsDecimal()}" formatName="money.format"/>
+            <g:formatNumber number="${planItem.model.getRateAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
         </span>
         <span class="strategy">
             <g:message code="price.strategy.${planItem.model.type}"/>
@@ -43,18 +45,31 @@
                               value="${planItem.model.type}"/>
                 </g:applyLayout>
 
-                <g:applyLayout name="form/input">
-                    <content tag="label"><g:message code="plan.model.rate"/></content>
-                    <content tag="label.for">model-${index}.rate</content>
-                    <g:textField class="field" name="model-${index}.rate" value="${formatNumber(number: planItem.model.rate, formatName: 'money.format')}"/>
-                </g:applyLayout>
+                <g:set var="strategy" value="${Enum.valueOf(PriceModelStrategy.class, planItem.model.type)?.getStrategy()}"/>
+
+                <g:if test="${!strategy?.hasRate()}">
+                    <!-- user defined rate -->
+                    <g:applyLayout name="form/input">
+                        <content tag="label"><g:message code="plan.model.rate"/></content>
+                        <content tag="label.for">model-${index}.rate</content>
+                        <g:textField class="field" name="model-${index}.rate" value="${formatNumber(number: planItem.model.rate, formatName: 'money.format')}"/>
+                    </g:applyLayout>
+                </g:if>
+                <g:else>
+                    <!-- strategy has a fixed rate -->
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="plan.model.rate"/></content>
+                        <g:formatNumber number="${strategy.rate}" formatName="money.format"/>
+                        <g:hiddenField name="model-${index}.rate" value="${formatNumber(number: planItem.model.rate, formatName: 'money.format')}"/>
+                    </g:applyLayout>
+                </g:else>
 
                 <g:applyLayout name="form/select">
                     <content tag="label"><g:message code="prompt.user.currency"/></content>
                     <content tag="label.for">model-${index}.currencyId</content>
                     <g:select from="${currencies}"
                               name="model-${index}.currencyId"
-                              optionKey="id" optionValue="description"
+                              optionKey="id" optionValue="code"
                               value="${planItem.model.currencyId}" />
                 </g:applyLayout>
 
@@ -65,8 +80,7 @@
                 </g:applyLayout>
 
                 <!-- attributes -->
-                <g:set var="strategy" value="${Enum.valueOf(PriceModelStrategy.class, planItem.model.type)}"/>
-                <g:each var="attribute" status="attributeIndex" in="${strategy.strategy.attributeDefinitions}">
+                <g:each var="attribute" status="attributeIndex" in="${strategy?.attributeDefinitions}">
                     <g:applyLayout name="form/input">
                         <content tag="label">${attribute.name}</content>
                         <g:textField class="field" name="attribute-${attributeIndex}.value"/>

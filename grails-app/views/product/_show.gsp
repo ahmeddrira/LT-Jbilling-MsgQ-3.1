@@ -69,46 +69,9 @@
         </div>
     </div>
 
-    <g:if test="${selectedProduct.plans}">
-        <div class="heading">
-            <strong>Plans</strong>
-        </div>
-        <div class="box">
-            <g:each var="plan" status="index" in="${selectedProduct.plans}">
-                <table class="dataTable" cellspacing="0" cellpadding="0">
-                    <tbody>
-                    <tr>
-                        <td><g:message code="plan.id"/></td>
-                        <td class="value">
-                            <g:link controller="plan" action="list" id="${plan.id}">
-                                ${plan.id}
-                            </g:link>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><g:message code="plan.item.description"/></td>
-                        <td class="value">${StringUtils.abbreviate(plan.description, 50)}</td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <g:if test="${index < selectedProduct.plans.size()-1}">
-                    <hr/>
-                </g:if>
-            </g:each>
-        </div>
-    </g:if>
-
     <div class="btn-box">
-        <div class="row">
-            <g:link class="submit add" controller="planBuilder" action="edit" params="[itemId: selectedProduct.id]">
-                <span><g:message code="button.create.plan"/></span>
-            </g:link>
-        </div>
-        <div class="row">
-            <g:link action="editProduct" id="${selectedProduct.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
-            <a onclick="showConfirm('deleteProduct-${selectedProduct.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
-        </div>
+        <g:link action="editProduct" id="${selectedProduct.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+        <a onclick="showConfirm('deleteProduct-${selectedProduct.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
     </div>
 
     <g:render template="/confirm"

@@ -52,6 +52,7 @@ public interface PricingStrategy {
      *
      * @return true if this strategy requires the current usage of the item being priced.
      */
+    @Deprecated // included quantity from attributes
     public boolean requiresUsage();
 
     /**

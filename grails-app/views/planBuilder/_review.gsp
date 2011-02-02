@@ -29,14 +29,10 @@
         <div class="header">
             <div class="column">
                 <h1><g:message code="plan.review.id" args="[plan.id ?: '']"/></h1>
-                <g:if test="${plan.description}">
-                    <h3>${plan.description}</h3>
-                </g:if>
             </div>
             <div class="column">
-                <h2 class="right">
-                    <g:message code="plan.review.product.number" args="[planItem.id, planItem.internalNumber]"/>
-                </h2>
+                <h2 class="right">${product.number}</h2>
+                <h3 class="right">${product.description}</h3>
             </div>
 
             <div style="clear: both;"></div>
@@ -54,6 +50,16 @@
                 <li><em><g:message code="plan.review.no.prices"/></em></li>
             </g:if>
         </ul>
+
+        <!-- plan notes -->
+        <g:if test="${plan.description}">
+            <hr/>
+            <div class="box-text">
+                <ul>
+                    <li><p>${plan.description}</p></li>
+                </ul>
+            </div>
+        </g:if>
     </div>
 
     <!-- buttons -->

@@ -55,7 +55,7 @@
     <!-- plan prices -->
     <g:if test="${plan.planItems}">
     <div class="heading">
-        <strong><g:message code="plan.prices.title"/></strong>
+        <strong><g:message code="plan.products.title"/></strong>
     </div>
     <div class="box">
         <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">

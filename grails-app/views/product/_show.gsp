@@ -30,11 +30,6 @@
                 <g:if test="${selectedProduct.defaultPrice.type != PriceModelStrategy.METERED}">
                     <dt>Pricing Strategy</dt>
                     <dd><g:message code="price.strategy.${selectedProduct.defaultPrice.type}"/></dd>
-
-                    <g:if test="${selectedProduct.defaultPrice.type.strategy.isGraduated()}">
-                        <dt>Included Quantity</dt>
-                        <dd><g:formatNumber number="${selectedProduct.defaultPrice.includedQuantity}" formatName="money.format"/></dd>
-                    </g:if>
                 </g:if>
             </g:if>
 

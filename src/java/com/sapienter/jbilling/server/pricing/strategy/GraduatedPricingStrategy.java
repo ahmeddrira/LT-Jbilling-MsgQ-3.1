@@ -95,7 +95,7 @@ public class GraduatedPricingStrategy implements PricingStrategy {
             // current usage + purchased quantity exceeds included
             // determine the percentage rate for minutes used OVER the included.
             BigDecimal rated = total.subtract(included);
-            BigDecimal percent = rated.divide(quantity, 2, RoundingMode.HALF_UP);
+            BigDecimal percent = rated.divide(quantity, 4, RoundingMode.HALF_UP);
             result.setPrice(percent.multiply(planPrice.getRate()));
 
         } else {

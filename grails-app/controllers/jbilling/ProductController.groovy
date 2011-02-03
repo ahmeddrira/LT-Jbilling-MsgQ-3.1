@@ -10,6 +10,9 @@ import com.sapienter.jbilling.server.item.db.ItemTypeDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.pricing.PriceModelWS
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import com.sapienter.jbilling.server.pricing.util.AttributeUtils
+import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy
 
 @Secured(['isAuthenticated()'])
 class ProductController {
@@ -276,27 +279,47 @@ class ProductController {
         [ product: product, currencies: currencies, categoryId: params.category ]
     }
 
+    def updateStrategy = {
+        def product = new ItemDTOEx()
+        bindProduct(product, params)
+
+        render template: '/priceModel/attributes', model: [ model: product.defaultPrice ]
+    }
+
+    def addAttribute = {
+        def product = new ItemDTOEx()
+        bindProduct(product, params)
+
+        def attribute = message(code: 'plan.new.attribute.key', args: [ params.attributeIndex ])
+        product.defaultPrice.attributes.put(attribute, '')
+
+        render template: '/priceModel/attributes', model: [ model: product.defaultPrice ]
+    }
+
+    def removeAttribute = {
+        def product = new ItemDTOEx()
+        bindProduct(product, params)
+
+        def index = params.attributeIndex
+        def name = params["attribute.${index}.name"]
+        product.defaultPrice.attributes.remove(name)
+
+        render template: '/priceModel/attributes', model: [ model: product.defaultPrice ]
+    }
+
     /**
      * Validate and save a product.
      */
     def saveProduct = {
         def product = new ItemDTOEx()
-        bindData(product, params, 'product')
+        bindProduct(product, params)
 
-        // bind parameters with odd types (integer booleans, string integers  etc.)
-        product.priceManual = params.priceManual ? 1 : 0
-        product.hasDecimals = params.hasDecimals ? 1 : 0
-        product.percentage = !params.percentage?.equals('') ? params.percentage : null
-
-        // bind default price model
-        def priceModel = new PriceModelWS()
-        bindData(priceModel, params, 'price')
-        product.defaultPrice = priceModel
-
-        log.debug("default item price model ${priceModel}")
-
-        // save or update
         try{
+            // validate price model attributes
+            def strategy = PriceModelStrategy.valueOf(product.defaultPrice.type).getStrategy()
+            AttributeUtils.validateAttributes(product.defaultPrice.attributes, strategy)
+
+            // save or update
             if (!product.id || product.id == 0) {
                 log.debug("creating product ${product}")
 
@@ -321,6 +344,30 @@ class ProductController {
         }
 
         chain action: 'show', params: [ id: product.id ]
+    }
+
+    def bindProduct(ItemDTOEx product, GrailsParameterMap params) {
+        bindData(product, params, 'product')
+
+        // bind parameters with odd types (integer booleans, string integers  etc.)
+        product.priceManual = params.priceManual ? 1 : 0
+        product.hasDecimals = params.hasDecimals ? 1 : 0
+        product.percentage = !params.percentage?.equals('') ? params.percentage : null
+
+        // bind default price model
+        def priceModel = new PriceModelWS()
+        bindData(priceModel, params, 'model')
+        product.defaultPrice = priceModel
+
+        // bind and validate attributes
+        product.defaultPrice.attributes.clear()
+        params.attribute.each{ i, attr ->
+            if (attr instanceof Map) {
+                if (attr.name) {
+                    product.defaultPrice.attributes.put(attr.name, attr.value)
+                }
+            }
+        }
     }
 
     def getCurrencies() {

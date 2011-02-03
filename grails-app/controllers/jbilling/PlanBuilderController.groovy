@@ -205,7 +205,7 @@ class PlanBuilderController {
                 // update plan item and price model
                 def index = params.int('index')
                 def planItem = plan.planItems[index]
-                def oldStrategy = planItem.type
+                def oldStrategy = planItem.model.type
                 bindData(planItem, params["price-${index}"])
                 bindData(planItem.model, params["model-${index}"])
 
@@ -232,7 +232,7 @@ class PlanBuilderController {
 
                 // if changing the strategy, show the edited line again
                 // otherwise re-order the list of lines by precedence
-                if (oldStrategy == params["model-${index}.type"]) {
+                if (oldStrategy != params["model-${index}.type"]) {
                     params.newLineIndex = index
 
                 } else {

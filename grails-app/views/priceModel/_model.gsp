@@ -1,0 +1,75 @@
+<%@ page import="com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy" %>
+
+<%--
+  Editor form for price models.
+
+  @author Brian Cowdery
+  @since  02-Feb-2011
+--%>
+
+<g:set var="type" value="${(model ? PriceModelStrategy.valueOf(model?.type) : PriceModelStrategy.METERED)}"/>
+
+<div id="priceModel">
+    <g:hiddenField name="model.id" value="${model?.id}"/>
+
+    <g:applyLayout name="form/select">
+        <content tag="label"><g:message code="plan.model.type"/></content>
+        <content tag="label.for">model.type</content>
+        <g:select from="${PriceModelStrategy.values()}"
+                name="model.type"
+                valueMessagePrefix="price.strategy"
+                value="${model?.type ?: type.name()}"/>
+    </g:applyLayout>
+
+    %{-- todo: obsolete, interface methods are to be removed and individual view templates will be provided --}%
+    <g:if test="${!type.strategy?.hasRate()}">
+        <!-- user defined rate -->
+        <g:applyLayout name="form/input">
+            <content tag="label"><g:message code="plan.model.rate"/></content>
+            <content tag="label.for">model.rate</content>
+            <g:textField class="field" name="model.rate" value="${formatNumber(number: model?.rate ?: BigDecimal.ZERO, formatName: 'money.format')}"/>
+        </g:applyLayout>
+    </g:if>
+    <g:else>
+        <!-- strategy has a fixed rate -->
+        <g:applyLayout name="form/text">
+            <content tag="label"><g:message code="plan.model.rate"/></content>
+            <g:formatNumber number="${type.strategy.rate}" formatName="money.format"/>
+            <g:hiddenField name="model.rate" value="${formatNumber(number: strategy?.rate, formatName: 'money.format')}"/>
+        </g:applyLayout>
+    </g:else>
+
+    <g:applyLayout name="form/select">
+        <content tag="label"><g:message code="prompt.user.currency"/></content>
+        <content tag="label.for">model.currencyId</content>
+        <g:select from="${currencies}"
+                name="model.currencyId"
+                optionKey="id" optionValue="code"
+                value="${model?.currencyId}" />
+    </g:applyLayout>
+
+
+    %{-- Show price precendence when editing a plan --}%
+    <g:if test="${planItem}">
+        <g:applyLayout name="form/input">
+            <content tag="label"><g:message code="plan.item.precedence"/></content>
+            <content tag="label.for">price.precedence</content>
+            <g:textField class="field" name="price.precedence" value="${planItem.precedence}"/>
+        </g:applyLayout>
+    </g:if>
+
+
+    <script type="text/javascript">
+        $(function() {
+            $('#model\\.type').change(function() {
+                    $.ajax({
+                       type: 'POST',
+                       url:'${createLink(action: 'updateStrategy')}',
+                       data: $('#priceModel').parents('form').serialize(),
+                       success: function(data){ $('#attributes').replaceWith(data); },
+                    });
+                }
+            );
+        });
+    </script>
+</div>

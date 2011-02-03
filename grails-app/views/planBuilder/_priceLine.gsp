@@ -7,6 +7,7 @@
   @since 24-Jan-2011
 --%>
 <g:set var="product" value="${products?.find{ it.id == planItem.itemId }}"/>
+<g:set var="strategy" value="${Enum.valueOf(PriceModelStrategy.class, planItem.model.type)?.getStrategy()}"/>
 <g:set var="editable" value="${index == params.int('newLineIndex')}"/>
 
 <g:formRemote name="price-${index}-update-form" url="[action: 'edit']" update="column2" method="GET">
@@ -23,7 +24,12 @@
             ${planItem.precedence} &nbsp; ${product.description}
         </span>
         <span class="rate">
-            <g:formatNumber number="${planItem.model.getRateAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
+            <g:if  test="${!strategy?.hasRate()}">
+                <g:formatNumber number="${planItem.model.rateAsDecimal}" type="currency" currencyCode="${currency.code}"/>
+            </g:if>
+            <g:else>
+                <g:formatNumber number="${strategy.rate}" type="currency" currencyCode="${currency.code}"/>
+            </g:else>
         </span>
         <span class="strategy">
             <g:message code="price.strategy.${planItem.model.type}"/>
@@ -43,7 +49,6 @@
                               value="${planItem.model.type}"/>
                 </g:applyLayout>
 
-                <g:set var="strategy" value="${Enum.valueOf(PriceModelStrategy.class, planItem.model.type)?.getStrategy()}"/>
 
                 <g:if test="${!strategy?.hasRate()}">
                     <!-- user defined rate -->
@@ -58,7 +63,7 @@
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="plan.model.rate"/></content>
                         <g:formatNumber number="${strategy.rate}" formatName="money.format"/>
-                        <g:hiddenField name="model-${index}.rate" value="${formatNumber(number: planItem.model.rate, formatName: 'money.format')}"/>
+                        <g:hiddenField name="model-${index}.rate" value="${formatNumber(number: strategy.rate, formatName: 'money.format')}"/>
                     </g:applyLayout>
                 </g:else>
 
@@ -79,7 +84,7 @@
 
                 <!-- attributes -->
                 <div id="line-${index}-attributes">
-                <g:set var="attributeIndex" value="${0}"/>
+                    <g:set var="attributeIndex" value="${0}"/>
 
                     <!-- all attribute definitions -->
                     <g:each var="definition" status="i" in="${strategy?.attributeDefinitions}">
@@ -159,4 +164,13 @@
             </g:remoteLink>
         </div>
     </li>
+
+    <script type="text/javascript">
+        // submit and re-render when strategy type changed
+        $(function() {
+            $('#model-${index}\\.type').change(function() {
+                $('#price-${index}-update-form').submit();
+            });
+        });
+    </script>
 </g:formRemote>

@@ -25,6 +25,8 @@ import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,75 +46,83 @@ public class AttributeUtils {
      *
      */
     public static void validateAttributes(Map<String, String> attributes, PricingStrategy strategy) {
+        String strategyName = strategy.getClass().getSimpleName();
+        List<String> errors = new ArrayList<String>();
+
         for (AttributeDefinition definition : strategy.getAttributeDefinitions()) {
             String name = definition.getName();
             String value = attributes.get(name);
 
             // validate required attributes
             if (definition.isRequired() && (value == null || value.trim().equals(""))) {
-                String klass = strategy.getClass().getSimpleName();
-                throw new SessionInternalError("Missing required attribute '" + name + "'",
-                                               new String[] { klass + "," + name + ",validation.error.is.required"});
+                errors.add(strategyName + "," + name + ",validation.error.is.required");
             }
 
             // validate attribute types
-            switch (definition.getType()) {
-                case STRING:
-                    // a string is a string...
-                    break;
-                case INTEGER:
-                    AttributeUtils.parseInteger(value, name);
-                    break;
-                case DECIMAL:
-                    AttributeUtils.parseDecimal(value, name);
-                    break;
+            try {
+                switch (definition.getType()) {
+                    case STRING:
+                        // a string is a string...
+                        break;
+                    case INTEGER:
+                        AttributeUtils.parseInteger(value);
+                        break;
+                    case DECIMAL:
+                        AttributeUtils.parseDecimal(value);
+                        break;
+                }
+            } catch (SessionInternalError validationException) {
+                errors.add(strategyName + "," + name + "," + validationException.getErrorMessages()[0]);
             }
         }
+
+        // throw new validation exception with complete error list
+        if (!errors.isEmpty())
+            throw new SessionInternalError(strategyName + " attributes failed validation.",
+                                           errors.toArray(new String[errors.size()]));
     }
 
     public static Integer getInteger(Map<String, String> attributes, String name) {
-        return parseInteger(attributes.get(name), name);
+        return parseInteger(attributes.get(name));
     }
 
     /**
      * Parses the given value as an Integer. If the value cannot be parsed, an exception will be thrown.
      *
      * @param value value to parse
-     * @param name attribute name to use when building error messages (can be null)
      * @return parsed integer
      * @throws SessionInternalError if value cannot be parsed as an integer
      */
-    public static Integer parseInteger(String value, String name) {
+    public static Integer parseInteger(String value) {
         if (value != null) {
             try {
                 return Integer.valueOf(value);
             } catch (NumberFormatException e) {
                 throw new SessionInternalError("Cannot parse attribute value '" + value + "' as an integer.",
-                                               new String[] { "attribute," + name + ",validation.error.not.a.integer" });
+                                               new String[] { "validation.error.not.a.integer" });
             }
         }
         return null;
     }
 
     public static BigDecimal getDecimal(Map<String, String> attributes, String name) {
-        return parseDecimal(attributes.get(name), name);
+        return parseDecimal(attributes.get(name));
     }
 
     /**
      * Parses the given value as a BigDecimal. If the value cannot be parsed, an exception will be thrown.
      *
      * @param value value to parse
-     * @param name attribute name to use when building error messages (can be null)
      * @return parsed integer
      * @throws SessionInternalError if value cannot be parsed as an BigDecimal
      */
-    public static BigDecimal parseDecimal(String value, String name) {
+    public static BigDecimal parseDecimal(String value) {
         if (value != null) {
             try {
                 return new BigDecimal(value);
             } catch (NumberFormatException e) {
                 throw new SessionInternalError("Cannot parse attribute value '" + value + "' as a decimal number.",
-                                               new String[] { "attribute," + name + ",validation.error.not.a.number" });
+                                               new String[] { "validation.error.not.a.number" });
             }
         }
         return null;

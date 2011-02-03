@@ -14,7 +14,7 @@
                 <tr>
                     <th><g:message code="plan.th.name"/></th>
                     <th class="medium"><g:message code="plan.th.item.number"/></th>
-                    <th class="small"><g:message code="plan.th.prices"/></th>
+                    <th class="small"><g:message code="plan.th.products"/></th>
                 </tr>
             </thead>
 

@@ -84,7 +84,7 @@
 
                 <!-- attributes -->
                 <div id="line-${index}-attributes">
-                <g:set var="attributeIndex" value="${0}"/>
+                    <g:set var="attributeIndex" value="${0}"/>
 
                     <!-- all attribute definitions -->
                     <g:each var="definition" status="i" in="${strategy?.attributeDefinitions}">

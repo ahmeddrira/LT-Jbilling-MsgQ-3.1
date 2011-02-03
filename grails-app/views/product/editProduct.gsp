@@ -3,27 +3,6 @@
 <html>
 <head>
     <meta name="layout" content="main" />
-
-    <script type="text/javascript">
-        var graduatedStrategies = [
-        <g:each var="strategy" status="i" in="${PriceModelStrategy.values()}">
-             <g:if test="${strategy.getStrategy().isGraduated()}">'${strategy.name()}',</g:if>
-        </g:each>
-        ];
-
-        $(document).ready(function() {
-            $('#price\\.type').change(function() {
-                var included = $('#price\\.includedQuantity');
-
-                if ($.inArray($(this).val(), graduatedStrategies) == -1) {
-                    included.attr('disabled', 'true');
-                    included.val('${formatNumber(number: BigDecimal.ZERO, formatName: 'money.format')}');
-                } else {
-                    included.attr('disabled', '');
-                }
-            }).change();
-        });
-    </script>
 </head>
 <body>
 <div class="form-edit">
@@ -97,37 +76,9 @@
                     <div class="box-card-hold">
                         <div class="form-columns">
                             <div class="column">
-                                <g:hiddenField name="price.id" value="${product?.defaultPrice?.id}"/>
-
-                                <g:applyLayout name="form/input">
-                                    <content tag="label"><g:message code="plan.model.rate"/></content>
-                                    <content tag="label.for">price.rate</content>
-                                    <g:textField class="field" name="price.rate" value="${formatNumber(number: product?.defaultPrice?.rate, formatName: 'money.format')}"/>
-                                </g:applyLayout>
-
-                                <g:applyLayout name="form/select">
-                                    <content tag="label"><g:message code="plan.model.type"/></content>
-                                    <content tag="label.for">price.type</content>
-                                    <g:select name="price.type" from="${PriceModelStrategy.values()}"
-                                              valueMessagePrefix="price.strategy"
-                                              value="${product?.defaultPrice?.type}"/>
-                                </g:applyLayout>
-
-                                <g:applyLayout name="form/input">
-                                    <content tag="label">Included Quantity</content>
-                                    <content tag="label.for">price.includedQuantity</content>
-                                    <g:textField class="field" name="price.includedQuantity" value="${formatNumber(number: product?.defaultPrice?.includedQuantity, formatName: 'money.format')}"/>
-                                </g:applyLayout>
-                            </div>
-
-                            <div class="column">
-                                <g:applyLayout name="form/select">
-                                    <content tag="label"><g:message code="prompt.user.currency"/></content>
-                                    <content tag="label.for">price.currencyId</content>
-                                    <g:select name="price.currencyId" from="${currencies}"
-                                              optionKey="id" optionValue="description"
-                                              value="${product?.defaultPrice?.currencyId}" />
-                                </g:applyLayout>
+                                <div id="model">
+                                    <g:render template="/priceModel/model" model="[model: product?.defaultPrice]"/>
+                                </div>
 
                                 <g:applyLayout name="form/input">
                                     <content tag="label"><g:message code="product.percentage"/></content>
@@ -140,6 +91,10 @@
                                     <content tag="label.for">product.priceManual</content>
                                     <g:checkBox class="cb checkbox" name="product.priceManual" checked="${product?.priceManual > 0}"/>
                                 </g:applyLayout>
+                            </div>
+
+                            <div class="column">
+                                <g:render template="/priceModel/attributes" model="[model: product?.defaultPrice]"/>
                             </div>
                         </div>
                     </div>

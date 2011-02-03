@@ -414,16 +414,16 @@ DROP TABLE public.ach;
 DROP PROCEDURAL LANGUAGE plpgsql;
 DROP SCHEMA public;
 --
--- Name: public; Type: SCHEMA; Schema: -; Owner: jbilling
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
 CREATE SCHEMA public;
 
 
-ALTER SCHEMA public OWNER TO jbilling;
+ALTER SCHEMA public OWNER TO postgres;
 
 --
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: jbilling
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
 --
 
 COMMENT ON SCHEMA public IS 'standard public schema';
@@ -674,7 +674,8 @@ CREATE TABLE contact_field_type (
     entity_id integer,
     prompt_key character varying(50) NOT NULL,
     data_type character varying(10) NOT NULL,
-    customer_readonly smallint
+    customer_readonly smallint,
+    optlock integer NOT NULL
 );
 
 
@@ -2239,13 +2240,10 @@ COPY ageing_entity_step (id, entity_id, status_id, days, optlock) FROM stdin;
 --
 
 COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscriber_status, currency_id, create_datetime, last_status_change, last_login, user_name, failed_attempts, optlock) FROM stdin;
-12	2	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2006-12-07 00:00:00	\N	2007-08-16 14:56:18.752	mordor	0	1
-13	2	9369e99369e9	0	1	1	9	1	2006-12-07 14:56:32.79	\N	\N	orc1	0	1
 1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2010-05-25 12:27:12.217	admin	0	18
-10740	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-03-01 00:00:00	\N	\N	partner1	0	2
-10741	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-03-01 00:00:00	\N	\N	partner2	0	1
-10742	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-03-05 00:00:00	\N	\N	partner3	0	2
 2	1	6a204bd89f3c8348afd5c77c717a097a	1	1	1	9	1	2006-07-26 09:29:19.596	\N	\N	gandalf	0	1
+12	2	46f94c8de14fb36680850768ff1b7f2a	1	1	1	9	1	2006-12-07 00:00:00	\N	2007-08-16 14:56:18.752	mordor	0	1
+13	2	9369e99369e9	1	1	1	9	1	2006-12-07 14:56:32.79	\N	\N	orc1	0	1
 23	1	9369e99369e9	1	1	5	9	1	2007-01-12 15:41:42.382	2007-01-12 15:41:59.907	\N	inactive	0	1
 33	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2007-02-10 10:56:43.359	\N	\N	authuser	0	1
 43	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2007-05-22 16:03:39.707	\N	\N	parent	0	1
@@ -2256,8 +2254,6 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 75	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:09:07.462	\N	\N	testUserName-1189624147344	0	1
 76	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:09:08.032	\N	\N	testUserName-1189624147887	0	1
 77	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:09:08.364	\N	\N	testUserName-1189624148228	0	1
-1056	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:14:58.701	\N	\N	testUserName-1189624498484	0	1
-1057	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:14:59.179	\N	\N	testUserName-1189624498964	0	1
 78	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:09:08.688	\N	\N	testUserName-1189624148529	0	1
 79	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:09:09.126	\N	\N	testUserName-1189624148934	0	1
 80	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:09:09.829	\N	\N	testUserName-1189624149625	0	1
@@ -3236,6 +3232,8 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 1053	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:14:57.698	\N	\N	testUserName-1189624497589	0	1
 1054	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:14:57.962	\N	\N	testUserName-1189624497837	0	1
 1055	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	9	1	2007-09-12 12:14:58.265	\N	\N	testUserName-1189624498100	0	1
+1056	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:14:58.701	\N	\N	testUserName-1189624498484	0	1
+1057	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:14:59.179	\N	\N	testUserName-1189624498964	0	1
 1058	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:14:59.638	\N	\N	testUserName-1189624499451	0	1
 1059	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:15:00.046	\N	\N	testUserName-1189624499903	0	1
 1060	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	1	2007-09-12 12:15:00.288	\N	\N	testUserName-1189624500171	0	1
@@ -3256,6 +3254,9 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 10746	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-06-23 20:33:44.57	\N	\N	partner-customer1	0	1
 10748	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-06-23 20:34:20.537	\N	\N	partner-customer3	0	2
 10747	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-06-23 20:34:03.466	\N	\N	partner-customer2	0	2
+10740	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-03-01 00:00:00	\N	\N	partner1	0	2
+10741	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-03-01 00:00:00	\N	\N	partner2	0	1
+10742	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-03-05 00:00:00	\N	\N	partner3	0	2
 10743	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-10-30 00:00:00	\N	\N	carry-over-test1	0	1
 10744	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-10-30 00:00:00	\N	\N	carry-over-test2	0	1
 10750	1	46f94c8de14fb36680850768ff1b7f2a	1	2	1	14	1	2009-10-15 11:12:45.123	\N	\N	french-speaker	0	3
@@ -3274,6 +3275,73 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 10779	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-12-17 13:38:25.721	\N	\N	mediation-batch-test-13	0	2
 10780	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-12-17 13:38:54.133	\N	\N	mediation-batch-test-14	0	1
 10781	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-12-17 13:39:09.731	\N	\N	mediation-batch-test-15	0	1
+10791	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	vashasri	0	1
+10792	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	vashantisri	0	1
+10793	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	thirusri	0	1
+10794	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	nashasai	0	1
+10795	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	rahimzah	0	1
+10796	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	zaihammoh	0	1
+10797	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	noorhal	0	1
+10798	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	nizamabd	0	1
+10799	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	zamanabd	0	1
+10800	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	ahmadibr	0	1
+10801	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	georgewon	0	1
+10802	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	davidlee	0	1
+10803	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	vasanthikri	0	1
+10804	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	sanjjoh	0	1
+10805	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	anthonygeo	0	1
+10806	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	adrinsaa	0	1
+10807	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	azhanabd	0	1
+10808	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	mohamedism	0	1
+10809	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	harunism	0	1
+10810	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	azlinsaa	0	1
+10811	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	azlinjul	0	1
+10812	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	suriyahkri	0	1
+10813	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	zarinaari	0	1
+10814	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	hamadmoh	0	1
+10815	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	yusmoh	0	1
+10816	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	saadiahmoh	0	1
+10817	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	yusofahm	0	1
+10818	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	mohamedyus	0	1
+10819	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	zarinayus	0	1
+10820	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	jeffreyhus	0	1
+10821	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	azerinakas	0	1
+10822	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	eizujoh	0	1
+10823	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	adnanbud	0	1
+10824	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	jeffreygor	0	1
+10825	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	nuryamanfit	0	1
+10826	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	johangre	0	1
+10827	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	noorabd	0	1
+10828	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	johnsmi	0	1
+10829	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	zulkiflizam	0	1
+10830	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	dinabd	0	1
+10831	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	saifulhus	0	1
+10832	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	gordanche	0	1
+10833	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	syalwahus	0	1
+10834	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	azilahal	0	1
+10835	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	ahmadosm	0	1
+10836	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	arifinmuh	0	1
+10837	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	osmanyus	0	1
+10838	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	yusairimoh	0	1
+10839	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	osmanzar	0	1
+10840	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	adnanhus	0	1
+10940	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 02:55:33.558	\N	\N	xyzglobal	0	1
+10941	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 02:58:06.612	\N	\N	ceoglobal	0	2
+10942	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 02:59:40.02	\N	\N	xyzap	0	1
+10943	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:00:21.373	\N	\N	xyzeu	0	1
+10944	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:00:47.038	\N	\N	xyzot	0	1
+10945	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:01:27.217	\N	\N	xyzasean	0	2
+10946	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:02:47.705	\N	\N	malaysia	0	1
+10947	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:03:14.126	\N	\N	brunei	0	2
+10948	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:04:08.24	\N	\N	mdbrunei	0	1
+10949	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:04:39.233	\N	\N	mktgbrunei	0	1
+10950	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:05:04.052	\N	\N	prodbrunei	0	1
+10951	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:05:19.84	\N	\N	csbrunei	0	1
+10952	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:05:46.06	\N	\N	operbrunei	0	1
+10953	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:06:14.729	\N	\N	billing	0	1
+10954	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:06:39.032	\N	\N	network	0	1
+10955	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:06:53.727	\N	\N	database	0	1
+10956	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:07:11.783	\N	\N	others	0	1
 \.
 
 
@@ -3316,7 +3384,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-1	1	user	list	\N	\N	0
+106	1	user	edit	create	\N	0
+107	1	user	list	\N	10954	0
+108	1	user	edit	create	\N	0
+109	1	user	list	\N	10955	0
+110	1	user	edit	create	\N	0
+111	1	user	list	\N	10956	0
+112	1	user	list	\N	\N	0
 \.
 
 
@@ -3335,1054 +3409,1138 @@ COPY cdrentries (id, accountcode, src, dst, dcontext, clid, channel, dstchannel,
 
 COPY contact (id, organization_name, street_addres1, street_addres2, city, state_province, postal_code, country_code, last_name, first_name, person_initial, person_title, phone_country_code, phone_area_code, phone_phone_number, fax_country_code, fax_area_code, fax_phone_number, email, create_datetime, deleted, notification_include, user_id, optlock) FROM stdin;
 1	Prancing Pony	1234 Great East Road		Bree	Middle Earth	54321	CA	\N	\N	\N	\N	\N	123	321-1234	\N	\N	\N	admin@prancingpony.me	2007-03-18 00:00:00	0	1	\N	1
-2	Prancing Pony	1234 Great East Road		Bree	Middle Earth	54321	CA	Strator	Admin	\N	\N	\N	123	321-1234	\N	\N	\N	admin@prancingpony.me	2007-03-18 00:00:00	0	1	1	1
-3	\N	\N	\N	Rivendel	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	gandalf@prancingpony.me	2006-07-26 09:29:19.766	0	1	2	1
 13	Mordor Inc.	1 Mount Doom Drive 		Mordor	AA	66666	AF	\N	\N	\N	\N	\N	123	12312312	\N	\N	\N	boss@mordor.com	2006-12-07 00:00:00	0	1	\N	1
-14	Mordor Inc.	1 Mount Doom Drive 		Mordor	AA	66666	AF	Baltimore	Lord	\N	\N	\N	123	12312312	\N	\N	\N	boss@mordor.com	2006-12-07 00:00:00	0	1	12	1
-15	\N	\N	\N	\N	\N	\N	AF	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	orc1@mordor.com	2006-12-07 14:56:32.85	0	1	13	1
 25	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	gandalf@prancingpony.me	2006-12-19 16:05:00.359	0	1	\N	1
 35	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	gandalf@prancingpony.me	2006-12-19 16:10:00.617	0	1	\N	1
 45	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	gandalf@prancingpony.me	2006-12-20 16:04:00.572	0	1	\N	1
 55	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	gandalf@prancingpony.me	2007-01-16 14:39:58.155	0	1	\N	1
-65	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	authuser@pp.com	2007-05-10 10:56:43.379	0	1	33	4
-75	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	parent@pp.com	2007-05-22 16:03:39.757	0	1	43	1
 85	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	gandalf@prancingpony.me	2007-07-12 13:20:29.888	0	1	\N	1
-95	\N	123 Fake Street	\N	Calgary	AB	H0H 0H0	CA	Test	User 53	\N	\N	\N	\N	\N	\N	\N	\N	test-admin@jbilling.com	2007-08-09 14:38:28.089	0	1	53	1
 96	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	admin@jbilling.com	2007-08-09 14:42:13.216	0	1	\N	1
-105	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	admin@jbilling.com	2007-08-09 14:58:15.504	0	1	63	1
 106	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	admin@jbilling.com	2007-08-09 14:59:04.445	0	1	\N	1
 115	\N	\N	\N	\N	\N	\N	AF	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	orc1@mordor.com	2007-08-16 14:57:08.838	0	1	\N	1
-125	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:01.112	0	1	73	1
-126	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:07.168	0	1	74	1
-127	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:07.518	0	1	75	1
-128	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:08.052	0	1	76	1
-129	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:08.391	0	1	77	1
-130	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:08.711	0	1	78	1
-131	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:09.193	0	1	79	1
-132	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:09.847	0	1	80	1
-133	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:10.212	0	1	81	1
-134	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:10.496	0	1	82	1
-135	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:10.821	0	1	83	1
-136	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:11.402	0	1	84	1
-137	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:11.948	0	1	85	1
-138	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:12.231	0	1	86	1
-139	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:12.552	0	1	87	1
-140	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:12.896	0	1	88	1
-141	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:13.53	0	1	89	1
-142	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:13.986	0	1	90	1
-143	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:14.239	0	1	91	1
-144	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:14.504	0	1	92	1
-145	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:14.772	0	1	93	1
-146	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:15.16	0	1	94	1
-147	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:15.694	0	1	95	1
-148	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:16.374	0	1	96	1
-149	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:16.659	0	1	97	1
-150	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:16.918	0	1	98	1
-151	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:17.17	0	1	99	1
-152	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:17.7	0	1	100	1
-153	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:18.236	0	1	101	1
-154	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:18.586	0	1	102	1
-155	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:18.846	0	1	103	1
-156	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:19.095	0	1	104	1
-157	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:19.344	0	1	105	1
-158	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:19.855	0	1	106	1
-159	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:20.33	0	1	107	1
-160	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:20.848	0	1	108	1
-161	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:21.154	0	1	109	1
-162	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:21.402	0	1	110	1
-163	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:21.664	0	1	111	1
-164	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:21.935	0	1	112	1
-165	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:22.408	0	1	113	1
-166	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:22.93	0	1	114	1
-167	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:23.446	0	1	115	1
-168	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:23.711	0	1	116	1
-169	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:23.956	0	1	117	1
-170	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:24.21	0	1	118	1
-171	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:24.486	0	1	119	1
-172	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:24.966	0	1	120	1
-173	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:25.453	0	1	121	1
-174	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:25.966	0	1	122	1
-175	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:26.203	0	1	123	1
-176	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:26.476	0	1	124	1
-177	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:26.724	0	1	125	1
-178	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:27.015	0	1	126	1
-179	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:27.498	0	1	127	1
-180	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:28.034	0	1	128	1
-181	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:28.464	0	1	129	1
-182	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:28.716	0	1	130	1
-183	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:28.967	0	1	131	1
-184	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:29.219	0	1	132	1
-185	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:29.587	0	1	133	1
-186	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:30.112	0	1	134	1
-187	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:30.62	0	1	135	1
-188	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:31.008	0	1	136	1
-189	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:31.261	0	1	137	1
-190	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:31.496	0	1	138	1
-191	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:31.764	0	1	139	1
-192	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:32.096	0	1	140	1
-193	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:32.602	0	1	141	1
-194	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:33.103	0	1	142	1
-195	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:33.496	0	1	143	1
-196	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:33.749	0	1	144	1
-197	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:33.991	0	1	145	1
-198	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:34.239	0	1	146	1
-199	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:34.573	0	1	147	1
-200	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:35.068	0	1	148	1
-201	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:35.516	0	1	149	1
-202	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:36.024	0	1	150	1
-203	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:36.277	0	1	151	1
-204	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:36.525	0	1	152	1
-205	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:36.777	0	1	153	1
-206	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:37.02	0	1	154	1
-207	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:37.46	0	1	155	1
-208	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:37.903	0	1	156	1
-209	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:38.336	0	1	157	1
-210	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:38.791	0	1	158	1
-211	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:39.068	0	1	159	1
-212	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:39.33	0	1	160	1
-213	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:39.569	0	1	161	1
-214	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:39.817	0	1	162	1
-215	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:40.237	0	1	163	1
-216	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:40.765	0	1	164	1
-217	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:41.251	0	1	165	1
-218	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:41.633	0	1	166	1
-219	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:41.883	0	1	167	1
-220	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:42.134	0	1	168	1
-221	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:42.375	0	1	169	1
-222	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:42.715	0	1	170	1
-223	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:43.206	0	1	171	1
-224	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:43.717	0	1	172	1
-225	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:44.088	0	1	173	1
-226	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:44.338	0	1	174	1
-227	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:44.57	0	1	175	1
-228	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:44.831	0	1	176	1
-229	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:45.167	0	1	177	1
-230	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:45.653	0	1	178	1
-231	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:46.184	0	1	179	1
-232	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:46.607	0	1	180	1
-233	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:46.853	0	1	181	1
-234	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:47.098	0	1	182	1
-235	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:47.346	0	1	183	1
-236	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:47.668	0	1	184	1
-237	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:48.167	0	1	185	1
-238	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:48.67	0	1	186	1
-239	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:49.178	0	1	187	1
-240	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:49.42	0	1	188	1
-241	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:49.67	0	1	189	1
-242	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:49.911	0	1	190	1
-243	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:50.153	0	1	191	1
-244	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:50.652	0	1	192	1
-245	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:51.128	0	1	193	1
-246	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:51.649	0	1	194	1
-247	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:51.945	0	1	195	1
-248	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:52.193	0	1	196	1
-249	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:52.436	0	1	197	1
-250	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:52.683	0	1	198	1
-251	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:53.106	0	1	199	1
-252	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:53.583	0	1	200	1
-253	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:54.009	0	1	201	1
-254	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:54.442	0	1	202	1
-255	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:54.677	0	1	203	1
-256	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:54.934	0	1	204	1
-257	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:55.175	0	1	205	1
-258	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:55.486	0	1	206	1
-259	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:55.968	0	1	207	1
-260	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:56.423	0	1	208	1
-261	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:56.924	0	1	209	1
-262	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:57.234	0	1	210	1
-263	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:57.468	0	1	211	1
-264	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:57.736	0	1	212	1
-265	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:57.981	0	1	213	1
-266	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:58.373	0	1	214	1
-267	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:58.852	0	1	215	1
-268	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:59.392	0	1	216	1
-269	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:59.717	0	1	217	1
-270	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:59.975	0	1	218	1
-271	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:00.22	0	1	219	1
-272	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:00.489	0	1	220	1
-273	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:00.909	0	1	221	1
-274	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:01.382	0	1	222	1
-275	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:01.916	0	1	223	1
-276	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:02.312	0	1	224	1
-277	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:02.552	0	1	225	1
-278	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:02.81	0	1	226	1
-279	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:03.048	0	1	227	1
-280	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:03.39	0	1	228	1
-281	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:03.854	0	1	229	1
-282	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:04.351	0	1	230	1
-283	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:04.769	0	1	231	1
-284	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:05.011	0	1	232	1
-285	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:05.251	0	1	233	1
-286	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:05.495	0	1	234	1
-287	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:05.799	0	1	235	1
-288	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:06.283	0	1	236	1
-289	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:06.756	0	1	237	1
-290	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:07.218	0	1	238	1
-291	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:07.537	0	1	239	1
-292	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:07.781	0	1	240	1
-293	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:08.024	0	1	241	1
-294	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:08.262	0	1	242	1
-295	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:08.624	0	1	243	1
-296	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:09.114	0	1	244	1
-297	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:09.646	0	1	245	1
-298	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:10.059	0	1	246	1
-299	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:10.301	0	1	247	1
-300	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:10.55	0	1	248	1
-301	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:10.794	0	1	249	1
-302	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:11.124	0	1	250	1
-303	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:11.606	0	1	251	1
-304	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:12.128	0	1	252	1
-305	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:12.535	0	1	253	1
-306	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:12.789	0	1	254	1
-307	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:13.028	0	1	255	1
-308	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:13.284	0	1	256	1
-309	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:13.593	0	1	257	1
-310	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:14.103	0	1	258	1
-311	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:14.603	0	1	259	1
-312	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:15.064	0	1	260	1
-313	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:15.356	0	1	261	1
-314	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:15.609	0	1	262	1
-315	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:15.84	0	1	263	1
-316	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:16.125	0	1	264	1
-317	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:16.992	0	1	265	1
-318	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:17.463	0	1	266	1
-319	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:17.748	0	1	267	1
-320	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:17.991	0	1	268	1
-321	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:18.237	0	1	269	1
-322	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:18.483	0	1	270	1
-323	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:18.891	0	1	271	1
-324	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:19.443	0	1	272	1
-325	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:19.908	0	1	273	1
-326	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:20.306	0	1	274	1
-327	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:20.544	0	1	275	1
-328	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:20.789	0	1	276	1
-329	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:21.031	0	1	277	1
-330	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:21.367	0	1	278	1
-331	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:21.842	0	1	279	1
-332	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:22.352	0	1	280	1
-333	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:22.793	0	1	281	1
-334	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:23.09	0	1	282	1
-335	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:23.332	0	1	283	1
-336	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:23.575	0	1	284	1
-337	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:23.823	0	1	285	1
-338	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:24.248	0	1	286	1
-339	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:24.723	0	1	287	1
-340	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:25.239	0	1	288	1
-341	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:25.6	0	1	289	1
-342	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:25.855	0	1	290	1
-343	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:26.105	0	1	291	1
-344	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:26.343	0	1	292	1
-345	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:26.678	0	1	293	1
-346	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:27.174	0	1	294	1
-347	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:27.656	0	1	295	1
-348	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:28.076	0	1	296	1
-349	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:28.313	0	1	297	1
-350	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:28.567	0	1	298	1
-351	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:28.82	0	1	299	1
-352	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:29.154	0	1	300	1
-353	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:29.617	0	1	301	1
-354	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:30.086	0	1	302	1
-355	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:30.642	0	1	303	1
-356	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:30.912	0	1	304	1
-357	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:31.143	0	1	305	1
-358	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:31.385	0	1	306	1
-359	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:31.624	0	1	307	1
-360	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:32.93	0	1	308	1
-361	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:33.183	0	1	309	1
-362	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:33.425	0	1	310	1
-363	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:33.755	0	1	311	1
-364	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:34.226	0	1	312	1
-365	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:34.748	0	1	313	1
-366	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:35.033	0	1	314	1
-367	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:35.292	0	1	315	1
-368	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:35.532	0	1	316	1
-369	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:35.776	0	1	317	1
-370	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:36.186	0	1	318	1
-371	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:36.682	0	1	319	1
-372	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:37.148	0	1	320	1
-373	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:37.53	0	1	321	1
-374	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:37.786	0	1	322	1
-375	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:38.035	0	1	323	1
-376	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:38.279	0	1	324	1
-377	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:38.598	0	1	325	1
-378	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:39.026	0	1	326	1
-379	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:39.505	0	1	327	1
-380	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:39.965	0	1	328	1
-381	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:40.287	0	1	329	1
-382	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:40.53	0	1	330	1
-383	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:40.771	0	1	331	1
-384	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:41.024	0	1	332	1
-385	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:41.422	0	1	333	1
-386	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:41.923	0	1	334	1
-387	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:42.441	0	1	335	1
-388	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:42.831	0	1	336	1
-389	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:43.069	0	1	337	1
-390	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:43.304	0	1	338	1
-391	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:43.551	0	1	339	1
-392	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:43.858	0	1	340	1
-393	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:44.319	0	1	341	1
-394	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:44.793	0	1	342	1
-395	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:45.219	0	1	343	1
-396	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:45.622	0	1	344	1
-397	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:45.866	0	1	345	1
-398	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:46.114	0	1	346	1
-399	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:46.351	0	1	347	1
-400	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:46.67	0	1	348	1
-401	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:47.167	0	1	349	1
-402	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:47.647	0	1	350	1
-403	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:48.083	0	1	351	1
-404	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:48.32	0	1	352	1
-405	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:48.57	0	1	353	1
-406	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:48.816	0	1	354	1
-407	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:49.153	0	1	355	1
-408	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:49.613	0	1	356	1
-409	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:50.094	0	1	357	1
-410	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:50.598	0	1	358	1
-411	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:50.906	0	1	359	1
-412	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:51.158	0	1	360	1
-413	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:51.398	0	1	361	1
-414	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:51.653	0	1	362	1
-415	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:52.13	0	1	363	1
-416	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:52.641	0	1	364	1
-417	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:53.142	0	1	365	1
-418	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:53.421	0	1	366	1
-419	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:53.678	0	1	367	1
-420	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:53.916	0	1	368	1
-421	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:54.162	0	1	369	1
-422	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:54.628	0	1	370	1
-423	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:55.133	0	1	371	1
-424	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:55.6	0	1	372	1
-425	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:55.88	0	1	373	1
-426	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:56.129	0	1	374	1
-427	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:56.372	0	1	375	1
-428	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:56.613	0	1	376	1
-429	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:57.028	0	1	377	1
-430	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:57.555	0	1	378	1
-431	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:58.048	0	1	379	1
-432	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:58.376	0	1	380	1
-433	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:58.621	0	1	381	1
-434	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:58.865	0	1	382	1
-435	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:59.099	0	1	383	1
-436	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:59.443	0	1	384	1
-437	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:59.924	0	1	385	1
-438	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:00.426	0	1	386	1
-439	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:00.901	0	1	387	1
-440	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:01.187	0	1	388	1
-441	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:01.438	0	1	389	1
-442	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:01.689	0	1	390	1
-443	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:01.944	0	1	391	1
-444	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:02.394	0	1	392	1
-445	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:02.883	0	1	393	1
-446	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:03.381	0	1	394	1
-447	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:03.721	0	1	395	1
-448	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:03.971	0	1	396	1
-449	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:04.212	0	1	397	1
-450	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:04.464	0	1	398	1
-451	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:04.822	0	1	399	1
-452	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:05.322	0	1	400	1
-453	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:05.844	0	1	401	1
-454	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:06.172	0	1	402	1
-455	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:06.427	0	1	403	1
-456	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:06.668	0	1	404	1
-457	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:06.91	0	1	405	1
-458	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:07.316	0	1	406	1
-459	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:07.794	0	1	407	1
-460	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:08.31	0	1	408	1
-461	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:08.696	0	1	409	1
-462	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:08.938	0	1	410	1
-463	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:09.173	0	1	411	1
-464	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:09.421	0	1	412	1
-465	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:09.768	0	1	413	1
-466	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:10.256	0	1	414	1
-467	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:10.742	0	1	415	1
-468	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:11.187	0	1	416	1
-469	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:11.43	0	1	417	1
-470	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:11.669	0	1	418	1
-471	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:11.919	0	1	419	1
-472	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:12.234	0	1	420	1
-473	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:12.703	0	1	421	1
-474	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:13.171	0	1	422	1
-475	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:13.659	0	1	423	1
-476	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:13.969	0	1	424	1
-477	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:14.211	0	1	425	1
-478	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:14.453	0	1	426	1
-479	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:14.705	0	1	427	1
-480	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:15.095	0	1	428	1
-481	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:15.526	0	1	429	1
-482	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:15.945	0	1	430	1
-483	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:16.613	0	1	431	1
-484	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:16.861	0	1	432	1
-485	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:17.109	0	1	433	1
-486	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:17.369	0	1	434	1
-487	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:17.67	0	1	435	1
-488	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:18.19	0	1	436	1
-489	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:18.674	0	1	437	1
-490	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:19.12	0	1	438	1
-491	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:19.416	0	1	439	1
-492	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:19.668	0	1	440	1
-493	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:19.924	0	1	441	1
-494	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:20.164	0	1	442	1
-495	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:20.604	0	1	443	1
-496	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:21.08	0	1	444	1
-497	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:21.557	0	1	445	1
-498	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:21.947	0	1	446	1
-499	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:22.19	0	1	447	1
-500	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:22.446	0	1	448	1
-501	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:22.689	0	1	449	1
-502	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:23.052	0	1	450	1
-503	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:23.533	0	1	451	1
-504	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:23.985	0	1	452	1
-505	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:24.451	0	1	453	1
-506	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:24.746	0	1	454	1
-507	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:25.006	0	1	455	1
-508	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:25.245	0	1	456	1
-509	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:25.49	0	1	457	1
-510	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:25.919	0	1	458	1
-511	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:26.387	0	1	459	1
-512	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:26.849	0	1	460	1
-513	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:27.251	0	1	461	1
-514	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:27.501	0	1	462	1
-515	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:27.741	0	1	463	1
-516	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:27.992	0	1	464	1
-517	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:28.283	0	1	465	1
-518	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:28.769	0	1	466	1
-519	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:29.25	0	1	467	1
-520	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:29.724	0	1	468	1
-521	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:30.027	0	1	469	1
-522	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:30.262	0	1	470	1
-523	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:30.513	0	1	471	1
-524	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:30.76	0	1	472	1
-525	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:31.185	0	1	473	1
-526	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:31.668	0	1	474	1
-527	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:32.169	0	1	475	1
-528	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:32.562	0	1	476	1
-529	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:32.8	0	1	477	1
-530	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:33.059	0	1	478	1
-531	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:33.301	0	1	479	1
-532	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:33.628	0	1	480	1
-533	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:34.093	0	1	481	1
-534	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:34.638	0	1	482	1
-535	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:35.16	0	1	483	1
-536	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:35.399	0	1	484	1
-537	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:35.661	0	1	485	1
-538	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:35.917	0	1	486	1
-539	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:36.325	0	1	487	1
-540	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:36.853	0	1	488	1
-541	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:37.337	0	1	489	1
-542	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:37.724	0	1	490	1
-543	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:37.972	0	1	491	1
-544	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:38.219	0	1	492	1
-545	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:38.464	0	1	493	1
-546	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:38.796	0	1	494	1
-547	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:39.259	0	1	495	1
-548	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:39.698	0	1	496	1
-549	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:40.16	0	1	497	1
-550	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:40.476	0	1	498	1
-551	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:40.725	0	1	499	1
-552	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:40.97	0	1	500	1
-553	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:41.217	0	1	501	1
-554	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:41.625	0	1	502	1
-555	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:42.073	0	1	503	1
-556	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:42.548	0	1	504	1
-557	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:43.021	0	1	505	1
-558	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:43.304	0	1	506	1
-559	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:43.556	0	1	507	1
-560	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:43.811	0	1	508	1
-561	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:44.053	0	1	509	1
-562	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:44.507	0	1	510	1
-563	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:44.983	0	1	511	1
-564	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:45.435	0	1	512	1
-565	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:45.784	0	1	513	1
-566	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:46.042	0	1	514	1
-567	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:46.303	0	1	515	1
-568	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:46.546	0	1	516	1
-569	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:46.908	0	1	517	1
-570	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:47.367	0	1	518	1
-571	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:47.833	0	1	519	1
-572	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:48.325	0	1	520	1
-573	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:48.597	0	1	521	1
-574	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:48.856	0	1	522	1
-575	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:49.1	0	1	523	1
-576	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:49.337	0	1	524	1
-577	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:49.796	0	1	525	1
-578	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:50.246	0	1	526	1
-579	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:50.738	0	1	527	1
-580	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:51.102	0	1	528	1
-581	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:51.361	0	1	529	1
-582	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:51.606	0	1	530	1
-583	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:51.851	0	1	531	1
-584	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:52.268	0	1	532	1
-585	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:52.759	0	1	533	1
-586	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:53.214	0	1	534	1
-587	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:53.635	0	1	535	1
-588	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:53.895	0	1	536	1
-589	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:54.139	0	1	537	1
-590	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:54.372	0	1	538	1
-591	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:54.733	0	1	539	1
-592	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:55.206	0	1	540	1
-593	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:55.72	0	1	541	1
-594	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:56.113	0	1	542	1
-595	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:56.356	0	1	543	1
-596	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:56.613	0	1	544	1
-597	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:56.853	0	1	545	1
-598	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:57.165	0	1	546	1
-599	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:57.627	0	1	547	1
-600	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:58.108	0	1	548	1
-601	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:58.59	0	1	549	1
-602	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:58.909	0	1	550	1
-603	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:59.157	0	1	551	1
-604	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:59.394	0	1	552	1
-605	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:59.644	0	1	553	1
-606	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:00.048	0	1	554	1
-607	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:00.501	0	1	555	1
-608	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:00.991	0	1	556	1
-609	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:01.424	0	1	557	1
-610	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:02.218	0	1	558	1
-611	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:02.582	0	1	559	1
-612	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:03.031	0	1	560	1
-613	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:03.32	0	1	561	1
-614	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:03.556	0	1	562	1
-615	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:03.821	0	1	563	1
-616	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:04.062	0	1	564	1
-617	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:04.403	0	1	565	1
-618	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:04.842	0	1	566	1
-619	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:05.253	0	1	567	1
-620	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:05.728	0	1	568	1
-621	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:06.108	0	1	569	1
-622	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:06.35	0	1	570	1
-623	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:06.6	0	1	571	1
-624	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:06.841	0	1	572	1
-625	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:07.118	0	1	573	1
-626	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:07.578	0	1	574	1
-627	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:08.058	0	1	575	1
-628	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:08.529	0	1	576	1
-629	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:08.926	0	1	577	1
-630	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:09.182	0	1	578	1
-631	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:09.431	0	1	579	1
-632	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:09.674	0	1	580	1
-633	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:10.028	0	1	581	1
-634	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:10.493	0	1	582	1
-635	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:10.992	0	1	583	1
-636	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:11.422	0	1	584	1
-637	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:11.67	0	1	585	1
-638	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:11.91	0	1	586	1
-639	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:12.15	0	1	587	1
-640	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:12.451	0	1	588	1
-641	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:12.921	0	1	589	1
-642	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:13.36	0	1	590	1
-643	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:13.819	0	1	591	1
-644	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:14.139	0	1	592	1
-645	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:14.379	0	1	593	1
-646	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:14.625	0	1	594	1
-647	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:14.864	0	1	595	1
-648	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:15.229	0	1	596	1
-649	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:15.696	0	1	597	1
-650	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:16.446	0	1	598	1
-651	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:16.825	0	1	599	1
-652	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:17.071	0	1	600	1
-653	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:17.31	0	1	601	1
-654	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:17.545	0	1	602	1
-655	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:18.003	0	1	603	1
-656	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:18.506	0	1	604	1
-657	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:19.008	0	1	605	1
-658	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:19.323	0	1	606	1
-659	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:19.556	0	1	607	1
-660	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:19.805	0	1	608	1
-661	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:20.04	0	1	609	1
-662	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:20.456	0	1	610	1
-663	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:20.95	0	1	611	1
-664	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:21.397	0	1	612	1
-665	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:21.839	0	1	613	1
-666	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:22.095	0	1	614	1
-667	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:22.337	0	1	615	1
-668	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:22.571	0	1	616	1
-669	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:22.82	0	1	617	1
-670	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:23.315	0	1	618	1
-671	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:23.812	0	1	619	1
-672	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:24.302	0	1	620	1
-673	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:24.593	0	1	621	1
-674	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:24.849	0	1	622	1
-675	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:25.089	0	1	623	1
-676	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:25.328	0	1	624	1
-677	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:25.744	0	1	625	1
-678	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:26.223	0	1	626	1
-679	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:26.727	0	1	627	1
-680	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:27.111	0	1	628	1
-681	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:27.361	0	1	629	1
-682	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:27.6	0	1	630	1
-683	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:27.847	0	1	631	1
-684	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:28.155	0	1	632	1
-685	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:28.623	0	1	633	1
-686	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:29.098	0	1	634	1
-687	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:29.562	0	1	635	1
-688	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:29.935	0	1	636	1
-689	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:30.176	0	1	637	1
-690	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:30.413	0	1	638	1
-691	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:30.659	0	1	639	1
-692	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:30.975	0	1	640	1
-693	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:31.448	0	1	641	1
-694	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:31.948	0	1	642	1
-695	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:32.369	0	1	643	1
-696	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:32.614	0	1	644	1
-697	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:32.848	0	1	645	1
-698	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:33.085	0	1	646	1
-699	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:33.401	0	1	647	1
-700	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:33.888	0	1	648	1
-701	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:34.388	0	1	649	1
-702	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:34.853	0	1	650	1
-703	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:35.139	0	1	651	1
-704	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:35.382	0	1	652	1
-705	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:35.619	0	1	653	1
-706	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:35.875	0	1	654	1
-707	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:36.273	0	1	655	1
-708	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:36.755	0	1	656	1
-709	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:37.266	0	1	657	1
-710	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:37.66	0	1	658	1
-711	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:37.911	0	1	659	1
-712	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:38.145	0	1	660	1
-713	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:38.387	0	1	661	1
-714	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:38.724	0	1	662	1
-715	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:39.212	0	1	663	1
-716	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:39.703	0	1	664	1
-717	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:40.181	0	1	665	1
-718	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:40.475	0	1	666	1
-719	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:40.713	0	1	667	1
-720	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:40.97	0	1	668	1
-721	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:41.214	0	1	669	1
-722	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:41.654	0	1	670	1
-723	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:42.118	0	1	671	1
-724	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:42.618	0	1	672	1
-725	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:42.943	0	1	673	1
-726	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:43.179	0	1	674	1
-727	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:43.423	0	1	675	1
-728	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:43.669	0	1	676	1
-729	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:44.012	0	1	677	1
-730	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:44.504	0	1	678	1
-731	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:45.001	0	1	679	1
-732	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:45.486	0	1	680	1
-733	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:45.724	0	1	681	1
-734	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:45.969	0	1	682	1
-735	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:46.222	0	1	683	1
-736	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:46.46	0	1	684	1
-737	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:46.892	0	1	685	1
-738	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:47.348	0	1	686	1
-739	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:47.811	0	1	687	1
-740	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:48.224	0	1	688	1
-741	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:48.473	0	1	689	1
-742	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:48.723	0	1	690	1
-743	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:48.961	0	1	691	1
-744	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:49.269	0	1	692	1
-745	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:49.759	0	1	693	1
-746	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:50.218	0	1	694	1
-747	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:50.733	0	1	695	1
-748	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:51.044	0	1	696	1
-749	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:51.291	0	1	697	1
-750	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:51.526	0	1	698	1
-751	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:51.784	0	1	699	1
-752	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:52.193	0	1	700	1
-753	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:52.673	0	1	701	1
-754	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:53.171	0	1	702	1
-755	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:53.505	0	1	703	1
-756	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:53.759	0	1	704	1
-757	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:53.999	0	1	705	1
-758	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:54.236	0	1	706	1
-759	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:54.575	0	1	707	1
-760	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:55.067	0	1	708	1
-761	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:55.521	0	1	709	1
-762	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:56.006	0	1	710	1
-763	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:56.303	0	1	711	1
-764	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:56.549	0	1	712	1
-765	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:56.793	0	1	713	1
-766	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:57.038	0	1	714	1
-767	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:57.426	0	1	715	1
-768	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:57.888	0	1	716	1
-769	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:58.405	0	1	717	1
-770	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:58.822	0	1	718	1
-771	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:59.076	0	1	719	1
-772	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:59.322	0	1	720	1
-773	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:59.572	0	1	721	1
-774	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:59.9	0	1	722	1
-775	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:00.343	0	1	723	1
-776	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:00.837	0	1	724	1
-777	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:01.327	0	1	725	1
-778	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:01.617	0	1	726	1
-779	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:01.864	0	1	727	1
-780	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:02.112	0	1	728	1
-781	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:02.355	0	1	729	1
-782	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:02.738	0	1	730	1
-783	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:03.208	0	1	731	1
-784	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:03.685	0	1	732	1
-785	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:04.125	0	1	733	1
-786	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:04.369	0	1	734	1
-787	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:04.621	0	1	735	1
-788	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:04.866	0	1	736	1
-789	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:05.192	0	1	737	1
-790	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:05.695	0	1	738	1
-791	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:06.178	0	1	739	1
-792	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:06.605	0	1	740	1
-793	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:06.842	0	1	741	1
-794	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:07.093	0	1	742	1
-795	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:07.332	0	1	743	1
-796	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:07.626	0	1	744	1
-797	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:08.088	0	1	745	1
-798	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:08.585	0	1	746	1
-799	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:09.061	0	1	747	1
-800	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:09.375	0	1	748	1
-801	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:09.62	0	1	749	1
-802	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:09.877	0	1	750	1
-803	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:10.108	0	1	751	1
-804	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:10.544	0	1	752	1
-805	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:10.966	0	1	753	1
-806	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:11.484	0	1	754	1
-807	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:11.901	0	1	755	1
-808	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:12.153	0	1	756	1
-809	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:12.397	0	1	757	1
-810	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:12.656	0	1	758	1
-811	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:12.989	0	1	759	1
-812	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:13.441	0	1	760	1
-813	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:13.977	0	1	761	1
-814	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:14.377	0	1	762	1
-815	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:14.627	0	1	763	1
-816	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:14.885	0	1	764	1
-817	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:15.121	0	1	765	1
-818	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:15.436	0	1	766	1
-819	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:15.918	0	1	767	1
-820	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:16.813	0	1	768	1
-821	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:17.095	0	1	769	1
-822	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:17.337	0	1	770	1
-823	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:17.576	0	1	771	1
-824	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:17.825	0	1	772	1
-825	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:18.23	0	1	773	1
-826	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:18.717	0	1	774	1
-827	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:19.193	0	1	775	1
-828	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:19.589	0	1	776	1
-829	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:19.829	0	1	777	1
-830	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:20.078	0	1	778	1
-831	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:20.32	0	1	779	1
-832	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:20.626	0	1	780	1
-833	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:21.082	0	1	781	1
-834	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:21.579	0	1	782	1
-835	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:22.074	0	1	783	1
-836	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:22.382	0	1	784	1
-837	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:22.633	0	1	785	1
-838	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:22.886	0	1	786	1
-839	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:23.139	0	1	787	1
-840	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:23.518	0	1	788	1
-841	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:23.964	0	1	789	1
-842	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:24.452	0	1	790	1
-843	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:24.875	0	1	791	1
-844	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:25.179	0	1	792	1
-845	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:25.422	0	1	793	1
-846	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:25.68	0	1	794	1
-847	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:25.923	0	1	795	1
-848	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:26.388	0	1	796	1
-849	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:26.861	0	1	797	1
-850	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:27.364	0	1	798	1
-851	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:27.676	0	1	799	1
-852	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:27.937	0	1	800	1
-853	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:28.183	0	1	801	1
-854	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:28.433	0	1	802	1
-855	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:28.841	0	1	803	1
-856	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:29.312	0	1	804	1
-857	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:29.765	0	1	805	1
-858	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:30.208	0	1	806	1
-859	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:30.487	0	1	807	1
-860	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:30.736	0	1	808	1
-861	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:30.994	0	1	809	1
-862	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:31.235	0	1	810	1
-863	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:31.651	0	1	811	1
-864	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:32.148	0	1	812	1
-865	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:32.588	0	1	813	1
-866	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:33.03	0	1	814	1
-867	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:33.314	0	1	815	1
-868	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:33.555	0	1	816	1
-869	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:33.789	0	1	817	1
-870	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:34.045	0	1	818	1
-871	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:34.516	0	1	819	1
-872	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:35.138	0	1	820	1
-873	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:35.601	0	1	821	1
-874	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:35.975	0	1	822	1
-875	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:36.212	0	1	823	1
-876	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:36.458	0	1	824	1
-877	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:36.694	0	1	825	1
-878	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:37	0	1	826	1
-879	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:37.478	0	1	827	1
-880	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:37.928	0	1	828	1
-881	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:38.381	0	1	829	1
-882	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:38.766	0	1	830	1
-883	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:39.003	0	1	831	1
-884	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:39.248	0	1	832	1
-885	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:39.482	0	1	833	1
-886	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:39.811	0	1	834	1
-887	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:40.3	0	1	835	1
-888	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:40.81	0	1	836	1
-889	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:41.244	0	1	837	1
-890	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:41.49	0	1	838	1
-891	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:41.736	0	1	839	1
-892	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:41.981	0	1	840	1
-893	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:42.297	0	1	841	1
-894	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:42.803	0	1	842	1
-895	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:43.263	0	1	843	1
-896	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:43.752	0	1	844	1
-897	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:44.046	0	1	845	1
-898	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:44.295	0	1	846	1
-899	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:44.54	0	1	847	1
-900	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:44.802	0	1	848	1
-901	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:45.211	0	1	849	1
-902	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:45.677	0	1	850	1
-903	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:46.154	0	1	851	1
-904	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:46.56	0	1	852	1
-905	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:46.81	0	1	853	1
-906	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:47.061	0	1	854	1
-907	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:47.303	0	1	855	1
-908	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:47.633	0	1	856	1
-909	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:48.09	0	1	857	1
-910	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:48.539	0	1	858	1
-911	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:49.036	0	1	859	1
-912	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:49.353	0	1	860	1
-913	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:49.589	0	1	861	1
-914	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:49.834	0	1	862	1
-915	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:50.076	0	1	863	1
-916	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:50.517	0	1	864	1
-917	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:50.984	0	1	865	1
-918	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:51.488	0	1	866	1
-919	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:51.861	0	1	867	1
-920	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:52.104	0	1	868	1
-921	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:52.351	0	1	869	1
-922	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:52.594	0	1	870	1
-923	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:52.918	0	1	871	1
-924	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:53.419	0	1	872	1
-925	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:53.867	0	1	873	1
-926	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:54.383	0	1	874	1
-927	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:54.629	0	1	875	1
-928	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:54.883	0	1	876	1
-929	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:55.113	0	1	877	1
-930	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:55.445	0	1	878	1
-931	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:55.909	0	1	879	1
-932	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:56.371	0	1	880	1
-933	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:56.852	0	1	881	1
-934	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:57.143	0	1	882	1
-935	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:57.383	0	1	883	1
-936	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:57.632	0	1	884	1
-937	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:57.876	0	1	885	1
-938	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:58.31	0	1	886	1
-939	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:58.816	0	1	887	1
-940	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:59.294	0	1	888	1
-941	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:59.619	0	1	889	1
-942	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:59.873	0	1	890	1
-943	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:00.111	0	1	891	1
-944	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:00.388	0	1	892	1
-945	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:00.83	0	1	893	1
-946	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:01.331	0	1	894	1
-947	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:01.848	0	1	895	1
-948	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:02.149	0	1	896	1
-949	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:02.4	0	1	897	1
-950	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:02.644	0	1	898	1
-951	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:02.894	0	1	899	1
-952	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:03.344	0	1	900	1
-953	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:03.845	0	1	901	1
-954	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:04.319	0	1	902	1
-955	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:04.646	0	1	903	1
-956	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:04.907	0	1	904	1
-957	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:05.143	0	1	905	1
-958	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:05.394	0	1	906	1
-959	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:05.812	0	1	907	1
-960	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:06.251	0	1	908	1
-961	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:06.748	0	1	909	1
-962	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:07.163	0	1	910	1
-963	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:07.406	0	1	911	1
-964	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:07.659	0	1	912	1
-965	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:07.899	0	1	913	1
-966	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:08.238	0	1	914	1
-967	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:08.654	0	1	915	1
-968	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:09.112	0	1	916	1
-969	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:09.565	0	1	917	1
-970	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:10.002	0	1	918	1
-971	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:10.263	0	1	919	1
-972	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:10.499	0	1	920	1
-973	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:10.741	0	1	921	1
-974	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:10.978	0	1	922	1
-975	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:11.416	0	1	923	1
-976	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:11.944	0	1	924	1
-977	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:12.425	0	1	925	1
-978	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:12.793	0	1	926	1
-979	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:13.04	0	1	927	1
-980	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:13.283	0	1	928	1
-981	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:13.53	0	1	929	1
-982	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:13.855	0	1	930	1
-983	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:14.329	0	1	931	1
-984	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:14.83	0	1	932	1
-985	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:15.253	0	1	933	1
-986	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:15.499	0	1	934	1
-987	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:15.744	0	1	935	1
-988	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:15.998	0	1	936	1
-989	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:16.573	0	1	937	1
-990	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:17.128	0	1	938	1
-991	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:17.657	0	1	939	1
-992	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:17.9	0	1	940	1
-993	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:18.134	0	1	941	1
-994	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:18.393	0	1	942	1
-995	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:18.658	0	1	943	1
-996	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:19.122	0	1	944	1
-997	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:19.62	0	1	945	1
-998	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:20.067	0	1	946	1
-999	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:20.399	0	1	947	1
-1000	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:20.643	0	1	948	1
-1001	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:20.897	0	1	949	1
-1002	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:21.135	0	1	950	1
-1003	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:21.464	0	1	951	1
-1004	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:21.952	0	1	952	1
-1005	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:22.474	0	1	953	1
-1006	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:22.95	0	1	954	1
-1007	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:23.237	0	1	955	1
-1008	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:23.476	0	1	956	1
-1009	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:23.721	0	1	957	1
-1010	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:23.957	0	1	958	1
-1011	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:24.353	0	1	959	1
-1012	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:24.89	0	1	960	1
-1013	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:25.309	0	1	961	1
-1014	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:25.696	0	1	962	1
-1015	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:25.937	0	1	963	1
-1016	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:26.192	0	1	964	1
-1017	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:26.436	0	1	965	1
-1018	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:26.748	0	1	966	1
-1019	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:27.23	0	1	967	1
-1020	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:27.729	0	1	968	1
-1021	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:28.22	0	1	969	1
-1022	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:28.526	0	1	970	1
-1023	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:28.773	0	1	971	1
-1024	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:29.017	0	1	972	1
-1025	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:29.254	0	1	973	1
-1026	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:29.696	0	1	974	1
-1027	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:30.184	0	1	975	1
-1028	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:30.686	0	1	976	1
-1029	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:31.063	0	1	977	1
-1030	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:31.301	0	1	978	1
-1031	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:31.546	0	1	979	1
-1032	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:31.798	0	1	980	1
-1033	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:32.139	0	1	981	1
-1034	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:32.618	0	1	982	1
-1035	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:33.084	0	1	983	1
-1036	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:33.532	0	1	984	1
-1037	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:33.838	0	1	985	1
-1038	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:34.094	0	1	986	1
-1039	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:34.334	0	1	987	1
-1040	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:34.59	0	1	988	1
-1041	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:34.977	0	1	989	1
-1042	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:35.443	0	1	990	1
-1043	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:35.949	0	1	991	1
-1044	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:36.334	0	1	992	1
-1045	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:36.579	0	1	993	1
-1046	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:36.827	0	1	994	1
-1047	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:37.084	0	1	995	1
-1048	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:37.411	0	1	996	1
-1049	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:37.875	0	1	997	1
-1050	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:38.323	0	1	998	1
-1051	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:38.796	0	1	999	1
-1052	\N	\N	\N	\N	\N	\N	\N	Baggins	Bilbo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:39.089	0	1	1000	1
-1053	\N	\N	\N	\N	\N	\N	\N	Baggins	Bilbo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:39.333	0	1	1001	1
-1054	\N	123 Main Rd.	\N	Vancouver	BC	V6B2E2	CA	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:39.595	0	1	1002	1
-1055	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	61	2	55512345	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:39.84	0	1	1003	1
-1056	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:40.24	0	1	1004	1
-1057	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:40.741	0	1	1005	1
-1058	\N	321 Main Rd.	\N	Vancouver	BC	V6B2E2	CA	LastName	Frodo	\N	\N	61	2	55554321	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:41.21	0	1	1006	1
-1059	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:41.607	0	1	1007	1
-1060	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:41.862	0	1	1008	1
-1061	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:42.131	0	1	1009	1
-1062	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:42.378	0	1	1010	1
-1063	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:42.705	0	1	1011	1
-1064	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:43.171	0	1	1012	1
-1065	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:43.638	0	1	1013	1
-1066	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:44.114	0	1	1014	1
-1067	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:44.413	0	1	1015	1
-1068	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:44.67	0	1	1016	1
-1069	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:44.929	0	1	1017	1
-1070	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:45.173	0	1	1018	1
-1071	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:45.63	0	1	1019	1
-1072	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:46.123	0	1	1020	1
-1073	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:46.576	0	1	1021	1
-1074	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:46.886	0	1	1022	1
-1075	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:47.132	0	1	1023	1
-1076	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:47.383	0	1	1024	1
-1077	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:47.639	0	1	1025	1
-1078	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:48.042	0	1	1026	1
-1079	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:48.511	0	1	1027	1
-1080	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:49.077	0	1	1028	1
-1081	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:49.422	0	1	1029	1
-1082	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:49.679	0	1	1030	1
-1083	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:49.918	0	1	1031	1
-1084	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:50.166	0	1	1032	1
-1085	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:50.548	0	1	1033	1
-1086	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:51.006	0	1	1034	1
-1087	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:51.509	0	1	1035	1
-1088	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:51.974	0	1	1036	1
-1089	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:52.269	0	1	1037	1
-1090	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:52.51	0	1	1038	1
-1091	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:52.753	0	1	1039	1
-1092	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:53.01	0	1	1040	1
-1093	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:53.459	0	1	1041	1
-1094	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:53.938	0	1	1042	1
-1095	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:54.373	0	1	1043	1
-1096	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:54.785	0	1	1044	1
-1097	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:55.025	0	1	1045	1
-1098	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:55.27	0	1	1046	1
-1099	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:55.52	0	1	1047	1
-1100	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:55.835	0	1	1048	1
-1101	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:56.298	0	1	1049	1
-1102	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:56.816	0	1	1050	1
-1103	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:57.221	0	1	1051	1
-1104	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:57.47	0	1	1052	1
-1105	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:57.715	0	1	1053	1
-1106	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:57.983	0	1	1054	1
-1107	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:58.301	0	1	1055	1
-1108	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:58.744	0	1	1056	1
-1109	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:59.216	0	1	1057	1
-1110	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:59.668	0	1	1058	1
-1111	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:00.061	0	1	1059	1
-1112	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:00.3	0	1	1060	1
-1113	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:00.549	0	1	1061	1
-1114	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:00.801	0	1	1062	1
-1115	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:01.126	0	1	1063	1
-1116	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:01.57	0	1	1064	1
-1117	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:02.09	0	1	1065	1
-1118	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:02.584	0	1	1066	1
-1119	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:02.874	0	1	1067	1
-1120	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:03.122	0	1	1068	1
-1121	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:03.364	0	1	1069	1
-1122	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:03.616	0	1	1070	1
-1123	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:04.076	0	1	1071	1
-1124	\N	\N	\N	\N	BC	\N	AF	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:04.579	0	1	1072	1
+2	Telekom Brunei Berhad\n	1234 Great East Road		Bree	Middle Earth	54321	CA	Strator	Admin	\N	\N	\N	123	321-1234	\N	\N	\N	admin@prancingpony.me	2007-03-18 00:00:00	0	1	1	1
+114629	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:39.092	0	1	\N	0
+114630	\N								Database Group	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:53.735	0	1	10955	1
+114631	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:53.773	0	1	\N	0
 1125	\N	\N	\N	\N	\N	\N	\N	Baggins	Bilbo	\N	\N	\N	\N	\N	\N	\N	\N	\N	2008-09-26 00:00:00	0	1	\N	1
 1126	\N	123 Main Rd.	\N	Vancouver	BC	V6B2E2	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	2008-09-26 00:00:00	0	1	\N	1
 1127	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	61	2	55512345	\N	\N	\N	\N	2008-09-26 00:00:00	0	1	\N	1
 1128	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	2008-09-26 00:00:00	0	1	\N	1
-112500	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	payment-router-currency-1@test.com	2009-04-08 22:00:53.927	0	1	10730	4
-112501	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	payment-router-currency-2@test.com	2009-04-08 22:01:32.286	0	1	10731	4
-112601	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner2@partners.com	2009-06-23 16:30:54.845	0	1	10741	1
-112607	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner-customer1@partners.com	2009-06-23 20:33:44.596	0	1	10746	1
-112608	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner-customer2@partners.com	2009-06-23 20:34:03.47	0	1	10747	1
-112609	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner-customer3@partners.com	2009-06-23 20:34:20.542	0	1	10748	1
-112600	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner1@partners.com	2009-06-23 16:25:44.594	0	1	10740	4
-112602	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner3@partners.com	2009-06-23 16:37:05.548	0	1	10742	4
-112603	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 10:10:01.034	0	1	10743	1
-112604	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 10:10:02.556	0	1	10744	1
 112700	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2009-07-20 16:42:04.934	0	1	\N	1
-112800	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	a@a.com	2009-10-15 11:12:45.18	0	1	10750	1
-112900	Long Distance Plan A	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-01@test.com	2009-12-15 16:17:40.847	0	1	10760	5
-112901	Long Distance Plan B	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-02@test.com	2009-12-15 16:18:05.824	0	1	10761	4
-112902	Long Distance Plan, 1000 min	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-03@test.com	2009-12-15 16:18:30.48	0	1	10762	4
-113000	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-04@test.com	2009-12-17 13:25:11.977	0	1	10770	1
-113001	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-05@test.com	2009-12-17 13:25:32.606	0	1	10771	1
-113002	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-06@test.com	2009-12-17 13:34:24.15	0	1	10772	1
-113003	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-07@test.com	2009-12-17 13:34:40.954	0	1	10773	1
-113004	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-08@test.com	2009-12-17 13:35:04.242	0	1	10774	1
-113005	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-09@test.com	2009-12-17 13:35:15.887	0	1	10775	1
-113006	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-10@test.com	2009-12-17 13:36:45.165	0	1	10776	1
-113007	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-11@test.com	2009-12-17 13:37:21.137	0	1	10777	1
-113008	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-12@test.com	2009-12-17 13:37:33.539	0	1	10778	1
-113009	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-13@test.com	2009-12-17 13:38:25.725	0	1	10779	1
-113010	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-14@test.com	2009-12-17 13:38:54.151	0	1	10780	1
-113011	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-15@test.com	2009-12-17 13:39:09.738	0	1	10781	1
+3	\N	\N	\N	Rivendel	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	gandalf@prancingpony.me	2006-07-26 09:29:19.766	1	1	2	1
+14	Mordor Inc.	1 Mount Doom Drive 		Mordor	AA	66666	AF	Baltimore	Lord	\N	\N	\N	123	12312312	\N	\N	\N	boss@mordor.com	2006-12-07 00:00:00	1	1	12	1
+15	\N	\N	\N	\N	\N	\N	AF	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	orc1@mordor.com	2006-12-07 14:56:32.85	1	1	13	1
+65	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	authuser@pp.com	2007-05-10 10:56:43.379	1	1	33	4
+75	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	parent@pp.com	2007-05-22 16:03:39.757	1	1	43	1
+95	\N	123 Fake Street	\N	Calgary	AB	H0H 0H0	CA	Test	User 53	\N	\N	\N	\N	\N	\N	\N	\N	test-admin@jbilling.com	2007-08-09 14:38:28.089	1	1	53	1
+105	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	admin@jbilling.com	2007-08-09 14:58:15.504	1	1	63	1
+125	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:01.112	1	1	73	1
+126	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:07.168	1	1	74	1
+127	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:07.518	1	1	75	1
+128	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:08.052	1	1	76	1
+129	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:08.391	1	1	77	1
+130	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:08.711	1	1	78	1
+131	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:09.193	1	1	79	1
+132	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:09.847	1	1	80	1
+133	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:10.212	1	1	81	1
+134	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:10.496	1	1	82	1
+135	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:10.821	1	1	83	1
+136	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:11.402	1	1	84	1
+137	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:11.948	1	1	85	1
+138	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:12.231	1	1	86	1
+139	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:12.552	1	1	87	1
+140	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:12.896	1	1	88	1
+141	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:13.53	1	1	89	1
+142	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:13.986	1	1	90	1
+143	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:14.239	1	1	91	1
+144	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:14.504	1	1	92	1
+145	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:14.772	1	1	93	1
+146	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:15.16	1	1	94	1
+147	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:15.694	1	1	95	1
+148	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:16.374	1	1	96	1
+149	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:16.659	1	1	97	1
+150	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:16.918	1	1	98	1
+151	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:17.17	1	1	99	1
+152	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:17.7	1	1	100	1
+153	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:18.236	1	1	101	1
+154	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:18.586	1	1	102	1
+155	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:18.846	1	1	103	1
+156	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:19.095	1	1	104	1
+157	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:19.344	1	1	105	1
+158	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:19.855	1	1	106	1
+159	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:20.33	1	1	107	1
+160	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:20.848	1	1	108	1
+161	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:21.154	1	1	109	1
+162	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:21.402	1	1	110	1
+163	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:21.664	1	1	111	1
+164	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:21.935	1	1	112	1
+165	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:22.408	1	1	113	1
+166	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:22.93	1	1	114	1
+167	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:23.446	1	1	115	1
+168	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:23.711	1	1	116	1
+169	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:23.956	1	1	117	1
+170	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:24.21	1	1	118	1
+171	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:24.486	1	1	119	1
+172	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:24.966	1	1	120	1
+173	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:25.453	1	1	121	1
+174	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:25.966	1	1	122	1
+175	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:26.203	1	1	123	1
+176	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:26.476	1	1	124	1
+177	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:26.724	1	1	125	1
+178	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:27.015	1	1	126	1
+179	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:27.498	1	1	127	1
+180	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:28.034	1	1	128	1
+181	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:28.464	1	1	129	1
+182	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:28.716	1	1	130	1
+183	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:28.967	1	1	131	1
+184	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:29.219	1	1	132	1
+185	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:29.587	1	1	133	1
+186	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:30.112	1	1	134	1
+187	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:30.62	1	1	135	1
+188	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:31.008	1	1	136	1
+189	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:31.261	1	1	137	1
+190	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:31.496	1	1	138	1
+191	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:31.764	1	1	139	1
+192	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:32.096	1	1	140	1
+193	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:32.602	1	1	141	1
+194	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:33.103	1	1	142	1
+195	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:33.496	1	1	143	1
+196	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:33.749	1	1	144	1
+197	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:33.991	1	1	145	1
+198	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:34.239	1	1	146	1
+199	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:34.573	1	1	147	1
+200	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:35.068	1	1	148	1
+201	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:35.516	1	1	149	1
+202	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:36.024	1	1	150	1
+203	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:36.277	1	1	151	1
+204	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:36.525	1	1	152	1
+205	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:36.777	1	1	153	1
+206	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:37.02	1	1	154	1
+207	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:37.46	1	1	155	1
+208	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:37.903	1	1	156	1
+209	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:38.336	1	1	157	1
+210	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:38.791	1	1	158	1
+211	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:39.068	1	1	159	1
+212	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:39.33	1	1	160	1
+213	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:39.569	1	1	161	1
+214	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:39.817	1	1	162	1
+215	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:40.237	1	1	163	1
+216	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:40.765	1	1	164	1
+217	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:41.251	1	1	165	1
+218	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:41.633	1	1	166	1
+219	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:41.883	1	1	167	1
+220	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:42.134	1	1	168	1
+221	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:42.375	1	1	169	1
+222	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:42.715	1	1	170	1
+223	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:43.206	1	1	171	1
+224	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:43.717	1	1	172	1
+225	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:44.088	1	1	173	1
+226	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:44.338	1	1	174	1
+227	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:44.57	1	1	175	1
+228	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:44.831	1	1	176	1
+229	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:45.167	1	1	177	1
+230	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:45.653	1	1	178	1
+231	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:46.184	1	1	179	1
+232	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:46.607	1	1	180	1
+233	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:46.853	1	1	181	1
+234	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:47.098	1	1	182	1
+235	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:47.346	1	1	183	1
+236	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:47.668	1	1	184	1
+237	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:48.167	1	1	185	1
+238	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:48.67	1	1	186	1
+239	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:49.178	1	1	187	1
+240	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:49.42	1	1	188	1
+241	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:49.67	1	1	189	1
+242	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:49.911	1	1	190	1
+243	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:50.153	1	1	191	1
+244	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:50.652	1	1	192	1
+245	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:51.128	1	1	193	1
+246	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:51.649	1	1	194	1
+247	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:51.945	1	1	195	1
+248	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:52.193	1	1	196	1
+249	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:52.436	1	1	197	1
+250	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:52.683	1	1	198	1
+251	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:53.106	1	1	199	1
+252	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:53.583	1	1	200	1
+253	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:54.009	1	1	201	1
+254	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:54.442	1	1	202	1
+255	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:54.677	1	1	203	1
+256	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:54.934	1	1	204	1
+257	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:55.175	1	1	205	1
+258	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:55.486	1	1	206	1
+259	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:55.968	1	1	207	1
+260	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:56.423	1	1	208	1
+261	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:56.924	1	1	209	1
+262	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:57.234	1	1	210	1
+263	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:57.468	1	1	211	1
+264	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:57.736	1	1	212	1
+265	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:57.981	1	1	213	1
+266	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:58.373	1	1	214	1
+267	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:58.852	1	1	215	1
+268	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:59.392	1	1	216	1
+269	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:59.717	1	1	217	1
+270	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:59.975	1	1	218	1
+271	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:00.22	1	1	219	1
+272	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:00.489	1	1	220	1
+273	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:00.909	1	1	221	1
+274	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:01.382	1	1	222	1
+275	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:01.916	1	1	223	1
+276	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:02.312	1	1	224	1
+277	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:02.552	1	1	225	1
+278	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:02.81	1	1	226	1
+279	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:03.048	1	1	227	1
+280	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:03.39	1	1	228	1
+281	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:03.854	1	1	229	1
+282	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:04.351	1	1	230	1
+283	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:04.769	1	1	231	1
+284	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:05.011	1	1	232	1
+285	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:05.251	1	1	233	1
+286	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:05.495	1	1	234	1
+287	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:05.799	1	1	235	1
+288	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:06.283	1	1	236	1
+289	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:06.756	1	1	237	1
+290	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:07.218	1	1	238	1
+291	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:07.537	1	1	239	1
+292	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:07.781	1	1	240	1
+293	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:08.024	1	1	241	1
+294	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:08.262	1	1	242	1
+295	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:08.624	1	1	243	1
+296	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:09.114	1	1	244	1
+297	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:09.646	1	1	245	1
+298	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:10.059	1	1	246	1
+299	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:10.301	1	1	247	1
+300	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:10.55	1	1	248	1
+301	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:10.794	1	1	249	1
+302	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:11.124	1	1	250	1
+303	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:11.606	1	1	251	1
+304	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:12.128	1	1	252	1
+305	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:12.535	1	1	253	1
+306	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:12.789	1	1	254	1
+307	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:13.028	1	1	255	1
+308	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:13.284	1	1	256	1
+309	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:13.593	1	1	257	1
+310	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:14.103	1	1	258	1
+311	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:14.603	1	1	259	1
+312	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:15.064	1	1	260	1
+313	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:15.356	1	1	261	1
+314	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:15.609	1	1	262	1
+315	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:15.84	1	1	263	1
+316	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:16.125	1	1	264	1
+317	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:16.992	1	1	265	1
+318	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:17.463	1	1	266	1
+319	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:17.748	1	1	267	1
+320	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:17.991	1	1	268	1
+321	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:18.237	1	1	269	1
+322	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:18.483	1	1	270	1
+323	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:18.891	1	1	271	1
+324	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:19.443	1	1	272	1
+325	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:19.908	1	1	273	1
+326	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:20.306	1	1	274	1
+327	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:20.544	1	1	275	1
+328	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:20.789	1	1	276	1
+329	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:21.031	1	1	277	1
+330	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:21.367	1	1	278	1
+331	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:21.842	1	1	279	1
+332	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:22.352	1	1	280	1
+333	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:22.793	1	1	281	1
+334	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:23.09	1	1	282	1
+335	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:23.332	1	1	283	1
+336	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:23.575	1	1	284	1
+337	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:23.823	1	1	285	1
+338	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:24.248	1	1	286	1
+339	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:24.723	1	1	287	1
+340	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:25.239	1	1	288	1
+341	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:25.6	1	1	289	1
+342	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:25.855	1	1	290	1
+343	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:26.105	1	1	291	1
+344	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:26.343	1	1	292	1
+345	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:26.678	1	1	293	1
+346	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:27.174	1	1	294	1
+347	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:27.656	1	1	295	1
+348	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:28.076	1	1	296	1
+349	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:28.313	1	1	297	1
+350	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:28.567	1	1	298	1
+351	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:28.82	1	1	299	1
+352	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:29.154	1	1	300	1
+353	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:29.617	1	1	301	1
+354	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:30.086	1	1	302	1
+355	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:30.642	1	1	303	1
+356	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:30.912	1	1	304	1
+357	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:31.143	1	1	305	1
+358	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:31.385	1	1	306	1
+359	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:31.624	1	1	307	1
+360	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:32.93	1	1	308	1
+361	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:33.183	1	1	309	1
+362	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:33.425	1	1	310	1
+363	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:33.755	1	1	311	1
+364	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:34.226	1	1	312	1
+365	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:34.748	1	1	313	1
+366	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:35.033	1	1	314	1
+367	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:35.292	1	1	315	1
+368	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:35.532	1	1	316	1
+369	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:35.776	1	1	317	1
+370	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:36.186	1	1	318	1
+371	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:36.682	1	1	319	1
+372	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:37.148	1	1	320	1
+373	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:37.53	1	1	321	1
+374	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:37.786	1	1	322	1
+375	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:38.035	1	1	323	1
+376	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:38.279	1	1	324	1
+377	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:38.598	1	1	325	1
+378	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:39.026	1	1	326	1
+379	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:39.505	1	1	327	1
+380	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:39.965	1	1	328	1
+381	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:40.287	1	1	329	1
+382	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:40.53	1	1	330	1
+383	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:40.771	1	1	331	1
+384	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:41.024	1	1	332	1
+385	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:41.422	1	1	333	1
+386	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:41.923	1	1	334	1
+387	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:42.441	1	1	335	1
+388	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:42.831	1	1	336	1
+389	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:43.069	1	1	337	1
+390	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:43.304	1	1	338	1
+391	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:43.551	1	1	339	1
+392	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:43.858	1	1	340	1
+393	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:44.319	1	1	341	1
+394	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:44.793	1	1	342	1
+395	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:45.219	1	1	343	1
+396	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:45.622	1	1	344	1
+397	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:45.866	1	1	345	1
+398	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:46.114	1	1	346	1
+399	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:46.351	1	1	347	1
+400	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:46.67	1	1	348	1
+401	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:47.167	1	1	349	1
+402	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:47.647	1	1	350	1
+403	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:48.083	1	1	351	1
+404	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:48.32	1	1	352	1
+405	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:48.57	1	1	353	1
+406	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:48.816	1	1	354	1
+407	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:49.153	1	1	355	1
+408	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:49.613	1	1	356	1
+409	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:50.094	1	1	357	1
+410	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:50.598	1	1	358	1
+411	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:50.906	1	1	359	1
+412	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:51.158	1	1	360	1
+413	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:51.398	1	1	361	1
+414	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:51.653	1	1	362	1
+415	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:52.13	1	1	363	1
+416	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:52.641	1	1	364	1
+417	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:53.142	1	1	365	1
+418	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:53.421	1	1	366	1
+419	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:53.678	1	1	367	1
+420	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:53.916	1	1	368	1
+421	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:54.162	1	1	369	1
+422	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:54.628	1	1	370	1
+423	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:55.133	1	1	371	1
+424	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:55.6	1	1	372	1
+425	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:55.88	1	1	373	1
+426	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:56.129	1	1	374	1
+427	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:56.372	1	1	375	1
+428	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:56.613	1	1	376	1
+429	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:57.028	1	1	377	1
+430	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:57.555	1	1	378	1
+431	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:58.048	1	1	379	1
+432	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:58.376	1	1	380	1
+433	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:58.621	1	1	381	1
+434	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:58.865	1	1	382	1
+435	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:59.099	1	1	383	1
+436	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:59.443	1	1	384	1
+437	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:59.924	1	1	385	1
+438	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:00.426	1	1	386	1
+439	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:00.901	1	1	387	1
+440	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:01.187	1	1	388	1
+441	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:01.438	1	1	389	1
+442	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:01.689	1	1	390	1
+443	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:01.944	1	1	391	1
+444	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:02.394	1	1	392	1
+445	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:02.883	1	1	393	1
+446	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:03.381	1	1	394	1
+447	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:03.721	1	1	395	1
+448	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:03.971	1	1	396	1
+449	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:04.212	1	1	397	1
+450	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:04.464	1	1	398	1
+451	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:04.822	1	1	399	1
+452	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:05.322	1	1	400	1
+453	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:05.844	1	1	401	1
+454	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:06.172	1	1	402	1
+455	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:06.427	1	1	403	1
+456	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:06.668	1	1	404	1
+457	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:06.91	1	1	405	1
+458	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:07.316	1	1	406	1
+459	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:07.794	1	1	407	1
+460	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:08.31	1	1	408	1
+461	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:08.696	1	1	409	1
+462	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:08.938	1	1	410	1
+463	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:09.173	1	1	411	1
+464	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:09.421	1	1	412	1
+465	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:09.768	1	1	413	1
+466	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:10.256	1	1	414	1
+467	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:10.742	1	1	415	1
+468	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:11.187	1	1	416	1
+469	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:11.43	1	1	417	1
+470	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:11.669	1	1	418	1
+471	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:11.919	1	1	419	1
+472	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:12.234	1	1	420	1
+473	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:12.703	1	1	421	1
+474	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:13.171	1	1	422	1
+475	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:13.659	1	1	423	1
+476	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:13.969	1	1	424	1
+477	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:14.211	1	1	425	1
+478	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:14.453	1	1	426	1
+479	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:14.705	1	1	427	1
+480	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:15.095	1	1	428	1
+481	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:15.526	1	1	429	1
+482	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:15.945	1	1	430	1
+483	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:16.613	1	1	431	1
+484	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:16.861	1	1	432	1
+485	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:17.109	1	1	433	1
+486	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:17.369	1	1	434	1
+487	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:17.67	1	1	435	1
+488	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:18.19	1	1	436	1
+489	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:18.674	1	1	437	1
+490	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:19.12	1	1	438	1
+491	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:19.416	1	1	439	1
+492	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:19.668	1	1	440	1
+493	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:19.924	1	1	441	1
+494	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:20.164	1	1	442	1
+495	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:20.604	1	1	443	1
+496	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:21.08	1	1	444	1
+497	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:21.557	1	1	445	1
+498	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:21.947	1	1	446	1
+499	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:22.19	1	1	447	1
+500	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:22.446	1	1	448	1
+501	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:22.689	1	1	449	1
+502	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:23.052	1	1	450	1
+503	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:23.533	1	1	451	1
+504	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:23.985	1	1	452	1
+505	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:24.451	1	1	453	1
+506	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:24.746	1	1	454	1
+507	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:25.006	1	1	455	1
+508	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:25.245	1	1	456	1
+509	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:25.49	1	1	457	1
+510	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:25.919	1	1	458	1
+511	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:26.387	1	1	459	1
+512	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:26.849	1	1	460	1
+513	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:27.251	1	1	461	1
+514	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:27.501	1	1	462	1
+515	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:27.741	1	1	463	1
+516	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:27.992	1	1	464	1
+517	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:28.283	1	1	465	1
+518	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:28.769	1	1	466	1
+519	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:29.25	1	1	467	1
+520	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:29.724	1	1	468	1
+521	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:30.027	1	1	469	1
+522	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:30.262	1	1	470	1
+523	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:30.513	1	1	471	1
+524	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:30.76	1	1	472	1
+525	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:31.185	1	1	473	1
+526	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:31.668	1	1	474	1
+527	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:32.169	1	1	475	1
+528	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:32.562	1	1	476	1
+529	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:32.8	1	1	477	1
+530	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:33.059	1	1	478	1
+531	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:33.301	1	1	479	1
+532	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:33.628	1	1	480	1
+533	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:34.093	1	1	481	1
+534	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:34.638	1	1	482	1
+535	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:35.16	1	1	483	1
+536	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:35.399	1	1	484	1
+537	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:35.661	1	1	485	1
+538	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:35.917	1	1	486	1
+539	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:36.325	1	1	487	1
+540	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:36.853	1	1	488	1
+541	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:37.337	1	1	489	1
+542	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:37.724	1	1	490	1
+543	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:37.972	1	1	491	1
+544	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:38.219	1	1	492	1
+545	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:38.464	1	1	493	1
+546	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:38.796	1	1	494	1
+547	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:39.259	1	1	495	1
+548	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:39.698	1	1	496	1
+549	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:40.16	1	1	497	1
+550	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:40.476	1	1	498	1
+551	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:40.725	1	1	499	1
+552	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:40.97	1	1	500	1
+553	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:41.217	1	1	501	1
+554	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:41.625	1	1	502	1
+555	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:42.073	1	1	503	1
+556	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:42.548	1	1	504	1
+557	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:43.021	1	1	505	1
+558	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:43.304	1	1	506	1
+559	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:43.556	1	1	507	1
+560	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:43.811	1	1	508	1
+561	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:44.053	1	1	509	1
+562	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:44.507	1	1	510	1
+563	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:44.983	1	1	511	1
+564	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:45.435	1	1	512	1
+565	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:45.784	1	1	513	1
+566	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:46.042	1	1	514	1
+567	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:46.303	1	1	515	1
+568	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:46.546	1	1	516	1
+569	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:46.908	1	1	517	1
+570	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:47.367	1	1	518	1
+571	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:47.833	1	1	519	1
+572	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:48.325	1	1	520	1
+573	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:48.597	1	1	521	1
+574	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:48.856	1	1	522	1
+575	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:49.1	1	1	523	1
+576	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:49.337	1	1	524	1
+577	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:49.796	1	1	525	1
+578	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:50.246	1	1	526	1
+579	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:50.738	1	1	527	1
+580	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:51.102	1	1	528	1
+581	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:51.361	1	1	529	1
+582	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:51.606	1	1	530	1
+583	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:51.851	1	1	531	1
+584	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:52.268	1	1	532	1
+585	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:52.759	1	1	533	1
+586	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:53.214	1	1	534	1
+587	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:53.635	1	1	535	1
+588	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:53.895	1	1	536	1
+589	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:54.139	1	1	537	1
+590	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:54.372	1	1	538	1
+591	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:54.733	1	1	539	1
+592	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:55.206	1	1	540	1
+593	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:55.72	1	1	541	1
+594	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:56.113	1	1	542	1
+595	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:56.356	1	1	543	1
+596	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:56.613	1	1	544	1
+597	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:56.853	1	1	545	1
+598	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:57.165	1	1	546	1
+599	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:57.627	1	1	547	1
+600	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:58.108	1	1	548	1
+601	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:58.59	1	1	549	1
+602	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:58.909	1	1	550	1
+603	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:59.157	1	1	551	1
+604	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:59.394	1	1	552	1
+605	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:59.644	1	1	553	1
+606	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:00.048	1	1	554	1
+607	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:00.501	1	1	555	1
+608	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:00.991	1	1	556	1
+609	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:01.424	1	1	557	1
+610	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:02.218	1	1	558	1
+611	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:02.582	1	1	559	1
+612	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:03.031	1	1	560	1
+613	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:03.32	1	1	561	1
+614	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:03.556	1	1	562	1
+615	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:03.821	1	1	563	1
+616	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:04.062	1	1	564	1
+617	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:04.403	1	1	565	1
+618	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:04.842	1	1	566	1
+619	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:05.253	1	1	567	1
+620	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:05.728	1	1	568	1
+621	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:06.108	1	1	569	1
+622	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:06.35	1	1	570	1
+623	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:06.6	1	1	571	1
+624	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:06.841	1	1	572	1
+625	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:07.118	1	1	573	1
+626	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:07.578	1	1	574	1
+627	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:08.058	1	1	575	1
+628	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:08.529	1	1	576	1
+629	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:08.926	1	1	577	1
+630	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:09.182	1	1	578	1
+631	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:09.431	1	1	579	1
+632	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:09.674	1	1	580	1
+633	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:10.028	1	1	581	1
+634	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:10.493	1	1	582	1
+635	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:10.992	1	1	583	1
+636	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:11.422	1	1	584	1
+637	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:11.67	1	1	585	1
+638	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:11.91	1	1	586	1
+639	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:12.15	1	1	587	1
+640	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:12.451	1	1	588	1
+641	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:12.921	1	1	589	1
+642	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:13.36	1	1	590	1
+643	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:13.819	1	1	591	1
+644	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:14.139	1	1	592	1
+645	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:14.379	1	1	593	1
+646	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:14.625	1	1	594	1
+647	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:14.864	1	1	595	1
+648	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:15.229	1	1	596	1
+649	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:15.696	1	1	597	1
+650	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:16.446	1	1	598	1
+651	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:16.825	1	1	599	1
+652	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:17.071	1	1	600	1
+653	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:17.31	1	1	601	1
+654	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:17.545	1	1	602	1
+655	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:18.003	1	1	603	1
+656	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:18.506	1	1	604	1
+657	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:19.008	1	1	605	1
+658	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:19.323	1	1	606	1
+659	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:19.556	1	1	607	1
+660	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:19.805	1	1	608	1
+661	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:20.04	1	1	609	1
+662	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:20.456	1	1	610	1
+663	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:20.95	1	1	611	1
+664	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:21.397	1	1	612	1
+665	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:21.839	1	1	613	1
+666	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:22.095	1	1	614	1
+667	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:22.337	1	1	615	1
+668	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:22.571	1	1	616	1
+669	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:22.82	1	1	617	1
+670	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:23.315	1	1	618	1
+671	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:23.812	1	1	619	1
+672	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:24.302	1	1	620	1
+673	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:24.593	1	1	621	1
+674	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:24.849	1	1	622	1
+675	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:25.089	1	1	623	1
+676	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:25.328	1	1	624	1
+677	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:25.744	1	1	625	1
+678	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:26.223	1	1	626	1
+679	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:26.727	1	1	627	1
+680	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:27.111	1	1	628	1
+681	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:27.361	1	1	629	1
+682	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:27.6	1	1	630	1
+683	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:27.847	1	1	631	1
+684	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:28.155	1	1	632	1
+685	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:28.623	1	1	633	1
+686	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:29.098	1	1	634	1
+687	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:29.562	1	1	635	1
+688	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:29.935	1	1	636	1
+689	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:30.176	1	1	637	1
+690	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:30.413	1	1	638	1
+691	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:30.659	1	1	639	1
+692	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:30.975	1	1	640	1
+693	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:31.448	1	1	641	1
+694	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:31.948	1	1	642	1
+695	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:32.369	1	1	643	1
+696	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:32.614	1	1	644	1
+697	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:32.848	1	1	645	1
+698	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:33.085	1	1	646	1
+699	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:33.401	1	1	647	1
+700	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:33.888	1	1	648	1
+701	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:34.388	1	1	649	1
+702	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:34.853	1	1	650	1
+703	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:35.139	1	1	651	1
+704	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:35.382	1	1	652	1
+705	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:35.619	1	1	653	1
+706	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:35.875	1	1	654	1
+707	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:36.273	1	1	655	1
+708	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:36.755	1	1	656	1
+709	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:37.266	1	1	657	1
+710	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:37.66	1	1	658	1
+711	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:37.911	1	1	659	1
+712	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:38.145	1	1	660	1
+713	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:38.387	1	1	661	1
+714	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:38.724	1	1	662	1
+715	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:39.212	1	1	663	1
+716	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:39.703	1	1	664	1
+717	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:40.181	1	1	665	1
+718	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:40.475	1	1	666	1
+719	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:40.713	1	1	667	1
+720	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:40.97	1	1	668	1
+721	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:41.214	1	1	669	1
+722	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:41.654	1	1	670	1
+723	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:42.118	1	1	671	1
+724	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:42.618	1	1	672	1
+725	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:42.943	1	1	673	1
+726	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:43.179	1	1	674	1
+727	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:43.423	1	1	675	1
+728	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:43.669	1	1	676	1
+729	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:44.012	1	1	677	1
+730	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:44.504	1	1	678	1
+731	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:45.001	1	1	679	1
+732	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:45.486	1	1	680	1
+733	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:45.724	1	1	681	1
+734	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:45.969	1	1	682	1
+735	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:46.222	1	1	683	1
+736	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:46.46	1	1	684	1
+737	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:46.892	1	1	685	1
+738	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:47.348	1	1	686	1
+739	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:47.811	1	1	687	1
+740	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:48.224	1	1	688	1
+741	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:48.473	1	1	689	1
+742	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:48.723	1	1	690	1
+743	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:48.961	1	1	691	1
+744	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:49.269	1	1	692	1
+745	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:49.759	1	1	693	1
+746	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:50.218	1	1	694	1
+747	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:50.733	1	1	695	1
+748	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:51.044	1	1	696	1
+749	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:51.291	1	1	697	1
+750	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:51.526	1	1	698	1
+751	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:51.784	1	1	699	1
+752	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:52.193	1	1	700	1
+753	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:52.673	1	1	701	1
+754	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:53.171	1	1	702	1
+755	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:53.505	1	1	703	1
+756	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:53.759	1	1	704	1
+757	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:53.999	1	1	705	1
+758	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:54.236	1	1	706	1
+759	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:54.575	1	1	707	1
+760	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:55.067	1	1	708	1
+761	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:55.521	1	1	709	1
+762	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:56.006	1	1	710	1
+763	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:56.303	1	1	711	1
+764	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:56.549	1	1	712	1
+765	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:56.793	1	1	713	1
+766	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:57.038	1	1	714	1
+767	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:57.426	1	1	715	1
+768	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:57.888	1	1	716	1
+769	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:58.405	1	1	717	1
+770	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:58.822	1	1	718	1
+771	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:59.076	1	1	719	1
+772	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:59.322	1	1	720	1
+773	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:59.572	1	1	721	1
+774	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:59.9	1	1	722	1
+775	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:00.343	1	1	723	1
+776	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:00.837	1	1	724	1
+777	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:01.327	1	1	725	1
+778	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:01.617	1	1	726	1
+779	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:01.864	1	1	727	1
+780	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:02.112	1	1	728	1
+781	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:02.355	1	1	729	1
+782	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:02.738	1	1	730	1
+783	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:03.208	1	1	731	1
+784	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:03.685	1	1	732	1
+785	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:04.125	1	1	733	1
+786	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:04.369	1	1	734	1
+787	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:04.621	1	1	735	1
+788	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:04.866	1	1	736	1
+789	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:05.192	1	1	737	1
+790	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:05.695	1	1	738	1
+791	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:06.178	1	1	739	1
+792	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:06.605	1	1	740	1
+793	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:06.842	1	1	741	1
+794	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:07.093	1	1	742	1
+795	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:07.332	1	1	743	1
+796	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:07.626	1	1	744	1
+797	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:08.088	1	1	745	1
+798	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:08.585	1	1	746	1
+799	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:09.061	1	1	747	1
+800	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:09.375	1	1	748	1
+801	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:09.62	1	1	749	1
+802	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:09.877	1	1	750	1
+803	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:10.108	1	1	751	1
+804	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:10.544	1	1	752	1
+805	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:10.966	1	1	753	1
+806	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:11.484	1	1	754	1
+807	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:11.901	1	1	755	1
+808	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:12.153	1	1	756	1
+809	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:12.397	1	1	757	1
+810	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:12.656	1	1	758	1
+811	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:12.989	1	1	759	1
+812	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:13.441	1	1	760	1
+813	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:13.977	1	1	761	1
+814	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:14.377	1	1	762	1
+815	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:14.627	1	1	763	1
+816	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:14.885	1	1	764	1
+817	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:15.121	1	1	765	1
+818	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:15.436	1	1	766	1
+819	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:15.918	1	1	767	1
+820	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:16.813	1	1	768	1
+821	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:17.095	1	1	769	1
+822	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:17.337	1	1	770	1
+823	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:17.576	1	1	771	1
+824	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:17.825	1	1	772	1
+825	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:18.23	1	1	773	1
+826	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:18.717	1	1	774	1
+827	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:19.193	1	1	775	1
+828	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:19.589	1	1	776	1
+829	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:19.829	1	1	777	1
+830	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:20.078	1	1	778	1
+831	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:20.32	1	1	779	1
+832	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:20.626	1	1	780	1
+833	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:21.082	1	1	781	1
+834	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:21.579	1	1	782	1
+835	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:22.074	1	1	783	1
+836	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:22.382	1	1	784	1
+837	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:22.633	1	1	785	1
+838	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:22.886	1	1	786	1
+839	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:23.139	1	1	787	1
+840	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:23.518	1	1	788	1
+841	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:23.964	1	1	789	1
+842	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:24.452	1	1	790	1
+843	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:24.875	1	1	791	1
+844	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:25.179	1	1	792	1
+845	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:25.422	1	1	793	1
+846	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:25.68	1	1	794	1
+847	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:25.923	1	1	795	1
+848	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:26.388	1	1	796	1
+849	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:26.861	1	1	797	1
+850	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:27.364	1	1	798	1
+851	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:27.676	1	1	799	1
+852	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:27.937	1	1	800	1
+853	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:28.183	1	1	801	1
+854	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:28.433	1	1	802	1
+855	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:28.841	1	1	803	1
+856	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:29.312	1	1	804	1
+857	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:29.765	1	1	805	1
+858	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:30.208	1	1	806	1
+859	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:30.487	1	1	807	1
+860	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:30.736	1	1	808	1
+861	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:30.994	1	1	809	1
+862	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:31.235	1	1	810	1
+863	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:31.651	1	1	811	1
+864	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:32.148	1	1	812	1
+865	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:32.588	1	1	813	1
+866	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:33.03	1	1	814	1
+867	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:33.314	1	1	815	1
+868	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:33.555	1	1	816	1
+869	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:33.789	1	1	817	1
+870	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:34.045	1	1	818	1
+871	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:34.516	1	1	819	1
+872	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:35.138	1	1	820	1
+873	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:35.601	1	1	821	1
+874	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:35.975	1	1	822	1
+875	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:36.212	1	1	823	1
+876	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:36.458	1	1	824	1
+877	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:36.694	1	1	825	1
+878	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:37	1	1	826	1
+879	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:37.478	1	1	827	1
+880	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:37.928	1	1	828	1
+881	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:38.381	1	1	829	1
+882	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:38.766	1	1	830	1
+883	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:39.003	1	1	831	1
+884	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:39.248	1	1	832	1
+885	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:39.482	1	1	833	1
+886	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:39.811	1	1	834	1
+887	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:40.3	1	1	835	1
+888	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:40.81	1	1	836	1
+889	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:41.244	1	1	837	1
+890	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:41.49	1	1	838	1
+891	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:41.736	1	1	839	1
+892	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:41.981	1	1	840	1
+893	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:42.297	1	1	841	1
+894	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:42.803	1	1	842	1
+895	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:43.263	1	1	843	1
+896	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:43.752	1	1	844	1
+897	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:44.046	1	1	845	1
+898	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:44.295	1	1	846	1
+899	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:44.54	1	1	847	1
+900	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:44.802	1	1	848	1
+901	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:45.211	1	1	849	1
+902	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:45.677	1	1	850	1
+903	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:46.154	1	1	851	1
+904	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:46.56	1	1	852	1
+905	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:46.81	1	1	853	1
+906	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:47.061	1	1	854	1
+907	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:47.303	1	1	855	1
+908	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:47.633	1	1	856	1
+909	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:48.09	1	1	857	1
+910	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:48.539	1	1	858	1
+911	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:49.036	1	1	859	1
+912	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:49.353	1	1	860	1
+913	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:49.589	1	1	861	1
+914	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:49.834	1	1	862	1
+915	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:50.076	1	1	863	1
+916	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:50.517	1	1	864	1
+917	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:50.984	1	1	865	1
+918	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:51.488	1	1	866	1
+919	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:51.861	1	1	867	1
+920	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:52.104	1	1	868	1
+921	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:52.351	1	1	869	1
+922	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:52.594	1	1	870	1
+923	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:52.918	1	1	871	1
+924	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:53.419	1	1	872	1
+925	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:53.867	1	1	873	1
+926	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:54.383	1	1	874	1
+927	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:54.629	1	1	875	1
+928	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:54.883	1	1	876	1
+929	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:55.113	1	1	877	1
+930	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:55.445	1	1	878	1
+931	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:55.909	1	1	879	1
+932	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:56.371	1	1	880	1
+933	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:56.852	1	1	881	1
+934	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:57.143	1	1	882	1
+935	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:57.383	1	1	883	1
+936	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:57.632	1	1	884	1
+937	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:57.876	1	1	885	1
+938	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:58.31	1	1	886	1
+939	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:58.816	1	1	887	1
+940	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:59.294	1	1	888	1
+941	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:59.619	1	1	889	1
+942	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:59.873	1	1	890	1
+943	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:00.111	1	1	891	1
+944	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:00.388	1	1	892	1
+945	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:00.83	1	1	893	1
+946	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:01.331	1	1	894	1
+947	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:01.848	1	1	895	1
+948	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:02.149	1	1	896	1
+949	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:02.4	1	1	897	1
+950	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:02.644	1	1	898	1
+951	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:02.894	1	1	899	1
+952	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:03.344	1	1	900	1
+953	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:03.845	1	1	901	1
+954	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:04.319	1	1	902	1
+955	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:04.646	1	1	903	1
+956	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:04.907	1	1	904	1
+957	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:05.143	1	1	905	1
+958	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:05.394	1	1	906	1
+959	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:05.812	1	1	907	1
+960	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:06.251	1	1	908	1
+961	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:06.748	1	1	909	1
+962	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:07.163	1	1	910	1
+963	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:07.406	1	1	911	1
+964	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:07.659	1	1	912	1
+965	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:07.899	1	1	913	1
+966	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:08.238	1	1	914	1
+967	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:08.654	1	1	915	1
+968	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:09.112	1	1	916	1
+969	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:09.565	1	1	917	1
+970	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:10.002	1	1	918	1
+971	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:10.263	1	1	919	1
+972	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:10.499	1	1	920	1
+973	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:10.741	1	1	921	1
+974	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:10.978	1	1	922	1
+975	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:11.416	1	1	923	1
+976	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:11.944	1	1	924	1
+977	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:12.425	1	1	925	1
+978	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:12.793	1	1	926	1
+979	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:13.04	1	1	927	1
+980	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:13.283	1	1	928	1
+981	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:13.53	1	1	929	1
+982	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:13.855	1	1	930	1
+983	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:14.329	1	1	931	1
+984	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:14.83	1	1	932	1
+985	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:15.253	1	1	933	1
+986	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:15.499	1	1	934	1
+987	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:15.744	1	1	935	1
+988	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:15.998	1	1	936	1
+989	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:16.573	1	1	937	1
+990	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:17.128	1	1	938	1
+991	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:17.657	1	1	939	1
+992	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:17.9	1	1	940	1
+993	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:18.134	1	1	941	1
+994	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:18.393	1	1	942	1
+995	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:18.658	1	1	943	1
+996	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:19.122	1	1	944	1
+997	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:19.62	1	1	945	1
+998	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:20.067	1	1	946	1
+999	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:20.399	1	1	947	1
+1000	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:20.643	1	1	948	1
+1001	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:20.897	1	1	949	1
+1002	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:21.135	1	1	950	1
+1003	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:21.464	1	1	951	1
+1004	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:21.952	1	1	952	1
+1005	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:22.474	1	1	953	1
+1006	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:22.95	1	1	954	1
+1007	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:23.237	1	1	955	1
+1008	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:23.476	1	1	956	1
+1009	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:23.721	1	1	957	1
+1010	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:23.957	1	1	958	1
+1011	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:24.353	1	1	959	1
+1012	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:24.89	1	1	960	1
+1013	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:25.309	1	1	961	1
+1014	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:25.696	1	1	962	1
+1015	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:25.937	1	1	963	1
+1016	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:26.192	1	1	964	1
+1017	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:26.436	1	1	965	1
+1018	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:26.748	1	1	966	1
+1019	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:27.23	1	1	967	1
+1020	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:27.729	1	1	968	1
+1021	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:28.22	1	1	969	1
+1022	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:28.526	1	1	970	1
+1023	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:28.773	1	1	971	1
+1024	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:29.017	1	1	972	1
+1025	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:29.254	1	1	973	1
+1026	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:29.696	1	1	974	1
+1027	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:30.184	1	1	975	1
+1028	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:30.686	1	1	976	1
+1029	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:31.063	1	1	977	1
+1030	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:31.301	1	1	978	1
+1031	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:31.546	1	1	979	1
+1032	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:31.798	1	1	980	1
+1033	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:32.139	1	1	981	1
+1034	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:32.618	1	1	982	1
+1035	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:33.084	1	1	983	1
+1036	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:33.532	1	1	984	1
+1037	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:33.838	1	1	985	1
+1038	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:34.094	1	1	986	1
+1039	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:34.334	1	1	987	1
+1040	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:34.59	1	1	988	1
+1041	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:34.977	1	1	989	1
+1042	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:35.443	1	1	990	1
+1043	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:35.949	1	1	991	1
+1044	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:36.334	1	1	992	1
+1045	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:36.579	1	1	993	1
+1046	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:36.827	1	1	994	1
+1047	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:37.084	1	1	995	1
+1048	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:37.411	1	1	996	1
+1049	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:37.875	1	1	997	1
+1050	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:38.323	1	1	998	1
+1051	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:38.796	1	1	999	1
+1052	\N	\N	\N	\N	\N	\N	\N	Baggins	Bilbo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:39.089	1	1	1000	1
+1053	\N	\N	\N	\N	\N	\N	\N	Baggins	Bilbo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:39.333	1	1	1001	1
+1054	\N	123 Main Rd.	\N	Vancouver	BC	V6B2E2	CA	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:39.595	1	1	1002	1
+1055	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	61	2	55512345	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:39.84	1	1	1003	1
+1056	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:40.24	1	1	1004	1
+1057	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:40.741	1	1	1005	1
+1058	\N	321 Main Rd.	\N	Vancouver	BC	V6B2E2	CA	LastName	Frodo	\N	\N	61	2	55554321	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:41.21	1	1	1006	1
+1059	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:41.607	1	1	1007	1
+1060	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:41.862	1	1	1008	1
+1061	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:42.131	1	1	1009	1
+1062	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:42.378	1	1	1010	1
+1063	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:42.705	1	1	1011	1
+1064	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:43.171	1	1	1012	1
+1065	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:43.638	1	1	1013	1
+1066	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:44.114	1	1	1014	1
+1067	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:44.413	1	1	1015	1
+1068	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:44.67	1	1	1016	1
+1069	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:44.929	1	1	1017	1
+1070	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:45.173	1	1	1018	1
+1071	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:45.63	1	1	1019	1
+1072	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:46.123	1	1	1020	1
+1073	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:46.576	1	1	1021	1
+1074	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:46.886	1	1	1022	1
+1075	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:47.132	1	1	1023	1
+1076	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:47.383	1	1	1024	1
+1077	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:47.639	1	1	1025	1
+1078	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:48.042	1	1	1026	1
+1079	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:48.511	1	1	1027	1
+1080	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:49.077	1	1	1028	1
+1081	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:49.422	1	1	1029	1
+1082	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:49.679	1	1	1030	1
+1083	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:49.918	1	1	1031	1
+1084	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:50.166	1	1	1032	1
+1085	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:50.548	1	1	1033	1
+1086	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:51.006	1	1	1034	1
+1087	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:51.509	1	1	1035	1
+1088	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:51.974	1	1	1036	1
+1089	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:52.269	1	1	1037	1
+1090	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:52.51	1	1	1038	1
+1091	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:52.753	1	1	1039	1
+1092	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:53.01	1	1	1040	1
+1093	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:53.459	1	1	1041	1
+1094	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:53.938	1	1	1042	1
+1095	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:54.373	1	1	1043	1
+1096	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:54.785	1	1	1044	1
+1097	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:55.025	1	1	1045	1
+1098	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:55.27	1	1	1046	1
+1099	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:55.52	1	1	1047	1
+1100	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:55.835	1	1	1048	1
+1101	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:56.298	1	1	1049	1
+1102	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:56.816	1	1	1050	1
+1103	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:57.221	1	1	1051	1
+1104	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:57.47	1	1	1052	1
+1105	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:57.715	1	1	1053	1
+1106	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:57.983	1	1	1054	1
+1107	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:58.301	1	1	1055	1
+1108	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:58.744	1	1	1056	1
+1109	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:59.216	1	1	1057	1
+1110	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:59.668	1	1	1058	1
+1111	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:00.061	1	1	1059	1
+1112	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:00.3	1	1	1060	1
+1113	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:00.549	1	1	1061	1
+1114	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:00.801	1	1	1062	1
+1115	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:01.126	1	1	1063	1
+1116	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:01.57	1	1	1064	1
+1117	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:02.09	1	1	1065	1
+1118	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:02.584	1	1	1066	1
+1119	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:02.874	1	1	1067	1
+1120	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:03.122	1	1	1068	1
+1121	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:03.364	1	1	1069	1
+1122	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:03.616	1	1	1070	1
+1123	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:04.076	1	1	1071	1
+1124	\N	\N	\N	\N	BC	\N	AF	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:04.579	1	1	1072	1
+112500	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	payment-router-currency-1@test.com	2009-04-08 22:00:53.927	1	1	10730	4
+112501	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	payment-router-currency-2@test.com	2009-04-08 22:01:32.286	1	1	10731	4
+112601	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner2@partners.com	2009-06-23 16:30:54.845	1	1	10741	1
+112607	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner-customer1@partners.com	2009-06-23 20:33:44.596	1	1	10746	1
+112608	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner-customer2@partners.com	2009-06-23 20:34:03.47	1	1	10747	1
+112609	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner-customer3@partners.com	2009-06-23 20:34:20.542	1	1	10748	1
+112600	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner1@partners.com	2009-06-23 16:25:44.594	1	1	10740	4
+112602	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner3@partners.com	2009-06-23 16:37:05.548	1	1	10742	4
+112603	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 10:10:01.034	1	1	10743	1
+112604	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 10:10:02.556	1	1	10744	1
+112800	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	a@a.com	2009-10-15 11:12:45.18	1	1	10750	1
+112900	Long Distance Plan A	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-01@test.com	2009-12-15 16:17:40.847	1	1	10760	5
+112901	Long Distance Plan B	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-02@test.com	2009-12-15 16:18:05.824	1	1	10761	4
+112902	Long Distance Plan, 1000 min	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-03@test.com	2009-12-15 16:18:30.48	1	1	10762	4
+113000	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-04@test.com	2009-12-17 13:25:11.977	1	1	10770	1
+113001	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-05@test.com	2009-12-17 13:25:32.606	1	1	10771	1
+113002	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-06@test.com	2009-12-17 13:34:24.15	1	1	10772	1
+113003	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-07@test.com	2009-12-17 13:34:40.954	1	1	10773	1
+113004	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-08@test.com	2009-12-17 13:35:04.242	1	1	10774	1
+113005	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-09@test.com	2009-12-17 13:35:15.887	1	1	10775	1
+113006	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-10@test.com	2009-12-17 13:36:45.165	1	1	10776	1
+113007	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-11@test.com	2009-12-17 13:37:21.137	1	1	10777	1
+113008	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-12@test.com	2009-12-17 13:37:33.539	1	1	10778	1
+113009	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-13@test.com	2009-12-17 13:38:25.725	1	1	10779	1
+113010	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-14@test.com	2009-12-17 13:38:54.151	1	1	10780	1
+113011	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-15@test.com	2009-12-17 13:39:09.738	1	1	10781	1
+11311	\N	"No. 5 Jalan McArthur, 45, 7th Floor"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivasan	Vasha	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10791	1
+11312	\N	"No. 1 Jalan McArthur, 4A, 4th Floor"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivas	Vashanti	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10792	1
+11313	\N	"No. 5, Jalan Budiman, Taman Kin"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivas	Thiru	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10793	1
+11314	\N	"Spg 2169, Unit No 9, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Said	Nasha	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10794	1
+11315	\N	"40, Jalan Simpang Empat"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Zahman	Rahim	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10795	1
+11316	\N	"No. 24A-2, Jalan Bebatik, Mukim Sengkurong"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohd	Zaiham	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10796	1
+11317	\N	"A-2, Jalan Simpang Empat"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Halim	Noor	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10797	1
+11318	\N	"68, Kampong Salar Industrial Estate,Spg 557, Jalan Muara"	\N	Bandar Seri Begawan	\N	BU1429	BR	Abdullah	Nizam	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10798	1
+11319	\N	"28-GB, Sri TTDI Apartment"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Abdullah	Zaman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10799	1
+11320	\N	"No. 7, Ground Floor, Jalan Roberts"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ibraham	Ahmad	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10800	1
+11321	\N	"20, Jalan TTDI,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Wong	George	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10801	1
+11322	\N	"Y-14-2, Tropicana Resort Jalan Simpang,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Lee	David	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10802	1
+11323	\N	"No. 715, Ground Floor, Jalan Roberts,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Krishna	Vasanthi	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10803	1
+114628	\N								Network Group	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:39.039	0	1	10954	1
+11324	\N	"56-ET, Sri TTDI Apartment,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Johan	Sanj	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10804	1
+11325	\N	"90, Jalan Simpang Empat,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	George	Anthony	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10805	1
+11326	\N	"No. 12, Ground Floor, Jalan Roberts,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Saad	Adrin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10806	1
+11327	\N	"No. 76A-2, Jalan Bebatik, Mukim Sengkurong,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Abdullah	Azhan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10807	1
+11328	\N	"290, Jalan TTDI,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ismail	Mohamed	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10808	1
+11329	\N	"No. 23, 1st Floor, Jalan Roberts,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ismail	Harun	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10809	1
+11330	\N	"Spg 2169, Unit No 15, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Saad	Azlin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10810	1
+11331	\N	"D5, Shakirin Complex, Simpang 88, Kiulap,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Julianna	Azlin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10811	1
+11332	\N	"523, Shakirin Parade, Simpang 20, Kiulap,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Krishna	Suriyah	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10812	1
+11333	\N	"11, Jalan Enggang,Taman Keramat Taman Keramat"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ariffin	Zarina	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10813	1
+11334	\N	"No. 5, Jalan Bebatik, Mukim Sengkurong,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohamed	Hamad	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10814	1
+11335	\N	"Lot 13 - 15, Serasa Industrial Complex. PO Box 1031 BSB,"	\N	Bandar Seri Begawan	\N	BS8672	BR	Mohd	Yus	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10815	1
+11336	\N	"Komplex Perindustrian Beribi II, Km7, Gadong,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohd	Saadiah	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10816	1
+11337	\N	"Spg 2169, Unit No 20, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ahmad	Yusof	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10817	1
+11338	\N	"No. 45, Serasa Industrial Complex. PO Box 1031 BSB,"	\N	Bandar Seri Begawan	\N	BS8672	BR	Yusof	Mohamed	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10818	1
+11339	\N	"43-WE, Sri TTDI Apartment,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Yusof	Zarina	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10819	1
+11340	\N	"12, Kampong CStar, Spg 57, Jalan Mara"	\N	Bandar Seri Begawan	\N	BU1429	BR	Hussien	Jeffrey	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10820	1
+11341	\N	"No. 75, Jalan Bebatik, Mukim Sengkurong,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Kasim	Azerina	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10821	1
+11342	\N	"Spg 2169, Unit No 25, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Johan	Eizu	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10822	1
+11343	\N	"18, Kampong AlorStar, Spg 557, Jalan Mutiara"	\N	Bandar Seri Begawan	\N	BU1429	BR	Budiman	Adnan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10823	1
+11344	\N	"263-AB, Sri TTDI Apartment,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Gordan	Jeffrey	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10824	1
+11345	\N	"D5, Sha Complex, Simpang 99, Kiulap,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Fitri	Nuryaman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10825	1
+11346	\N	"No. 35, Jalan Bebatik, Mukim Sengkurong,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Gregory	Johan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10826	1
+11347	\N	"214, Kampong Setia, Spg 57, Jalan Maju"	\N	Bandar Seri Begawan	\N	BU1429	BR	Abdullah	Noor	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10827	1
+11348	\N	"No. 124A-8, Jalan Bebatik, Mukim Sengkurong,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Smith	John	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10828	1
+11349	\N	"No. 56, Jalan PJS 1, MAS Garden,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Zaman	Zulkifli	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10829	1
+11350	\N	"123, Sha Parade, Simpang 99, Kiulap,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Abdullah	Din	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10830	1
+11351	\N	"99C Jalan Mckerron, Kuala Belait"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Hussien	Saiful	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10831	1
+11352	\N	"23, Jalan TTDI,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Chen	Gordan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10832	1
+11353	\N	"6, Kampong Salar Industrial Estate,Spg 557, Jalan Muara"	\N	Bandar Seri Begawan	\N	BU1429	BR	Hussien	Syalwa	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10833	1
+11354	\N	"65, Taman Bukit Jaya, Jalan Antarabangsa"	\N	Bandar Seri Begawan	\N	BU1429	BR	Halim	Azila	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10834	1
+11355	\N	"No. 3, Jalan PJS 91, MAS Garden,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Osman	Ahmad	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10835	1
+11356	\N	"61, Kampong Salar Industrial Estate,Spg 557, Jalan Muara"	\N	Bandar Seri Begawan	\N	BU1429	BR	Muhamad	Arifin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10836	1
+11357	\N	"65, Taman Desaria, Jalan Tegas"	\N	Bandar Seri Begawan	\N	BU1429	BR	Yusof	Osman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10837	1
+11358	\N	"No. 5, Jalan PJS 56, Mayang Garden,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohamad	Yusairi	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10838	1
+11359	\N	"201, Kampong Damai, Spg 57, Jalan Desa Cemerlang"	\N	Bandar Seri Begawan	\N	BU1429	BR	Zariff	Osman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10839	1
+11360	\N	"18, Kampong AlorStar, Spg 557, Jalan Mutiara"	\N	Bandar Seri Begawan	\N	BU1429	BR	Hussien	Adnan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10840	1
+114600	\N								XYZ Global Berhad	\N	\N	\N	\N		\N	\N	\N	mail@xyzglobal.com	2011-02-04 02:55:33.679	0	1	10940	1
+114601	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:55:33.764	0	1	\N	0
+114602	\N								CEO Global	\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:58:06.621	0	1	10941	1
+114603	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:58:06.666	0	1	\N	0
+114604	\N								XYZ AP	\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:59:40.027	0	1	10942	1
+114605	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:59:40.064	0	1	\N	0
+114606	\N								XYZ EU	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:00:21.381	0	1	10943	1
+114607	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:00:21.45	0	1	\N	0
+114608	\N								XYZ OT	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:00:47.046	0	1	10944	1
+114609	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:00:47.084	0	1	\N	0
+114610	\N								XYZ ASEAN	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:01:27.225	0	1	10945	1
+114611	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:01:27.256	0	1	\N	0
+114612	\N								XYZ Malaysia	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:02:47.713	0	1	10946	1
+114613	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:02:47.759	0	1	\N	0
+114614	\N								XYZ Brunei	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:03:14.132	0	1	10947	1
+114615	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:03:14.158	0	1	\N	0
+114616	\N								MD XYZ Brunei	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:04:08.25	0	1	10948	1
+114617	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:04:08.331	0	1	\N	0
+114618	\N								Marketing DIv	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:04:39.24	0	1	10949	1
+114619	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:04:39.268	0	1	\N	0
+114620	\N								Product DIV	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:05:04.061	0	1	10950	1
+114621	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:05:04.097	0	1	\N	0
+114622	\N								CS DIV	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:05:19.848	0	1	10951	1
+114623	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:05:19.903	0	1	\N	0
+114624	\N								Operation DIV	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:05:46.07	0	1	10952	1
+114625	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:05:46.1	0	1	\N	0
+114626	\N								Billing Group	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:14.737	0	1	10953	1
+114627	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:14.768	0	1	\N	0
+114632	\N								Others Group	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:07:11.815	0	1	10956	1
+114633	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:07:11.931	0	1	\N	0
 \.
 
 
@@ -6423,6 +6581,57 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 202506	3	112902		0
 202507	2	112902		0
 202508	1	112902		0
+202600	3	114600		0
+202601	2	114600		0
+202602	1	114600		0
+202603	3	114602		0
+202604	2	114602		0
+202605	1	114602		0
+202606	3	114604		0
+202607	2	114604		0
+202608	1	114604		0
+202609	3	114606		0
+202610	2	114606		0
+202611	1	114606		0
+202612	3	114608		0
+202613	2	114608		0
+202614	1	114608		0
+202615	3	114610		0
+202616	2	114610		0
+202617	1	114610		0
+202618	3	114612		0
+202619	2	114612		0
+202620	1	114612		0
+202621	3	114614		0
+202622	2	114614		0
+202623	1	114614		0
+202624	3	114616		0
+202625	2	114616		0
+202626	1	114616		0
+202627	3	114618		0
+202628	2	114618		0
+202629	1	114618		0
+202630	3	114620		0
+202631	2	114620		0
+202632	1	114620		0
+202633	3	114622		0
+202634	2	114622		0
+202635	1	114622		0
+202636	3	114624		0
+202637	2	114624		0
+202638	1	114624		0
+202639	3	114626		0
+202640	2	114626		0
+202641	1	114626		0
+202642	3	114628		0
+202643	2	114628		0
+202644	1	114628		0
+202645	3	114630		0
+202646	2	114630		0
+202647	1	114630		0
+202648	3	114632		0
+202649	2	114632		0
+202650	1	114632		0
 \.
 
 
@@ -6430,10 +6639,10 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 -- Data for Name: contact_field_type; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY contact_field_type (id, entity_id, prompt_key, data_type, customer_readonly) FROM stdin;
-1	1	partner.prompt.fee	string	1
-2	1	ccf.payment_processor	integer	1
-3	1	ccf.ip_address	string	1
+COPY contact_field_type (id, entity_id, prompt_key, data_type, customer_readonly, optlock) FROM stdin;
+1	1	partner.prompt.fee	string	1	0
+2	1	ccf.payment_processor	integer	1	0
+3	1	ccf.ip_address	string	1	0
 \.
 
 
@@ -7485,6 +7694,40 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 790909	113009	2	10	10779	1
 790910	113010	2	10	10780	1
 790911	113011	2	10	10781	1
+791000	114600	2	10	10940	1
+791001	114601	4	10	10940	1
+791002	114602	2	10	10941	1
+791003	114603	4	10	10941	1
+791004	114604	2	10	10942	1
+791005	114605	4	10	10942	1
+791006	114606	2	10	10943	1
+791007	114607	4	10	10943	1
+791008	114608	2	10	10944	1
+791009	114609	4	10	10944	1
+791010	114610	2	10	10945	1
+791011	114611	4	10	10945	1
+791012	114612	2	10	10946	1
+791013	114613	4	10	10946	1
+791014	114614	2	10	10947	1
+791015	114615	4	10	10947	1
+791016	114616	2	10	10948	1
+791017	114617	4	10	10948	1
+791018	114618	2	10	10949	1
+791019	114619	4	10	10949	1
+791020	114620	2	10	10950	1
+791021	114621	4	10	10950	1
+791022	114622	2	10	10951	1
+791023	114623	4	10	10951	1
+791024	114624	2	10	10952	1
+791025	114625	4	10	10952	1
+791026	114626	2	10	10953	1
+791027	114627	4	10	10953	1
+791028	114628	2	10	10954	1
+791029	114629	4	10	10954	1
+791030	114630	2	10	10955	1
+791031	114631	4	10	10955	1
+791032	114632	2	10	10956	1
+791033	114633	4	10	10956	1
 \.
 
 
@@ -9845,6 +10088,73 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 106909	10779	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107809	3	1	0.0000000000	0.0000000000	0.0000000000
 106910	10780	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107810	2	1	0.0000000000	0.0000000000	0.0000000000
 106911	10781	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107811	2	1	0.0000000000	0.0000000000	0.0000000000
+10710	10800	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10711	10801	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10712	10802	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10713	10803	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10714	10804	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10715	10805	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10716	10806	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10750	10840	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	1	1	\N	\N	\N
+10701	10791	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10702	10792	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10703	10793	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10704	10794	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10705	10795	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10706	10796	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10707	10797	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10708	10798	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10709	10799	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10717	10807	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10718	10808	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10719	10809	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10720	10810	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10721	10811	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10722	10812	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10723	10813	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10724	10814	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10725	10815	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10726	10816	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10727	10817	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10728	10818	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10729	10819	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10730	10820	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10731	10821	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10732	10822	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10733	10823	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10734	10824	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10735	10825	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10736	10826	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10737	10827	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10738	10828	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10739	10829	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10740	10830	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10741	10831	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10742	10832	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10743	10833	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10744	10834	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10745	10835	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10746	10836	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10747	10837	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10748	10838	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+10749	10839	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+108500	10940	\N	\N	1	\N	\N	\N	\N	\N	\N	1	0	\N	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108501	10941	\N	\N	1		\N	1	\N	\N	108500	1	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+108502	10942	\N	\N	1	\N	\N	\N	\N	\N	108500	1	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108503	10943	\N	\N	1	\N	\N	\N	\N	\N	108500	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108504	10944	\N	\N	1	\N	\N	\N	\N	\N	108500	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108505	10945	\N	\N	1		\N	1	\N	\N	108502	1	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+108506	10946	\N	\N	1	\N	\N	\N	\N	\N	108505	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108507	10947	\N	\N	1		\N	1	\N	\N	108505	1	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+108508	10948	\N	\N	1	\N	\N	\N	\N	\N	108507	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108509	10949	\N	\N	1	\N	\N	\N	\N	\N	108507	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108510	10950	\N	\N	1	\N	\N	\N	\N	\N	108507	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108511	10951	\N	\N	1	\N	\N	\N	\N	\N	108507	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108512	10952	\N	\N	1	\N	\N	\N	\N	\N	108507	1	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108513	10953	\N	\N	1	\N	\N	\N	\N	\N	108512	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108514	10954	\N	\N	1	\N	\N	\N	\N	\N	108512	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108515	10955	\N	\N	1	\N	\N	\N	\N	\N	108512	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108516	10956	\N	\N	1	\N	\N	\N	\N	\N	108512	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
 \.
 
 
@@ -9862,7 +10172,7 @@ COPY customer_price (plan_item_id, user_id, create_datetime) FROM stdin;
 
 COPY entity (id, external_id, description, create_datetime, language_id, currency_id, optlock) FROM stdin;
 1	\N	Telekom Brunei Berhad	2007-03-18 00:00:00	1	1	1
-2	\N	BT	2006-12-07 00:00:00	1	1	1
+2	\N	Mordor Inc.	2006-12-07 00:00:00	1	1	1
 \.
 
 
@@ -10535,6 +10845,71 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 466022	1	\N	21	107810	2009-12-21 13:21:26.002	2	7	25	\N	\N	\N	0	10780
 466023	1	1	21	107811	2009-12-21 13:21:44.511	2	7	22	\N	\N	\N	0	10781
 466024	1	\N	21	107811	2009-12-21 13:21:44.518	2	7	25	\N	\N	\N	0	10781
+467000	1	1	13	2400	2011-02-04 02:44:07.025	2	4	9	\N	Broadband	\N	0	\N
+467001	1	1	13	2400	2011-02-04 02:44:25.375	2	4	9	\N	eSpeed Broadband	\N	0	\N
+467002	1	\N	10	10940	2011-02-04 02:55:33.658	2	2	25	\N	\N	\N	0	10940
+467003	\N	\N	27	114600	2011-02-04 02:55:33.714	2	2	25	\N	\N	\N	0	\N
+467004	\N	\N	27	114601	2011-02-04 02:55:33.768	2	2	25	\N	\N	\N	0	\N
+467005	1	\N	10	10941	2011-02-04 02:58:06.612	2	2	25	\N	\N	\N	0	10941
+467006	\N	\N	27	114602	2011-02-04 02:58:06.629	2	2	25	\N	\N	\N	0	\N
+467007	\N	\N	27	114603	2011-02-04 02:58:06.669	2	2	25	\N	\N	\N	0	\N
+467008	1	1	12	108501	2011-02-04 02:58:59.821	2	2	34	0	\N	\N	0	10941
+467009	1	1	10	10941	2011-02-04 02:58:59.822	2	2	9	\N	\N	\N	0	10941
+467010	1	\N	27	114602	2011-02-04 02:58:59.923	2	2	9	\N	\N	\N	0	10941
+467011	\N	\N	27	114603	2011-02-04 02:58:59.967	2	2	9	\N	\N	\N	0	\N
+467012	1	\N	10	10942	2011-02-04 02:59:40.021	2	2	25	\N	\N	\N	0	10942
+467013	\N	\N	27	114604	2011-02-04 02:59:40.034	2	2	25	\N	\N	\N	0	\N
+467014	\N	\N	27	114605	2011-02-04 02:59:40.067	2	2	25	\N	\N	\N	0	\N
+467015	1	\N	10	10943	2011-02-04 03:00:21.373	2	2	25	\N	\N	\N	0	10943
+467016	\N	\N	27	114606	2011-02-04 03:00:21.39	2	2	25	\N	\N	\N	0	\N
+467017	\N	\N	27	114607	2011-02-04 03:00:21.458	2	2	25	\N	\N	\N	0	\N
+467018	1	\N	10	10944	2011-02-04 03:00:47.039	2	2	25	\N	\N	\N	0	10944
+467019	\N	\N	27	114608	2011-02-04 03:00:47.053	2	2	25	\N	\N	\N	0	\N
+467020	\N	\N	27	114609	2011-02-04 03:00:47.088	2	2	25	\N	\N	\N	0	\N
+467021	1	\N	10	10945	2011-02-04 03:01:27.218	2	2	25	\N	\N	\N	0	10945
+467022	\N	\N	27	114610	2011-02-04 03:01:27.232	2	2	25	\N	\N	\N	0	\N
+467023	\N	\N	27	114611	2011-02-04 03:01:27.261	2	2	25	\N	\N	\N	0	\N
+467024	1	1	12	108505	2011-02-04 03:01:59.738	2	2	34	0	\N	\N	0	10945
+467025	1	1	10	10945	2011-02-04 03:01:59.738	2	2	9	\N	\N	\N	0	10945
+467026	1	\N	27	114610	2011-02-04 03:01:59.753	2	2	9	\N	\N	\N	0	10945
+467027	\N	\N	27	114611	2011-02-04 03:01:59.79	2	2	9	\N	\N	\N	0	\N
+467028	1	\N	10	10946	2011-02-04 03:02:47.706	2	2	25	\N	\N	\N	0	10946
+467029	\N	\N	27	114612	2011-02-04 03:02:47.72	2	2	25	\N	\N	\N	0	\N
+467030	\N	\N	27	114613	2011-02-04 03:02:47.763	2	2	25	\N	\N	\N	0	\N
+467031	1	\N	10	10947	2011-02-04 03:03:14.127	2	2	25	\N	\N	\N	0	10947
+467032	\N	\N	27	114614	2011-02-04 03:03:14.137	2	2	25	\N	\N	\N	0	\N
+467033	\N	\N	27	114615	2011-02-04 03:03:14.161	2	2	25	\N	\N	\N	0	\N
+467034	1	1	12	108507	2011-02-04 03:03:23.106	2	2	34	0	\N	\N	0	10947
+467035	1	1	10	10947	2011-02-04 03:03:23.107	2	2	9	\N	\N	\N	0	10947
+467036	1	\N	27	114614	2011-02-04 03:03:23.112	2	2	9	\N	\N	\N	0	10947
+467037	\N	\N	27	114615	2011-02-04 03:03:23.162	2	2	9	\N	\N	\N	0	\N
+467038	1	\N	10	10948	2011-02-04 03:04:08.243	2	2	25	\N	\N	\N	0	10948
+467039	\N	\N	27	114616	2011-02-04 03:04:08.257	2	2	25	\N	\N	\N	0	\N
+467040	\N	\N	27	114617	2011-02-04 03:04:08.335	2	2	25	\N	\N	\N	0	\N
+467041	1	\N	10	10949	2011-02-04 03:04:39.234	2	2	25	\N	\N	\N	0	10949
+467042	\N	\N	27	114618	2011-02-04 03:04:39.246	2	2	25	\N	\N	\N	0	\N
+467043	\N	\N	27	114619	2011-02-04 03:04:39.273	2	2	25	\N	\N	\N	0	\N
+467044	1	\N	10	10950	2011-02-04 03:05:04.055	2	2	25	\N	\N	\N	0	10950
+467045	\N	\N	27	114620	2011-02-04 03:05:04.068	2	2	25	\N	\N	\N	0	\N
+467046	\N	\N	27	114621	2011-02-04 03:05:04.097	2	2	25	\N	\N	\N	0	\N
+467047	1	\N	10	10951	2011-02-04 03:05:19.841	2	2	25	\N	\N	\N	0	10951
+467048	\N	\N	27	114622	2011-02-04 03:05:19.855	2	2	25	\N	\N	\N	0	\N
+467049	\N	\N	27	114623	2011-02-04 03:05:19.907	2	2	25	\N	\N	\N	0	\N
+467050	1	\N	10	10952	2011-02-04 03:05:46.06	2	2	25	\N	\N	\N	0	10952
+467051	\N	\N	27	114624	2011-02-04 03:05:46.08	2	2	25	\N	\N	\N	0	\N
+467052	\N	\N	27	114625	2011-02-04 03:05:46.11	2	2	25	\N	\N	\N	0	\N
+467053	1	\N	10	10953	2011-02-04 03:06:14.73	2	2	25	\N	\N	\N	0	10953
+467054	\N	\N	27	114626	2011-02-04 03:06:14.744	2	2	25	\N	\N	\N	0	\N
+467055	\N	\N	27	114627	2011-02-04 03:06:14.773	2	2	25	\N	\N	\N	0	\N
+467056	1	\N	10	10954	2011-02-04 03:06:39.032	2	2	25	\N	\N	\N	0	10954
+467057	\N	\N	27	114628	2011-02-04 03:06:39.046	2	2	25	\N	\N	\N	0	\N
+467058	\N	\N	27	114629	2011-02-04 03:06:39.095	2	2	25	\N	\N	\N	0	\N
+467059	1	\N	10	10955	2011-02-04 03:06:53.728	2	2	25	\N	\N	\N	0	10955
+467060	\N	\N	27	114630	2011-02-04 03:06:53.741	2	2	25	\N	\N	\N	0	\N
+467061	\N	\N	27	114631	2011-02-04 03:06:53.778	2	2	25	\N	\N	\N	0	\N
+467062	1	\N	10	10956	2011-02-04 03:07:11.784	2	2	25	\N	\N	\N	0	10956
+467063	\N	\N	27	114632	2011-02-04 03:07:11.855	2	2	25	\N	\N	\N	0	\N
+467064	\N	\N	27	114633	2011-02-04 03:07:11.941	2	2	25	\N	\N	\N	0	\N
 \.
 
 
@@ -11534,7 +11909,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	32	title	1	Separator file reader
 24	32	description	1	This is a reader for the mediation process. It reads records from a text file whose fields are separated by a character (or string).
 24	33	title	1	Rules mediation processor
-24	33	description	1	This is a rules-based plug-in (see chapter 7). It takes an event record from the mediation process and executes external rules to translate the record into billing meaningful data. This is at the core of the mediation component, see the “Telecom Guide�? document for more information.
+24	33	description	1	This is a rules-based plug-in (see chapter 7). It takes an event record from the mediation process and executes external rules to translate the record into billing meaningful data. This is at the core of the mediation component, see the “Telecom Guide” document for more information.
 24	34	title	1	Fixed length file reader
 24	34	description	1	This is a reader for the mediation process. It reads records from a text file whose fields have fixed positions,and the record has a fixed length.
 24	35	title	1	Payment information without validation
@@ -11623,6 +11998,15 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	79	description	1	A scheduled task to execute the Mediation Process.
 24	80	title	1	Billing Process Task
 24	80	description	1	A scheduled task to execute the Billing Process.
+99	1	description	1	Referral Fee
+99	2	description	1	Payment Processor
+99	3	description	1	IP Address
+14	3100	description	1	eSpeed 2.5 Mbps
+14	3101	description	1	Wave Pre-paid
+14	3102	description	1	1 MB VPN
+14	3103	description	1	iCall Pre-paid
+14	3104	description	1	Time & Location
+14	3105	description	1	BND 20 First 3 months
 \.
 
 
@@ -11631,19 +12015,19 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 --
 
 COPY invoice (id, create_datetime, billing_process_id, user_id, delegated_invoice_id, due_date, total, payment_attempts, status_id, balance, carried_balance, in_process_payment, is_review, currency_id, deleted, paper_invoice_batch_id, customer_notes, public_number, last_reminder, overdue_step, create_timestamp, optlock) FROM stdin;
-1	2006-07-26 00:00:00	\N	2	\N	2006-08-26	20.0000000000	1	26	0.0000000000	0.0000000000	1	0	1	0	\N	\N	1	\N	\N	2006-07-26 09:43:43.428	1
-2	2006-07-26 00:00:00	\N	2	\N	2006-08-26	15.0000000000	1	26	0.0000000000	0.0000000000	1	0	1	0	\N	\N	2	\N	\N	2006-07-26 09:48:16.931	1
-3	2006-07-26 00:00:00	\N	2	5	2006-08-26	35.0000000000	1	28	35.0000000000	0.0000000000	1	0	1	0	\N	\N	3	\N	\N	2006-07-26 09:49:48.723	1
-4	2006-07-26 00:00:00	\N	2	5	2006-08-26	20.0000000000	1	28	20.0000000000	0.0000000000	1	0	1	0	\N	\N	4	\N	\N	2006-07-26 09:50:36.882	1
-5	2006-08-26 00:00:00	2	2	15	2006-09-26	75.0000000000	0	28	20.0000000000	55.0000000000	1	0	1	0	\N	\N	5	\N	\N	2006-12-19 16:05:00.329	1
-15	2006-09-26 00:00:00	12	2	\N	2006-10-26	95.0000000000	1	26	20.0000000000	75.0000000000	1	0	1	0	\N	\N	6	\N	\N	2006-12-19 16:10:00.587	1
-35	2007-01-16 00:00:00	\N	2	\N	2007-02-16	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	0	\N	\N	7	\N	\N	2007-01-16 14:39:58.115	1
-45	2007-07-12 00:00:00	2	2	\N	2017-08-12	20.0000000000	0	27	20.0000000000	0.0000000000	1	0	1	0	\N	\N	8	\N	\N	2007-07-12 13:20:29.858	1
-55	2007-08-09 00:00:00	\N	53	\N	2007-09-09	10.0000000000	0	27	10.0000000000	0.0000000000	1	0	1	0	\N	\N	9	\N	\N	2007-08-09 14:42:13.196	1
-65	2007-08-09 00:00:00	\N	63	\N	2007-09-09	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	0	\N	\N	10	\N	\N	2007-08-09 14:59:04.418	1
-70	2007-07-26 00:00:00	\N	10743	\N	2007-08-26	20.0000000000	0	27	20.0000000000	0.0000000000	1	0	1	0	\N	\N	11	\N	\N	2007-07-26 18:17:19.113	1
-75	2007-08-16 00:00:00	\N	13	\N	2007-09-16	12.9899997711	0	27	12.9899997711	0.0000000000	1	0	1	0	\N	\N	1	\N	\N	2007-08-16 14:57:08.799	1
-8500	2009-07-20 00:00:00	\N	121	\N	2006-09-10	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	0	\N	\N	1022	\N	\N	2009-07-20 16:42:04.869	1
+1	2006-07-26 00:00:00	\N	2	\N	2006-08-26	20.0000000000	1	26	0.0000000000	0.0000000000	1	0	1	1	\N	\N	1	\N	\N	2006-07-26 09:43:43.428	1
+2	2006-07-26 00:00:00	\N	2	\N	2006-08-26	15.0000000000	1	26	0.0000000000	0.0000000000	1	0	1	1	\N	\N	2	\N	\N	2006-07-26 09:48:16.931	1
+3	2006-07-26 00:00:00	\N	2	5	2006-08-26	35.0000000000	1	28	35.0000000000	0.0000000000	1	0	1	1	\N	\N	3	\N	\N	2006-07-26 09:49:48.723	1
+4	2006-07-26 00:00:00	\N	2	5	2006-08-26	20.0000000000	1	28	20.0000000000	0.0000000000	1	0	1	1	\N	\N	4	\N	\N	2006-07-26 09:50:36.882	1
+5	2006-08-26 00:00:00	2	2	15	2006-09-26	75.0000000000	0	28	20.0000000000	55.0000000000	1	0	1	1	\N	\N	5	\N	\N	2006-12-19 16:05:00.329	1
+15	2006-09-26 00:00:00	12	2	\N	2006-10-26	95.0000000000	1	26	20.0000000000	75.0000000000	1	0	1	1	\N	\N	6	\N	\N	2006-12-19 16:10:00.587	1
+35	2007-01-16 00:00:00	\N	2	\N	2007-02-16	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	1	\N	\N	7	\N	\N	2007-01-16 14:39:58.115	1
+45	2007-07-12 00:00:00	2	2	\N	2017-08-12	20.0000000000	0	27	20.0000000000	0.0000000000	1	0	1	1	\N	\N	8	\N	\N	2007-07-12 13:20:29.858	1
+55	2007-08-09 00:00:00	\N	53	\N	2007-09-09	10.0000000000	0	27	10.0000000000	0.0000000000	1	0	1	1	\N	\N	9	\N	\N	2007-08-09 14:42:13.196	1
+65	2007-08-09 00:00:00	\N	63	\N	2007-09-09	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	1	\N	\N	10	\N	\N	2007-08-09 14:59:04.418	1
+70	2007-07-26 00:00:00	\N	10743	\N	2007-08-26	20.0000000000	0	27	20.0000000000	0.0000000000	1	0	1	1	\N	\N	11	\N	\N	2007-07-26 18:17:19.113	1
+75	2007-08-16 00:00:00	\N	13	\N	2007-09-16	12.9899997711	0	27	12.9899997711	0.0000000000	1	0	1	1	\N	\N	1	\N	\N	2007-08-16 14:57:08.799	1
+8500	2009-07-20 00:00:00	\N	121	\N	2006-09-10	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	1	\N	\N	1022	\N	\N	2009-07-20 16:42:04.869	1
 \.
 
 
@@ -11702,26 +12086,32 @@ COPY invoice_line_type (id, description, order_position) FROM stdin;
 --
 
 COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, has_decimals, optlock, price_model_id) FROM stdin;
-14	J-01	1	-10.0000000000	0	0	0	1	\N
-1	DP-1	1	\N	0	0	0	3	1
-2	DP-2	1	\N	0	0	0	1	2
-3	DP-3	1	\N	0	0	0	1	3
-4	01	2	\N	0	0	0	1	4
-24	F-1	1	\N	0	0	0	1	14
-250	PL-01	1	\N	0	0	0	2	150
-251	ST-01	1	\N	0	0	0	2	151
-270	FE-01	1	\N	0	0	0	2	152
-2600	DR-01	1	\N	0	0	0	2	1600
-2601	DR--02	1	\N	0	0	0	2	1601
-2602	DR-03	1	\N	0	0	0	2	1602
-2700	LD-A	1	\N	0	0	0	5	1701
-2701	LD-B	1	\N	0	0	0	4	1703
-2702	LD-1000	1	\N	0	0	0	4	1705
-2800	CALL-LD	1	\N	0	0	1	4	1801
-2801	CALL-LD-INCLUDE	1	\N	0	0	1	4	1803
-2900	CALL-LD-GEN	1	\N	0	0	0	2	1900
-3000	PL-02	1	\N	0	0	0	4	2001
-240	DP-4	1	\N	0	0	0	2	2003
+14	J-01	1	-10.0000000000	0	1	0	1	\N
+1	DP-1	1	\N	0	1	0	3	1
+2	DP-2	1	\N	0	1	0	1	2
+3	DP-3	1	\N	0	1	0	1	3
+4	01	2	\N	0	1	0	1	4
+24	F-1	1	\N	0	1	0	1	14
+250	PL-01	1	\N	0	1	0	2	150
+251	ST-01	1	\N	0	1	0	2	151
+270	FE-01	1	\N	0	1	0	2	152
+2600	DR-01	1	\N	0	1	0	2	1600
+2601	DR--02	1	\N	0	1	0	2	1601
+2602	DR-03	1	\N	0	1	0	2	1602
+2700	LD-A	1	\N	0	1	0	5	1701
+2701	LD-B	1	\N	0	1	0	4	1703
+2702	LD-1000	1	\N	0	1	0	4	1705
+2800	CALL-LD	1	\N	0	1	1	4	1801
+2801	CALL-LD-INCLUDE	1	\N	0	1	1	4	1803
+2900	CALL-LD-GEN	1	\N	0	1	0	2	1900
+3000	PL-02	1	\N	0	1	0	4	2001
+240	DP-4	1	\N	0	1	0	2	2003
+3100	ESBB	1	\N	0	0	0	1	2100
+3101	WAVE	1	\N	0	0	0	1	2101
+3102	VPND	1	\N	0	0	0	1	2102
+3103	CAPP	1	\N	0	0	0	1	2103
+3104	TLDC	1	\N	0	0	0	1	2104
+3105	BND20	1	\N	0	0	0	1	2105
 \.
 
 
@@ -11730,13 +12120,13 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 --
 
 COPY item_type (id, entity_id, description, order_line_type_id, optlock) FROM stdin;
-1	1	Drink passes	1	1
 2	2	Drinks	1	1
-12	1	discounts	1	1
 22	1	Fees	3	1
 2200	1	Long Distance Plans	1	0
 2201	1	Calls	1	0
-2300	1	Plans	1	0
+12	1	Discounts	1	1
+2401	1	Data 	1	0
+2400	1	Broadband	1	2
 \.
 
 
@@ -11745,26 +12135,23 @@ COPY item_type (id, entity_id, description, order_line_type_id, optlock) FROM st
 --
 
 COPY item_type_map (item_id, type_id) FROM stdin;
-1	1
-2	1
-3	1
 4	2
 14	12
 24	22
-240	1
-250	1
 251	22
 270	22
-2600	1
-2601	1
-2602	1
 2700	2200
 2701	2200
 2702	2200
 2800	2201
 2801	2201
 2900	2201
-3000	2300
+3100	2400
+3101	2400
+3102	2401
+3103	2201
+3104	12
+3105	12
 \.
 
 
@@ -11852,8 +12239,6 @@ entity	1
 entity	1
 contact_type	1
 contact_type	1
-contact_map	7910
-contact_map	7910
 period_unit	1
 period_unit	1
 payment_info_cheque	17
@@ -11875,12 +12260,6 @@ notification_message_line	1
 notification_message_line	1
 ageing_entity_step	1
 ageing_entity_step	1
-item_type	24
-item_type	24
-item	31
-item	31
-event_log	467
-event_log	467
 purchase_order	1079
 purchase_order	1079
 order_line	2081
@@ -11892,14 +12271,6 @@ invoice_line	87
 order_process	86
 payment	19
 payment	19
-base_user	1079
-base_user	1079
-customer	1070
-customer	1070
-contact	1131
-contact	1131
-contact_field	2026
-contact_field	2026
 credit_card	1015
 credit_card	1015
 language	1
@@ -11914,7 +12285,6 @@ promotion	1
 promotion	1
 filter	1
 filter_set	1
-recent_item	1
 plan	1
 plan_item	1
 permission_type	1
@@ -11924,7 +12294,6 @@ event_log_module	1
 list_field_entity	1
 pluggable_task_parameter	8313
 billing_process_configuration	1
-price_model	21
 pluggable_task	606
 notification_message_section	1
 order_process	86
@@ -11934,7 +12303,21 @@ mediation_process	1
 ach	1
 ach	1
 partner_payout	1
-breadcrumb	2
+customer	1086
+base_user	1096
+contact_map	7911
+contact_map	7911
+breadcrumb	113
+price_model	22
+item_type	25
+item_type	25
+event_log	468
+item	32
+event_log	468
+recent_item	14
+customer	1086
+contact	1147
+contact_field	2027
 partner_payout	1
 process_run_total_pm	1
 process_run_total_pm	1
@@ -11951,6 +12334,11 @@ notification_message_arch_line	1
 mediation_record_line	1
 mediation_record_line	1
 contact_type	10
+contact_field_type	1
+item	32
+contact	1147
+contact_field	2027
+base_user	1096
 \.
 
 
@@ -12055,6 +12443,7 @@ COPY jbilling_table (id, name) FROM stdin;
 96	plan
 97	plan_item
 98	customer_price
+99	contact_field_type
 \.
 
 
@@ -14604,12 +14993,12 @@ COPY payment (id, user_id, attempt, result_id, amount, create_datetime, update_d
 2	2	1	4	7.0000000000	2006-07-26 09:47:16.694	2006-12-21 11:04:51.974	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0.0000000000	1	\N	\N
 3	2	1	4	10.0000000000	2006-07-26 09:47:41.67	2006-12-21 11:04:44.875	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0.0000000000	1	\N	\N
 4	2	1	4	20.0000000000	2006-07-26 09:51:14.346	2006-12-21 11:04:36.935	2006-07-26	2	1	1	0	0	\N	1	\N	\N	0.0000000000	1	\N	\N
-5	2	1	4	10.0000000000	2006-07-26 09:52:08.855	\N	2006-07-26	2	2	0	1	0	4	1	\N	\N	0.0000000000	1	\N	\N
-6	2	1	4	95.0000000000	2006-12-21 11:08:11.878	\N	2006-12-21	1	\N	0	0	0	\N	1	\N	\N	0.0000000000	1	\N	\N
-1600	10746	1	4	100.0000000000	2009-03-25 00:00:00	\N	2009-03-25	1	\N	0	0	0	\N	1	\N	\N	100.0000000000	1	\N	\N
-1601	10746	1	4	50.0000000000	2009-03-27 00:00:00	\N	2009-03-27	1	\N	0	1	0	\N	1	\N	\N	0.0000000000	1	\N	\N
-1700	10747	1	4	50.0000000000	2009-03-10 00:00:00	\N	2009-03-10	1	\N	0	0	0	\N	1	\N	\N	50.0000000000	1	\N	\N
-1800	10748	1	4	25.0000000000	2009-03-13 00:00:00	\N	2009-03-13	1	\N	0	0	0	\N	1	\N	\N	25.0000000000	1	\N	\N
+5	2	1	4	10.0000000000	2006-07-26 09:52:08.855	\N	2006-07-26	2	2	1	1	0	4	1	\N	\N	0.0000000000	1	\N	\N
+6	2	1	4	95.0000000000	2006-12-21 11:08:11.878	\N	2006-12-21	1	\N	1	0	0	\N	1	\N	\N	0.0000000000	1	\N	\N
+1600	10746	1	4	100.0000000000	2009-03-25 00:00:00	\N	2009-03-25	1	\N	1	0	0	\N	1	\N	\N	100.0000000000	1	\N	\N
+1601	10746	1	4	50.0000000000	2009-03-27 00:00:00	\N	2009-03-27	1	\N	1	1	0	\N	1	\N	\N	0.0000000000	1	\N	\N
+1700	10747	1	4	50.0000000000	2009-03-10 00:00:00	\N	2009-03-10	1	\N	1	0	0	\N	1	\N	\N	50.0000000000	1	\N	\N
+1800	10748	1	4	25.0000000000	2009-03-13 00:00:00	\N	2009-03-13	1	\N	1	0	0	\N	1	\N	\N	25.0000000000	1	\N	\N
 \.
 
 
@@ -15622,6 +16011,12 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id) FROM 
 1900	METERED	0.0000000000	\N	1
 2001	METERED	99.9900000000	\N	1
 2003	METERED	15.0000000000	\N	11
+2100	METERED	0.0000000000	\N	1
+2101	METERED	0.0000000000	\N	1
+2102	METERED	0.0000000000	\N	1
+2103	METERED	0.0000000000	\N	1
+2104	GRADUATED	0.0000000000	\N	1
+2105	METERED	0.0000000000	\N	1
 \.
 
 
@@ -15630,6 +16025,7 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id) FROM 
 --
 
 COPY price_model_attribute (price_model_id, attribute_name, attribute_value) FROM stdin;
+2104	included	0
 \.
 
 
@@ -15690,1034 +16086,1034 @@ COPY promotion_user_map (user_id, promotion_id) FROM stdin;
 --
 
 COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, active_until, cycle_start, create_datetime, next_billable_day, created_by, status_id, currency_id, deleted, notify, last_notified, notification_step, due_date_unit_id, due_date_value, df_fm, anticipate_periods, own_invoice, notes, notes_in_invoice, is_current, optlock) FROM stdin;
-35	53	2	1	2006-10-01	2006-11-01	\N	2007-08-09 14:41:51.208	\N	1	17	1	0	0	\N	\N	3	\N	0	\N	0		0	\N	1
-45	63	2	1	2006-09-26	2006-10-26	\N	2007-08-09 14:59:01.542	\N	1	17	1	0	0	\N	\N	3	\N	0	\N	0		0	\N	1
-100	118	2	1	2006-10-26	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	0	4
-101	119	2	1	2006-11-27	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	0	8
-102	120	2	1	2006-10-01	2006-11-01	\N	2006-11-01 00:00:00	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	0	4
-103	121	2	1	2006-10-16	\N	2006-10-01	2006-11-01 00:00:00	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	0	4
-104	122	2	1	2006-10-15	2006-11-30	2006-10-10	2006-11-01 00:00:00	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	0	4
-105	123	2	1	2006-09-05	2006-11-25	2006-09-01	2006-11-01 00:00:00	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	0	4
-106	124	2	2	2006-09-03	\N	2006-09-01	2006-11-01 00:00:00	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	0	4
-107	125	2	2	2006-09-30	2006-10-29	2006-09-15	2006-11-01 00:00:00	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	0	4
-108	126	2	2	2006-08-10	2006-10-20	2006-08-02	2006-11-01 00:00:00	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	0	4
-109	127	2	1	2006-11-10	2006-11-10	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-113	131	2	2	2006-10-15	2006-11-05	2006-10-10	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1055	2	2	1	2007-09-15	\N	\N	2007-12-28 14:47:08.494	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	1	1
-1065	1055	2	1	2007-11-01	\N	\N	2008-03-06 09:19:01.499	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	1	1
-107600	1000	2	1	2006-10-30	2006-11-15	2006-10-15	2009-11-04 17:37:51.128	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	0	0
-1	2	1	1	2006-07-26	\N	\N	2006-07-26 09:43:39.793	\N	1	17	1	0	0	\N	\N	3	\N	0	\N	0		0	\N	1
-2	2	1	1	2006-07-26	\N	\N	2006-07-26 09:48:13.967	\N	1	17	1	0	0	\N	\N	3	\N	0	\N	0		0	\N	1
-3	2	1	1	2006-07-26	\N	\N	2006-07-26 09:49:38.649	\N	1	17	1	0	0	\N	\N	3	\N	0	\N	0		0	\N	1
-4	2	2	1	2006-07-26	\N	\N	2006-07-26 09:50:34.309	2006-10-26	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	\N	1
-5	13	3	1	2006-12-07	\N	\N	2006-12-07 14:58:53.043	2007-01-07	12	16	1	0	0	\N	\N	3	\N	0	\N	0		0	\N	1
-15	2	1	1	2007-01-16	\N	\N	2007-01-16 14:39:49.112	\N	1	17	1	0	0	\N	\N	3	\N	0	\N	0		0	\N	1
-25	2	1	1	2007-07-12	\N	\N	2007-07-12 13:20:22.264	\N	1	17	1	0	0	\N	\N	3	\N	0	\N	0		0	\N	1
-55	73	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-56	74	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-57	75	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-58	76	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-59	77	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-60	78	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-61	79	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-62	80	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-63	81	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-64	82	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-65	83	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-66	84	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-67	85	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-68	86	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-69	87	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-70	88	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-71	89	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-72	90	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-73	91	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-74	92	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-75	93	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-76	94	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-77	95	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-78	96	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-79	97	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-80	98	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-81	99	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-82	100	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-83	101	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-84	102	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-85	103	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-86	104	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-87	105	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-88	106	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-89	107	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-90	108	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-91	109	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-92	110	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-93	111	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-94	112	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-95	113	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-96	114	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-97	115	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-98	116	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-99	117	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-110	128	2	2	2006-09-01	\N	\N	2006-09-01 00:00:00	2006-10-25	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-111	129	2	2	2006-09-01	\N	\N	2006-09-01 00:00:00	2006-10-27	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-112	130	2	2	2006-09-01	\N	\N	2006-09-01 00:00:00	2006-10-15	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-114	132	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-115	133	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-116	134	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-117	135	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-118	136	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-119	137	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-120	138	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-121	139	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-122	140	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-123	141	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-124	142	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-125	143	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-126	144	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-127	145	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-128	146	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-129	147	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-130	148	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-131	149	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-132	150	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-133	151	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-134	152	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-135	153	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-136	154	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-137	155	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-138	156	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-139	157	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-140	158	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-141	159	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-142	160	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-143	161	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-144	162	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-145	163	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-146	164	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-147	165	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-148	166	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-149	167	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-150	168	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-151	169	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-152	170	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-153	171	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-154	172	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-155	173	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-156	174	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-157	175	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-158	176	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-159	177	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-160	178	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-161	179	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-162	180	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-163	181	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-164	182	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-165	183	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-166	184	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-167	185	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-168	186	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-169	187	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-170	188	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-171	189	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-172	190	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-173	191	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-174	192	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-175	193	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-176	194	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-177	195	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-178	196	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-179	197	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-180	198	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-181	199	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-182	200	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-183	201	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-184	202	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-185	203	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-186	204	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-187	205	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-188	206	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-189	207	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-190	208	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-191	209	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-192	210	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-193	211	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-194	212	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-195	213	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-196	214	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-197	215	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-198	216	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-199	217	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-200	218	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-201	219	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-202	220	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-203	221	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-204	222	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-205	223	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-206	224	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-207	225	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-208	226	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-209	227	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-210	228	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-211	229	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-212	230	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-213	231	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-214	232	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-215	233	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-216	234	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-217	235	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-218	236	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-219	237	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-220	238	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-221	239	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-222	240	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-223	241	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-224	242	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-225	243	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-226	244	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-227	245	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-228	246	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-229	247	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-230	248	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-231	249	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-232	250	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-233	251	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-234	252	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-235	253	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-236	254	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-237	255	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-238	256	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-239	257	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-240	258	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-241	259	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-242	260	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-243	261	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-244	262	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-245	263	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-246	264	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-247	265	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-248	266	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-249	267	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-250	268	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-251	269	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-252	270	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-253	271	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-254	272	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-255	273	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-256	274	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-257	275	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-258	276	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-259	277	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-260	278	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-261	279	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-262	280	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-263	281	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-264	282	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-265	283	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-266	284	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-267	285	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-268	286	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-269	287	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-270	288	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-271	289	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-272	290	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-273	291	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-274	292	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-275	293	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-276	294	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-277	295	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-278	296	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-279	297	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-280	298	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-281	299	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-282	300	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-283	301	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-284	302	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-285	303	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-286	304	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-287	305	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-288	306	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-289	307	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-290	308	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-291	309	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-292	310	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-293	311	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-294	312	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-295	313	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-296	314	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-297	315	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-298	316	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-299	317	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-300	318	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-301	319	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-302	320	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-303	321	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-304	322	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-305	323	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-306	324	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-307	325	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-308	326	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-309	327	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-310	328	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-311	329	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-312	330	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-313	331	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-314	332	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-315	333	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-316	334	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-317	335	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-318	336	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-319	337	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-320	338	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-321	339	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-322	340	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-323	341	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-324	342	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-325	343	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-326	344	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-327	345	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-328	346	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-329	347	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-330	348	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-331	349	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-332	350	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-333	351	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-334	352	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-335	353	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-336	354	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-337	355	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-338	356	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-339	357	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-340	358	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-341	359	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-342	360	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-343	361	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-344	362	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-345	363	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-346	364	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-347	365	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-348	366	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-349	367	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-350	368	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-351	369	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-352	370	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-353	371	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-354	372	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-355	373	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-356	374	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-357	375	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-358	376	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-359	377	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-360	378	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-361	379	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-362	380	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-363	381	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-364	382	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-365	383	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-366	384	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-367	385	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-368	386	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-369	387	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-370	388	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-371	389	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-372	390	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-373	391	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-374	392	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-375	393	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-376	394	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-377	395	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-378	396	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-379	397	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-380	398	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-381	399	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-382	400	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-383	401	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-384	402	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-385	403	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-386	404	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-387	405	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-388	406	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-389	407	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-390	408	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-391	409	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-392	410	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-393	411	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-394	412	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-395	413	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-396	414	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-397	415	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-398	416	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-399	417	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-400	418	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-401	419	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-402	420	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-403	421	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-404	422	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-405	423	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-406	424	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-407	425	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-408	426	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-409	427	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-410	428	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-411	429	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-412	430	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-413	431	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-414	432	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-415	433	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-416	434	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-417	435	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-418	436	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-419	437	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-420	438	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-421	439	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-422	440	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-423	441	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-424	442	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-425	443	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-426	444	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-427	445	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-428	446	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-429	447	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-430	448	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-431	449	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-432	450	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-433	451	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-434	452	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-435	453	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-436	454	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-437	455	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-438	456	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-439	457	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-440	458	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-441	459	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-442	460	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-443	461	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-444	462	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-445	463	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-446	464	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-447	465	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-448	466	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-449	467	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-450	468	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-451	469	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-452	470	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-453	471	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-454	472	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-455	473	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-456	474	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-457	475	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-458	476	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-459	477	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-460	478	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-461	479	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-462	480	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-463	481	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-464	482	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-465	483	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-466	484	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-467	485	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-468	486	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-469	487	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-470	488	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-471	489	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-472	490	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-473	491	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-474	492	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-475	493	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-476	494	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-477	495	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-478	496	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-479	497	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-480	498	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-481	499	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-482	500	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-483	501	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-484	502	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-485	503	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-486	504	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-487	505	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-488	506	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-489	507	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-490	508	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-491	509	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-492	510	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-493	511	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-494	512	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-495	513	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-496	514	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-497	515	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-498	516	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-499	517	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-500	518	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-501	519	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-502	520	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-503	521	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-504	522	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-505	523	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-506	524	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-507	525	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-508	526	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-509	527	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-510	528	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-511	529	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-512	530	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-513	531	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-514	532	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-515	533	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-516	534	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-517	535	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-518	536	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-519	537	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-520	538	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-521	539	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-522	540	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-523	541	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-524	542	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-525	543	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-526	544	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-527	545	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-528	546	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-529	547	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-530	548	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-531	549	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-532	550	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-533	551	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-534	552	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-535	553	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-536	554	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-537	555	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-538	556	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-539	557	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-540	558	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-541	559	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-542	560	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-543	561	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-544	562	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-545	563	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-546	564	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-547	565	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-548	566	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-549	567	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-550	568	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-551	569	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-552	570	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-553	571	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-554	572	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-555	573	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-556	574	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-557	575	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-558	576	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-559	577	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-560	578	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-561	579	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-562	580	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-563	581	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-564	582	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-565	583	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-566	584	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-567	585	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-568	586	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-569	587	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-570	588	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-571	589	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-572	590	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-573	591	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-574	592	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-575	593	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-576	594	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-577	595	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-578	596	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-579	597	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-580	598	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-581	599	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-582	600	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-583	601	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-584	602	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-585	603	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-586	604	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-587	605	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-588	606	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-589	607	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-590	608	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-591	609	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-592	610	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-593	611	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-594	612	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-595	613	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-596	614	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-597	615	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-598	616	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-599	617	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-600	618	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-601	619	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-602	620	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-603	621	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-604	622	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-605	623	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-606	624	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-607	625	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-608	626	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-609	627	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-610	628	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-611	629	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-612	630	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-613	631	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-614	632	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-615	633	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-616	634	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-617	635	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-618	636	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-619	637	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-620	638	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-621	639	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-622	640	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-623	641	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-624	642	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-625	643	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-626	644	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-627	645	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-628	646	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-629	647	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-630	648	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-631	649	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-632	650	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-633	651	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-634	652	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-635	653	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-636	654	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-637	655	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-638	656	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-639	657	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-640	658	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-641	659	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-642	660	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-643	661	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-644	662	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-645	663	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-646	664	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-647	665	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-648	666	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-649	667	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-650	668	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-651	669	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-652	670	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-653	671	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-654	672	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-655	673	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-656	674	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-657	675	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-658	676	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-659	677	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-660	678	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-661	679	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-662	680	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-663	681	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-664	682	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-665	683	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-666	684	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-667	685	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-668	686	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-669	687	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-670	688	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-671	689	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-672	690	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-673	691	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-674	692	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-675	693	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-676	694	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-677	695	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-678	696	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-679	697	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-680	698	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-681	699	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-682	700	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-683	701	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-684	702	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-685	703	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-686	704	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-687	705	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-688	706	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-689	707	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-690	708	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-691	709	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-692	710	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-693	711	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-694	712	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-695	713	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-696	714	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-697	715	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-698	716	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-699	717	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-700	718	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-701	719	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-702	720	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-703	721	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-704	722	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-705	723	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-706	724	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-707	725	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-708	726	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-709	727	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-710	728	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-711	729	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-712	730	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-713	731	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-714	732	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-715	733	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-716	734	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-717	735	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-718	736	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-719	737	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-720	738	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-721	739	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-722	740	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-723	741	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-724	742	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-725	743	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-726	744	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-727	745	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-728	746	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-729	747	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-730	748	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-731	749	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-732	750	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-733	751	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-734	752	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-735	753	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-736	754	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-737	755	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-738	756	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-739	757	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-740	758	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-741	759	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-742	760	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-743	761	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-744	762	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-745	763	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-746	764	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-747	765	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-748	766	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-749	767	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-750	768	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-751	769	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-752	770	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-753	771	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-754	772	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-755	773	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-756	774	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-757	775	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-758	776	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-759	777	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-760	778	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-761	779	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-762	780	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-763	781	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-764	782	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-765	783	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-766	784	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-767	785	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-768	786	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-769	787	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-770	788	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-771	789	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-772	790	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-773	791	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-774	792	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-775	793	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-776	794	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-777	795	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-778	796	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-779	797	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-780	798	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-781	799	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-782	800	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-783	801	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-784	802	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-785	803	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-786	804	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-787	805	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-788	806	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-789	807	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-790	808	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-791	809	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-792	810	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-793	811	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-794	812	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-795	813	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-796	814	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-797	815	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-798	816	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-799	817	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-800	818	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-801	819	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-802	820	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-803	821	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-804	822	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-805	823	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-806	824	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-807	825	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-808	826	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-809	827	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-810	828	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-811	829	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-812	830	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-813	831	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-814	832	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-815	833	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-816	834	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-817	835	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-818	836	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-819	837	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-820	838	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-821	839	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-822	840	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-823	841	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-824	842	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-825	843	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-826	844	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-827	845	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-828	846	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-829	847	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-830	848	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-831	849	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-832	850	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-833	851	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-834	852	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-835	853	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-836	854	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-837	855	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-838	856	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-839	857	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-840	858	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-841	859	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-842	860	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-843	861	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-844	862	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-845	863	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-846	864	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-847	865	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-848	866	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-849	867	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-850	868	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-851	869	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-852	870	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-853	871	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-854	872	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-855	873	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-856	874	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-857	875	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-858	876	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-859	877	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-860	878	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-861	879	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-862	880	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-863	881	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-864	882	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-865	883	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-866	884	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-867	885	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-868	886	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-869	887	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-870	888	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-871	889	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-872	890	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-873	891	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-874	892	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-875	893	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-876	894	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-877	895	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-878	896	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-879	897	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-880	898	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-881	899	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-882	900	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-883	901	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-884	902	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-885	903	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-886	904	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-887	905	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-888	906	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-889	907	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-890	908	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-891	909	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-892	910	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-893	911	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-894	912	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-895	913	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-896	914	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-897	915	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-898	916	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-899	917	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-900	918	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-901	919	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-902	920	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-903	921	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-904	922	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-905	923	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-906	924	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-907	925	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-908	926	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-909	927	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-910	928	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-911	929	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-912	930	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-913	931	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-914	932	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-915	933	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-916	934	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-917	935	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-918	936	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-919	937	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-920	938	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-921	939	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-922	940	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-923	941	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-924	942	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-925	943	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-926	944	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-927	945	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-928	946	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-929	947	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-930	948	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-931	949	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-932	950	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-933	951	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-934	952	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-935	953	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-936	954	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-937	955	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-938	956	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-939	957	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-940	958	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-941	959	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-942	960	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-943	961	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-944	962	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-945	963	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-946	964	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-947	965	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-948	966	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-949	967	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-950	968	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-951	969	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-952	970	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-953	971	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-954	972	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-955	973	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-956	974	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-957	975	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-958	976	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-959	977	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-960	978	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-961	979	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-962	980	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-963	981	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-964	982	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-965	983	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-966	984	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-967	985	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-968	986	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-969	987	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-970	988	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-971	989	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-972	990	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-973	991	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-974	992	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-975	993	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-976	994	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-977	995	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-978	996	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-979	997	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-980	998	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-981	999	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-982	1000	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-983	1001	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-984	1002	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-985	1003	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-986	1004	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-987	1005	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-988	1006	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-989	1007	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-990	1008	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-991	1009	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-992	1010	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-993	1011	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-994	1012	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-995	1013	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-996	1014	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-997	1015	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-998	1016	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-999	1017	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1000	1018	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1001	1019	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1002	1020	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1003	1021	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1004	1022	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1005	1023	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1006	1024	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1007	1025	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1008	1026	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1009	1027	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1010	1028	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1011	1029	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1012	1030	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1013	1031	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1014	1032	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1015	1033	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1016	1034	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1017	1035	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1018	1036	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1019	1037	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1020	1038	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1021	1039	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1022	1040	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1023	1041	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1024	1042	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1025	1043	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1026	1044	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1027	1045	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1028	1046	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1029	1047	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1030	1048	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1031	1049	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1032	1050	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1033	1051	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1034	1052	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1035	1053	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1036	1054	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1037	1055	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1038	1056	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1039	1057	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1040	1058	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1041	1059	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1042	1060	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1043	1061	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1044	1062	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1045	1063	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1046	1064	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1047	1065	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1048	1066	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1049	1067	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1050	1068	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1051	1069	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1052	1070	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1053	1071	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1054	1072	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-107500	121	1	1	2009-07-20	\N	\N	2009-07-20 16:41:52.315	\N	1	17	1	0	0	\N	\N	3	\N	0	\N	0		0	0	1
-107700	10760	2	2	2009-12-15	\N	2009-01-01	2009-12-15 16:38:36.74	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Long Distance Plan A - fixed rate	0	1	3
-107701	10761	2	2	2009-12-15	\N	2009-01-01	2009-12-15 16:39:04.505	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Long Distance Plan B - fixed rate	0	1	3
-107702	10762	2	2	2009-12-15	\N	2009-01-01	2009-12-15 16:39:31.16	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Long Distance Plan - 1000 minutes included	0	1	2
-107800	10770	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:17:00.141	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	1
-107801	10771	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:17:58.45	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107802	10772	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:18:17.379	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107803	10773	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:18:59.123	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107804	10774	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:19:17.927	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107805	10775	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:19:38.062	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107806	10776	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:19:56.159	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107807	10777	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:20:23.277	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107808	10778	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:20:44.579	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107809	10779	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:21:03.215	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107810	10780	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:21:21.348	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107811	10781	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:21:42.292	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+35	53	2	1	2006-10-01	2006-11-01	\N	2007-08-09 14:41:51.208	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
+45	63	2	1	2006-09-26	2006-10-26	\N	2007-08-09 14:59:01.542	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
+100	118	2	1	2006-10-26	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
+101	119	2	1	2006-11-27	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	8
+102	120	2	1	2006-10-01	2006-11-01	\N	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
+103	121	2	1	2006-10-16	\N	2006-10-01	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
+104	122	2	1	2006-10-15	2006-11-30	2006-10-10	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
+105	123	2	1	2006-09-05	2006-11-25	2006-09-01	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
+106	124	2	2	2006-09-03	\N	2006-09-01	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
+107	125	2	2	2006-09-30	2006-10-29	2006-09-15	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
+108	126	2	2	2006-08-10	2006-10-20	2006-08-02	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
+109	127	2	1	2006-11-10	2006-11-10	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+113	131	2	2	2006-10-15	2006-11-05	2006-10-10	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1055	2	2	1	2007-09-15	\N	\N	2007-12-28 14:47:08.494	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	1	1
+1065	1055	2	1	2007-11-01	\N	\N	2008-03-06 09:19:01.499	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	1	1
+107600	1000	2	1	2006-10-30	2006-11-15	2006-10-15	2009-11-04 17:37:51.128	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	0
+1	2	1	1	2006-07-26	\N	\N	2006-07-26 09:43:39.793	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
+2	2	1	1	2006-07-26	\N	\N	2006-07-26 09:48:13.967	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
+3	2	1	1	2006-07-26	\N	\N	2006-07-26 09:49:38.649	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
+4	2	2	1	2006-07-26	\N	\N	2006-07-26 09:50:34.309	2006-10-26	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
+5	13	3	1	2006-12-07	\N	\N	2006-12-07 14:58:53.043	2007-01-07	12	16	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
+15	2	1	1	2007-01-16	\N	\N	2007-01-16 14:39:49.112	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
+25	2	1	1	2007-07-12	\N	\N	2007-07-12 13:20:22.264	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
+55	73	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+56	74	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+57	75	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+58	76	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+59	77	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+60	78	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+61	79	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+62	80	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+63	81	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+64	82	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+65	83	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+66	84	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+67	85	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+68	86	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+69	87	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+70	88	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+71	89	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+72	90	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+73	91	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+74	92	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+75	93	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+76	94	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+77	95	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+78	96	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+79	97	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+80	98	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+81	99	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+82	100	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+83	101	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+84	102	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+85	103	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+86	104	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+87	105	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+88	106	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+89	107	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+90	108	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+91	109	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+92	110	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+93	111	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+94	112	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+95	113	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+96	114	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+97	115	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+98	116	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+99	117	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+110	128	2	2	2006-09-01	\N	\N	2006-09-01 00:00:00	2006-10-25	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+111	129	2	2	2006-09-01	\N	\N	2006-09-01 00:00:00	2006-10-27	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+112	130	2	2	2006-09-01	\N	\N	2006-09-01 00:00:00	2006-10-15	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+114	132	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+115	133	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+116	134	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+117	135	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+118	136	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+119	137	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+120	138	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+121	139	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+122	140	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+123	141	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+124	142	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+125	143	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+126	144	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+127	145	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+128	146	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+129	147	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+130	148	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+131	149	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+132	150	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+133	151	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+134	152	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+135	153	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+136	154	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+137	155	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+138	156	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+139	157	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+140	158	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+141	159	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+142	160	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+143	161	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+144	162	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+145	163	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+146	164	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+147	165	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+148	166	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+149	167	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+150	168	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+151	169	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+152	170	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+153	171	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+154	172	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+155	173	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+156	174	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+157	175	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+158	176	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+159	177	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+160	178	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+161	179	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+162	180	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+163	181	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+164	182	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+165	183	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+166	184	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+167	185	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+168	186	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+169	187	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+170	188	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+171	189	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+172	190	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+173	191	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+174	192	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+175	193	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+176	194	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+177	195	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+178	196	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+179	197	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+180	198	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+181	199	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+182	200	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+183	201	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+184	202	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+185	203	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+186	204	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+187	205	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+188	206	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+189	207	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+190	208	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+191	209	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+192	210	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+193	211	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+194	212	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+195	213	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+196	214	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+197	215	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+198	216	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+199	217	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+200	218	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+201	219	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+202	220	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+203	221	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+204	222	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+205	223	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+206	224	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+207	225	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+208	226	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+209	227	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+210	228	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+211	229	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+212	230	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+213	231	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+214	232	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+215	233	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+216	234	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+217	235	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+218	236	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+219	237	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+220	238	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+221	239	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+222	240	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+223	241	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+224	242	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+225	243	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+226	244	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+227	245	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+228	246	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+229	247	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+230	248	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+231	249	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+232	250	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+233	251	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+234	252	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+235	253	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+236	254	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+237	255	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+238	256	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+239	257	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+240	258	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+241	259	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+242	260	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+243	261	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+244	262	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+245	263	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+246	264	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+247	265	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+248	266	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+249	267	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+250	268	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+251	269	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+252	270	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+253	271	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+254	272	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+255	273	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+256	274	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+257	275	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+258	276	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+259	277	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+260	278	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+261	279	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+262	280	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+263	281	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+264	282	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+265	283	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+266	284	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+267	285	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+268	286	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+269	287	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+270	288	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+271	289	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+272	290	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+273	291	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+274	292	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+275	293	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+276	294	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+277	295	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+278	296	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+279	297	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+280	298	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+281	299	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+282	300	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+283	301	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+284	302	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+285	303	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+286	304	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+287	305	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+288	306	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+289	307	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+290	308	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+291	309	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+292	310	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+293	311	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+294	312	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+295	313	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+296	314	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+297	315	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+298	316	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+299	317	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+300	318	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+301	319	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+302	320	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+303	321	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+304	322	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+305	323	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+306	324	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+307	325	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+308	326	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+309	327	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+310	328	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+311	329	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+312	330	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+313	331	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+314	332	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+315	333	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+316	334	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+317	335	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+318	336	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+319	337	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+320	338	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+321	339	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+322	340	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+323	341	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+324	342	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+325	343	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+326	344	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+327	345	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+328	346	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+329	347	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+330	348	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+331	349	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+332	350	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+333	351	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+334	352	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+335	353	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+336	354	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+337	355	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+338	356	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+339	357	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+340	358	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+341	359	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+342	360	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+343	361	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+344	362	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+345	363	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+346	364	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+347	365	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+348	366	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+349	367	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+350	368	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+351	369	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+352	370	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+353	371	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+354	372	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+355	373	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+356	374	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+357	375	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+358	376	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+359	377	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+360	378	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+361	379	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+362	380	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+363	381	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+364	382	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+365	383	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+366	384	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+367	385	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+368	386	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+369	387	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+370	388	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+371	389	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+372	390	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+373	391	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+374	392	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+375	393	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+376	394	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+377	395	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+378	396	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+379	397	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+380	398	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+381	399	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+382	400	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+383	401	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+384	402	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+385	403	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+386	404	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+387	405	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+388	406	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+389	407	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+390	408	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+391	409	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+392	410	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+393	411	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+394	412	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+395	413	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+396	414	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+397	415	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+398	416	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+399	417	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+400	418	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+401	419	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+402	420	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+403	421	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+404	422	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+405	423	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+406	424	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+407	425	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+408	426	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+409	427	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+410	428	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+411	429	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+412	430	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+413	431	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+414	432	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+415	433	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+416	434	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+417	435	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+418	436	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+419	437	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+420	438	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+421	439	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+422	440	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+423	441	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+424	442	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+425	443	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+426	444	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+427	445	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+428	446	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+429	447	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+430	448	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+431	449	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+432	450	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+433	451	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+434	452	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+435	453	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+436	454	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+437	455	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+438	456	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+439	457	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+440	458	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+441	459	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+442	460	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+443	461	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+444	462	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+445	463	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+446	464	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+447	465	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+448	466	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+449	467	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+450	468	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+451	469	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+452	470	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+453	471	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+454	472	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+455	473	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+456	474	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+457	475	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+458	476	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+459	477	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+460	478	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+461	479	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+462	480	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+463	481	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+464	482	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+465	483	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+466	484	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+467	485	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+468	486	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+469	487	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+470	488	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+471	489	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+472	490	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+473	491	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+474	492	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+475	493	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+476	494	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+477	495	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+478	496	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+479	497	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+480	498	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+481	499	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+482	500	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+483	501	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+484	502	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+485	503	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+486	504	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+487	505	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+488	506	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+489	507	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+490	508	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+491	509	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+492	510	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+493	511	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+494	512	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+495	513	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+496	514	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+497	515	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+498	516	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+499	517	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+500	518	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+501	519	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+502	520	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+503	521	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+504	522	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+505	523	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+506	524	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+507	525	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+508	526	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+509	527	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+510	528	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+511	529	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+512	530	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+513	531	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+514	532	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+515	533	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+516	534	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+517	535	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+518	536	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+519	537	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+520	538	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+521	539	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+522	540	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+523	541	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+524	542	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+525	543	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+526	544	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+527	545	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+528	546	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+529	547	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+530	548	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+531	549	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+532	550	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+533	551	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+534	552	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+535	553	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+536	554	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+537	555	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+538	556	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+539	557	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+540	558	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+541	559	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+542	560	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+543	561	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+544	562	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+545	563	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+546	564	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+547	565	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+548	566	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+549	567	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+550	568	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+551	569	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+552	570	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+553	571	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+554	572	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+555	573	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+556	574	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+557	575	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+558	576	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+559	577	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+560	578	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+561	579	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+562	580	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+563	581	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+564	582	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+565	583	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+566	584	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+567	585	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+568	586	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+569	587	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+570	588	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+571	589	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+572	590	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+573	591	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+574	592	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+575	593	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+576	594	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+577	595	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+578	596	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+579	597	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+580	598	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+581	599	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+582	600	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+583	601	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+584	602	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+585	603	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+586	604	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+587	605	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+588	606	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+589	607	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+590	608	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+591	609	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+592	610	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+593	611	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+594	612	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+595	613	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+596	614	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+597	615	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+598	616	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+599	617	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+600	618	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+601	619	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+602	620	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+603	621	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+604	622	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+605	623	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+606	624	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+607	625	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+608	626	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+609	627	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+610	628	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+611	629	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+612	630	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+613	631	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+614	632	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+615	633	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+616	634	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+617	635	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+618	636	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+619	637	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+620	638	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+621	639	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+622	640	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+623	641	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+624	642	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+625	643	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+626	644	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+627	645	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+628	646	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+629	647	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+630	648	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+631	649	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+632	650	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+633	651	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+634	652	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+635	653	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+636	654	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+637	655	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+638	656	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+639	657	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+640	658	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+641	659	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+642	660	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+643	661	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+644	662	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+645	663	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+646	664	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+647	665	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+648	666	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+649	667	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+650	668	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+651	669	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+652	670	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+653	671	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+654	672	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+655	673	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+656	674	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+657	675	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+658	676	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+659	677	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+660	678	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+661	679	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+662	680	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+663	681	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+664	682	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+665	683	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+666	684	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+667	685	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+668	686	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+669	687	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+670	688	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+671	689	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+672	690	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+673	691	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+674	692	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+675	693	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+676	694	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+677	695	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+678	696	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+679	697	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+680	698	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+681	699	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+682	700	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+683	701	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+684	702	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+685	703	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+686	704	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+687	705	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+688	706	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+689	707	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+690	708	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+691	709	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+692	710	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+693	711	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+694	712	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+695	713	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+696	714	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+697	715	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+698	716	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+699	717	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+700	718	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+701	719	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+702	720	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+703	721	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+704	722	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+705	723	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+706	724	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+707	725	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+708	726	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+709	727	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+710	728	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+711	729	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+712	730	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+713	731	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+714	732	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+715	733	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+716	734	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+717	735	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+718	736	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+719	737	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+720	738	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+721	739	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+722	740	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+723	741	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+724	742	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+725	743	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+726	744	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+727	745	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+728	746	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+729	747	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+730	748	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+731	749	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+732	750	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+733	751	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+734	752	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+735	753	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+736	754	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+737	755	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+738	756	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+739	757	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+740	758	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+741	759	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+742	760	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+743	761	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+744	762	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+745	763	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+746	764	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+747	765	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+748	766	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+749	767	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+750	768	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+751	769	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+752	770	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+753	771	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+754	772	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+755	773	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+756	774	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+757	775	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+758	776	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+759	777	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+760	778	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+761	779	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+762	780	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+763	781	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+764	782	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+765	783	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+766	784	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+767	785	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+768	786	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+769	787	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+770	788	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+771	789	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+772	790	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+773	791	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+774	792	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+775	793	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+776	794	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+777	795	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+778	796	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+779	797	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+780	798	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+781	799	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+782	800	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+783	801	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+784	802	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+785	803	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+786	804	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+787	805	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+788	806	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+789	807	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+790	808	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+791	809	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+792	810	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+793	811	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+794	812	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+795	813	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+796	814	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+797	815	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+798	816	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+799	817	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+800	818	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+801	819	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+802	820	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+803	821	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+804	822	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+805	823	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+806	824	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+807	825	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+808	826	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+809	827	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+810	828	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+811	829	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+812	830	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+813	831	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+814	832	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+815	833	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+816	834	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+817	835	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+818	836	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+819	837	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+820	838	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+821	839	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+822	840	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+823	841	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+824	842	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+825	843	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+826	844	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+827	845	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+828	846	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+829	847	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+830	848	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+831	849	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+832	850	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+833	851	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+834	852	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+835	853	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+836	854	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+837	855	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+838	856	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+839	857	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+840	858	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+841	859	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+842	860	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+843	861	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+844	862	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+845	863	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+846	864	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+847	865	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+848	866	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+849	867	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+850	868	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+851	869	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+852	870	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+853	871	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+854	872	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+855	873	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+856	874	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+857	875	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+858	876	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+859	877	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+860	878	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+861	879	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+862	880	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+863	881	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+864	882	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+865	883	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+866	884	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+867	885	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+868	886	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+869	887	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+870	888	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+871	889	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+872	890	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+873	891	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+874	892	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+875	893	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+876	894	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+877	895	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+878	896	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+879	897	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+880	898	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+881	899	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+882	900	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+883	901	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+884	902	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+885	903	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+886	904	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+887	905	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+888	906	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+889	907	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+890	908	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+891	909	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+892	910	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+893	911	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+894	912	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+895	913	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+896	914	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+897	915	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+898	916	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+899	917	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+900	918	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+901	919	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+902	920	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+903	921	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+904	922	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+905	923	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+906	924	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+907	925	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+908	926	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+909	927	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+910	928	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+911	929	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+912	930	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+913	931	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+914	932	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+915	933	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+916	934	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+917	935	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+918	936	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+919	937	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+920	938	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+921	939	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+922	940	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+923	941	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+924	942	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+925	943	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+926	944	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+927	945	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+928	946	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+929	947	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+930	948	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+931	949	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+932	950	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+933	951	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+934	952	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+935	953	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+936	954	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+937	955	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+938	956	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+939	957	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+940	958	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+941	959	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+942	960	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+943	961	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+944	962	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+945	963	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+946	964	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+947	965	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+948	966	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+949	967	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+950	968	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+951	969	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+952	970	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+953	971	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+954	972	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+955	973	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+956	974	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+957	975	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+958	976	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+959	977	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+960	978	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+961	979	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+962	980	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+963	981	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+964	982	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+965	983	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+966	984	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+967	985	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+968	986	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+969	987	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+970	988	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+971	989	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+972	990	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+973	991	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+974	992	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+975	993	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+976	994	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+977	995	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+978	996	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+979	997	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+980	998	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+981	999	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+982	1000	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+983	1001	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+984	1002	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+985	1003	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+986	1004	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+987	1005	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+988	1006	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+989	1007	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+990	1008	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+991	1009	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+992	1010	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+993	1011	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+994	1012	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+995	1013	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+996	1014	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+997	1015	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+998	1016	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+999	1017	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1000	1018	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1001	1019	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1002	1020	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1003	1021	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1004	1022	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1005	1023	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1006	1024	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1007	1025	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1008	1026	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1009	1027	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1010	1028	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1011	1029	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1012	1030	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1013	1031	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1014	1032	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1015	1033	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1016	1034	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1017	1035	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1018	1036	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1019	1037	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1020	1038	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1021	1039	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1022	1040	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1023	1041	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1024	1042	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1025	1043	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1026	1044	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1027	1045	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1028	1046	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1029	1047	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1030	1048	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1031	1049	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1032	1050	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1033	1051	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1034	1052	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1035	1053	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1036	1054	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1037	1055	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1038	1056	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1039	1057	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1040	1058	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1041	1059	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1042	1060	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1043	1061	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1044	1062	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1045	1063	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1046	1064	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1047	1065	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1048	1066	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1049	1067	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1050	1068	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1051	1069	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1052	1070	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1053	1071	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+1054	1072	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+107500	121	1	1	2009-07-20	\N	\N	2009-07-20 16:41:52.315	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	0	1
+107700	10760	2	2	2009-12-15	\N	2009-01-01	2009-12-15 16:38:36.74	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Long Distance Plan A - fixed rate	0	1	3
+107701	10761	2	2	2009-12-15	\N	2009-01-01	2009-12-15 16:39:04.505	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Long Distance Plan B - fixed rate	0	1	3
+107702	10762	2	2	2009-12-15	\N	2009-01-01	2009-12-15 16:39:31.16	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Long Distance Plan - 1000 minutes included	0	1	2
+107800	10770	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:17:00.141	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	1
+107801	10771	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:17:58.45	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107802	10772	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:18:17.379	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107803	10773	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:18:59.123	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107804	10774	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:19:17.927	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107805	10775	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:19:38.062	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107806	10776	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:19:56.159	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107807	10777	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:20:23.277	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107808	10778	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:20:44.579	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107809	10779	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:21:03.215	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107810	10780	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:21:21.348	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107811	10781	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:21:42.292	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
 \.
 
 
@@ -16726,6 +17122,11 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 --
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
+9	CUSTOMER	10940	1	0
+10	CUSTOMER	10941	1	0
+11	CUSTOMER	10942	1	0
+12	CUSTOMER	10945	1	0
+13	CUSTOMER	10947	1	0
 \.
 
 
@@ -20094,6 +20495,73 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 10779	5
 10780	5
 10781	5
+10791	5
+10792	5
+10793	5
+10794	5
+10795	5
+10796	5
+10797	5
+10798	5
+10799	5
+10800	5
+10801	5
+10802	5
+10803	5
+10804	5
+10805	5
+10806	5
+10807	5
+10808	5
+10809	5
+10810	5
+10811	5
+10812	5
+10813	5
+10814	5
+10815	5
+10816	5
+10817	5
+10818	5
+10819	5
+10820	5
+10821	5
+10822	5
+10823	5
+10824	5
+10825	5
+10826	5
+10827	5
+10828	5
+10829	5
+10830	5
+10831	5
+10832	5
+10833	5
+10834	5
+10835	5
+10836	5
+10837	5
+10838	5
+10839	5
+10840	5
+10940	5
+10941	5
+10942	5
+10943	5
+10944	5
+10945	5
+10946	5
+10947	5
+10948	5
+10949	5
+10950	5
+10951	5
+10952	5
+10953	5
+10954	5
+10955	5
+10956	5
 \.
 
 
@@ -22379,12 +22847,11 @@ ALTER TABLE ONLY user_role_map
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: jbilling
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM jbilling;
-GRANT ALL ON SCHEMA public TO jbilling;
+REVOKE ALL ON SCHEMA public FROM postgres;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
@@ -22392,3 +22859,4 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
+

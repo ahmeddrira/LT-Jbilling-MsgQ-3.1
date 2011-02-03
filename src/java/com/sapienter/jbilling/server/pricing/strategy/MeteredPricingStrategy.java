@@ -39,6 +39,7 @@ import java.util.List;
  */
 public class MeteredPricingStrategy implements PricingStrategy {
 
+    public boolean requiresUsage() { return false; }
     public boolean hasRate() { return false; }
     public BigDecimal getRate() { return null; }
 

@@ -40,6 +40,7 @@ import java.util.List;
  */
 public class FlatPricingStrategy implements PricingStrategy {
 
+    public boolean requiresUsage() { return false; }
     public boolean hasRate() { return true; }
     public BigDecimal getRate() { return BigDecimal.ZERO; }
 

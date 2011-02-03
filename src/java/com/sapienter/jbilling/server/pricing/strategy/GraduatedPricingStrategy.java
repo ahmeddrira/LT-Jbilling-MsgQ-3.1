@@ -48,6 +48,7 @@ public class GraduatedPricingStrategy implements PricingStrategy {
             new AttributeDefinition("included", DECIMAL, true)
     );
 
+    public boolean requiresUsage() { return true; }
     public boolean hasRate() { return false; }
     public BigDecimal getRate() { return null; }
 

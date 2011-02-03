@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.pricing.util;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
+import org.joda.time.LocalTime;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -64,11 +65,14 @@ public class AttributeUtils {
                     case STRING:
                         // a string is a string...
                         break;
+                    case TIME:
+                        parseTime(value);
+                        break;
                     case INTEGER:
-                        AttributeUtils.parseInteger(value);
+                        parseInteger(value);
                         break;
                     case DECIMAL:
-                        AttributeUtils.parseDecimal(value);
+                        parseDecimal(value);
                         break;
                 }
             } catch (SessionInternalError validationException) {
@@ -80,6 +84,33 @@ public class AttributeUtils {
         if (!errors.isEmpty())
             throw new SessionInternalError(strategyName + " attributes failed validation.",
                                            errors.toArray(new String[errors.size()]));
+    }
+
+
+    public static LocalTime getTime(Map<String, String> attributes, String name) {
+        return parseTime(attributes.get(name));
+    }
+
+    /**
+     * Parses the given value as LocalTime. If the value cannot be parsed, an exception will be thrown.
+     *
+     * @param value value to parse
+     * @return parsed LocalTime
+     * @throws SessionInternalError if value cannot be parsed as LocalTime
+     */
+    public static LocalTime parseTime(String value) {
+        String[] time = value.split(":");
+
+        if (time.length != 2)
+            throw new SessionInternalError("Cannot parse attribute value '" + value + "' as a time of day.",
+                                           new String[] { "validation.error.not.time.of.day" });
+
+        try {
+            return new LocalTime(Integer.valueOf(time[0]), Integer.valueOf(time[1]));
+        } catch (NumberFormatException e) {
+            throw new SessionInternalError("Cannot parse attribute value '" + value + "' as a time of day.",
+                                           new String[] { "validation.error.not.time.of.day" });
+        }
     }
 
     public static Integer getInteger(Map<String, String> attributes, String name) {

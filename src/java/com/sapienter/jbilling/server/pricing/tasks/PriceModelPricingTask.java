@@ -92,7 +92,7 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
                 }
                                 
                 PricingResult result = new PricingResult(itemId, quantity, userId, currencyId);
-                model.applyTo(result, result.getQuantity(), usage);
+                model.applyTo(result, fields, result.getQuantity(), usage);
                 return result.getPrice();
             }
         }        

@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.pricing.strategy;
 
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
@@ -78,5 +79,6 @@ public interface PricingStrategy {
      * @param usage total item usage for this billing period
      * @throws IllegalArgumentException if strategy requires usage, and usage was given as null
      */
-    public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, Usage usage);
+    public void applyTo(PricingResult result, List<PricingField> fields, PriceModelDTO planPrice,
+                        BigDecimal quantity, Usage usage);
 }

@@ -30,7 +30,7 @@ package com.sapienter.jbilling.server.pricing.db;
  */
 public class AttributeDefinition {
 
-    public enum Type { STRING, INTEGER, DECIMAL }
+    public enum Type { STRING, TIME, INTEGER, DECIMAL }
 
     private String name;
     private Type type = Type.STRING;

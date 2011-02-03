@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.pricing.strategy;
 
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
@@ -72,11 +73,14 @@ public class GraduatedPricingStrategy implements PricingStrategy {
      * </code>
      *
      * @param result pricing result to apply pricing to
+     * @param fields pricing fields (not used by this strategy)
      * @param planPrice the plan price to apply
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
      */
-    public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
+    public void applyTo(PricingResult result, List<PricingField> fields, PriceModelDTO planPrice,
+                        BigDecimal quantity, Usage usage) {
+
         if (usage == null || usage.getQuantity() == null)
             throw new IllegalArgumentException("Usage quantity cannot be null for GraduatedPricingStrategy.");
 

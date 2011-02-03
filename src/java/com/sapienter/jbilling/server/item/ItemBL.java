@@ -48,6 +48,7 @@ import org.springmodules.cache.provider.CacheProviderFacade;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -258,7 +259,8 @@ public class ItemBL {
 
             // calculate default price from strategy
             PricingResult result = new PricingResult(item.getId(), userId, currencyId);
-            item.getDefaultPrice().applyTo(result, BigDecimal.ONE, usage);
+            List<PricingField> fields = Collections.emptyList();
+            item.getDefaultPrice().applyTo(result, fields, BigDecimal.ONE, usage);
             return result.getPrice();
         }
         return BigDecimal.ZERO;

@@ -42,7 +42,10 @@ public enum PriceModelStrategy {
     GRADUATED           (new GraduatedPricingStrategy()),
 
     /** Graduated pricing strategy with a maximum total usage $ cap */
-    CAPPED_GRADUATED    (new CappedGraduatedPricingStrategy());
+    CAPPED_GRADUATED    (new CappedGraduatedPricingStrategy()),
+
+    /** Pricing strategy that uses the current time (or time of a mediated event) to determine the price. */
+    TIME_OF_DAY         (new TimeOfDayPricingStrategy());
 
     private final PricingStrategy strategy;
 

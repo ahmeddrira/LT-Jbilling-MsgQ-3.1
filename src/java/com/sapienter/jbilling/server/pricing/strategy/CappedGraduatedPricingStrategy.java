@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.pricing.strategy;
 
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
@@ -58,19 +59,22 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
      * @see GraduatedPricingStrategy
      *
      * @param result pricing result to apply pricing to
+     * @param fields pricing fields (not used by this strategy)
      * @param planPrice the plan price to apply
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
      */
     @Override
-    public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
+    public void applyTo(PricingResult result, List<PricingField> fields, PriceModelDTO planPrice,
+                        BigDecimal quantity, Usage usage) {
+
         if (usage == null || usage.getAmount() == null)
             throw new IllegalArgumentException("Usage amount cannot be null for CappedGraduatedPricingStrategy.");
 
         // apply price only if the total usage cap has not been reached
         BigDecimal maximum = AttributeUtils.getDecimal(planPrice.getAttributes(), "max");
         if (usage.getAmount().compareTo(maximum) <= 0) {
-            super.applyTo(result, planPrice, quantity, usage);
+            super.applyTo(result, fields, planPrice, quantity, usage);
         }
 
         // only bill up to the set maximum cap

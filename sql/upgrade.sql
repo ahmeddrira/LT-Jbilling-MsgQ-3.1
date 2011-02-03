@@ -718,3 +718,27 @@ alter table contact_type alter column OPTLOCK set not null;
 
 -- Orders should always have an active since date
 update purchase_order set active_since = date(create_datetime) where active_since is null;
+
+-- custom contact fields
+--- table id entry
+INSERT INTO jbilling_table(name, id) VALUES ('contact_field_type', 1+(select max(id) from jbilling_table ));
+
+--- table id generator
+INSERT INTO jbilling_seqs(name, next_id) VALUES ('contact_field_type', 10);
+
+---optlock column
+alter table contact_field_type  add column OPTLOCK int null;
+update contact_field_type set OPTLOCK = 0; 
+alter table contact_field_type alter column OPTLOCK set not null;
+
+---Entries to bring the old contact field type descriptions from the properties file
+---into the international_description table for i18n purposes. 
+---The below query should be made once per properties file. In the query below:
+---    1. 'content' value comes from the property value in the language properties file
+---    2. 'foreign_id' is the row id of the contact_field_type' table
+---    3. 'language_id' is the id column value of the language table for the corresponding language
+---	   4. 'table_id' is the id columne value of the jbilling_table table where name = 'contact_field_type'
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) 
+values (99, 1, 'description', 1, 'Referral Fee'), (99, 2, 'description', 1, 'Payment Processor'), (99, 3, 'description', 1, 'IP Address');
+

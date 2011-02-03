@@ -30,7 +30,10 @@ import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.util.PreferenceWS
 import com.sapienter.jbilling.server.order.OrderProcessWS
 import com.sapienter.jbilling.server.user.ContactTypeWS;
+import com.sapienter.jbilling.server.item.PlanWS
+import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.process.AgeingWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
@@ -147,6 +150,10 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getUserId(username)
     }
 
+	public void saveCustomContactFields(ContactFieldTypeWS[] fields) {
+		webServicesSession.saveCustomContactFields(fields)
+	}
+	
     public Integer[] getUsersInStatus(Integer statusId) {
         return webServicesSession.getUsersInStatus(statusId)
     }
@@ -559,4 +566,56 @@ class ApiService implements IWebServicesSessionBean {
     void deletePlugin(Integer plugin) {
         webServicesSession.deletePlugin(plugin);
 	}
+
+    /*
+        Plans and special pricing
+     */
+
+    public PlanWS getPlanWS(Integer planId) {
+        return webServicesSession.getPlanWS(planId);
+    }
+
+    public Integer createPlan(PlanWS plan) {
+        return webServicesSession.createPlan(plan);
+    }
+
+    public void updatePlan(PlanWS plan) {
+        webServicesSession.updatePlan(plan);
+    }
+
+    public void deletePlan(Integer planId) {
+        webServicesSession.deletePlan(planId);
+    }
+
+    public void addPlanPrice(Integer planId, PlanItemWS price) {
+        webServicesSession.addPlanPrice(planId, price);
+    }
+
+    public boolean isCustomerSubscribed(Integer planId, Integer userId) {
+        return webServicesSession.isCustomerSubscribed(planId, userId);
+    }
+
+    public Integer[] getSubscribedCustomers(Integer planId) {
+        return webServicesSession.getSubscribedCustomers(planId);
+    }
+
+    public Integer[] getPlansBySubscriptionItem(Integer itemId) {
+        return webServicesSession.getPlansBySubscriptionItem(itemId);
+    }
+
+    public Integer[] getPlansByAffectedItem(Integer itemId) {
+        return webServicesSession.getPlansByAffectedItem(itemId);
+    }
+
+    public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
+        return webServicesSession.getCustomerPrice(userId, itemId);
+    }
+
+    public PlanItemWS[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
+        return webServicesSession.getCustomerPriceByAttributes(userId, itemId, attrs);
+    }
+
+    public PlanItemWS[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
+        return webServicesSession.getCustomerPriceByWildcardAttributes(userId, itemId, attrs);
+    }
 }

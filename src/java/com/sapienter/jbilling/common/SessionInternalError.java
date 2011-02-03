@@ -47,13 +47,7 @@ public class SessionInternalError extends RuntimeException {
         log.fatal(s + e.getMessage() + "\n" + sw.toString());
         
     }
-    
-    /**
-     * Method SessionInternalError.
-     * Gets the original exception as a parameter an logs the message
-     * and whole stack trece.
-     * @param e
-     */
+
     public SessionInternalError(Exception e) {
         super(e.getMessage());
         
@@ -69,6 +63,11 @@ public class SessionInternalError extends RuntimeException {
 
     public SessionInternalError(String message, Throwable e) {
         super(message + " Cause: " + e.getMessage(), e);
+    }
+
+    public SessionInternalError(String message, String[] errors) {
+        super(message);
+        setErrorMessages(errors);
     }
 
 	public void setErrorMessages(String errors[]) {

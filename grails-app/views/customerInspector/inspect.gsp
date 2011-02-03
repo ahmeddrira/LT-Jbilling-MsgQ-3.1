@@ -108,7 +108,7 @@
                         <g:set var="field" value="${contact?.fields?.find{ it.type.id == ccf.id }}"/>
 
                         <g:applyLayout name="form/text">
-                            <content tag="label"><g:message code="${ccf.promptKey}"/></content>
+                            <content tag="label"><g:message code="${ccf.getDescription(session['language_id'])}"/></content>
                             <span>${field?.content}</span>
                         </g:applyLayout>
                     </g:each>

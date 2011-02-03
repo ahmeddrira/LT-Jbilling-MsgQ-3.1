@@ -11,30 +11,30 @@
 
     <!-- filter -->
     <div class="form-columns">
-        <g:formRemote name="filter-form" url="[action: 'edit']" update="ui-tabs-2" method="GET">
+        <g:formRemote name="products-filter-form" url="[action: 'edit']" update="ui-tabs-2" method="GET">
             <g:hiddenField name="_eventId" value="products"/>
             <g:hiddenField name="execution" value="${flowExecutionKey}"/>
 
             <g:applyLayout name="form/input">
                 <content tag="label"><g:message code="filters.title"/></content>
                 <content tag="label.for">filterBy</content>
-                <g:textField name="filterBy" class="field default" placeholder="${message(code: 'products.filter.by.default')}" value="${params.filterBy}"/>
+                <g:textField name="product.filterBy" class="field default" placeholder="${message(code: 'products.filter.by.default')}" value="${params['product.filterBy']}"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/select">
                 <content tag="label"><g:message code="order.label.products.category"/></content>
                 <content tag="label.for">typeId</content>
-                <g:select name="typeId" from="${itemTypes}"
+                <g:select name="product.typeId" from="${itemTypes}"
                           noSelection="['': message(code: 'filters.item.type.empty')]"
                           optionKey="id" optionValue="description"
-                          value="${params.typeId}"/>
+                          value="${params['product.typeId']}"/>
             </g:applyLayout>
         </g:formRemote>
 
         <script type="text/javascript">
             $(function() {
-                $('#filterBy').blur(function() { $('#filter-form').submit(); });
-                $('#typeId').change(function() { $('#filter-form').submit(); });
+                $('#product\\.filterBy').blur(function() { $('#products-filter-form').submit(); });
+                $('#product\\.typeId').change(function() { $('#products-filter-form').submit(); });
                 placeholder();
             });
         </script>

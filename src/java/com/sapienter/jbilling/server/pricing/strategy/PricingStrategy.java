@@ -38,14 +38,6 @@ import java.util.List;
 public interface PricingStrategy {
 
     /**
-     * Returns true if this strategy calculates a graduated pricing based on the plan's
-     * "included quantity" and the current customer usage.
-     *
-     * @return true if strategy calculates graduated pricing.
-     */
-    public boolean isGraduated();
-
-    /**
      * Returns true if this strategy requires the current usage of the item
      * to properly calculate the the price.
      *

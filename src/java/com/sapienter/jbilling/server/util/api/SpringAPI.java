@@ -25,6 +25,8 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
+import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
 import com.sapienter.jbilling.server.mediation.MediationProcessWS;
@@ -50,6 +52,7 @@ import com.sapienter.jbilling.server.util.RemoteContext;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class SpringAPI implements JbillingAPI {
 
@@ -521,5 +524,58 @@ public class SpringAPI implements JbillingAPI {
 
     public void generateRules(String rulesData) {
         session.generateRules(rulesData);
+    }
+
+
+    /*
+        Plans and special pricing
+     */
+
+    public PlanWS getPlanWS(Integer planId) {
+        return session.getPlanWS(planId);
+    }
+
+    public Integer createPlan(PlanWS plan) {
+        return session.createPlan(plan);
+    }
+
+    public void updatePlan(PlanWS plan) {
+        session.updatePlan(plan);
+    }
+
+    public void deletePlan(Integer planId) {
+        session.deletePlan(planId);
+    }
+
+    public void addPlanPrice(Integer planId, PlanItemWS price) {
+        session.addPlanPrice(planId, price);
+    }
+
+    public boolean isCustomerSubscribed(Integer planId, Integer userId) {
+        return session.isCustomerSubscribed(planId, userId);
+    }
+
+    public Integer[] getSubscribedCustomers(Integer planId) {
+        return session.getSubscribedCustomers(planId);
+    }
+
+    public Integer[] getPlansBySubscriptionItem(Integer itemId) {
+        return session.getPlansBySubscriptionItem(itemId);
+    }
+
+    public Integer[] getPlansByAffectedItem(Integer itemId) {
+        return session.getPlansByAffectedItem(itemId);
+    }
+
+    public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
+        return session.getCustomerPrice(userId, itemId);
+    }
+
+    public PlanItemWS[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
+        return session.getCustomerPriceByAttributes(userId, itemId, attrs);
+    }
+
+    public PlanItemWS[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
+        return session.getCustomerPriceByWildcardAttributes(userId, itemId, attrs);
     }
 }

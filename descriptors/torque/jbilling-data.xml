@@ -1824,6 +1824,9 @@
     <InternationalDescription TableId="23" ForeignId="21" PsudoColumn="description" LanguageId="1" Content="Mediation Error Handler"/>
     <InternationalDescription TableId="23" ForeignId="22" PsudoColumn="description" LanguageId="1" Content="Scheduled Plug-ins"/>
     <InternationalDescription TableId="23" ForeignId="23" PsudoColumn="description" LanguageId="1" Content="Rules Generators"/>
+	<InternationalDescription TableId="99" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Referral Fee"/>
+    <InternationalDescription TableId="99" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Payment Processor"/>
+    <InternationalDescription TableId="99" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="IP Address"/>
     <InvoiceDeliveryMethod Id="1"/>
     <InvoiceDeliveryMethod Id="2"/>
     <InvoiceDeliveryMethod Id="3"/>
@@ -1833,6 +1836,7 @@
     <InvoiceLineType Id="4" Description="interests" OrderPosition="3"/>
     <InvoiceLineType Id="2" Description="tax" OrderPosition="5"/>
     <JbillingTable Id="8" Name="entity_delivery_method_map"/>
+    <JbillingTable Id="99" Name="contact_field_type"/>
     <JbillingTable Id="62" Name="user_role_map"/>
     <JbillingTable Id="36" Name="entity_payment_method_map"/>
     <JbillingTable Id="72" Name="report_entity_map"/>
@@ -1927,6 +1931,7 @@
     <JbillingTable Id="96" Name="plan_item"/>
     <JbillingTable Id="97" Name="customer_price"/>
     <JbillingSeqs Name="entity_delivery_method_map" NextId="4"/>
+    <JbillingSeqs Name="contact_field_type" NextId="10"/>
     <JbillingSeqs Name="user_role_map" NextId="13"/>
     <JbillingSeqs Name="entity_payment_method_map" NextId="26"/>
     <JbillingSeqs Name="report_entity_map" NextId="113"/>

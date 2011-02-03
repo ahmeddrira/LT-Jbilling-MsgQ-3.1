@@ -19,6 +19,11 @@ public class PlanItemWS {
     public PlanItemWS() {
     }
 
+    public PlanItemWS(Integer itemId, PriceModelWS model) {
+        this.itemId = itemId;
+        this.model = model;
+    }
+
     public PlanItemWS(PlanItemDTO dto) {
         this.id = dto.getId();
         this.precedence = dto.getPrecedence();

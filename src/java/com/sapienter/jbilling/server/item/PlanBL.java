@@ -125,7 +125,7 @@ public class PlanBL {
             plan.setItem(dto.getItem());
             plan.setPlanItems(dto.getPlanItems());
 
-            planDas.flush();
+            planDas.save(plan);
             refreshCustomerPrices();
 
         } else {

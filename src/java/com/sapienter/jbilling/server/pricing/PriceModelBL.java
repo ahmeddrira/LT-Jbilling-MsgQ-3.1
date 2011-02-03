@@ -22,11 +22,15 @@ package com.sapienter.jbilling.server.pricing;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.CurrencyBL;
+import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
+import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
+import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Brian Cowdery
@@ -76,5 +80,15 @@ public class PriceModelBL {
             return new PriceModelDTO(ws,  new CurrencyBL(ws.getCurrencyId()).getEntity());
         }
         return null;
+    }
+
+    /**
+     * Validates that the given pricing model has all the required attributes and that
+     * the given attributes are of the correct type.
+     *
+     * @param model pricing model to validate
+     */
+    public static void validateAttributes(PriceModelDTO model) {
+        AttributeUtils.validateAttributes(model.getAttributes(), model.getStrategy());
     }
 }

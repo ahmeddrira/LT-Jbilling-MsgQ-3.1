@@ -112,6 +112,11 @@
                             <g:message code="configuration.menu.contactType"/>
                         </g:link>
                     </li>
+                    <li class="${pageProperty(name: 'page.menu.item') == 'customContactField' ? 'active' : ''}">
+                        <g:link controller="contactFieldConfig">
+                            <g:message code="configuration.menu.customContactField"/>
+                        </g:link>
+                    </li>
                 </ul>
             </div>
 

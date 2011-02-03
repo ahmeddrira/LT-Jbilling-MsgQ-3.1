@@ -96,6 +96,7 @@ class ProductController {
                 itemTypes {
                     eq('id', id)
                 }
+                isEmpty('plans')
                 eq('deleted', 0)
                 eq('entity', new CompanyDTO(session['company_id']))
             }
@@ -129,6 +130,8 @@ class ProductController {
                         }
                     }
                 }
+
+                isEmpty('plans')
                 eq('deleted', 0)
                 eq('entity', new CompanyDTO(session['company_id']))
             }

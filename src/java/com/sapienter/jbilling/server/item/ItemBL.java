@@ -181,7 +181,6 @@ public class ItemBL {
                 item.getDefaultPrice().setType(dto.getDefaultPrice().getType());
                 item.getDefaultPrice().setAttributes(dto.getDefaultPrice().getAttributes());
                 item.getDefaultPrice().setRate(dto.getDefaultPrice().getRate());
-                item.getDefaultPrice().setIncludedQuantity(dto.getDefaultPrice().getIncludedQuantity());
             } else if (dto.getPrice() != null) {
                 item.getDefaultPrice().setRate(dto.getPrice());
             }

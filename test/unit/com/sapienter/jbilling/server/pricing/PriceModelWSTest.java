@@ -52,7 +52,6 @@ public class PriceModelWSTest extends TestCase {
         dto.setType(PriceModelStrategy.METERED);
         dto.setAttributes(attributes);
         dto.setRate(new BigDecimal("0.7"));
-        dto.setIncludedQuantity(BigDecimal.ZERO);
         dto.setCurrency(new CurrencyDTO(1));
 
         // convert to PriceModelWS
@@ -61,7 +60,6 @@ public class PriceModelWSTest extends TestCase {
         assertEquals(dto.getId(), ws.getId());
         assertEquals(PriceModelWS.PLAN_TYPE_METERED, ws.getType());
         assertEquals(dto.getRate(), ws.getRateAsDecimal());
-        assertEquals(dto.getIncludedQuantity(), ws.getIncludedQuantityAsDecimal());
         assertEquals(dto.getCurrency().getId(), ws.getCurrencyId().intValue());
 
         assertNotSame(dto.getAttributes(), ws.getAttributes());

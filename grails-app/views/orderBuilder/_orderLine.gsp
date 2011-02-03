@@ -7,6 +7,10 @@
 --%>
 
 <g:set var="product" value="${products?.find{ it.id == line.itemId}}"/>
+<g:if test="${!product}">
+    <g:set var="product" value="${plans?.find{ it.id == line.itemId}}"/>
+</g:if>
+
 <g:set var="quantityNumberFormat" value="${product?.hasDecimals ? 'money.format' : 'default.number.format'}"/>
 <g:set var="editable" value="${index == params.int('newLineIndex')}"/>
 

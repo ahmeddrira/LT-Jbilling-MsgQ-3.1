@@ -86,20 +86,6 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         assertTrue(planPrice.getStrategy() instanceof FlatPricingStrategy);
     }
 
-    public void testSetGraduatedStrategy() {
-        PriceModelDTO planPrice = new PriceModelDTO();
-
-        // METERED is not a graduated pricing strategy and does not support "included quantities"
-        planPrice.setType(PriceModelStrategy.METERED);
-        planPrice.setIncludedQuantity(BigDecimal.TEN);
-        assertEquals(BigDecimal.ZERO, planPrice.getIncludedQuantity()); // always ZERO
-
-        // GRADUATED supports "included quantities"
-        planPrice.setType(PriceModelStrategy.GRADUATED);
-        planPrice.setIncludedQuantity(BigDecimal.TEN);
-        assertEquals(BigDecimal.TEN, planPrice.getIncludedQuantity()); // included can be set                                                           
-    }
-
     public void testSetRatedStrategy() {
         PriceModelDTO planPrice = new PriceModelDTO();
 
@@ -133,7 +119,6 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         ws.setType(PriceModelWS.PLAN_TYPE_METERED);
         ws.setAttributes(attributes);
         ws.setRate(new BigDecimal("0.7"));
-        ws.setIncludedQuantity(BigDecimal.ZERO);
 
         // convert to PriceModelDTO
         PriceModelDTO dto = new PriceModelDTO(ws, null);
@@ -141,7 +126,6 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         assertEquals(ws.getId(), dto.getId());
         assertEquals(PriceModelStrategy.METERED, dto.getType());
         assertEquals(ws.getRateAsDecimal(), dto.getRate());
-        assertEquals(ws.getIncludedQuantityAsDecimal(), dto.getIncludedQuantity());
 
         assertNotSame(ws.getAttributes(), dto.getAttributes());
         assertEquals(PriceModelDTO.ATTRIBUTE_WILDCARD, dto.getAttributes().get("null_attr"));

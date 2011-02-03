@@ -1059,50 +1059,54 @@ ul.cloud li a {
     list-style-position: outside;
     margin-left: 0;
 }
-ul#order-lines {
+ul#review-lines {
     width: 85%;
     margin: 0 auto;
     padding: 5px;
 	list-style: none;
 }
-#order-lines li {
+#review-lines li {
 	list-style: none;
 	vertical-align:top;
 }
-#order-lines li.line {
+#review-lines li.line {
     border: 1px solid #fff;
 }
-#order-lines li.editor {
+#review-lines li.editor {
     margin-bottom: 7px;
     display: none;
 }
-#order-lines li.open {
+#review-lines li.open {
     display: block;
 }
-#order-lines li.active, #order-lines li.line:hover {
+#review-lines li.active, #review-lines li.line:hover {
     background: url(../images/bg-gradient2.gif) right -1px repeat-x;
     border: 1px dashed #c1c1c1;
     cursor: pointer;
 }
-#order-lines li.active span {
+#review-lines li.active span {
     font-weight: normal;
     font-style: italic;
     color: #5a5a5a;
 }
-#order-lines li span {
+#review-lines li span {
     line-height: 25px;
     font-size: 14px;
     font-weight: bold;
 }
-#order-lines span.description {
+#review-lines li .row span {
+    font-size: 12px;
+    font-weight: normal;
+}
+#review-lines span.description {
     padding-left: 3px;
 }
-#order-lines span.qty-price {
+#review-lines span.qty-price, #review-lines span.strategy {
     display: block;
     width: 120px;
     float: right;
 }
-#order-lines span.sub-total {
+#review-lines span.sub-total, #review-lines span.rate {
     display: block;
     width: 100px;
     float: right;
@@ -1118,7 +1122,7 @@ ul#order-lines {
 .editor .box {
     padding: 0 0 18px;
 }
-#order-lines a span {
+#review-lines a span {
     font-size: 12px;
 }
 #details-box .form-columns {
@@ -1187,6 +1191,11 @@ ul#order-lines {
     font-size: 14px;
     text-align: left;
 }
+.form-columns a.field {
+    position: relative;
+    top: 5px;
+    left: 5px;
+}
 .form-columns ul {
     margin: 4px 0 0 0;
 }
@@ -1208,6 +1217,7 @@ ul#order-lines {
 	float:left;
 	width:212px;
 	height:16px;
+    margin-right: 3px;
 	padding:4px 5px;
 	overflow:hidden;
 	outline:none;

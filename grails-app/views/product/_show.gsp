@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy; com.sapienter.jbilling.server.util.Util"%>
+<%@ page import="org.apache.commons.lang.StringUtils; com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy; com.sapienter.jbilling.server.util.Util"%>
 
 <%--
   Product details template. This template shows a product and all the relevant product details.
@@ -69,21 +69,20 @@
         </div>
     </div>
 
-
     <div class="btn-box">
         <g:link action="editProduct" id="${selectedProduct.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
         <a onclick="showConfirm('deleteProduct-${selectedProduct.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
     </div>
 
-<g:render template="/confirm"
-          model="['message': 'product.delete.confirm',
-                  'controller': 'product',
-                  'action': 'deleteProduct',
-                  'id': selectedProduct.id,
-                  'formParams': ['category': selectedCategoryId],
-                  'ajax': true,
-                  'update': 'column2',
-                  'onYes': 'closePanel($(\'column3\'))'
-                 ]"/>
+    <g:render template="/confirm"
+              model="['message': 'product.delete.confirm',
+                      'controller': 'product',
+                      'action': 'deleteProduct',
+                      'id': selectedProduct.id,
+                      'formParams': ['category': selectedCategoryId],
+                      'ajax': true,
+                      'update': 'column2',
+                      'onYes': 'closePanel($(\'column3\'))'
+                     ]"/>
 </div>
 

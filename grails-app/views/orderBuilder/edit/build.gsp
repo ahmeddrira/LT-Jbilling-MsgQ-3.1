@@ -33,6 +33,7 @@
             <ul>
                 <li><a href="${createLink(action: 'edit', event: 'details')}">Details</a></li>
                 <li><a href="${createLink(action: 'edit', event: 'products')}">Products</a></li>
+                <li><a href="${createLink(action: 'edit', event: 'plans')}">Plans</a></li>
             </ul>
         </div>
     </content>

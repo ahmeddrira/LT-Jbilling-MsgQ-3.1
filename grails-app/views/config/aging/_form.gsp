@@ -71,8 +71,8 @@ $(function() {
                                         <g:checkBox class="cb checkbox" name="obj[${iter}].inUse" checked="${step.inUse }"/>
                                     </g:else>
                                     <g:hiddenField value="${step?.statusId}" name="obj[${iter}].statusId"/>
-                                    <g:hiddenField value="" name="obj[${iter}].welcomeMessage"/>
-                                    <g:hiddenField value="" name="obj[${iter}].failedLoginMessage"/>
+                                    <g:hiddenField value="placeholder_text" name="obj[${iter}].welcomeMessage"/>
+                                    <g:hiddenField value="placeholder_text" name="obj[${iter}].failedLoginMessage"/>
                                     </td>
                                 </tr>
                             </g:each>

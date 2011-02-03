@@ -100,13 +100,13 @@
                                 <g:hiddenField name="price.id" value="${product?.defaultPrice?.id}"/>
 
                                 <g:applyLayout name="form/input">
-                                    <content tag="label">Rate</content>
+                                    <content tag="label"><g:message code="plan.model.rate"/></content>
                                     <content tag="label.for">price.rate</content>
                                     <g:textField class="field" name="price.rate" value="${formatNumber(number: product?.defaultPrice?.rate, formatName: 'money.format')}"/>
                                 </g:applyLayout>
 
                                 <g:applyLayout name="form/select">
-                                    <content tag="label">Pricing Strategy</content>
+                                    <content tag="label"><g:message code="plan.model.type"/></content>
                                     <content tag="label.for">price.type</content>
                                     <g:select name="price.type" from="${PriceModelStrategy.values()}"
                                               valueMessagePrefix="price.strategy"

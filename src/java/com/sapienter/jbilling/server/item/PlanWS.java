@@ -2,6 +2,7 @@ package com.sapienter.jbilling.server.item;
 
 import com.sapienter.jbilling.server.item.db.PlanDTO;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ public class PlanWS {
     private Integer id;
     private Integer itemId; // plan subscription item    
     private String description;
-    private List<PlanItemWS> planItems;
+    private List<PlanItemWS> planItems = new ArrayList<PlanItemWS>();
 
     public PlanWS() {
     }

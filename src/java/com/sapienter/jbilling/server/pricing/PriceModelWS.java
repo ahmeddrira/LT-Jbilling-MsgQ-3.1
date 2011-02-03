@@ -45,7 +45,6 @@ public class PriceModelWS implements Serializable {
     private String type;
     private Map<String, String> attributes = new HashMap<String, String>();
     private String rate;
-    private String includedQuantity;
     private Integer currencyId;
 
     public PriceModelWS() {
@@ -56,7 +55,6 @@ public class PriceModelWS implements Serializable {
         this.attributes = new HashMap<String,String>(model.getAttributes());
 
         setRate(model.getRate());
-        setIncludedQuantity(model.getIncludedQuantity());
 
         if (model.getType() != null ) this.type = model.getType().name();
         if (model.getCurrency() != null) this.currencyId = model.getCurrency().getId();
@@ -106,22 +104,6 @@ public class PriceModelWS implements Serializable {
         this.rate = (rate != null ? rate.toString() : null);
     }
 
-    public String getIncludedQuantity() {
-        return includedQuantity;
-    }
-
-    public BigDecimal getIncludedQuantityAsDecimal() {
-        return includedQuantity != null ? new BigDecimal(includedQuantity) : null;
-    }
-
-    public void setIncludedQuantity(String includedQuantity) {
-        this.includedQuantity = includedQuantity;
-    }
-
-    public void setIncludedQuantity(BigDecimal includedQuantity) {
-        this.includedQuantity = (includedQuantity != null ? includedQuantity.toString() : null);
-    }
-
     public Integer getCurrencyId() {
         return currencyId;
     }
@@ -137,7 +119,6 @@ public class PriceModelWS implements Serializable {
                 + ", type='" + type + '\''
                 + ", attributes=" + attributes
                 + ", rate=" + rate
-                + ", includedQuantity=" + includedQuantity
                 + ", currencyId=" + currencyId
                 + '}';
     }

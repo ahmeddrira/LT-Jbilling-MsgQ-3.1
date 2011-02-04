@@ -10365,6 +10365,7 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 238	1	1	25	6	2007-06-29 14:39:56.193	2	11	9	\N	\N	\N	1	\N
 239	1	1	25	7	2007-06-29 14:39:56.213	2	11	9	\N	\N	\N	1	\N
 240	1	1	25	8	2007-06-29 14:39:56.213	2	11	9	\N	\N	\N	1	\N
+
 241	1	1	25	9	2007-06-29 14:39:56.223	2	11	9	\N	\N	\N	1	\N
 242	1	1	25	19	2007-06-29 14:39:56.233	2	11	9	\N	\N	\N	1	\N
 243	1	1	25	20	2007-06-29 14:39:56.253	2	11	9	\N	\N	\N	1	\N
@@ -15283,6 +15284,7 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 57	1
 58	1
 59	1
+
 60	1
 62	1
 63	1
@@ -15668,7 +15670,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 571	1	71	1	1	\N
 580	2	58	1	1	\N
 590	2	63	1	1	\N
-410	1	61	1	1	\N
+410	1	79	1	1	\N
 600	1	66	1	1	\N
 1	1	59	1	3	\N
 430	1	60	1	1	\N
@@ -15746,7 +15748,6 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 8302	570	ageing_step	6	\N	\N	1
 8303	580	contactType	2	\N	\N	1
 8304	580	externalSavingPluginId	590	\N	\N	1
-590	410	file	\N	PricingRules.pkg RateCard.pkg	\N	2
 580	420	file	\N	Mediation.pkg ItemsRules.pkg PricingRules.pkg RateCard.pkg	\N	1
 8305	572	url	\N	jdbc:postgresql://localhost:5432/jbilling_test	\N	1
 8306	572	username	\N	jbilling	\N	1
@@ -16979,6 +16980,7 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 933	951	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
 934	952	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
 935	953	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
+
 936	954	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
 937	955	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
 938	956	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1

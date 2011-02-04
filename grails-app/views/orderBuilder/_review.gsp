@@ -113,7 +113,7 @@
 
     <script type="text/javascript">
         $(function() {
-            $('#order-lines li.line').click(function() {
+            $('#review-lines li.line').click(function() {
                 var id = $(this).attr('id');
                 $('#' + id).toggleClass('active');
                 $('#' + id + '-editor').toggle('blind');

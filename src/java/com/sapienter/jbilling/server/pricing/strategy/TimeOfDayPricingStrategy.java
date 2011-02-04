@@ -117,9 +117,9 @@ public class TimeOfDayPricingStrategy implements PricingStrategy {
         for (LocalTime time : prices.keySet()) {
             if (now.isEqual(time) || now.isAfter(time)) {
                 result.setPrice(prices.get(time));
-                LOG.debug("Price for " + now + ": " + result.getPrice());
             }
         }
+        LOG.debug("Price for " + now + ": " + result.getPrice());
     }
 
 

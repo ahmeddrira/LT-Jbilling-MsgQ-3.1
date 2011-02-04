@@ -27,6 +27,7 @@ import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.item.tasks.IPricing;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
@@ -267,28 +268,28 @@ public class ItemBL {
     }
 
 
-    /**
-     * It will call the main getPrice, with the currency of the userId passed
-     * @param userId
-     * @param entityId
-     * @return
-     * @throws SessionInternalError
-     */
     public BigDecimal getPrice(Integer userId, BigDecimal quantity, Integer entityId) throws SessionInternalError {
         UserBL user = new UserBL(userId);
-        return getPrice(userId, user.getCurrencyId(), quantity, entityId);
+        return getPrice(userId, user.getCurrencyId(), quantity, entityId, null);
+    }
+
+    public BigDecimal getPrice(Integer userId, Integer currencyId, BigDecimal quantity, Integer entityId) throws SessionInternalError {
+        UserBL user = new UserBL(userId);
+        return getPrice(userId, currencyId, quantity, entityId, null);
     }
 
     /**
      * Will find the right price considering the user's special prices and which
      * currencies had been entered in the prices table.
-     * @param userId
-     * @param currencyId
-     * @param entityId
+     *
+     * @param userId user id
+     * @param currencyId currency id
+     * @param entityId entity id
+     * @param order order being created or edited, maybe used for additional pricing calculations
      * @return The price in the requested currency. It always returns a price,
      * otherwise an exception for lack of pricing for an item
      */
-    public BigDecimal getPrice(Integer userId, Integer currencyId, BigDecimal quantity, Integer entityId)
+    public BigDecimal getPrice(Integer userId, Integer currencyId, BigDecimal quantity, Integer entityId, OrderDTO order)
             throws SessionInternalError {
 
         if (currencyId == null || entityId == null) {
@@ -315,7 +316,7 @@ public class ItemBL {
             IPricing myTask = taskManager.getNextClass();
 
             while(myTask != null) {
-                price = myTask.getPrice(item.getId(), quantity, userId, currencyId, pricingFields, price);
+                price = myTask.getPrice(item.getId(), quantity, userId, currencyId, pricingFields, price, order);
                 myTask = taskManager.getNextClass();
             }
         } catch (Exception e) {
@@ -339,8 +340,9 @@ public class ItemBL {
     public ItemDTO getDTO(Integer languageId, Integer userId, Integer entityId, Integer currencyId)
         throws SessionInternalError {
 
-        return getDTO(languageId, userId, entityId, currencyId, BigDecimal.ONE);
+        return getDTO(languageId, userId, entityId, currencyId, BigDecimal.ONE, null);
     }
+
 
     /**
      * Returns an ItemDTO constructed for the given language and entity, priced for the
@@ -356,6 +358,28 @@ public class ItemBL {
      */
     public ItemDTO getDTO(Integer languageId, Integer userId, Integer entityId, Integer currencyId, BigDecimal quantity)
         throws SessionInternalError {
+        return getDTO(languageId, userId, entityId, currencyId, quantity, null);
+    }
+
+
+    /**
+     * Returns an ItemDTO constructed for the given language and entity, priced for the
+     * given user, currency and the amount being purchased.
+     *
+     * If an order is given, then the order quantities will impact the price calculations
+     * for item prices that include usage.
+     *
+     * @param languageId id of the users language
+     * @param userId id of the user purchasing the item
+     * @param entityId id of the entity
+     * @param currencyId id of the currency
+     * @param quantity quantity being purchased
+     * @param order order that this item is to be added to. may be null if no order operation.
+     * @return item dto
+     * @throws SessionInternalError if an internal exception occurs processing request
+     */
+    public ItemDTO getDTO(Integer languageId, Integer userId, Integer entityId, Integer currencyId, BigDecimal quantity,
+                          OrderDTO order) throws SessionInternalError {
 
         ItemDTO dto = new ItemDTO(
             item.getId(),
@@ -375,7 +399,7 @@ public class ItemBL {
         // calculate a true price using the pricing plug-in, pricing takes into
         // account plans, special prices and the quantity of the item being purchased.
         if (currencyId != null && dto.getPercentage() == null) {
-            dto.setPrice(getPrice(userId, currencyId, quantity, entityId));
+            dto.setPrice(getPrice(userId, currencyId, quantity, entityId, order));
         }
 
         // set the types

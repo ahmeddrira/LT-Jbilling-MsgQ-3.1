@@ -27,6 +27,7 @@ import com.sapienter.jbilling.server.item.tasks.IPricing;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.order.UsageBL;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
@@ -62,7 +63,8 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
                                Integer userId,
                                Integer currencyId,
                                List<PricingField> fields,
-                               BigDecimal defaultPrice) throws TaskException {
+                               BigDecimal defaultPrice,
+                               OrderDTO pricingOrder) throws TaskException {
 
         LOG.debug("Pricing item " + itemId + ", quantity " + quantity + " - for user " + userId);
 
@@ -85,7 +87,8 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
                 // fetch current usage of the item if the pricing strategy requires it
                 Usage usage = null;
                 if (model.getStrategy().requiresUsage()) {
-                    usage = new UsageBL(userId).getItemUsage(itemId);
+                    usage = new UsageBL(userId, pricingOrder).getItemUsage(itemId);
+
                     LOG.debug("Current usage of item " + itemId + ": " + usage);
                 } else {
                     LOG.debug("Pricing strategy " + model.getType() + " does not require usage.");

@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.order;
 
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -34,6 +35,7 @@ import java.util.List;
  * @since 16-08-2010
  */
 public class Usage {
+    private static Logger LOG = Logger.getLogger(Usage.class);
 
     private Integer itemId;
     private Integer itemTypeId;
@@ -138,6 +140,7 @@ public class Usage {
      * @param line order line to add
      */
     public void addLine(OrderLineDTO line) {
+        LOG.debug("Adding usage from line: " + line);
         addAmount(line.getAmount());
         addQuantity(line.getQuantity());
     }
@@ -148,6 +151,7 @@ public class Usage {
      * @param line order line to subtract
      */
     public void subtractLine(OrderLineDTO line) {
+        LOG.debug("Subtracting usage from line: " + line);
         subractAmount(line.getAmount());
         subtractQuantity(line.getQuantity());
 

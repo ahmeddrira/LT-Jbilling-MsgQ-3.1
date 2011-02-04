@@ -45,7 +45,7 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
     private static final Logger LOG = Logger.getLogger(RulesPricingTask.class);
 
     public BigDecimal getPrice(Integer itemId, BigDecimal quantity, Integer userId, Integer currencyId,
-            List<PricingField> fields, BigDecimal defaultPrice)
+            List<PricingField> fields, BigDecimal defaultPrice, OrderDTO pricingOrder)
             throws TaskException {
         // now we have the line with good defaults, the order and the item
         // These have to be visible to the rules

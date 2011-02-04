@@ -1125,9 +1125,31 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return invoice == null ? null : invoice.getId();
     }
 
-    private void processItemLine(OrderLineWS[] lines, Integer languageId,Integer entityId, Integer userId, Integer currencyId,
-            String pricingFields)
-            throws SessionInternalError, PluggableTaskException, TaskException {
+    /**
+     * Processes the given array of order lines, executing pricing and item management plug-ins for each line.
+     *
+     * @param order the working order being created or edited.
+     * @param lines lines to process
+     * @param languageId language id
+     * @param entityId entity id
+     * @param userId user id
+     * @param currencyId currency id
+     * @param pricingFields pricing fields
+     * @throws PluggableTaskException pluggable task exception
+     * @throws TaskException pluggable task exception
+     */
+    private void processItemLine(OrderDTO order, OrderLineWS[] lines, Integer languageId, Integer entityId,
+                                 Integer userId, Integer currencyId, String pricingFields)
+            throws SessionInternalError {
+
+        /*
+            Exclude existing order lines from the usage count when updating an order. This prevents us
+            from counting the existing line (read from the database) on top of the line that were editing.
+         */
+        if (order != null && order.getId() != null) {
+            order = new OrderDTO(order);
+            order.setLines(new ArrayList<OrderLineDTO>());
+        }
 
         for (OrderLineWS line : lines) {
             // get pricing fields if they were set for the order
@@ -1139,7 +1161,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             // get the item
             ItemBL itemBL = new ItemBL(line.getItemId());
             itemBL.setPricingFields(fields);
-            ItemDTO item = itemBL.getDTO(languageId, userId, entityId, currencyId, line.getQuantityAsDecimal());
+            ItemDTO item = itemBL.getDTO(languageId, userId, entityId, currencyId, line.getQuantityAsDecimal(), order);
 
             if (line.getUseItem()) {
                 if (item.getPrice() == null) {
@@ -1153,7 +1175,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 }
             }
         }
-
     }
 
     public void updateOrder(OrderWS order)
@@ -1171,13 +1192,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             Integer languageId = bl.getEntity().getLanguageIdField();
 
             // see if the related items should provide info
-            processItemLine(order.getOrderLines(), languageId, entityId,
-                    order.getUserId(), order.getCurrencyId(),
-                    order.getPricingFields());
+            processItemLine(oldOrder.getEntity(), order.getOrderLines(), languageId, entityId,
+                            order.getUserId(), order.getCurrencyId(),
+                            order.getPricingFields());
 
             // do some transformation from WS to DTO :(
             OrderBL orderBL = new OrderBL();
             OrderDTO dto = orderBL.getDTO(order);
+
             // recalculate
             orderBL.set(dto);
             orderBL.recalculate(entityId);
@@ -1334,7 +1356,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 List<OrderLineDTO> oldLines = OrderLineBL.copy(bl.getDTO().getLines());
 
                 // convert order lines from WS to DTO
-                processItemLine(lines, languageId, getCallerCompanyId(), userId, currencyId, pricing);
+                processItemLine(bl.getEntity(), lines, languageId, getCallerCompanyId(), userId, currencyId, pricing);
 
                 for (OrderLineWS line : lines) {
                     // add the line to the current order
@@ -1958,7 +1980,17 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         // see if the related items should provide info
         try {
-            processItemLine(order.getOrderLines(), languageId, entityId, order.getUserId(), order.getCurrencyId(), order.getPricingFields());
+            if (order.getId() != null) {
+                // rating existing order
+                LOG.debug("Rating existing order ...");
+                OrderDTO oldOrder = new OrderBL(order.getId()).getEntity();
+                processItemLine(oldOrder, order.getOrderLines(), languageId, entityId, order.getUserId(), order.getCurrencyId(), order.getPricingFields());
+            } else {
+                // creating new order
+                LOG.debug("Creating a new order");
+                processItemLine(null, order.getOrderLines(), languageId, entityId, order.getUserId(), order.getCurrencyId(), order.getPricingFields());
+            }
+
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }

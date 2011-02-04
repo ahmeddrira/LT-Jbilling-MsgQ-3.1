@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.item.tasks;
 import java.util.List;
 
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import java.math.BigDecimal;
 
@@ -37,10 +38,11 @@ public interface IPricing {
      * @param currencyId currency of user
      * @param fields pricing fields
      * @param defaultPrice default price if no other price could be determined.
+     * @param pricingOrder target order for this pricing request (may be null)
      * @return price
      * @throws TaskException checked exception if a problem occurs.
      */
     public BigDecimal getPrice(Integer itemId, BigDecimal quantity, Integer userId, Integer currencyId,
-                               List<PricingField> fields, BigDecimal defaultPrice)
+                               List<PricingField> fields, BigDecimal defaultPrice, OrderDTO pricingOrder)
             throws TaskException;
 }

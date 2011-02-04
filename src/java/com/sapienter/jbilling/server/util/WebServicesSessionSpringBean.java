@@ -1125,40 +1125,35 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return invoice == null ? null : invoice.getId();
     }
 
-    private void processItemLine(OrderLineWS[] lines, Integer languageId,
-            Integer entityId, Integer userId, Integer currencyId,
+    private void processItemLine(OrderLineWS[] lines, Integer languageId,Integer entityId, Integer userId, Integer currencyId,
             String pricingFields)
             throws SessionInternalError, PluggableTaskException, TaskException {
-        for (OrderLineWS line : lines) {
-            // get the related item
-            IItemSessionBean itemSession = (IItemSessionBean) Context.getBean(
-                    Context.Name.ITEM_SESSION);
 
+        for (OrderLineWS line : lines) {
             // get pricing fields if they were set for the order
             List<PricingField> fields = null;
             if (pricingFields != null) {
-                fields = Arrays.asList(
-                        PricingField.getPricingFieldsValue(pricingFields));
+                fields = Arrays.asList(PricingField.getPricingFieldsValue(pricingFields));
             }
 
-            ItemDTO item = itemSession.get(line.getItemId(),
-                    languageId, userId, currencyId,
-                    entityId, fields);
+            // get the item
+            ItemBL itemBL = new ItemBL(line.getItemId());
+            itemBL.setPricingFields(fields);
+            ItemDTO item = itemBL.getDTO(languageId, userId, entityId, currencyId, line.getQuantityAsDecimal());
 
-            //ItemDAS itemDas = new ItemDAS();
-            //line.setItem(itemDas.find(line.getItemId()));
-            if (line.getUseItem().booleanValue()) {
+            if (line.getUseItem()) {
                 if (item.getPrice() == null) {
                     line.setPrice(item.getPercentage());
                 } else {
                     line.setPrice(item.getPrice());
                 }
-                if (line.getDescription() == null ||
-                        line.getDescription().length() == 0) {
+
+                if (line.getDescription() == null || line.getDescription().length() == 0) {
                     line.setDescription(item.getDescription());
                 }
             }
         }
+
     }
 
     public void updateOrder(OrderWS order)
@@ -1337,15 +1332,15 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 bl.set(OrderBL.getOrCreateCurrentOrder(userId, date, currencyId,
                         true));
                 List<OrderLineDTO> oldLines = OrderLineBL.copy(bl.getDTO().getLines());
+
                 // convert order lines from WS to DTO
-                processItemLine(lines, languageId, getCallerCompanyId(),
-                        userId, currencyId, pricing);
+                processItemLine(lines, languageId, getCallerCompanyId(), userId, currencyId, pricing);
 
                 for (OrderLineWS line : lines) {
                     // add the line to the current order
-                    bl.addItem(line.getItemId(), line.getQuantityAsDecimal(), languageId, userId, getCallerCompanyId(),
-                               currencyId, records);
+                    bl.addItem(line.getItemId(), line.getQuantityAsDecimal(), languageId, userId, getCallerCompanyId(), currencyId, records);
                 }
+
                 diffLines = OrderLineBL.diffOrderLines(oldLines, bl.getDTO().getLines());
                 // generate NewQuantityEvents
                 bl.checkOrderLineQuantities(oldLines, bl.getDTO().getLines(),
@@ -1963,9 +1958,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         // see if the related items should provide info
         try {
-            processItemLine(order.getOrderLines(), languageId, entityId,
-                    order.getUserId(), order.getCurrencyId(),
-                    order.getPricingFields());
+            processItemLine(order.getOrderLines(), languageId, entityId, order.getUserId(), order.getCurrencyId(), order.getPricingFields());
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }

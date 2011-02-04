@@ -276,7 +276,7 @@ class ProductController {
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
 
-        [ product: product, currencies: currencies, categoryId: params.category ]
+        [ product: product, currencies: currencies, categories: categories, categoryId: params.category ]
     }
 
     def updateStrategy = {
@@ -339,7 +339,7 @@ class ProductController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
-            render view: 'editProduct', model: [ product: product, currencies: currencies ]
+            render view: 'editProduct', model: [ product: product, categories: categories, currencies: currencies ]
             return
         }
 

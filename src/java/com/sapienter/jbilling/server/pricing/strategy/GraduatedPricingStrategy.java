@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
+import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -44,6 +45,7 @@ import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.
  * @since 05-08-2010
  */
 public class GraduatedPricingStrategy implements PricingStrategy {
+    private static final Logger LOG = Logger.getLogger(GraduatedPricingStrategy.class);
 
     private static final List<AttributeDefinition> ATTRIBUTE_LIST = Arrays.asList(
             new AttributeDefinition("included", DECIMAL, true)
@@ -86,6 +88,9 @@ public class GraduatedPricingStrategy implements PricingStrategy {
 
         BigDecimal total = quantity.add(usage.getQuantity());
         BigDecimal included = AttributeUtils.getDecimal(planPrice.getAttributes(), "included");
+
+        LOG.debug("Pricing purchase quantity " + quantity + ", " + included + " units included ");
+        LOG.debug("Total usage: " + total);
 
         if (usage.getQuantity().compareTo(included) >= 0) {
             // included usage exceeded by current usage

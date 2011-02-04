@@ -393,6 +393,8 @@ public class ItemBL {
         }
         dto.setTypes(types);
 
+        LOG.debug("Got item: " + dto.getId() + ", price: " + dto.getPrice());
+
         return dto;
     }
 

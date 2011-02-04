@@ -66,6 +66,7 @@ import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
@@ -1427,8 +1428,11 @@ public class OrderBL extends ResultList
     }
 
     public Integer getMainOrderId(Integer userId) {
-        UserDAS das = new UserDAS();
-        return das.find(userId).getCustomer().getCurrentOrderId();
+        UserDTO user = new UserDAS().find(userId);
+        if (user.getCustomer() != null)
+            return user.getCustomer().getCurrentOrderId();
+
+        return null;
     }
 
     public void addRelationships(Integer userId, Integer periodId, Integer currencyId) {

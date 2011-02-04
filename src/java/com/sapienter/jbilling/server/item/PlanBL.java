@@ -147,6 +147,11 @@ public class PlanBL {
 
     public void delete() {
         if (plan != null) {
+            for (CustomerDTO customer : getCustomersByPlan(plan.getId())) {
+                CustomerPriceBL bl = new CustomerPriceBL(customer);
+                bl.removePrices(plan.getId());
+            }
+
             planDas.delete(plan);
         } else {
             LOG.error("Cannot delete, PlanDTO not found or not set!");

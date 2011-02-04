@@ -326,7 +326,6 @@
             <classpath refid="compile.classpath"/>
             <classpath refid="test.classpath"/>
 
-
             <formatter type="brief" usefile="false"/>
             <formatter type="xml"/>            
 
@@ -335,6 +334,7 @@
             <test name="com.sapienter.jbilling.server.payment.WSTest" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.item.WSTest" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.invoice.WSTest" todir="${build.test-results.dir}/ws/xml"/>
+            <test name="com.sapienter.jbilling.server.pricing.WSTest" todir="${build.test-results.dir}/ws/xml"/>
         </junit>
 
         <!-- generate testing reports -->

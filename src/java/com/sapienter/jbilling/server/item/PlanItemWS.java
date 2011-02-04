@@ -3,11 +3,13 @@ package com.sapienter.jbilling.server.item;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 
+import java.io.Serializable;
+
 /**
  * @author Brian Cowdery
  * @since 20-09-2010
  */
-public class PlanItemWS {
+public class PlanItemWS implements Serializable {
 
     public static final Integer DEFAULT_PRECEDENCE = -1;
 

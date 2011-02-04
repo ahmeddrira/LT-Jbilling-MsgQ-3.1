@@ -50,6 +50,12 @@ public class PriceModelWS implements Serializable {
     public PriceModelWS() {
     }
 
+    public PriceModelWS(String type, BigDecimal rate, Integer currencyId) {
+        this.type = type;
+        this.rate = (rate != null ? rate.toString() : null);
+        this.currencyId = currencyId;
+    }
+
     public PriceModelWS(PriceModelDTO model) {
         this.id = model.getId();
         this.attributes = new HashMap<String,String>(model.getAttributes());

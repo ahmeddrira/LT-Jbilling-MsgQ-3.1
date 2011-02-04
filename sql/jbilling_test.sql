@@ -3317,6 +3317,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
+4	1	product	list	\N	2300	0
+5	1	product	show	\N	3000	0
+6	1	product	list	\N	\N	0
+7	1	product	list	\N	1	0
+8	1	product	show	\N	2602	0
+9	1	plan	list	\N	\N	0
+10	1	plan	list	\N	1	0
 \.
 
 
@@ -8816,14 +8823,6 @@ COPY currency_exchange (id, entity_id, currency_id, rate, create_datetime, optlo
 
 COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_method_id, notes, auto_payment_type, due_date_unit_id, due_date_value, df_fm, parent_id, is_parent, exclude_aging, invoice_child, current_order_id, optlock, balance_type, dynamic_balance, credit_limit, auto_recharge) FROM stdin;
 2	13	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N	\N
-12	23	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	1	1	\N	\N	\N
-22	33	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N	\N
-32	43	\N	0	1	\N	1	\N	\N	\N	\N	1	0	\N	\N	1	1	\N	\N	\N
-42	53	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	1	1	\N	\N	\N
-52	63	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	1	1	\N	\N	\N
-62	73	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
-63	74	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
-64	75	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 65	76	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 66	77	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 67	78	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
@@ -9825,7 +9824,6 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 1066	10748	12	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N	\N
 1067	10743	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 1068	10744	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
-1	2	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	1055	2	1	0.0000000000	0.0000000000	\N
 1044	1055	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	1065	2	1	0.0000000000	0.0000000000	\N
 1029	1040	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	\N
 106700	10750	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	\N
@@ -9845,6 +9843,15 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 106909	10779	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107809	3	1	0.0000000000	0.0000000000	0.0000000000
 106910	10780	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107810	2	1	0.0000000000	0.0000000000	0.0000000000
 106911	10781	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107811	2	1	0.0000000000	0.0000000000	0.0000000000
+1	2	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	1055	3	1	0.0000000000	0.0000000000	0.0000000000
+12	23	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+22	33	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+32	43	\N	0	1	\N	1	\N	\N	\N	\N	1	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+42	53	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+52	63	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+62	73	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+63	74	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+64	75	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
 \.
 
 
@@ -11917,8 +11924,6 @@ promotion	1
 promotion	1
 filter	1
 filter_set	1
-recent_item	1
-breadcrumb	1
 plan	1
 plan_item	1
 permission_type	1
@@ -11938,6 +11943,7 @@ mediation_process	1
 ach	1
 ach	1
 partner_payout	1
+recent_item	3
 partner_payout	1
 process_run_total_pm	1
 process_run_total_pm	1
@@ -11955,6 +11961,7 @@ mediation_record_line	1
 mediation_record_line	1
 contact_type	10
 contact_field_type	1
+breadcrumb	11
 \.
 
 
@@ -15224,6 +15231,7 @@ COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 --
 
 COPY plan (id, item_id, description) FROM stdin;
+1	3000	Discount lemonade
 \.
 
 
@@ -15232,6 +15240,7 @@ COPY plan (id, item_id, description) FROM stdin;
 --
 
 COPY plan_item (id, plan_id, item_id, price_model_id, precedence) FROM stdin;
+1	1	2602	2004	-1
 \.
 
 
@@ -15627,6 +15636,7 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id) FROM 
 1900	METERED	0.0000000000	\N	1
 2001	METERED	99.9900000000	\N	1
 2003	METERED	15.0000000000	\N	11
+2004	METERED	0.5000000000	\N	1
 \.
 
 
@@ -16731,6 +16741,8 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 --
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
+1	PRODUCT	3000	1	0
+2	PRODUCT	2602	1	0
 \.
 
 

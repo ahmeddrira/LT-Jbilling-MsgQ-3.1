@@ -81,6 +81,19 @@ public class UsageBL {
     }
 
     /**
+     * Constructs a UusageBL object to calculate usage for the customers most recent/current
+     * period, with a working order that is to be included in the usage counts.
+     *
+     * @param userId user id
+     * @param order working order (order being edited/created).
+     */
+    public UsageBL(Integer userId, OrderDTO order) {
+        _init();
+        set(userId, CURRENT_PERIOD);
+        setWorkingOrder(order);
+    }
+
+    /**
      * Construct a UsageBL object to calculate usage over the given number of
      * periods in the past, where 1 period back is the current period.
      *
@@ -393,7 +406,7 @@ public class UsageBL {
             for (OrderLineDTO line : getWorkingOrder().getLines()) {
 
                 // add matching line items
-                if (usage.getItemId() != null && usage.getItemId().equals(line.getItemId())) 
+                if (usage.getItemId() != null && usage.getItemId().equals(line.getItemId()))
                     usage.addLine(line);
 
                 // add matching line items of type

@@ -58,8 +58,8 @@ then
         if (model.getStrategy().requiresUsage()) {
             usage = getCurrentUsage($result.getUserId(), $result.getItemId());
         }
-    
-        model.applyTo($result, $result.getQuantity(), usage);
+
+        model.applyTo($result, null, $result.getQuantity(), usage);
         LOG.debug("Applying price model: " + model);
     }
 end

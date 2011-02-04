@@ -21,23 +21,11 @@
                 value="${model?.type ?: type.name()}"/>
     </g:applyLayout>
 
-    %{-- todo: obsolete, interface methods are to be removed and individual view templates will be provided --}%
-    <g:if test="${!type.strategy?.hasRate()}">
-        <!-- user defined rate -->
-        <g:applyLayout name="form/input">
-            <content tag="label"><g:message code="plan.model.rate"/></content>
-            <content tag="label.for">model.rate</content>
-            <g:textField class="field" name="model.rate" value="${formatNumber(number: model?.rate ?: BigDecimal.ZERO, formatName: 'money.format')}"/>
-        </g:applyLayout>
-    </g:if>
-    <g:else>
-        <!-- strategy has a fixed rate -->
-        <g:applyLayout name="form/text">
-            <content tag="label"><g:message code="plan.model.rate"/></content>
-            <g:formatNumber number="${type.strategy.rate}" formatName="money.format"/>
-            <g:hiddenField name="model.rate" value="${formatNumber(number: strategy?.rate, formatName: 'money.format')}"/>
-        </g:applyLayout>
-    </g:else>
+    <g:applyLayout name="form/input">
+        <content tag="label"><g:message code="plan.model.rate"/></content>
+        <content tag="label.for">model.rate</content>
+        <g:textField class="field" name="model.rate" value="${formatNumber(number: model?.rate ?: BigDecimal.ZERO, formatName: 'money.format')}"/>
+    </g:applyLayout>
 
     <g:applyLayout name="form/select">
         <content tag="label"><g:message code="prompt.user.currency"/></content>

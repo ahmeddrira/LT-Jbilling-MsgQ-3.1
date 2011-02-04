@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.order.UsageBL;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
@@ -88,7 +89,8 @@ public class TieredPriceModelPricingTask extends PriceModelPricingTask {
                                Integer userId,
                                Integer currencyId,
                                List<PricingField> fields,
-                               BigDecimal defaultPrice) throws TaskException {
+                               BigDecimal defaultPrice,
+                               OrderDTO pricingOrder) throws TaskException {
 
         LOG.debug("Pricing item " + itemId + ", quantity " + quantity + " - for user " + userId);
 
@@ -122,7 +124,7 @@ public class TieredPriceModelPricingTask extends PriceModelPricingTask {
                 if (model.getStrategy().requiresUsage()) {
                     try {
                         UsageType type = UsageType.valueOfIgnoreCase(getParameter(PARAM_USAGE_TYPE, DEFAULT_USAGE_TYPE));
-                        usage = getUsage(type, itemId, userId, customer.getBaseUser().getId());
+                        usage = getUsage(type, itemId, userId, customer.getBaseUser().getId(), pricingOrder);
                     } catch (PluggableTaskException e) {
                         throw new TaskException(e);
                     }
@@ -132,7 +134,7 @@ public class TieredPriceModelPricingTask extends PriceModelPricingTask {
                 }
 
                 PricingResult result = new PricingResult(itemId, quantity, userId, currencyId);
-                model.applyTo(result, result.getQuantity(), usage);
+                model.applyTo(result, fields, result.getQuantity(), usage);
                 return result.getPrice();
             }
         }
@@ -149,21 +151,22 @@ public class TieredPriceModelPricingTask extends PriceModelPricingTask {
      * @param itemId item id to get usage for
      * @param userId user id making the price request
      * @param planUserId user holding the pricing plan
+     * @param pricingOrder working order (order being edited/created)
      * @return usage for customer and usage type
      * @throws PluggableTaskException thrown if plug-in parameters cannot be parsed
      */
-    private Usage getUsage(UsageType type, Integer itemId, Integer userId, Integer planUserId)
+    private Usage getUsage(UsageType type, Integer itemId, Integer userId, Integer planUserId, OrderDTO pricingOrder)
             throws PluggableTaskException {
 
         UsageBL usage;
         switch (type) {
             case USER:
-                usage = new UsageBL(userId);
+                usage = new UsageBL(userId, pricingOrder);
                 break;
 
             default:
             case PLAN_USER:
-                usage = new UsageBL(planUserId);
+                usage = new UsageBL(planUserId, pricingOrder);
                 break;
         }
 

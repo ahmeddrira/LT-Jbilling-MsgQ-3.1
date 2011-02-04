@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.pricing.strategy;
 
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
@@ -27,6 +28,7 @@ import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 
@@ -58,26 +60,36 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
      * @see GraduatedPricingStrategy
      *
      * @param result pricing result to apply pricing to
+     * @param fields pricing fields (not used by this strategy)
      * @param planPrice the plan price to apply
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
      */
     @Override
-    public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
+    public void applyTo(PricingResult result, List<PricingField> fields, PriceModelDTO planPrice,
+                        BigDecimal quantity, Usage usage) {
+
         if (usage == null || usage.getAmount() == null)
             throw new IllegalArgumentException("Usage amount cannot be null for CappedGraduatedPricingStrategy.");
 
-        // apply price only if the total usage cap has not been reached
         BigDecimal maximum = AttributeUtils.getDecimal(planPrice.getAttributes(), "max");
         if (usage.getAmount().compareTo(maximum) <= 0) {
-            super.applyTo(result, planPrice, quantity, usage);
+            // usage cap not yet reached, price normally
+            super.applyTo(result, fields, planPrice, quantity, usage);
+        } else {
+            // cap reached, price at zero
+            result.setPrice(BigDecimal.ZERO);
         }
 
         // only bill up to the set maximum cap
+        // calculate a unit price that brings the total cost back down to the maximum cap
         if (result.getPrice() != null) {
-            BigDecimal total = quantity.multiply(result.getPrice());
+
+            BigDecimal total = usage.getAmount().add(quantity.multiply(result.getPrice()));
             if (total.compareTo(maximum) >= 0) {
-                // todo: calculate a unit price that brings us up to the maximum cap
+                BigDecimal billable = maximum.subtract(usage.getAmount());             // remainder to reach maximum
+                BigDecimal price = billable.divide(quantity, 4, RoundingMode.HALF_UP); // price per unit
+                result.setPrice(price);
             }
         }
     }

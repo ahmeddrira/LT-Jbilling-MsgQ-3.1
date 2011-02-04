@@ -268,6 +268,7 @@ public class OrderLineWS implements Serializable {
                + ", price='" + price + '\''
                + ", deleted=" + deleted
                + ", description='" + description + '\''
+               + ", useItem=" + useItem
                + ", itemId=" + itemId
                + ", typeId=" + typeId
                + '}';

@@ -20,11 +20,13 @@
 
 package com.sapienter.jbilling.server.pricing.strategy;
 
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
+import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -43,6 +45,7 @@ import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.
  * @since 05-08-2010
  */
 public class GraduatedPricingStrategy implements PricingStrategy {
+    private static final Logger LOG = Logger.getLogger(GraduatedPricingStrategy.class);
 
     private static final List<AttributeDefinition> ATTRIBUTE_LIST = Arrays.asList(
             new AttributeDefinition("included", DECIMAL, true)
@@ -72,16 +75,22 @@ public class GraduatedPricingStrategy implements PricingStrategy {
      * </code>
      *
      * @param result pricing result to apply pricing to
+     * @param fields pricing fields (not used by this strategy)
      * @param planPrice the plan price to apply
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
      */
-    public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
+    public void applyTo(PricingResult result, List<PricingField> fields, PriceModelDTO planPrice,
+                        BigDecimal quantity, Usage usage) {
+
         if (usage == null || usage.getQuantity() == null)
             throw new IllegalArgumentException("Usage quantity cannot be null for GraduatedPricingStrategy.");
 
         BigDecimal total = quantity.add(usage.getQuantity());
         BigDecimal included = AttributeUtils.getDecimal(planPrice.getAttributes(), "included");
+
+        LOG.debug("Pricing purchase quantity " + quantity + ", " + included + " units included ");
+        LOG.debug("Total usage: " + total);
 
         if (usage.getQuantity().compareTo(included) >= 0) {
             // included usage exceeded by current usage
@@ -91,7 +100,7 @@ public class GraduatedPricingStrategy implements PricingStrategy {
             // current usage + purchased quantity exceeds included
             // determine the percentage rate for minutes used OVER the included.
             BigDecimal rated = total.subtract(included);
-            BigDecimal percent = rated.divide(quantity, 2, RoundingMode.HALF_UP);
+            BigDecimal percent = rated.divide(quantity, 4, RoundingMode.HALF_UP);
             result.setPrice(percent.multiply(planPrice.getRate()));
 
         } else {

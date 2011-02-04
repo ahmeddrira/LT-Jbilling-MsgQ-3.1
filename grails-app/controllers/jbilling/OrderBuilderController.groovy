@@ -310,6 +310,14 @@ class OrderBuilderController {
                     line.quantity = line.getQuantityAsDecimal().setScale(0, RoundingMode.HALF_UP)
                 }
 
+                // line may have a price if "allow manual pricing" is set on the item
+                // if there is no price, use the item
+                if (!params["line-${index}.price"] || !line.price) {
+                    line.useItem = true
+                }
+
+                log.debug("Updated line: " + line)
+
                 // add line to order
                 order.orderLines[index] = line
 

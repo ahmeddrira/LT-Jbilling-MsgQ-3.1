@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.pricing.db;
 
 import com.sapienter.jbilling.server.item.CurrencyBL;
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
@@ -206,8 +207,8 @@ public class PriceModelDTO implements Serializable {
      * @param usage total item usage for this billing period
      */
     @Transient
-    public void applyTo(PricingResult result, BigDecimal quantity, Usage usage) {
-        getType().getStrategy().applyTo(result, this, quantity, usage);
+    public void applyTo(PricingResult result, List<PricingField> fields, BigDecimal quantity, Usage usage) {
+        getType().getStrategy().applyTo(result, fields, this, quantity, usage);
 
         // convert to PricingResult currency
         if (result.getCurrencyId() != null

@@ -57,7 +57,7 @@
                             <content tag="label"><g:message code="product.categories"/></content>
                             <content tag="label.for">product.types</content>
 
-                            <g:select name="product.types" multiple="true" from="${ItemTypeDTO.list()}"
+                            <g:select name="product.types" multiple="true" from="${categories}"
                                       optionKey="id" optionValue="description" value="${product?.types ?: categoryId}" />
                         </g:applyLayout>
                     </div>

@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.pricing.strategy;
 
+import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
@@ -87,8 +88,8 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
 
             BigDecimal total = usage.getAmount().add(quantity.multiply(result.getPrice()));
             if (total.compareTo(maximum) >= 0) {
-                BigDecimal billable = maximum.subtract(usage.getAmount());             // remainder to reach maximum
-                BigDecimal price = billable.divide(quantity, 4, RoundingMode.HALF_UP); // price per unit
+                BigDecimal billable = maximum.subtract(usage.getAmount());
+                BigDecimal price = billable.divide(quantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
                 result.setPrice(price);
             }
         }

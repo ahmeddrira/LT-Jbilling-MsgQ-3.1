@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.pricing.strategy;
 
+import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
@@ -100,7 +101,7 @@ public class GraduatedPricingStrategy implements PricingStrategy {
             // current usage + purchased quantity exceeds included
             // determine the percentage rate for minutes used OVER the included.
             BigDecimal rated = total.subtract(included);
-            BigDecimal percent = rated.divide(quantity, 4, RoundingMode.HALF_UP);
+            BigDecimal percent = rated.divide(quantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
             result.setPrice(percent.multiply(planPrice.getRate()));
 
         } else {

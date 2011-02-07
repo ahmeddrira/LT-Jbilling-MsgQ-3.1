@@ -25,12 +25,11 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
+import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.*;
@@ -45,14 +44,17 @@ import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.
  */
 public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
 
-    private static final List<AttributeDefinition> ATTRIBUTE_LIST = Arrays.asList(
-        new AttributeDefinition("included", DECIMAL, true),
-        new AttributeDefinition("max", DECIMAL, true)
-    );
+    public CappedGraduatedPricingStrategy() {
+        setAttributeDefinitions(
+                new AttributeDefinition("included", DECIMAL, true),
+                new AttributeDefinition("max", DECIMAL, true)
+        );
 
-    @Override
-    public List<AttributeDefinition> getAttributeDefinitions() {
-        return ATTRIBUTE_LIST;
+        setChainPositions(
+                ChainPosition.START
+        );
+
+        setRequiresUsage(true);
     }
 
     /**

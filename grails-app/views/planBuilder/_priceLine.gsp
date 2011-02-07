@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 <%--
   Renders an PlanItemWS as an editable row for the plan builder preview pane.

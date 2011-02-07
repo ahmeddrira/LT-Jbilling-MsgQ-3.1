@@ -25,7 +25,6 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
-import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;

@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelStrategy; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 <%--
   Editor form for price model attributes.
@@ -11,7 +11,7 @@
   @since  02-Feb-2011
 --%>
 
-<g:set var="strategy" value="${(model ? PriceModelStrategy.valueOf(model?.type) : PriceModelStrategy.METERED).getStrategy()}"/>
+<g:set var="strategy" value="${(model ? com.sapienter.jbilling.server.pricing.db.PriceModelStrategy.valueOf(model?.type) : com.sapienter.jbilling.server.pricing.db.PriceModelStrategy.METERED).getStrategy()}"/>
 <g:set var="attributeIndex" value="${0}"/>
 
 <div id="attributes">

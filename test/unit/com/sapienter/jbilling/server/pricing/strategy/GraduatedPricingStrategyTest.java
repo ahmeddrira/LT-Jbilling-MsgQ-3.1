@@ -21,14 +21,12 @@
 package com.sapienter.jbilling.server.pricing.strategy;
 
 import com.sapienter.jbilling.server.BigDecimalTestCase;
-import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Brian Cowdery

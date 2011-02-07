@@ -21,11 +21,9 @@
 package com.sapienter.jbilling.server.pricing.db;
 
 import com.sapienter.jbilling.server.BigDecimalTestCase;
-import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.pricing.strategy.FlatPricingStrategy;
-import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

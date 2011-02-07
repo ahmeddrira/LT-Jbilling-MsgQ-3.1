@@ -1,6 +1,6 @@
 /*
  jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
+ Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
  This file is part of jbilling.
 
@@ -23,33 +23,44 @@ package com.sapienter.jbilling.server.pricing.strategy;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
+import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
+import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.*;
+
 /**
- * Metered pricing strategy.
- *
- * Applies a set $/unit amount.
+ * PercentagePricingStrategy
  *
  * @author Brian Cowdery
- * @since 05-08-2010
+ * @since 07/02/11
  */
-public class MeteredPricingStrategy extends AbstractPricingStrategy {
+public class PercentageStrategy extends AbstractPricingStrategy {
 
-    public MeteredPricingStrategy() {
+    public PercentageStrategy() {
+        setAttributeDefinitions(
+                new AttributeDefinition("percentage", DECIMAL, true)
+        );
+
         setChainPositions(
-                ChainPosition.START
+                ChainPosition.MIDDLE,
+                ChainPosition.END
         );
     }
 
     /**
-     * Sets the price to the plan rate.
+     * Applies a percentage to the given pricing result. This strategy is designed to be at the middle
+     * or end of a pricing chain, when the base rate has already been determined.
+     *
+     * The PriceModelDTO rate is handled as a decimal percentage by this strategy. A rate of "0.80"
+     * would be applied as 80%, "1.25" as %125 and so on.
      *
      * @param result pricing result to apply pricing to
-     * @param fields pricing fields (not used by this strategy)
+     * @param fields pricing fields
      * @param planPrice the plan price to apply
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
@@ -57,6 +68,8 @@ public class MeteredPricingStrategy extends AbstractPricingStrategy {
     public void applyTo(PricingResult result, List<PricingField> fields, PriceModelDTO planPrice,
                         BigDecimal quantity, Usage usage) {
 
-        result.setPrice(planPrice.getRate());
+        if (result.getPrice() != null) {
+            result.setPrice(result.getPrice().multiply(planPrice.getRate()));
+        }
     }
 }

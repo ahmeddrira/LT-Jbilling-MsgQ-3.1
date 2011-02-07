@@ -30,7 +30,7 @@ import com.sapienter.jbilling.server.item.PlanItemWS
 import com.sapienter.jbilling.server.pricing.PriceModelWS
 import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.item.ItemDTOEx
-import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils
 import com.sapienter.jbilling.server.item.ItemTypeBL
 

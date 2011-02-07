@@ -32,6 +32,7 @@ import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.item.ItemDTOEx
 import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils
+import com.sapienter.jbilling.server.item.ItemTypeBL
 
 /**
  * Plan builder controller
@@ -110,6 +111,7 @@ class PlanBuilderController {
 
                 def company = CompanyDTO.get(session['company_id'])
                 def itemTypes = company.itemTypes.sort{ it.id }
+                def internalPlansType = new ItemTypeBL().getInternalPlansType(session['company_id'])
 
                 def currencies = new CurrencyBL().getCurrencies(session['language_id'], session['company_id'])
                 currencies = currencies.findAll{ it.inUse }
@@ -118,8 +120,8 @@ class PlanBuilderController {
                 if (!product.id || product.id == 0) {
                     product.hasDecimals = 0
                     product.priceManual = 0
+                    product.types = [ internalPlansType.id ]
                     product.entityId = company.id
-                    product.types = [ itemTypes?.asList()?.first().id ]
 
                     def priceModel = new PriceModelWS()
                     priceModel.type = PriceModelStrategy.METERED
@@ -296,7 +298,6 @@ class PlanBuilderController {
                 bindData(conversation.product.defaultPrice, params, 'price')
 
                 conversation.product.priceManual = params.priceManual ? 1 : 0
-                conversation.product.types = [ params.int('productTypeId') ]
 
                 // sort prices by precedence
                 conversation.plan.planItems = conversation.plan.planItems.sort { it.precedence }.reverse()

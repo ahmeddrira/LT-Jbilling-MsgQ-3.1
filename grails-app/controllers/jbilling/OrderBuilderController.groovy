@@ -116,7 +116,6 @@ class OrderBuilderController {
      */
     def getPlans(CompanyDTO company, GrailsParameterMap params) {
         def filterBy = params['plan.filterBy']
-        def typeId = params.int('plan.typeId')
 
         // filter on item type, item id and internal number
         def plans = ItemDTO.createCriteria().list() {
@@ -125,12 +124,6 @@ class OrderBuilderController {
                     or {
                         eq('id', params.int('filterBy'))
                         ilike('internalNumber', "%${filterBy}%")
-                    }
-                }
-
-                if (typeId) {
-                    itemTypes {
-                        eq('id', typeId)
                     }
                 }
 

@@ -32,9 +32,10 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 import java.util.List;
 
 public class ItemTypeBL {
+    private static final Logger LOG = Logger.getLogger(ItemTypeBL.class);
+
     private ItemTypeDAS itemTypeDas = null;
     private ItemTypeDTO itemType = null;
-    private Logger log = null;
     private EventLogger eLogger = null;
     
     public ItemTypeBL(Integer itemTypeId)  {
@@ -47,7 +48,6 @@ public class ItemTypeBL {
     }
     
     private void init() {
-        log = Logger.getLogger(ItemTypeBL.class);     
         eLogger = EventLogger.getInstance();        
         itemTypeDas = new ItemTypeDAS();
     }
@@ -80,12 +80,15 @@ public class ItemTypeBL {
     }
     
     public void delete(Integer executorId) {
-        if (!isInUse()) {
+        if (isInUse()) {
             throw new SessionInternalError("Cannot delete a non-empty item type, remove items before deleting.");
         }
 
+        LOG.debug("Deleting item type: " + itemType.getId());
         Integer itemTypeId = itemType.getId();
         itemTypeDas.delete(itemType);
+        itemTypeDas.flush();
+        itemTypeDas.clear();
 
         // now remove all the descriptions 
         DescriptionBL desc = new DescriptionBL();
@@ -95,11 +98,21 @@ public class ItemTypeBL {
                 EventLogger.MODULE_ITEM_TYPE_MAINTENANCE, 
                 EventLogger.ROW_DELETED, null, null,null);
 
-        itemTypeDas.clear();
     }   
 
     public boolean isInUse() {
         return itemTypeDas.isInUse(itemType.getId());
+    }
+
+    /**
+     * Gets the internal category for plan subscription items. If the category does not
+     * exist, it will be created.
+     *
+     * @param entityId entity id
+     * @return plan category
+     */
+    public ItemTypeDTO getInternalPlansType(Integer entityId) {
+        return itemTypeDas.getCreateInternalPlansType(entityId);
     }
 
     /**

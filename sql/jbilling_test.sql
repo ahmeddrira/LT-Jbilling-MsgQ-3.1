@@ -1108,7 +1108,8 @@ CREATE TABLE item_type (
     entity_id integer NOT NULL,
     description character varying(100),
     order_line_type_id integer NOT NULL,
-    optlock integer NOT NULL
+    optlock integer NOT NULL,
+    internal boolean NOT NULL
 );
 
 
@@ -11739,14 +11740,16 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 -- Data for Name: item_type; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY item_type (id, entity_id, description, order_line_type_id, optlock) FROM stdin;
-1	1	Drink passes	1	1
-2	2	Drinks	1	1
-12	1	discounts	1	1
-22	1	Fees	3	1
-2200	1	Long Distance Plans	1	0
-2201	1	Calls	1	0
-2300	1	Plans	1	0
+COPY item_type (id, entity_id, description, order_line_type_id, optlock, internal) FROM stdin;
+1	1	Drink passes	1	1	f
+2	2	Drinks	1	1	f
+12	1	discounts	1	1	f
+22	1	Fees	3	1	f
+2200	1	Long Distance Plans	1	0	f
+2201	1	Calls	1	0	f
+2300	1	Plans	1	0	f
+2301	1	plans	1	0	t
+2302	2	plans	1	0	t
 \.
 
 
@@ -11774,7 +11777,7 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 2800	2201
 2801	2201
 2900	2201
-3000	2300
+3000	2301
 \.
 
 

@@ -56,6 +56,7 @@ class ProductController {
                 max:    params.max,
                 offset: params.offset
         ) {
+            eq('internal', false)
             eq('entity', new CompanyDTO(session['company_id']))
         }
     }

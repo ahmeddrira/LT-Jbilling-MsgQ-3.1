@@ -46,7 +46,7 @@
 		</dl>
 
         <!-- product categories cloud -->
-        <div class="box-cards">
+        <div class="box-cards box-cards-open">
             <div class="box-cards-title">
                 <span><g:message code="product.detail.categories.title"/></span>
             </div>

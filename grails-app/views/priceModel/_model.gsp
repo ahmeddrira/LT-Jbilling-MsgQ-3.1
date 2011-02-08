@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 <%--
   Editor form for price models.
@@ -8,56 +8,51 @@
 --%>
 
 <g:set var="type" value="${(model ? PriceModelStrategy.valueOf(model?.type) : PriceModelStrategy.METERED)}"/>
+<g:set var="templateName" value="${WordUtils.uncapitalize(WordUtils.capitalizeFully(type.name(), ['_'] as char[]).replaceAll('_',''))}"/>
 
 <div id="priceModel">
-    <g:hiddenField name="model.id" value="${model?.id}"/>
-
-    <g:applyLayout name="form/select">
-        <content tag="label"><g:message code="plan.model.type"/></content>
-        <content tag="label.for">model.type</content>
-        <g:select from="${PriceModelStrategy.values()}"
-                name="model.type"
-                valueMessagePrefix="price.strategy"
-                value="${model?.type ?: type.name()}"/>
-    </g:applyLayout>
-
-    <g:applyLayout name="form/input">
-        <content tag="label"><g:message code="plan.model.rate"/></content>
-        <content tag="label.for">model.rate</content>
-        <g:textField class="field" name="model.rate" value="${formatNumber(number: model?.rate ?: BigDecimal.ZERO, formatName: 'money.format')}"/>
-    </g:applyLayout>
-
-    <g:applyLayout name="form/select">
-        <content tag="label"><g:message code="prompt.user.currency"/></content>
-        <content tag="label.for">model.currencyId</content>
-        <g:select from="${currencies}"
-                name="model.currencyId"
-                optionKey="id" optionValue="code"
-                value="${model?.currencyId}" />
-    </g:applyLayout>
-
-
-    %{-- Show price precendence when editing a plan --}%
-    <g:if test="${planItem}">
-        <g:applyLayout name="form/input">
-            <content tag="label"><g:message code="plan.item.precedence"/></content>
-            <content tag="label.for">price.precedence</content>
-            <g:textField class="field" name="price.precedence" value="${planItem.precedence}"/>
-        </g:applyLayout>
-    </g:if>
-
+    <div class="column">
+        <g:render template="/priceModel/strategy/${templateName}" model="[model: model, type: type, currencies: currencies]"/>
+    </div>
+    <div class="column">
+        <g:render template="/priceModel/attributes" model="[model: model, type: type]"/>
+    </div>
 
     <script type="text/javascript">
+        /**
+         * Re-render the pricing model form when the strategy is changed
+         */
         $(function() {
             $('#model\\.type').change(function() {
                     $.ajax({
                        type: 'POST',
                        url:'${createLink(action: 'updateStrategy')}',
                        data: $('#priceModel').parents('form').serialize(),
-                       success: function(data){ $('#attributes').replaceWith(data); },
+                       success: function(data){ $('#priceModel').replaceWith(data); }
                     });
                 }
             );
         });
+
+        function add(index) {
+            $.ajax({
+               type: 'POST',
+               url:'${createLink(action: 'addAttribute')}',
+               data: $('#priceModel').parents('form').serialize(),
+               success: function(data){ $('#priceModel').replaceWith(data); }
+            });
+        }
+
+        function remove(index) {
+            $('#attributeIndex').val(index);
+
+            $.ajax({
+               type: 'POST',
+               url:'${createLink(action: 'removeAttribute')}',
+               data: $('#priceModel').parents('form').serialize(),
+               success: function(data){ $('#priceModel').replaceWith(data); }
+            });
+        }
     </script>
 </div>
+

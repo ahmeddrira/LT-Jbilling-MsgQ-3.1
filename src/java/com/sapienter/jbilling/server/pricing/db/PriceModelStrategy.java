@@ -28,6 +28,7 @@ import com.sapienter.jbilling.server.pricing.strategy.PercentageStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPercentageStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPricingStrategy;
+import org.apache.commons.lang.WordUtils;
 
 /**
  * Simple mapping enum for PricingStrategy implementations. This class is used

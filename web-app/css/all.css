@@ -41,6 +41,7 @@ img {
 a {
 	color:#2375a3;
 	text-decoration:none;
+    cursor: pointer;
 }
 a:focus {
 	outline:none;

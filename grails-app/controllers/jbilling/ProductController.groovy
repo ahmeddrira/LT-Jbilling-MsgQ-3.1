@@ -283,8 +283,9 @@ class ProductController {
     def updateStrategy = {
         def product = new ItemDTOEx()
         bindProduct(product, params)
+        product.defaultPrice.attributes.clear()
 
-        render template: '/priceModel/attributes', model: [ model: product.defaultPrice ]
+        render template: '/priceModel/model', model: [ model: product.defaultPrice, currencies: currencies ]
     }
 
     def addAttribute = {
@@ -294,7 +295,7 @@ class ProductController {
         def attribute = message(code: 'plan.new.attribute.key', args: [ params.attributeIndex ])
         product.defaultPrice.attributes.put(attribute, '')
 
-        render template: '/priceModel/attributes', model: [ model: product.defaultPrice ]
+        render template: '/priceModel/model', model: [ model: product.defaultPrice, currencies: currencies ]
     }
 
     def removeAttribute = {
@@ -305,7 +306,7 @@ class ProductController {
         def name = params["attribute.${index}.name"]
         product.defaultPrice.attributes.remove(name)
 
-        render template: '/priceModel/attributes', model: [ model: product.defaultPrice ]
+        render template: '/priceModel/model', model: [ model: product.defaultPrice, currencies: currencies ]
     }
 
     /**

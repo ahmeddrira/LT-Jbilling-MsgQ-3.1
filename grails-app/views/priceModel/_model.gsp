@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelStrategy; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 <%--
   Editor form for price models.
@@ -7,7 +7,7 @@
   @since  02-Feb-2011
 --%>
 
-<g:set var="type" value="${(model ? com.sapienter.jbilling.server.pricing.db.PriceModelStrategy.valueOf(model?.type) : com.sapienter.jbilling.server.pricing.db.PriceModelStrategy.METERED)}"/>
+<g:set var="type" value="${(model ? PriceModelStrategy.valueOf(model?.type) : PriceModelStrategy.METERED)}"/>
 
 <div id="priceModel">
     <g:hiddenField name="model.id" value="${model?.id}"/>

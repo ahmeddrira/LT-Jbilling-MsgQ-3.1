@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy; com.sapienter.jbilling.server.util.Util"%>
+<%@ page import="com.sapienter.jbilling.server.util.Util"%>
 
 <%--
   Plan details template.

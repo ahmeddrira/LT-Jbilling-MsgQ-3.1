@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelStrategy; org.apache.commons.lang.StringUtils; com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy; com.sapienter.jbilling.server.util.Util"%>
+<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelStrategy; com.sapienter.jbilling.server.util.Util"%>
 
 <%--
   Product details template. This template shows a product and all the relevant product details.
@@ -27,8 +27,8 @@
                 <dt>${selectedProduct.defaultPrice.currency.code}</dt>
                 <dd><g:formatNumber number="${selectedProduct.defaultPrice.rate}" type="currency" currencyCode="${selectedProduct.defaultPrice.currency.code}"/></dd>
 
-                <g:if test="${selectedProduct.defaultPrice.type != com.sapienter.jbilling.server.pricing.db.PriceModelStrategy.METERED}">
-                    <dt>Pricing Strategy</dt>
+                <g:if test="${selectedProduct.defaultPrice.type != PriceModelStrategy.METERED}">
+                    <dt><g:message code="plan.model.type"/></dt>
                     <dd><g:message code="price.strategy.${selectedProduct.defaultPrice.type}"/></dd>
                 </g:if>
             </g:if>

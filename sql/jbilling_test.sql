@@ -67,11 +67,9 @@ ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_4;
 ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_3;
 ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_2;
 ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_1;
-ALTER TABLE ONLY public.order_process DROP CONSTRAINT order_process_fk_1;
 ALTER TABLE ONLY public.order_period DROP CONSTRAINT order_period_fk_2;
 ALTER TABLE ONLY public.order_period DROP CONSTRAINT order_period_fk_1;
 ALTER TABLE ONLY public.order_line DROP CONSTRAINT order_line_fk_3;
-ALTER TABLE ONLY public.order_line DROP CONSTRAINT order_line_fk_2;
 ALTER TABLE ONLY public.order_line DROP CONSTRAINT order_line_fk_1;
 ALTER TABLE ONLY public.notification_message_section DROP CONSTRAINT notification_message_section_fk_1;
 ALTER TABLE ONLY public.notification_message_line DROP CONSTRAINT notification_message_line_fk_1;
@@ -2240,7 +2238,6 @@ COPY ageing_entity_step (id, entity_id, status_id, days, optlock) FROM stdin;
 --
 
 COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscriber_status, currency_id, create_datetime, last_status_change, last_login, user_name, failed_attempts, optlock) FROM stdin;
-1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2010-05-25 12:27:12.217	admin	0	18
 2	1	6a204bd89f3c8348afd5c77c717a097a	1	1	1	9	1	2006-07-26 09:29:19.596	\N	\N	gandalf	0	1
 12	2	46f94c8de14fb36680850768ff1b7f2a	1	1	1	9	1	2006-12-07 00:00:00	\N	2007-08-16 14:56:18.752	mordor	0	1
 13	2	9369e99369e9	1	1	1	9	1	2006-12-07 14:56:32.79	\N	\N	orc1	0	1
@@ -3275,73 +3272,74 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 10779	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-12-17 13:38:25.721	\N	\N	mediation-batch-test-13	0	2
 10780	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-12-17 13:38:54.133	\N	\N	mediation-batch-test-14	0	1
 10781	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	1	2009-12-17 13:39:09.731	\N	\N	mediation-batch-test-15	0	1
-10791	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	vashasri	0	1
-10792	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	vashantisri	0	1
-10793	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	thirusri	0	1
-10794	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	nashasai	0	1
-10795	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	rahimzah	0	1
-10796	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	zaihammoh	0	1
-10797	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	noorhal	0	1
-10798	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	nizamabd	0	1
-10799	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	zamanabd	0	1
-10800	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	ahmadibr	0	1
-10801	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	georgewon	0	1
-10802	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	davidlee	0	1
-10803	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	vasanthikri	0	1
-10804	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	sanjjoh	0	1
-10805	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	anthonygeo	0	1
-10806	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	adrinsaa	0	1
-10807	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	azhanabd	0	1
-10808	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	mohamedism	0	1
-10809	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	harunism	0	1
-10810	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	azlinsaa	0	1
-10811	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	azlinjul	0	1
-10812	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	suriyahkri	0	1
-10813	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	zarinaari	0	1
-10814	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	hamadmoh	0	1
-10815	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	yusmoh	0	1
-10816	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	saadiahmoh	0	1
-10817	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	yusofahm	0	1
-10818	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	mohamedyus	0	1
-10819	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	zarinayus	0	1
-10820	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	jeffreyhus	0	1
-10821	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	azerinakas	0	1
-10822	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	eizujoh	0	1
-10823	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	adnanbud	0	1
-10824	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	jeffreygor	0	1
-10825	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	nuryamanfit	0	1
-10826	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	johangre	0	1
-10827	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	noorabd	0	1
-10828	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	johnsmi	0	1
-10829	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	zulkiflizam	0	1
-10830	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	dinabd	0	1
-10831	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	saifulhus	0	1
-10832	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	gordanche	0	1
-10833	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	syalwahus	0	1
-10834	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	azilahal	0	1
-10835	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	ahmadosm	0	1
-10836	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	arifinmuh	0	1
-10837	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	osmanyus	0	1
-10838	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	yusairimoh	0	1
-10839	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	osmanzar	0	1
-10840	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 00:00:00	\N	\N	adnanhus	0	1
-10940	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 02:55:33.558	\N	\N	xyzglobal	0	1
-10941	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 02:58:06.612	\N	\N	ceoglobal	0	2
-10942	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 02:59:40.02	\N	\N	xyzap	0	1
-10943	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:00:21.373	\N	\N	xyzeu	0	1
-10944	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:00:47.038	\N	\N	xyzot	0	1
-10945	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:01:27.217	\N	\N	xyzasean	0	2
-10946	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:02:47.705	\N	\N	malaysia	0	1
-10947	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:03:14.126	\N	\N	brunei	0	2
-10948	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:04:08.24	\N	\N	mdbrunei	0	1
-10949	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:04:39.233	\N	\N	mktgbrunei	0	1
-10950	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:05:04.052	\N	\N	prodbrunei	0	1
-10951	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:05:19.84	\N	\N	csbrunei	0	1
-10952	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:05:46.06	\N	\N	operbrunei	0	1
-10953	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:06:14.729	\N	\N	billing	0	1
-10954	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:06:39.032	\N	\N	network	0	1
-10955	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:06:53.727	\N	\N	database	0	1
-10956	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2011-02-04 03:07:11.783	\N	\N	others	0	1
+1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2007-03-18 00:00:00	\N	2010-05-25 12:27:12.217	admin	0	18
+10791	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	vashasri	0	1
+10792	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	vashantisri	0	1
+10793	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	thirusri	0	1
+10794	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	nashasai	0	1
+10795	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	rahimzah	0	1
+10796	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	zaihammoh	0	1
+10797	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	noorhal	0	1
+10798	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	nizamabd	0	1
+10799	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	zamanabd	0	1
+10800	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	ahmadibr	0	1
+10801	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	georgewon	0	1
+10802	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	davidlee	0	1
+10803	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	vasanthikri	0	1
+10804	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	sanjjoh	0	1
+10805	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	anthonygeo	0	1
+10806	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	adrinsaa	0	1
+10807	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	azhanabd	0	1
+10808	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	mohamedism	0	1
+10809	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	harunism	0	1
+10810	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	azlinsaa	0	1
+10811	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	azlinjul	0	1
+10812	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	suriyahkri	0	1
+10813	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	zarinaari	0	1
+10814	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	hamadmoh	0	1
+10815	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	yusmoh	0	1
+10816	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	saadiahmoh	0	1
+10817	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	yusofahm	0	1
+10818	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	mohamedyus	0	1
+10819	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	zarinayus	0	1
+10820	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	jeffreyhus	0	1
+10821	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	azerinakas	0	1
+10822	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	eizujoh	0	1
+10823	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	adnanbud	0	1
+10824	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	jeffreygor	0	1
+10825	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	nuryamanfit	0	1
+10826	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	johangre	0	1
+10827	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	noorabd	0	1
+10828	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	johnsmi	0	1
+10829	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	zulkiflizam	0	1
+10830	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	dinabd	0	1
+10831	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	saifulhus	0	1
+10832	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	gordanche	0	1
+10833	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	syalwahus	0	1
+10834	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	azilahal	0	1
+10835	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	ahmadosm	0	1
+10836	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	arifinmuh	0	1
+10837	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	osmanyus	0	1
+10838	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	yusairimoh	0	1
+10839	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	osmanzar	0	1
+10840	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 00:00:00	\N	\N	adnanhus	0	1
+10940	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 02:55:33.558	\N	\N	xyzglobal	0	1
+10941	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 02:58:06.612	\N	\N	ceoglobal	0	2
+10942	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 02:59:40.02	\N	\N	xyzap	0	1
+10943	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:00:21.373	\N	\N	xyzeu	0	1
+10944	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:00:47.038	\N	\N	xyzot	0	1
+10945	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:01:27.217	\N	\N	xyzasean	0	2
+10946	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:02:47.705	\N	\N	malaysia	0	1
+10947	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:03:14.126	\N	\N	brunei	0	2
+10948	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:04:08.24	\N	\N	mdbrunei	0	1
+10949	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:04:39.233	\N	\N	mktgbrunei	0	1
+10950	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:05:04.052	\N	\N	prodbrunei	0	1
+10951	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:05:19.84	\N	\N	csbrunei	0	1
+10952	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:05:46.06	\N	\N	operbrunei	0	1
+10953	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:06:14.729	\N	\N	billing	0	1
+10954	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:06:39.032	\N	\N	network	0	1
+10955	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:06:53.727	\N	\N	database	0	1
+10956	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	12	2011-02-04 03:07:11.783	\N	\N	others	0	1
 \.
 
 
@@ -3384,13 +3382,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-106	1	user	edit	create	\N	0
-107	1	user	list	\N	10954	0
-108	1	user	edit	create	\N	0
-109	1	user	list	\N	10955	0
-110	1	user	edit	create	\N	0
-111	1	user	list	\N	10956	0
-112	1	user	list	\N	\N	0
+156	1	product	show	\N	3100	0
+157	1	product	show	\N	3102	0
+158	1	product	editProduct	update	3102	0
+159	1	product	show	\N	3102	0
+160	1	product	editProduct	update	3102	0
+161	1	product	show	\N	3102	0
+162	1	product	editProduct	update	3102	0
 \.
 
 
@@ -4460,63 +4458,61 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 113009	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-13@test.com	2009-12-17 13:38:25.725	1	1	10779	1
 113010	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-14@test.com	2009-12-17 13:38:54.151	1	1	10780	1
 113011	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-15@test.com	2009-12-17 13:39:09.738	1	1	10781	1
-11311	\N	"No. 5 Jalan McArthur, 45, 7th Floor"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivasan	Vasha	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10791	1
-11312	\N	"No. 1 Jalan McArthur, 4A, 4th Floor"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivas	Vashanti	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10792	1
-11313	\N	"No. 5, Jalan Budiman, Taman Kin"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivas	Thiru	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10793	1
-11314	\N	"Spg 2169, Unit No 9, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Said	Nasha	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10794	1
-11315	\N	"40, Jalan Simpang Empat"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Zahman	Rahim	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10795	1
-11316	\N	"No. 24A-2, Jalan Bebatik, Mukim Sengkurong"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohd	Zaiham	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10796	1
-11317	\N	"A-2, Jalan Simpang Empat"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Halim	Noor	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10797	1
-11318	\N	"68, Kampong Salar Industrial Estate,Spg 557, Jalan Muara"	\N	Bandar Seri Begawan	\N	BU1429	BR	Abdullah	Nizam	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10798	1
-11319	\N	"28-GB, Sri TTDI Apartment"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Abdullah	Zaman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10799	1
-11320	\N	"No. 7, Ground Floor, Jalan Roberts"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ibraham	Ahmad	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10800	1
-11321	\N	"20, Jalan TTDI,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Wong	George	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10801	1
-11322	\N	"Y-14-2, Tropicana Resort Jalan Simpang,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Lee	David	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10802	1
-11323	\N	"No. 715, Ground Floor, Jalan Roberts,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Krishna	Vasanthi	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10803	1
+114604	\N								XYZ AP	\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:59:40.027	0	1	10942	1
+11311	\N	No. 5 Jalan McArthur, 45, 7th Floor	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivasan	Vasha	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10791	1
+11312	\N	No. 1 Jalan McArthur, 4A, 4th Floor	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivas	Vashanti	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10792	1
+11313	\N	No. 5, Jalan Budiman, Taman Kin	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivas	Thiru	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10793	1
+11314	\N	Spg 2169, Unit No 9, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu	\N	Bandar Seri Begawan	\N	BS8711 	BR	Said	Nasha	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10794	1
+11315	\N	40, Jalan Simpang Empat	\N	Bandar Seri Begawan	\N	BS8711 	BR	Zahman	Rahim	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10795	1
+11316	\N	No. 24A-2, Jalan Bebatik, Mukim Sengkurong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohd	Zaiham	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10796	1
+11317	\N	A-2, Jalan Simpang Empat	\N	Bandar Seri Begawan	\N	BS8711 	BR	Halim	Noor	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10797	1
+11318	\N	68, Kampong Salar Industrial Estate,Spg 557, Jalan Muara	\N	Bandar Seri Begawan	\N	BU1429	BR	Abdullah	Nizam	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10798	1
+11319	\N	28-GB, Sri TTDI Apartment	\N	Bandar Seri Begawan	\N	BS8711 	BR	Abdullah	Zaman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10799	1
+11320	\N	No. 7, Ground Floor, Jalan Roberts	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ibraham	Ahmad	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10800	1
 114628	\N								Network Group	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:39.039	0	1	10954	1
-11324	\N	"56-ET, Sri TTDI Apartment,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Johan	Sanj	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10804	1
-11325	\N	"90, Jalan Simpang Empat,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	George	Anthony	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10805	1
-11326	\N	"No. 12, Ground Floor, Jalan Roberts,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Saad	Adrin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10806	1
-11327	\N	"No. 76A-2, Jalan Bebatik, Mukim Sengkurong,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Abdullah	Azhan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10807	1
-11328	\N	"290, Jalan TTDI,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ismail	Mohamed	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10808	1
-11329	\N	"No. 23, 1st Floor, Jalan Roberts,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ismail	Harun	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10809	1
-11330	\N	"Spg 2169, Unit No 15, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Saad	Azlin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10810	1
-11331	\N	"D5, Shakirin Complex, Simpang 88, Kiulap,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Julianna	Azlin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10811	1
-11332	\N	"523, Shakirin Parade, Simpang 20, Kiulap,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Krishna	Suriyah	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10812	1
-11333	\N	"11, Jalan Enggang,Taman Keramat Taman Keramat"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ariffin	Zarina	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10813	1
-11334	\N	"No. 5, Jalan Bebatik, Mukim Sengkurong,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohamed	Hamad	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10814	1
-11335	\N	"Lot 13 - 15, Serasa Industrial Complex. PO Box 1031 BSB,"	\N	Bandar Seri Begawan	\N	BS8672	BR	Mohd	Yus	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10815	1
-11336	\N	"Komplex Perindustrian Beribi II, Km7, Gadong,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohd	Saadiah	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10816	1
-11337	\N	"Spg 2169, Unit No 20, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ahmad	Yusof	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10817	1
-11338	\N	"No. 45, Serasa Industrial Complex. PO Box 1031 BSB,"	\N	Bandar Seri Begawan	\N	BS8672	BR	Yusof	Mohamed	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10818	1
-11339	\N	"43-WE, Sri TTDI Apartment,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Yusof	Zarina	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10819	1
-11340	\N	"12, Kampong CStar, Spg 57, Jalan Mara"	\N	Bandar Seri Begawan	\N	BU1429	BR	Hussien	Jeffrey	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10820	1
-11341	\N	"No. 75, Jalan Bebatik, Mukim Sengkurong,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Kasim	Azerina	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10821	1
-11342	\N	"Spg 2169, Unit No 25, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Johan	Eizu	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10822	1
-11343	\N	"18, Kampong AlorStar, Spg 557, Jalan Mutiara"	\N	Bandar Seri Begawan	\N	BU1429	BR	Budiman	Adnan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10823	1
-11344	\N	"263-AB, Sri TTDI Apartment,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Gordan	Jeffrey	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10824	1
-11345	\N	"D5, Sha Complex, Simpang 99, Kiulap,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Fitri	Nuryaman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10825	1
-11346	\N	"No. 35, Jalan Bebatik, Mukim Sengkurong,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Gregory	Johan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10826	1
-11347	\N	"214, Kampong Setia, Spg 57, Jalan Maju"	\N	Bandar Seri Begawan	\N	BU1429	BR	Abdullah	Noor	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10827	1
-11348	\N	"No. 124A-8, Jalan Bebatik, Mukim Sengkurong,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Smith	John	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10828	1
-11349	\N	"No. 56, Jalan PJS 1, MAS Garden,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Zaman	Zulkifli	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10829	1
-11350	\N	"123, Sha Parade, Simpang 99, Kiulap,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Abdullah	Din	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10830	1
-11351	\N	"99C Jalan Mckerron, Kuala Belait"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Hussien	Saiful	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10831	1
-11352	\N	"23, Jalan TTDI,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Chen	Gordan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10832	1
-11353	\N	"6, Kampong Salar Industrial Estate,Spg 557, Jalan Muara"	\N	Bandar Seri Begawan	\N	BU1429	BR	Hussien	Syalwa	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10833	1
-11354	\N	"65, Taman Bukit Jaya, Jalan Antarabangsa"	\N	Bandar Seri Begawan	\N	BU1429	BR	Halim	Azila	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10834	1
-11355	\N	"No. 3, Jalan PJS 91, MAS Garden,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Osman	Ahmad	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10835	1
-11356	\N	"61, Kampong Salar Industrial Estate,Spg 557, Jalan Muara"	\N	Bandar Seri Begawan	\N	BU1429	BR	Muhamad	Arifin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10836	1
-11357	\N	"65, Taman Desaria, Jalan Tegas"	\N	Bandar Seri Begawan	\N	BU1429	BR	Yusof	Osman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10837	1
-11358	\N	"No. 5, Jalan PJS 56, Mayang Garden,"	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohamad	Yusairi	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10838	1
-11359	\N	"201, Kampong Damai, Spg 57, Jalan Desa Cemerlang"	\N	Bandar Seri Begawan	\N	BU1429	BR	Zariff	Osman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10839	1
-11360	\N	"18, Kampong AlorStar, Spg 557, Jalan Mutiara"	\N	Bandar Seri Begawan	\N	BU1429	BR	Hussien	Adnan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10840	1
+11330	\N	Spg 2169, Unit No 15, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu	\N	Bandar Seri Begawan	\N	BS8711 	BR	Saad	Azlin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10810	1
+11333	\N	11, Jalan Enggang,Taman Keramat Taman Keramat	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ariffin	Zarina	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10813	1
+11337	\N	Spg 2169, Unit No 20, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ahmad	Yusof	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10817	1
+11340	\N	12, Kampong CStar, Spg 57, Jalan Mara	\N	Bandar Seri Begawan	\N	BU1429	BR	Hussien	Jeffrey	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10820	1
+11342	\N	Spg 2169, Unit No 25, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu	\N	Bandar Seri Begawan	\N	BS8711 	BR	Johan	Eizu	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10822	1
+11343	\N	18, Kampong AlorStar, Spg 557, Jalan Mutiara	\N	Bandar Seri Begawan	\N	BU1429	BR	Budiman	Adnan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10823	1
+11347	\N	214, Kampong Setia, Spg 57, Jalan Maju	\N	Bandar Seri Begawan	\N	BU1429	BR	Abdullah	Noor	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10827	1
+11351	\N	99C Jalan Mckerron, Kuala Belait	\N	Bandar Seri Begawan	\N	BS8711 	BR	Hussien	Saiful	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10831	1
+11353	\N	6, Kampong Salar Industrial Estate,Spg 557, Jalan Muara	\N	Bandar Seri Begawan	\N	BU1429	BR	Hussien	Syalwa	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10833	1
+11354	\N	65, Taman Bukit Jaya, Jalan Antarabangsa	\N	Bandar Seri Begawan	\N	BU1429	BR	Halim	Azila	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10834	1
+11356	\N	61, Kampong Salar Industrial Estate,Spg 557, Jalan Muara	\N	Bandar Seri Begawan	\N	BU1429	BR	Muhamad	Arifin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10836	1
+11357	\N	65, Taman Desaria, Jalan Tegas	\N	Bandar Seri Begawan	\N	BU1429	BR	Yusof	Osman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10837	1
+11359	\N	201, Kampong Damai, Spg 57, Jalan Desa Cemerlang	\N	Bandar Seri Begawan	\N	BU1429	BR	Zariff	Osman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10839	1
+11360	\N	18, Kampong AlorStar, Spg 557, Jalan Mutiara	\N	Bandar Seri Begawan	\N	BU1429	BR	Hussien	Adnan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10840	1
 114600	\N								XYZ Global Berhad	\N	\N	\N	\N		\N	\N	\N	mail@xyzglobal.com	2011-02-04 02:55:33.679	0	1	10940	1
 114601	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:55:33.764	0	1	\N	0
 114602	\N								CEO Global	\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:58:06.621	0	1	10941	1
 114603	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:58:06.666	0	1	\N	0
-114604	\N								XYZ AP	\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:59:40.027	0	1	10942	1
 114605	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:59:40.064	0	1	\N	0
+11325	\N	90, Jalan Simpang Empat	\N	Bandar Seri Begawan	\N	BS8711 	BR	George	Anthony	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10805	1
+11324	\N	56-ET, Sri TTDI Apartment	\N	Bandar Seri Begawan	\N	BS8711 	BR	Johan	Sanj	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10804	1
+11327	\N	No. 76A-2, Jalan Bebatik, Mukim Sengkurong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Abdullah	Azhan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10807	1
+11326	\N	No. 12, Ground Floor, Jalan Roberts	\N	Bandar Seri Begawan	\N	BS8711 	BR	Saad	Adrin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10806	1
+11328	\N	290, Jalan TTDI	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ismail	Mohamed	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10808	1
+11329	\N	No. 23, 1st Floor, Jalan Roberts	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ismail	Harun	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10809	1
+11331	\N	D5, Shakirin Complex, Simpang 88, Kiulap	\N	Bandar Seri Begawan	\N	BS8711 	BR	Julianna	Azlin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10811	1
+11332	\N	523, Shakirin Parade, Simpang 20, Kiulap	\N	Bandar Seri Begawan	\N	BS8711 	BR	Krishna	Suriyah	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10812	1
+11335	\N	Lot 13 - 15, Serasa Industrial Complex. PO Box 1031 BSB	\N	Bandar Seri Begawan	\N	BS8672	BR	Mohd	Yus	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10815	1
+11334	\N	No. 5, Jalan Bebatik, Mukim Sengkurong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohamed	Hamad	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10814	1
+11336	\N	Komplex Perindustrian Beribi II, Km7, Gadong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohd	Saadiah	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10816	1
+11338	\N	No. 45, Serasa Industrial Complex. PO Box 1031 BSB	\N	Bandar Seri Begawan	\N	BS8672	BR	Yusof	Mohamed	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10818	1
+11341	\N	No. 75, Jalan Bebatik, Mukim Sengkurong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Kasim	Azerina	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10821	1
+11344	\N	263-AB, Sri TTDI Apartment	\N	Bandar Seri Begawan	\N	BS8711 	BR	Gordan	Jeffrey	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10824	1
+11346	\N	No. 35, Jalan Bebatik, Mukim Sengkurong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Gregory	Johan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10826	1
+11345	\N	D5, Sha Complex, Simpang 99, Kiulap	\N	Bandar Seri Begawan	\N	BS8711 	BR	Fitri	Nuryaman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10825	1
+11348	\N	No. 124A-8, Jalan Bebatik, Mukim Sengkurong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Smith	John	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10828	1
+11350	\N	123, Sha Parade, Simpang 99, Kiulap	\N	Bandar Seri Begawan	\N	BS8711 	BR	Abdullah	Din	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10830	1
+11349	\N	No. 56, Jalan PJS 1, MAS Garden	\N	Bandar Seri Begawan	\N	BS8711 	BR	Zaman	Zulkifli	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10829	1
+11358	\N	No. 5, Jalan PJS 56, Mayang Garden	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohamad	Yusairi	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10838	1
+11355	\N	No. 3, Jalan PJS 91, MAS Garden	\N	Bandar Seri Begawan	\N	BS8711 	BR	Osman	Ahmad	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10835	1
+11352	\N	23, Jalan TTDI	\N	Bandar Seri Begawan	\N	BS8711 	BR	Chen	Gordan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10832	1
+11339	\N	43-WE, Sri TTDI Apartment	\N	Bandar Seri Begawan	\N	BS8711 	BR	Yusof	Zarina	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10819	1
+11321	\N	20, Jalan TTDI	\N	Bandar Seri Begawan	\N	BS8711 	BR	Wong	George	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10801	1
 114606	\N								XYZ EU	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:00:21.381	0	1	10943	1
 114607	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:00:21.45	0	1	\N	0
 114608	\N								XYZ OT	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:00:47.046	0	1	10944	1
@@ -4541,6 +4537,8 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 114627	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:14.768	0	1	\N	0
 114632	\N								Others Group	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:07:11.815	0	1	10956	1
 114633	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:07:11.931	0	1	\N	0
+11322	\N	Y-14-2, Tropicana Resort Jalan Simpang	\N	Bandar Seri Begawan	\N	BS8711 	BR	Lee	David	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10802	1
+11323	\N	No. 715, Ground Floor, Jalan Roberts	\N	Bandar Seri Begawan	\N	BS8711 	BR	Krishna	Vasanthi	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10803	1
 \.
 
 
@@ -9020,6 +9018,7 @@ COPY currency (id, symbol, code, country_code) FROM stdin;
 9	S$	SGD	SG
 10	M$	MYR	MY
 11	$	AUD	AU
+12	B$	BND	BN
 \.
 
 
@@ -9028,9 +9027,9 @@ COPY currency (id, symbol, code, country_code) FROM stdin;
 --
 
 COPY currency_entity_map (currency_id, entity_id) FROM stdin;
-1	1
 1	2
-11	1
+12	1
+1	1
 \.
 
 
@@ -9050,6 +9049,8 @@ COPY currency_exchange (id, entity_id, currency_id, rate, create_datetime, optlo
 11	0	10	3.8000000000	2004-10-12 00:00:00	1
 25	0	11	1.2880000000	2007-01-25 00:00:00	1
 250	1	11	1.5000000000	2008-11-28 14:32:16.652	0
+251	1	12	0.7865960000	2011-02-08 00:00:00	1
+252	0	12	0.7865960000	2011-02-09 00:00:00	0
 \.
 
 
@@ -10171,8 +10172,8 @@ COPY customer_price (plan_item_id, user_id, create_datetime) FROM stdin;
 --
 
 COPY entity (id, external_id, description, create_datetime, language_id, currency_id, optlock) FROM stdin;
-1	\N	Telekom Brunei Berhad	2007-03-18 00:00:00	1	1	1
 2	\N	Mordor Inc.	2006-12-07 00:00:00	1	1	1
+1	\N	Telekom Brunei Berhad	2007-03-18 00:00:00	1	12	1
 \.
 
 
@@ -10211,706 +10212,10 @@ COPY entity_payment_method_map (entity_id, payment_method_id) FROM stdin;
 --
 
 COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, level_field, module_id, message_id, old_num, old_str, old_date, optlock, affected_user_id) FROM stdin;
-11	1	\N	34	1	2006-12-07 14:40:00.36	3	1	11	\N	\N	\N	1	\N
-12	1	\N	10	2	2006-12-07 14:40:01.923	3	2	14	\N	\N	\N	1	\N
-13	1	\N	10	2	2006-12-19 16:05:00.559	3	2	14	\N	\N	\N	1	\N
-23	1	\N	10	2	2006-12-19 16:10:02.93	3	2	14	\N	\N	\N	1	\N
-33	1	\N	34	1	2006-12-20 16:04:00.242	3	1	11	\N	\N	\N	1	\N
-34	1	\N	10	2	2006-12-20 16:04:01.964	3	2	14	\N	\N	\N	1	\N
-35	1	\N	34	1	2006-12-20 16:05:00.034	3	1	10	\N	\N	\N	1	\N
-36	1	\N	34	1	2006-12-20 16:06:00.067	3	1	10	\N	\N	\N	1	\N
-37	1	\N	34	1	2006-12-20 16:07:00.039	3	1	10	\N	\N	\N	1	\N
-63	1	1	25	1	2007-03-01 14:54:47.379	2	11	9	\N	\N	\N	1	\N
-64	1	1	25	2	2007-03-01 14:54:47.389	2	11	9	\N	\N	\N	1	\N
-65	1	1	25	3	2007-03-01 14:54:47.449	2	11	9	\N	\N	\N	1	\N
-66	1	1	25	4	2007-03-01 14:54:47.459	2	11	9	\N	\N	\N	1	\N
-67	1	1	25	5	2007-03-01 14:54:47.459	2	11	9	\N	\N	\N	1	\N
-68	1	1	25	6	2007-03-01 14:54:47.469	2	11	9	\N	\N	\N	1	\N
-69	1	1	25	7	2007-03-01 14:54:47.469	2	11	9	\N	\N	\N	1	\N
-70	1	1	25	8	2007-03-01 14:54:47.479	2	11	9	\N	\N	\N	1	\N
-71	1	1	25	9	2007-03-01 14:54:47.489	2	11	9	\N	\N	\N	1	\N
-72	1	1	25	19	2007-03-01 14:54:47.529	2	11	9	\N	\N	\N	1	\N
-73	1	1	25	20	2007-03-01 14:54:47.539	2	11	9	\N	\N	\N	1	\N
-74	1	1	26	23	2007-03-01 14:55:00.275	2	11	7	\N	\N	\N	1	\N
-83	1	1	44	3	2007-03-12 10:39:22.283	2	8	9	\N	4111111111111111	\N	1	\N
-84	1	1	25	1	2007-03-12 10:39:59.888	2	11	9	\N	\N	\N	1	\N
-85	1	1	25	2	2007-03-12 10:39:59.898	2	11	9	\N	\N	\N	1	\N
-86	1	1	25	3	2007-03-12 10:39:59.908	2	11	9	\N	\N	\N	1	\N
-87	1	1	25	4	2007-03-12 10:39:59.908	2	11	9	\N	\N	\N	1	\N
-88	1	1	25	5	2007-03-12 10:39:59.908	2	11	9	\N	\N	\N	1	\N
-89	1	1	25	6	2007-03-12 10:39:59.908	2	11	9	\N	\N	\N	1	\N
-90	1	1	25	7	2007-03-12 10:39:59.928	2	11	9	\N	\N	\N	1	\N
-91	1	1	25	8	2007-03-12 10:39:59.938	2	11	9	\N	\N	\N	1	\N
-92	1	1	25	9	2007-03-12 10:39:59.938	2	11	9	\N	\N	\N	1	\N
-93	1	1	25	19	2007-03-12 10:39:59.948	2	11	9	\N	\N	\N	1	\N
-94	1	1	25	20	2007-03-12 10:39:59.958	2	11	9	\N	\N	\N	1	\N
-103	1	1	25	1	2007-03-12 16:51:46.169	2	11	9	\N	\N	\N	1	\N
-104	1	1	25	2	2007-03-12 16:51:46.179	2	11	9	\N	\N	\N	1	\N
-105	1	1	25	3	2007-03-12 16:51:46.179	2	11	9	\N	\N	\N	1	\N
-106	1	1	25	4	2007-03-12 16:51:46.189	2	11	9	\N	\N	\N	1	\N
-107	1	1	25	5	2007-03-12 16:51:46.189	2	11	9	\N	\N	\N	1	\N
-108	1	1	25	6	2007-03-12 16:51:46.199	2	11	9	\N	\N	\N	1	\N
-109	1	1	25	7	2007-03-12 16:51:46.209	2	11	9	\N	\N	\N	1	\N
-110	1	1	25	8	2007-03-12 16:51:46.209	2	11	9	\N	\N	\N	1	\N
-111	1	1	25	9	2007-03-12 16:51:46.219	2	11	9	\N	\N	\N	1	\N
-112	1	1	25	19	2007-03-12 16:51:46.229	2	11	9	\N	\N	\N	1	\N
-113	1	1	25	20	2007-03-12 16:51:46.229	2	11	9	\N	\N	\N	1	\N
-114	1	1	25	21	2007-03-12 16:51:46.239	2	11	9	\N	\N	\N	1	\N
-115	1	1	25	1	2007-03-12 16:51:57.125	2	11	9	\N	\N	\N	1	\N
-116	1	1	25	2	2007-03-12 16:51:57.125	2	11	9	\N	\N	\N	1	\N
-117	1	1	25	3	2007-03-12 16:51:57.125	2	11	9	\N	\N	\N	1	\N
-118	1	1	25	4	2007-03-12 16:51:57.145	2	11	9	\N	\N	\N	1	\N
-119	1	1	25	5	2007-03-12 16:51:57.155	2	11	9	\N	\N	\N	1	\N
-120	1	1	25	6	2007-03-12 16:51:57.155	2	11	9	\N	\N	\N	1	\N
-121	1	1	25	7	2007-03-12 16:51:57.165	2	11	9	\N	\N	\N	1	\N
-122	1	1	25	8	2007-03-12 16:51:57.165	2	11	9	\N	\N	\N	1	\N
-123	1	1	25	9	2007-03-12 16:51:57.175	2	11	9	\N	\N	\N	1	\N
-124	1	1	25	19	2007-03-12 16:51:57.175	2	11	9	\N	\N	\N	1	\N
-125	1	1	25	20	2007-03-12 16:51:57.175	2	11	9	\N	\N	\N	1	\N
-126	1	1	25	21	2007-03-12 16:51:57.175	2	11	9	\N	\N	\N	1	\N
-127	1	1	25	1	2007-03-12 16:52:32.155	2	11	9	\N	\N	\N	1	\N
-128	1	1	25	2	2007-03-12 16:52:32.155	2	11	9	\N	\N	\N	1	\N
-129	1	1	25	3	2007-03-12 16:52:32.175	2	11	9	\N	\N	\N	1	\N
-130	1	1	25	4	2007-03-12 16:52:32.175	2	11	9	\N	\N	\N	1	\N
-131	1	1	25	5	2007-03-12 16:52:32.175	2	11	9	\N	\N	\N	1	\N
-132	1	1	25	6	2007-03-12 16:52:32.205	2	11	9	\N	\N	\N	1	\N
-133	1	1	25	7	2007-03-12 16:52:32.215	2	11	9	\N	\N	\N	1	\N
-134	1	1	25	8	2007-03-12 16:52:32.215	2	11	9	\N	\N	\N	1	\N
-135	1	1	25	9	2007-03-12 16:52:32.225	2	11	9	\N	\N	\N	1	\N
-136	1	1	25	19	2007-03-12 16:52:32.225	2	11	9	\N	\N	\N	1	\N
-137	1	1	25	20	2007-03-12 16:52:32.225	2	11	9	\N	\N	\N	1	\N
-138	1	1	25	21	2007-03-12 16:52:32.235	2	11	9	\N	\N	\N	1	\N
-139	1	1	25	1	2007-03-12 16:52:54.437	2	11	9	\N	\N	\N	1	\N
-140	1	1	25	2	2007-03-12 16:52:54.437	2	11	9	\N	\N	\N	1	\N
-141	1	1	25	3	2007-03-12 16:52:54.437	2	11	9	\N	\N	\N	1	\N
-142	1	1	25	4	2007-03-12 16:52:54.447	2	11	9	\N	\N	\N	1	\N
-143	1	1	25	5	2007-03-12 16:52:54.447	2	11	9	\N	\N	\N	1	\N
-144	1	1	25	6	2007-03-12 16:52:54.457	2	11	9	\N	\N	\N	1	\N
-145	1	1	25	7	2007-03-12 16:52:54.457	2	11	9	\N	\N	\N	1	\N
-146	1	1	25	8	2007-03-12 16:52:54.467	2	11	9	\N	\N	\N	1	\N
-147	1	1	25	9	2007-03-12 16:52:54.467	2	11	9	\N	\N	\N	1	\N
-148	1	1	25	19	2007-03-12 16:52:54.477	2	11	9	\N	\N	\N	1	\N
-149	1	1	25	20	2007-03-12 16:52:54.477	2	11	9	\N	\N	\N	1	\N
-150	1	1	25	21	2007-03-12 16:52:54.497	2	11	9	\N	\N	\N	1	\N
-151	1	1	25	1	2007-03-12 16:53:24.801	2	11	9	\N	\N	\N	1	\N
-152	1	1	25	2	2007-03-12 16:53:24.801	2	11	9	\N	\N	\N	1	\N
-153	1	1	25	3	2007-03-12 16:53:24.821	2	11	9	\N	\N	\N	1	\N
-154	1	1	25	4	2007-03-12 16:53:24.831	2	11	9	\N	\N	\N	1	\N
-155	1	1	25	5	2007-03-12 16:53:24.831	2	11	9	\N	\N	\N	1	\N
-156	1	1	25	6	2007-03-12 16:53:24.851	2	11	9	\N	\N	\N	1	\N
-157	1	1	25	7	2007-03-12 16:53:24.861	2	11	9	\N	\N	\N	1	\N
-158	1	1	25	8	2007-03-12 16:53:24.861	2	11	9	\N	\N	\N	1	\N
-159	1	1	25	9	2007-03-12 16:53:24.871	2	11	9	\N	\N	\N	1	\N
-160	1	1	25	19	2007-03-12 16:53:24.871	2	11	9	\N	\N	\N	1	\N
-161	1	1	25	20	2007-03-12 16:53:24.891	2	11	9	\N	\N	\N	1	\N
-162	1	1	25	21	2007-03-12 16:53:24.901	2	11	9	\N	\N	\N	1	\N
-163	1	1	25	1	2007-03-12 16:53:56.316	2	11	9	\N	\N	\N	1	\N
-164	1	1	25	2	2007-03-12 16:53:56.316	2	11	9	\N	\N	\N	1	\N
-165	1	1	25	3	2007-03-12 16:53:56.326	2	11	9	\N	\N	\N	1	\N
-166	1	1	25	4	2007-03-12 16:53:56.326	2	11	9	\N	\N	\N	1	\N
-167	1	1	25	5	2007-03-12 16:53:56.336	2	11	9	\N	\N	\N	1	\N
-168	1	1	25	6	2007-03-12 16:53:56.336	2	11	9	\N	\N	\N	1	\N
-169	1	1	25	7	2007-03-12 16:53:56.346	2	11	9	\N	\N	\N	1	\N
-170	1	1	25	8	2007-03-12 16:53:56.366	2	11	9	\N	\N	\N	1	\N
-171	1	1	25	9	2007-03-12 16:53:56.376	2	11	9	\N	\N	\N	1	\N
-172	1	1	25	19	2007-03-12 16:53:56.376	2	11	9	\N	\N	\N	1	\N
-173	1	1	25	20	2007-03-12 16:53:56.386	2	11	9	\N	\N	\N	1	\N
-174	1	1	25	21	2007-03-12 16:53:56.396	2	11	9	\N	\N	\N	1	\N
-175	1	1	25	1	2007-03-12 16:54:14.693	2	11	9	\N	\N	\N	1	\N
-176	1	1	25	2	2007-03-12 16:54:14.703	2	11	9	\N	\N	\N	1	\N
-177	1	1	25	3	2007-03-12 16:54:14.703	2	11	9	\N	\N	\N	1	\N
-178	1	1	25	4	2007-03-12 16:54:14.713	2	11	9	\N	\N	\N	1	\N
-179	1	1	25	5	2007-03-12 16:54:14.723	2	11	9	\N	\N	\N	1	\N
-180	1	1	25	6	2007-03-12 16:54:14.733	2	11	9	\N	\N	\N	1	\N
-181	1	1	25	7	2007-03-12 16:54:14.733	2	11	9	\N	\N	\N	1	\N
-182	1	1	25	8	2007-03-12 16:54:14.743	2	11	9	\N	\N	\N	1	\N
-183	1	1	25	9	2007-03-12 16:54:14.743	2	11	9	\N	\N	\N	1	\N
-184	1	1	25	19	2007-03-12 16:54:14.753	2	11	9	\N	\N	\N	1	\N
-185	1	1	25	20	2007-03-12 16:54:14.753	2	11	9	\N	\N	\N	1	\N
-186	1	1	25	21	2007-03-12 16:54:14.763	2	11	9	\N	\N	\N	1	\N
-187	1	1	25	22	2007-03-12 16:54:14.763	2	11	9	\N	\N	\N	1	\N
-188	1	1	25	1	2007-03-12 16:54:27.321	2	11	9	\N	\N	\N	1	\N
-189	1	1	25	2	2007-03-12 16:54:27.331	2	11	9	\N	\N	\N	1	\N
-190	1	1	25	3	2007-03-12 16:54:27.341	2	11	9	\N	\N	\N	1	\N
-191	1	1	25	4	2007-03-12 16:54:27.341	2	11	9	\N	\N	\N	1	\N
-192	1	1	25	5	2007-03-12 16:54:27.351	2	11	9	\N	\N	\N	1	\N
-193	1	1	25	6	2007-03-12 16:54:27.351	2	11	9	\N	\N	\N	1	\N
-194	1	1	25	7	2007-03-12 16:54:27.361	2	11	9	\N	\N	\N	1	\N
-195	1	1	25	8	2007-03-12 16:54:27.371	2	11	9	\N	\N	\N	1	\N
-196	1	1	25	9	2007-03-12 16:54:27.371	2	11	9	\N	\N	\N	1	\N
-197	1	1	25	19	2007-03-12 16:54:27.381	2	11	9	\N	\N	\N	1	\N
-198	1	1	25	20	2007-03-12 16:54:27.381	2	11	9	\N	\N	\N	1	\N
-199	1	1	25	21	2007-03-12 16:54:27.391	2	11	9	\N	\N	\N	1	\N
-200	1	1	25	22	2007-03-12 16:54:27.391	2	11	9	\N	\N	\N	1	\N
-201	1	1	25	1	2007-03-12 16:54:41.822	2	11	9	\N	\N	\N	1	\N
-202	1	1	25	2	2007-03-12 16:54:41.822	2	11	9	\N	\N	\N	1	\N
-203	1	1	25	3	2007-03-12 16:54:41.822	2	11	9	\N	\N	\N	1	\N
-204	1	1	25	4	2007-03-12 16:54:41.832	2	11	9	\N	\N	\N	1	\N
-205	1	1	25	5	2007-03-12 16:54:41.832	2	11	9	\N	\N	\N	1	\N
-206	1	1	25	6	2007-03-12 16:54:41.842	2	11	9	\N	\N	\N	1	\N
-207	1	1	25	7	2007-03-12 16:54:41.842	2	11	9	\N	\N	\N	1	\N
-208	1	1	25	8	2007-03-12 16:54:41.852	2	11	9	\N	\N	\N	1	\N
-209	1	1	25	9	2007-03-12 16:54:41.862	2	11	9	\N	\N	\N	1	\N
-210	1	1	25	19	2007-03-12 16:54:41.862	2	11	9	\N	\N	\N	1	\N
-211	1	1	25	20	2007-03-12 16:54:41.872	2	11	9	\N	\N	\N	1	\N
-212	1	1	25	21	2007-03-12 16:54:41.872	2	11	9	\N	\N	\N	1	\N
-213	1	1	25	22	2007-03-12 16:54:41.882	2	11	9	\N	\N	\N	1	\N
-214	\N	\N	\N	1	2007-03-20 14:16:41.192	2	12	18	2	1	\N	1	\N
-223	1	1	10	1	2007-05-22 16:01:43.699	2	2	8	\N	1g84lOdpo3IA/LntnnUWbw	\N	1	\N
-233	1	1	25	1	2007-06-29 14:39:56.163	2	11	9	\N	\N	\N	1	\N
-234	1	1	25	2	2007-06-29 14:39:56.163	2	11	9	\N	\N	\N	1	\N
-235	1	1	25	3	2007-06-29 14:39:56.173	2	11	9	\N	\N	\N	1	\N
-236	1	1	25	4	2007-06-29 14:39:56.173	2	11	9	\N	\N	\N	1	\N
-237	1	1	25	5	2007-06-29 14:39:56.183	2	11	9	\N	\N	\N	1	\N
-238	1	1	25	6	2007-06-29 14:39:56.193	2	11	9	\N	\N	\N	1	\N
-239	1	1	25	7	2007-06-29 14:39:56.213	2	11	9	\N	\N	\N	1	\N
-240	1	1	25	8	2007-06-29 14:39:56.213	2	11	9	\N	\N	\N	1	\N
-
-241	1	1	25	9	2007-06-29 14:39:56.223	2	11	9	\N	\N	\N	1	\N
-242	1	1	25	19	2007-06-29 14:39:56.233	2	11	9	\N	\N	\N	1	\N
-243	1	1	25	20	2007-06-29 14:39:56.253	2	11	9	\N	\N	\N	1	\N
-244	1	1	25	21	2007-06-29 14:39:56.253	2	11	9	\N	\N	\N	1	\N
-245	1	1	25	22	2007-06-29 14:39:56.253	2	11	9	\N	\N	\N	1	\N
-246	1	1	25	23	2007-06-29 14:39:56.263	2	11	9	\N	\N	\N	1	\N
-247	1	1	25	31	2007-06-29 14:39:56.273	2	11	9	\N	\N	\N	1	\N
-248	1	1	25	1	2007-06-29 14:41:13.959	2	11	9	\N	\N	\N	1	\N
-249	1	1	25	2	2007-06-29 14:41:13.969	2	11	9	\N	\N	\N	1	\N
-250	1	1	25	3	2007-06-29 14:41:13.979	2	11	9	\N	\N	\N	1	\N
-251	1	1	25	4	2007-06-29 14:41:13.979	2	11	9	\N	\N	\N	1	\N
-252	1	1	25	5	2007-06-29 14:41:13.979	2	11	9	\N	\N	\N	1	\N
-253	1	1	25	6	2007-06-29 14:41:13.989	2	11	9	\N	\N	\N	1	\N
-254	1	1	25	7	2007-06-29 14:41:13.989	2	11	9	\N	\N	\N	1	\N
-255	1	1	25	8	2007-06-29 14:41:13.989	2	11	9	\N	\N	\N	1	\N
-256	1	1	25	9	2007-06-29 14:41:13.999	2	11	9	\N	\N	\N	1	\N
-257	1	1	25	19	2007-06-29 14:41:13.999	2	11	9	\N	\N	\N	1	\N
-258	1	1	25	20	2007-06-29 14:41:14.01	2	11	9	\N	\N	\N	1	\N
-259	1	1	25	21	2007-06-29 14:41:14.01	2	11	9	\N	\N	\N	1	\N
-260	1	1	25	22	2007-06-29 14:41:14.02	2	11	9	\N	\N	\N	1	\N
-261	1	1	25	23	2007-06-29 14:41:14.02	2	11	9	\N	\N	\N	1	\N
-262	1	1	25	31	2007-06-29 14:41:14.02	2	11	9	\N	\N	\N	1	\N
-263	1	1	26	34	2007-06-29 14:41:21.498	2	11	7	\N	\N	\N	1	\N
-273	1	\N	21	25	2007-07-12 13:20:29.913	2	7	13	1	\N	\N	1	\N
-284	1	\N	21	35	2007-08-09 14:42:13.123	3	1	1	\N	\N	\N	1	\N
-285	1	\N	21	35	2007-08-09 14:42:13.228	2	7	13	1	\N	\N	1	\N
-286	1	\N	10	53	2007-08-09 14:43:31.062	2	2	20	6	4	\N	1	\N
-287	1	\N	10	53	2007-08-09 14:43:36.508	2	2	20	4	2	\N	1	\N
-293	1	\N	21	45	2007-08-09 14:59:04.331	3	1	1	\N	\N	\N	1	\N
-294	1	\N	21	45	2007-08-09 14:59:04.458	2	7	13	1	\N	\N	1	\N
-295	1	\N	10	63	2007-08-09 14:59:45.096	2	2	20	6	2	\N	1	\N
-303	2	\N	21	5	2007-08-16 14:57:08.702	3	1	1	\N	\N	\N	1	\N
-313	1	1	25	1	2007-10-09 10:06:33.724	2	11	9	\N	\N	\N	1	\N
-314	1	1	25	2	2007-10-09 10:06:33.744	2	11	9	\N	\N	\N	1	\N
-315	1	1	25	3	2007-10-09 10:06:33.749	2	11	9	\N	\N	\N	1	\N
-316	1	1	25	4	2007-10-09 10:06:33.754	2	11	9	\N	\N	\N	1	\N
-317	1	1	25	5	2007-10-09 10:06:33.76	2	11	9	\N	\N	\N	1	\N
-318	1	1	25	6	2007-10-09 10:06:33.765	2	11	9	\N	\N	\N	1	\N
-319	1	1	25	7	2007-10-09 10:06:33.771	2	11	9	\N	\N	\N	1	\N
-320	1	1	25	8	2007-10-09 10:06:33.776	2	11	9	\N	\N	\N	1	\N
-321	1	1	25	9	2007-10-09 10:06:33.781	2	11	9	\N	\N	\N	1	\N
-322	1	1	25	19	2007-10-09 10:06:33.787	2	11	9	\N	\N	\N	1	\N
-323	1	1	25	20	2007-10-09 10:06:33.794	2	11	9	\N	\N	\N	1	\N
-324	1	1	25	21	2007-10-09 10:06:33.801	2	11	9	\N	\N	\N	1	\N
-325	1	1	25	22	2007-10-09 10:06:33.806	2	11	9	\N	\N	\N	1	\N
-326	1	1	25	23	2007-10-09 10:06:33.843	2	11	9	\N	\N	\N	1	\N
-327	1	1	25	31	2007-10-09 10:06:33.848	2	11	9	\N	\N	\N	1	\N
-328	1	1	25	32	2007-10-09 10:06:33.856	2	11	9	\N	\N	\N	1	\N
-329	1	1	26	45	2007-10-09 10:06:40.44	2	11	7	\N	\N	\N	1	\N
-333	1	1	10	1	2007-10-31 10:12:05.256	2	2	8	\N	46f94c8de14fb36680850768ff1b7f2a	\N	1	\N
-334	1	1	25	1	2007-10-31 10:17:26.652	2	11	9	\N	\N	\N	1	\N
-335	1	1	25	2	2007-10-31 10:17:26.659	2	11	9	\N	\N	\N	1	\N
-336	1	1	25	3	2007-10-31 10:17:26.679	2	11	9	\N	\N	\N	1	\N
-337	1	1	25	4	2007-10-31 10:17:26.683	2	11	9	\N	\N	\N	1	\N
-338	1	1	25	5	2007-10-31 10:17:26.689	2	11	9	\N	\N	\N	1	\N
-339	1	1	25	6	2007-10-31 10:17:26.694	2	11	9	\N	\N	\N	1	\N
-340	1	1	25	7	2007-10-31 10:17:26.7	2	11	9	\N	\N	\N	1	\N
-341	1	1	25	8	2007-10-31 10:17:26.705	2	11	9	\N	\N	\N	1	\N
-342	1	1	25	9	2007-10-31 10:17:26.71	2	11	9	\N	\N	\N	1	\N
-343	1	1	25	19	2007-10-31 10:17:26.716	2	11	9	\N	\N	\N	1	\N
-344	1	1	25	20	2007-10-31 10:17:26.722	2	11	9	\N	\N	\N	1	\N
-345	1	1	25	21	2007-10-31 10:17:26.726	2	11	9	\N	\N	\N	1	\N
-346	1	1	25	22	2007-10-31 10:17:26.764	2	11	9	\N	\N	\N	1	\N
-347	1	1	25	23	2007-10-31 10:17:26.769	2	11	9	\N	\N	\N	1	\N
-348	1	1	25	31	2007-10-31 10:17:26.775	2	11	9	\N	\N	\N	1	\N
-349	1	1	25	32	2007-10-31 10:17:26.784	2	11	9	\N	\N	\N	1	\N
-350	1	1	25	410	2007-10-31 10:17:26.791	2	11	9	\N	\N	\N	1	\N
-353	1	1	25	1	2007-11-23 16:51:14.269	2	11	9	\N	\N	\N	1	\N
-354	1	1	25	2	2007-11-23 16:51:14.284	2	11	9	\N	\N	\N	1	\N
-355	1	1	25	3	2007-11-23 16:51:14.287	2	11	9	\N	\N	\N	1	\N
-356	1	1	25	4	2007-11-23 16:51:14.289	2	11	9	\N	\N	\N	1	\N
-357	1	1	25	5	2007-11-23 16:51:14.292	2	11	9	\N	\N	\N	1	\N
-358	1	1	25	6	2007-11-23 16:51:14.295	2	11	9	\N	\N	\N	1	\N
-359	1	1	25	7	2007-11-23 16:51:14.303	2	11	9	\N	\N	\N	1	\N
-360	1	1	25	8	2007-11-23 16:51:14.308	2	11	9	\N	\N	\N	1	\N
-361	1	1	25	9	2007-11-23 16:51:14.311	2	11	9	\N	\N	\N	1	\N
-362	1	1	25	19	2007-11-23 16:51:14.314	2	11	9	\N	\N	\N	1	\N
-363	1	1	25	20	2007-11-23 16:51:14.318	2	11	9	\N	\N	\N	1	\N
-364	1	1	25	21	2007-11-23 16:51:14.321	2	11	9	\N	\N	\N	1	\N
-365	1	1	25	22	2007-11-23 16:51:14.325	2	11	9	\N	\N	\N	1	\N
-366	1	1	25	23	2007-11-23 16:51:14.328	2	11	9	\N	\N	\N	1	\N
-367	1	1	25	31	2007-11-23 16:51:14.331	2	11	9	\N	\N	\N	1	\N
-368	1	1	25	32	2007-11-23 16:51:14.336	2	11	9	\N	\N	\N	1	\N
-369	1	1	25	410	2007-11-23 16:51:14.342	2	11	9	\N	\N	\N	1	\N
-370	1	1	25	420	2007-11-23 16:51:14.346	2	11	9	\N	\N	\N	1	\N
-371	1	1	25	1	2007-11-23 16:51:37.784	2	11	9	\N	\N	\N	1	\N
-372	1	1	25	2	2007-11-23 16:51:37.788	2	11	9	\N	\N	\N	1	\N
-373	1	1	25	3	2007-11-23 16:51:37.797	2	11	9	\N	\N	\N	1	\N
-374	1	1	25	4	2007-11-23 16:51:37.799	2	11	9	\N	\N	\N	1	\N
-375	1	1	25	5	2007-11-23 16:51:37.802	2	11	9	\N	\N	\N	1	\N
-376	1	1	25	6	2007-11-23 16:51:37.805	2	11	9	\N	\N	\N	1	\N
-377	1	1	25	7	2007-11-23 16:51:37.808	2	11	9	\N	\N	\N	1	\N
-378	1	1	25	8	2007-11-23 16:51:37.81	2	11	9	\N	\N	\N	1	\N
-379	1	1	25	9	2007-11-23 16:51:37.813	2	11	9	\N	\N	\N	1	\N
-380	1	1	25	19	2007-11-23 16:51:37.817	2	11	9	\N	\N	\N	1	\N
-381	1	1	25	20	2007-11-23 16:51:37.82	2	11	9	\N	\N	\N	1	\N
-382	1	1	25	21	2007-11-23 16:51:37.823	2	11	9	\N	\N	\N	1	\N
-383	1	1	25	22	2007-11-23 16:51:37.826	2	11	9	\N	\N	\N	1	\N
-384	1	1	25	23	2007-11-23 16:51:37.829	2	11	9	\N	\N	\N	1	\N
-385	1	1	25	31	2007-11-23 16:51:37.831	2	11	9	\N	\N	\N	1	\N
-386	1	1	25	32	2007-11-23 16:51:37.834	2	11	9	\N	\N	\N	1	\N
-387	1	1	25	410	2007-11-23 16:51:37.837	2	11	9	\N	\N	\N	1	\N
-388	1	1	25	420	2007-11-23 16:51:37.839	2	11	9	\N	\N	\N	1	\N
-389	1	1	25	421	2007-11-23 16:51:37.843	2	11	9	\N	\N	\N	1	\N
-393	1	1	25	1	2007-11-26 10:16:30.725	2	11	9	\N	\N	\N	1	\N
-394	1	1	25	2	2007-11-26 10:16:30.769	2	11	9	\N	\N	\N	1	\N
-395	1	1	25	3	2007-11-26 10:16:30.774	2	11	9	\N	\N	\N	1	\N
-396	1	1	25	4	2007-11-26 10:16:30.777	2	11	9	\N	\N	\N	1	\N
-397	1	1	25	5	2007-11-26 10:16:30.78	2	11	9	\N	\N	\N	1	\N
-398	1	1	25	6	2007-11-26 10:16:30.783	2	11	9	\N	\N	\N	1	\N
-399	1	1	25	7	2007-11-26 10:16:30.787	2	11	9	\N	\N	\N	1	\N
-400	1	1	25	8	2007-11-26 10:16:30.79	2	11	9	\N	\N	\N	1	\N
-401	1	1	25	9	2007-11-26 10:16:30.793	2	11	9	\N	\N	\N	1	\N
-402	1	1	25	19	2007-11-26 10:16:30.797	2	11	9	\N	\N	\N	1	\N
-403	1	1	25	20	2007-11-26 10:16:30.8	2	11	9	\N	\N	\N	1	\N
-404	1	1	25	21	2007-11-26 10:16:30.803	2	11	9	\N	\N	\N	1	\N
-405	1	1	25	22	2007-11-26 10:16:30.807	2	11	9	\N	\N	\N	1	\N
-406	1	1	25	23	2007-11-26 10:16:30.81	2	11	9	\N	\N	\N	1	\N
-407	1	1	25	31	2007-11-26 10:16:30.813	2	11	9	\N	\N	\N	1	\N
-408	1	1	25	32	2007-11-26 10:16:30.818	2	11	9	\N	\N	\N	1	\N
-409	1	1	25	410	2007-11-26 10:16:30.823	2	11	9	\N	\N	\N	1	\N
-410	1	1	25	420	2007-11-26 10:16:30.827	2	11	9	\N	\N	\N	1	\N
-411	1	1	25	421	2007-11-26 10:16:30.83	2	11	9	\N	\N	\N	1	\N
-413	1	1	25	1	2007-11-26 11:21:42.09	2	11	9	\N	\N	\N	1	\N
-414	1	1	25	2	2007-11-26 11:21:42.103	2	11	9	\N	\N	\N	1	\N
-415	1	1	25	3	2007-11-26 11:21:42.106	2	11	9	\N	\N	\N	1	\N
-416	1	1	25	4	2007-11-26 11:21:42.11	2	11	9	\N	\N	\N	1	\N
-417	1	1	25	5	2007-11-26 11:21:42.113	2	11	9	\N	\N	\N	1	\N
-418	1	1	25	6	2007-11-26 11:21:42.116	2	11	9	\N	\N	\N	1	\N
-419	1	1	25	7	2007-11-26 11:21:42.121	2	11	9	\N	\N	\N	1	\N
-420	1	1	25	8	2007-11-26 11:21:42.124	2	11	9	\N	\N	\N	1	\N
-421	1	1	25	9	2007-11-26 11:21:42.127	2	11	9	\N	\N	\N	1	\N
-422	1	1	25	19	2007-11-26 11:21:42.13	2	11	9	\N	\N	\N	1	\N
-423	1	1	25	20	2007-11-26 11:21:42.133	2	11	9	\N	\N	\N	1	\N
-424	1	1	25	21	2007-11-26 11:21:42.137	2	11	9	\N	\N	\N	1	\N
-425	1	1	25	22	2007-11-26 11:21:42.14	2	11	9	\N	\N	\N	1	\N
-426	1	1	25	23	2007-11-26 11:21:42.147	2	11	9	\N	\N	\N	1	\N
-427	1	1	25	31	2007-11-26 11:21:42.15	2	11	9	\N	\N	\N	1	\N
-428	1	1	25	32	2007-11-26 11:21:42.154	2	11	9	\N	\N	\N	1	\N
-429	1	1	25	410	2007-11-26 11:21:42.16	2	11	9	\N	\N	\N	1	\N
-430	1	1	25	420	2007-11-26 11:21:42.163	2	11	9	\N	\N	\N	1	\N
-431	1	1	25	421	2007-11-26 11:21:42.166	2	11	9	\N	\N	\N	1	\N
-433	1	1	21	1055	2007-12-28 14:47:08.517	2	7	22	\N	\N	\N	1	\N
-4430	1	1	21	1065	2008-03-06 09:19:01.531	2	7	22	\N	\N	\N	0	\N
-4431	1	\N	21	1065	2008-03-06 09:19:01.561	2	7	25	\N	\N	\N	0	\N
-4440	1	1	25	32	2008-05-05 15:24:26.564	2	11	7	\N	\N	\N	0	\N
-4441	1	1	25	1	2008-05-05 15:24:39.587	2	11	9	\N	\N	\N	0	\N
-4442	1	1	25	2	2008-05-05 15:24:39.588	2	11	9	\N	\N	\N	0	\N
-4443	1	1	25	3	2008-05-05 15:24:39.59	2	11	9	\N	\N	\N	0	\N
-4444	1	1	25	4	2008-05-05 15:24:39.591	2	11	9	\N	\N	\N	0	\N
-4445	1	1	25	5	2008-05-05 15:24:39.592	2	11	9	\N	\N	\N	0	\N
-4446	1	1	25	6	2008-05-05 15:24:39.593	2	11	9	\N	\N	\N	0	\N
-4447	1	1	25	7	2008-05-05 15:24:39.595	2	11	9	\N	\N	\N	0	\N
-4448	1	1	25	8	2008-05-05 15:24:39.596	2	11	9	\N	\N	\N	0	\N
-4449	1	1	25	9	2008-05-05 15:24:39.598	2	11	9	\N	\N	\N	0	\N
-4450	1	1	25	19	2008-05-05 15:24:39.599	2	11	9	\N	\N	\N	0	\N
-4451	1	1	25	20	2008-05-05 15:24:39.602	2	11	9	\N	\N	\N	0	\N
-4452	1	1	25	21	2008-05-05 15:24:39.605	2	11	9	\N	\N	\N	0	\N
-4453	1	1	25	22	2008-05-05 15:24:39.607	2	11	9	\N	\N	\N	0	\N
-4454	1	1	25	23	2008-05-05 15:24:39.608	2	11	9	\N	\N	\N	0	\N
-4455	1	1	25	31	2008-05-05 15:24:39.61	2	11	9	\N	\N	\N	0	\N
-4456	1	1	25	410	2008-05-05 15:24:39.611	2	11	9	\N	\N	\N	0	\N
-4457	1	1	25	420	2008-05-05 15:24:39.612	2	11	9	\N	\N	\N	0	\N
-4458	1	1	25	421	2008-05-05 15:24:39.615	2	11	9	\N	\N	\N	0	\N
-4460	1	1	25	1	2008-05-05 16:12:53.76	2	11	9	\N	\N	\N	0	\N
-4461	1	1	25	2	2008-05-05 16:12:53.765	2	11	9	\N	\N	\N	0	\N
-4462	1	1	25	3	2008-05-05 16:12:53.766	2	11	9	\N	\N	\N	0	\N
-4463	1	1	25	4	2008-05-05 16:12:53.767	2	11	9	\N	\N	\N	0	\N
-4464	1	1	25	5	2008-05-05 16:12:53.768	2	11	9	\N	\N	\N	0	\N
-4465	1	1	25	6	2008-05-05 16:12:53.769	2	11	9	\N	\N	\N	0	\N
-4466	1	1	25	7	2008-05-05 16:12:53.771	2	11	9	\N	\N	\N	0	\N
-4467	1	1	25	8	2008-05-05 16:12:53.773	2	11	9	\N	\N	\N	0	\N
-4468	1	1	25	9	2008-05-05 16:12:53.774	2	11	9	\N	\N	\N	0	\N
-4469	1	1	25	19	2008-05-05 16:12:53.775	2	11	9	\N	\N	\N	0	\N
-4470	1	1	25	20	2008-05-05 16:12:53.777	2	11	9	\N	\N	\N	0	\N
-4471	1	1	25	21	2008-05-05 16:12:53.78	2	11	9	\N	\N	\N	0	\N
-4472	1	1	25	22	2008-05-05 16:12:53.781	2	11	9	\N	\N	\N	0	\N
-4473	1	1	25	23	2008-05-05 16:12:53.782	2	11	9	\N	\N	\N	0	\N
-4474	1	1	25	31	2008-05-05 16:12:53.784	2	11	9	\N	\N	\N	0	\N
-4475	1	1	25	410	2008-05-05 16:12:53.786	2	11	9	\N	\N	\N	0	\N
-4476	1	1	25	420	2008-05-05 16:12:53.788	2	11	9	\N	\N	\N	0	\N
-4477	1	1	25	421	2008-05-05 16:12:53.789	2	11	9	\N	\N	\N	0	\N
-4478	1	1	25	430	2008-05-05 16:12:53.79	2	11	9	\N	\N	\N	0	\N
-4480	1	1	25	1	2008-05-06 11:31:24.205	2	11	9	\N	\N	\N	0	\N
-4481	1	1	25	2	2008-05-06 11:31:24.227	2	11	9	\N	\N	\N	0	\N
-4482	1	1	25	3	2008-05-06 11:31:24.229	2	11	9	\N	\N	\N	0	\N
-4483	1	1	25	4	2008-05-06 11:31:24.23	2	11	9	\N	\N	\N	0	\N
-4484	1	1	25	5	2008-05-06 11:31:24.231	2	11	9	\N	\N	\N	0	\N
-4485	1	1	25	6	2008-05-06 11:31:24.232	2	11	9	\N	\N	\N	0	\N
-4486	1	1	25	7	2008-05-06 11:31:24.235	2	11	9	\N	\N	\N	0	\N
-4487	1	1	25	8	2008-05-06 11:31:24.237	2	11	9	\N	\N	\N	0	\N
-4488	1	1	25	9	2008-05-06 11:31:24.238	2	11	9	\N	\N	\N	0	\N
-4489	1	1	25	19	2008-05-06 11:31:24.24	2	11	9	\N	\N	\N	0	\N
-4490	1	1	25	20	2008-05-06 11:31:24.241	2	11	9	\N	\N	\N	0	\N
-4491	1	1	25	21	2008-05-06 11:31:24.244	2	11	9	\N	\N	\N	0	\N
-4492	1	1	25	22	2008-05-06 11:31:24.246	2	11	9	\N	\N	\N	0	\N
-4493	1	1	25	23	2008-05-06 11:31:24.247	2	11	9	\N	\N	\N	0	\N
-4494	1	1	25	31	2008-05-06 11:31:24.249	2	11	9	\N	\N	\N	0	\N
-4495	1	1	25	410	2008-05-06 11:31:24.25	2	11	9	\N	\N	\N	0	\N
-4496	1	1	25	420	2008-05-06 11:31:24.258	2	11	9	\N	\N	\N	0	\N
-4497	1	1	25	421	2008-05-06 11:31:24.259	2	11	9	\N	\N	\N	0	\N
-4498	1	1	25	430	2008-05-06 11:31:24.263	2	11	9	\N	\N	\N	0	\N
-4500	1	1	25	1	2008-05-30 15:51:52.516	2	11	9	\N	\N	\N	0	\N
-4501	1	1	25	2	2008-05-30 15:51:52.54	2	11	9	\N	\N	\N	0	\N
-4502	1	1	25	3	2008-05-30 15:51:52.544	2	11	9	\N	\N	\N	0	\N
-4503	1	1	25	4	2008-05-30 15:51:52.545	2	11	9	\N	\N	\N	0	\N
-4504	1	1	25	5	2008-05-30 15:51:52.546	2	11	9	\N	\N	\N	0	\N
-4505	1	1	25	6	2008-05-30 15:51:52.549	2	11	9	\N	\N	\N	0	\N
-4506	1	1	25	7	2008-05-30 15:51:52.551	2	11	9	\N	\N	\N	0	\N
-4507	1	1	25	8	2008-05-30 15:51:52.553	2	11	9	\N	\N	\N	0	\N
-4508	1	1	25	9	2008-05-30 15:51:52.554	2	11	9	\N	\N	\N	0	\N
-4509	1	1	25	19	2008-05-30 15:51:52.556	2	11	9	\N	\N	\N	0	\N
-4510	1	1	25	20	2008-05-30 15:51:52.557	2	11	9	\N	\N	\N	0	\N
-4511	1	1	25	21	2008-05-30 15:51:52.56	2	11	9	\N	\N	\N	0	\N
-4512	1	1	25	22	2008-05-30 15:51:52.561	2	11	9	\N	\N	\N	0	\N
-4513	1	1	25	23	2008-05-30 15:51:52.563	2	11	9	\N	\N	\N	0	\N
-4514	1	1	25	31	2008-05-30 15:51:52.564	2	11	9	\N	\N	\N	0	\N
-4515	1	1	25	410	2008-05-30 15:51:52.566	2	11	9	\N	\N	\N	0	\N
-4516	1	1	25	420	2008-05-30 15:51:52.567	2	11	9	\N	\N	\N	0	\N
-4517	1	1	25	421	2008-05-30 15:51:52.568	2	11	9	\N	\N	\N	0	\N
-4518	1	1	25	430	2008-05-30 15:51:52.569	2	11	9	\N	\N	\N	0	\N
-4520	1	1	21	100	2008-05-30 16:13:34.454	2	7	9	\N	\N	\N	0	\N
-4521	1	1	21	100	2008-05-30 16:13:34.502	2	7	9	\N	\N	\N	0	\N
-4522	1	1	21	101	2008-05-30 16:26:18.895	2	7	9	\N	\N	\N	0	\N
-4523	1	1	21	101	2008-05-30 16:26:18.904	2	7	9	\N	\N	\N	0	\N
-4524	1	1	21	102	2008-05-30 16:30:24.856	2	7	9	\N	\N	\N	0	\N
-4525	1	1	21	102	2008-05-30 16:30:24.885	2	7	9	\N	\N	\N	0	\N
-4526	1	1	21	102	2008-05-30 16:30:24.89	2	7	9	\N	\N	\N	0	\N
-4530	1	1	21	103	2008-06-02 09:26:58.584	2	7	9	\N	\N	\N	0	\N
-4531	1	1	21	103	2008-06-02 09:26:58.647	2	7	9	\N	\N	\N	0	\N
-4532	1	1	21	104	2008-06-02 09:27:54.887	2	7	9	\N	\N	\N	0	\N
-4533	1	1	21	104	2008-06-02 09:27:54.931	2	7	9	\N	\N	\N	0	\N
-4534	1	1	21	104	2008-06-02 09:27:54.939	2	7	9	\N	\N	\N	0	\N
-4535	1	1	21	105	2008-06-02 09:28:52.324	2	7	9	\N	\N	\N	0	\N
-4536	1	1	21	105	2008-06-02 09:28:52.334	2	7	9	\N	\N	\N	0	\N
-4537	1	1	21	105	2008-06-02 09:28:52.341	2	7	9	\N	\N	\N	0	\N
-4538	1	1	21	106	2008-06-02 09:29:41.724	2	7	9	\N	\N	\N	0	\N
-4539	1	1	21	106	2008-06-02 09:29:41.731	2	7	9	\N	\N	\N	0	\N
-4540	1	1	21	107	2008-06-02 09:30:28.485	2	7	9	\N	\N	\N	0	\N
-4541	1	1	21	107	2008-06-02 09:30:28.496	2	7	9	\N	\N	\N	0	\N
-4542	1	1	21	107	2008-06-02 09:30:28.503	2	7	9	\N	\N	\N	0	\N
-4543	1	1	21	108	2008-06-02 09:31:56.695	2	7	9	\N	\N	\N	0	\N
-4544	1	1	21	108	2008-06-02 09:31:56.722	2	7	9	\N	\N	\N	0	\N
-4545	1	1	21	108	2008-06-02 09:31:56.757	2	7	9	\N	\N	\N	0	\N
-4550	1	1	21	101	2008-06-02 17:19:34.845	2	7	9	\N	\N	2006-10-27 00:00:00	0	\N
-4551	1	1	21	101	2008-06-02 17:19:34.905	2	7	9	\N	\N	\N	0	\N
-4560	1	1	25	1	2008-06-26 11:47:27.428	2	11	9	\N	\N	\N	0	\N
-4561	1	1	25	2	2008-06-26 11:47:27.435	2	11	9	\N	\N	\N	0	\N
-4562	1	1	25	3	2008-06-26 11:47:27.436	2	11	9	\N	\N	\N	0	\N
-4563	1	1	25	4	2008-06-26 11:47:27.438	2	11	9	\N	\N	\N	0	\N
-4564	1	1	25	5	2008-06-26 11:47:27.44	2	11	9	\N	\N	\N	0	\N
-4565	1	1	25	6	2008-06-26 11:47:27.441	2	11	9	\N	\N	\N	0	\N
-4566	1	1	25	7	2008-06-26 11:47:27.445	2	11	9	\N	\N	\N	0	\N
-4567	1	1	25	8	2008-06-26 11:47:27.446	2	11	9	\N	\N	\N	0	\N
-4568	1	1	25	9	2008-06-26 11:47:27.448	2	11	9	\N	\N	\N	0	\N
-4569	1	1	25	19	2008-06-26 11:47:27.45	2	11	9	\N	\N	\N	0	\N
-4570	1	1	25	20	2008-06-26 11:47:27.451	2	11	9	\N	\N	\N	0	\N
-4571	1	1	25	21	2008-06-26 11:47:27.454	2	11	9	\N	\N	\N	0	\N
-4572	1	1	25	22	2008-06-26 11:47:27.456	2	11	9	\N	\N	\N	0	\N
-4573	1	1	25	23	2008-06-26 11:47:27.457	2	11	9	\N	\N	\N	0	\N
-4574	1	1	25	31	2008-06-26 11:47:27.458	2	11	9	\N	\N	\N	0	\N
-4575	1	1	25	410	2008-06-26 11:47:27.46	2	11	9	\N	\N	\N	0	\N
-4576	1	1	25	420	2008-06-26 11:47:27.461	2	11	9	\N	\N	\N	0	\N
-4577	1	1	25	421	2008-06-26 11:47:27.462	2	11	9	\N	\N	\N	0	\N
-4578	1	1	25	430	2008-06-26 11:47:27.463	2	11	9	\N	\N	\N	0	\N
-4579	1	1	25	440	2008-06-26 11:47:27.466	2	11	9	\N	\N	\N	0	\N
-1	1	1	\N	2	2006-12-31 23:59:59	3	2	20	2	1	\N	1	\N
-2	1	1	\N	2	2007-01-02 23:59:59	3	2	20	2	1	\N	1	\N
-459000	1	1	10	1	2009-07-20 16:28:40.856	2	2	8	\N	46f94c8de14fb36680850768ff1b7f2a	\N	0	\N
-459001	1	\N	22	207600	2009-07-20 16:41:58.173	2	15	31	2	\N	\N	0	\N
-459002	1	\N	22	207600	2009-07-20 16:41:58.179	2	15	29	\N	2676339f-3878-49dd-86ea-d0f144cf652f	\N	0	\N
-459003	1	\N	22	207600	2009-07-20 16:41:58.18	2	15	30	\N	result_test	\N	0	\N
-459004	1	\N	22	207600	2009-07-20 16:41:58.291	2	15	31	3	\N	\N	0	\N
-459005	1	\N	22	207600	2009-07-20 16:41:58.292	2	15	29	\N	d85d1780-1594-4c25-8980-39ddaf2e15ce	\N	0	\N
-459006	1	\N	22	207600	2009-07-20 16:41:58.293	2	15	30	\N	result_test	\N	0	\N
-459007	1	\N	21	107500	2009-07-20 16:41:58.342	2	7	25	\N	\N	\N	0	\N
-459008	1	\N	22	207600	2009-07-20 16:41:58.427	2	15	31	3	\N	\N	0	\N
-459009	1	\N	22	207600	2009-07-20 16:41:58.456	2	15	31	1	\N	\N	0	\N
-459010	1	\N	22	207600	2009-07-20 16:41:58.49	2	15	31	6	\N	\N	0	\N
-459011	1	\N	22	207600	2009-07-20 16:41:58.92	2	15	31	5	\N	\N	0	\N
-459012	1	\N	22	207600	2009-07-20 16:41:59.436	2	15	31	5	\N	\N	0	\N
-459013	1	\N	22	207600	2009-07-20 16:41:59.952	2	15	31	5	\N	\N	0	\N
-459014	1	\N	39	8500	2009-07-20 16:42:04.941	2	9	25	\N	\N	\N	0	\N
-459015	1	\N	21	107500	2009-07-20 16:42:04.953	2	7	13	1	\N	\N	0	\N
-460001	1	\N	22	207700	2009-11-04 17:37:58.703	2	15	31	2	\N	\N	0	1000
-460002	1	\N	22	207700	2009-11-04 17:37:58.705	2	15	29	\N	ca3ebd8e-3f51-4f40-aead-e42a2c288f1b	\N	0	1000
-460003	1	\N	22	207700	2009-11-04 17:37:58.706	2	15	30	\N	activate_user	\N	0	1000
-460004	1	\N	21	107600	2009-11-04 17:37:58.871	2	7	25	\N	\N	\N	0	1000
-460005	1	\N	22	207700	2009-11-04 17:37:58.994	2	15	31	3	\N	\N	0	1000
-461000	1	1	10	1	2009-12-15 16:15:06.859	2	2	8	\N	46f94c8de14fb36680850768ff1b7f2a	\N	0	1
-462000	1	\N	21	107700	2009-12-15 16:38:42.383	2	7	25	\N	\N	\N	0	10760
-462001	1	\N	21	107701	2009-12-15 16:39:07.982	2	7	25	\N	\N	\N	0	10761
-462002	1	1	21	107702	2009-12-15 16:39:40.772	2	7	22	\N	\N	\N	0	10762
-462003	1	\N	21	107702	2009-12-15 16:39:40.776	2	7	25	\N	\N	\N	0	10762
-462004	1	1	21	107701	2009-12-15 16:40:05.959	2	7	22	\N	\N	\N	0	10761
-462005	1	1	21	107701	2009-12-15 16:40:05.971	2	7	9	\N	\N	\N	0	10761
-462006	1	1	21	107700	2009-12-15 16:40:15.73	2	7	22	\N	\N	\N	0	10760
-462007	1	1	21	107700	2009-12-15 16:40:15.737	2	7	9	\N	\N	\N	0	10760
-463000	1	1	25	2	2009-12-15 16:58:32.179	2	11	9	\N	\N	\N	0	\N
-463001	1	1	25	3	2009-12-15 16:58:32.189	2	11	9	\N	\N	\N	0	\N
-463002	1	1	25	4	2009-12-15 16:58:32.194	2	11	9	\N	\N	\N	0	\N
-463003	1	1	25	5	2009-12-15 16:58:32.199	2	11	9	\N	\N	\N	0	\N
-463004	1	1	25	6	2009-12-15 16:58:32.203	2	11	9	\N	\N	\N	0	\N
-463005	1	1	25	7	2009-12-15 16:58:32.212	2	11	9	\N	\N	\N	0	\N
-463006	1	1	25	8	2009-12-15 16:58:32.217	2	11	9	\N	\N	\N	0	\N
-463007	1	1	25	9	2009-12-15 16:58:32.222	2	11	9	\N	\N	\N	0	\N
-463008	1	1	25	19	2009-12-15 16:58:32.229	2	11	9	\N	\N	\N	0	\N
-463009	1	1	25	21	2009-12-15 16:58:32.235	2	11	9	\N	\N	\N	0	\N
-463010	1	1	25	23	2009-12-15 16:58:32.241	2	11	9	\N	\N	\N	0	\N
-463011	1	1	25	31	2009-12-15 16:58:32.246	2	11	9	\N	\N	\N	0	\N
-463012	1	1	25	420	2009-12-15 16:58:32.251	2	11	9	\N	\N	\N	0	\N
-463013	1	1	25	421	2009-12-15 16:58:32.258	2	11	9	\N	\N	\N	0	\N
-463014	1	1	25	431	2009-12-15 16:58:32.262	2	11	9	\N	\N	\N	0	\N
-463015	1	1	25	440	2009-12-15 16:58:32.267	2	11	9	\N	\N	\N	0	\N
-463016	1	1	25	450	2009-12-15 16:58:32.272	2	11	9	\N	\N	\N	0	\N
-463017	1	1	25	460	2009-12-15 16:58:32.281	2	11	9	\N	\N	\N	0	\N
-463018	1	1	25	470	2009-12-15 16:58:32.285	2	11	9	\N	\N	\N	0	\N
-463019	1	1	25	480	2009-12-15 16:58:32.289	2	11	9	\N	\N	\N	0	\N
-463020	1	1	25	490	2009-12-15 16:58:32.294	2	11	9	\N	\N	\N	0	\N
-463021	1	1	25	500	2009-12-15 16:58:32.302	2	11	9	\N	\N	\N	0	\N
-463022	1	1	25	510	2009-12-15 16:58:32.304	2	11	9	\N	\N	\N	0	\N
-463023	1	1	25	520	2009-12-15 16:58:32.306	2	11	9	\N	\N	\N	0	\N
-463024	1	1	25	20	2009-12-15 16:58:32.308	2	11	9	\N	\N	\N	0	\N
-463025	1	1	25	22	2009-12-15 16:58:32.31	2	11	9	\N	\N	\N	0	\N
-463026	1	1	25	530	2009-12-15 16:58:32.313	2	11	9	\N	\N	\N	0	\N
-463027	1	1	25	540	2009-12-15 16:58:32.315	2	11	9	\N	\N	\N	0	\N
-463028	1	1	25	541	2009-12-15 16:58:32.317	2	11	9	\N	\N	\N	0	\N
-463029	1	1	25	550	2009-12-15 16:58:32.318	2	11	9	\N	\N	\N	0	\N
-463030	1	1	25	560	2009-12-15 16:58:32.32	2	11	9	\N	\N	\N	0	\N
-463031	1	1	25	570	2009-12-15 16:58:32.322	2	11	9	\N	\N	\N	0	\N
-463032	1	1	25	410	2009-12-15 16:58:32.324	2	11	9	\N	\N	\N	0	\N
-463033	1	1	25	600	2009-12-15 16:58:32.325	2	11	9	\N	\N	\N	0	\N
-463034	1	1	25	1	2009-12-15 16:58:32.327	2	11	9	\N	\N	\N	0	\N
-463035	1	1	25	430	2009-12-15 16:58:32.329	2	11	9	\N	\N	\N	0	\N
-463036	1	1	25	6010	2009-12-15 16:58:32.331	2	11	9	\N	\N	\N	0	\N
-463037	1	1	25	2	2009-12-15 16:58:42.41	2	11	9	\N	\N	\N	0	\N
-463038	1	1	25	3	2009-12-15 16:58:42.413	2	11	9	\N	\N	\N	0	\N
-463039	1	1	25	4	2009-12-15 16:58:42.415	2	11	9	\N	\N	\N	0	\N
-463040	1	1	25	5	2009-12-15 16:58:42.417	2	11	9	\N	\N	\N	0	\N
-463041	1	1	25	6	2009-12-15 16:58:42.419	2	11	9	\N	\N	\N	0	\N
-463042	1	1	25	7	2009-12-15 16:58:42.425	2	11	9	\N	\N	\N	0	\N
-463043	1	1	25	8	2009-12-15 16:58:42.428	2	11	9	\N	\N	\N	0	\N
-463044	1	1	25	9	2009-12-15 16:58:42.43	2	11	9	\N	\N	\N	0	\N
-463045	1	1	25	19	2009-12-15 16:58:42.434	2	11	9	\N	\N	\N	0	\N
-463046	1	1	25	21	2009-12-15 16:58:42.438	2	11	9	\N	\N	\N	0	\N
-463047	1	1	25	23	2009-12-15 16:58:42.44	2	11	9	\N	\N	\N	0	\N
-463048	1	1	25	31	2009-12-15 16:58:42.443	2	11	9	\N	\N	\N	0	\N
-463049	1	1	25	420	2009-12-15 16:58:42.447	2	11	9	\N	\N	\N	0	\N
-463050	1	1	25	421	2009-12-15 16:58:42.45	2	11	9	\N	\N	\N	0	\N
-463051	1	1	25	431	2009-12-15 16:58:42.452	2	11	9	\N	\N	\N	0	\N
-463052	1	1	25	440	2009-12-15 16:58:42.454	2	11	9	\N	\N	\N	0	\N
-463053	1	1	25	450	2009-12-15 16:58:42.46	2	11	9	\N	\N	\N	0	\N
-463054	1	1	25	460	2009-12-15 16:58:42.464	2	11	9	\N	\N	\N	0	\N
-463055	1	1	25	470	2009-12-15 16:58:42.466	2	11	9	\N	\N	\N	0	\N
-463056	1	1	25	480	2009-12-15 16:58:42.468	2	11	9	\N	\N	\N	0	\N
-463057	1	1	25	490	2009-12-15 16:58:42.471	2	11	9	\N	\N	\N	0	\N
-463058	1	1	25	500	2009-12-15 16:58:42.483	2	11	9	\N	\N	\N	0	\N
-463059	1	1	25	510	2009-12-15 16:58:42.486	2	11	9	\N	\N	\N	0	\N
-463060	1	1	25	520	2009-12-15 16:58:42.488	2	11	9	\N	\N	\N	0	\N
-463061	1	1	25	20	2009-12-15 16:58:42.491	2	11	9	\N	\N	\N	0	\N
-463062	1	1	25	22	2009-12-15 16:58:42.496	2	11	9	\N	\N	\N	0	\N
-463063	1	1	25	530	2009-12-15 16:58:42.497	2	11	9	\N	\N	\N	0	\N
-463064	1	1	25	540	2009-12-15 16:58:42.498	2	11	9	\N	\N	\N	0	\N
-463065	1	1	25	541	2009-12-15 16:58:42.499	2	11	9	\N	\N	\N	0	\N
-463066	1	1	25	550	2009-12-15 16:58:42.5	2	11	9	\N	\N	\N	0	\N
-463067	1	1	25	560	2009-12-15 16:58:42.501	2	11	9	\N	\N	\N	0	\N
-463068	1	1	25	570	2009-12-15 16:58:42.502	2	11	9	\N	\N	\N	0	\N
-463069	1	1	25	410	2009-12-15 16:58:42.502	2	11	9	\N	\N	\N	0	\N
-463070	1	1	25	600	2009-12-15 16:58:42.503	2	11	9	\N	\N	\N	0	\N
-463071	1	1	25	1	2009-12-15 16:58:42.504	2	11	9	\N	\N	\N	0	\N
-463072	1	1	25	430	2009-12-15 16:58:42.505	2	11	9	\N	\N	\N	0	\N
-463073	1	1	25	6010	2009-12-15 16:58:42.507	2	11	9	\N	\N	\N	0	\N
-463074	1	1	25	2	2009-12-15 17:04:04.714	2	11	9	\N	\N	\N	0	\N
-463075	1	1	25	3	2009-12-15 17:04:04.718	2	11	9	\N	\N	\N	0	\N
-463076	1	1	25	4	2009-12-15 17:04:04.722	2	11	9	\N	\N	\N	0	\N
-463077	1	1	25	5	2009-12-15 17:04:04.725	2	11	9	\N	\N	\N	0	\N
-463078	1	1	25	6	2009-12-15 17:04:04.728	2	11	9	\N	\N	\N	0	\N
-463079	1	1	25	7	2009-12-15 17:04:04.736	2	11	9	\N	\N	\N	0	\N
-463080	1	1	25	8	2009-12-15 17:04:04.741	2	11	9	\N	\N	\N	0	\N
-463081	1	1	25	9	2009-12-15 17:04:04.745	2	11	9	\N	\N	\N	0	\N
-463082	1	1	25	19	2009-12-15 17:04:04.751	2	11	9	\N	\N	\N	0	\N
-463083	1	1	25	21	2009-12-15 17:04:04.757	2	11	9	\N	\N	\N	0	\N
-463084	1	1	25	23	2009-12-15 17:04:04.762	2	11	9	\N	\N	\N	0	\N
-463085	1	1	25	31	2009-12-15 17:04:04.766	2	11	9	\N	\N	\N	0	\N
-463086	1	1	25	420	2009-12-15 17:04:04.779	2	11	9	\N	\N	\N	0	\N
-463087	1	1	25	421	2009-12-15 17:04:04.784	2	11	9	\N	\N	\N	0	\N
-463088	1	1	25	431	2009-12-15 17:04:04.788	2	11	9	\N	\N	\N	0	\N
-463089	1	1	25	440	2009-12-15 17:04:04.8	2	11	9	\N	\N	\N	0	\N
-463090	1	1	25	450	2009-12-15 17:04:04.804	2	11	9	\N	\N	\N	0	\N
-463091	1	1	25	460	2009-12-15 17:04:04.812	2	11	9	\N	\N	\N	0	\N
-463092	1	1	25	470	2009-12-15 17:04:04.818	2	11	9	\N	\N	\N	0	\N
-463093	1	1	25	480	2009-12-15 17:04:04.822	2	11	9	\N	\N	\N	0	\N
-463094	1	1	25	490	2009-12-15 17:04:04.827	2	11	9	\N	\N	\N	0	\N
-463095	1	1	25	500	2009-12-15 17:04:04.831	2	11	9	\N	\N	\N	0	\N
-463096	1	1	25	510	2009-12-15 17:04:04.866	2	11	9	\N	\N	\N	0	\N
-463097	1	1	25	520	2009-12-15 17:04:04.871	2	11	9	\N	\N	\N	0	\N
-463098	1	1	25	20	2009-12-15 17:04:04.876	2	11	9	\N	\N	\N	0	\N
-463099	1	1	25	22	2009-12-15 17:04:04.883	2	11	9	\N	\N	\N	0	\N
-463100	1	1	25	530	2009-12-15 17:04:04.889	2	11	9	\N	\N	\N	0	\N
-463101	1	1	25	540	2009-12-15 17:04:04.894	2	11	9	\N	\N	\N	0	\N
-463102	1	1	25	541	2009-12-15 17:04:04.898	2	11	9	\N	\N	\N	0	\N
-463103	1	1	25	550	2009-12-15 17:04:04.901	2	11	9	\N	\N	\N	0	\N
-463104	1	1	25	560	2009-12-15 17:04:04.906	2	11	9	\N	\N	\N	0	\N
-463105	1	1	25	570	2009-12-15 17:04:04.911	2	11	9	\N	\N	\N	0	\N
-463106	1	1	25	410	2009-12-15 17:04:04.915	2	11	9	\N	\N	\N	0	\N
-463107	1	1	25	600	2009-12-15 17:04:04.919	2	11	9	\N	\N	\N	0	\N
-463108	1	1	25	1	2009-12-15 17:04:04.924	2	11	9	\N	\N	\N	0	\N
-463109	1	1	25	430	2009-12-15 17:04:04.928	2	11	9	\N	\N	\N	0	\N
-463110	1	1	25	6010	2009-12-15 17:04:04.935	2	11	9	\N	\N	\N	0	\N
-463111	1	1	25	2	2009-12-15 17:09:03.547	2	11	9	\N	\N	\N	0	\N
-463112	1	1	25	3	2009-12-15 17:09:03.55	2	11	9	\N	\N	\N	0	\N
-463113	1	1	25	4	2009-12-15 17:09:03.552	2	11	9	\N	\N	\N	0	\N
-463114	1	1	25	5	2009-12-15 17:09:03.554	2	11	9	\N	\N	\N	0	\N
-463115	1	1	25	6	2009-12-15 17:09:03.557	2	11	9	\N	\N	\N	0	\N
-463116	1	1	25	7	2009-12-15 17:09:03.561	2	11	9	\N	\N	\N	0	\N
-463117	1	1	25	8	2009-12-15 17:09:03.563	2	11	9	\N	\N	\N	0	\N
-463118	1	1	25	9	2009-12-15 17:09:03.565	2	11	9	\N	\N	\N	0	\N
-463119	1	1	25	19	2009-12-15 17:09:03.568	2	11	9	\N	\N	\N	0	\N
-463120	1	1	25	21	2009-12-15 17:09:03.571	2	11	9	\N	\N	\N	0	\N
-463121	1	1	25	23	2009-12-15 17:09:03.574	2	11	9	\N	\N	\N	0	\N
-463122	1	1	25	31	2009-12-15 17:09:03.575	2	11	9	\N	\N	\N	0	\N
-463123	1	1	25	420	2009-12-15 17:09:03.579	2	11	9	\N	\N	\N	0	\N
-463124	1	1	25	421	2009-12-15 17:09:03.582	2	11	9	\N	\N	\N	0	\N
-463125	1	1	25	431	2009-12-15 17:09:03.584	2	11	9	\N	\N	\N	0	\N
-463126	1	1	25	440	2009-12-15 17:09:03.585	2	11	9	\N	\N	\N	0	\N
-463127	1	1	25	450	2009-12-15 17:09:03.588	2	11	9	\N	\N	\N	0	\N
-463128	1	1	25	460	2009-12-15 17:09:03.592	2	11	9	\N	\N	\N	0	\N
-463129	1	1	25	470	2009-12-15 17:09:03.594	2	11	9	\N	\N	\N	0	\N
-463130	1	1	25	480	2009-12-15 17:09:03.595	2	11	9	\N	\N	\N	0	\N
-463131	1	1	25	490	2009-12-15 17:09:03.598	2	11	9	\N	\N	\N	0	\N
-463132	1	1	25	500	2009-12-15 17:09:03.6	2	11	9	\N	\N	\N	0	\N
-463133	1	1	25	510	2009-12-15 17:09:03.602	2	11	9	\N	\N	\N	0	\N
-463134	1	1	25	520	2009-12-15 17:09:03.605	2	11	9	\N	\N	\N	0	\N
-463135	1	1	25	20	2009-12-15 17:09:03.607	2	11	9	\N	\N	\N	0	\N
-463136	1	1	25	22	2009-12-15 17:09:03.611	2	11	9	\N	\N	\N	0	\N
-463137	1	1	25	530	2009-12-15 17:09:03.614	2	11	9	\N	\N	\N	0	\N
-463138	1	1	25	540	2009-12-15 17:09:03.616	2	11	9	\N	\N	\N	0	\N
-463139	1	1	25	541	2009-12-15 17:09:03.618	2	11	9	\N	\N	\N	0	\N
-463140	1	1	25	550	2009-12-15 17:09:03.62	2	11	9	\N	\N	\N	0	\N
-463141	1	1	25	560	2009-12-15 17:09:03.622	2	11	9	\N	\N	\N	0	\N
-463142	1	1	25	570	2009-12-15 17:09:03.624	2	11	9	\N	\N	\N	0	\N
-463143	1	1	25	410	2009-12-15 17:09:03.627	2	11	9	\N	\N	\N	0	\N
-463144	1	1	25	600	2009-12-15 17:09:03.628	2	11	9	\N	\N	\N	0	\N
-463145	1	1	25	1	2009-12-15 17:09:03.631	2	11	9	\N	\N	\N	0	\N
-463146	1	1	25	430	2009-12-15 17:09:03.634	2	11	9	\N	\N	\N	0	\N
-463147	1	1	25	6010	2009-12-15 17:09:03.636	2	11	9	\N	\N	\N	0	\N
-464000	1	1	14	2700	2009-12-17 13:15:28.181	2	3	9	\N	\N	\N	0	\N
-464001	1	1	14	2701	2009-12-17 13:16:16.286	2	3	9	\N	\N	\N	0	\N
-464002	1	1	14	2700	2009-12-17 13:16:22.425	2	3	9	\N	\N	\N	0	\N
-464003	1	1	14	2702	2009-12-17 13:17:05.246	2	3	9	\N	\N	\N	0	\N
-464004	1	1	21	107700	2009-12-17 13:21:45.59	2	7	9	\N	\N	\N	0	10760
-464005	1	1	21	107701	2009-12-17 13:22:05.158	2	7	9	\N	\N	\N	0	10761
-464006	1	1	21	107702	2009-12-17 13:22:34.715	2	7	9	\N	\N	\N	0	10762
-465000	1	1	14	2800	2009-12-17 14:16:58.961	2	3	9	\N	\N	\N	0	\N
-465001	1	1	14	2801	2009-12-17 14:17:02.063	2	3	9	\N	\N	\N	0	\N
-466000	1	1	21	107800	2009-12-21 13:17:07.736	2	7	22	\N	\N	\N	0	10770
-466001	1	\N	21	107800	2009-12-21 13:17:07.946	2	7	25	\N	\N	\N	0	10770
-466002	1	1	21	107800	2009-12-21 13:17:44.639	2	7	9	\N	\N	\N	0	10770
-466003	1	1	21	107801	2009-12-21 13:18:00.773	2	7	22	\N	\N	\N	0	10771
-466004	1	\N	21	107801	2009-12-21 13:18:00.776	2	7	25	\N	\N	\N	0	10771
-466005	1	1	21	107802	2009-12-21 13:18:38.545	2	7	22	\N	\N	\N	0	10772
-466006	1	\N	21	107802	2009-12-21 13:18:38.553	2	7	25	\N	\N	\N	0	10772
-466007	1	1	21	107803	2009-12-21 13:19:01.328	2	7	22	\N	\N	\N	0	10773
-466008	1	\N	21	107803	2009-12-21 13:19:01.331	2	7	25	\N	\N	\N	0	10773
-466009	1	1	21	107804	2009-12-21 13:19:23.246	2	7	22	\N	\N	\N	0	10774
-466010	1	\N	21	107804	2009-12-21 13:19:23.254	2	7	25	\N	\N	\N	0	10774
-466011	1	1	21	107805	2009-12-21 13:19:40.836	2	7	22	\N	\N	\N	0	10775
-466012	1	\N	21	107805	2009-12-21 13:19:40.843	2	7	25	\N	\N	\N	0	10775
-466013	1	1	21	107806	2009-12-21 13:19:58.534	2	7	22	\N	\N	\N	0	10776
-466014	1	\N	21	107806	2009-12-21 13:19:58.542	2	7	25	\N	\N	\N	0	10776
-466015	1	1	21	107807	2009-12-21 13:20:26.179	2	7	22	\N	\N	\N	0	10777
-466016	1	\N	21	107807	2009-12-21 13:20:26.186	2	7	25	\N	\N	\N	0	10777
-466017	1	1	21	107808	2009-12-21 13:20:47.863	2	7	22	\N	\N	\N	0	10778
-466018	1	\N	21	107808	2009-12-21 13:20:47.871	2	7	25	\N	\N	\N	0	10778
-466019	1	1	21	107809	2009-12-21 13:21:06.133	2	7	22	\N	\N	\N	0	10779
-466020	1	\N	21	107809	2009-12-21 13:21:06.161	2	7	25	\N	\N	\N	0	10779
-466021	1	1	21	107810	2009-12-21 13:21:25.999	2	7	22	\N	\N	\N	0	10780
-466022	1	\N	21	107810	2009-12-21 13:21:26.002	2	7	25	\N	\N	\N	0	10780
-466023	1	1	21	107811	2009-12-21 13:21:44.511	2	7	22	\N	\N	\N	0	10781
-466024	1	\N	21	107811	2009-12-21 13:21:44.518	2	7	25	\N	\N	\N	0	10781
-467000	1	1	13	2400	2011-02-04 02:44:07.025	2	4	9	\N	Broadband	\N	0	\N
-467001	1	1	13	2400	2011-02-04 02:44:25.375	2	4	9	\N	eSpeed Broadband	\N	0	\N
-467002	1	\N	10	10940	2011-02-04 02:55:33.658	2	2	25	\N	\N	\N	0	10940
-467003	\N	\N	27	114600	2011-02-04 02:55:33.714	2	2	25	\N	\N	\N	0	\N
-467004	\N	\N	27	114601	2011-02-04 02:55:33.768	2	2	25	\N	\N	\N	0	\N
-467005	1	\N	10	10941	2011-02-04 02:58:06.612	2	2	25	\N	\N	\N	0	10941
-467006	\N	\N	27	114602	2011-02-04 02:58:06.629	2	2	25	\N	\N	\N	0	\N
-467007	\N	\N	27	114603	2011-02-04 02:58:06.669	2	2	25	\N	\N	\N	0	\N
-467008	1	1	12	108501	2011-02-04 02:58:59.821	2	2	34	0	\N	\N	0	10941
-467009	1	1	10	10941	2011-02-04 02:58:59.822	2	2	9	\N	\N	\N	0	10941
-467010	1	\N	27	114602	2011-02-04 02:58:59.923	2	2	9	\N	\N	\N	0	10941
-467011	\N	\N	27	114603	2011-02-04 02:58:59.967	2	2	9	\N	\N	\N	0	\N
-467012	1	\N	10	10942	2011-02-04 02:59:40.021	2	2	25	\N	\N	\N	0	10942
-467013	\N	\N	27	114604	2011-02-04 02:59:40.034	2	2	25	\N	\N	\N	0	\N
-467014	\N	\N	27	114605	2011-02-04 02:59:40.067	2	2	25	\N	\N	\N	0	\N
-467015	1	\N	10	10943	2011-02-04 03:00:21.373	2	2	25	\N	\N	\N	0	10943
-467016	\N	\N	27	114606	2011-02-04 03:00:21.39	2	2	25	\N	\N	\N	0	\N
-467017	\N	\N	27	114607	2011-02-04 03:00:21.458	2	2	25	\N	\N	\N	0	\N
-467018	1	\N	10	10944	2011-02-04 03:00:47.039	2	2	25	\N	\N	\N	0	10944
-467019	\N	\N	27	114608	2011-02-04 03:00:47.053	2	2	25	\N	\N	\N	0	\N
-467020	\N	\N	27	114609	2011-02-04 03:00:47.088	2	2	25	\N	\N	\N	0	\N
-467021	1	\N	10	10945	2011-02-04 03:01:27.218	2	2	25	\N	\N	\N	0	10945
-467022	\N	\N	27	114610	2011-02-04 03:01:27.232	2	2	25	\N	\N	\N	0	\N
-467023	\N	\N	27	114611	2011-02-04 03:01:27.261	2	2	25	\N	\N	\N	0	\N
-467024	1	1	12	108505	2011-02-04 03:01:59.738	2	2	34	0	\N	\N	0	10945
-467025	1	1	10	10945	2011-02-04 03:01:59.738	2	2	9	\N	\N	\N	0	10945
-467026	1	\N	27	114610	2011-02-04 03:01:59.753	2	2	9	\N	\N	\N	0	10945
-467027	\N	\N	27	114611	2011-02-04 03:01:59.79	2	2	9	\N	\N	\N	0	\N
-467028	1	\N	10	10946	2011-02-04 03:02:47.706	2	2	25	\N	\N	\N	0	10946
-467029	\N	\N	27	114612	2011-02-04 03:02:47.72	2	2	25	\N	\N	\N	0	\N
-467030	\N	\N	27	114613	2011-02-04 03:02:47.763	2	2	25	\N	\N	\N	0	\N
-467031	1	\N	10	10947	2011-02-04 03:03:14.127	2	2	25	\N	\N	\N	0	10947
-467032	\N	\N	27	114614	2011-02-04 03:03:14.137	2	2	25	\N	\N	\N	0	\N
-467033	\N	\N	27	114615	2011-02-04 03:03:14.161	2	2	25	\N	\N	\N	0	\N
-467034	1	1	12	108507	2011-02-04 03:03:23.106	2	2	34	0	\N	\N	0	10947
-467035	1	1	10	10947	2011-02-04 03:03:23.107	2	2	9	\N	\N	\N	0	10947
-467036	1	\N	27	114614	2011-02-04 03:03:23.112	2	2	9	\N	\N	\N	0	10947
-467037	\N	\N	27	114615	2011-02-04 03:03:23.162	2	2	9	\N	\N	\N	0	\N
-467038	1	\N	10	10948	2011-02-04 03:04:08.243	2	2	25	\N	\N	\N	0	10948
-467039	\N	\N	27	114616	2011-02-04 03:04:08.257	2	2	25	\N	\N	\N	0	\N
-467040	\N	\N	27	114617	2011-02-04 03:04:08.335	2	2	25	\N	\N	\N	0	\N
-467041	1	\N	10	10949	2011-02-04 03:04:39.234	2	2	25	\N	\N	\N	0	10949
-467042	\N	\N	27	114618	2011-02-04 03:04:39.246	2	2	25	\N	\N	\N	0	\N
-467043	\N	\N	27	114619	2011-02-04 03:04:39.273	2	2	25	\N	\N	\N	0	\N
-467044	1	\N	10	10950	2011-02-04 03:05:04.055	2	2	25	\N	\N	\N	0	10950
-467045	\N	\N	27	114620	2011-02-04 03:05:04.068	2	2	25	\N	\N	\N	0	\N
-467046	\N	\N	27	114621	2011-02-04 03:05:04.097	2	2	25	\N	\N	\N	0	\N
-467047	1	\N	10	10951	2011-02-04 03:05:19.841	2	2	25	\N	\N	\N	0	10951
-467048	\N	\N	27	114622	2011-02-04 03:05:19.855	2	2	25	\N	\N	\N	0	\N
-467049	\N	\N	27	114623	2011-02-04 03:05:19.907	2	2	25	\N	\N	\N	0	\N
-467050	1	\N	10	10952	2011-02-04 03:05:46.06	2	2	25	\N	\N	\N	0	10952
-467051	\N	\N	27	114624	2011-02-04 03:05:46.08	2	2	25	\N	\N	\N	0	\N
-467052	\N	\N	27	114625	2011-02-04 03:05:46.11	2	2	25	\N	\N	\N	0	\N
-467053	1	\N	10	10953	2011-02-04 03:06:14.73	2	2	25	\N	\N	\N	0	10953
-467054	\N	\N	27	114626	2011-02-04 03:06:14.744	2	2	25	\N	\N	\N	0	\N
-467055	\N	\N	27	114627	2011-02-04 03:06:14.773	2	2	25	\N	\N	\N	0	\N
-467056	1	\N	10	10954	2011-02-04 03:06:39.032	2	2	25	\N	\N	\N	0	10954
-467057	\N	\N	27	114628	2011-02-04 03:06:39.046	2	2	25	\N	\N	\N	0	\N
-467058	\N	\N	27	114629	2011-02-04 03:06:39.095	2	2	25	\N	\N	\N	0	\N
-467059	1	\N	10	10955	2011-02-04 03:06:53.728	2	2	25	\N	\N	\N	0	10955
-467060	\N	\N	27	114630	2011-02-04 03:06:53.741	2	2	25	\N	\N	\N	0	\N
-467061	\N	\N	27	114631	2011-02-04 03:06:53.778	2	2	25	\N	\N	\N	0	\N
-467062	1	\N	10	10956	2011-02-04 03:07:11.784	2	2	25	\N	\N	\N	0	10956
-467063	\N	\N	27	114632	2011-02-04 03:07:11.855	2	2	25	\N	\N	\N	0	\N
-467064	\N	\N	27	114633	2011-02-04 03:07:11.941	2	2	25	\N	\N	\N	0	\N
+468000	1	1	14	3102	2011-02-09 02:33:45.593	2	3	9	\N	\N	\N	0	\N
+468001	1	1	14	3100	2011-02-09 02:34:37.997	2	3	9	\N	\N	\N	0	\N
+468002	1	1	14	3102	2011-02-09 02:36:43.222	2	3	9	\N	\N	\N	0	\N
+468003	1	1	14	3102	2011-02-09 02:36:52.599	2	3	9	\N	\N	\N	0	\N
 \.
 
 
@@ -12008,6 +11313,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 14	3103	description	1	iCall Pre-paid
 14	3104	description	1	Time & Location
 14	3105	description	1	BND 20 First 3 months
+4	12	description	1	Brunei Dollar
 \.
 
 
@@ -12107,12 +11413,12 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 2900	CALL-LD-GEN	1	\N	0	1	0	2	1900
 3000	PL-02	1	\N	0	1	0	4	2001
 240	DP-4	1	\N	0	1	0	2	2003
-3100	ESBB	1	\N	0	0	0	1	2100
 3101	WAVE	1	\N	0	0	0	1	2101
-3102	VPND	1	\N	0	0	0	1	2102
 3103	CAPP	1	\N	0	0	0	1	2103
 3104	TLDC	1	\N	0	0	0	1	2104
 3105	BND20	1	\N	0	0	0	1	2105
+3100	ESBB	1	\N	0	0	0	2	2100
+3102	VPND	1	\N	0	0	0	4	2102
 \.
 
 
@@ -12308,14 +11614,10 @@ customer	1086
 base_user	1096
 contact_map	7911
 contact_map	7911
-breadcrumb	113
 price_model	22
 item_type	25
 item_type	25
-event_log	468
 item	32
-event_log	468
-recent_item	14
 customer	1086
 contact	1147
 contact_field	2027
@@ -12323,6 +11625,8 @@ partner_payout	1
 process_run_total_pm	1
 process_run_total_pm	1
 report_user	1
+event_log	469
+breadcrumb	163
 report_user	1
 payment_authorization	1
 payment_authorization	1
@@ -12340,6 +11644,8 @@ item	32
 contact	1147
 contact_field	2027
 base_user	1096
+event_log	469
+recent_item	28
 \.
 
 
@@ -15231,349 +14537,6 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 --
 
 COPY permission_role_map (permission_id, role_id) FROM stdin;
-1	1
-2	1
-3	1
-4	1
-80	1
-83	1
-85	1
-5	1
-87	1
-89	1
-90	1
-91	1
-92	1
-105	1
-88	1
-93	1
-94	1
-95	1
-6	1
-86	1
-19	1
-22	1
-23	1
-24	1
-29	1
-30	1
-31	1
-32	1
-33	1
-35	1
-36	1
-37	1
-38	1
-39	1
-40	1
-41	1
-42	1
-43	1
-44	1
-46	1
-47	1
-48	1
-49	1
-50	1
-51	1
-52	1
-53	1
-54	1
-55	1
-56	1
-57	1
-58	1
-59	1
-
-60	1
-62	1
-63	1
-64	1
-65	1
-78	1
-67	1
-68	1
-69	1
-70	1
-71	1
-72	1
-73	1
-74	1
-75	1
-76	1
-84	1
-99	1
-100	1
-101	1
-102	1
-103	1
-7	1
-8	1
-9	1
-10	1
-11	1
-12	1
-13	1
-15	1
-16	1
-17	1
-20	1
-81	1
-34	1
-1	2
-2	2
-3	2
-4	2
-15	2
-80	2
-83	2
-85	2
-5	2
-87	2
-89	2
-90	2
-91	2
-92	2
-105	2
-88	2
-93	2
-94	2
-95	2
-6	2
-86	2
-19	2
-22	2
-23	2
-24	2
-29	2
-30	2
-31	2
-32	2
-33	2
-35	2
-36	2
-37	2
-38	2
-39	2
-40	2
-41	2
-42	2
-43	2
-44	2
-46	2
-47	2
-48	2
-49	2
-50	2
-51	2
-52	2
-53	2
-54	2
-55	2
-56	2
-57	2
-58	2
-59	2
-60	2
-62	2
-63	2
-64	2
-65	2
-67	2
-68	2
-69	2
-70	2
-71	2
-72	2
-73	2
-74	2
-75	2
-76	2
-84	2
-99	2
-100	2
-101	2
-102	2
-103	2
-78	2
-7	2
-9	2
-10	2
-11	2
-13	2
-47	3
-16	2
-17	2
-20	2
-81	2
-34	2
-1	3
-2	3
-3	3
-4	3
-5	3
-87	3
-89	3
-90	3
-91	3
-92	3
-105	3
-88	3
-93	3
-94	3
-95	3
-6	3
-86	3
-19	3
-22	3
-23	3
-24	3
-29	3
-32	3
-39	3
-40	3
-41	3
-42	3
-43	3
-44	3
-46	3
-109	1
-48	3
-49	3
-50	3
-51	3
-52	3
-53	3
-55	3
-56	3
-62	3
-63	3
-64	3
-65	3
-67	3
-68	3
-69	3
-71	3
-73	3
-74	3
-75	3
-76	3
-84	3
-78	3
-7	3
-10	3
-11	3
-14	3
-16	3
-17	3
-20	3
-82	3
-1	4
-2	4
-104	4
-106	4
-4	4
-96	4
-97	4
-98	4
-22	4
-23	4
-24	4
-40	4
-41	4
-43	4
-44	4
-46	4
-50	4
-51	4
-7	4
-11	4
-18	4
-21	4
-82	4
-61	4
-77	4
-79	4
-99	4
-100	4
-101	4
-1	5
-2	5
-109	2
-109	3
-25	5
-26	5
-27	5
-40	5
-41	5
-43	5
-45	5
-46	5
-50	5
-51	5
-107	1
-107	2
-108	1
-108	2
-108	3
-108	4
-109	4
-109	5
-110	1
-110	2
-111	1
-112	1
-111	2
-112	2
-111	3
-112	3
-113	1
-113	2
-113	3
-114	1
-114	2
-114	3
-115	1
-115	2
-115	3
-70	3
-72	3
-114	4
-99	3
-100	3
-101	3
-102	3
-103	3
-116	5
-42	4
-117	5
-118	2
-119	2
-122	2
-123	2
-124	2
-125	2
-125	2
-126	2
-127	2
-128	2
-129	2
-130	2
-131	2
-132	5
-133	2
-134	2
-134	3
-138	2
-135	2
-136	2
-137	2
-139	2
-140	2
-145	2
-145	3
-146	2
-146	3
 \.
 
 
@@ -16012,12 +14975,12 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id) FROM 
 1900	METERED	0.0000000000	\N	1
 2001	METERED	99.9900000000	\N	1
 2003	METERED	15.0000000000	\N	11
-2100	METERED	0.0000000000	\N	1
 2101	METERED	0.0000000000	\N	1
 2102	METERED	0.0000000000	\N	1
 2103	METERED	0.0000000000	\N	1
 2104	GRADUATED	0.0000000000	\N	1
 2105	METERED	0.0000000000	\N	1
+2100	METERED	1.0000000000	\N	1
 \.
 
 
@@ -16087,1035 +15050,6 @@ COPY promotion_user_map (user_id, promotion_id) FROM stdin;
 --
 
 COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, active_until, cycle_start, create_datetime, next_billable_day, created_by, status_id, currency_id, deleted, notify, last_notified, notification_step, due_date_unit_id, due_date_value, df_fm, anticipate_periods, own_invoice, notes, notes_in_invoice, is_current, optlock) FROM stdin;
-35	53	2	1	2006-10-01	2006-11-01	\N	2007-08-09 14:41:51.208	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
-45	63	2	1	2006-09-26	2006-10-26	\N	2007-08-09 14:59:01.542	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
-100	118	2	1	2006-10-26	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
-101	119	2	1	2006-11-27	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	8
-102	120	2	1	2006-10-01	2006-11-01	\N	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
-103	121	2	1	2006-10-16	\N	2006-10-01	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
-104	122	2	1	2006-10-15	2006-11-30	2006-10-10	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
-105	123	2	1	2006-09-05	2006-11-25	2006-09-01	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
-106	124	2	2	2006-09-03	\N	2006-09-01	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
-107	125	2	2	2006-09-30	2006-10-29	2006-09-15	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
-108	126	2	2	2006-08-10	2006-10-20	2006-08-02	2006-11-01 00:00:00	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	4
-109	127	2	1	2006-11-10	2006-11-10	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-113	131	2	2	2006-10-15	2006-11-05	2006-10-10	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1055	2	2	1	2007-09-15	\N	\N	2007-12-28 14:47:08.494	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	1	1
-1065	1055	2	1	2007-11-01	\N	\N	2008-03-06 09:19:01.499	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	1	1
-107600	1000	2	1	2006-10-30	2006-11-15	2006-10-15	2009-11-04 17:37:51.128	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	0	0
-1	2	1	1	2006-07-26	\N	\N	2006-07-26 09:43:39.793	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
-2	2	1	1	2006-07-26	\N	\N	2006-07-26 09:48:13.967	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
-3	2	1	1	2006-07-26	\N	\N	2006-07-26 09:49:38.649	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
-4	2	2	1	2006-07-26	\N	\N	2006-07-26 09:50:34.309	2006-10-26	1	16	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
-5	13	3	1	2006-12-07	\N	\N	2006-12-07 14:58:53.043	2007-01-07	12	16	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
-15	2	1	1	2007-01-16	\N	\N	2007-01-16 14:39:49.112	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
-25	2	1	1	2007-07-12	\N	\N	2007-07-12 13:20:22.264	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	\N	1
-55	73	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-56	74	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-57	75	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-58	76	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-59	77	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-60	78	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-61	79	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-62	80	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-63	81	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-64	82	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-65	83	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-66	84	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-67	85	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-68	86	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-69	87	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-70	88	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-71	89	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-72	90	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-73	91	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-74	92	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-75	93	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-76	94	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-77	95	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-78	96	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-79	97	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-80	98	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-81	99	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-82	100	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-83	101	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-84	102	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-85	103	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-86	104	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-87	105	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-88	106	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-89	107	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-90	108	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-91	109	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-92	110	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-93	111	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-94	112	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-95	113	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-96	114	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-97	115	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-98	116	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-99	117	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-110	128	2	2	2006-09-01	\N	\N	2006-09-01 00:00:00	2006-10-25	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-111	129	2	2	2006-09-01	\N	\N	2006-09-01 00:00:00	2006-10-27	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-112	130	2	2	2006-09-01	\N	\N	2006-09-01 00:00:00	2006-10-15	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-114	132	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-115	133	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-116	134	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-117	135	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-118	136	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-119	137	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-120	138	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-121	139	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-122	140	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-123	141	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-124	142	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-125	143	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-126	144	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-127	145	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-128	146	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-129	147	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-130	148	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-131	149	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-132	150	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-133	151	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-134	152	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-135	153	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-136	154	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-137	155	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-138	156	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-139	157	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-140	158	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-141	159	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-142	160	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-143	161	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-144	162	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-145	163	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-146	164	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-147	165	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-148	166	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-149	167	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-150	168	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-151	169	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-152	170	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-153	171	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-154	172	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-155	173	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-156	174	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-157	175	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-158	176	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-159	177	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-160	178	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-161	179	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-162	180	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-163	181	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-164	182	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-165	183	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-166	184	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-167	185	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-168	186	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-169	187	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-170	188	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-171	189	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-172	190	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-173	191	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-174	192	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-175	193	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-176	194	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-177	195	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-178	196	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-179	197	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-180	198	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-181	199	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-182	200	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-183	201	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-184	202	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-185	203	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-186	204	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-187	205	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-188	206	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-189	207	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-190	208	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-191	209	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-192	210	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-193	211	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-194	212	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-195	213	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-196	214	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-197	215	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-198	216	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-199	217	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-200	218	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-201	219	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-202	220	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-203	221	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-204	222	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-205	223	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-206	224	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-207	225	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-208	226	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-209	227	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-210	228	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-211	229	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-212	230	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-213	231	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-214	232	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-215	233	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-216	234	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-217	235	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-218	236	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-219	237	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-220	238	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-221	239	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-222	240	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-223	241	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-224	242	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-225	243	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-226	244	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-227	245	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-228	246	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-229	247	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-230	248	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-231	249	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-232	250	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-233	251	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-234	252	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-235	253	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-236	254	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-237	255	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-238	256	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-239	257	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-240	258	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-241	259	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-242	260	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-243	261	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-244	262	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-245	263	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-246	264	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-247	265	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-248	266	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-249	267	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-250	268	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-251	269	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-252	270	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-253	271	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-254	272	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-255	273	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-256	274	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-257	275	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-258	276	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-259	277	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-260	278	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-261	279	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-262	280	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-263	281	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-264	282	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-265	283	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-266	284	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-267	285	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-268	286	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-269	287	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-270	288	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-271	289	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-272	290	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-273	291	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-274	292	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-275	293	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-276	294	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-277	295	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-278	296	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-279	297	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-280	298	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-281	299	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-282	300	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-283	301	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-284	302	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-285	303	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-286	304	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-287	305	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-288	306	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-289	307	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-290	308	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-291	309	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-292	310	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-293	311	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-294	312	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-295	313	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-296	314	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-297	315	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-298	316	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-299	317	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-300	318	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-301	319	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-302	320	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-303	321	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-304	322	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-305	323	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-306	324	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-307	325	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-308	326	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-309	327	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-310	328	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-311	329	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-312	330	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-313	331	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-314	332	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-315	333	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-316	334	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-317	335	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-318	336	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-319	337	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-320	338	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-321	339	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-322	340	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-323	341	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-324	342	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-325	343	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-326	344	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-327	345	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-328	346	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-329	347	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-330	348	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-331	349	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-332	350	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-333	351	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-334	352	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-335	353	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-336	354	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-337	355	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-338	356	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-339	357	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-340	358	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-341	359	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-342	360	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-343	361	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-344	362	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-345	363	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-346	364	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-347	365	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-348	366	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-349	367	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-350	368	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-351	369	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-352	370	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-353	371	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-354	372	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-355	373	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-356	374	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-357	375	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-358	376	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-359	377	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-360	378	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-361	379	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-362	380	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-363	381	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-364	382	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-365	383	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-366	384	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-367	385	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-368	386	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-369	387	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-370	388	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-371	389	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-372	390	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-373	391	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-374	392	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-375	393	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-376	394	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-377	395	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-378	396	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-379	397	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-380	398	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-381	399	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-382	400	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-383	401	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-384	402	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-385	403	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-386	404	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-387	405	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-388	406	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-389	407	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-390	408	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-391	409	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-392	410	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-393	411	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-394	412	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-395	413	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-396	414	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-397	415	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-398	416	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-399	417	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-400	418	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-401	419	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-402	420	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-403	421	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-404	422	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-405	423	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-406	424	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-407	425	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-408	426	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-409	427	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-410	428	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-411	429	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-412	430	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-413	431	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-414	432	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-415	433	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-416	434	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-417	435	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-418	436	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-419	437	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-420	438	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-421	439	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-422	440	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-423	441	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-424	442	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-425	443	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-426	444	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-427	445	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-428	446	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-429	447	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-430	448	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-431	449	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-432	450	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-433	451	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-434	452	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-435	453	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-436	454	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-437	455	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-438	456	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-439	457	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-440	458	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-441	459	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-442	460	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-443	461	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-444	462	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-445	463	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-446	464	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-447	465	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-448	466	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-449	467	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-450	468	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-451	469	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-452	470	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-453	471	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-454	472	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-455	473	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-456	474	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-457	475	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-458	476	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-459	477	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-460	478	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-461	479	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-462	480	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-463	481	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-464	482	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-465	483	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-466	484	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-467	485	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-468	486	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-469	487	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-470	488	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-471	489	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-472	490	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-473	491	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-474	492	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-475	493	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-476	494	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-477	495	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-478	496	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-479	497	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-480	498	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-481	499	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-482	500	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-483	501	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-484	502	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-485	503	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-486	504	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-487	505	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-488	506	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-489	507	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-490	508	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-491	509	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-492	510	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-493	511	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-494	512	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-495	513	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-496	514	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-497	515	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-498	516	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-499	517	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-500	518	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-501	519	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-502	520	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-503	521	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-504	522	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-505	523	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-506	524	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-507	525	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-508	526	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-509	527	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-510	528	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-511	529	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-512	530	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-513	531	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-514	532	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-515	533	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-516	534	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-517	535	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-518	536	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-519	537	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-520	538	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-521	539	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-522	540	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-523	541	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-524	542	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-525	543	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-526	544	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-527	545	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-528	546	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-529	547	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-530	548	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-531	549	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-532	550	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-533	551	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-534	552	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-535	553	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-536	554	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-537	555	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-538	556	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-539	557	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-540	558	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-541	559	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-542	560	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-543	561	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-544	562	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-545	563	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-546	564	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-547	565	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-548	566	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-549	567	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-550	568	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-551	569	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-552	570	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-553	571	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-554	572	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-555	573	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-556	574	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-557	575	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-558	576	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-559	577	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-560	578	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-561	579	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-562	580	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-563	581	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-564	582	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-565	583	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-566	584	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-567	585	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-568	586	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-569	587	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-570	588	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-571	589	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-572	590	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-573	591	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-574	592	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-575	593	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-576	594	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-577	595	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-578	596	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-579	597	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-580	598	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-581	599	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-582	600	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-583	601	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-584	602	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-585	603	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-586	604	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-587	605	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-588	606	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-589	607	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-590	608	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-591	609	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-592	610	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-593	611	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-594	612	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-595	613	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-596	614	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-597	615	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-598	616	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-599	617	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-600	618	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-601	619	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-602	620	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-603	621	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-604	622	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-605	623	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-606	624	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-607	625	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-608	626	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-609	627	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-610	628	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-611	629	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-612	630	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-613	631	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-614	632	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-615	633	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-616	634	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-617	635	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-618	636	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-619	637	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-620	638	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-621	639	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-622	640	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-623	641	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-624	642	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-625	643	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-626	644	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-627	645	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-628	646	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-629	647	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-630	648	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-631	649	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-632	650	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-633	651	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-634	652	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-635	653	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-636	654	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-637	655	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-638	656	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-639	657	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-640	658	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-641	659	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-642	660	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-643	661	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-644	662	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-645	663	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-646	664	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-647	665	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-648	666	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-649	667	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-650	668	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-651	669	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-652	670	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-653	671	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-654	672	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-655	673	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-656	674	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-657	675	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-658	676	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-659	677	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-660	678	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-661	679	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-662	680	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-663	681	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-664	682	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-665	683	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-666	684	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-667	685	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-668	686	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-669	687	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-670	688	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-671	689	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-672	690	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-673	691	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-674	692	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-675	693	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-676	694	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-677	695	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-678	696	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-679	697	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-680	698	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-681	699	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-682	700	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-683	701	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-684	702	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-685	703	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-686	704	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-687	705	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-688	706	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-689	707	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-690	708	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-691	709	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-692	710	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-693	711	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-694	712	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-695	713	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-696	714	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-697	715	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-698	716	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-699	717	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-700	718	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-701	719	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-702	720	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-703	721	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-704	722	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-705	723	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-706	724	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-707	725	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-708	726	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-709	727	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-710	728	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-711	729	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-712	730	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-713	731	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-714	732	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-715	733	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-716	734	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-717	735	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-718	736	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-719	737	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-720	738	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-721	739	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-722	740	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-723	741	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-724	742	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-725	743	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-726	744	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-727	745	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-728	746	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-729	747	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-730	748	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-731	749	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-732	750	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-733	751	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-734	752	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-735	753	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-736	754	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-737	755	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-738	756	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-739	757	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-740	758	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-741	759	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-742	760	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-743	761	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-744	762	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-745	763	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-746	764	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-747	765	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-748	766	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-749	767	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-750	768	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-751	769	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-752	770	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-753	771	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-754	772	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-755	773	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-756	774	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-757	775	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-758	776	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-759	777	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-760	778	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-761	779	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-762	780	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-763	781	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-764	782	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-765	783	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-766	784	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-767	785	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-768	786	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-769	787	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-770	788	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-771	789	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-772	790	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-773	791	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-774	792	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-775	793	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-776	794	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-777	795	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-778	796	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-779	797	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-780	798	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-781	799	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-782	800	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-783	801	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-784	802	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-785	803	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-786	804	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-787	805	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-788	806	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-789	807	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-790	808	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-791	809	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-792	810	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-793	811	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-794	812	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-795	813	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-796	814	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-797	815	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-798	816	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-799	817	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-800	818	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-801	819	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-802	820	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-803	821	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-804	822	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-805	823	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-806	824	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-807	825	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-808	826	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-809	827	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-810	828	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-811	829	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-812	830	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-813	831	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-814	832	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-815	833	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-816	834	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-817	835	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-818	836	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-819	837	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-820	838	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-821	839	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-822	840	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-823	841	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-824	842	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-825	843	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-826	844	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-827	845	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-828	846	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-829	847	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-830	848	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-831	849	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-832	850	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-833	851	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-834	852	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-835	853	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-836	854	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-837	855	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-838	856	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-839	857	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-840	858	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-841	859	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-842	860	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-843	861	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-844	862	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-845	863	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-846	864	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-847	865	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-848	866	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-849	867	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-850	868	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-851	869	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-852	870	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-853	871	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-854	872	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-855	873	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-856	874	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-857	875	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-858	876	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-859	877	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-860	878	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-861	879	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-862	880	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-863	881	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-864	882	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-865	883	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-866	884	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-867	885	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-868	886	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-869	887	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-870	888	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-871	889	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-872	890	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-873	891	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-874	892	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-875	893	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-876	894	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-877	895	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-878	896	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-879	897	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-880	898	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-881	899	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-882	900	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-883	901	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-884	902	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-885	903	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-886	904	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-887	905	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-888	906	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-889	907	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-890	908	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-891	909	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-892	910	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-893	911	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-894	912	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-895	913	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-896	914	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-897	915	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-898	916	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-899	917	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-900	918	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-901	919	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-902	920	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-903	921	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-904	922	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-905	923	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-906	924	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-907	925	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-908	926	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-909	927	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-910	928	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-911	929	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-912	930	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-913	931	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-914	932	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-915	933	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-916	934	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-917	935	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-918	936	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-919	937	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-920	938	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-921	939	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-922	940	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-923	941	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-924	942	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-925	943	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-926	944	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-927	945	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-928	946	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-929	947	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-930	948	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-931	949	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-932	950	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-933	951	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-934	952	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-935	953	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-
-936	954	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-937	955	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-938	956	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-939	957	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-940	958	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-941	959	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-942	960	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-943	961	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-944	962	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-945	963	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-946	964	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-947	965	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-948	966	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-949	967	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-950	968	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-951	969	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-952	970	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-953	971	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-954	972	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-955	973	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-956	974	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-957	975	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-958	976	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-959	977	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-960	978	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-961	979	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-962	980	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-963	981	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-964	982	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-965	983	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-966	984	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-967	985	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-968	986	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-969	987	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-970	988	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-971	989	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-972	990	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-973	991	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-974	992	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-975	993	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-976	994	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-977	995	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-978	996	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-979	997	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-980	998	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-981	999	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-982	1000	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-983	1001	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-984	1002	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-985	1003	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-986	1004	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-987	1005	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-988	1006	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-989	1007	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-990	1008	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-991	1009	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-992	1010	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-993	1011	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-994	1012	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-995	1013	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-996	1014	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-997	1015	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-998	1016	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-999	1017	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1000	1018	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1001	1019	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1002	1020	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1003	1021	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1004	1022	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1005	1023	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1006	1024	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1007	1025	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1008	1026	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1009	1027	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1010	1028	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1011	1029	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1012	1030	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1013	1031	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1014	1032	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1015	1033	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1016	1034	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1017	1035	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1018	1036	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1019	1037	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1020	1038	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1021	1039	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1022	1040	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1023	1041	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1024	1042	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1025	1043	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1026	1044	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1027	1045	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1028	1046	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1029	1047	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1030	1048	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1031	1049	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1032	1050	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1033	1051	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1034	1052	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1035	1053	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1036	1054	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1037	1055	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1038	1056	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1039	1057	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1040	1058	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1041	1059	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1042	1060	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1043	1061	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1044	1062	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1045	1063	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1046	1064	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1047	1065	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1048	1066	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1049	1067	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1050	1068	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1051	1069	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1052	1070	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1053	1071	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-1054	1072	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
-107500	121	1	1	2009-07-20	\N	\N	2009-07-20 16:41:52.315	\N	1	17	1	1	0	\N	\N	3	\N	0	\N	0		0	0	1
-107700	10760	2	2	2009-12-15	\N	2009-01-01	2009-12-15 16:38:36.74	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Long Distance Plan A - fixed rate	0	1	3
-107701	10761	2	2	2009-12-15	\N	2009-01-01	2009-12-15 16:39:04.505	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Long Distance Plan B - fixed rate	0	1	3
-107702	10762	2	2	2009-12-15	\N	2009-01-01	2009-12-15 16:39:31.16	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Long Distance Plan - 1000 minutes included	0	1	2
-107800	10770	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:17:00.141	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	1
-107801	10771	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:17:58.45	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107802	10772	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:18:17.379	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107803	10773	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:18:59.123	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107804	10774	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:19:17.927	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107805	10775	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:19:38.062	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107806	10776	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:19:56.159	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107807	10777	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:20:23.277	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107808	10778	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:20:44.579	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107809	10779	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:21:03.215	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107810	10780	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:21:21.348	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107811	10781	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:21:42.292	\N	1	16	1	1	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
 \.
 
 
@@ -17124,11 +15058,11 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 --
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
-9	CUSTOMER	10940	1	0
-10	CUSTOMER	10941	1	0
-11	CUSTOMER	10942	1	0
-12	CUSTOMER	10945	1	0
-13	CUSTOMER	10947	1	0
+23	PRODUCT	3103	1	0
+24	PRODUCT	3104	1	0
+25	PRODUCT	3105	1	0
+26	PRODUCT	3100	1	0
+27	PRODUCT	3102	1	0
 \.
 
 
@@ -22361,14 +20295,6 @@ ALTER TABLE ONLY order_line
 
 
 --
--- Name: order_line_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY order_line
-    ADD CONSTRAINT order_line_fk_2 FOREIGN KEY (order_id) REFERENCES purchase_order(id);
-
-
---
 -- Name: order_line_fk_3; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
 --
 
@@ -22390,14 +20316,6 @@ ALTER TABLE ONLY order_period
 
 ALTER TABLE ONLY order_period
     ADD CONSTRAINT order_period_fk_2 FOREIGN KEY (unit_id) REFERENCES period_unit(id);
-
-
---
--- Name: order_process_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY order_process
-    ADD CONSTRAINT order_process_fk_1 FOREIGN KEY (order_id) REFERENCES purchase_order(id);
 
 
 --

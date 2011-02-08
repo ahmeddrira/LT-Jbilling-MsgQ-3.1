@@ -42,10 +42,6 @@ import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.
 public class PercentageStrategy extends AbstractPricingStrategy {
 
     public PercentageStrategy() {
-        setAttributeDefinitions(
-                new AttributeDefinition("percentage", DECIMAL, true)
-        );
-
         setChainPositions(
                 ChainPosition.MIDDLE,
                 ChainPosition.END

@@ -750,3 +750,7 @@ alter table item_type alter column internal set not null;
 
 -- internal 'plans' category, add for each company
 insert into item_type (id, entity_id, description, internal, order_line_type_id, optlock) values ((select max(id)+1 from item_type), 1, 'plans', true, 1, 0);
+
+-- price model chaining
+alter table price_model add column next_model_id int null;
+ALTER TABLE price_model ADD CONSTRAINT price_model_next_id_FK FOREIGN KEY (next_model_id) REFERENCES price_model (id);

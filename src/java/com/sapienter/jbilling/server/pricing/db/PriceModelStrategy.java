@@ -60,7 +60,7 @@ public enum PriceModelStrategy {
     TIME_OF_DAY_PERCENTAGE  (new TimeOfDayPercentageStrategy()),
 
     /** MIDDLE or END of chain pricing strategy that applies a percentage to a previously calculated rate */
-    PERCENTAGE (new PercentageStrategy());
+    PERCENTAGE              (new PercentageStrategy());
 
 
     private final PricingStrategy strategy;

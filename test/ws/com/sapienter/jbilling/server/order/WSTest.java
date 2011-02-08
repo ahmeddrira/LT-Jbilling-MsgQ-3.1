@@ -1021,6 +1021,7 @@ public class WSTest  extends TestCase {
         // Test the result given by a known existing user
         // (it has items 2 and 3 on category 1 in PostgreSQL test db)
         result = api.getUserItemsByCategory(Integer.valueOf(2), Integer.valueOf(1));
+        Arrays.sort(result);
         assertEquals(2, result.length);
         assertEquals(Integer.valueOf(2), result[0]);
         assertEquals(Integer.valueOf(3), result[1]);

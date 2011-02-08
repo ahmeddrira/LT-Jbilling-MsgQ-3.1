@@ -40,15 +40,6 @@
                 <content tag="label.for">plan.filterBy</content>
                 <g:textField name="plan.filterBy" class="field default" placeholder="${message(code: 'products.filter.by.default')}" value="${params['plan.filterBy']}"/>
             </g:applyLayout>
-
-            <g:applyLayout name="form/select">
-                <content tag="label"><g:message code="order.label.products.category"/></content>
-                <content tag="label.for">plan.typeId</content>
-                <g:select name="plan.typeId" from="${itemTypes}"
-                          noSelection="['': message(code: 'filters.item.type.empty')]"
-                          optionKey="id" optionValue="description"
-                          value="${params['plan.typeId']}"/>
-            </g:applyLayout>
         </g:formRemote>
 
         <script type="text/javascript">

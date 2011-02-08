@@ -1,4 +1,5 @@
-<%@ page import="com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+
 
 <%--
   Renders an PlanItemWS as an editable row for the plan builder preview pane.
@@ -7,7 +8,7 @@
   @since 24-Jan-2011
 --%>
 <g:set var="product" value="${products?.find{ it.id == planItem.itemId }}"/>
-<g:set var="strategy" value="${Enum.valueOf(PriceModelStrategy.class, planItem.model.type)?.getStrategy()}"/>
+<g:set var="strategy" value="${PriceModelStrategy.valueOf(planItem.model.type)?.getStrategy()}"/>
 <g:set var="editable" value="${index == params.int('newLineIndex')}"/>
 
 <g:formRemote name="price-${index}-update-form" url="[action: 'edit']" update="column2" method="GET">

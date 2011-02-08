@@ -21,11 +21,9 @@
 package com.sapienter.jbilling.server.pricing.db;
 
 import com.sapienter.jbilling.server.BigDecimalTestCase;
-import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.pricing.strategy.FlatPricingStrategy;
-import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -108,7 +106,23 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         planPrice.applyTo(result, null, null, null);
         assertEquals(planPrice.getRate(), result.getPrice());
     }
-       
+
+    public void testChaining() {
+        PriceModelDTO planPrice = new PriceModelDTO();
+        planPrice.setType(PriceModelStrategy.METERED);
+        planPrice.setRate(new BigDecimal("10.00"));
+
+        PriceModelDTO next = new PriceModelDTO();
+        next.setType(PriceModelStrategy.PERCENTAGE);
+        next.setRate(new BigDecimal("0.70"));
+
+        planPrice.setNext(next);
+
+        PricingResult result = new PricingResult(1, 2, 3);
+        planPrice.applyTo(result, null, null, null);
+        assertEquals(new BigDecimal("7.00"), result.getPrice());
+    }
+
     public void testFromWS() {
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("null_attr", null);

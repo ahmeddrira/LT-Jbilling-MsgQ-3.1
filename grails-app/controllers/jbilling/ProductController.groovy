@@ -3,7 +3,7 @@ package jbilling
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.item.ItemDTOEx
-import com.sapienter.jbilling.server.item.ItemPriceDTOEx
+
 import com.sapienter.jbilling.server.item.ItemTypeWS
 import com.sapienter.jbilling.server.item.db.ItemDTO
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO
@@ -12,7 +12,7 @@ import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.pricing.PriceModelWS
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils
-import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
 
 @Secured(['isAuthenticated()'])
 class ProductController {
@@ -56,6 +56,7 @@ class ProductController {
                 max:    params.max,
                 offset: params.offset
         ) {
+            eq('internal', false)
             eq('entity', new CompanyDTO(session['company_id']))
         }
     }

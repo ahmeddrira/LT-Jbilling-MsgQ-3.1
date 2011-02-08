@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 <%--
   Editor form for price model attributes.
@@ -83,7 +83,7 @@
                type: 'POST',
                url:'${createLink(action: 'addAttribute')}',
                data: $('#attributes').parents('form').serialize(),
-               success: function(data){ $('#attributes').replaceWith(data); },
+               success: function(data){ $('#attributes').replaceWith(data); }
             });
         }
 
@@ -94,7 +94,7 @@
                type: 'POST',
                url:'${createLink(action: 'removeAttribute')}',
                data: $('#attributes').parents('form').serialize(),
-               success: function(data){ $('#attributes').replaceWith(data); },
+               success: function(data){ $('#attributes').replaceWith(data); }
             });
         }
     </script>

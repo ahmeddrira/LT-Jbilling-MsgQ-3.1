@@ -23,11 +23,10 @@ package com.sapienter.jbilling.server.pricing.strategy;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
-import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
+import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,15 +38,16 @@ import java.util.List;
  * @author Brian Cowdery
  * @since 05-08-2010
  */
-public class FlatPricingStrategy implements PricingStrategy {
+public class FlatPricingStrategy extends AbstractPricingStrategy {
 
-    public boolean requiresUsage() { return false; }
-    public boolean hasRate() { return true; }
-    public BigDecimal getRate() { return BigDecimal.ZERO; }
+    public FlatPricingStrategy() {
+        setChainPositions(
+                ChainPosition.START
+        );
 
-    public List<AttributeDefinition> getAttributeDefinitions() {
-        return Collections.emptyList();
+        setRate(BigDecimal.ZERO);
     }
+
 
     /**
      * Sets the price to zero. The price for all usage is included in the cost of the

@@ -13,6 +13,7 @@ import com.sapienter.jbilling.server.pricing.PriceModelWS
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
+import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy
 
 @Secured(['isAuthenticated()'])
 class ProductController {
@@ -281,32 +282,58 @@ class ProductController {
     }
 
     def updateStrategy = {
-        def product = new ItemDTOEx()
-        bindProduct(product, params)
-        product.defaultPrice.attributes.clear()
+        def priceModel = bindPriceModel(params)
+        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+    }
 
-        render template: '/priceModel/model', model: [ model: product.defaultPrice, currencies: currencies ]
+    def addChainModel = {
+        PriceModelWS priceModel = bindPriceModel(params)
+
+        // add new price model to end of chain
+        def model = priceModel
+        while (model.next) {
+            model = model.next
+        }
+        model.next = new PriceModelWS(PriceModelStrategy.METERED.name());
+
+        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
     }
 
     def addAttribute = {
-        def product = new ItemDTOEx()
-        bindProduct(product, params)
+        PriceModelWS priceModel = bindPriceModel(params)
 
+        def modelIndex = params.int('modelIndex')
         def attribute = message(code: 'plan.new.attribute.key', args: [ params.attributeIndex ])
-        product.defaultPrice.attributes.put(attribute, '')
 
-        render template: '/priceModel/model', model: [ model: product.defaultPrice, currencies: currencies ]
+        // find the model in the chain, and add a new attribute
+        def model = priceModel
+        for (int i = 0; model != null; i++) {
+            if (i == modelIndex) {
+                model.attributes.put(attribute, '')
+            }
+            model = model.next
+        }
+
+        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
     }
 
     def removeAttribute = {
-        def product = new ItemDTOEx()
-        bindProduct(product, params)
+        PriceModelWS priceModel = bindPriceModel(params)
 
-        def index = params.attributeIndex
-        def name = params["attribute.${index}.name"]
-        product.defaultPrice.attributes.remove(name)
+        def modelIndex = params.int('modelIndex')
+        def attributeIndex = params.int('attributeIndex')
 
-        render template: '/priceModel/model', model: [ model: product.defaultPrice, currencies: currencies ]
+        // find the model in the chain, remove the attribute
+        def model = priceModel
+        for (int i = 0; model != null; i++) {
+            if (i == modelIndex) {
+                def name = params["model.${modelIndex}.attribute.${attributeIndex}.name"]
+                model.attributes.remove(name)
+            }
+            model = model.next
+        }
+
+        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
     }
 
     /**
@@ -356,20 +383,43 @@ class ProductController {
         product.hasDecimals = params.hasDecimals ? 1 : 0
         product.percentage = !params.percentage?.equals('') ? params.percentage : null
 
-        // bind default price model
-        def priceModel = new PriceModelWS()
-        bindData(priceModel, params, 'model')
-        product.defaultPrice = priceModel
+        // default price model
+        product.defaultPrice = bindPriceModel(params)
+    }
 
-        // bind and validate attributes
-        product.defaultPrice.attributes.clear()
-        params.attribute.each{ i, attr ->
-            if (attr instanceof Map) {
-                if (attr.name) {
-                    product.defaultPrice.attributes.put(attr.name, attr.value)
-                }
-            }
+    def bindPriceModel(GrailsParameterMap params) {
+        // sort price model parameters by index
+        def sorted = new TreeMap<Integer, GrailsParameterMap>()
+        params.model.each{ k, v ->
+            if (v instanceof Map)
+                sorted.put(k, v)
         }
+
+        // build price model chain
+        def root = null
+        def model = null
+
+        sorted.each{ i, modelParams ->
+            if (model == null) {
+                model = root = new PriceModelWS()
+            } else {
+                model = model.next = new PriceModelWS()
+            }
+
+            // bind model
+            bindData(model, modelParams)
+
+            // bind model attributes
+            modelParams.attribute.each{ j, attrParams ->
+                if (attrParams instanceof Map)
+                    if (attrParams.name)
+                        model.attributes.put(attrParams.name, attrParams.value)
+            }
+
+            log.debug("price model ${i}: ${model}")
+        }
+
+        return root;
     }
 
     def getCurrencies() {

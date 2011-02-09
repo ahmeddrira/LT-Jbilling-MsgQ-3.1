@@ -20,10 +20,10 @@
 
     <g:applyLayout name="form/input">
         <content tag="label"><g:message code="attribute.${definition.name}"/></content>
-        <content tag="label.for">attribute.${attributeIndex}.value</content>
+        <content tag="label.for">model.${modelIndex}.attribute.${attributeIndex}.value</content>
 
-        <g:hiddenField name="attribute.${attributeIndex}.name" value="${definition.name}"/>
-        <g:textField class="field" name="attribute.${attributeIndex}.value" value="${attribute}"/>
+        <g:hiddenField name="model.${modelIndex}.attribute.${attributeIndex}.name" value="${definition.name}"/>
+        <g:textField class="field" name="model.${modelIndex}.attribute.${attributeIndex}.value" value="${attribute}"/>
     </g:applyLayout>
 </g:each>
 
@@ -36,13 +36,13 @@
             <content tag="label"><g:message code="plan.mode.attributes"/></content>
         </g:if>
         <content tag="name">
-            <g:textField class="field" name="attribute.${attributeIndex}.name" value="${attribute.key}"/>
+            <g:textField class="field" name="model.${modelIndex}.attribute.${attributeIndex}.name" value="${attribute.key}"/>
         </content>
         <content tag="value">
-            <g:textField class="field" name="attribute.${attributeIndex}.value" value="${attribute.value}"/>
+            <g:textField class="field" name="model.${modelIndex}.attribute.${attributeIndex}.value" value="${attribute.value}"/>
         </content>
 
-        <a onclick="remove(${attributeIndex})">
+        <a onclick="remove(${modelIndex}, ${attributeIndex})">
             <img src="${resource(dir:'images', file:'cross.png')}" alt="remove"/>
         </a>
     </g:applyLayout>
@@ -55,15 +55,14 @@
         <content tag="label"><g:message code="plan.mode.attributes"/></content>
     </g:if>
     <content tag="name">
-        <g:textField class="field" name="attribute.${attributeIndex}.name"/>
+        <g:textField class="field" name="model.${modelIndex}.attribute.${attributeIndex}.name"/>
     </content>
     <content tag="value">
-        <g:textField class="field" name="attribute.${attributeIndex}.value"/>
+        <g:textField class="field" name="model.${modelIndex}.attribute.${attributeIndex}.value"/>
     </content>
 
-    <a onclick="add(${attributeIndex})">
+    <a onclick="add(${modelIndex}, ${attributeIndex})">
         <img src="${resource(dir:'images', file:'add.png')}" alt="remove"/>
     </a>
 </g:applyLayout>
 
-<g:hiddenField name="attributeIndex" value="${attributeIndex}"/>

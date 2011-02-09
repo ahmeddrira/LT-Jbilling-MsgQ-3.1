@@ -3,6 +3,7 @@ package com.sapienter.jbilling.server.item;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
+import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
@@ -43,8 +44,7 @@ public class PlanItemBL {
             ItemDTO item = new ItemBL(ws.getItemId()).getEntity();
 
             // price model
-            CurrencyDTO currency = new CurrencyBL(ws.getModel().getCurrencyId()).getEntity();
-            PriceModelDTO model = new PriceModelDTO(ws.getModel(), currency);
+            PriceModelDTO model = PriceModelBL.getDTO(ws.getModel());
 
             return new PlanItemDTO(ws, item, model);
         }

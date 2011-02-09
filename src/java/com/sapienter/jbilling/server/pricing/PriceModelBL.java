@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +38,8 @@ import java.util.Map;
  * @since 06-08-2010
  */
 public class PriceModelBL {
+
+    private static final Logger LOG = Logger.getLogger(PriceModelBL.class);
     
     /**
      * Returns the given PriceModelDTO entity as a WS object
@@ -74,10 +77,26 @@ public class PriceModelBL {
      */
     public static PriceModelDTO getDTO(PriceModelWS ws) {
         if (ws != null) {
-            if (ws.getCurrencyId() == null)
-                throw new SessionInternalError("PriceModelWS must have a currency.");
+            PriceModelDTO root = null;
+            PriceModelDTO model = null;
 
-            return new PriceModelDTO(ws,  new CurrencyBL(ws.getCurrencyId()).getEntity());
+            PriceModelWS next = ws;
+            while (next != null) {
+                if (next.getCurrencyId() == null)
+                    throw new SessionInternalError("PriceModelWS must have a currency.");
+
+                if (model == null) {
+                    model = root = new PriceModelDTO(next, new CurrencyBL(ws.getCurrencyId()).getEntity());
+                } else {
+                    model.setNext(new PriceModelDTO(next, new CurrencyBL(ws.getCurrencyId()).getEntity()));
+                    model = model.getNext();
+                }
+
+                next = next.getNext();
+            }
+
+            LOG.debug("Constructed price model dto: " + root);
+            return root;
         }
         return null;
     }

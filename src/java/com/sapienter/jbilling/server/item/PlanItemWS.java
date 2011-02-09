@@ -1,6 +1,7 @@
 package com.sapienter.jbilling.server.item;
 
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
+import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 
 import java.io.Serializable;

@@ -816,7 +816,6 @@ public class WSTest  extends TestCase {
         api.deleteOrder(orderId);
     }
 
-/*
     public void testCurrentOrder() throws Exception {
         final Integer USER_ID = GANDALF_USER_ID;
         final Integer NO_MAIN_SUB_USER_ID = 1010;
@@ -944,10 +943,15 @@ public class WSTest  extends TestCase {
         assertFalse("Current order for next cycle can't be the same as the previous one",
                     currentOrderNext.getId().equals(currentOrderAfter.getId()));
 
+        System.out.println("Date1: " + currentOrderAfter.getActiveSince());
+        DateMidnight date1 = new DateMidnight(currentOrderAfter.getActiveSince().getTime());
+        System.out.println("Date1: " + date1);
+        date1 = date1.plusMonths(1);
+        System.out.println("Date1: " + date1);
+        DateMidnight date2 = new DateMidnight(currentOrderNext.getActiveSince().getTime());
+        System.out.println("Date2: " + date2);
         assertEquals("Active since of new order should be one month later than previous one for the same event",
-                     new DateMidnight(currentOrderAfter.getActiveSince().getTime()).plusMonths(1),
-                     new DateMidnight(currentOrderNext.getActiveSince().getTime()));
-
+                date1,date2);
 
         //
         // No main subscription order tests.
@@ -993,7 +997,6 @@ public class WSTest  extends TestCase {
         api.deleteOrder(currentOrderAfter.getId());
         api.deleteOrder(currentOrderNext.getId());
     }
-*/
 
     public void testIsUserSubscribedTo() throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();

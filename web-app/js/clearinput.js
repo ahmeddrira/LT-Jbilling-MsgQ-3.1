@@ -8,7 +8,7 @@ function placeholder() {
         if (element.attr('placeholder') == null && element.attr('value') != null)
             element.attr('placeholder', this.getAttribute('value'));
 
-        if (element.val().length == 0)
+        if (element.val() == null || element.val().length == 0)
             element.val(element.attr('placeholder'));
     });
 }

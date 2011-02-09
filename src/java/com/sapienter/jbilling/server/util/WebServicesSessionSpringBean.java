@@ -2352,23 +2352,19 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError { 
-	    try {
-	    	AgeingBL bl= new AgeingBL();
-	    	AgeingDTOEx[] dtoList= new AgeingDTOEx[steps.length];
-		    for (int i = 0; i < steps.length; i++) {
-		    	dtoList[i]= bl.getDTOEx(steps[i]);
-			}
-		    IBillingProcessSessionBean processSession = 
-		    (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-		    processSession.setAgeingSteps (getCallerCompanyId(), languageId, new AgeingBL().validate(dtoList));
-		
-		    // update the grace period in another call
-		    IUserSessionBean userSession = (IUserSessionBean) Context.getBean(Context.Name.USER_SESSION);
-		    userSession.setEntityParameter(getCallerCompanyId(), 
-		    Constants.PREFERENCE_GRACE_PERIOD, null, gracePeriod, null);
-	    } catch (Exception e) {
-	    	throw new SessionInternalError(e);
-	    }
+    	AgeingBL bl= new AgeingBL();
+    	AgeingDTOEx[] dtoList= new AgeingDTOEx[steps.length];
+	    for (int i = 0; i < steps.length; i++) {
+	    	dtoList[i]= bl.getDTOEx(steps[i]);
+		}
+	    IBillingProcessSessionBean processSession = 
+	    (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+	    processSession.setAgeingSteps (getCallerCompanyId(), languageId, bl.validate(dtoList));
+	
+	    // update the grace period in another call
+	    IUserSessionBean userSession = (IUserSessionBean) Context.getBean(Context.Name.USER_SESSION);
+	    userSession.setEntityParameter(getCallerCompanyId(), 
+	    Constants.PREFERENCE_GRACE_PERIOD, null, gracePeriod, null);
     }
     
     /*

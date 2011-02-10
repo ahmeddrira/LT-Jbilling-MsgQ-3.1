@@ -244,7 +244,9 @@
                 <formatter type="brief" usefile="false"/>
                 <formatter type="xml"/>
                 <fileset dir="${source.test.dir}/unit">
-                    <include name="**/*Test*.java"/>
+                    <!-- run specific unit tests with 'ant test-unit -Dtest=NameOfTest' -->
+                    <include name="**/*Test*.java" unless="test"/>
+                    <include name="**/${test}.java" if="test"/>
                     <exclude name="**/*Tester*.java"/>
                     <exclude name="**/*TestCase*.java"/>
                 </fileset>
@@ -326,7 +328,6 @@
             <classpath refid="compile.classpath"/>
             <classpath refid="test.classpath"/>
 
-
             <formatter type="brief" usefile="false"/>
             <formatter type="xml"/>            
 
@@ -335,6 +336,7 @@
             <test name="com.sapienter.jbilling.server.payment.WSTest" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.item.WSTest" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.invoice.WSTest" todir="${build.test-results.dir}/ws/xml"/>
+            <test name="com.sapienter.jbilling.server.pricing.WSTest" todir="${build.test-results.dir}/ws/xml"/>
         </junit>
 
         <!-- generate testing reports -->

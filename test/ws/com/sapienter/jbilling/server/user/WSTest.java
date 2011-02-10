@@ -74,7 +74,8 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
         }
     }
-    
+
+/*
     public void testOwingBalance() {
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -89,7 +90,7 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
         }
     }
-
+*/
 
     public void testCreateUpdateDeleteUser() {
         try {

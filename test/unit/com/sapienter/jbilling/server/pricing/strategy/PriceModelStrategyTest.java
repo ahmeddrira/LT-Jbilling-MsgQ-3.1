@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.pricing.strategy;
 
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import junit.framework.TestCase;
 
 /**

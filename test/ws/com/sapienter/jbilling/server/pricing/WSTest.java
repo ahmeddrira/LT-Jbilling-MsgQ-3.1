@@ -20,28 +20,23 @@
 
 package com.sapienter.jbilling.server.pricing;
 
-import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
-import com.sapienter.jbilling.server.util.api.JbillingAPIException;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 import junit.framework.TestCase;
-import org.hibernate.ObjectNotFoundException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Brian Cowdery
@@ -49,7 +44,17 @@ import java.util.Map;
  */
 public class WSTest extends TestCase {
 
-    private static final Integer PLAN_ITEM_ID = 1800;
+    /*
+        Testing plan "Crazy Brian's Discount Plan"
+        Prices Item 2602 (Lemonade) at $0.05
+     */
+
+    private static final Integer PLAN_ID = 1;
+    private static final Integer PLAN_ITEM_ID = 3000;               // crazy brian's discount plan
+    private static final Integer PLAN_AFFECTED_ITEM_ID = 2602;      // lemonade
+
+    private static final Integer NON_PLAN_ITEM_ID = 2800;           // long distance call
+
 
     public WSTest() {
     }
@@ -58,15 +63,13 @@ public class WSTest extends TestCase {
         super(name);
     }
 
-    // dummy test to allow WSTests to run.
-    // remove when WS API is complete and proper tests have been written.
-    public void testNoop() throws Exception {
-        assertTrue(true);
-    }
 
-    // todo: support new tests with Plan/Price WS calls
-    // note: beginnings of a new WS test. results verified manually.
-/*
+    /**
+     * Tests subscription / un-subscription to a plan by creating and deleting an order
+     * containing the plan item.
+     *
+     * @throws Exception possible api exception
+     */
     public void testCreateDeleteOrder() throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();
 
@@ -86,10 +89,11 @@ public class WSTest extends TestCase {
         user.setContact(contact);
 
         user.setUserId(api.createUser(user)); // create user
+        assertNotNull("customer created", user.getUserId());
 
         OrderWS order = new OrderWS();
     	order.setUserId(user.getUserId());
-        order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
         order.setPeriod(2);
         order.setCurrencyId(1);
         order.setActiveSince(new Date());
@@ -104,18 +108,110 @@ public class WSTest extends TestCase {
 
         order.setId(api.createOrder(order)); // create order
         order = api.getOrder(order.getId());
+        assertNotNull("order created", order.getId());
 
-        // todo verify customer price creation with API calls.
 
+        // verify customer price creation with API calls.
+        assertTrue("Customer should be subscribed to plan.", api.isCustomerSubscribed(PLAN_ID, user.getUserId()));
+
+        PlanItemWS price = api.getCustomerPrice(user.getUserId(), PLAN_AFFECTED_ITEM_ID);
+        assertEquals("Affected item should be discounted.", new BigDecimal("0.50"), price.getModel().getRateAsDecimal());
+
+        // delete order that subscribes the user to the plan
         api.deleteOrder(order.getId());
 
-        // todo: verify customer price removal with API calls.
+        // verify customer price removal with API calls.
+        assertFalse("Customer no longer subscribed to plan.", api.isCustomerSubscribed(PLAN_ID, user.getUserId()));
+
+        price = api.getCustomerPrice(user.getUserId(), PLAN_AFFECTED_ITEM_ID);
+        assertNull("Customer no longer subscribed to plan.", price);
 
         // cleanup
         api.deleteUser(user.getUserId());
     }
 
+    /**
+     * Tests subscription to a plan by updating an order.
+     *
+     * @throws Exception possible api exception
+     */
     public void testUpdateOrderSubscribe() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        // create user
+        UserWS user = new UserWS();
+        user.setUserName("plan-test-02-" + new Date().getTime());
+        user.setPassword("password");
+        user.setLanguageId(1);
+        user.setCurrencyId(1);
+        user.setMainRoleId(5);
+        user.setStatusId(UserDTOEx.STATUS_ACTIVE);
+        user.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+
+        ContactWS contact = new ContactWS();
+        contact.setEmail("test@test.com");
+        contact.setFirstName("Plan Test");
+        contact.setLastName("Update Order (subscribe)");
+        user.setContact(contact);
+
+        user.setUserId(api.createUser(user)); // create user
+        assertNotNull("customer created", user.getUserId());
+
+
+        // create order
+        OrderWS order = new OrderWS();
+    	order.setUserId(user.getUserId());
+        order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
+        order.setPeriod(2);
+        order.setCurrencyId(1);
+        order.setActiveSince(new Date());
+
+        // subscribe to a non-plan junk item
+        OrderLineWS line = new OrderLineWS();
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setItemId(NON_PLAN_ITEM_ID);
+        line.setUseItem(true);
+        line.setQuantity(1);
+        order.setOrderLines(new OrderLineWS[] { line });
+        
+        order.setId(api.createOrder(order)); // create order
+        order = api.getOrder(order.getId());
+        assertNotNull("order created", order.getId());
+
+
+        // verify customer prices still empty with API calls.
+        assertFalse("Customer should not subscribed to plan.", api.isCustomerSubscribed(PLAN_ID, user.getUserId()));
+
+        PlanItemWS price = api.getCustomerPrice(user.getUserId(), PLAN_AFFECTED_ITEM_ID);
+        assertNull("Order does not subscribe the customer to a plan. No price change.", price);
+
+        // subscribe to plan item
+        OrderLineWS planLine = new OrderLineWS();
+        planLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        planLine.setItemId(PLAN_ITEM_ID);
+        planLine.setUseItem(true);
+        planLine.setQuantity(1);
+        order.setOrderLines(new OrderLineWS[] { line, planLine });
+
+        api.updateOrder(order); // update order
+
+        // verify price creation with API calls.
+        assertTrue("Customer should be subscribed to plan.", api.isCustomerSubscribed(PLAN_ID, user.getUserId()));
+
+        price = api.getCustomerPrice(user.getUserId(), PLAN_AFFECTED_ITEM_ID);
+        assertEquals("Affected item should be discounted.", new BigDecimal("0.50"), price.getModel().getRateAsDecimal());
+
+        // cleanup
+        api.deleteOrder(order.getId());                
+        api.deleteUser(user.getUserId());
+    }
+
+    /**
+     * Tests un-subscription from a plan by updating an order.
+     *
+     * @throws Exception possible api exception
+     */
+    public void testUpdateOrderUnsubscribe() throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();
 
         // create user
@@ -131,74 +227,17 @@ public class WSTest extends TestCase {
         ContactWS contact = new ContactWS();
         contact.setEmail("test@test.com");
         contact.setFirstName("Plan Test");
-        contact.setLastName("Update Order (subscribe)");
-        user.setContact(contact);
-
-        user.setUserId(api.createUser(user)); // create user
-
-        // create order
-        OrderWS order = new OrderWS();
-    	order.setUserId(user.getUserId());
-        order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
-        order.setPeriod(2);
-        order.setCurrencyId(1);
-        order.setActiveSince(new Date());
-
-        // non-plan junk item
-        OrderLineWS line = new OrderLineWS();
-        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
-        line.setItemId(1443);
-        line.setUseItem(true);
-        line.setQuantity(1);
-        order.setOrderLines(new OrderLineWS[] { line });
-        
-        order.setId(api.createOrder(order)); // create order
-        order = api.getOrder(order.getId());
-
-        // todo: verify customer prices still empty with API calls.
-
-        // subscribe to plan item
-        OrderLineWS planLine = new OrderLineWS();
-        planLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
-        planLine.setItemId(PLAN_ITEM_ID);
-        planLine.setUseItem(true);
-        planLine.setQuantity(1);
-        order.setOrderLines(new OrderLineWS[] { line, planLine });
-
-        api.updateOrder(order); // update order
-
-        // todo: verify price creation with API calls.
-
-        // cleanup
-        api.deleteOrder(order.getId());                
-        api.deleteUser(user.getUserId());
-    }
-
-    public void testUpdateOrderUnsubscribe() throws Exception {
-        JbillingAPI api = JbillingAPIFactory.getAPI();
-
-        // create user
-        UserWS user = new UserWS();
-        user.setUserName("plan-test-04-" + new Date().getTime());
-        user.setPassword("password");
-        user.setLanguageId(1);
-        user.setCurrencyId(1);
-        user.setMainRoleId(5);
-        user.setStatusId(UserDTOEx.STATUS_ACTIVE);
-        user.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
-
-        ContactWS contact = new ContactWS();
-        contact.setEmail("test@test.com");
-        contact.setFirstName("Plan Test");
         contact.setLastName("Update Order (un-subscribe)");
         user.setContact(contact);
 
         user.setUserId(api.createUser(user)); // create user
+        assertNotNull("customer created", user.getUserId());
+
 
         // create order
         OrderWS order = new OrderWS();
     	order.setUserId(user.getUserId());
-        order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
         order.setPeriod(2);
         order.setCurrencyId(1);
         order.setActiveSince(new Date());
@@ -213,26 +252,296 @@ public class WSTest extends TestCase {
 
         order.setId(api.createOrder(order)); // create order
         order = api.getOrder(order.getId());
+        assertNotNull("order created", order.getId());
+
+
+        // verify price creation with API calls.
+        assertTrue("Customer should be subscribed to plan.", api.isCustomerSubscribed(PLAN_ID, user.getUserId()));
+
+        PlanItemWS price = api.getCustomerPrice(user.getUserId(), PLAN_AFFECTED_ITEM_ID);
+        assertEquals("Affected item should be discounted.", new BigDecimal("0.50"), price.getModel().getRateAsDecimal());
 
         // remove plan item, replace with non-plan junk item
         OrderLineWS line = new OrderLineWS();
         line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
-        line.setItemId(1443);
+        line.setItemId(NON_PLAN_ITEM_ID);
         line.setUseItem(true);
         line.setQuantity(1);
         order.setOrderLines(new OrderLineWS[] { line });
 
         api.updateOrder(order); // update order
 
+        // verify price removed
+        assertFalse("Customer no longer subscribed to plan.", api.isCustomerSubscribed(PLAN_ID, user.getUserId()));
+
+        price = api.getCustomerPrice(user.getUserId(), PLAN_AFFECTED_ITEM_ID);
+        assertNull("Order does not subscribe the customer to a plan. No price change.", price);
+
         // cleanup
         api.deleteOrder(order.getId());
         api.deleteUser(user.getUserId());        
     }
+
+    /**
+     * Tests that the plan can be queried by the subscription item.
+     *
+     * @throws Exception possible api exception
+     */
+    public void testGetPlanBySubscriptionItem() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        Integer[] planIds = api.getPlansBySubscriptionItem(PLAN_ITEM_ID);
+        assertEquals("Should only be 1 plan.", 1, planIds.length);
+        assertEquals("Should be 'crazy brian's discount plan'", PLAN_ID, planIds[0]);
+    }
+
+    /**
+     * Tests that the plan can be queried by the item's it affects.
+     *
+     * @throws Exception possible api exception
+     */
+    public void testGetPlansByAffectedItem() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        Integer[] planIds = api.getPlansByAffectedItem(PLAN_AFFECTED_ITEM_ID);
+        assertEquals("Should only be 1 plan.", 1, planIds.length);
+        assertEquals("Should be 'crazy brian's discount plan'", PLAN_ID, planIds[0]);
+    }
+
+    /**
+     * Tests plan CRUD API calls.
+     *
+     * @throws Exception possible api exception
+     */
+    public void testCreateUpdateDeletePlan() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        final Integer LONG_DISTANCE_PLAN_ITEM = 2700;       // long distance plan A - fixed rate
+        final Integer LONG_DISTANCE_CALL = 2800;            // long distance call
+        final Integer LONG_DISTANCE_CALL_GENERIC = 2900;    // long distance call - generic
+
+
+        // create plan
+        PlanItemWS callPrice = new PlanItemWS();
+        callPrice.setItemId(LONG_DISTANCE_CALL);
+        callPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
+
+        PlanWS plan = new PlanWS();
+        plan.setItemId(LONG_DISTANCE_PLAN_ITEM);
+        plan.setDescription("Discount long distance calls.");
+        plan.addPlanItem(callPrice);
+
+        plan.setId(api.createPlan(plan));
+
+        // verify creation
+        PlanWS fetchedPlan = api.getPlanWS(plan.getId());
+        assertEquals(LONG_DISTANCE_PLAN_ITEM, fetchedPlan.getItemId());
+        assertEquals("Discount long distance calls.", fetchedPlan.getDescription());
+
+        PlanItemWS fetchedPrice = fetchedPlan.getPlanItems().get(0);
+        assertEquals(LONG_DISTANCE_CALL, fetchedPrice.getItemId());
+        assertEquals(PriceModelStrategy.METERED.name(), fetchedPrice.getModel().getType());
+        assertEquals(new BigDecimal("0.10"), fetchedPrice.getModel().getRateAsDecimal());
+        assertEquals(1, fetchedPrice.getModel().getCurrencyId().intValue());
+
+
+        // update the plan
+        // update the description and add a price for the generic LD item
+        PlanItemWS genericPrice = new PlanItemWS();
+        genericPrice.setItemId(LONG_DISTANCE_CALL_GENERIC);
+        genericPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.25"), 1));
+
+        fetchedPlan.setDescription("Updated description.");
+        fetchedPlan.addPlanItem(genericPrice);
+
+        api.updatePlan(fetchedPlan);
+
+        // verify update
+        fetchedPlan = api.getPlanWS(fetchedPlan.getId());
+        assertEquals(LONG_DISTANCE_PLAN_ITEM, fetchedPlan.getItemId());
+        assertEquals("Updated description.", fetchedPlan.getDescription());
+
+        fetchedPrice = fetchedPlan.getPlanItems().get(1);
+        assertEquals(LONG_DISTANCE_CALL_GENERIC, fetchedPrice.getItemId());
+        assertEquals(PriceModelStrategy.METERED.name(), fetchedPrice.getModel().getType());
+        assertEquals(new BigDecimal("0.25"), fetchedPrice.getModel().getRateAsDecimal());
+        assertEquals(1, fetchedPrice.getModel().getCurrencyId().intValue());
+
+
+        // delete the plan
+        api.deletePlan(fetchedPlan.getId());
+
+        try {
+            api.getPlanWS(fetchedPlan.getId());
+            fail("plan deleted, should throw an exception.");
+        } catch (SessionInternalError e) {
+            assertTrue(e.getMessage().contains("No row with the given identifier exists"));
+        }
+    }
+
+    /**
+     * Tests that the customer is un-subscribed when the plan is deleted.
+     *
+     * @throws Exception possible api exception
+     */
+    public void testUnsubscribePlanDelete() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        final Integer LONG_DISTANCE_PLAN_ITEM = 2701;       // long distance plan B - fixed rate
+        final Integer LONG_DISTANCE_CALL = 2800;            // long distance call
+
+
+        // create plan
+        PlanItemWS callPrice = new PlanItemWS();
+        callPrice.setItemId(LONG_DISTANCE_CALL);
+        callPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
+
+        PlanWS plan = new PlanWS();
+        plan.setItemId(LONG_DISTANCE_PLAN_ITEM);
+        plan.setDescription("Discount long distance calls.");
+        plan.addPlanItem(callPrice);
+
+        plan.setId(api.createPlan(plan));
+        assertNotNull("plan created", plan.getId());
+
+
+        // subscribe a customer to the plan
+        UserWS user = new UserWS();
+        user.setUserName("plan-test-04-" + new Date().getTime());
+        user.setPassword("password");
+        user.setLanguageId(1);
+        user.setCurrencyId(1);
+        user.setMainRoleId(5);
+        user.setStatusId(UserDTOEx.STATUS_ACTIVE);
+        user.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+
+        ContactWS contact = new ContactWS();
+        contact.setEmail("test@test.com");
+        contact.setFirstName("Plan Test");
+        contact.setLastName("Delete plan (un-subscribe)");
+        user.setContact(contact);
+
+        user.setUserId(api.createUser(user)); // create user
+        assertNotNull("customer created", user.getUserId());
+
+        OrderWS order = new OrderWS();
+    	order.setUserId(user.getUserId());
+        order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
+        order.setPeriod(2);
+        order.setCurrencyId(1);
+        order.setActiveSince(new Date());
+
+        OrderLineWS line = new OrderLineWS();
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setItemId(LONG_DISTANCE_PLAN_ITEM);
+        line.setUseItem(true);
+        line.setQuantity(1);
+        order.setOrderLines(new OrderLineWS[] { line });
+
+        order.setId(api.createOrder(order)); // create order
+        order = api.getOrder(order.getId());
+        assertNotNull("order created", order.getId());
+
+
+        // verify that customer is subscribed
+        assertTrue("Customer should be subscribed to plan.", api.isCustomerSubscribed(plan.getId(), user.getUserId()));
+
+        // delete plan
+        api.deletePlan(plan.getId());
+
+        // verify that customer is no longer subscribed
+        assertFalse("Customer should no longer be subscribed to plan.", api.isCustomerSubscribed(plan.getId(), user.getUserId()));
+
+        // cleanup
+        api.deleteOrder(order.getId());
+        api.deleteUser(user.getUserId());
+    }
+
+    /**
+     * Tests that the price is affected by the subscription to a plan
+     *
+     * @throws Exception possible api exception
+     */
+    public void testRateOrder() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        UserWS user = new UserWS();
+        user.setUserName("plan-test-05-" + new Date().getTime());
+        user.setPassword("password");
+        user.setLanguageId(1);
+        user.setCurrencyId(1);
+        user.setMainRoleId(5);
+        user.setStatusId(UserDTOEx.STATUS_ACTIVE);
+        user.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+
+        ContactWS contact = new ContactWS();
+        contact.setEmail("test@test.com");
+        contact.setFirstName("Plan Test");
+        contact.setLastName("Rate order test");
+        user.setContact(contact);
+
+        user.setUserId(api.createUser(user)); // create user
+        assertNotNull("customer created", user.getUserId());
+
+        OrderWS order = new OrderWS();
+    	order.setUserId(user.getUserId());
+        order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
+        order.setPeriod(2);
+        order.setCurrencyId(1);
+        order.setActiveSince(new Date());
+
+        OrderLineWS line = new OrderLineWS();
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setItemId(PLAN_ITEM_ID);
+        line.setUseItem(true);
+        line.setQuantity(1);
+        order.setOrderLines(new OrderLineWS[] { line });
+
+        order.setId(api.createOrder(order)); // create order
+        order = api.getOrder(order.getId());
+        assertNotNull("order created", order.getId());
+
+
+        // verify customer price creation with API calls.
+        assertTrue("Customer should be subscribed to plan.", api.isCustomerSubscribed(PLAN_ID, user.getUserId()));
+
+        PlanItemWS price = api.getCustomerPrice(user.getUserId(), PLAN_AFFECTED_ITEM_ID);
+        assertEquals("Affected item should be discounted.", new BigDecimal("0.50"), price.getModel().getRateAsDecimal());
+
+
+        // todo: cannot test rate order unless the PriceModelPricingTask is configured as the pricing plug-in
+/*
+        // test order using the affected plan item
+        OrderWS testOrder = new OrderWS();
+    	testOrder.setUserId(user.getUserId());
+        testOrder.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
+        testOrder.setPeriod(2);
+        testOrder.setCurrencyId(1);
+        testOrder.setActiveSince(new Date());
+
+        OrderLineWS testLine = new OrderLineWS();
+        testLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        testLine.setItemId(PLAN_AFFECTED_ITEM_ID);
+        testLine.setUseItem(true);
+        testLine.setQuantity(1);
+        testOrder.setOrderLines(new OrderLineWS[] { testLine });
+
+
+        // rate order and verify price
+        testOrder = api.rateOrder(testOrder);
+        assertEquals("Order line should be priced at $0.50.", new BigDecimal("0.50"), testOrder.getOrderLines()[0].getPriceAsDecimal());
 */
+
+        // cleanup
+        api.deleteOrder(order.getId());
+        api.deleteUser(user.getUserId());
+    }
 
 
     // note: old tests from original version, use as a basis for new WS tests
 /*
+    private ItemDTOEx planItem;
+
     public ItemDTOEx getPlanItem() throws Exception {
         if (planItem == null) {
             JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -244,124 +553,7 @@ public class WSTest extends TestCase {
                 }
             }
         }
-
         return planItem;
-    }
-
-    public void testCreate() throws Exception {
-        JbillingAPI api = JbillingAPIFactory.getAPI();
-
-        ItemDTOEx planItem = getPlanItem();
-
-        // model with wildcard attributes
-        PriceModelWS wildcardPrice = new PriceModelWS();
-        wildcardPrice.setType(PriceModelWS.PLAN_TYPE_GRADUATED);
-        wildcardPrice.setPlanItem(planItem);
-        wildcardPrice.setRate(new BigDecimal("0.20"));
-        wildcardPrice.setPrecedence(10);
-        wildcardPrice.setIncludedQuantity(new BigDecimal(1000));
-        wildcardPrice.addAttribute("lata", null);
-        wildcardPrice.addAttribute("rateCenter", null);
-        wildcardPrice.addAttribute("stateProv", "NC");
-
-        // default model
-        PriceModelWS defaultPrice = new PriceModelWS();
-        defaultPrice.setType(PriceModelWS.PLAN_TYPE_METERED);
-        defaultPrice.setRate(new BigDecimal("0.10"));
-        defaultPrice.setDefaultPricing(true);
-        defaultPrice.addAttribute("lata", "0772");
-        defaultPrice.addAttribute("rateCenter", "CHARLOTTE");
-        defaultPrice.addAttribute("stateProv", "NC");
-
-        Integer[] ids = api.createPriceModels(new PriceModelWS[]{ wildcardPrice, defaultPrice });
-
-        PriceModelWS price1 = api.getPriceModel(ids[0]);
-        assertEquals(PriceModelWS.PLAN_TYPE_GRADUATED, price1.getType());
-        assertEquals(new BigDecimal("0.20"), price1.getRate());
-        assertEquals(10, price1.getPrecedence().intValue());
-        assertEquals(new BigDecimal(1000), price1.getIncludedQuantity());
-        assertFalse(price1.isDefaultPricing());
-        assertEquals(PriceModelWS.ATTRIBUTE_WILDCARD, price1.getAttributes().get("lata"));
-        assertEquals(PriceModelWS.ATTRIBUTE_WILDCARD, price1.getAttributes().get("rateCenter"));
-        assertEquals("NC", price1.getAttributes().get("stateProv"));
-
-        PriceModelWS price2 = api.getPriceModel(ids[1]);
-        assertEquals(PriceModelWS.PLAN_TYPE_METERED, price2.getType());
-        assertNull(price2.getPlanItem());                       // default plan has no item
-        assertEquals(new BigDecimal("0.10"), price2.getRate());
-        assertEquals(-1, price2.getPrecedence().intValue());    // default precedence
-        assertTrue(price2.isDefaultPricing());
-        assertEquals("0772", price2.getAttributes().get("lata"));
-        assertEquals("CHARLOTTE", price2.getAttributes().get("rateCenter"));
-        assertEquals("NC", price2.getAttributes().get("stateProv"));
-
-        // cleanup
-        api.deletePriceModel(ids[0]);
-        api.deletePriceModel(ids[1]);
-    }
-
-    public void testUpdate() throws Exception {
-        JbillingAPI api = JbillingAPIFactory.getAPI();
-
-        ItemDTOEx planItem = getPlanItem();
-
-        // simple graduated plan
-        PriceModelWS graduated = new PriceModelWS();
-        graduated.setType(PriceModelWS.PLAN_TYPE_GRADUATED);
-        graduated.setPlanItem(planItem);
-        graduated.setRate(new BigDecimal("0.20"));
-        graduated.setPrecedence(10);
-        graduated.setIncludedQuantity(new BigDecimal(1000));
-        graduated.addAttribute("lata", null);
-        graduated.addAttribute("rateCenter", null);
-        graduated.addAttribute("stateProv", "NC");
-
-        Integer[] ids = api.createPriceModels(new PriceModelWS[]{ graduated });
-
-        // update to a FLAT plan
-        // non graduated pricing always have ZERO included minutes
-        // flat pricing always have a rate of ZERO
-        PriceModelWS flat = api.getPriceModel(ids[0]);
-        flat.setType(PriceModelWS.PLAN_TYPE_FLAT);
-        flat.setPrecedence(5);
-
-        api.updatePriceModel(flat);
-        PriceModelWS updated = api.getPriceModel(ids[0]);
-
-        assertEquals(flat.getId(), updated.getId());
-        assertEquals(PriceModelWS.PLAN_TYPE_FLAT, updated.getType());
-        assertEquals(BigDecimal.ZERO, updated.getRate());
-        assertEquals(BigDecimal.ZERO, updated.getIncludedQuantity());
-        assertEquals(5, updated.getPrecedence().intValue());
-        assertEquals(PriceModelWS.ATTRIBUTE_WILDCARD, updated.getAttributes().get("lata"));
-        assertEquals(PriceModelWS.ATTRIBUTE_WILDCARD, updated.getAttributes().get("rateCenter"));
-        assertEquals("NC", updated.getAttributes().get("stateProv"));
-
-        // cleanup
-        api.deletePriceModel(ids[0]);
-    }
-
-    public void testDelete() throws Exception {
-        JbillingAPI api = JbillingAPIFactory.getAPI();
-
-        ItemDTOEx planItem = getPlanItem();
-
-        // simple metered plan
-        PriceModelWS metered = new PriceModelWS();
-        metered.setType(PriceModelWS.PLAN_TYPE_METERED);
-        metered.setPlanItem(planItem);
-        metered.setRate(new BigDecimal("0.10"));
-        metered.setPrecedence(0);
-
-        Integer[] ids = api.createPriceModels(new PriceModelWS[]{ metered });
-        api.deletePriceModel(ids[0]);
-
-        try {
-            PriceModelWS deleted = api.getPriceModel(ids[0]);
-            fail("Should throw an org.hibernate.ObjectNotFoundException");
-        } catch (JbillingAPIException e) {
-            assertTrue(e.getCause().getCause() instanceof ObjectNotFoundException);
-        }
     }
 
     public void testGetPlanPriceByAttribute() throws Exception {

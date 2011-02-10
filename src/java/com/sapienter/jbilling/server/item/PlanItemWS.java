@@ -1,19 +1,24 @@
 package com.sapienter.jbilling.server.item;
 
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
+import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @author Brian Cowdery
  * @since 20-09-2010
  */
-public class PlanItemWS {
+public class PlanItemWS implements Serializable {
 
     public static final Integer DEFAULT_PRECEDENCE = -1;
 
     private Integer id;
     private Integer itemId; // affected item
     private PriceModelWS model;
+    private String bundledQuantity;
     private Integer precedence = DEFAULT_PRECEDENCE;
 
     public PlanItemWS() {
@@ -27,6 +32,8 @@ public class PlanItemWS {
     public PlanItemWS(PlanItemDTO dto) {
         this.id = dto.getId();
         this.precedence = dto.getPrecedence();
+
+        setBundledQuantity(dto.getBundledQuantity());
 
         if (dto.getModel() != null) this.model = new PriceModelWS(dto.getModel());
         if (dto.getItem() != null) this.itemId = dto.getItem().getId();
@@ -64,6 +71,22 @@ public class PlanItemWS {
         this.model = model;
     }
 
+    public String getBundledQuantity() {
+        return bundledQuantity;
+    }
+
+    public BigDecimal getBundledQuantityAsDecimal() {
+        return bundledQuantity != null ? new BigDecimal(bundledQuantity) : null;
+    }
+
+    public void setBundledQuantity(String bundledQuantity) {
+        this.bundledQuantity = bundledQuantity;
+    }
+
+    public void setBundledQuantity(BigDecimal bundledQuantity) {
+        this.bundledQuantity = (bundledQuantity != null ? bundledQuantity.toString() : null);
+    }
+
     public Integer getPrecedence() {
         return precedence;
     }
@@ -78,6 +101,7 @@ public class PlanItemWS {
                + "id=" + id
                + ", itemId=" + itemId
                + ", model=" + model
+               + ", bundledQuantity=" + bundledQuantity
                + ", precedence=" + precedence
                + '}';
     }

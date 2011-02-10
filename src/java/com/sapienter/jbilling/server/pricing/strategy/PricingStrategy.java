@@ -24,6 +24,7 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
+import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import java.math.BigDecimal;
@@ -31,7 +32,7 @@ import java.util.List;
 
 /**
  * Interface for pricing strategies. All implemented strategies must be accessible via
- * the {@link PriceModelStrategy} mapping enum. 
+ * the {@link com.sapienter.jbilling.server.pricing.db.PriceModelStrategy} mapping enum.
  *
  * @author Brian Cowdery
  * @since 05-08-2010
@@ -39,19 +40,12 @@ import java.util.List;
 public interface PricingStrategy {
 
     /**
-     * Returns true if this strategy requires the current usage of the item
-     * to properly calculate the the price.
-     *
-     * @return true if this strategy requires the current usage of the item being priced.
-     */
-    public boolean requiresUsage();
-
-    /**
      * Returns true if this strategy defines a rate that overrides the
      * PlanPriceDTO rate.
      *
      * @return true if strategy has an overriding rate.
      */
+    @Deprecated // should have a UI template per pricing strategy, this is not necessary
     public boolean hasRate();
 
     /**
@@ -60,6 +54,7 @@ public interface PricingStrategy {
      *
      * @return overriding rate for this strategy, or null if strategy does not override the plan rate.
      */
+    @Deprecated // should have a UI template per pricing strategy, this is not necessary
     public BigDecimal getRate();
 
     /**
@@ -71,9 +66,25 @@ public interface PricingStrategy {
     public List<AttributeDefinition> getAttributeDefinitions();
 
     /**
+     * Returns a list of positions that a price model using strategy is allowed to occupy when chained.
+     *
+     * @return list of allowed chain positions
+     */
+    public List<ChainPosition> getChainPositions();
+
+    /**
+     * Returns true if this strategy requires the current usage of the item
+     * to properly calculate the the price.
+     *
+     * @return true if this strategy requires the current usage of the item being priced.
+     */
+    public boolean requiresUsage();
+
+    /**
      * Applies the plan's pricing strategy to the given pricing request.
      *
      * @param result pricing result to apply pricing to
+     * @param fields pricing fields
      * @param planPrice the plan price to apply
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period

@@ -46,8 +46,19 @@ public class PriceModelWS implements Serializable {
     private Map<String, String> attributes = new HashMap<String, String>();
     private String rate;
     private Integer currencyId;
+    private PriceModelWS next;
 
     public PriceModelWS() {
+    }
+
+    public PriceModelWS(String type) {
+        this.type = type;
+    }
+
+    public PriceModelWS(String type, BigDecimal rate, Integer currencyId) {
+        this.type = type;
+        this.rate = (rate != null ? rate.toString() : null);
+        this.currencyId = currencyId;
     }
 
     public PriceModelWS(PriceModelDTO model) {
@@ -58,6 +69,7 @@ public class PriceModelWS implements Serializable {
 
         if (model.getType() != null ) this.type = model.getType().name();
         if (model.getCurrency() != null) this.currencyId = model.getCurrency().getId();
+        if (model.getNext() != null) this.next = new PriceModelWS(model.getNext());
     }
 
     public Integer getId() {
@@ -110,6 +122,14 @@ public class PriceModelWS implements Serializable {
 
     public void setCurrencyId(Integer currencyId) {
         this.currencyId = currencyId;
+    }
+
+    public PriceModelWS getNext() {
+        return next;
+    }
+
+    public void setNext(PriceModelWS next) {
+        this.next = next;
     }
 
     @Override

@@ -21,7 +21,7 @@
 package com.sapienter.jbilling.server.pricing;
 
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
-import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import junit.framework.TestCase;
 

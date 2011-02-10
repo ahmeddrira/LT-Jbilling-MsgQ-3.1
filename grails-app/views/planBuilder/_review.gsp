@@ -80,6 +80,43 @@
                 $('#' + id).toggleClass('active');
                 $('#' + id + '-editor').toggle('blind');
             });
-        })
+        });
+
+        $(function() {
+            $('.model-type').change(function() {
+                var form = $(this).parents('form');
+                form.find('[name=_eventId]').val('updateStrategy');
+                form.submit();
+            });
+        });
+
+        function addChainModel(element) {
+            var form = $(element).parents('form');
+            form.find('[name=_eventId]').val('addChainModel');
+            form.submit();
+        }
+
+        function removeChainModel(element, modelIndex) {
+            var form = $(element).parents('form');
+            form.find('[name=_eventId]').val('removeChainModel');
+            form.find('[name=modelIndex]').val(modelIndex);
+            form.submit();
+        }
+
+        function addModelAttribute(element, modelIndex, attributeIndex) {
+            var form = $(element).parents('form');
+            form.find('[name=_eventId]').val('addAttribute');
+            form.find('[name=modelIndex]').val(modelIndex);
+            form.find('[name=attributeIndex]').val(attributeIndex);
+            form.submit();
+        }
+
+        function removeModelAttribute(element, modelIndex, attributeIndex) {
+            var form = $(element).parents('form');
+            form.find('[name=_eventId]').val('removeAttribute');
+            form.find('[name=modelIndex]').val(modelIndex);
+            form.find('[name=attributeIndex]').val(attributeIndex);
+            form.submit();
+        }
     </script>
 </div>

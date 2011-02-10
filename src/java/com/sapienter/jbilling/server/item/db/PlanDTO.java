@@ -80,7 +80,6 @@ import java.util.List;
                             + " and line.purchaseOrder.orderStatus.id = 1 "  // Constants.ORDER_STATUS_ACTIVE
                             + " and line.purchaseOrder.deleted = 0"),
 
-        // todo: include bundled items as "affected"
         @NamedQuery(name = "PlanDTO.findByAffectedItem",
                     query = "select plan "
                             + " from PlanDTO plan "

@@ -16,7 +16,7 @@
 	
 			<tbody>
 				<g:each var="dto" in="${lstBillingProcesses}">
-					<tr id="process-${dto.id}" class="${selected?.id == dto.id ? 'active' : ''}" 
+					<tr id="process-${dto.id}" class="${selected?.id == dto.id ? 'active' : ''} ${dto?.isReview > 0 ? 'isReview' : ''}" 
                         onmouseover="this.style.cursor='hand'" 
                         onclick="javascript: document.location.href='/jbilling/billing/show/${dto.id}'">
 						<td class="small">${dto.id}</td>

@@ -46,9 +46,13 @@
 				session["user_id"],invoice?.currencyId, false)}</td></tr>
 	
 			<tr><td><g:message code="invoice.label.payment.attempts"/>:</td><td class="value">${invoice.paymentAttempts}</td></tr>
-			<tr><td><g:message code="invoice.label.orders"/>:</td><td class="value"><g:each var="order" in="${invoice.orders}">
-				${order.toString()}&nbsp;
-			</g:each></td></tr>
+			<tr><td><g:message code="invoice.label.orders"/>:</td><td class="value">
+                <g:each var="order" in="${invoice.orders}">
+                    <g:remoteLink breadcrumb="id" controller="order" action="show" id="${order}" params="['template': 'order']"
+                                before="register(this);" onSuccess="render(data, next);">
+                        ${order.toString()}
+                     </g:remoteLink>&nbsp;
+			    </g:each></td></tr>
 			<tr><td><g:message code="invoice.label.delegation"/>:</td><td class="value">${delegatedInvoices}</td></tr>
 		</table>
 	</div>
@@ -107,6 +111,7 @@
 			<table class="innerTable" >
 				<thead class="innerHeader">
 			         <tr>
+                        <th><g:message code="label.gui.payment.id"/></th>
 			            <th><g:message code="label.gui.date"/></th>
 						<th><g:message code="label.gui.payment.refunds"/></th>
 						<th><g:message code="label.gui.amount"/></th>
@@ -118,6 +123,11 @@
 		         <tbody>
 				     <g:each var="payment" in="${payments}" status="idx">
 				         <tr>
+                            <td class="innerContent">
+                                <g:remoteLink breadcrumb="id" controller="payment" action="show" id="${payment.id}" params="['template': 'show']"
+                                    before="register(this);" onSuccess="render(data, next);">${payment.id}
+                                </g:remoteLink>
+                            </td>
 				         	<td class="innerContent">${Util.formatDate(payment.paymentDate, session["user_id"])}</td>
 							<td class="innerContent">${payment.isRefund?"R":"P"}</td>
 							<td class="innerContent">${Util.formatMoney(new BigDecimal(payment.amount?:"0.0"),

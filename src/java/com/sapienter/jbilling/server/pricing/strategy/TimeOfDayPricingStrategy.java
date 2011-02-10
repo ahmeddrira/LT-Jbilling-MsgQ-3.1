@@ -24,6 +24,7 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
+import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 import org.apache.log4j.Logger;
@@ -47,21 +48,21 @@ import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.
  * @author Brian Cowdery
  * @since 03/02/11
  */
-public class TimeOfDayPricingStrategy implements PricingStrategy {
+public class TimeOfDayPricingStrategy extends AbstractPricingStrategy {
 
     private static final Logger LOG = Logger.getLogger(TimeOfDayPricingStrategy.class);
 
-    private static final List<AttributeDefinition> ATTRIBUTE_LIST = Arrays.asList(
-        new AttributeDefinition("date_field", STRING, false),    // pricing field name holding the date
-        new AttributeDefinition("00:00", DECIMAL, true)          // price at start of day
-    );
+    public TimeOfDayPricingStrategy() {
+        setAttributeDefinitions(
+                new AttributeDefinition("date_field", STRING, false),   // pricing field name holding the date
+                new AttributeDefinition("00:00", DECIMAL, true)         // price at start of day
+        );
 
-    public boolean requiresUsage() { return false; }
-    public boolean hasRate() { return true; }
-    public BigDecimal getRate() { return BigDecimal.ZERO; }
+        setChainPositions(
+                ChainPosition.START
+        );
 
-    public List<AttributeDefinition> getAttributeDefinitions() {
-        return ATTRIBUTE_LIST;
+        setRate(BigDecimal.ZERO);
     }
 
     /**
@@ -82,7 +83,6 @@ public class TimeOfDayPricingStrategy implements PricingStrategy {
      *      After 12:00 = $12.00
      * </code>
      *
-     *
      * @param result pricing result to apply pricing to
      * @param fields pricing fields
      * @param planPrice the plan price to apply
@@ -93,25 +93,12 @@ public class TimeOfDayPricingStrategy implements PricingStrategy {
                         BigDecimal quantity, Usage usage) {
 
         // parse time ranges and prices
-        // map is sorted in ascending order by time - earliest times first
-        SortedMap<LocalTime, BigDecimal> prices = new TreeMap<LocalTime, BigDecimal>();
-        for (Map.Entry<String, String> entry : planPrice.getAttributes().entrySet()) {
-            if (entry.getKey().contains(":"))
-                prices.put(AttributeUtils.parseTime(entry.getKey()), AttributeUtils.parseDecimal(entry.getValue()));
-        }
+        SortedMap<LocalTime, BigDecimal> prices = getPrices(planPrice.getAttributes());
         LOG.debug("Time-of-day pricing: " + prices);
 
         // get the current time from the pricing fields
         String fieldName = planPrice.getAttributes().get("date_field");
-        LocalTime now = new LocalTime();
-        if (fields != null && fieldName != null) {
-            for (PricingField field : fields) {
-                if (field.getName().equals(fieldName)) {
-                    now = LocalTime.fromDateFields(field.getDateValue());
-                    break;
-                }
-            }
-        }
+        LocalTime now = getTime(fieldName, fields);
 
         // find the price
         for (LocalTime time : prices.keySet()) {
@@ -122,5 +109,44 @@ public class TimeOfDayPricingStrategy implements PricingStrategy {
         LOG.debug("Price for " + now + ": " + result.getPrice());
     }
 
+    /**
+     * Parses the price model attributes and returns a map of times and corresponding
+     * prices. The map is sorted in ascending order by time (earliest times first).
+     *
+     * @param attributes attributes to parse
+     * @return times and prices
+     */
+    protected SortedMap<LocalTime, BigDecimal> getPrices(Map<String, String> attributes) {
+        SortedMap<LocalTime, BigDecimal> prices = new TreeMap<LocalTime, BigDecimal>();
+        for (Map.Entry<String, String> entry : attributes.entrySet())
+            if (entry.getKey().contains(":"))
+                prices.put(AttributeUtils.parseTime(entry.getKey()), AttributeUtils.parseDecimal(entry.getValue()));
+
+        return prices;
+    }
+
+    /**
+     * Searches through the list of pricing fields and extracts the time for this price
+     * calculation. If the field is not found, the current system time will be returned.
+     *
+     * @param fieldName pricing field name of the pricing date
+     * @param fields pricing fields
+     * @return pricing time
+     */
+    protected LocalTime getTime(String fieldName, List<PricingField> fields) {
+        LocalTime now = new LocalTime();
+        if (fields != null && fieldName != null) {
+            for (PricingField field : fields) {
+                if (field.getName().equals(fieldName)) {
+                    now = LocalTime.fromDateFields(field.getDateValue());
+                    break;
+                }
+            }
+        }
+
+        return now;
+    }
 
 }
+
+

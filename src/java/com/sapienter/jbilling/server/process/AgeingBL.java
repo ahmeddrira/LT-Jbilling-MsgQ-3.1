@@ -465,7 +465,7 @@ public class AgeingBL {
 	        	//if the Step is not deleted, welcome message may not be null
                 if (!steps[f].getStatusId().equals(UserDTOEx.STATUS_DELETED) && 
                         steps[f].getWelcomeMessage() == null ) {
-                	SessionInternalError exception = new SessionInternalError("Validation of new plug-in");
+                	SessionInternalError exception = new SessionInternalError("Welcome message may not be null for a step");
                 	exception.setErrorMessages(new String[] {
                         	"AgeingWS,welcomeMessage,config.ageing.error.null.message," + null});
                 	throw exception;

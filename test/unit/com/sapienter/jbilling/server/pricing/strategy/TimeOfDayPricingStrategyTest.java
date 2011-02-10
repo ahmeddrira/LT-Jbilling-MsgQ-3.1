@@ -50,7 +50,7 @@ public class TimeOfDayPricingStrategyTest extends TestCase {
         super(name);
     }
 
-
+    /** Convenience method to produce a time for the given hours and minutes */
     private Date getTime(int hours, int minutes) {
         return new LocalTime(hours, minutes).toDateTimeToday().toDate();
     }

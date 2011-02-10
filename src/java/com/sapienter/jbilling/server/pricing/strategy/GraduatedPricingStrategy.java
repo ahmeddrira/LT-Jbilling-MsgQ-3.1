@@ -20,18 +20,16 @@
 
 package com.sapienter.jbilling.server.pricing.strategy;
 
+import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
+import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
-import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.DECIMAL;
@@ -44,19 +42,18 @@ import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.
  * @author Brian Cowdery
  * @since 05-08-2010
  */
-public class GraduatedPricingStrategy implements PricingStrategy {
-    private static final Logger LOG = Logger.getLogger(GraduatedPricingStrategy.class);
+public class GraduatedPricingStrategy extends AbstractPricingStrategy {
 
-    private static final List<AttributeDefinition> ATTRIBUTE_LIST = Arrays.asList(
-            new AttributeDefinition("included", DECIMAL, true)
-    );
+    public GraduatedPricingStrategy() {
+        setAttributeDefinitions(
+                new AttributeDefinition("included", DECIMAL, true)
+        );
 
-    public boolean requiresUsage() { return true; }
-    public boolean hasRate() { return false; }
-    public BigDecimal getRate() { return null; }
+        setChainPositions(
+                ChainPosition.START
+        );
 
-    public List<AttributeDefinition> getAttributeDefinitions() {
-        return ATTRIBUTE_LIST;
+        setRequiresUsage(true);
     }
 
     /**
@@ -89,9 +86,6 @@ public class GraduatedPricingStrategy implements PricingStrategy {
         BigDecimal total = quantity.add(usage.getQuantity());
         BigDecimal included = AttributeUtils.getDecimal(planPrice.getAttributes(), "included");
 
-        LOG.debug("Pricing purchase quantity " + quantity + ", " + included + " units included ");
-        LOG.debug("Total usage: " + total);
-
         if (usage.getQuantity().compareTo(included) >= 0) {
             // included usage exceeded by current usage
             result.setPrice(planPrice.getRate());
@@ -100,7 +94,7 @@ public class GraduatedPricingStrategy implements PricingStrategy {
             // current usage + purchased quantity exceeds included
             // determine the percentage rate for minutes used OVER the included.
             BigDecimal rated = total.subtract(included);
-            BigDecimal percent = rated.divide(quantity, 4, RoundingMode.HALF_UP);
+            BigDecimal percent = rated.divide(quantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
             result.setPrice(percent.multiply(planPrice.getRate()));
 
         } else {

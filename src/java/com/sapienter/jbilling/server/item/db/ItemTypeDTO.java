@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.item.db;
 
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,23 +49,22 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
 
 @Entity
 @TableGenerator(
-        name="item_type_GEN",
-        table="jbilling_seqs",
+        name = "item_type_GEN",
+        table = "jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
-        pkColumnValue="item_type",
+        pkColumnValue = "item_type",
         allocationSize = 100
-        )
-@Table(name="item_type")
+)
+@Table(name = "item_type")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class ItemTypeDTO extends AbstractDescription 
-        implements java.io.Serializable {
-
+public class ItemTypeDTO extends AbstractDescription implements Serializable {
 
     private int id;
     private CompanyDTO entity;
     private String description;
     private int orderLineTypeId;
+    private boolean internal;
     private Set<ItemDTO> items = new HashSet<ItemDTO>(0);
     private int versionNum;
 
@@ -82,11 +82,11 @@ public class ItemTypeDTO extends AbstractDescription
     }
 
     public ItemTypeDTO(int id, CompanyDTO entity, String description, int orderLineTypeId, Set<ItemDTO> items) {
-       this.id = id;
-       this.entity = entity;
-       this.description = description;
-       this.orderLineTypeId = orderLineTypeId;
-       this.items = items;
+        this.id = id;
+        this.entity = entity;
+        this.description = description;
+        this.orderLineTypeId = orderLineTypeId;
+        this.items = items;
     }
 
     @Transient
@@ -94,59 +94,68 @@ public class ItemTypeDTO extends AbstractDescription
         return Constants.TABLE_ITEM_TYPE;
     }
 
-    @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="item_type_GEN")
-    @Column(name="id", unique=true, nullable=false)
+    @Id @GeneratedValue(strategy = GenerationType.TABLE, generator = "item_type_GEN")
+    @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return this.id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="entity_id", nullable=false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entity_id", nullable = false)
     public CompanyDTO getEntity() {
         return this.entity;
     }
-    
+
     public void setEntity(CompanyDTO entity) {
         this.entity = entity;
     }
-    
-    @Column(name="description", length=100)
+
+    @Column(name = "description", length = 100)
     public String getDescription() {
         return this.description;
     }
-    
+
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    @Column(name="order_line_type_id", nullable=false)
+
+    @Column(name = "order_line_type_id", nullable = false)
     public int getOrderLineTypeId() {
         return this.orderLineTypeId;
     }
-    
+
     public void setOrderLineTypeId(int orderLineTypeId) {
         this.orderLineTypeId = orderLineTypeId;
     }
 
+    @Column(name = "internal", nullable = false)
+    public boolean isInternal() {
+        return internal;
+    }
+
+    public void setInternal(boolean internal) {
+        this.internal = internal;
+    }
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinTable(name = "item_type_map",
-               joinColumns = { @JoinColumn(name="type_id", updatable=false) },
-               inverseJoinColumns = { @JoinColumn(name="item_id", updatable=false) }
+               joinColumns = {@JoinColumn(name = "type_id", updatable = false)},
+               inverseJoinColumns = {@JoinColumn(name = "item_id", updatable = false)}
     )
     public Set<ItemDTO> getItems() {
         return this.items;
     }
-    
+
     public void setItems(Set<ItemDTO> items) {
         this.items = items;
     }
 
     @Version
-    @Column(name="OPTLOCK")
+    @Column(name = "OPTLOCK")
     public int getVersionNum() {
         return versionNum;
     }

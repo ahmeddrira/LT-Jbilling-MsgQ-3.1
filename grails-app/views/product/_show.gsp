@@ -1,4 +1,4 @@
-<%@ page import="org.apache.commons.lang.StringUtils; com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy; com.sapienter.jbilling.server.util.Util"%>
+<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelStrategy; com.sapienter.jbilling.server.util.Util"%>
 
 <%--
   Product details template. This template shows a product and all the relevant product details.
@@ -15,38 +15,67 @@
 
 	<div class="box">
         <!-- product info -->
-		<dl class="other">
-			<dt><g:message code="product.detail.id"/></dt>
-			<dd>${selectedProduct.id}</dd>
-			<dt><g:message code="product.detail.internal.number"/></dt>
-			<dd>${selectedProduct.internalNumber} &nbsp;</dd>
-			<dt><g:message code="product.detail.percentage"/></dt>
-			<dd>${selectedProduct.percentage ?: '-'} &nbsp;</dd>
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><g:message code="product.detail.id"/></td>
+                    <td class="value">${selectedProduct.id}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="product.detail.internal.number"/></td>
+                    <td class="value">${selectedProduct.internalNumber}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="product.detail.percentage"/></td>
+                    <td class="value">${selectedProduct.percentage ?: '-'}</td>
+                </tr>
+            </tbody>
+        </table>
 
-            <g:if test="${selectedProduct.defaultPrice}">
-                <dt>${selectedProduct.defaultPrice.currency.code}</dt>
-                <dd><g:formatNumber number="${selectedProduct.defaultPrice.rate}" type="currency" currencyCode="${selectedProduct.defaultPrice.currency.code}"/></dd>
+        <!-- pricing -->
+        <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">
+            <tbody>
+            <g:set var="next" value="${selectedProduct.defaultPrice}"/>
+                <g:while test="${next}">
+                    <tr>
+                        <td><g:message code="plan.model.type"/></td>
+                        <td class="value"><g:message code="price.strategy.${next.type.name()}"/></td>
+                        <td><g:message code="plan.model.rate"/></td>
+                        <td class="value"><g:formatNumber number="${next.rate}" type="currency" currencyCode="${next.currency.code}"/></td>
+                    </tr>
+                    <g:each var="attribute" in="${next.attributes.entrySet()}">
+                        <tr>
+                            <td></td><td></td>
+                            <td><g:message code="${attribute.key}"/></td>
+                            <td class="value">${attribute.value}</td>
+                        </tr>
+                    </g:each>
 
-                <g:if test="${selectedProduct.defaultPrice.type != PriceModelStrategy.METERED}">
-                    <dt>Pricing Strategy</dt>
-                    <dd><g:message code="price.strategy.${selectedProduct.defaultPrice.type}"/></dd>
-                </g:if>
-            </g:if>
+                    <g:set var="next" value="${next.next}"/>
+                </g:while>
+            </tbody>
+        </table>
 
-            <br/>
+        <!-- flags -->
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><em><g:message code="product.detail.manual.pricing"/></em></td>
+                    <td class="value"><em><g:formatBoolean boolean="${selectedProduct.priceManual > 0}"/></em></td>
+                </tr>
+                <tr>
+                    <td><em><g:message code="product.detail.decimal"/></em></td>
+                    <td class="value"><em><g:formatBoolean boolean="${selectedProduct.hasDecimals > 0}"/></em></td>
+                </tr>
+            </tbody>
+        </table>
 
-			<dt class="long"><em><g:message code="product.detail.manual.pricing"/>:&nbsp;</em></dt>
-			<dd><em><g:formatBoolean boolean="${selectedProduct.priceManual > 0}"/> &nbsp;</em></dd>
-			<dt class="long"><em><g:message code="product.detail.decimal"/>:&nbsp;</em></dt>
-			<dd><em><g:formatBoolean boolean="${selectedProduct.hasDecimals > 0}"/> &nbsp;</em></dd>
-
-            <p class="description">
-                ${selectedProduct.description}
-            </p>
-		</dl>
+        <p class="description">
+            ${selectedProduct.description}
+        </p>
 
         <!-- product categories cloud -->
-        <div class="box-cards">
+        <div class="box-cards box-cards-open">
             <div class="box-cards-title">
                 <span><g:message code="product.detail.categories.title"/></span>
             </div>

@@ -823,10 +823,9 @@ public class WSTest  extends TestCase {
         JbillingAPI api = JbillingAPIFactory.getAPI();
 
 
-        /*
-         * Test update current order without pricing fields.
-         */
-
+        //
+        // Test update current order without pricing fields.
+        //
 
         // current order before modification
         OrderWS currentOrderBefore = api.getCurrentOrder(USER_ID, new Date());
@@ -860,9 +859,10 @@ public class WSTest  extends TestCase {
         assertEquals("Order line price", new BigDecimal("10.00"), createdLine.getPriceAsDecimal());
         assertEquals("Order line total", new BigDecimal("220.00"), createdLine.getAmountAsDecimal());
 
-        /*
-         * Test update current order with pricing fields.
-         */
+
+        //
+        // Test update current order with pricing fields.
+        //
 
         // A pricing rule. See PricingRules.drl, rule 'PricingField test1'.
         PricingField pf = new PricingField("newPrice", new BigDecimal("5.0"));
@@ -884,10 +884,10 @@ public class WSTest  extends TestCase {
         assertEquals("Order line total", new BigDecimal("225.00"), createdLine.getAmountAsDecimal());
 
 
-        /*
-         * Test update current order with pricing fields and no
-         * order lines. RulesMediationTask should create them.
-         */
+        //
+        // Test update current order with pricing fields and no
+        // order lines. RulesMediationTask should create them.
+        //
 
         // Call info pricing fields. See Mediation.drl, rule 'line creation'
         PricingField duration = new PricingField("duration", 5); // 5 min
@@ -914,10 +914,10 @@ public class WSTest  extends TestCase {
         assertEquals("Order line price", new BigDecimal("25"), createdLine.getAmountAsDecimal()); // not priced
 
 
-        /*
-         * Events that go into an order already invoiced, should update the
-         * current order for the next cycle
-         */
+        //
+        // Events that go into an order already invoiced, should update the
+        // current order for the next cycle
+        //
 
         // fool the system making the current order finished (don't do this at home)
         System.out.println("Making current order 'finished'");
@@ -943,14 +943,19 @@ public class WSTest  extends TestCase {
         assertFalse("Current order for next cycle can't be the same as the previous one",
                     currentOrderNext.getId().equals(currentOrderAfter.getId()));
 
-        assertEquals("Active since of new order should be one mothe later than previous one for the same event",
-                     new DateMidnight(currentOrderAfter.getActiveSince().getTime()).plusMonths(1),
-                     new DateMidnight(currentOrderNext.getActiveSince().getTime()));
+        System.out.println("Date1: " + currentOrderAfter.getActiveSince());
+        DateMidnight date1 = new DateMidnight(currentOrderAfter.getActiveSince().getTime());
+        System.out.println("Date1: " + date1);
+        date1 = date1.plusMonths(1);
+        System.out.println("Date1: " + date1);
+        DateMidnight date2 = new DateMidnight(currentOrderNext.getActiveSince().getTime());
+        System.out.println("Date2: " + date2);
+        assertEquals("Active since of new order should be one month later than previous one for the same event",
+                date1,date2);
 
-
-        /*
-         * No main subscription order tests.
-         */
+        //
+        // No main subscription order tests.
+        //
 
         // User with no main subscription order should return
         // null when trying to get a current order.
@@ -969,9 +974,9 @@ public class WSTest  extends TestCase {
         } catch(Exception e) { }
 
 
-        /*
-         * Security tests
-         */
+        //
+        // Security tests
+        //
 
         try {
             api.getCurrentOrder(13, new Date()); // returns null, not a real test
@@ -992,7 +997,6 @@ public class WSTest  extends TestCase {
         api.deleteOrder(currentOrderAfter.getId());
         api.deleteOrder(currentOrderNext.getId());
     }
-
 
     public void testIsUserSubscribedTo() throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -1020,6 +1024,7 @@ public class WSTest  extends TestCase {
         // Test the result given by a known existing user
         // (it has items 2 and 3 on category 1 in PostgreSQL test db)
         result = api.getUserItemsByCategory(Integer.valueOf(2), Integer.valueOf(1));
+        Arrays.sort(result);
         assertEquals(2, result.length);
         assertEquals(Integer.valueOf(2), result[0]);
         assertEquals(Integer.valueOf(3), result[1]);

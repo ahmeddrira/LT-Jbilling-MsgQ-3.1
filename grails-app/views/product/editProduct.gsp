@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy; com.sapienter.jbilling.server.util.db.CurrencyDTO; com.sapienter.jbilling.server.util.db.LanguageDTO; com.sapienter.jbilling.server.item.db.ItemTypeDTO" %>
+<%@ page import="com.sapienter.jbilling.server.util.db.CurrencyDTO; com.sapienter.jbilling.server.util.db.LanguageDTO; com.sapienter.jbilling.server.item.db.ItemTypeDTO" %>
 
 <html>
 <head>
@@ -39,10 +39,22 @@
                             <g:textField class="field" name="product.description" value="${product?.description}" size="40"/>
                         </g:applyLayout>
 
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="product.percentage"/></content>
+                            <content tag="label.for">product.percentage</content>
+                            <g:textField class="field" name="product.percentage" value="${formatNumber(number: product?.percentage, formatName: 'money.format')}" size="5"/>
+                        </g:applyLayout>
+
                         <g:applyLayout name="form/checkbox">
                             <content tag="label"><g:message code="product.allow.decimal.quantity"/></content>
                             <content tag="label.for">product.hasDecimals</content>
                             <g:checkBox class="cb checkbox" name="product.hasDecimals" checked="${product?.hasDecimals > 0}"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/checkbox">
+                            <content tag="label"><g:message code="product.allow.manual.pricing"/></content>
+                            <content tag="label.for">product.priceManual</content>
+                            <g:checkBox class="cb checkbox" name="product.priceManual" checked="${product?.priceManual > 0}"/>
                         </g:applyLayout>
                     </div>
 
@@ -57,8 +69,11 @@
                             <content tag="label"><g:message code="product.categories"/></content>
                             <content tag="label.for">product.types</content>
 
-                            <g:select name="product.types" multiple="true" from="${categories}"
-                                      optionKey="id" optionValue="description" value="${product?.types ?: categoryId}" />
+                            <g:set var="types" value="${product?.types?.collect{ it as Integer }}"/>
+                            <g:select name="product.types" multiple="true"
+                                      from="${categories}"
+                                      optionKey="id" optionValue="description"
+                                      value="${types ?: categoryId}"/>
                         </g:applyLayout>
                     </div>
                 </div>
@@ -74,29 +89,7 @@
                         <a class="btn-open" href="#"><span><g:message code="product.prices"/></span></a>
                     </div>
                     <div class="box-card-hold">
-                        <div class="form-columns">
-                            <div class="column">
-                                <div id="model">
-                                    <g:render template="/priceModel/model" model="[model: product?.defaultPrice]"/>
-                                </div>
-
-                                <g:applyLayout name="form/input">
-                                    <content tag="label"><g:message code="product.percentage"/></content>
-                                    <content tag="label.for">product.percentage</content>
-                                    <g:textField class="field" name="product.percentage" value="${formatNumber(number: product?.percentage, formatName: 'money.format')}" size="5"/>
-                                </g:applyLayout>
-
-                                <g:applyLayout name="form/checkbox">
-                                    <content tag="label"><g:message code="product.allow.manual.pricing"/></content>
-                                    <content tag="label.for">product.priceManual</content>
-                                    <g:checkBox class="cb checkbox" name="product.priceManual" checked="${product?.priceManual > 0}"/>
-                                </g:applyLayout>
-                            </div>
-
-                            <div class="column">
-                                <g:render template="/priceModel/attributes" model="[model: product?.defaultPrice]"/>
-                            </div>
-                        </div>
+                        <g:render template="/priceModel/model" model="[model: product?.defaultPrice]"/>
                     </div>
                 </div>
 

@@ -31,23 +31,18 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
+import com.sapienter.jbilling.server.pricing.db.PriceModelDAS;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
-import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
-import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import org.apache.log4j.Logger;
-import org.springmodules.cache.CachingModel;
-import org.springmodules.cache.FlushingModel;
-import org.springmodules.cache.provider.CacheProviderFacade;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -138,8 +133,12 @@ public class ItemBL {
         item.setPercentage(dto.getPercentage());
         item.setHasDecimals(dto.getHasDecimals());
 
+//        item.setDefaultPrice(dto.getDefaultPrice());
+
         updateDefaultPrice(dto);
         updateTypes(dto);
+
+        itemDas.save(item);
     }
 
     /**
@@ -177,12 +176,11 @@ public class ItemBL {
             } else if (dto.getPrice() != null) {
                 item.setDefaultPrice(getDefaultPrice(dto.getPrice()));
             }
+
         } else {
             // update existing default price
             if (dto.getDefaultPrice() != null) {
-                item.getDefaultPrice().setType(dto.getDefaultPrice().getType());
-                item.getDefaultPrice().setAttributes(dto.getDefaultPrice().getAttributes());
-                item.getDefaultPrice().setRate(dto.getDefaultPrice().getRate());
+                item.setDefaultPrice(dto.getDefaultPrice());
             } else if (dto.getPrice() != null) {
                 item.getDefaultPrice().setRate(dto.getPrice());
             }
@@ -192,6 +190,8 @@ public class ItemBL {
         if (item.getDefaultPrice() != null && item.getDefaultPrice().getCurrency() == null) {
             item.getDefaultPrice().setCurrency(item.getEntity().getCurrency());
         }
+
+        LOG.debug("Item price: " + item.getDefaultPrice());
     }
 
     private void updateTypes(ItemDTO dto)

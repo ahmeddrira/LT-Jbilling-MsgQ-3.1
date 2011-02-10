@@ -17,14 +17,12 @@ package com.sapienter.jbilling.client.item;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
-import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
-import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Context;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import org.apache.struts.action.ActionError;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;

@@ -46,14 +46,6 @@
             </g:applyLayout>
 
             <g:applyLayout name="form/select">
-                <content tag="label"><g:message code="product.type"/></content>
-                <content tag="label.for">product.types</content>
-                <g:select name="productTypeId" from="${itemTypes}"
-                          optionKey="id" optionValue="description"
-                          value="${product?.types?.getAt(0)}"/>
-            </g:applyLayout>
-
-            <g:applyLayout name="form/select">
                 <content tag="label"><g:message code="prompt.user.currency"/></content>
                 <content tag="label.for">price.currencyId</content>
                 <g:select name="price.currencyId" from="${currencies}"

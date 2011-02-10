@@ -2,6 +2,7 @@ package com.sapienter.jbilling.server.item;
 
 import com.sapienter.jbilling.server.item.db.PlanDTO;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * @author Brian Cowdery
  * @since 20-09-2010
  */
-public class PlanWS {
+public class PlanWS implements Serializable {
 
     private Integer id;
     private Integer itemId; // plan subscription item    
@@ -65,6 +66,10 @@ public class PlanWS {
 
     public void setPlanItems(List<PlanItemWS> planItems) {
         this.planItems = planItems;
+    }
+
+    public void addPlanItem(PlanItemWS planItem) {
+        getPlanItems().add(planItem);
     }
 
     @Override

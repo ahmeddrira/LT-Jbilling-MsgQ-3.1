@@ -41,6 +41,12 @@ img {
 a {
 	color:#2375a3;
 	text-decoration:none;
+    cursor: pointer;
+}
+a img {
+    position: relative;
+    top: 4px;
+    left: 4px;
 }
 a:focus {
 	outline:none;
@@ -824,6 +830,12 @@ hr {
 .table-box tbody tr.active {
     background: #bbb url(../images/bg-gradient2.gif) repeat-x;
 }
+
+.table-box tbody tr.isReview {
+    font-style: italic;
+    text-shadow: 1px 1px 4px #383838;
+}
+
 .table-box tbody tr em {
 	display:block;
 }
@@ -1034,6 +1046,14 @@ ul.cloud li a {
     border-top: 1px solid #000;
     border-bottom: 1px solid #000;
 }
+#review-box .form-columns {
+    width: auto;
+}
+#review-box .form-columns hr {
+    margin: 8px auto;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #fafafa;
+}
 #review-box .header {
     width: 90%;
     margin: 0 auto 13px;
@@ -1097,6 +1117,9 @@ ul#review-lines {
 #review-lines li .row span {
     font-size: 12px;
     font-weight: normal;
+}
+#review-lines li .row a span {
+    font-weight: bold;
 }
 #review-lines span.description {
     padding-left: 3px;
@@ -1170,7 +1193,6 @@ ul#review-lines {
 	padding:6px 0 0;
 }
 .form-columns span {
-	float:left;
 	font-weight:bold;
 	line-height:24px;
 }

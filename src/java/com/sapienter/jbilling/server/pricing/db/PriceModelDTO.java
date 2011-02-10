@@ -25,7 +25,6 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
-import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
@@ -36,6 +35,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.MapKey;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -47,6 +47,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
@@ -80,6 +81,9 @@ public class PriceModelDTO implements Serializable {
     private Map<String, String> attributes = new HashMap<String, String>();
     private BigDecimal rate;
     private CurrencyDTO currency;
+
+    // price model chaining
+    private PriceModelDTO next;
 
     public PriceModelDTO() {
     }
@@ -167,6 +171,18 @@ public class PriceModelDTO implements Serializable {
     }
 
     /**
+     * Allowed positions in a chain of price models.
+     *
+     * @return list of chain positions
+     */
+    @Transient
+    public List<ChainPosition> getChainPositions() {
+        if (getStrategy() != null)
+            return getStrategy().getChainPositions();
+        return null;
+    }
+
+    /**
      * Returns the pricing rate. If the strategy type defines an overriding rate, the
      * strategy rate will be returned.
      *
@@ -194,6 +210,16 @@ public class PriceModelDTO implements Serializable {
         this.currency = currency;
     }
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "next_model_id", nullable = true)
+    public PriceModelDTO getNext() {
+        return next;
+    }
+
+    public void setNext(PriceModelDTO next) {
+        this.next = next;
+    }
+
     /**
      * Applies this pricing to the given PricingResult.
      *
@@ -208,16 +234,23 @@ public class PriceModelDTO implements Serializable {
      */
     @Transient
     public void applyTo(PricingResult result, List<PricingField> fields, BigDecimal quantity, Usage usage) {
-        getType().getStrategy().applyTo(result, fields, this, quantity, usage);
+        PriceModelDTO model = this;
+        while (model != null) {
+            // apply pricing
+            model.getType().getStrategy().applyTo(result, fields, model, quantity, usage);
 
-        // convert to PricingResult currency
-        if (result.getCurrencyId() != null
-            && result.getUserId() != null
-            && currency != null
-            && currency.getId() != result.getCurrencyId()) {
+            // convert currency if necessary
+            if (result.getUserId() != null
+                && result.getCurrencyId() != null
+                && model.getCurrency() != null
+                && model.getCurrency().getId() != result.getCurrencyId()) {
 
-            Integer entityId = new UserBL().getEntityId(result.getUserId());
-            result.setPrice(new CurrencyBL().convert(currency.getId(), result.getCurrencyId(), result.getPrice(), entityId));
+                Integer entityId = new UserBL().getEntityId(result.getUserId());
+                result.setPrice(new CurrencyBL().convert(model.getCurrency().getId(), result.getCurrencyId(), result.getPrice(), entityId));
+            }
+
+            // next price model in chain
+            model = model.getNext();
         }
     }
 
@@ -255,6 +288,7 @@ public class PriceModelDTO implements Serializable {
                + ", attributes=" + attributes
                + ", rate=" + rate
                + ", currencyId=" + (currency != null ? currency.getId() : null)
+               + ", next=" + next
                + '}';
     }
 }

@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.db.ChainPosition; org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 <%--
   Editor form for price models.
@@ -7,57 +7,113 @@
   @since  02-Feb-2011
 --%>
 
-<g:set var="type" value="${(model ? PriceModelStrategy.valueOf(model?.type) : PriceModelStrategy.METERED)}"/>
+<g:set var="types" value="${PriceModelStrategy.getStrategyByChainPosition(ChainPosition.START)}"/>
+<g:set var="type" value="${model ? PriceModelStrategy.valueOf(model?.type) : types?.asList()?.first()}"/>
+<g:set var="templateName" value="${WordUtils.uncapitalize(WordUtils.capitalizeFully(type.name(), ['_'] as char[]).replaceAll('_',''))}"/>
+<g:set var="modelIndex" value="${0}"/>
 
 <div id="priceModel">
-    <g:hiddenField name="model.id" value="${model?.id}"/>
+    <!-- root price model -->
+    <div class="form-columns">
+        <div class="column">
+            <g:render template="/priceModel/strategy/${templateName}" model="[model: model, type: type, modelIndex: modelIndex, types: types, currencies: currencies]"/>
+        </div>
+        <div class="column">
+            <g:render template="/priceModel/attributes" model="[model: model, type: type, modelIndex: modelIndex]"/>
+        </div>
+    </div>
 
-    <g:applyLayout name="form/select">
-        <content tag="label"><g:message code="plan.model.type"/></content>
-        <content tag="label.for">model.type</content>
-        <g:select from="${PriceModelStrategy.values()}"
-                name="model.type"
-                valueMessagePrefix="price.strategy"
-                value="${model?.type ?: type.name()}"/>
-    </g:applyLayout>
+    <!-- price models in chain -->
+    <g:set var="types" value="${PriceModelStrategy.getStrategyByChainPosition(ChainPosition.MIDDLE, ChainPosition.END)}"/>
+    <g:set var="next" value="${model.next}"/>
+    <g:while test="${next}">
+        <g:set var="type" value="${PriceModelStrategy.valueOf(next?.type)}"/>
+        <g:set var="templateName" value="${WordUtils.uncapitalize(WordUtils.capitalizeFully(type.name(), ['_'] as char[]).replaceAll('_',''))}"/>
+        <g:set var="modelIndex" value="${modelIndex + 1}"/>
 
-    <g:applyLayout name="form/input">
-        <content tag="label"><g:message code="plan.model.rate"/></content>
-        <content tag="label.for">model.rate</content>
-        <g:textField class="field" name="model.rate" value="${formatNumber(number: model?.rate ?: BigDecimal.ZERO, formatName: 'money.format')}"/>
-    </g:applyLayout>
+        <div class="form-columns">
+            <hr/>
+            <div class="column">
+                <g:render template="/priceModel/strategy/${templateName}" model="[model: next, type: type, modelIndex: modelIndex, types: types, currencies: currencies]"/>
+            </div>
+            <div class="column">
+                <g:render template="/priceModel/attributes" model="[model: next, type: type, modelIndex: modelIndex]"/>
+            </div>
+        </div>
 
-    <g:applyLayout name="form/select">
-        <content tag="label"><g:message code="prompt.user.currency"/></content>
-        <content tag="label.for">model.currencyId</content>
-        <g:select from="${currencies}"
-                name="model.currencyId"
-                optionKey="id" optionValue="code"
-                value="${model?.currencyId}" />
-    </g:applyLayout>
+        <g:set var="next" value="${next.next}"/>
+    </g:while>
 
+    <!-- controls -->
+    <div class="form-columns">
+        <div class="column">
+            <g:applyLayout name="form/text">
+                <content tag="label">&nbsp;</content>
+                <a class="submit add" onclick="addChainModel()"><span><g:message code="button.add.chain"/></span></a>
+            </g:applyLayout>
 
-    %{-- Show price precendence when editing a plan --}%
-    <g:if test="${planItem}">
-        <g:applyLayout name="form/input">
-            <content tag="label"><g:message code="plan.item.precedence"/></content>
-            <content tag="label.for">price.precedence</content>
-            <g:textField class="field" name="price.precedence" value="${planItem.precedence}"/>
-        </g:applyLayout>
-    </g:if>
-
+            <g:hiddenField name="attributeIndex"/>
+            <g:hiddenField name="modelIndex"/>
+        </div>
+    </div>
 
     <script type="text/javascript">
+        /**
+         * Re-render the pricing model form when the strategy is changed
+         */
         $(function() {
-            $('#model\\.type').change(function() {
-                    $.ajax({
-                       type: 'POST',
-                       url:'${createLink(action: 'updateStrategy')}',
-                       data: $('#priceModel').parents('form').serialize(),
-                       success: function(data){ $('#attributes').replaceWith(data); },
-                    });
-                }
-            );
+            $('.model-type').change(function() {
+                $.ajax({
+                   type: 'POST',
+                   url: '${createLink(action: 'updateStrategy')}',
+                   data: $('#priceModel').parents('form').serialize(),
+                   success: function(data) { $('#priceModel').replaceWith(data); }
+                });
+            });
         });
+
+        function addChainModel() {
+            $.ajax({
+               type: 'POST',
+               url: '${createLink(action: 'addChainModel')}',
+               data: $('#priceModel').parents('form').serialize(),
+               success: function(data) { $('#priceModel').replaceWith(data); }
+            });
+        }
+
+        function removeChainModel(element, modelIndex) {
+            $('#modelIndex').val(modelIndex);
+
+            $.ajax({
+               type: 'POST',
+               url: '${createLink(action: 'removeChainModel')}',
+               data: $('#priceModel').parents('form').serialize(),
+               success: function(data) { $('#priceModel').replaceWith(data); }
+            });
+        }
+
+        function addModelAttribute(element, modelIndex, attributeIndex) {
+            $('#modelIndex').val(modelIndex);
+            $('#attributeIndex').val(attributeIndex);
+
+            $.ajax({
+               type: 'POST',
+               url: '${createLink(action: 'addAttribute')}',
+               data: $('#priceModel').parents('form').serialize(),
+               success: function(data) { $('#priceModel').replaceWith(data); }
+            });
+        }
+
+        function removeModelAttribute(element, modelIndex, attributeIndex) {
+            $('#modelIndex').val(modelIndex);
+            $('#attributeIndex').val(attributeIndex);
+
+            $.ajax({
+               type: 'POST',
+               url: '${createLink(action: 'removeAttribute')}',
+               data: $('#priceModel').parents('form').serialize(),
+               success: function(data) { $('#priceModel').replaceWith(data); }
+            });
+        }
     </script>
 </div>

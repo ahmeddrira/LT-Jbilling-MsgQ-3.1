@@ -1035,6 +1035,14 @@ ul.cloud li a {
     border-top: 1px solid #000;
     border-bottom: 1px solid #000;
 }
+#review-box .form-columns {
+    width: auto;
+}
+#review-box .form-columns hr {
+    margin: 8px auto;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #fafafa;
+}
 #review-box .header {
     width: 90%;
     margin: 0 auto 13px;

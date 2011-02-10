@@ -80,6 +80,36 @@
                 $('#' + id).toggleClass('active');
                 $('#' + id + '-editor').toggle('blind');
             });
-        })
+        });
+
+        $(function() {
+            $('.model-type').change(function() {
+                var form = $(this).parents('form');
+                form.find('[name=_eventId]').val('updateStrategy');
+                form.submit();
+            });
+        });
+
+        function chain(element) {
+            var form = $(element).parents('form');
+            form.find('[name=_eventId]').val('addChainModel');
+            form.submit();
+        }
+
+        function add(element, modelIndex, attributeIndex) {
+            var form = $(element).parents('form');
+            form.find('[name=_eventId]').val('addAttribute');
+            form.find('[name=modelIndex]').val(modelIndex);
+            form.find('[name=attributeIndex]').val(attributeIndex);
+            form.submit();
+        }
+
+        function remove(element, modelIndex, attributeIndex) {
+            var form = $(element).parents('form');
+            form.find('[name=_eventId]').val('removeAttribute');
+            form.find('[name=modelIndex]').val(modelIndex);
+            form.find('[name=attributeIndex]').val(attributeIndex);
+            form.submit();
+        }
     </script>
 </div>

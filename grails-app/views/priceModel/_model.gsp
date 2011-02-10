@@ -47,7 +47,7 @@
         <div class="column">
             <g:applyLayout name="form/text">
                 <content tag="label">&nbsp;</content>
-                <a class="submit add" onclick="chain()"><span>Add Chain</span></a>
+                <a class="submit add" onclick="chain()"><span><g:message code="button.add.chain"/></span></a>
             </g:applyLayout>
 
             <g:hiddenField name="attributeIndex"/>
@@ -79,7 +79,7 @@
             });
         }
 
-        function add(modelIndex, attributeIndex) {
+        function add(element, modelIndex, attributeIndex) {
             $('#modelIndex').val(modelIndex);
             $('#attributeIndex').val(attributeIndex);
 
@@ -91,7 +91,7 @@
             });
         }
 
-        function remove(modelIndex, attributeIndex) {
+        function remove(element, modelIndex, attributeIndex) {
             $('#modelIndex').val(modelIndex);
             $('#attributeIndex').val(attributeIndex);
 

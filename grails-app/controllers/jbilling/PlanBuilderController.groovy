@@ -99,6 +99,41 @@ class PlanBuilderController {
         return products
     }
 
+    def bindPriceModel(GrailsParameterMap params) {
+        // sort price model parameters by index
+        def sorted = new TreeMap<Integer, GrailsParameterMap>()
+        params.model.each{ k, v ->
+            if (v instanceof Map)
+                sorted.put(k, v)
+        }
+
+        // build price model chain
+        def root = null
+        def model = null
+
+        sorted.each{ i, modelParams ->
+            if (model == null) {
+                model = root = new PriceModelWS()
+            } else {
+                model = model.next = new PriceModelWS()
+            }
+
+            // bind model
+            bindData(model, modelParams)
+
+            // bind model attributes
+            modelParams.attribute.each{ j, attrParams ->
+                if (attrParams instanceof Map)
+                    if (attrParams.name)
+                        model.attributes.put(attrParams.name, attrParams.value)
+            }
+
+            log.debug("price model ${i}: ${model}")
+        }
+
+        return root;
+    }
+
     def editFlow = {
         /**
          * Initializes the plan builder, putting necessary data into the flow and conversation
@@ -202,44 +237,15 @@ class PlanBuilderController {
          */
         updatePrice {
             action {
-                def plan = conversation.plan
-
-                // update plan item and price model
                 def index = params.int('index')
-                def planItem = plan.planItems[index]
-                def oldStrategy = planItem.model.type
-                bindData(planItem, params["price-${index}"])
-                bindData(planItem.model, params["model-${index}"])
+                def planItem = conversation.plan.planItems[index]
 
-                // bind and validate attributes
-                planItem.model.attributes.clear()
-                params.attribute.each{ i, attr ->
-                    if (attr instanceof Map) {
-                        if (attr.name) {
-                            planItem.model.attributes.put(attr.name, attr.value)
-                        }
-                    }
-                }
+                bindData(planItem, params, 'price')
+                planItem.model = bindPriceModel(params)
 
-                try {
-                    def strategy = Enum.valueOf(PriceModelStrategy.class, planItem.model.type).getStrategy()
-                    AttributeUtils.validateAttributes(planItem.model.attributes, strategy)
-                } catch (SessionInternalError e) {
-                    viewUtils.resolveException(flow, session.locale, e)
-                }
+                // re-order plan items by precedence
+                conversation.plan.planItems = conversation.plan.planItems.sort { it.precedence }.reverse()
 
-                // update the list
-                plan.planItems[index] = planItem
-                conversation.plan = plan
-
-                // if changing the strategy, show the edited line again
-                // otherwise re-order the list of lines by precedence
-                if (oldStrategy != params["model-${index}.type"]) {
-                    params.newLineIndex = index
-
-                } else {
-                    conversation.plan.planItems = conversation.plan.planItems.sort { it.precedence }.reverse()
-                }
                 params.template = 'review'
             }
             on("success").to("build")
@@ -257,14 +263,65 @@ class PlanBuilderController {
         }
 
         /**
+         * Updates a strategy of a model in a pricing chain.
+         */
+        updateStrategy {
+            action {
+                def index = params.int('index')
+                def planItem = conversation.plan.planItems[index]
+
+                bindData(planItem, params, 'price')
+                planItem.model = bindPriceModel(params)
+
+                params.newLineIndex = index
+                params.template = 'review'
+            }
+            on("success").to("build")
+        }
+
+        /**
+         * Adds an additional price model to the chain.
+         */
+        addChainModel {
+            action {
+                def index = params.int('index')
+                def planItem = conversation.plan.planItems[index]
+                planItem.model = bindPriceModel(params)
+
+                // add new price model to end of chain
+                def model = planItem.model
+                while (model.next) {
+                    model = model.next
+                }
+                model.next = new PriceModelWS(PriceModelStrategy.METERED.name());
+
+                params.newLineIndex = index
+                params.template = 'review'
+            }
+            on("success").to("build")
+        }
+
+        /**
          * Adds a new attribute field to the plan price model, and renders the review panel.
          * The rendered review panel will have the edited line open for further modification.
          */
         addAttribute {
             action {
                 def index = params.int('index')
-                def attribute = message(code: 'plan.new.attribute.key', args: [ params.id ])
-                conversation.plan.planItems[index].model.attributes.put(attribute, '')
+                def planItem = conversation.plan.planItems[index]
+                planItem.model = bindPriceModel(params)
+
+                def modelIndex = params.int('modelIndex')
+                def attribute = message(code: 'plan.new.attribute.key', args: [ params.attributeIndex ])
+
+                // find the model in the chain, and add a new attribute
+                def model = planItem.model
+                for (int i = 0; model != null; i++) {
+                    if (i == modelIndex) {
+                        model.attributes.put(attribute, '')
+                    }
+                    model = model.next
+                }
 
                 params.newLineIndex = index
                 params.template = 'review'
@@ -279,7 +336,21 @@ class PlanBuilderController {
         removeAttribute {
             action {
                 def index = params.int('index')
-                conversation.plan.planItems[index].model.attributes.remove(params.attribute)
+                def planItem = conversation.plan.planItems[index]
+                planItem.model = bindPriceModel(params)
+
+                def modelIndex = params.int('modelIndex')
+                def attributeIndex = params.int('attributeIndex')
+
+                // find the model in the chain, remove the attribute
+                def model = planItem.model
+                for (int i = 0; model != null; i++) {
+                    if (i == modelIndex) {
+                        def name = params["model.${modelIndex}.attribute.${attributeIndex}.name"]
+                        model.attributes.remove(name)
+                    }
+                    model = model.next
+                }
 
                 params.newLineIndex = index
                 params.template = 'review'
@@ -316,13 +387,22 @@ class PlanBuilderController {
          * of the complete 'build.gsp' page view (workaround for the lack of AJAX support in web-flow).
          */
         build {
+            // list
             on("details").to("showDetails")
             on("products").to("showProducts")
+
+            // pricing
             on("addPrice").to("addPrice")
             on("updatePrice").to("updatePrice")
             on("removePrice").to("removePrice")
+
+            // pricing model
+            on("updateStrategy").to("updateStrategy")
+            on("addChainModel").to("addChainModel")
             on("addAttribute").to("addAttribute")
             on("removeAttribute").to("removeAttribute")
+
+            // plan
             on("update").to("updatePlan")
             on("save").to("savePlan")
             on("cancel").to("finish")

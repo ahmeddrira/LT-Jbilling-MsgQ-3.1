@@ -74,6 +74,14 @@
                     <td class="value">${planItem.item.internalNumber}</td>
                 </tr>
 
+                <tr>
+                    <td><g:message code="plan.item.precedence"/></td>
+                    <td class="value">${planItem.precedence}</td>
+
+                    <td><g:message code="plan.item.bundled.quantity"/></td>
+                    <td class="value"><g:formatNumber number="${planItem.bundledQuantity}"/></td>
+                </tr>
+
                 <g:set var="next" value="${planItem.model}"/>
                 <g:while test="${next}">
                     <tr>

@@ -45,6 +45,12 @@
                     <content tag="label.for">price.precedence</content>
                     <g:textField class="field" name="price.precedence" value="${planItem.precedence}"/>
                 </g:applyLayout>
+
+                <g:applyLayout name="form/input">
+                    <content tag="label"><g:message code="plan.item.bundled.quantity"/></content>
+                    <content tag="label.for">price.bundledQuantity</content>
+                    <g:textField class="field" name="price.bundledQuantity" value="${formatNumber(number: planItem.bundledQuantity)}"/>
+                </g:applyLayout>
                 <br/>
 
                 <g:render template="/priceModel/builderModel" model="[model: planItem.model]"/>

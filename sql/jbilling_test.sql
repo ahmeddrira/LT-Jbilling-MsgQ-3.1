@@ -1808,7 +1808,8 @@ CREATE TABLE plan_item (
     plan_id integer,
     item_id integer NOT NULL,
     price_model_id integer NOT NULL,
-    precedence integer NOT NULL
+    precedence integer NOT NULL,
+    bundled_quantity numeric(22,10)
 );
 
 
@@ -15244,8 +15245,8 @@ COPY plan (id, item_id, description) FROM stdin;
 -- Data for Name: plan_item; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY plan_item (id, plan_id, item_id, price_model_id, precedence) FROM stdin;
-1	1	2602	2004	-1
+COPY plan_item (id, plan_id, item_id, price_model_id, precedence, bundled_quantity) FROM stdin;
+1	1	2602	2004	-1	\N
 \.
 
 

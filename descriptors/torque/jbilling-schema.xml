@@ -707,6 +707,7 @@
         <column name="plan_id" required="true" type="INTEGER"/>
         <column name="item_id" required="true" type="INTEGER"/>
         <column name="price_model_id" required="true" type="INTEGER"/>
+        <column name="bundled_quantity" required="false" size="22" scale="10" type="NUMERIC"/>
         <column name="precedence"  required="true" type="INTEGER"/>
         <foreign-key foreignTable="plan">
             <reference foreign="id" local="plan_id"/>

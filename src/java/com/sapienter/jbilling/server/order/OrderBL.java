@@ -27,6 +27,8 @@ import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.item.PlanBL;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
+import com.sapienter.jbilling.server.item.db.PlanDTO;
+import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.list.ResultList;
@@ -62,6 +64,7 @@ import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDAS;
 import com.sapienter.jbilling.server.provisioning.event.SubscriptionActiveEvent;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.ContactBL;
+import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
@@ -187,6 +190,37 @@ public class OrderBL extends ResultList
 
     public OrderDTO getDTO() {
         return order;
+    }
+
+
+    /**
+     * Adds the given quantity of an item to this order if the item is not already present.
+     *
+     * @param lines order lines to check for existing item
+     * @param itemId item id to add
+     * @param quantity quantity to add
+     * @param userId user id
+     * @param languageId language id
+     * @param currencyId currency id
+     * @param entityId entity id
+     */
+    public void addItemIfMissing(List<OrderLineDTO> lines, Integer itemId, BigDecimal quantity,
+                                 Integer userId, Integer languageId, Integer currencyId, Integer entityId) {
+
+        if (quantity != null && quantity.compareTo(BigDecimal.ZERO) > 0) {
+            boolean exists = false;
+            for (OrderLineDTO line : lines) {
+                if (line.getItemId().equals(itemId)) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists) {
+                LOG.debug("Item " + itemId + " does not exist in the order, adding " + quantity + " units.");
+                addItem(itemId, quantity, languageId, userId, entityId, currencyId, null);
+            }
+        }
     }
 
     public void addItem(Integer itemID, BigDecimal quantity, Integer language, Integer userId, Integer entityId,
@@ -341,7 +375,9 @@ public class OrderBL extends ResultList
                 for (OrderLineDTO line : lines)
                     line.setItem(new ItemBL(line.getItemId()).getEntity());
 
-                addCustomerPlans(lines, orderDto.getUserId());
+                UserDTO baseUser = orderDto.getBaseUserByCreatedBy();
+                addCustomerPlans(lines, baseUser.getId());
+                addBundledItems(lines, baseUser.getId(), baseUser.getLanguageIdField(), baseUser.getCurrencyId(), entityId);
             }
 
             order = orderDas.save(orderDto);
@@ -580,6 +616,11 @@ public class OrderBL extends ResultList
         // add new customer plan subscriptions
         if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
             addCustomerPlans(dto.getLines(), order.getUserId());
+            addBundledItems(dto.getLines(),
+                            order.getUserId(),
+                            order.getCurrencyId(),
+                            order.getUser().getLanguage().getId(),
+                            order.getUser().getEntity().getId());
         }
 
         // now update this order's lines
@@ -676,6 +717,21 @@ public class OrderBL extends ResultList
         }
     }
 
+    public void addBundledItems(List<OrderLineDTO> lines, Integer userId, Integer languageId, Integer currencyId, Integer entityId) {
+        LOG.debug("Processing " + lines.size() + " order line(s), adding bundled plan items to order.");
+
+        for (OrderLineDTO line : lines) {
+            if (!line.getItem().getPlans().isEmpty()) {
+                for (PlanDTO plan : new PlanBL().getPlansBySubscriptionItem(line.getItemId())) {
+                    for (PlanItemDTO planItem : plan.getPlanItems()) {
+                        LOG.debug("Adding bundled items from " + planItem);
+                        addItemIfMissing(lines, planItem.getId(), planItem.getBundledQuantity(),
+                                         userId, languageId, currencyId, entityId);
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * Un-subscribes the given user to any plans held by the list of order lines. The customer

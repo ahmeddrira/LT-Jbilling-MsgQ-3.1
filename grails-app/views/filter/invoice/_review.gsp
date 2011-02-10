@@ -18,7 +18,7 @@
                               valueMessagePrefix='filters.isReview'
                               noSelection="['': message(code: 'filters.isReview.empty')]"/>
                 </div>
-                <label for="filters.${filter.name}.stringValue"><g:message code="filters.isReview.label"/></label>
+                <label for="filters.${filter.name}.integerValue"><g:message code="filters.isReview.label"/></label>
             </div>
         </fieldset>
     </div>

@@ -47,7 +47,7 @@
         <div class="column">
             <g:applyLayout name="form/text">
                 <content tag="label">&nbsp;</content>
-                <a class="submit add" onclick="chain()"><span><g:message code="button.add.chain"/></span></a>
+                <a class="submit add" onclick="addChainModel()"><span><g:message code="button.add.chain"/></span></a>
             </g:applyLayout>
 
             <g:hiddenField name="attributeIndex"/>
@@ -70,7 +70,7 @@
             });
         });
 
-        function chain() {
+        function addChainModel() {
             $.ajax({
                type: 'POST',
                url: '${createLink(action: 'addChainModel')}',
@@ -79,7 +79,18 @@
             });
         }
 
-        function add(element, modelIndex, attributeIndex) {
+        function removeChainModel(element, modelIndex) {
+            $('#modelIndex').val(modelIndex);
+
+            $.ajax({
+               type: 'POST',
+               url: '${createLink(action: 'removeChainModel')}',
+               data: $('#priceModel').parents('form').serialize(),
+               success: function(data) { $('#priceModel').replaceWith(data); }
+            });
+        }
+
+        function addModelAttribute(element, modelIndex, attributeIndex) {
             $('#modelIndex').val(modelIndex);
             $('#attributeIndex').val(attributeIndex);
 
@@ -91,7 +102,7 @@
             });
         }
 
-        function remove(element, modelIndex, attributeIndex) {
+        function removeModelAttribute(element, modelIndex, attributeIndex) {
             $('#modelIndex').val(modelIndex);
             $('#attributeIndex').val(attributeIndex);
 

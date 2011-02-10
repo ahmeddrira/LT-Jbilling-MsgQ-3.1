@@ -43,6 +43,11 @@ a {
 	text-decoration:none;
     cursor: pointer;
 }
+a img {
+    position: relative;
+    top: 4px;
+    left: 4px;
+}
 a:focus {
 	outline:none;
 }
@@ -1106,6 +1111,9 @@ ul#review-lines {
 #review-lines li .row span {
     font-size: 12px;
     font-weight: normal;
+}
+#review-lines li .row a span {
+    font-weight: bold;
 }
 #review-lines span.description {
     padding-left: 3px;

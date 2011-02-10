@@ -299,6 +299,23 @@ class ProductController {
         render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
     }
 
+    def removeChainModel = {
+        PriceModelWS priceModel = bindPriceModel(params)
+        def modelIndex = params.int('modelIndex')
+
+        // remove price model from the chain
+        def model = priceModel
+        for (int i = 1; model != null; i++) {
+            if (i == modelIndex) {
+                model.next = model.next?.next
+                break
+            }
+            model = model.next
+        }
+
+        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+    }
+
     def addAttribute = {
         PriceModelWS priceModel = bindPriceModel(params)
 

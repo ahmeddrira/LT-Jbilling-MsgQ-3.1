@@ -16,6 +16,12 @@
               from="${PriceModelStrategy.values()}"
               valueMessagePrefix="price.strategy"
               value="${model?.type ?: type.name()}"/>
+
+    <g:if test="${modelIndex > 0}">
+        <a onclick="removeChainModel(this, ${modelIndex});">
+            <img src="${resource(dir:'images', file:'cross.png')}" alt="remove"/>
+        </a>
+    </g:if>
 </g:applyLayout>
 
 <g:applyLayout name="form/input">

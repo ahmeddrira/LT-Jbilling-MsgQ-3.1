@@ -301,6 +301,29 @@ class PlanBuilderController {
             on("success").to("build")
         }
 
+        removeChainModel {
+            action {
+                def index = params.int('index')
+                def modelIndex = params.int('modelIndex')
+                def planItem = conversation.plan.planItems[index]
+                planItem.model = bindPriceModel(params)
+
+                // remove price model from the chain
+                def model = planItem.model
+                for (int i = 1; model != null; i++) {
+                    if (i == modelIndex) {
+                        model.next = model.next?.next
+                        break
+                    }
+                    model = model.next
+                }
+
+                params.newLineIndex = index
+                params.template = 'review'
+            }
+            on("success").to("build")
+        }
+
         /**
          * Adds a new attribute field to the plan price model, and renders the review panel.
          * The rendered review panel will have the edited line open for further modification.
@@ -399,6 +422,7 @@ class PlanBuilderController {
             // pricing model
             on("updateStrategy").to("updateStrategy")
             on("addChainModel").to("addChainModel")
+            on("removeChainModel").to("removeChainModel")
             on("addAttribute").to("addAttribute")
             on("removeAttribute").to("removeAttribute")
 

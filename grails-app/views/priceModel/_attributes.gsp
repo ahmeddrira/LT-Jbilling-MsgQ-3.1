@@ -42,7 +42,7 @@
             <g:textField class="field" name="model.${modelIndex}.attribute.${attributeIndex}.value" value="${attribute.value}"/>
         </content>
 
-        <a onclick="remove(this, ${modelIndex}, ${attributeIndex})">
+        <a onclick="removeModelAttribute(this, ${modelIndex}, ${attributeIndex})">
             <img src="${resource(dir:'images', file:'cross.png')}" alt="remove"/>
         </a>
     </g:applyLayout>
@@ -61,7 +61,7 @@
         <g:textField class="field" name="model.${modelIndex}.attribute.${attributeIndex}.value"/>
     </content>
 
-    <a onclick="add(this, ${modelIndex}, ${attributeIndex})">
+    <a onclick="addModelAttribute(this, ${modelIndex}, ${attributeIndex})">
         <img src="${resource(dir:'images', file:'add.png')}" alt="remove"/>
     </a>
 </g:applyLayout>

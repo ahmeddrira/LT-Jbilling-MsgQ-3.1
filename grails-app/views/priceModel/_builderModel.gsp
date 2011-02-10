@@ -32,9 +32,10 @@
 </g:while>
 
 <!-- controls -->
+<br/>
 <g:applyLayout name="form/text">
     <content tag="label">&nbsp;</content>
-    <a class="submit add" onclick="chain(this)"><span><g:message code="button.add.chain"/></span></a>
+    <a class="submit add" onclick="addChainModel(this)"><span><g:message code="button.add.chain"/></span></a>
 </g:applyLayout>
 
 <g:hiddenField name="attributeIndex"/>

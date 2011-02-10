@@ -73,12 +73,39 @@
                     <td><g:message code="product.internal.number"/></td>
                     <td class="value">${planItem.item.internalNumber}</td>
                 </tr>
+
                 <tr>
                     <td><g:message code="plan.model.type"/></td>
-                    <td class="value">${planItem.model.type}</td>
+                    <td class="value"><g:message code="price.strategy.${planItem.model.type.name()}"/></td>
                     <td><g:message code="plan.model.rate"/></td>
                     <td class="value"><g:formatNumber number="${planItem.model.rate}" type="currency" currencyCode="${planItem.model.currency.code}"/></td>
                 </tr>
+                <g:each var="attribute" in="${planItem.model.attributes.entrySet()}">
+                    <tr>
+                        <td></td><td></td>
+                        <td><g:message code="attribute.${attribute.key}"/></td>
+                        <td class="value">${attribute.value}</td>
+                    </tr>
+                </g:each>
+
+                <g:set var="next" value="${planItem.model.next}"/>
+                <g:while test="${next}">
+                    <tr>
+                        <td><g:message code="plan.model.type"/></td>
+                        <td class="value"><g:message code="price.strategy.${next.type.name()}"/></td>
+                        <td><g:message code="plan.model.rate"/></td>
+                        <td class="value"><g:formatNumber number="${next.rate}" type="currency" currencyCode="${next.currency.code}"/></td>
+                    </tr>
+                    <g:each var="attribute" in="${next.attributes.entrySet()}">
+                        <tr>
+                            <td></td><td></td>
+                            <td><g:message code="attribute.${attribute.key}"/></td>
+                            <td class="value">${attribute.value}</td>
+                        </tr>
+                    </g:each>
+
+                    <g:set var="next" value="${next.next}"/>
+                </g:while>
 
                 <g:if test="${index < plan.planItems.size()-1}">
                     <tr><td colspan="4"><hr/></td></tr>

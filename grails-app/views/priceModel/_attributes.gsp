@@ -12,14 +12,16 @@
 --%>
 
 <g:set var="attributeIndex" value="${0}"/>
+<g:set var="attributes" value="${new HashMap<String, String>(model.attributes)}"/>
 
 <!-- all attribute definitions -->
 <g:each var="definition" in="${type?.strategy?.attributeDefinitions}">
     <g:set var="attributeIndex" value="${attributeIndex + 1}"/>
-    <g:set var="attribute" value="${model.attributes.remove(definition.name)}"/>
+
+    <g:set var="attribute" value="${attributes.remove(definition.name)}"/>
 
     <g:applyLayout name="form/input">
-        <content tag="label"><g:message code="attribute.${definition.name}"/></content>
+        <content tag="label"><g:message code="${definition.name}"/></content>
         <content tag="label.for">model.${modelIndex}.attribute.${attributeIndex}.value</content>
 
         <g:hiddenField name="model.${modelIndex}.attribute.${attributeIndex}.name" value="${definition.name}"/>
@@ -28,7 +30,7 @@
 </g:each>
 
 <!-- remaining user-defined attributes -->
-<g:each var="attribute" in="${model?.attributes?.entrySet()}">
+<g:each var="attribute" in="${attributes?.entrySet()}">
     <g:set var="attributeIndex" value="${attributeIndex + 1}"/>
 
     <g:applyLayout name="form/attribute">

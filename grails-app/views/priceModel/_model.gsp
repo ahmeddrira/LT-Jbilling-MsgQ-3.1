@@ -1,4 +1,4 @@
-<%@ page import="org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.db.ChainPosition; org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 <%--
   Editor form for price models.
@@ -7,7 +7,8 @@
   @since  02-Feb-2011
 --%>
 
-<g:set var="type" value="${(model ? PriceModelStrategy.valueOf(model?.type) : PriceModelStrategy.METERED)}"/>
+<g:set var="types" value="${PriceModelStrategy.getStrategyByChainPosition(ChainPosition.START)}"/>
+<g:set var="type" value="${model ? PriceModelStrategy.valueOf(model?.type) : types?.asList()?.first()}"/>
 <g:set var="templateName" value="${WordUtils.uncapitalize(WordUtils.capitalizeFully(type.name(), ['_'] as char[]).replaceAll('_',''))}"/>
 <g:set var="modelIndex" value="${0}"/>
 
@@ -15,7 +16,7 @@
     <!-- root price model -->
     <div class="form-columns">
         <div class="column">
-            <g:render template="/priceModel/strategy/${templateName}" model="[model: model, type: type, modelIndex: modelIndex, currencies: currencies]"/>
+            <g:render template="/priceModel/strategy/${templateName}" model="[model: model, type: type, modelIndex: modelIndex, types: types, currencies: currencies]"/>
         </div>
         <div class="column">
             <g:render template="/priceModel/attributes" model="[model: model, type: type, modelIndex: modelIndex]"/>
@@ -23,6 +24,7 @@
     </div>
 
     <!-- price models in chain -->
+    <g:set var="types" value="${PriceModelStrategy.getStrategyByChainPosition(ChainPosition.MIDDLE, ChainPosition.END)}"/>
     <g:set var="next" value="${model.next}"/>
     <g:while test="${next}">
         <g:set var="type" value="${PriceModelStrategy.valueOf(next?.type)}"/>
@@ -32,7 +34,7 @@
         <div class="form-columns">
             <hr/>
             <div class="column">
-                <g:render template="/priceModel/strategy/${templateName}" model="[model: next, type: type, modelIndex: modelIndex, currencies: currencies]"/>
+                <g:render template="/priceModel/strategy/${templateName}" model="[model: next, type: type, modelIndex: modelIndex, types: types, currencies: currencies]"/>
             </div>
             <div class="column">
                 <g:render template="/priceModel/attributes" model="[model: next, type: type, modelIndex: modelIndex]"/>

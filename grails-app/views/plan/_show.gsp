@@ -74,21 +74,7 @@
                     <td class="value">${planItem.item.internalNumber}</td>
                 </tr>
 
-                <tr>
-                    <td><g:message code="plan.model.type"/></td>
-                    <td class="value"><g:message code="price.strategy.${planItem.model.type.name()}"/></td>
-                    <td><g:message code="plan.model.rate"/></td>
-                    <td class="value"><g:formatNumber number="${planItem.model.rate}" type="currency" currencyCode="${planItem.model.currency.code}"/></td>
-                </tr>
-                <g:each var="attribute" in="${planItem.model.attributes.entrySet()}">
-                    <tr>
-                        <td></td><td></td>
-                        <td><g:message code="attribute.${attribute.key}"/></td>
-                        <td class="value">${attribute.value}</td>
-                    </tr>
-                </g:each>
-
-                <g:set var="next" value="${planItem.model.next}"/>
+                <g:set var="next" value="${planItem.model}"/>
                 <g:while test="${next}">
                     <tr>
                         <td><g:message code="plan.model.type"/></td>
@@ -99,7 +85,7 @@
                     <g:each var="attribute" in="${next.attributes.entrySet()}">
                         <tr>
                             <td></td><td></td>
-                            <td><g:message code="attribute.${attribute.key}"/></td>
+                            <td><g:message code="${attribute.key}"/></td>
                             <td class="value">${attribute.value}</td>
                         </tr>
                     </g:each>

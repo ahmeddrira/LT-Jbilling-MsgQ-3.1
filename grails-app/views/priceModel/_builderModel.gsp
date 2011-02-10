@@ -1,4 +1,4 @@
-<%@ page import="org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.db.ChainPosition; org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 <%--
   Plan-builder editor form for price models.
@@ -10,14 +10,16 @@
 --%>
 
 <!-- root price model -->
+<g:set var="types" value="${PriceModelStrategy.getStrategyByChainPosition(ChainPosition.START)}"/>
 <g:set var="type" value="${(model ? PriceModelStrategy.valueOf(model?.type) : PriceModelStrategy.METERED)}"/>
 <g:set var="templateName" value="${WordUtils.uncapitalize(WordUtils.capitalizeFully(type.name(), ['_'] as char[]).replaceAll('_',''))}"/>
 <g:set var="modelIndex" value="${0}"/>
 
-<g:render template="/priceModel/strategy/${templateName}" model="[model: model, type: type, modelIndex: modelIndex, currencies: currencies]"/>
+<g:render template="/priceModel/strategy/${templateName}" model="[model: model, type: type, modelIndex: modelIndex, types: types, currencies: currencies]"/>
 <g:render template="/priceModel/attributes" model="[model: model, type: type, modelIndex: modelIndex]"/>
 
 <!-- price models in chain -->
+<g:set var="types" value="${PriceModelStrategy.getStrategyByChainPosition(ChainPosition.END, ChainPosition.MIDDLE)}"/>
 <g:set var="next" value="${model.next}"/>
 <g:while test="${next}">
     <g:set var="type" value="${PriceModelStrategy.valueOf(next?.type)}"/>
@@ -25,7 +27,7 @@
     <g:set var="modelIndex" value="${modelIndex + 1}"/>
 
     <hr/>
-    <g:render template="/priceModel/strategy/${templateName}" model="[model: next, type: type, modelIndex: modelIndex, currencies: currencies]"/>
+    <g:render template="/priceModel/strategy/${templateName}" model="[model: next, type: type, modelIndex: modelIndex, types: types, currencies: currencies]"/>
     <g:render template="/priceModel/attributes" model="[model: next, type: type, modelIndex: modelIndex]"/>
 
     <g:set var="next" value="${next.next}"/>

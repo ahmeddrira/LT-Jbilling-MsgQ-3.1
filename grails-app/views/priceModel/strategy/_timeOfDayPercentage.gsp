@@ -13,7 +13,7 @@
     <content tag="label"><g:message code="plan.model.type"/></content>
     <content tag="label.for">model.${modelIndex}.type</content>
     <g:select name="model.${modelIndex}.type" class="model-type"
-              from="${PriceModelStrategy.values()}"
+              from="${types}"
               valueMessagePrefix="price.strategy"
               value="${model?.type ?: type.name()}"/>
 

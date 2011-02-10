@@ -35,21 +35,7 @@
         <!-- pricing -->
         <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">
             <tbody>
-                <tr>
-                    <td><g:message code="plan.model.type"/></td>
-                    <td class="value"><g:message code="price.strategy.${selectedProduct.defaultPrice.type.name()}"/></td>
-                    <td><g:message code="plan.model.rate"/></td>
-                    <td class="value"><g:formatNumber number="${selectedProduct.defaultPrice.rate}" type="currency" currencyCode="${selectedProduct.defaultPrice.currency.code}"/></td>
-                </tr>
-                <g:each var="attribute" in="${selectedProduct.defaultPrice.attributes.entrySet()}">
-                    <tr>
-                        <td></td><td></td>
-                        <td><g:message code="attribute.${attribute.key}"/></td>
-                        <td class="value">${attribute.value}</td>
-                    </tr>
-                </g:each>
-
-                <g:set var="next" value="${selectedProduct.defaultPrice.next}"/>
+            <g:set var="next" value="${selectedProduct.defaultPrice}"/>
                 <g:while test="${next}">
                     <tr>
                         <td><g:message code="plan.model.type"/></td>
@@ -60,7 +46,7 @@
                     <g:each var="attribute" in="${next.attributes.entrySet()}">
                         <tr>
                             <td></td><td></td>
-                            <td><g:message code="attribute.${attribute.key}"/></td>
+                            <td><g:message code="${attribute.key}"/></td>
                             <td class="value">${attribute.value}</td>
                         </tr>
                     </g:each>

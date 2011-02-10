@@ -28,7 +28,9 @@ import com.sapienter.jbilling.server.pricing.strategy.PercentageStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPercentageStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPricingStrategy;
-import org.apache.commons.lang.WordUtils;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Simple mapping enum for PricingStrategy implementations. This class is used
@@ -67,4 +69,16 @@ public enum PriceModelStrategy {
     private final PricingStrategy strategy;
     PriceModelStrategy(PricingStrategy strategy) { this.strategy = strategy; }
     public PricingStrategy getStrategy() { return strategy; }
+
+    public static Set<PriceModelStrategy> getStrategyByChainPosition(ChainPosition ...chainPositions) {
+        Set<PriceModelStrategy> strategies = new LinkedHashSet<PriceModelStrategy>();
+        for (PriceModelStrategy strategy : values()) {
+            for (ChainPosition position : chainPositions) {
+                if (strategy.getStrategy().getChainPositions().contains(position)) {
+                    strategies.add(strategy);
+                }
+            }
+        }
+        return strategies;
+    }
 }

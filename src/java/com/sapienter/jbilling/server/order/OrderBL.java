@@ -375,7 +375,7 @@ public class OrderBL extends ResultList
                 for (OrderLineDTO line : lines)
                     line.setItem(new ItemBL(line.getItemId()).getEntity());
 
-                UserDTO baseUser = orderDto.getBaseUserByCreatedBy();
+                UserDTO baseUser = orderDto.getBaseUserByUserId();
                 addCustomerPlans(lines, baseUser.getId());
                 addBundledItems(lines, baseUser.getId(), baseUser.getLanguageIdField(), baseUser.getCurrencyId(), entityId);
             }

@@ -89,7 +89,7 @@ class BillingController {
 							}
 						}
 					}
-					eq('isReview', 0)
+					//eq('isReview', 0)
 					eq('entity', new CompanyDTO(session['company_id']))
 				}
 				order("id", "desc")

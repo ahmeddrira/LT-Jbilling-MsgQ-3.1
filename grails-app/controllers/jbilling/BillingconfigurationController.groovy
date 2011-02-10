@@ -25,10 +25,10 @@ class BillingconfigurationController {
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 		def configuration= webServicesSession.getBillingProcessConfiguration()
 		boolean isBillingRunning= webServicesSession.isBillingRunning()
-		//if (isBillingRunning)
-		//{
-		//	flash.message = 'prompt.billing.running'
-		//}
+		if (isBillingRunning)
+		{
+			flash.message = 'prompt.billing.running'
+		}
 		[configuration:configuration, isBillingRunning: isBillingRunning]
 	}
 	

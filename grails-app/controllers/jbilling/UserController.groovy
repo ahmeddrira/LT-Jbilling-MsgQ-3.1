@@ -48,7 +48,7 @@ class UserController {
 
         def users = UserDTO.createCriteria().list(
                 max:    params.max,
-                offset: params.offset                
+                offset: params.offset
         ) {
             and {
                 filters.each { filter ->
@@ -72,7 +72,9 @@ class UserController {
                         }
                     }
                 }
-
+				roles {
+					eq('id', Constants.TYPE_CUSTOMER)
+				}
                 eq('company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
             }

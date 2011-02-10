@@ -830,6 +830,12 @@ hr {
 .table-box tbody tr.active {
     background: #bbb url(../images/bg-gradient2.gif) repeat-x;
 }
+
+.table-box tbody tr.isReview {
+    font-style: italic;
+    text-shadow: 1px 1px 4px #383838;
+}
+
 .table-box tbody tr em {
 	display:block;
 }

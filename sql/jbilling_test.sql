@@ -35,6 +35,7 @@ ALTER TABLE ONLY public.process_run_total DROP CONSTRAINT process_run_total_fk_2
 ALTER TABLE ONLY public.process_run_total DROP CONSTRAINT process_run_total_fk_1;
 ALTER TABLE ONLY public.process_run DROP CONSTRAINT process_run_fk_2;
 ALTER TABLE ONLY public.process_run DROP CONSTRAINT process_run_fk_1;
+ALTER TABLE ONLY public.price_model DROP CONSTRAINT price_model_next_id_fk;
 ALTER TABLE ONLY public.price_model DROP CONSTRAINT price_model_currency_id_fk;
 ALTER TABLE ONLY public.price_model_attribute DROP CONSTRAINT price_model_attr_model_id_fk;
 ALTER TABLE ONLY public.preference DROP CONSTRAINT preference_fk_2;
@@ -1106,7 +1107,8 @@ CREATE TABLE item_type (
     entity_id integer NOT NULL,
     description character varying(100),
     order_line_type_id integer NOT NULL,
-    optlock integer NOT NULL
+    optlock integer NOT NULL,
+    internal boolean NOT NULL
 );
 
 
@@ -1804,7 +1806,8 @@ CREATE TABLE plan_item (
     plan_id integer,
     item_id integer NOT NULL,
     price_model_id integer NOT NULL,
-    precedence integer NOT NULL
+    precedence integer NOT NULL,
+    bundled_quantity numeric(22,10)
 );
 
 
@@ -1909,7 +1912,8 @@ CREATE TABLE price_model (
     strategy_type character varying(20) NOT NULL,
     rate numeric(22,10) NOT NULL,
     included_quantity integer,
-    currency_id integer NOT NULL
+    currency_id integer NOT NULL,
+    next_model_id integer
 );
 
 
@@ -11426,14 +11430,16 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 -- Data for Name: item_type; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY item_type (id, entity_id, description, order_line_type_id, optlock) FROM stdin;
-2	2	Drinks	1	1
-22	1	Fees	3	1
-2200	1	Long Distance Plans	1	0
-2201	1	Calls	1	0
-12	1	Discounts	1	1
-2401	1	Data 	1	0
-2400	1	Broadband	1	2
+COPY item_type (id, entity_id, description, order_line_type_id, optlock, internal) FROM stdin;
+2	2	Drinks	1	1	f
+22	1	Fees	3	1	f
+2200	1	Long Distance Plans	1	0	f
+2201	1	Calls	1	0	f
+12	1	Discounts	1	1	f
+2401	1	Data 	1	0	f
+2400	1	Broadband	1	2	f
+2402	1	plans	1	0	t
+2403	2	plans	1	0	t
 \.
 
 
@@ -14580,7 +14586,7 @@ COPY plan (id, item_id, description) FROM stdin;
 -- Data for Name: plan_item; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY plan_item (id, plan_id, item_id, price_model_id, precedence) FROM stdin;
+COPY plan_item (id, plan_id, item_id, price_model_id, precedence, bundled_quantity) FROM stdin;
 \.
 
 
@@ -14955,32 +14961,32 @@ COPY preference_type (id, int_def_value, str_def_value, float_def_value) FROM st
 -- Data for Name: price_model; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY price_model (id, strategy_type, rate, included_quantity, currency_id) FROM stdin;
-1	METERED	10.0000000000	\N	1
-2	METERED	20.0000000000	\N	1
-3	METERED	15.0000000000	\N	1
-4	METERED	12.9899997711	\N	1
-14	METERED	5.0000000000	\N	1
-150	METERED	0.0000000000	\N	1
-151	METERED	15.0000000000	\N	1
-152	METERED	10.0000000000	\N	1
-1600	METERED	0.0000000000	\N	1
-1601	METERED	0.0000000000	\N	1
-1602	METERED	3.5000000000	\N	1
-1701	METERED	25.0000000000	\N	1
-1703	METERED	40.0000000000	\N	1
-1705	METERED	30.0000000000	\N	1
-1801	METERED	0.0000000000	\N	1
-1803	METERED	0.0000000000	\N	1
-1900	METERED	0.0000000000	\N	1
-2001	METERED	99.9900000000	\N	1
-2003	METERED	15.0000000000	\N	11
-2101	METERED	0.0000000000	\N	1
-2102	METERED	0.0000000000	\N	1
-2103	METERED	0.0000000000	\N	1
-2104	GRADUATED	0.0000000000	\N	1
-2105	METERED	0.0000000000	\N	1
-2100	METERED	1.0000000000	\N	1
+COPY price_model (id, strategy_type, rate, included_quantity, currency_id, next_model_id) FROM stdin;
+1	METERED	10.0000000000	\N	1	\N
+2	METERED	20.0000000000	\N	1	\N
+3	METERED	15.0000000000	\N	1	\N
+4	METERED	12.9899997711	\N	1	\N
+14	METERED	5.0000000000	\N	1	\N
+150	METERED	0.0000000000	\N	1	\N
+151	METERED	15.0000000000	\N	1	\N
+152	METERED	10.0000000000	\N	1	\N
+1600	METERED	0.0000000000	\N	1	\N
+1601	METERED	0.0000000000	\N	1	\N
+1602	METERED	3.5000000000	\N	1	\N
+1701	METERED	25.0000000000	\N	1	\N
+1703	METERED	40.0000000000	\N	1	\N
+1705	METERED	30.0000000000	\N	1	\N
+1801	METERED	0.0000000000	\N	1	\N
+1803	METERED	0.0000000000	\N	1	\N
+1900	METERED	0.0000000000	\N	1	\N
+2001	METERED	99.9900000000	\N	1	\N
+2003	METERED	15.0000000000	\N	11	\N
+2101	METERED	0.0000000000	\N	1	\N
+2102	METERED	0.0000000000	\N	1	\N
+2103	METERED	0.0000000000	\N	1	\N
+2104	GRADUATED	0.0000000000	\N	1	\N
+2105	METERED	0.0000000000	\N	1	\N
+2100	METERED	1.0000000000	\N	1	\N
 \.
 
 
@@ -20572,6 +20578,14 @@ ALTER TABLE ONLY price_model_attribute
 
 ALTER TABLE ONLY price_model
     ADD CONSTRAINT price_model_currency_id_fk FOREIGN KEY (currency_id) REFERENCES currency(id);
+
+
+--
+-- Name: price_model_next_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY price_model
+    ADD CONSTRAINT price_model_next_id_fk FOREIGN KEY (next_model_id) REFERENCES price_model(id);
 
 
 --

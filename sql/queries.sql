@@ -405,3 +405,12 @@ select p.billing_date, p.retries_to_do, r.*, finished - started
 update jbilling_seqs
 set next_id = ( select (max(id)/10)+1 from base_user )
 where name = 'base_user';
+
+-- list the statuses for a generic table. Just replace 'process_run_status'
+select gs.id, gs.status_value, content
+from international_description id, jbilling_table jt, generic_status gs
+where jt.name = gs.dtype
+  and id.table_id = jt.id
+  and gs.dtype = 'process_run_status'
+  and id.foreign_id = gs.status_value
+

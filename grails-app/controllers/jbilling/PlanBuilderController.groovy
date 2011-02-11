@@ -293,7 +293,7 @@ class PlanBuilderController {
                 while (model.next) {
                     model = model.next
                 }
-                model.next = new PriceModelWS(PriceModelStrategy.METERED.name());
+                model.next = new PriceModelWS();
 
                 params.newLineIndex = index
                 params.template = 'review'

@@ -8,7 +8,7 @@
 --%>
 
 <g:set var="types" value="${PriceModelStrategy.getStrategyByChainPosition(ChainPosition.START)}"/>
-<g:set var="type" value="${model ? PriceModelStrategy.valueOf(model?.type) : types?.asList()?.first()}"/>
+<g:set var="type" value="${model?.type ? PriceModelStrategy.valueOf(model.type) : types?.asList()?.first()}"/>
 <g:set var="templateName" value="${WordUtils.uncapitalize(WordUtils.capitalizeFully(type.name(), ['_'] as char[]).replaceAll('_',''))}"/>
 <g:set var="modelIndex" value="${0}"/>
 
@@ -27,7 +27,7 @@
     <g:set var="types" value="${PriceModelStrategy.getStrategyByChainPosition(ChainPosition.MIDDLE, ChainPosition.END)}"/>
     <g:set var="next" value="${model.next}"/>
     <g:while test="${next}">
-        <g:set var="type" value="${PriceModelStrategy.valueOf(next?.type)}"/>
+        <g:set var="type" value="${next?.type ? PriceModelStrategy.valueOf(next.type) : types?.asList()?.first()}"/>
         <g:set var="templateName" value="${WordUtils.uncapitalize(WordUtils.capitalizeFully(type.name(), ['_'] as char[]).replaceAll('_',''))}"/>
         <g:set var="modelIndex" value="${modelIndex + 1}"/>
 

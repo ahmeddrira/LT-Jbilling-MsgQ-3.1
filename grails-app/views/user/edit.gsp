@@ -63,23 +63,6 @@
                             <g:hiddenField name="user.userId" value="${user?.userId}"/>
                         </g:applyLayout>
 
-                        <g:if test="${parent?.customerId}">
-                            <g:applyLayout name="form/select">
-                                <content tag="label"><g:message code="prompt.customer.type"/></content>
-                                <content tag="label.for">user.mainRoleId</content>
-                                <g:set var="customerRole" value="${RoleDTO.get(Constants.TYPE_CUSTOMER)}"/>
-                                <span>${customerRole.getTitle(session['language_id'])}</span>
-                                <g:hiddenField name="user.mainRoleId" value="${Constants.TYPE_CUSTOMER}"/>
-                            </g:applyLayout>
-                        </g:if>
-                        <g:else>
-                            <g:applyLayout name="form/select">
-                                <content tag="label"><g:message code="prompt.customer.type"/></content>
-                                <content tag="label.for">user.mainRoleId</content>
-                                <g:selectRoles name="user.mainRoleId" value="${user?.mainRoleId ?: Constants.TYPE_CUSTOMER}" languageId="${session['language_id']}" />
-                            </g:applyLayout>
-                        </g:else>
-
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.login.name"/></content>
                             <content tag="label.for">user.userName</content>
@@ -399,7 +382,7 @@
                 <!-- box text -->
                 <div class="box-text">
                     <label><g:message code="customer.detail.note.title"/></label>
-                    <g:textArea name="user.notes" value="${user?.notes}" rows="5" cols="60"/>
+                    <g:textArea name="user.notes" value="${user?.notes ?: ''}" rows="5" cols="60"/>
                 </div>
 
                 <div class="buttons">

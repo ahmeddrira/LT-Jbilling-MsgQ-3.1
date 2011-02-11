@@ -49,7 +49,7 @@
                 <g:applyLayout name="form/input">
                     <content tag="label"><g:message code="plan.item.bundled.quantity"/></content>
                     <content tag="label.for">price.bundledQuantity</content>
-                    <g:textField class="field" name="price.bundledQuantity" value="${formatNumber(number: planItem.bundledQuantity)}"/>
+                    <g:textField class="field" name="price.bundledQuantity" value="${formatNumber(number: planItem.getBundledQuantityAsDecimal() ?: BigDecimal.ZERO)}"/>
                 </g:applyLayout>
                 <br/>
 

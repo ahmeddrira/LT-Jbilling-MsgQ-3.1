@@ -725,7 +725,7 @@ public class OrderBL extends ResultList
                 for (PlanDTO plan : new PlanBL().getPlansBySubscriptionItem(line.getItemId())) {
                     for (PlanItemDTO planItem : plan.getPlanItems()) {
                         LOG.debug("Adding bundled items from " + planItem);
-                        addItemIfMissing(lines, planItem.getId(), planItem.getBundledQuantity(),
+                        addItemIfMissing(lines, planItem.getItem().getId(), planItem.getBundledQuantity(),
                                          userId, languageId, currencyId, entityId);
                     }
                 }

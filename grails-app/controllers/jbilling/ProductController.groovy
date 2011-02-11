@@ -294,7 +294,7 @@ class ProductController {
         while (model.next) {
             model = model.next
         }
-        model.next = new PriceModelWS(PriceModelStrategy.METERED.name());
+        model.next = new PriceModelWS();
 
         render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
     }

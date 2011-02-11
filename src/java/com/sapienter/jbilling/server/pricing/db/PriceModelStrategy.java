@@ -59,11 +59,11 @@ public enum PriceModelStrategy {
     /** Pricing strategy that uses the current time (or time of a mediated event) to determine the price */
     TIME_OF_DAY             (new TimeOfDayPricingStrategy()),
 
-    /** MIDDLE or END of chain, time-of-day strategy that applies a percentage to a previously calculated rate */
-    TIME_OF_DAY_PERCENTAGE  (new TimeOfDayPercentageStrategy()),
-
     /** MIDDLE or END of chain pricing strategy that applies a percentage to a previously calculated rate */
-    PERCENTAGE              (new PercentageStrategy());
+    PERCENTAGE              (new PercentageStrategy()),
+
+    /** MIDDLE or END of chain, time-of-day strategy that applies a percentage to a previously calculated rate */
+    TIME_OF_DAY_PERCENTAGE  (new TimeOfDayPercentageStrategy());
 
 
     private final PricingStrategy strategy;

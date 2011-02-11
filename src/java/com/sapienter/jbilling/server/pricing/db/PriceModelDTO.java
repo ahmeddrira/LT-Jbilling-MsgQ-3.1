@@ -234,23 +234,20 @@ public class PriceModelDTO implements Serializable {
      */
     @Transient
     public void applyTo(PricingResult result, List<PricingField> fields, BigDecimal quantity, Usage usage) {
-        PriceModelDTO model = this;
-        while (model != null) {
+        // each model in the chain
+        for (PriceModelDTO next = this; next != null; next = next.getNext()) {
             // apply pricing
-            model.getType().getStrategy().applyTo(result, fields, model, quantity, usage);
+            next.getType().getStrategy().applyTo(result, fields, next, quantity, usage);
 
             // convert currency if necessary
             if (result.getUserId() != null
                 && result.getCurrencyId() != null
-                && model.getCurrency() != null
-                && model.getCurrency().getId() != result.getCurrencyId()) {
+                && next.getCurrency() != null
+                && next.getCurrency().getId() != result.getCurrencyId()) {
 
                 Integer entityId = new UserBL().getEntityId(result.getUserId());
-                result.setPrice(new CurrencyBL().convert(model.getCurrency().getId(), result.getCurrencyId(), result.getPrice(), entityId));
+                result.setPrice(new CurrencyBL().convert(next.getCurrency().getId(), result.getCurrencyId(), result.getPrice(), entityId));
             }
-
-            // next price model in chain
-            model = model.getNext();
         }
     }
 

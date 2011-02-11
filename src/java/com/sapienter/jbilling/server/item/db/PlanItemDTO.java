@@ -86,7 +86,7 @@ public class PlanItemDTO implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", nullable = true)
     public PlanDTO getPlan() {
         return plan;

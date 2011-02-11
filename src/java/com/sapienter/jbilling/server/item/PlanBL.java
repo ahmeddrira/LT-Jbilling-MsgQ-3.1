@@ -163,7 +163,9 @@ public class PlanBL {
 
             plan.setDescription(dto.getDescription());
             plan.setItem(dto.getItem());
-            plan.setPlanItems(dto.getPlanItems());
+
+            plan.getPlanItems().clear();
+            plan.getPlanItems().addAll(dto.getPlanItems());
 
             this.plan = planDas.save(plan);
             refreshCustomerPrices();

@@ -64,16 +64,19 @@
             <g:each var="planItem" status="index" in="${plan.planItems.sort{ it.precedence }}">
 
                 <tr>
-                    <td><g:message code="product.id"/></td>
-                    <td class="value">
+                    <td><g:message code="product.internal.number"/></td>
+                    <td class="value" colspan="3">
                         <g:link controller="product" action="show" id="${planItem.item.id}">
-                            ${planItem.item.id}
+                            ${planItem.item.internalNumber}
                         </g:link>
                     </td>
-                    <td><g:message code="product.internal.number"/></td>
-                    <td class="value">${planItem.item.internalNumber}</td>
                 </tr>
-
+                <tr>
+                    <td><g:message code="product.description"/></td>
+                    <td class="value" colspan="3">
+                        ${planItem.item.getDescription(session['language_id'])}
+                    </td>
+                </tr>
                 <tr>
                     <td><g:message code="plan.item.precedence"/></td>
                     <td class="value">${planItem.precedence}</td>
@@ -82,20 +85,24 @@
                     <td class="value"><g:formatNumber number="${planItem.bundledQuantity}"/></td>
                 </tr>
 
+                <tr><td colspan="4">&nbsp;</td></tr>
+
                 <g:set var="next" value="${planItem.model}"/>
                 <g:while test="${next}">
-                    <tr>
+                    <tr class="price">
                         <td><g:message code="plan.model.type"/></td>
                         <td class="value"><g:message code="price.strategy.${next.type.name()}"/></td>
                         <td><g:message code="plan.model.rate"/></td>
                         <td class="value"><g:formatNumber number="${next.rate}" type="currency" currencyCode="${next.currency.code}"/></td>
                     </tr>
                     <g:each var="attribute" in="${next.attributes.entrySet()}">
-                        <tr>
-                            <td></td><td></td>
-                            <td><g:message code="${attribute.key}"/></td>
-                            <td class="value">${attribute.value}</td>
-                        </tr>
+                        <g:if test="${attribute.value}">
+                            <tr class="attribute">
+                                <td></td><td></td>
+                                <td><g:message code="${attribute.key}"/></td>
+                                <td class="value">${attribute.value}</td>
+                            </tr>
+                        </g:if>
                     </g:each>
 
                     <g:set var="next" value="${next.next}"/>

@@ -73,7 +73,7 @@ hr {
     display: block;
     position: relative;
     padding: 0;
-    margin: 8px auto;
+    margin: 10px auto;
     width: 90%;
     clear: both;
     border: none;
@@ -1580,6 +1580,15 @@ div.box-text {
     margin: 0;
 	font-weight: bold;
 	padding-left:10px;
+}
+.dataTable tr.price {
+    background-color: #eaeaea;
+}
+.dataTable tr.attribute {
+    background-color: #fafafa;
+}
+.dataTable tr hr {
+    margin: 25px auto;
 }
 .box-card-hold .dataTable {
     margin: 15px auto 10px;

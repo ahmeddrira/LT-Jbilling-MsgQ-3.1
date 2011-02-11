@@ -108,7 +108,7 @@ public class ItemBL {
         }
 
         // default currency for new prices (if currency is not explicitly set)
-        if (dto.getDefaultPrice() != null && dto.getDefaultPrice().getCurrency() != null) {
+        if (dto.getDefaultPrice() != null && dto.getDefaultPrice().getCurrency() == null) {
             dto.getDefaultPrice().setCurrency(entity.getEntity().getCurrency());
         }
 

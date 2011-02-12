@@ -14,7 +14,7 @@
 		<table class="dataTable">
             <tr><td><strong>
                     <g:if test="${user?.contact?.firstName || user?.contact?.lastName}">
-                        ${user.contact.firstName}&nbsp;${user.contact.lastName}
+                        ${user?.contact?.firstName}&nbsp;${user?.contact?.lastName}
                     </g:if>
                     <g:else>
                         ${user?.userName}

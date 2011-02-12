@@ -24,11 +24,13 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +97,6 @@ public class PriceModelBL {
                 next = next.getNext();
             }
 
-            LOG.debug("Constructed price model dto: " + root);
             return root;
         }
         return null;
@@ -106,8 +107,46 @@ public class PriceModelBL {
      * the given attributes are of the correct type.
      *
      * @param model pricing model to validate
+     * @throws SessionInternalError if attributes are missing or of an incorrect type
      */
-    public static void validateAttributes(PriceModelDTO model) {
-        AttributeUtils.validateAttributes(model.getAttributes(), model.getStrategy());
+    public static void validateAttributes(PriceModelDTO model) throws SessionInternalError {
+        List<String> errors = new ArrayList<String>();
+
+        for (PriceModelDTO next = model; next != null; next = next.getNext()) {
+            try {
+                AttributeUtils.validateAttributes(next.getAttributes(), next.getStrategy());
+            } catch (SessionInternalError e) {
+                errors.addAll(Arrays.asList(e.getErrorMessages()));
+            }
+        }
+
+        if (!errors.isEmpty())
+            throw new SessionInternalError("Price model attributes failed validation.",
+                                           errors.toArray(new String[errors.size()]));
+    }
+
+
+    /**
+     * Validates that the given pricing model WS object has all the required attributes and that
+     * the given attributes are of the correct type.
+     *
+     * @param model pricing model WS object to validate
+     * @throws SessionInternalError if attributes are missing or of an incorrect type
+     */
+    public static void validateAttributes(PriceModelWS model) throws SessionInternalError {
+        List<String> errors = new ArrayList<String>();
+
+        for (PriceModelWS next = model; next != null; next = next.getNext()) {
+            try {
+                PriceModelStrategy type = PriceModelStrategy.valueOf(next.getType());
+                AttributeUtils.validateAttributes(next.getAttributes(), type.getStrategy());
+            } catch (SessionInternalError e) {
+                errors.addAll(Arrays.asList(e.getErrorMessages()));
+            }
+        }
+
+        if (!errors.isEmpty())
+            throw new SessionInternalError("Price model attributes failed validation.",
+                                           errors.toArray(new String[errors.size()]));
     }
 }

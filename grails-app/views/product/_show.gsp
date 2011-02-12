@@ -44,11 +44,13 @@
                         <td class="value"><g:formatNumber number="${next.rate}" type="currency" currencyCode="${next.currency.code}"/></td>
                     </tr>
                     <g:each var="attribute" in="${next.attributes.entrySet()}">
-                        <tr>
-                            <td></td><td></td>
-                            <td><g:message code="${attribute.key}"/></td>
-                            <td class="value">${attribute.value}</td>
-                        </tr>
+                        <g:if test="${attribute.value}">
+                            <tr>
+                                <td></td><td></td>
+                                <td><g:message code="${attribute.key}"/></td>
+                                <td class="value">${attribute.value}</td>
+                            </tr>
+                        </g:if>
                     </g:each>
 
                     <g:set var="next" value="${next.next}"/>

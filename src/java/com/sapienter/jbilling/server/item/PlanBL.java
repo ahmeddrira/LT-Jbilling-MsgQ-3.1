@@ -25,14 +25,18 @@ import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.PlanDAS;
 import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
-import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.pricing.PriceModelBL;
+import com.sapienter.jbilling.server.pricing.PriceModelWS;
+import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
+import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.CustomerPriceDTO;
 import org.apache.log4j.Logger;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -113,21 +117,57 @@ public class PlanBL {
         return null;
     }
 
+    /**
+     * Validates all pricing models within the plan to ensure that they have the
+     * correct attributes.
+     *
+     * @param plan plan to validate
+     * @throws SessionInternalError if attributes are missing or of an incorrect type
+     */
+    public static void validateAttributes(PlanDTO plan) throws SessionInternalError {
+        List<String> errors = new ArrayList<String>();
+
+        for (PlanItemDTO planItem : plan.getPlanItems()) {
+            for (PriceModelDTO next = planItem.getModel(); next != null; next = next.getNext()) {
+                try {
+                    AttributeUtils.validateAttributes(next.getAttributes(), next.getStrategy());
+                } catch (SessionInternalError e) {
+                    errors.addAll(Arrays.asList(e.getErrorMessages()));
+                }
+            }
+        }
+
+        if (!errors.isEmpty())
+            throw new SessionInternalError("Plan pricing attributes failed validation.",
+                                           errors.toArray(new String[errors.size()]));
+    }
+
     // todo: add event logging for plans
     // todo: add useful internal events for customer subscription/unsubscription, and refresh prices
 
     public Integer create(PlanDTO plan) {
-        this.plan = planDas.save(plan);
-        return this.plan.getId();        
+        if (plan != null) {
+            validateAttributes(plan);
+
+            this.plan = planDas.save(plan);
+            return this.plan.getId();
+        }
+
+        LOG.error("Cannot save a null PlanDTO!");
+        return null;
     }
 
     public void update(PlanDTO dto) {
         if (plan != null) {
+            validateAttributes(dto);
+
             plan.setDescription(dto.getDescription());
             plan.setItem(dto.getItem());
-            plan.setPlanItems(dto.getPlanItems());
 
-            planDas.save(plan);
+            plan.getPlanItems().clear();
+            plan.getPlanItems().addAll(dto.getPlanItems());
+
+            this.plan = planDas.save(plan);
             refreshCustomerPrices();
 
         } else {
@@ -137,9 +177,10 @@ public class PlanBL {
 
     public void addPrice(PlanItemDTO planItem) {
         if (plan != null) {
-            plan.addPlanItem(planItem);
+            PriceModelBL.validateAttributes(planItem.getModel());
 
-            planDas.flush();
+            plan.addPlanItem(planItem);
+            this.plan = planDas.save(plan);
             refreshCustomerPrices();
             
         } else {
@@ -158,7 +199,7 @@ public class PlanBL {
         } else {
             LOG.error("Cannot delete, PlanDTO not found or not set!");
         }
-    }   
+    }
 
     /**
      * Refreshes the customer plan item price mappings for all customers that have

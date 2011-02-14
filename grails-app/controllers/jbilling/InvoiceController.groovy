@@ -1,11 +1,8 @@
 package jbilling
 
 import grails.plugins.springsecurity.Secured;
-
 import javax.servlet.ServletOutputStream
-
 import grails.converters.JSON
-
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.util.WebServicesSessionSpringBean;
@@ -23,8 +20,6 @@ import com.sapienter.jbilling.common.SessionInternalError;
 @Secured(['isAuthenticated()'])
 class InvoiceController {
 	
-	Integer languageId= session["language_id"]
-	
 	static pagination = [ max: 25, offset: 0 ]
 
     def webServicesSession
@@ -34,7 +29,7 @@ class InvoiceController {
 	def breadcrumbService
 
     def index = {
-        redirect action: list, params: params
+        redirect action: 'list', params: params
     }
 
 	def list = {
@@ -44,11 +39,8 @@ class InvoiceController {
 		}
 		
 		def filters = filterService.getFilters(FilterType.INVOICE, params)
-		
 		def invoiceList= getInvoices(filters)
-
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
-		log.debug "Found ${invoiceList?.size()} invoices."
 		if (params.applyFilter) {
 			render template: 'lists', model: [invoices:invoiceList, filters:filters]
 		} else {
@@ -123,7 +115,7 @@ class InvoiceController {
 		recentItemService.addRecentItem(invId, RecentItemType.INVOICE)
 		breadcrumbService.addBreadcrumb(controllerName, 'list', null, invId)
 		
-		render view: 'showListAndInvoice', model:[invoices:invoices, totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
+		render view: 'showListAndInvoice', model:[invoices:invoices, totalRevenue:totalRevenue, user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
 		}catch (Exception e) {
 			log.error e.getMessage()
 			flash.error = 'error.invoice.details'
@@ -196,7 +188,7 @@ class InvoiceController {
 			}
 		}		
 		
-		render template: params.template ?: 'show', model:[totalRevenue:totalRevenue,languageId:languageId,user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
+		render template: params.template ?: 'show', model:[totalRevenue:totalRevenue, user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
 	}
 	
 	def snapshot = {

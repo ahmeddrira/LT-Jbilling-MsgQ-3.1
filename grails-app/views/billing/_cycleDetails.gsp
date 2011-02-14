@@ -15,6 +15,23 @@
         <strong>${process?.processRuns?.size()} </strong></em>
 </div>
 
+<g:if test="${process.isReview}">
+<div class="table-info">
+        <p><strong><g:message code="billing.details.is.review"/></strong>
+        <g:message code="billing.details.is.review.explain"/></p>
+</div>
+<div class="table-info">
+<p>
+    <a onclick="showConfirm('approve-'+${process?.id});" class="submit">
+        <span><g:message code="billing.details.approve"/></span>
+    </a>
+    <a onclick="showConfirm('disapprove-'+${process?.id});" class="submit">
+        <span><g:message code="billing.details.disapprove"/></span>
+    </a>
+</div>
+</g:if>
+<div class="table-info"></div>
+
 <div class="table-area">
 <table>
     <thead>
@@ -155,3 +172,16 @@
     </tbody>
 </table>
 </div>
+
+<g:render template="/confirm"
+     model="['message':'billing.details.approve.confirm',
+             'controller':'billing',
+             'action':'approve',
+             'id':process.id,
+            ]"/>
+<g:render template="/confirm"
+     model="['message':'billing.details.disapprove.confirm',
+             'controller':'billing',
+             'action':'disapprove',
+             'id':process.id,
+            ]"/>

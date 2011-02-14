@@ -189,8 +189,8 @@
 
                         <!-- custom contact fields -->
                         <g:each var="ccf" in="${company.contactFieldTypes.sort{ it.id }}">
-                            <g:set var="fieldIndex" value="${contact?.fieldIDs?.findIndexOf{ it == ccf.id }}"/>
-                            <g:set var="fieldValue" value="${contact?.fieldValues?.getAt(fieldIndex)}"/>
+                            <g:set var="fieldIndex" value="${user?.contact?.fieldIDs?.findIndexOf{ it == ccf.id }}"/>
+                            <g:set var="fieldValue" value="${user?.contact?.fieldValues?.getAt(fieldIndex)}"/>
 
                             <g:applyLayout name="form/input">
                                 <content tag="label"><g:message code="${ccf.getDescription(session['language_id'])}"/></content>
@@ -382,7 +382,7 @@
                 <!-- box text -->
                 <div class="box-text">
                     <label><g:message code="customer.detail.note.title"/></label>
-                    <g:textArea name="user.notes" value="${user?.notes ?: ''}" rows="5" cols="60"/>
+                    <g:textArea name="user.notes" value="${user?.notes}" rows="5" cols="60"/>
                 </div>
 
                 <div class="buttons">

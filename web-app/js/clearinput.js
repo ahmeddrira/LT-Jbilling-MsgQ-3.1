@@ -2,7 +2,7 @@
  * Initialize input field place-holder values.
  */
 function placeholder() {
-    $(':input').not('[placeholder=*]').each(function() {
+    $(':input.default').not('[placeholder=*]').each(function() {
         var element = $(this);
 
         if (element.attr('placeholder') == null && element.attr('value') != null)

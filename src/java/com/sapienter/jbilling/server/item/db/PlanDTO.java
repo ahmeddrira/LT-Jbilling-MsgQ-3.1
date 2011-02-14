@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.item.PlanWS;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -80,7 +81,6 @@ import java.util.List;
                             + " and line.purchaseOrder.orderStatus.id = 1 "  // Constants.ORDER_STATUS_ACTIVE
                             + " and line.purchaseOrder.deleted = 0"),
 
-        // todo: include bundled items as "affected"
         @NamedQuery(name = "PlanDTO.findByAffectedItem",
                     query = "select plan "
                             + " from PlanDTO plan "
@@ -150,6 +150,7 @@ public class PlanDTO implements Serializable {
         this.description = description;
     }
 
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "plan")
     public List<PlanItemDTO> getPlanItems() {
         return planItems;

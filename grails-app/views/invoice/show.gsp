@@ -75,8 +75,8 @@ ${user?.companyName }
 		<td>${payment.isRefund?"R":"P"}</td>
 		<td>${Util.formatMoney(new BigDecimal(payment.amount),
 					session["user_id"],invoice.currencyId, false)}</td>
-		<td>${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</td>
-		<td>${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</td>
+		<td>${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(session['language_id'])}</td>
+		<td>${new PaymentResultDTO(payment?.resultId).getDescription(session['language_id'])}</td>
 		<td>*</td>
 	</tr>
 </g:each>

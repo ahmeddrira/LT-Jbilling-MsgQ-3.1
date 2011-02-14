@@ -69,8 +69,11 @@
                             <content tag="label"><g:message code="product.categories"/></content>
                             <content tag="label.for">product.types</content>
 
-                            <g:select name="product.types" multiple="true" from="${categories}"
-                                      optionKey="id" optionValue="description" value="${product?.types ?: categoryId}" />
+                            <g:set var="types" value="${product?.types?.collect{ it as Integer }}"/>
+                            <g:select name="product.types" multiple="true"
+                                      from="${categories}"
+                                      optionKey="id" optionValue="description"
+                                      value="${types ?: categoryId}"/>
                         </g:applyLayout>
                     </div>
                 </div>
@@ -86,9 +89,7 @@
                         <a class="btn-open" href="#"><span><g:message code="product.prices"/></span></a>
                     </div>
                     <div class="box-card-hold">
-                        <div class="form-columns">
-                            <g:render template="/priceModel/model" model="[model: product?.defaultPrice]"/>
-                        </div>
+                        <g:render template="/priceModel/model" model="[model: product?.defaultPrice]"/>
                     </div>
                 </div>
 

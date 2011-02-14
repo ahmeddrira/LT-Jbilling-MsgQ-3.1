@@ -58,18 +58,6 @@ public abstract class AbstractPricingStrategy implements PricingStrategy {
         this.chainPositions = Collections.unmodifiableList(Arrays.asList(chainPositions));
     }
 
-    public boolean hasRate() {
-        return rate != null;
-    }
-
-    public BigDecimal getRate() {
-        return rate;
-    }
-
-    public void setRate(BigDecimal rate) {
-        this.rate = rate;
-    }
-
     public boolean requiresUsage() {
         return requiresUsage;
     }

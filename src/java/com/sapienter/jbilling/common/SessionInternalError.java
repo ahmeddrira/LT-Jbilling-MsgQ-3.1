@@ -50,15 +50,17 @@ public class SessionInternalError extends RuntimeException {
 
     public SessionInternalError(Exception e) {
         super(e.getMessage());
-        
+
+        if (e instanceof SessionInternalError) {
+            setErrorMessages(((SessionInternalError) e).getErrorMessages());
+        }
+
         Logger log = Logger.getLogger("com.sapienter.jbilling");
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         pw.close();
-
-        log.fatal("Internal error: " + e.getMessage() +
-                "\n" + sw.toString());
+        log.fatal("Internal error: " + e.getMessage() + "\n" + sw.toString());
     }
 
     public SessionInternalError(String message, Throwable e) {

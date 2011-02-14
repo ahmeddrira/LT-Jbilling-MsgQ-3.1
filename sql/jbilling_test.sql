@@ -1808,7 +1808,8 @@ CREATE TABLE plan_item (
     plan_id integer,
     item_id integer NOT NULL,
     price_model_id integer NOT NULL,
-    precedence integer NOT NULL
+    precedence integer NOT NULL,
+    bundled_quantity numeric(22,10)
 );
 
 
@@ -1911,7 +1912,7 @@ ALTER TABLE public.preference_type OWNER TO jbilling;
 CREATE TABLE price_model (
     id integer NOT NULL,
     strategy_type character varying(20) NOT NULL,
-    rate numeric(22,10) NOT NULL,
+    rate numeric(22,10) NULL,
     included_quantity integer,
     currency_id integer NOT NULL,
     next_model_id integer
@@ -15237,6 +15238,7 @@ COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 
 COPY plan (id, item_id, description) FROM stdin;
 1	3000	Discount lemonade
+2	4	Saurons discount plan.
 \.
 
 
@@ -15244,8 +15246,8 @@ COPY plan (id, item_id, description) FROM stdin;
 -- Data for Name: plan_item; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY plan_item (id, plan_id, item_id, price_model_id, precedence) FROM stdin;
-1	1	2602	2004	-1
+COPY plan_item (id, plan_id, item_id, price_model_id, precedence, bundled_quantity) FROM stdin;
+1	1	2602	2004	-1	\N
 \.
 
 

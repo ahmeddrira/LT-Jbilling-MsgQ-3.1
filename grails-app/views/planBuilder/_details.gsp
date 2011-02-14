@@ -82,7 +82,7 @@
                 $('#plan-details-form').submit();
             });
 
-            $('#plan-details-form').find('textarea, :text').not('.hasDatepicker').blur(function() {
+            $('#plan-details-form').find('textarea, :text').blur(function() {
                 $('#plan-details-form').submit();
             });
         });

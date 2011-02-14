@@ -14,7 +14,7 @@
 		<table class="dataTable">
             <tr><td><strong>
                     <g:if test="${user?.contact?.firstName || user?.contact?.lastName}">
-                        ${user.contact.firstName}&nbsp;${user.contact.lastName}
+                        ${user?.contact?.firstName}&nbsp;${user?.contact?.lastName}
                     </g:if>
                     <g:else>
                         ${user?.userName}
@@ -46,9 +46,13 @@
 				session["user_id"],invoice?.currencyId, false)}</td></tr>
 	
 			<tr><td><g:message code="invoice.label.payment.attempts"/>:</td><td class="value">${invoice.paymentAttempts}</td></tr>
-			<tr><td><g:message code="invoice.label.orders"/>:</td><td class="value"><g:each var="order" in="${invoice.orders}">
-				${order.toString()}&nbsp;
-			</g:each></td></tr>
+			<tr><td><g:message code="invoice.label.orders"/>:</td><td class="value">
+                <g:each var="order" in="${invoice.orders}">
+                    <g:remoteLink breadcrumb="id" controller="order" action="show" id="${order}" params="['template': 'order']"
+                                before="register(this);" onSuccess="render(data, next);">
+                        ${order.toString()}
+                     </g:remoteLink>&nbsp;
+			    </g:each></td></tr>
 			<tr><td><g:message code="invoice.label.delegation"/>:</td><td class="value">${delegatedInvoices}</td></tr>
 		</table>
 	</div>
@@ -107,6 +111,7 @@
 			<table class="innerTable" >
 				<thead class="innerHeader">
 			         <tr>
+                        <th><g:message code="label.gui.payment.id"/></th>
 			            <th><g:message code="label.gui.date"/></th>
 						<th><g:message code="label.gui.payment.refunds"/></th>
 						<th><g:message code="label.gui.amount"/></th>
@@ -118,12 +123,17 @@
 		         <tbody>
 				     <g:each var="payment" in="${payments}" status="idx">
 				         <tr>
+                            <td class="innerContent">
+                                <g:remoteLink breadcrumb="id" controller="payment" action="show" id="${payment.id}" params="['template': 'show']"
+                                    before="register(this);" onSuccess="render(data, next);">${payment.id}
+                                </g:remoteLink>
+                            </td>
 				         	<td class="innerContent">${Util.formatDate(payment.paymentDate, session["user_id"])}</td>
 							<td class="innerContent">${payment.isRefund?"R":"P"}</td>
 							<td class="innerContent">${Util.formatMoney(new BigDecimal(payment.amount?:"0.0"),
 								session["user_id"],invoice?.currencyId, false)}</td>
-							<td class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</td>
-							<td class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</td>
+							<td class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(session['language_id'])}</td>
+							<td class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(session['language_id'])}</td>
 							<td class="innerContent">
 								<a href="javascript:void(0);" onclick="setUnlinkPaymentId(${invoice.id}, ${payment.id});">
 								<span><g:message code="invoice.prompt.unlink.payment"/></span></a>

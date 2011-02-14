@@ -753,4 +753,10 @@ insert into item_type (id, entity_id, description, internal, order_line_type_id,
 
 -- price model chaining
 alter table price_model add column next_model_id int null;
-ALTER TABLE price_model ADD CONSTRAINT price_model_next_id_FK FOREIGN KEY (next_model_id) REFERENCES price_model (id);
+alter tabe price_model add constraint price_model_next_id_FK foreign key (next_model_id) references price_model (id);
+
+-- plan item bundled quantity
+alter table plan_item add column bundled_quantity numeric(22,10) null;
+
+-- nullable price model rate
+alter table price_model alter column rate drop not null;

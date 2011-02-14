@@ -37,6 +37,7 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @author Brian Cowdery
@@ -61,6 +62,7 @@ public class PlanItemDTO implements Serializable {
     private PlanDTO plan;
     private ItemDTO item; // affected item
     private PriceModelDTO model;
+    private BigDecimal bundledQuantity;
     private Integer precedence = DEFAULT_PRECEDENCE;
 
     public PlanItemDTO() {
@@ -70,6 +72,7 @@ public class PlanItemDTO implements Serializable {
         this.id = ws.getId();
         this.item = item;
         this.model = model;
+        this.bundledQuantity = ws.getBundledQuantityAsDecimal();
         this.precedence = ws.getPrecedence();                
     }
 
@@ -83,7 +86,7 @@ public class PlanItemDTO implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", nullable = true)
     public PlanDTO getPlan() {
         return plan;
@@ -129,6 +132,15 @@ public class PlanItemDTO implements Serializable {
         this.model = model;
     }
 
+    @Column(name = "bundled_quantity", nullable = true, precision = 10, scale = 22)
+    public BigDecimal getBundledQuantity() {
+        return bundledQuantity;
+    }
+
+    public void setBundledQuantity(BigDecimal bundledQuantity) {
+        this.bundledQuantity = bundledQuantity;
+    }
+
     @Column(name = "precedence", nullable = false, length = 2)
     public Integer getPrecedence() {
         return precedence;
@@ -146,6 +158,7 @@ public class PlanItemDTO implements Serializable {
         PlanItemDTO that = (PlanItemDTO) o;
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (bundledQuantity != null ? !bundledQuantity.equals(that.bundledQuantity) : that.bundledQuantity != null) return false;
         if (item != null ? !item.equals(that.item) : that.item != null) return false;
         if (plan != null ? !plan.equals(that.plan) : that.plan != null) return false;
 
@@ -155,6 +168,7 @@ public class PlanItemDTO implements Serializable {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (bundledQuantity != null ? bundledQuantity.hashCode() : 0);
         result = 31 * result + (plan != null ? plan.hashCode() : 0);
         result = 31 * result + (item != null ? item.hashCode() : 0);
         return result;

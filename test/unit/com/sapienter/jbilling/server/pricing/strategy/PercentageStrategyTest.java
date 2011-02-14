@@ -49,7 +49,7 @@ public class PercentageStrategyTest extends BigDecimalTestCase {
     public void testPercentage() {
         PriceModelDTO planPrice = new PriceModelDTO();
         planPrice.setType(PriceModelStrategy.PERCENTAGE);
-        planPrice.setRate(new BigDecimal("0.80")); // %80
+        planPrice.addAttribute("percentage", "0.80"); // %80
 
         PricingResult result = new PricingResult(1, 2, 3);
         result.setPrice(new BigDecimal("10.00"));
@@ -67,7 +67,7 @@ public class PercentageStrategyTest extends BigDecimalTestCase {
     public void testNullPrice() {
         PriceModelDTO planPrice = new PriceModelDTO();
         planPrice.setType(PriceModelStrategy.PERCENTAGE);
-        planPrice.setRate(new BigDecimal("0.80")); // %80
+        planPrice.addAttribute("percentage", "0.80"); // %80
 
         // result without price
         PricingResult result = new PricingResult(1, 2, 3);

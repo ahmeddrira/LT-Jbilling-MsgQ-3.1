@@ -44,8 +44,6 @@ public class FlatPricingStrategy extends AbstractPricingStrategy {
         setChainPositions(
                 ChainPosition.START
         );
-
-        setRate(BigDecimal.ZERO);
     }
 
 

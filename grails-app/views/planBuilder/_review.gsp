@@ -28,11 +28,15 @@
         <!-- plan review header -->
         <div class="header">
             <div class="column">
-                <h1><g:message code="plan.review.id" args="[plan.id ?: '']"/></h1>
+                <h1>${product.number}</h1>
+                <h3>${product.description}</h3>
             </div>
             <div class="column">
-                <h2 class="right">${product.number}</h2>
-                <h3 class="right">${product.description}</h3>
+                <h2 class="right">
+                    <g:set var="currency" value="${currencies.find{ it.id == product.defaultPrice.currencyId }}"/>
+                    <g:set var="price" value="${formatNumber(number: product.defaultPrice.getRateAsDecimal(), type: 'currency', currencyCode: currency.code)}"/>
+                    <g:message code="plan.review.period.price" args="[price]"/>
+                </h2>
             </div>
 
             <div style="clear: both;"></div>
@@ -80,6 +84,43 @@
                 $('#' + id).toggleClass('active');
                 $('#' + id + '-editor').toggle('blind');
             });
-        })
+        });
+
+        $(function() {
+            $('.model-type').change(function() {
+                var form = $(this).parents('form');
+                form.find('[name=_eventId]').val('updateStrategy');
+                form.submit();
+            });
+        });
+
+        function addChainModel(element) {
+            var form = $(element).parents('form');
+            form.find('[name=_eventId]').val('addChainModel');
+            form.submit();
+        }
+
+        function removeChainModel(element, modelIndex) {
+            var form = $(element).parents('form');
+            form.find('[name=_eventId]').val('removeChainModel');
+            form.find('[name=modelIndex]').val(modelIndex);
+            form.submit();
+        }
+
+        function addModelAttribute(element, modelIndex, attributeIndex) {
+            var form = $(element).parents('form');
+            form.find('[name=_eventId]').val('addAttribute');
+            form.find('[name=modelIndex]').val(modelIndex);
+            form.find('[name=attributeIndex]').val(attributeIndex);
+            form.submit();
+        }
+
+        function removeModelAttribute(element, modelIndex, attributeIndex) {
+            var form = $(element).parents('form');
+            form.find('[name=_eventId]').val('removeAttribute');
+            form.find('[name=modelIndex]').val(modelIndex);
+            form.find('[name=attributeIndex]').val(attributeIndex);
+            form.submit();
+        }
     </script>
 </div>

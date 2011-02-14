@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import grails.plugins.springsecurity.Secured;
+import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
@@ -218,4 +219,29 @@ class OrderController {
 		def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
 		return currencies.findAll{ it.inUse }
 	}
+	
+	def byProcess = { 
+		OrderBL bl= new OrderBL();
+		List<Integer> orderIds= bl.getOrdersByProcess(params.id.toInteger())
+		
+		log.debug "Expecting ${orderIds.size()} orders."
+		
+		params.max = params?.max?.toInteger() ?: pagination.max
+		params.offset = params?.offset?.toInteger() ?: pagination.offset
+		def filters=filterService.getFilters(FilterType.ORDER, params)
+		
+		def orders = OrderDTO.createCriteria().list(
+			max:    params.max,
+			offset: params.offset
+		) {
+			and {
+				'in'('id', orderIds.toArray(new Integer[orderIds.size()]))
+				//eq('deleted', 0)
+			}
+			order("id", "desc")
+		}
+		log.debug("Found ${orders.size()} orders.")
+		render view: 'list', model: [orders:orders, filters:filters]
+	}
+	
 }

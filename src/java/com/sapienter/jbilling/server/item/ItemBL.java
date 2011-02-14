@@ -107,8 +107,14 @@ public class ItemBL {
             dto.setDefaultPrice(getDefaultPrice(dto.getPrice()));
         }
 
-        if (dto.getDefaultPrice() != null) {
+        // default currency for new prices (if currency is not explicitly set)
+        if (dto.getDefaultPrice() != null && dto.getDefaultPrice().getCurrency() == null) {
             dto.getDefaultPrice().setCurrency(entity.getEntity().getCurrency());
+        }
+
+        // validate all pricing attributes
+        if (dto.getDefaultPrice() != null) {
+            PriceModelBL.validateAttributes(dto.getDefaultPrice());
         }
 
         dto.setDeleted(0);
@@ -134,6 +140,13 @@ public class ItemBL {
 
         updateDefaultPrice(dto);
         updateTypes(dto);
+
+        // validate all pricing attributes
+        if (item.getDefaultPrice() != null) {
+            PriceModelBL.validateAttributes(item.getDefaultPrice());
+        }
+
+        itemDas.save(item);
     }
 
     /**
@@ -171,12 +184,11 @@ public class ItemBL {
             } else if (dto.getPrice() != null) {
                 item.setDefaultPrice(getDefaultPrice(dto.getPrice()));
             }
+
         } else {
             // update existing default price
             if (dto.getDefaultPrice() != null) {
-                item.getDefaultPrice().setType(dto.getDefaultPrice().getType());
-                item.getDefaultPrice().setAttributes(dto.getDefaultPrice().getAttributes());
-                item.getDefaultPrice().setRate(dto.getDefaultPrice().getRate());
+                item.setDefaultPrice(dto.getDefaultPrice());
             } else if (dto.getPrice() != null) {
                 item.getDefaultPrice().setRate(dto.getPrice());
             }
@@ -210,18 +222,6 @@ public class ItemBL {
         eLogger.audit(executorId, null, Constants.TABLE_ITEM, item.getId(),
                 EventLogger.MODULE_ITEM_MAINTENANCE,
                 EventLogger.ROW_DELETED, null, null, null);
-    }
-
-    public static boolean validate(ItemDTO dto) {
-        if ((dto.getPrice() == null && dto.getDefaultPrice() == null && dto.getPercentage() == null)
-            || dto.getDescription() == null
-            || dto.getPriceManual() == null
-            || dto.getTypes() == null) {
-
-            return false;
-        }
-
-        return true;
     }
 
     public boolean validateDecimals( Integer hasDecimals ){

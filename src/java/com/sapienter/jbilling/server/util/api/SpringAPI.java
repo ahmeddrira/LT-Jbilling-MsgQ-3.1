@@ -38,6 +38,7 @@ import com.sapienter.jbilling.server.order.OrderProcessWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
@@ -524,6 +525,27 @@ public class SpringAPI implements JbillingAPI {
 
     public void generateRules(String rulesData) {
         session.generateRules(rulesData);
+    }
+
+
+    /*
+        Plug-ins
+     */
+
+    public PluggableTaskWS getPluginWS(Integer pluginId) {
+        return session.getPluginWS(pluginId);
+    }
+
+    public Integer createPlugin(PluggableTaskWS plugin) {
+        return session.createPlugin(plugin);
+    }
+
+    public void updatePlugin(PluggableTaskWS plugin) {
+        session.updatePlugin(plugin);
+    }
+
+    public void deletePlugin(Integer plugin) {
+        session.deletePlugin(plugin);
     }
 
 

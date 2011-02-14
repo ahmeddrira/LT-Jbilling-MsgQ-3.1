@@ -2,13 +2,13 @@
  * Initialize input field place-holder values.
  */
 function placeholder() {
-    $(':input').not('[placeholder=*]').each(function() {
+    $(':input.default').not('[placeholder=*]').each(function() {
         var element = $(this);
 
         if (element.attr('placeholder') == null && element.attr('value') != null)
             element.attr('placeholder', this.getAttribute('value'));
 
-        if (element.val().length == 0)
+        if (element.val() == null || element.val().length == 0)
             element.val(element.attr('placeholder'));
     });
 }

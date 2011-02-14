@@ -37,6 +37,7 @@ import junit.framework.TestCase;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * @author Brian Cowdery
@@ -535,6 +536,131 @@ public class WSTest extends TestCase {
         // cleanup
         api.deleteOrder(order.getId());
         api.deleteUser(user.getUserId());
+    }
+
+    public void testWSSecurity() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        final Integer BAD_ITEM_ID = 4;        // item belonging to entity 2
+        final Integer BAD_USER_ID = 13;       // user belonging to entity 2
+        final Integer ENTITY_TWO_PLAN_ID = 2; // plan belonging to entity 2
+
+        // getPlanWS
+        try {
+            api.getPlanWS(ENTITY_TWO_PLAN_ID);
+            fail("Should not be able to get plan from another entity");
+        } catch (SecurityException e) {
+            assertTrue("Could not get plan for entity 2 subscription item", true);
+        }
+
+        // createPlan
+        PlanWS createPlan = new PlanWS();
+        createPlan.setItemId(BAD_ITEM_ID);
+        createPlan.setDescription("Create plan with a bad item.");
+
+        try {
+            api.createPlan(createPlan);
+            fail("Should not be able to create plans using items from another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not create plan using item belonging to entity 2", true);
+        }
+
+        // updatePlan
+        PlanWS updatePlan = api.getPlanWS(PLAN_ID);
+        updatePlan.setItemId(BAD_ITEM_ID);
+
+        try {
+            api.updatePlan(updatePlan);
+            fail("Should not be able to update plan using items from another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not update plan using an item belonging to entity 2", true);
+        }
+
+        // deletePlan
+        try {
+            api.deletePlan(ENTITY_TWO_PLAN_ID);
+            fail("Should not be able to delete a plan using an item from another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not delete plan for entity 2 subscription item", true);
+        }
+
+        // addPlanPrice
+        PlanItemWS addPlanPrice = new PlanItemWS();
+        addPlanPrice.setItemId(BAD_ITEM_ID);
+        addPlanPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("1.00"), 1));
+
+        try {
+            // cannot add to a plan we don't own
+            api.addPlanPrice(ENTITY_TWO_PLAN_ID, addPlanPrice);
+            fail("Should not be able to delete");
+        } catch (SecurityException e) {
+            assertTrue("Could not add price to a plan for entity 2 subscription item", true);
+        }
+
+        try {
+            // cannot add a price for an item we don't own
+            api.addPlanPrice(PLAN_ID, addPlanPrice);
+            fail("Should not be able to add price for item from another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not add price for an item belonging to entity 2", true);
+        }
+
+        // isCustomerSubscribed
+        try {
+            api.isCustomerSubscribed(ENTITY_TWO_PLAN_ID, 2); // entity 2 plan, for gandalf (entity 1 user)
+            fail("Should not be able to check subscription status for a plan from another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not check subscription status for plan belonging to entity 2", true);
+        }
+
+        // getSubscribedCustomers
+        try {
+            api.getSubscribedCustomers(ENTITY_TWO_PLAN_ID);
+            fail("Should not be able to get subscribed customers for a plan from another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not get subscribed customers  for plan belonging to entity 2", true);
+        }
+
+        // getPlansbySubscriptionItem
+        try {
+            api.getPlansBySubscriptionItem(BAD_ITEM_ID);
+            fail("Should not be able to get plans using for item belonging to another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not get plans by subscription item belonging to entity 2", true);
+        }
+
+        // getPlansByAffectedItem
+        try {
+            api.getPlansByAffectedItem(BAD_ITEM_ID);
+            fail("Should not be able to get plans using for item belonging to another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not get plans by affected item belonging to entity 2", true);
+        }
+
+        // getCustomerPrice
+        try {
+            api.getCustomerPrice(BAD_USER_ID, PLAN_AFFECTED_ITEM_ID);
+            fail("Should not be able to get price for a user belonging to another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not get price for user belonging to entity 2", true);
+
+        }
+
+        // getCustomerPriceByAttributes
+        try {
+            api.getCustomerPriceByAttributes(BAD_USER_ID, PLAN_AFFECTED_ITEM_ID, new HashMap<String, String>());
+            fail("Should not be able to get price for a user belonging to another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not get price for user belonging to entity 2", true);
+        }
+
+        // getCustomerPriceByWildcardAttributes
+        try {
+            api.getCustomerPriceByWildcardAttributes(BAD_USER_ID, PLAN_AFFECTED_ITEM_ID, new HashMap<String, String>());
+            fail("Should not be able to get price for a user belonging to another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not get price for user belonging to entity 2", true);
+        }
     }
 
 

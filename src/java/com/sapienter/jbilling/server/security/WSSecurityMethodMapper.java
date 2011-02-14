@@ -26,6 +26,8 @@ import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDAS;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
+import com.sapienter.jbilling.server.item.db.PlanDAS;
+import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.mediation.db.MediationConfigurationDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
@@ -142,7 +144,16 @@ public class WSSecurityMethodMapper {
                 PluggableTaskDTO task = new PluggableTaskBL((Integer)id).getDTO();
                 return task != null ? new MappedSecuredWS(task.getEntityId(), null) : null;
             }
+        },
+
+        PLAN {
+            public WSSecured getMappedSecuredWS(Serializable id) {
+                PlanDTO plan = new PlanDAS().find(id);
+                return plan != null ? new MappedSecuredWS(plan.getItem().getEntity().getId(), null) : null;
+            }
         };
+
+
 
         /**
          * implemented by each Type to return a secure object for validation based on the given ID.
@@ -214,7 +225,19 @@ public class WSSecurityMethodMapper {
         UPDATE_LINE_PROVISIONING        ("updateLineProvisioningStatus", 0, Type.ORDER_LINE),
         SAVE_CUSTOMER_NOTES             ("saveCustomerNotes", 0, Type.USER),
         NOTIFY_INVOICE_BY_EMAIL         ("notifyInvoiceByEmail", 0, Type.INVOICE),
-        DELETE_PLUGIN                   ("deletePlugin", 1, Type.PLUG_IN);
+        DELETE_PLUGIN                   ("deletePlugin", 1, Type.PLUG_IN),
+
+        GET_PLAN                        ("getPlanWS", 0, Type.PLAN),
+        DELETE_PLAN                     ("deletePlan", 0, Type.PLAN),
+        ADD_PLAN_PRICE                  ("addPlanPrice", 0, Type.PLAN),
+        IS_CUSTOMER_SUBSCRIBED          ("isCustomerSubscribed", 0, Type.PLAN),
+        GET_SUBSCRIBED_CUSTOMERS        ("getSubscribedCustomers", 0, Type.PLAN),
+        GET_PLANS_BY_SUBSCRIPTION_ITEM  ("getPlansBySubscriptionItem", 0, Type.ITEM),
+        GET_PLANS_BY_AFFECTED_ITEM      ("getPlansByAffectedItem", 0, Type.ITEM),
+        GET_CUSTOMER_PRICE              ("getCustomerPrice", 0, Type.USER),
+        GET_CUSTOMER_PRICE_BY_ATTR      ("getCustomerPriceByAttributes", 0, Type.USER),
+        GET_CUSTOMER_PRICE_BY_WILDCARD  ("getCustomerPriceByWildcardAttributes", 0, Type.USER),
+        ;
         
         private Method method;
         private Integer IdArgIndex;

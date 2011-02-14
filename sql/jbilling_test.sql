@@ -15238,6 +15238,7 @@ COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 
 COPY plan (id, item_id, description) FROM stdin;
 1	3000	Discount lemonade
+2	4	Saurons discount plan.
 \.
 
 

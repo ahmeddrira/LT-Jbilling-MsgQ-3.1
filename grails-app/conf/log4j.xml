@@ -71,6 +71,7 @@
   <appender name="jbillingAppender" class="org.apache.log4j.DailyRollingFileAppender">
     <param name="File" value="/home/emilc/jb/jbilling/logs/jbilling.log"/>
     <param name="Append" value="false"/>
+    <param name="Threshold" value="DEBUG"/>
 
     <!-- Rollover at midnight each day -->
     <param name="DatePattern" value="'.'yyyy-MM-dd"/>
@@ -87,54 +88,27 @@
     </layout>	    
   </appender>
   
-  <logger name="com.sapienter.jbilling.client.authentication.CompanyUserRememberMeFilter"
-          additivity="false">
-      <level value="info"></level>
+  <category name="com.sapienter.jbilling">
       <appender-ref ref="jbillingAppender"/>
-  </logger>
-
-  <logger name="com.sapienter.jbilling" additivity="false">
-      <level value="debug"></level>
-      <appender-ref ref="jbillingAppender"/>
-  </logger>
-
-  <logger name="grails.app">
-      <level value="info"></level>
-      <appender-ref ref="jbillingAppender"/>
-  </logger>
-
-  <logger name="grails.app.controller">
-      <level value="debug"></level>
-      <appender-ref ref="jbillingAppender"/>
-  </logger>
-
-  <logger name="grails.app.service">
-      <level value="debug"></level>
-      <appender-ref ref="jbillingAppender"/>
-  </logger>
-
-  <logger name="grails.app.tagLib">
-      <level value="debug"></level>
-      <appender-ref ref="jbillingAppender"/>
-  </logger>
+  </category>
 
 <!--
-  <logger name="org.hibernate.SQL">
+  <category name="org.hibernate.SQL">
       <appender-ref ref="SQL-FILE"/>
-  </logger>
+  </category>
 
 
-  <logger name="org.springmodules.cache">
+  <category name="org.springmodules.cache">
       <appender-ref ref="jbillingAppender"/>
-  </logger>
+  </category>
 -->
-  <logger name="com.mchange">
+  <category name="com.mchange">
       <appender-ref ref="FILE"/>
-  </logger>
+  </category>
   
 
   <!-- ======================= -->
-  <!-- Setup the Root logger -->
+  <!-- Setup the Root category -->
   <!-- ======================= -->
 
   <root>

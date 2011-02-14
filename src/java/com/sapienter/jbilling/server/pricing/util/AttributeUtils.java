@@ -83,9 +83,10 @@ public class AttributeUtils {
         }
 
         // throw new validation exception with complete error list
-        if (!errors.isEmpty())
+        if (!errors.isEmpty()) {
             throw new SessionInternalError(strategyName + " attributes failed validation.",
                                            errors.toArray(new String[errors.size()]));
+        }
     }
 
 

@@ -675,7 +675,7 @@
     <table name="price_model">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="strategy_type" required="true" size="20" type="VARCHAR"/>
-        <column name="rate" required="true" size="22" scale="10" type="NUMERIC"/>
+        <column name="rate" required="false" size="22" scale="10" type="NUMERIC"/>
         <column name="included_quantity" required="false" type="INTEGER"/>
         <column name="currency_id" required="true" type="INTEGER"/>
         <column name="next_model_id" required="false" type="INTEGER"/>

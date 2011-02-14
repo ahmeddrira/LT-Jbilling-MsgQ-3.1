@@ -61,8 +61,6 @@ public class TimeOfDayPricingStrategy extends AbstractPricingStrategy {
         setChainPositions(
                 ChainPosition.START
         );
-
-        setRate(BigDecimal.ZERO);
     }
 
     /**

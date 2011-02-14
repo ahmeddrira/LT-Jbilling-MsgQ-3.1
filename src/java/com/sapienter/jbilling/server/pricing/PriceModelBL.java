@@ -120,9 +120,10 @@ public class PriceModelBL {
             }
         }
 
-        if (!errors.isEmpty())
+        if (!errors.isEmpty()) {
             throw new SessionInternalError("Price model attributes failed validation.",
                                            errors.toArray(new String[errors.size()]));
+        }
     }
 
 
@@ -145,8 +146,9 @@ public class PriceModelBL {
             }
         }
 
-        if (!errors.isEmpty())
+        if (!errors.isEmpty()) {
             throw new SessionInternalError("Price model attributes failed validation.",
                                            errors.toArray(new String[errors.size()]));
+        }
     }
 }

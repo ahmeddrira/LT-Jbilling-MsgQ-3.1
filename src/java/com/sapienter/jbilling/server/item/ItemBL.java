@@ -141,6 +141,11 @@ public class ItemBL {
         updateDefaultPrice(dto);
         updateTypes(dto);
 
+        // validate all pricing attributes
+        if (item.getDefaultPrice() != null) {
+            PriceModelBL.validateAttributes(item.getDefaultPrice());
+        }
+
         itemDas.save(item);
     }
 

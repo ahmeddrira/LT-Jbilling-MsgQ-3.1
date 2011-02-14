@@ -42,6 +42,10 @@ import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.
 public class PercentageStrategy extends AbstractPricingStrategy {
 
     public PercentageStrategy() {
+        setAttributeDefinitions(
+                new AttributeDefinition("percentage", DECIMAL, true)
+        );
+
         setChainPositions(
                 ChainPosition.MIDDLE,
                 ChainPosition.END
@@ -52,8 +56,8 @@ public class PercentageStrategy extends AbstractPricingStrategy {
      * Applies a percentage to the given pricing result. This strategy is designed to be at the middle
      * or end of a pricing chain, when the base rate has already been determined.
      *
-     * The PriceModelDTO rate is handled as a decimal percentage by this strategy. A rate of "0.80"
-     * would be applied as 80%, "1.25" as %125 and so on.
+     * The "percentage" attribute is handled as a decimal percentage by this strategy. A percentage
+     * of "0.80" would be applied as 80%, "1.25" as %125 and so on.
      *
      * @param result pricing result to apply pricing to
      * @param fields pricing fields
@@ -65,7 +69,8 @@ public class PercentageStrategy extends AbstractPricingStrategy {
                         BigDecimal quantity, Usage usage) {
 
         if (result.getPrice() != null) {
-            result.setPrice(result.getPrice().multiply(planPrice.getRate()));
+            BigDecimal percentage = AttributeUtils.getDecimal(planPrice.getAttributes(), "percentage");
+            result.setPrice(result.getPrice().multiply(percentage));
         }
     }
 }

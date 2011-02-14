@@ -137,9 +137,10 @@ public class PlanBL {
             }
         }
 
-        if (!errors.isEmpty())
+        if (!errors.isEmpty()) {
             throw new SessionInternalError("Plan pricing attributes failed validation.",
                                            errors.toArray(new String[errors.size()]));
+        }
     }
 
     // todo: add event logging for plans

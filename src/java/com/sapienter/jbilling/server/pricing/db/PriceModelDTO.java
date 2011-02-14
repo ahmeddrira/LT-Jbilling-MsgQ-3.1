@@ -159,41 +159,14 @@ public class PriceModelDTO implements Serializable {
     }
 
     /**
-     * Expected attributes.
-     *
-     * @return list of expected attributes
-     */
-    @Transient
-    public List<AttributeDefinition> getAttributeDefinitions() {
-        if (getStrategy() != null)
-            return getStrategy().getAttributeDefinitions();
-        return null;
-    }
-
-    /**
-     * Allowed positions in a chain of price models.
-     *
-     * @return list of chain positions
-     */
-    @Transient
-    public List<ChainPosition> getChainPositions() {
-        if (getStrategy() != null)
-            return getStrategy().getChainPositions();
-        return null;
-    }
-
-    /**
      * Returns the pricing rate. If the strategy type defines an overriding rate, the
      * strategy rate will be returned.
      *
-     * @see com.sapienter.jbilling.server.pricing.strategy.PricingStrategy#hasRate()
-     * @see com.sapienter.jbilling.server.pricing.strategy.PricingStrategy#getRate()
-     *
      * @return pricing rate.
      */
-    @Column(name = "rate", nullable = false, precision = 10, scale = 22)
+    @Column(name = "rate", nullable = true, precision = 10, scale = 22)
     public BigDecimal getRate() {
-        return getStrategy() != null && getStrategy().hasRate() ? getStrategy().getRate() : rate;
+        return rate;
     }
 
     public void setRate(BigDecimal rate) {

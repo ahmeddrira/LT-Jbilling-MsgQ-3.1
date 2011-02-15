@@ -181,7 +181,8 @@ class UserController {
         user.setMainRoleId(Constants.TYPE_CUSTOMER)
         bindData(user, params, 'user')
 
-        def contactTypes = CompanyDTO.get(session['company_id']).contactTypes
+        def company = CompanyDTO.get(session['company_id'])
+        def contactTypes = company.contactTypes
         def primaryContactTypeId = params.int('primaryContactTypeId')
 
         // bind primary user contact and custom contact fields
@@ -195,7 +196,7 @@ class UserController {
         }
         user.setContact(contact)
 
-        log.debug("Primary contact: " + contact)
+        log.debug("Primary contact: ${contact}")
 
         // bind secondary contact types
         def contacts = contactTypes.findAll{ it.id != primaryContactTypeId }.collect{
@@ -204,7 +205,7 @@ class UserController {
             return otherContact;
         }
 
-        log.debug("Secondary contacts: " + contacts)
+        log.debug("Secondary contacts: ${contacts}")
 
         // bind credit card object if parameters present
         if (params.creditCard.any { key, value -> value }) {
@@ -235,14 +236,14 @@ class UserController {
                 // validate that the entered confirmation password matches the users existing password
                 if (!passwordEncoder.isPasswordValid(oldUser.password, params.oldPassword, null)) {
                     flash.error = 'customer.current.password.doesnt.match.existing'
-                    render view: 'edit', model: [ user: user, contacts: contacts, currencies: currencies ]
+                    render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
                     return
                 }
             }
         } else {
             if (!params.newPassword) {
                 flash.error = 'customer.create.without.password'
-                render view: 'edit', model: [ user: user, contacts: contacts, currencies: currencies ]
+                render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
                 return
             }
         }
@@ -253,7 +254,7 @@ class UserController {
 
         } else {
             flash.error = 'customer.passwords.dont.match'
-            render view: 'edit', model: [ user: user, contacts: contacts, currencies: currencies ]
+            render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
             return
         }
 
@@ -271,7 +272,10 @@ class UserController {
                 log.debug("saving changes to user ${user.userId}")
 
                 webServicesSession.updateUser(user)
-                if (user.ach) webServicesSession.updateAch(user.userId, user.ach)
+
+                if (user.ach) {
+                    webServicesSession.updateAch(user.userId, user.ach)
+                }
 
                 flash.message = 'customer.updated'
                 flash.args = [ user.userId ]
@@ -287,7 +291,7 @@ class UserController {
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
 
-            def company = CompanyDTO.get(session['company_id'])
+
             render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
             return
         }
@@ -295,7 +299,7 @@ class UserController {
         chain action: 'list', params: [ id: user.userId ]
     }
 
-    def bindExpiryDate(CreditCardDTO creditCard, params) {
+    def bindExpiryDate(CreditCardDTO creditCard, GrailsParameterMap params) {
         Calendar calendar = Calendar.getInstance()
         calendar.clear()
         calendar.set(Calendar.MONTH, params.int('expiryMonth'))

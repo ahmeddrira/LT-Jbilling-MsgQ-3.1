@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.security.WSSecured;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Date;
 
 
@@ -296,35 +297,58 @@ public class InvoiceWS implements WSSecured, Serializable {
 
     @Override
     public String toString() {
-        StringBuffer str = new StringBuffer();
-
-        str.append("delegated invoice = [")
-                .append(delegatedInvoiceId)
-                .append("]")
-                .append(" payments = ");
-
-        if (payments != null) {
-            for (int f = 0; f < payments.length; f++) {
-                str.append(payments[f].toString());
-            }
-        }
-
-        str.append(" userId = [")
-                .append(userId)
-                .append(" invoiceLines = ");
-
-        if (invoiceLines != null) {
-            for (InvoiceLineDTO line : invoiceLines) {
-                str.append(line.toString());
-            }
-        }
-
-        str.append(" orders = ");
-        for (int f = 0; f < orders.length; f++) {
-            str.append(orders[f].toString());
-        }
-
-        str.append("InvoiceDTO = [").append(super.toString());
-        return str.toString();
+        StringBuilder builder = new StringBuilder();
+        builder.append("InvoiceWS [balance=");
+        builder.append(balance);
+        builder.append(", carriedBalance=");
+        builder.append(carriedBalance);
+        builder.append(", createDateTime=");
+        builder.append(createDateTime);
+        builder.append(", createTimeStamp=");
+        builder.append(createTimeStamp);
+        builder.append(", currencyId=");
+        builder.append(currencyId);
+        builder.append(", customerNotes=");
+        builder.append(customerNotes);
+        builder.append(", delegatedInvoiceId=");
+        builder.append(delegatedInvoiceId);
+        builder.append(", deleted=");
+        builder.append(deleted);
+        builder.append(", dueDate=");
+        builder.append(dueDate);
+        builder.append(", id=");
+        builder.append(id);
+        builder.append(", inProcessPayment=");
+        builder.append(inProcessPayment);
+        builder.append(", invoiceLines=");
+        builder.append(Arrays.toString(invoiceLines));
+        builder.append(", isReview=");
+        builder.append(isReview);
+        builder.append(", lastReminder=");
+        builder.append(lastReminder);
+        builder.append(", number=");
+        builder.append(number);
+        builder.append(", orders=");
+        builder.append(Arrays.toString(orders));
+        builder.append(", overdueStep=");
+        builder.append(overdueStep);
+        builder.append(", paymentAttempts=");
+        builder.append(paymentAttempts);
+        builder.append(", payments=");
+        builder.append(Arrays.toString(payments));
+        builder.append(", statusDescr=");
+        builder.append(statusDescr);
+        builder.append(", statusId=");
+        builder.append(statusId);
+        builder.append(", toProcess=");
+        builder.append(toProcess);
+        builder.append(", total=");
+        builder.append(total);
+        builder.append(", userId=");
+        builder.append(userId);
+        builder.append("]");
+        return builder.toString();
     }
+
+    
 }

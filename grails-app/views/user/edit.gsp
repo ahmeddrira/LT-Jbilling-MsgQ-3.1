@@ -69,7 +69,7 @@
                             <g:textField class="field" name="user.userName" value="${user?.userName}"/>
                         </g:applyLayout>
 
-                        <g:if test="${user}">
+                        <g:if test="${user?.password}">
                              <g:applyLayout name="form/input">
                                 <content tag="label"><g:message code="prompt.current.password"/></content>
                                 <content tag="label.for">oldPassword</content>

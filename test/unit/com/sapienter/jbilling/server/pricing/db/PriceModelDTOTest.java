@@ -84,19 +84,6 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         assertTrue(planPrice.getStrategy() instanceof FlatPricingStrategy);
     }
 
-    public void testSetRatedStrategy() {
-        PriceModelDTO planPrice = new PriceModelDTO();
-
-        // METERED pricing has no overriding rate, uses the set plan pricing rate
-        planPrice.setType(PriceModelStrategy.METERED);
-        planPrice.setRate(new BigDecimal("0.7"));
-        assertEquals(new BigDecimal("0.7"), planPrice.getRate()); // plan rate can be set
-
-        // FLAT pricing has an overriding rate that is always ZERO
-        planPrice.setType(PriceModelStrategy.FLAT);
-        assertEquals(BigDecimal.ZERO, planPrice.getRate()); // always ZERO
-    }
-
     public void testApplyTo() {
         PriceModelDTO planPrice = new PriceModelDTO();
         planPrice.setType(PriceModelStrategy.METERED);
@@ -114,7 +101,7 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
 
         PriceModelDTO next = new PriceModelDTO();
         next.setType(PriceModelStrategy.PERCENTAGE);
-        next.setRate(new BigDecimal("0.70"));
+        next.addAttribute("percentage", "0.70");
 
         planPrice.setNext(next);
 

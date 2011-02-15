@@ -93,7 +93,14 @@
                         <td><g:message code="plan.model.type"/></td>
                         <td class="value"><g:message code="price.strategy.${next.type.name()}"/></td>
                         <td><g:message code="plan.model.rate"/></td>
-                        <td class="value"><g:formatNumber number="${next.rate}" type="currency" currencyCode="${next.currency.code}"/></td>
+                        <td class="value">
+                            <g:if test="${next.rate}">
+                                <g:formatNumber number="${next.rate}" type="currency" currencyCode="${next.currency.code}"/>
+                            </g:if>
+                            <g:else>
+                                -
+                            </g:else>
+                        </td>
                     </tr>
                     <g:each var="attribute" in="${next.attributes.entrySet()}">
                         <g:if test="${attribute.value}">

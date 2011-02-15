@@ -6,7 +6,7 @@
     <g:applyLayout name="form/input">
         <content tag="label"><g:message code="prompt.organization.name"/></content>
         <content tag="label.for">contact.organizationName</content>
-        <g:textField class="field" name="contact.organizationName" value="${contact?.organizationName}" />
+        <g:textField class="field" name="contact-${contactType?.id}.organizationName" value="${contact?.organizationName}" />
     </g:applyLayout>
 
     <g:applyLayout name="form/input">

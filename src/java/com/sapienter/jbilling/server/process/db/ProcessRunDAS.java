@@ -22,6 +22,9 @@ package com.sapienter.jbilling.server.process.db;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.hibernate.Query;
+
+import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
 public class ProcessRunDAS extends AbstractDAS<ProcessRunDTO> {
@@ -37,5 +40,19 @@ public class ProcessRunDAS extends AbstractDAS<ProcessRunDTO> {
         dto = save(dto);
         process.getProcessRuns().add(dto);
         return dto;
+    }
+    
+    public ProcessRunDTO getLatestSuccessful(Integer entityId) {
+        final String hql =
+            "select a " +
+            "  from ProcessRunDTO a " +
+            " where a.billingProcess.entity.id = :entity " +
+            "   and a.status.id = " + Constants.PROCESS_RUN_STATUS_SUCCESS +
+            "order by a.id desc ";
+
+        Query query = getSession().createQuery(hql);
+        query.setParameter("entity", entityId);
+        query.setMaxResults(1);
+        return (ProcessRunDTO) query.uniqueResult();
     }
 }

@@ -40,24 +40,6 @@ import java.util.List;
 public interface PricingStrategy {
 
     /**
-     * Returns true if this strategy defines a rate that overrides the
-     * PlanPriceDTO rate.
-     *
-     * @return true if strategy has an overriding rate.
-     */
-    @Deprecated // should have a UI template per pricing strategy, this is not necessary
-    public boolean hasRate();
-
-    /**
-     * Returns the strategy specific rate that overrides the PlanPriceDTO rate. This
-     * method should return null if the strategy does not define an overriding rate.
-     *
-     * @return overriding rate for this strategy, or null if strategy does not override the plan rate.
-     */
-    @Deprecated // should have a UI template per pricing strategy, this is not necessary
-    public BigDecimal getRate();
-
-    /**
      * Returns a list of attribute definitions for this pricing strategy. This method should
      * return an empty list if there are no attributes.
      *

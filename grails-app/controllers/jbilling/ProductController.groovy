@@ -361,10 +361,6 @@ class ProductController {
         bindProduct(product, params)
 
         try{
-            // validate price model attributes
-            def strategy = PriceModelStrategy.valueOf(product.defaultPrice.type).getStrategy()
-            AttributeUtils.validateAttributes(product.defaultPrice.attributes, strategy)
-
             // save or update
             if (!product.id || product.id == 0) {
                 log.debug("creating product ${product}")

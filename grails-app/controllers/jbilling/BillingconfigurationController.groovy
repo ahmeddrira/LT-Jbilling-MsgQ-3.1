@@ -27,7 +27,7 @@ class BillingconfigurationController {
 		boolean isBillingRunning= webServicesSession.isBillingRunning()
 		if (isBillingRunning)
 		{
-			flash.message = 'prompt.billing.running'
+			flash.info = 'prompt.billing.running'
 		}
 		[configuration:configuration, isBillingRunning: isBillingRunning]
 	}

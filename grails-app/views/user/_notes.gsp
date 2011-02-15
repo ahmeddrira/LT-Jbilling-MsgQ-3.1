@@ -13,11 +13,9 @@
     <g:hiddenField name="id" value="${selected.id}"/>
 
     <div class="box">
-        <div class="form-columns">
-            <div class="row">
-                <label class="lb"><g:message code="customer.detail.note.title"/></label>
-                <g:textArea name="notes" value="${selected.customer.notes}" rows="5" cols="60"/>
-            </div>
+        <div class="box-text">
+            <label class="lb"><g:message code="customer.detail.note.title"/></label>
+            <g:textArea name="notes" value="${selected.customer.notes}" rows="5" cols="60"/>
         </div>
     </div>
 

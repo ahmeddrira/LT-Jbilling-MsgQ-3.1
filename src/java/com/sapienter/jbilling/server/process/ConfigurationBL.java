@@ -22,14 +22,16 @@ package com.sapienter.jbilling.server.process;
 
 
 
+import org.apache.log4j.Logger;
+
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDAS;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
+import com.sapienter.jbilling.server.process.db.ProcessRunDAS;
 import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
@@ -41,6 +43,7 @@ public class ConfigurationBL {
     private BillingProcessConfigurationDAS configurationDas = null;
     private BillingProcessConfigurationDTO configuration = null;
     private EventLogger eLogger = null;
+    private static final Logger LOG = Logger.getLogger(ConfigurationBL.class);
 
     public ConfigurationBL(Integer entityId)  {
         init();
@@ -207,9 +210,10 @@ public class ConfigurationBL {
     	if ( billingProcessDTO != null) {
     		for (ProcessRunDTO run: billingProcessDTO.getProcessRuns()) {
     			//if status is not failed i.e. for the same date, if the process is either running or finished
-    			if (!Constants.PROCESS_RUN_STATUS_FAILED.equals(run.getStatus()) )
-    			{
-    				SessionInternalError exception = new SessionInternalError("BillingProcess.nextRunDate validation error.");
+    			if (!Constants.PROCESS_RUN_STATUS_FAILED.equals(run.getStatus().getId()) ) {
+    			    LOG.error("Trying to set this configuration: " + ws + " but already has this: " + run);
+    				SessionInternalError exception = new SessionInternalError(
+    				        "There is already a billing process for the give date." + ws.getNextRunDate());
     	            String messages[] = new String[1];
     	            messages[0] = new String("BillingProcessConfigurationWS,nextRunDate,billing.configuration.error.unique.nextrundate,");
     	            exception.setErrorMessages(messages);
@@ -217,18 +221,18 @@ public class ConfigurationBL {
     			}
     		}
     	}
-    	BillingProcessDTO process= null;
-    	try {
-    		process= new BillingProcessDAS().find(new BillingProcessBL().getLast(ws.getEntityId()));
-    	} catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
+    	
+    	ProcessRunDTO run = new ProcessRunDAS().getLatestSuccessful(ws.getEntityId());
     	
     	//The nextRunDate must be greater than the latest successful one
-    	if (!process.getBillingDate().before(ws.getNextRunDate())) {
-			SessionInternalError exception = new SessionInternalError("BillingProcess.nextRunDate validation error1.");
+    	if (!run.getBillingProcess().getBillingDate().before(ws.getNextRunDate())) {
+    		LOG.error("Trying to set this configuration: " + ws + " but the it should be in the future " + 
+    		        run.getBillingProcess());
+			SessionInternalError exception = new SessionInternalError(
+			        "The new next date needs to be in the future from the last successful run");
 			String messages[] = new String[1];
-			messages[0] = new String("BillingProcessConfigurationWS,nextRunDate,billing.configuration.error.past.nextrundate,"+process.getBillingDate());
+			messages[0] = new String("BillingProcessConfigurationWS,nextRunDate," +
+					"billing.configuration.error.past.nextrundate,"+run.getBillingProcess().getBillingDate());
 			exception.setErrorMessages(messages);
 			throw exception;
 		}

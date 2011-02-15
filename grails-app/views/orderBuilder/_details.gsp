@@ -102,7 +102,7 @@
                 $('#order-details-form').submit();
             });
 
-            $('#order-details-form').find('textarea, :text').not('.hasDatepicker').blur(function() {
+            $('#order-details-form').find('textarea, :text').blur(function() {
                 $('#order-details-form').submit();
             });
         });

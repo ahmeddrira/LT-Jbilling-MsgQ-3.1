@@ -24,12 +24,6 @@
     </g:if>
 </g:applyLayout>
 
-<g:applyLayout name="form/input">
-    <content tag="label"><g:message code="plan.model.percentage"/></content>
-    <content tag="label.for">model.${modelIndex}.rate</content>
-    <g:textField class="field" name="model.${modelIndex}.rate" value="${formatNumber(number: model?.rate ?: BigDecimal.ZERO, formatName: 'money.format')}"/>
-</g:applyLayout>
-
 <g:applyLayout name="form/select">
     <content tag="label"><g:message code="prompt.user.currency"/></content>
     <content tag="label.for">model.${modelIndex}.currencyId</content>

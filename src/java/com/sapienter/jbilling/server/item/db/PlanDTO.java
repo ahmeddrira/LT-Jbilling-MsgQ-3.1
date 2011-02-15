@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.item.PlanWS;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -149,6 +150,7 @@ public class PlanDTO implements Serializable {
         this.description = description;
     }
 
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "plan")
     public List<PlanItemDTO> getPlanItems() {
         return planItems;

@@ -12,7 +12,7 @@
 --%>
 
 <g:set var="attributeIndex" value="${0}"/>
-<g:set var="attributes" value="${new HashMap<String, String>(model.attributes)}"/>
+<g:set var="attributes" value="${model?.attributes ? new HashMap<String, String>(model.attributes) : new HashMap<String, String>()}"/>
 
 <!-- all attribute definitions -->
 <g:each var="definition" in="${type?.strategy?.attributeDefinitions}">

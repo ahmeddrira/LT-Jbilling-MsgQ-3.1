@@ -1910,7 +1910,7 @@ ALTER TABLE public.preference_type OWNER TO jbilling;
 CREATE TABLE price_model (
     id integer NOT NULL,
     strategy_type character varying(20) NOT NULL,
-    rate numeric(22,10) NOT NULL,
+    rate numeric(22,10) NULL,
     included_quantity integer,
     currency_id integer NOT NULL,
     next_model_id integer

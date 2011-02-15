@@ -159,41 +159,14 @@ public class PriceModelDTO implements Serializable {
     }
 
     /**
-     * Expected attributes.
-     *
-     * @return list of expected attributes
-     */
-    @Transient
-    public List<AttributeDefinition> getAttributeDefinitions() {
-        if (getStrategy() != null)
-            return getStrategy().getAttributeDefinitions();
-        return null;
-    }
-
-    /**
-     * Allowed positions in a chain of price models.
-     *
-     * @return list of chain positions
-     */
-    @Transient
-    public List<ChainPosition> getChainPositions() {
-        if (getStrategy() != null)
-            return getStrategy().getChainPositions();
-        return null;
-    }
-
-    /**
      * Returns the pricing rate. If the strategy type defines an overriding rate, the
      * strategy rate will be returned.
      *
-     * @see com.sapienter.jbilling.server.pricing.strategy.PricingStrategy#hasRate()
-     * @see com.sapienter.jbilling.server.pricing.strategy.PricingStrategy#getRate()
-     *
      * @return pricing rate.
      */
-    @Column(name = "rate", nullable = false, precision = 10, scale = 22)
+    @Column(name = "rate", nullable = true, precision = 10, scale = 22)
     public BigDecimal getRate() {
-        return getStrategy() != null && getStrategy().hasRate() ? getStrategy().getRate() : rate;
+        return rate;
     }
 
     public void setRate(BigDecimal rate) {
@@ -234,23 +207,20 @@ public class PriceModelDTO implements Serializable {
      */
     @Transient
     public void applyTo(PricingResult result, List<PricingField> fields, BigDecimal quantity, Usage usage) {
-        PriceModelDTO model = this;
-        while (model != null) {
+        // each model in the chain
+        for (PriceModelDTO next = this; next != null; next = next.getNext()) {
             // apply pricing
-            model.getType().getStrategy().applyTo(result, fields, model, quantity, usage);
+            next.getType().getStrategy().applyTo(result, fields, next, quantity, usage);
 
             // convert currency if necessary
             if (result.getUserId() != null
                 && result.getCurrencyId() != null
-                && model.getCurrency() != null
-                && model.getCurrency().getId() != result.getCurrencyId()) {
+                && next.getCurrency() != null
+                && next.getCurrency().getId() != result.getCurrencyId()) {
 
                 Integer entityId = new UserBL().getEntityId(result.getUserId());
-                result.setPrice(new CurrencyBL().convert(model.getCurrency().getId(), result.getCurrencyId(), result.getPrice(), entityId));
+                result.setPrice(new CurrencyBL().convert(next.getCurrency().getId(), result.getCurrencyId(), result.getPrice(), entityId));
             }
-
-            // next price model in chain
-            model = model.getNext();
         }
     }
 

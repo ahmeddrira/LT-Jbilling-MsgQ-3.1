@@ -14,7 +14,7 @@
 		<table class="dataTable">
             <tr><td><strong>
                     <g:if test="${user?.contact?.firstName || user?.contact?.lastName}">
-                        ${user.contact.firstName}&nbsp;${user.contact.lastName}
+                        ${user?.contact?.firstName}&nbsp;${user?.contact?.lastName}
                     </g:if>
                     <g:else>
                         ${user?.userName}
@@ -132,8 +132,8 @@
 							<td class="innerContent">${payment.isRefund?"R":"P"}</td>
 							<td class="innerContent">${Util.formatMoney(new BigDecimal(payment.amount?:"0.0"),
 								session["user_id"],invoice?.currencyId, false)}</td>
-							<td class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(languageId)}</td>
-							<td class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(languageId)}</td>
+							<td class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(session['language_id'])}</td>
+							<td class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(session['language_id'])}</td>
 							<td class="innerContent">
 								<a href="javascript:void(0);" onclick="setUnlinkPaymentId(${invoice.id}, ${payment.id});">
 								<span><g:message code="invoice.prompt.unlink.payment"/></span></a>

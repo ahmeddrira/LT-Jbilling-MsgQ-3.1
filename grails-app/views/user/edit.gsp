@@ -63,23 +63,6 @@
                             <g:hiddenField name="user.userId" value="${user?.userId}"/>
                         </g:applyLayout>
 
-                        <g:if test="${parent?.customerId}">
-                            <g:applyLayout name="form/select">
-                                <content tag="label"><g:message code="prompt.customer.type"/></content>
-                                <content tag="label.for">user.mainRoleId</content>
-                                <g:set var="customerRole" value="${RoleDTO.get(Constants.TYPE_CUSTOMER)}"/>
-                                <span>${customerRole.getTitle(session['language_id'])}</span>
-                                <g:hiddenField name="user.mainRoleId" value="${Constants.TYPE_CUSTOMER}"/>
-                            </g:applyLayout>
-                        </g:if>
-                        <g:else>
-                            <g:applyLayout name="form/select">
-                                <content tag="label"><g:message code="prompt.customer.type"/></content>
-                                <content tag="label.for">user.mainRoleId</content>
-                                <g:selectRoles name="user.mainRoleId" value="${user?.mainRoleId ?: Constants.TYPE_CUSTOMER}" languageId="${session['language_id']}" />
-                            </g:applyLayout>
-                        </g:else>
-
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.login.name"/></content>
                             <content tag="label.for">user.userName</content>
@@ -206,8 +189,8 @@
 
                         <!-- custom contact fields -->
                         <g:each var="ccf" in="${company.contactFieldTypes.sort{ it.id }}">
-                            <g:set var="fieldIndex" value="${contact?.fieldIDs?.findIndexOf{ it == ccf.id }}"/>
-                            <g:set var="fieldValue" value="${contact?.fieldValues?.getAt(fieldIndex)}"/>
+                            <g:set var="fieldIndex" value="${user?.contact?.fieldIDs?.findIndexOf{ it == ccf.id }}"/>
+                            <g:set var="fieldValue" value="${user?.contact?.fieldValues?.getAt(fieldIndex)}"/>
 
                             <g:applyLayout name="form/input">
                                 <content tag="label"><g:message code="${ccf.getDescription(session['language_id'])}"/></content>

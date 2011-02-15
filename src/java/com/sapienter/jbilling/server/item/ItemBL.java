@@ -31,7 +31,6 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
-import com.sapienter.jbilling.server.pricing.db.PriceModelDAS;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.EntityBL;
@@ -108,8 +107,14 @@ public class ItemBL {
             dto.setDefaultPrice(getDefaultPrice(dto.getPrice()));
         }
 
-        if (dto.getDefaultPrice() != null) {
+        // default currency for new prices (if currency is not explicitly set)
+        if (dto.getDefaultPrice() != null && dto.getDefaultPrice().getCurrency() == null) {
             dto.getDefaultPrice().setCurrency(entity.getEntity().getCurrency());
+        }
+
+        // validate all pricing attributes
+        if (dto.getDefaultPrice() != null) {
+            PriceModelBL.validateAttributes(dto.getDefaultPrice());
         }
 
         dto.setDeleted(0);
@@ -133,10 +138,13 @@ public class ItemBL {
         item.setPercentage(dto.getPercentage());
         item.setHasDecimals(dto.getHasDecimals());
 
-//        item.setDefaultPrice(dto.getDefaultPrice());
-
         updateDefaultPrice(dto);
         updateTypes(dto);
+
+        // validate all pricing attributes
+        if (item.getDefaultPrice() != null) {
+            PriceModelBL.validateAttributes(item.getDefaultPrice());
+        }
 
         itemDas.save(item);
     }
@@ -190,8 +198,6 @@ public class ItemBL {
         if (item.getDefaultPrice() != null && item.getDefaultPrice().getCurrency() == null) {
             item.getDefaultPrice().setCurrency(item.getEntity().getCurrency());
         }
-
-        LOG.debug("Item price: " + item.getDefaultPrice());
     }
 
     private void updateTypes(ItemDTO dto)
@@ -216,18 +222,6 @@ public class ItemBL {
         eLogger.audit(executorId, null, Constants.TABLE_ITEM, item.getId(),
                 EventLogger.MODULE_ITEM_MAINTENANCE,
                 EventLogger.ROW_DELETED, null, null, null);
-    }
-
-    public static boolean validate(ItemDTO dto) {
-        if ((dto.getPrice() == null && dto.getDefaultPrice() == null && dto.getPercentage() == null)
-            || dto.getDescription() == null
-            || dto.getPriceManual() == null
-            || dto.getTypes() == null) {
-
-            return false;
-        }
-
-        return true;
     }
 
     public boolean validateDecimals( Integer hasDecimals ){

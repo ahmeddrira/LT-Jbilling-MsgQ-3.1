@@ -2651,6 +2651,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * Plug-ins
      */
 
+    public PluggableTaskWS getPluginWS(Integer pluginId) {
+        PluggableTaskDTO dto = new PluggableTaskBL(pluginId).getDTO();
+        return new PluggableTaskWS(dto);
+    }
+
     public Integer createPlugin(PluggableTaskWS plugin) {
         return new PluggableTaskBL().create(getCallerId(), new PluggableTaskDTO(getCallerCompanyId(), plugin));
     }

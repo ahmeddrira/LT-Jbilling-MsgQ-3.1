@@ -33,6 +33,8 @@ import com.sapienter.jbilling.server.item.ItemDTOEx
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils
 import com.sapienter.jbilling.server.item.ItemTypeBL
+import com.sapienter.jbilling.server.pricing.PriceModelBL
+import com.sapienter.jbilling.server.pricing.db.PriceModelDTO
 
 /**
  * Plan builder controller
@@ -243,8 +245,17 @@ class PlanBuilderController {
                 bindData(planItem, params, 'price')
                 planItem.model = bindPriceModel(params)
 
-                // re-order plan items by precedence
-                conversation.plan.planItems = conversation.plan.planItems.sort { it.precedence }.reverse()
+                try {
+                    // validate attributes of updated price
+                    PriceModelBL.validateAttributes(planItem.model)
+
+                    // re-order plan items by precedence, unless a validation exception is thrown
+                    conversation.plan.planItems = conversation.plan.planItems.sort { it.precedence }.reverse()
+
+                } catch (SessionInternalError e) {
+                    viewUtils.resolveException(flow, session.locale, e)
+                    params.newLineIndex = index
+                }
 
                 params.template = 'review'
             }

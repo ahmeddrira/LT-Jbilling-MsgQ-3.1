@@ -10,6 +10,7 @@ import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
+import com.sapienter.jbilling.common.SessionInternalError;
 
 /**
 * BillingController
@@ -30,7 +31,6 @@ class BillingController {
 	def index = {
 		redirect action: list, params: params
 	}
-	
 	
 	/*
 	 * Renders/display list of Billing Processes Ordered by Process Id descending
@@ -108,7 +108,6 @@ class BillingController {
 		log.debug "process.orderProcesses: ${process.orderProcesses?.size()}"
 		
 		def das= new BillingProcessDAS() 
-		
 		def countAndSumByCurrency= new ArrayList()
 		Iterator iter= das.getCountAndSum(processId)
 		log.debug "*******Records found - getCountAndSum${processId}*******"
@@ -157,11 +156,8 @@ class BillingController {
 		[process:process, countAndSumByCurrency: countAndSumByCurrency, mapOfPaymentListByCurrency: mapOfPaymentListByCurrency, failedAmountsByCurrency: failedAmountsByCurrency] 
 	}
 
-	/*
-	 * Applies a filter on billing_process_id on the InvoiceDTO 
-	 */
 	def showInvoices = {
-		Integer _processId= params.id as Integer
+		def _processId= params.int('id')
 		log.debug "showInvoices, params.id=${_processId}"
 		def filter =  new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: false, integerValue: _processId)
 		filterService.setFilter(FilterType.INVOICE, filter)
@@ -169,10 +165,26 @@ class BillingController {
 		redirect controller: 'invoice', action: 'list'
 	}
 	
-	def showOrders = { 
-		Integer _processId= params.id as Integer
-		log.debug "showInvoices, params.id=${_processId}"
-		BillingProcessDTO dto= new BillingProcessDAS().find(_processId)
-		//redirect to orders with list of order ids
+	def showOrders = {
+		def _processId= params.int('id')
+		log.debug "redirect to order controller for processId $_processId"
+		redirect controller: 'order', action: 'byProcess', id:_processId
+	}
+	
+	def approve = {
+		try {
+			webServicesSession.setReviewApproval(Boolean.TRUE)
+		} catch (Exception e) {
+			throw new SessionInternalError(e)
+		}
+		redirect action: 'list'
+	}
+	def disapprove = {
+		try {
+			webServicesSession.setReviewApproval(Boolean.FALSE)
+		} catch (Exception e) {
+			throw new SessionInternalError(e)
+		}
+		redirect action: 'list'
 	}
 }

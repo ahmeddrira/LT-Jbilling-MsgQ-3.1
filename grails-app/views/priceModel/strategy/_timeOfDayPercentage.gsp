@@ -32,5 +32,3 @@
               optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
               value="${model?.currencyId}" />
 </g:applyLayout>
-
-<g:hiddenField name="model.${modelIndex}.rate" value="${BigDecimal.ZERO}"/>

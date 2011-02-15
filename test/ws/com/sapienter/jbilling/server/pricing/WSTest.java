@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -37,6 +38,7 @@ import junit.framework.TestCase;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * @author Brian Cowdery
@@ -54,6 +56,13 @@ public class WSTest extends TestCase {
     private static final Integer PLAN_AFFECTED_ITEM_ID = 2602;      // lemonade
 
     private static final Integer NON_PLAN_ITEM_ID = 2800;           // long distance call
+
+
+    // plug-in configuration
+    private static final Integer PRICING_PLUGIN_ID = 410;
+
+    private static final Integer RULES_PRICING_PLUGIN_TYPE_ID = 61; // RulesPricingTask2
+    private static final Integer MODEL_PRICING_PLUGIN_TYPE_ID = 79; // PriceModelPricingTask
 
 
     public WSTest() {
@@ -464,6 +473,7 @@ public class WSTest extends TestCase {
      */
     public void testRateOrder() throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();
+        enablePricingPlugin(api);
 
         UserWS user = new UserWS();
         user.setUserName("plan-test-05-" + new Date().getTime());
@@ -509,8 +519,6 @@ public class WSTest extends TestCase {
         assertEquals("Affected item should be discounted.", new BigDecimal("0.50"), price.getModel().getRateAsDecimal());
 
 
-        // todo: cannot test rate order unless the PriceModelPricingTask is configured as the pricing plug-in
-/*
         // test order using the affected plan item
         OrderWS testOrder = new OrderWS();
     	testOrder.setUserId(user.getUserId());
@@ -530,215 +538,253 @@ public class WSTest extends TestCase {
         // rate order and verify price
         testOrder = api.rateOrder(testOrder);
         assertEquals("Order line should be priced at $0.50.", new BigDecimal("0.50"), testOrder.getOrderLines()[0].getPriceAsDecimal());
-*/
 
         // cleanup
+        disablePricingPlugin(api);
         api.deleteOrder(order.getId());
         api.deleteUser(user.getUserId());
     }
 
+    /**
+     * Tests that subscribing to a plan with bundled quantity also adds the bundled items
+     * to the subscription order. Bundled items should be added at the plan price.
+     *
+     * @throws Exception possible api exception
+     */
+    public void testBundledQuantity() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+        enablePricingPlugin(api);
 
-    // note: old tests from original version, use as a basis for new WS tests
-/*
-    private ItemDTOEx planItem;
+        final Integer LONG_DISTANCE_PLAN_ITEM = 2700;       // long distance plan A - fixed rate
+        final Integer LONG_DISTANCE_CALL = 2800;            // long distance call
 
-    public ItemDTOEx getPlanItem() throws Exception {
-        if (planItem == null) {
-            JbillingAPI api = JbillingAPIFactory.getAPI();
 
-            for (ItemDTOEx item : api.getAllItems()){
-                if (item.getId().equals(PLAN_ITEM_ID)) {
-                    planItem = item;
-                    break;
-                }
+        // create user
+        UserWS user = new UserWS();
+        user.setUserName("plan-test-02-" + new Date().getTime());
+        user.setPassword("password");
+        user.setLanguageId(1);
+        user.setCurrencyId(1);
+        user.setMainRoleId(5);
+        user.setStatusId(UserDTOEx.STATUS_ACTIVE);
+        user.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+
+        ContactWS contact = new ContactWS();
+        contact.setEmail("test@test.com");
+        contact.setFirstName("Plan Test");
+        contact.setLastName("Update Order (subscribe)");
+        user.setContact(contact);
+
+        user.setUserId(api.createUser(user)); // create user
+        assertNotNull("customer created", user.getUserId());
+
+
+        // create plan
+        // includes 10 bundled "long distance call" items
+        PlanItemWS callPrice = new PlanItemWS();
+        callPrice.setItemId(LONG_DISTANCE_CALL);
+        callPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
+        callPrice.setBundledQuantity(new BigDecimal("10"));
+
+        PlanWS plan = new PlanWS();
+        plan.setItemId(LONG_DISTANCE_PLAN_ITEM);
+        plan.setDescription("Discount long distance calls.");
+        plan.addPlanItem(callPrice);
+
+        plan.setId(api.createPlan(plan));
+
+
+        // subscribe to the created plan
+        OrderWS order = new OrderWS();
+    	order.setUserId(user.getUserId());
+        order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
+        order.setPeriod(2);
+        order.setCurrencyId(1);
+        order.setActiveSince(new Date());
+
+        OrderLineWS planLine = new OrderLineWS();
+        planLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        planLine.setItemId(LONG_DISTANCE_PLAN_ITEM);
+        planLine.setUseItem(true);
+        planLine.setQuantity(1);
+        order.setOrderLines(new OrderLineWS[] { planLine });
+
+        order.setId(api.createOrder(order)); // create order
+        order = api.getOrder(order.getId());
+        assertNotNull("order created", order.getId());
+
+
+        // verify bundled item quantity in created order
+        assertEquals("order has lines for bundled quantity", 2, order.getOrderLines().length);
+
+        boolean found = false;
+        for (OrderLineWS line : order.getOrderLines()) {
+            if (line.getItemId().equals(LONG_DISTANCE_CALL)) {
+                found = true;
+                assertEquals("includes 10 bundled call items", new BigDecimal("10"), line.getQuantityAsDecimal());
+                assertEquals("bundled items at plan price", new BigDecimal("0.10"), line.getPriceAsDecimal());
             }
         }
-        return planItem;
+        assertTrue("Found line for bundled quantity", found);
+
+
+        // cleanup
+        disablePricingPlugin(api);
+        api.deleteOrder(order.getId());
+        api.deleteUser(user.getUserId());
+        api.deletePlan(plan.getId());
     }
 
-    public void testGetPlanPriceByAttribute() throws Exception {
+    /**
+     * Tests that plans and prices can only be accessed by the entity that owns the subscription/affected
+     * plan item ids.
+     *
+     * @throws Exception possible api exception.
+     */
+    public void testWSSecurity() throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();
 
-        ItemDTOEx planItem = getPlanItem();
+        final Integer BAD_ITEM_ID = 4;        // item belonging to entity 2
+        final Integer BAD_USER_ID = 13;       // user belonging to entity 2
+        final Integer ENTITY_TWO_PLAN_ID = 2; // plan belonging to entity 2
 
-        // price 1
-        PriceModelWS planPrice1 = new PriceModelWS();
-        planPrice1.setType(PriceModelWS.PLAN_TYPE_METERED);
-        planPrice1.setPlanItem(planItem);
-        planPrice1.setRate(new BigDecimal("0.10"));
-        planPrice1.setPrecedence(0);
-        planPrice1.addAttribute("lata", "0722");
-        planPrice1.addAttribute("rateCenter", "CHARLOTTE");
-        planPrice1.addAttribute("stateProv", "NC");
+        // getPlanWS
+        try {
+            api.getPlanWS(ENTITY_TWO_PLAN_ID);
+            fail("Should not be able to get plan from another entity");
+        } catch (SecurityException e) {
+            assertTrue("Could not get plan for entity 2 subscription item", true);
+        }
 
-        PriceModelWS planPrice2 = new PriceModelWS();
-        planPrice2.setType(PriceModelWS.PLAN_TYPE_METERED);
-        planPrice2.setPlanItem(planItem);
-        planPrice2.setRate(new BigDecimal("0.10"));
-        planPrice2.setPrecedence(0);
-        planPrice2.addAttribute("lata", "0723");
-        planPrice2.addAttribute("rateCenter", "CHARLOTTE");
-        planPrice2.addAttribute("stateProv", "NC");
+        // createPlan
+        PlanWS createPlan = new PlanWS();
+        createPlan.setItemId(BAD_ITEM_ID);
+        createPlan.setDescription("Create plan with a bad item.");
 
-        Integer[] planPriceIds = api.createPriceModels(new PriceModelWS[] { planPrice1, planPrice2 });
+        try {
+            api.createPlan(createPlan);
+            fail("Should not be able to create plans using items from another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not create plan using item belonging to entity 2", true);
+        }
 
-        // all attributes must match to be returned
-        Map<String, String> attributes1 = new HashMap<String, String>();
-        attributes1.put("lata", "0722");
-        attributes1.put("rateCenter", "CHARLOTTE");
-        attributes1.put("stateProv", "NC");
+        // updatePlan
+        PlanWS updatePlan = api.getPlanWS(PLAN_ID);
+        updatePlan.setItemId(BAD_ITEM_ID);
 
-        PriceModelWS[] prices1 = api.getPriceModelsByItemAndAttributes(new Integer[]{ planItem.getId() }, attributes1);
-        assertEquals("only 1 price with ALL attributes matching.", 1, prices1.length);
+        try {
+            api.updatePlan(updatePlan);
+            fail("Should not be able to update plan using items from another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not update plan using an item belonging to entity 2", true);
+        }
 
-        // can selectively query attributes
-        Map<String, String> attributes2 = new HashMap<String, String>();
-        attributes2.put("rateCenter", "CHARLOTTE");
+        // deletePlan
+        try {
+            api.deletePlan(ENTITY_TWO_PLAN_ID);
+            fail("Should not be able to delete a plan using an item from another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not delete plan for entity 2 subscription item", true);
+        }
 
-        PriceModelWS[] prices2 = api.getPriceModelsByItemAndAttributes(new Integer[]{ planItem.getId() }, attributes2);
-        assertEquals("only 2 prices matching rateCenter.", 2, prices2.length);
+        // addPlanPrice
+        PlanItemWS addPlanPrice = new PlanItemWS();
+        addPlanPrice.setItemId(BAD_ITEM_ID);
+        addPlanPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("1.00"), 1));
 
-        // clean up
-        api.deletePriceModel(planPriceIds[0]);
-        api.deletePriceModel(planPriceIds[1]);
+        try {
+            // cannot add to a plan we don't own
+            api.addPlanPrice(ENTITY_TWO_PLAN_ID, addPlanPrice);
+            fail("Should not be able to delete");
+        } catch (SecurityException e) {
+            assertTrue("Could not add price to a plan for entity 2 subscription item", true);
+        }
+
+        try {
+            // cannot add a price for an item we don't own
+            api.addPlanPrice(PLAN_ID, addPlanPrice);
+            fail("Should not be able to add price for item from another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not add price for an item belonging to entity 2", true);
+        }
+
+        // isCustomerSubscribed
+        try {
+            api.isCustomerSubscribed(ENTITY_TWO_PLAN_ID, 2); // entity 2 plan, for gandalf (entity 1 user)
+            fail("Should not be able to check subscription status for a plan from another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not check subscription status for plan belonging to entity 2", true);
+        }
+
+        // getSubscribedCustomers
+        try {
+            api.getSubscribedCustomers(ENTITY_TWO_PLAN_ID);
+            fail("Should not be able to get subscribed customers for a plan from another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not get subscribed customers  for plan belonging to entity 2", true);
+        }
+
+        // getPlansbySubscriptionItem
+        try {
+            api.getPlansBySubscriptionItem(BAD_ITEM_ID);
+            fail("Should not be able to get plans using for item belonging to another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not get plans by subscription item belonging to entity 2", true);
+        }
+
+        // getPlansByAffectedItem
+        try {
+            api.getPlansByAffectedItem(BAD_ITEM_ID);
+            fail("Should not be able to get plans using for item belonging to another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not get plans by affected item belonging to entity 2", true);
+        }
+
+        // getCustomerPrice
+        try {
+            api.getCustomerPrice(BAD_USER_ID, PLAN_AFFECTED_ITEM_ID);
+            fail("Should not be able to get price for a user belonging to another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not get price for user belonging to entity 2", true);
+
+        }
+
+        // getCustomerPriceByAttributes
+        try {
+            api.getCustomerPriceByAttributes(BAD_USER_ID, PLAN_AFFECTED_ITEM_ID, new HashMap<String, String>());
+            fail("Should not be able to get price for a user belonging to another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not get price for user belonging to entity 2", true);
+        }
+
+        // getCustomerPriceByWildcardAttributes
+        try {
+            api.getCustomerPriceByWildcardAttributes(BAD_USER_ID, PLAN_AFFECTED_ITEM_ID, new HashMap<String, String>());
+            fail("Should not be able to get price for a user belonging to another entity.");
+        } catch (SecurityException e) {
+            assertTrue("Could not get price for user belonging to entity 2", true);
+        }
     }
 
-    public void testGetPlanPriceByWildcardAttribute() throws Exception {
-        JbillingAPI api = JbillingAPIFactory.getAPI();
 
-        ItemDTOEx planItem = getPlanItem();
+    /*
+        Enable/disable the PricingModelPricingTask plug-in.
+     */
 
-        // price 1
-        PriceModelWS planPrice1 = new PriceModelWS();
-        planPrice1.setType(PriceModelWS.PLAN_TYPE_METERED);
-        planPrice1.setPlanItem(planItem);
-        planPrice1.setRate(new BigDecimal("0.10"));
-        planPrice1.setPrecedence(0);
-        planPrice1.addAttribute("lata", null);
-        planPrice1.addAttribute("rateCenter", "CHARLOTTE");
-        planPrice1.addAttribute("stateProv", "NC");
+    public void enablePricingPlugin(JbillingAPI api) {
+        PluggableTaskWS plugin = api.getPluginWS(PRICING_PLUGIN_ID);
+        plugin.setTypeId(MODEL_PRICING_PLUGIN_TYPE_ID);
 
-        // price 2
-        PriceModelWS planPrice2 = new PriceModelWS();
-        planPrice2.setType(PriceModelWS.PLAN_TYPE_METERED);
-        planPrice2.setPlanItem(planItem);
-        planPrice2.setRate(new BigDecimal("0.10"));
-        planPrice2.setPrecedence(0);
-        planPrice2.addAttribute("lata", null);
-        planPrice2.addAttribute("rateCenter", "CHARLOTTE");
-        planPrice2.addAttribute("stateProv", "NC");
-
-        Integer[] planPriceIds = api.createPriceModels(new PriceModelWS[] { planPrice1, planPrice2 });
-
-        // null plan price attributes are treated as wild-cards
-        // above pricing will only match on "rateCenter" and "stateProv" when queried with the wildcard method
-        Map<String, String> attributes1 = new HashMap<String, String>();
-        attributes1.put("lata", "9999");
-        attributes1.put("rateCenter", "CHARLOTTE");
-        attributes1.put("stateProv", "NC");
-
-        PriceModelWS[] prices1 = api.getPriceModelsByItemAndWildcardAttributes(new Integer[]{ planItem.getId() }, attributes1);
-        assertEquals("Both plan prices match, null lata treated as wildcard.", 2, prices1.length);
-
-        // can selectively query attributes
-        Map<String, String> attributes2 = new HashMap<String, String>();
-        attributes2.put("lata", "9999");
-        attributes2.put("rateCenter", "CHARLOTTE");
-
-        PriceModelWS[] prices2 = api.getPriceModelsByItemAndWildcardAttributes(new Integer[]{ planItem.getId() }, attributes2);
-        assertEquals("Both plan prices match, null lata treated as wildcard.", 2, prices2.length);
-
-        // clean up
-        api.deletePriceModel(planPriceIds[0]);
-        api.deletePriceModel(planPriceIds[1]);
+        api.updatePlugin(plugin);
     }
 
-    public void testGetPlanPriceByAttributeWithPrecedence() throws Exception {
-        JbillingAPI api = JbillingAPIFactory.getAPI();
+    public void disablePricingPlugin(JbillingAPI api) {
+        PluggableTaskWS plugin = api.getPluginWS(PRICING_PLUGIN_ID);
+        plugin.setTypeId(RULES_PRICING_PLUGIN_TYPE_ID);
 
-        ItemDTOEx planItem = getPlanItem();
-
-        // price 1
-        PriceModelWS planPrice1 = new PriceModelWS();
-        planPrice1.setType(PriceModelWS.PLAN_TYPE_METERED);
-        planPrice1.setPlanItem(planItem);
-        planPrice1.setRate(new BigDecimal("0.10"));
-        planPrice1.setPrecedence(0);
-        planPrice1.addAttribute("lata", "0722");
-        planPrice1.addAttribute("rateCenter", "CHARLOTTE");
-        planPrice1.addAttribute("stateProv", "NC");
-
-        // price 2 with a higher precedence
-        PriceModelWS planPrice2 = new PriceModelWS();
-        planPrice2.setType(PriceModelWS.PLAN_TYPE_METERED);
-        planPrice2.setPlanItem(planItem);
-        planPrice2.setRate(new BigDecimal("0.05"));
-        planPrice2.setPrecedence(10);
-        planPrice2.addAttribute("lata", "0722");
-        planPrice2.addAttribute("rateCenter", "CHARLOTTE");
-        planPrice2.addAttribute("stateProv", "NC");
-
-        Integer[] planPriceIds = api.createPriceModels(new PriceModelWS[] { planPrice1, planPrice2 });
-
-        // both pricing returned ordered by precedence, price 2 should be first
-        Map<String, String> attributes = new HashMap<String, String>();
-        attributes.put("lata", "0722");
-        attributes.put("rateCenter", "CHARLOTTE");
-        attributes.put("stateProv", "NC");
-
-        PriceModelWS[] prices = api.getPriceModelsByItemAndAttributes(new Integer[]{ planItem.getId() }, attributes);
-        assertEquals("should be 2 pricing plans matching", 2, prices.length);
-        assertEquals("price 2 should be first (highest precedence)", planPrice2.getRate(), prices[0].getRate());
-
-        // clean up
-        api.deletePriceModel(planPriceIds[0]);
-        api.deletePriceModel(planPriceIds[1]);
+        api.updatePlugin(plugin);
     }
 
-    public void testGetPlanPriceByAttributeWithMultiplePlans() throws Exception {
-        JbillingAPI api = JbillingAPIFactory.getAPI();
-
-        // price 1
-        ItemDTOEx planItem1 = getPlanItem();
-
-        PriceModelWS planPrice1 = new PriceModelWS();
-        planPrice1.setType(PriceModelWS.PLAN_TYPE_METERED);
-        planPrice1.setPlanItem(planItem1);
-        planPrice1.setRate(new BigDecimal("0.10"));
-        planPrice1.setPrecedence(0);
-        planPrice1.addAttribute("lata", "0722");
-        planPrice1.addAttribute("rateCenter", "CHARLOTTE");
-        planPrice1.addAttribute("stateProv", "NC");
-
-        // price 2 with a higher precedence
-        ItemDTOEx planItem2 = getPlanItem();
-
-        PriceModelWS planPrice2 = new PriceModelWS();
-        planPrice2.setType(PriceModelWS.PLAN_TYPE_METERED);
-        planPrice2.setPlanItem(planItem2);
-        planPrice2.setRate(new BigDecimal("0.05"));
-        planPrice2.setPrecedence(10);
-        planPrice2.addAttribute("lata", "0722");
-        planPrice2.addAttribute("rateCenter", "CHARLOTTE");
-        planPrice2.addAttribute("stateProv", "NC");
-
-        Integer[] planPriceIds = api.createPriceModels(new PriceModelWS[] { planPrice1, planPrice2 });
-
-        // both pricing returned ordered by precedence, price 2 should be first
-        Map<String, String> attributes = new HashMap<String, String>();
-        attributes.put("lata", "0722");
-        attributes.put("rateCenter", "CHARLOTTE");
-        attributes.put("stateProv", "NC");
-
-        PriceModelWS[] prices = api.getPriceModelsByItemAndAttributes(new Integer[]{ planItem1.getId(), planItem2.getId() }, attributes);
-        assertEquals("should be 2 pricing plans matching", 2, prices.length);
-        assertEquals("price 2 should be first (highest precedence)", planPrice2.getRate(), prices[0].getRate());
-
-        // clean up
-        api.deletePriceModel(planPriceIds[0]);
-        api.deletePriceModel(planPriceIds[1]);
-    }
-*/
 
     /*
         Convenience assertions for BigDecimal comparisons. 

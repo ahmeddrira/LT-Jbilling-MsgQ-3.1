@@ -45,4 +45,16 @@ public class ProcessRunStatusDTO extends AbstractGenericStatus implements java.i
         return Constants.TABLE_PROCESS_RUN_STATUS;
     }
 
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ProcessRunStatusDTO [getId()=");
+        builder.append(getId());
+        builder.append(", getDescription()=");
+        builder.append(getDescription());
+        builder.append("]");
+        return builder.toString();
+    }
+
 }

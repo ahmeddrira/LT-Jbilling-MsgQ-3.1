@@ -82,7 +82,11 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import sun.jdbc.rowset.CachedRowSet;
 
 import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 import java.math.BigDecimal;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -910,6 +914,20 @@ public class OrderBL extends ResultList
         execute();
         conn.close();
         return cachedResults;
+    }
+    
+    public List<Integer> getOrdersByProcess(Integer processId) throws SQLException, Exception { 
+    	conn = ((DataSource) Context.getBean(Context.Name.DATA_SOURCE)).getConnection();
+    	PreparedStatement stmt = conn.prepareStatement(OrderSQL.listByProcess);
+		stmt.setInt(1, processId.intValue());
+		ResultSet res = stmt.executeQuery();
+		List<Integer> orders=new ArrayList();
+		while (res.next()) {
+			orders.add(res.getInt(1));
+		}
+		res.close();
+		conn.close();
+		return orders;
     }
 
     public void setStatus(Integer executorId, Integer statusId) {

@@ -33,6 +33,3 @@
               value="${model?.currencyId}" />
 </g:applyLayout>
 
-<g:hiddenField name="model.${modelIndex}.rate" value="${BigDecimal.ZERO}"/>
-
-

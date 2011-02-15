@@ -20,9 +20,17 @@
 
 package com.sapienter.jbilling.server.security;
 
+import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
+import com.sapienter.jbilling.server.item.PlanBL;
+import com.sapienter.jbilling.server.item.PlanItemBL;
+import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.item.PlanWS;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDAS;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
+import com.sapienter.jbilling.server.item.db.PlanDTO;
+import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -56,6 +64,12 @@ public class WSSecurityEntityMapper {
         if (o instanceof ItemTypeWS)
             return fromItemTypeWS((ItemTypeWS) o);
 
+        if (o instanceof PlanWS)
+            return fromPlanWS((PlanWS) o);
+
+        if (o instanceof PlanItemWS)
+            return fromPlanItemWS((PlanItemWS) o);
+
         return null;
     }
 
@@ -67,5 +81,15 @@ public class WSSecurityEntityMapper {
     private static WSSecured fromItemTypeWS(ItemTypeWS type) {
         ItemTypeDTO dto = new ItemTypeDAS().find(type.getId());
         return dto != null ? new MappedSecuredWS(dto.getEntity().getId(), null) : null; // entity id
+    }
+
+    private static WSSecured fromPlanWS(PlanWS ws) {
+        ItemDTO item = new ItemBL(ws.getItemId()).getEntity();
+        return item != null ? new MappedSecuredWS(item.getEntity().getId(), null) : null; // entity id of plan item
+    }
+
+    private static WSSecured fromPlanItemWS(PlanItemWS ws) {
+        ItemDTO item = new ItemBL(ws.getItemId()).getEntity();
+        return item != null ? new MappedSecuredWS(item.getEntity().getId(), null) : null; // entity id of priced item
     }
 }

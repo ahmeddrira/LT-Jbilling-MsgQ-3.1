@@ -78,6 +78,25 @@
                         </td>
                     </tr>
                 </g:if>
+
+                <g:if test="${customer?.children}">
+                    <!-- empty spacer row -->
+                    <tr>
+                        <td colspan="2"><br/></td>
+                    </tr>
+
+                    <!-- direct sub-accounts -->
+                    <g:each var="account" in="${customer.children}">
+                        <tr>
+                            <td><g:message code="customer.subaccount.title" args="[ account.baseUser.id ]"/></td>
+                            <td class="value">
+                                <g:remoteLink action="show" id="${account.baseUser.id}" before="register(this);" onSuccess="render(data, next);">
+                                    ${account.baseUser.userName}
+                                </g:remoteLink>
+                            </td>
+                        </tr>
+                    </g:each>
+                </g:if>
             </tbody>
         </table>
     </div>

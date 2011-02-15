@@ -41,6 +41,7 @@
         <mapping class="com.sapienter.jbilling.server.util.db.LanguageDTO" />
         <mapping class="com.sapienter.jbilling.server.util.db.PreferenceTypeDTO" />
         <mapping class="com.sapienter.jbilling.server.util.db.PreferenceDTO" />
+        <mapping class="com.sapienter.jbilling.server.util.db.CountryDTO" />
         <mapping class="com.sapienter.jbilling.server.util.db.CurrencyExchangeDTO" />
         <mapping class="com.sapienter.jbilling.server.util.db.CurrencyDTO" />
         <mapping class="com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO" />

@@ -348,6 +348,9 @@ public class ContactBL {
             Integer contactTypeId) throws SessionInternalError {
         contact = contactDas.findContact(userId, contactTypeId);
         if (contact != null) {
+            if (entityId == null) {
+                setEntityFromUser(userId);
+            }
             update(dto);
         } else {
             try {

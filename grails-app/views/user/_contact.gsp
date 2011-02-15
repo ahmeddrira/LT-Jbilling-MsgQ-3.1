@@ -1,3 +1,4 @@
+<%@ page import="com.sapienter.jbilling.server.util.db.CountryDTO" %>
 <div id="contact-${contactType.id}" class="contact" style="${contactType.isPrimary > 0 ? '' : 'display: none;'}">
 
     <g:hiddenField name="contact-${contactType?.id}.type" value="${contactType?.id}"/>
@@ -5,25 +6,25 @@
 
     <g:applyLayout name="form/input">
         <content tag="label"><g:message code="prompt.organization.name"/></content>
-        <content tag="label.for">contact.organizationName</content>
-        <g:textField class="field" name="contact.organizationName" value="${contact?.organizationName}" />
+        <content tag="label.for">contact-${contactType?.id}.organizationName</content>
+        <g:textField class="field" name="contact-${contactType?.id}.organizationName" value="${contact?.organizationName}" />
     </g:applyLayout>
 
     <g:applyLayout name="form/input">
         <content tag="label"><g:message code="prompt.first.name"/></content>
-        <content tag="label.for">contact.firstName</content>
+        <content tag="label.for">contact-${contactType?.id}.firstName</content>
         <g:textField class="field" name="contact-${contactType?.id}.firstName" value="${contact?.firstName}" />
     </g:applyLayout>
 
     <g:applyLayout name="form/input">
         <content tag="label"><g:message code="prompt.last.name"/></content>
-        <content tag="label.for">contact.lastName</content>
+        <content tag="label.for">contact-${contactType?.id}.lastName</content>
         <g:textField class="field" name="contact-${contactType?.id}.lastName" value="${contact?.lastName}" />
     </g:applyLayout>
 
     <g:applyLayout name="form/text">
         <content tag="label"><g:message code="prompt.phone.number"/></content>
-        <content tag="label.for">contact.phoneCountryCode</content>
+        <content tag="label.for">contact-${contactType?.id}.phoneCountryCode</content>
         <span>
             <g:textField class="field" name="contact-${contactType?.id}.phoneCountryCode" value="${contact?.phoneCountryCode}" maxlength="3" size="2"/>
             -
@@ -35,49 +36,54 @@
 
     <g:applyLayout name="form/input">
         <content tag="label"><g:message code="prompt.email"/></content>
-        <content tag="label.for">contact.email</content>
+        <content tag="label.for">contact-${contactType?.id}.email</content>
         <g:textField class="field" name="contact-${contactType?.id}.email" value="${contact?.email}" />
     </g:applyLayout>
 
     <g:applyLayout name="form/input">
         <content tag="label"><g:message code="prompt.address1"/></content>
-        <content tag="label.for">contact.address1</content>
+        <content tag="label.for">contact-${contactType?.id}.address1</content>
         <g:textField class="field" name="contact-${contactType?.id}.address1" value="${contact?.address1}" />
     </g:applyLayout>
 
     <g:applyLayout name="form/input">
         <content tag="label"><g:message code="prompt.address2"/></content>
-        <content tag="label.for">contact.address2</content>
+        <content tag="label.for">contact-${contactType?.id}.address2</content>
         <g:textField class="field" name="contact-${contactType?.id}.address2" value="${contact?.address2}" />
     </g:applyLayout>
 
     <g:applyLayout name="form/input">
         <content tag="label"><g:message code="prompt.city"/></content>
-        <content tag="label.for">contact.city</content>
+        <content tag="label.for">contact-${contactType?.id}.city</content>
         <g:textField class="field" name="contact-${contactType?.id}.city" value="${contact?.city}" />
     </g:applyLayout>
 
     <g:applyLayout name="form/input">
         <content tag="label"><g:message code="prompt.state"/></content>
-        <content tag="label.for">contact.stateProvince</content>
+        <content tag="label.for">contact-${contactType?.id}.stateProvince</content>
         <g:textField class="field" name="contact-${contactType?.id}.stateProvince" value="${contact?.stateProvince}" />
     </g:applyLayout>
 
     <g:applyLayout name="form/input">
         <content tag="label"><g:message code="prompt.zip"/></content>
-        <content tag="label.for">contact.postalCode</content>
+        <content tag="label.for">contact-${contactType?.id}.postalCode</content>
         <g:textField class="field" name="contact-${contactType?.id}.postalCode" value="${contact?.postalCode}" />
     </g:applyLayout>
 
-    <g:applyLayout name="form/input">
+    <g:applyLayout name="form/select">
         <content tag="label"><g:message code="prompt.country"/></content>
-        <content tag="label.for">contact.countryCode</content>
-        <g:textField class="field" name="contact-${contactType?.id}.countryCode" value="${contact?.countryCode}" />
+        <content tag="label.for">contact-${contactType?.id}.countryCode</content>
+
+        <g:select name="contact-${contactType?.id}.countryCode"
+                  from="${CountryDTO.list()}"
+                  optionKey="code"
+                  optionValue="${{ it.getDescription(session['language_id']) }}"
+                  value="${contact?.countryCode}"/>
     </g:applyLayout>
 
     <g:applyLayout name="form/checkbox">
         <content tag="label"><g:message code="prompt.include.in.notifications"/></content>
-        <content tag="label.for">contact.include</content>
+        <content tag="label.for">contact-${contactType?.id}.include</content>
         <g:checkBox class="cb checkbox" name="contact-${contactType?.id}.include" checked="${contact?.include > 0}"/>
     </g:applyLayout>
 </div>

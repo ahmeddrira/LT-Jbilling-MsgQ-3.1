@@ -1910,7 +1910,7 @@ ALTER TABLE public.preference_type OWNER TO jbilling;
 CREATE TABLE price_model (
     id integer NOT NULL,
     strategy_type character varying(20) NOT NULL,
-    rate numeric(22,10) NULL,
+    rate numeric(22,10),
     included_quantity integer,
     currency_id integer NOT NULL,
     next_model_id integer
@@ -3386,13 +3386,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-156	1	product	show	\N	3100	0
-157	1	product	show	\N	3102	0
-158	1	product	editProduct	update	3102	0
-159	1	product	show	\N	3102	0
-160	1	product	editProduct	update	3102	0
-161	1	product	show	\N	3102	0
-162	1	product	editProduct	update	3102	0
+227	1	product	list	\N	2502	0
+228	1	product	list	\N	2500	0
+229	1	product	list	\N	2502	0
+230	1	product	list	\N	2401	0
+231	1	product	list	\N	2400	0
+232	1	product	list	\N	2201	0
+233	1	product	list	\N	2500	0
 \.
 
 
@@ -10220,6 +10220,20 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 468001	1	1	14	3100	2011-02-09 02:34:37.997	2	3	9	\N	\N	\N	0	\N
 468002	1	1	14	3102	2011-02-09 02:36:43.222	2	3	9	\N	\N	\N	0	\N
 468003	1	1	14	3102	2011-02-09 02:36:52.599	2	3	9	\N	\N	\N	0	\N
+469000	1	1	13	2200	2011-02-15 15:15:50.633	2	4	7	\N	\N	\N	0	\N
+469001	1	1	13	2201	2011-02-15 15:16:10.496	2	4	9	\N	Calls	\N	0	\N
+469002	1	1	13	22	2011-02-15 15:16:14.939	2	4	7	\N	\N	\N	0	\N
+469003	1	1	14	3100	2011-02-15 15:33:19.523	2	3	9	\N	\N	\N	0	\N
+469004	1	1	14	3101	2011-02-15 15:39:39.11	2	3	9	\N	\N	\N	0	\N
+469005	1	1	14	3102	2011-02-15 15:43:31.088	2	3	9	\N	\N	\N	0	\N
+469006	1	1	14	3103	2011-02-15 15:45:04.706	2	3	9	\N	\N	\N	0	\N
+469007	1	1	14	3103	2011-02-15 15:45:31.675	2	3	9	\N	\N	\N	0	\N
+469008	1	1	14	3103	2011-02-15 15:50:35.484	2	3	9	\N	\N	\N	0	\N
+469009	1	1	14	3105	2011-02-15 15:52:26.001	2	3	7	\N	\N	\N	0	\N
+469010	1	1	14	3104	2011-02-15 15:54:37.476	2	3	7	\N	\N	\N	0	\N
+469011	1	1	13	12	2011-02-15 15:54:58.946	2	4	7	\N	\N	\N	0	\N
+469012	1	1	13	2501	2011-02-15 15:57:25.19	2	4	7	\N	\N	\N	0	\N
+469013	1	1	13	2502	2011-02-15 15:58:35.145	2	4	7	\N	\N	\N	0	\N
 \.
 
 
@@ -11311,13 +11325,16 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 99	1	description	1	Referral Fee
 99	2	description	1	Payment Processor
 99	3	description	1	IP Address
-14	3100	description	1	eSpeed 2.5 Mbps
 14	3101	description	1	Wave Pre-paid
-14	3102	description	1	1 MB VPN
-14	3103	description	1	iCall Pre-paid
 14	3104	description	1	Time & Location
 14	3105	description	1	BND 20 First 3 months
 4	12	description	1	Brunei Dollar
+14	3200	description	1	Broadband Modem - Monthly Rental
+14	3100	description	1	Bandwidth 2.5 Mbps
+14	3201	description	1	Traffic (Minute)
+14	3102	description	1	Bandwidth 1 MB VPN
+14	3202	description	1	iCall Installation Charge
+14	3103	description	1	Voice Modem - Monthly rental
 \.
 
 
@@ -11417,12 +11434,15 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 2900	CALL-LD-GEN	1	\N	0	1	0	2	1900
 3000	PL-02	1	\N	0	1	0	4	2001
 240	DP-4	1	\N	0	1	0	2	2003
-3101	WAVE	1	\N	0	0	0	1	2101
-3103	CAPP	1	\N	0	0	0	1	2103
-3104	TLDC	1	\N	0	0	0	1	2104
-3105	BND20	1	\N	0	0	0	1	2105
-3100	ESBB	1	\N	0	0	0	2	2100
-3102	VPND	1	\N	0	0	0	4	2102
+3200	MODEM-R-01	1	\N	0	0	0	1	2200
+3100	BW-2.5	1	\N	0	0	0	3	2100
+3201	TR-MN	1	\N	0	0	0	1	2201
+3101	CARD-01	1	\N	0	0	0	2	2101
+3102	VPN-1MB	1	\N	0	0	0	5	2102
+3202	INSTALL-01	1	\N	0	0	0	1	2202
+3103	MODEM-R-02	1	\N	0	0	0	4	2103
+3105	BND20	1	\N	0	1	0	2	2105
+3104	TLDC	1	\N	0	1	0	2	2104
 \.
 
 
@@ -11432,14 +11452,12 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 
 COPY item_type (id, entity_id, description, order_line_type_id, optlock, internal) FROM stdin;
 2	2	Drinks	1	1	f
-22	1	Fees	3	1	f
-2200	1	Long Distance Plans	1	0	f
-2201	1	Calls	1	0	f
-12	1	Discounts	1	1	f
 2401	1	Data 	1	0	f
 2400	1	Broadband	1	2	f
 2402	1	plans	1	0	t
 2403	2	plans	1	0	t
+2201	1	Voice	1	1	f
+2500	1	Rentals	1	0	f
 \.
 
 
@@ -11449,13 +11467,6 @@ COPY item_type (id, entity_id, description, order_line_type_id, optlock, interna
 
 COPY item_type_map (item_id, type_id) FROM stdin;
 4	2
-14	12
-24	22
-251	22
-270	22
-2700	2200
-2701	2200
-2702	2200
 2800	2201
 2801	2201
 2900	2201
@@ -11463,8 +11474,11 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 3101	2400
 3102	2401
 3103	2201
-3104	12
-3105	12
+3200	2500
+3200	2400
+3201	2400
+3103	2500
+3202	2201
 \.
 
 
@@ -11620,10 +11634,6 @@ customer	1086
 base_user	1096
 contact_map	7911
 contact_map	7911
-price_model	22
-item_type	25
-item_type	25
-item	32
 customer	1086
 contact	1147
 contact_field	2027
@@ -11631,10 +11641,11 @@ partner_payout	1
 process_run_total_pm	1
 process_run_total_pm	1
 report_user	1
-event_log	469
-breadcrumb	163
 report_user	1
 payment_authorization	1
+item_type	26
+price_model	23
+item	33
 payment_authorization	1
 paper_invoice_batch	1
 paper_invoice_batch	1
@@ -11646,12 +11657,15 @@ mediation_record_line	1
 mediation_record_line	1
 contact_type	10
 contact_field_type	1
-item	32
 contact	1147
 contact_field	2027
 base_user	1096
-event_log	469
-recent_item	28
+event_log	470
+event_log	470
+item_type	26
+item	33
+recent_item	39
+breadcrumb	234
 \.
 
 
@@ -14981,12 +14995,15 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id, next_
 1900	METERED	0.0000000000	\N	1	\N
 2001	METERED	99.9900000000	\N	1	\N
 2003	METERED	15.0000000000	\N	11	\N
-2101	METERED	0.0000000000	\N	1	\N
-2102	METERED	0.0000000000	\N	1	\N
-2103	METERED	0.0000000000	\N	1	\N
 2104	GRADUATED	0.0000000000	\N	1	\N
 2105	METERED	0.0000000000	\N	1	\N
-2100	METERED	1.0000000000	\N	1	\N
+2200	METERED	99.9000000000	\N	12	\N
+2100	METERED	49.9000000000	\N	12	\N
+2201	METERED	0.0500000000	\N	12	\N
+2101	METERED	20.0000000000	\N	12	\N
+2102	METERED	1400.0000000000	\N	12	\N
+2202	METERED	50.0000000000	\N	12	\N
+2103	METERED	25.0000000000	\N	12	\N
 \.
 
 
@@ -15064,11 +15081,11 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 --
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
-23	PRODUCT	3103	1	0
-24	PRODUCT	3104	1	0
-25	PRODUCT	3105	1	0
-26	PRODUCT	3100	1	0
-27	PRODUCT	3102	1	0
+34	PRODUCT	3202	1	0
+35	PRODUCT	3103	1	0
+36	PRODUCT	3104	1	0
+37	PRODUCT	3105	1	0
+38	PRODUCT	3104	1	0
 \.
 
 

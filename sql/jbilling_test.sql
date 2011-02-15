@@ -3386,13 +3386,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-227	1	product	list	\N	2502	0
-228	1	product	list	\N	2500	0
-229	1	product	list	\N	2502	0
-230	1	product	list	\N	2401	0
-231	1	product	list	\N	2400	0
 232	1	product	list	\N	2201	0
 233	1	product	list	\N	2500	0
+234	1	plan	list	\N	\N	0
+235	1	planBuilder	edit	create	\N	0
+236	1	plan	list	\N	100	0
+237	1	planBuilder	edit	update	100	0
+238	1	plan	list	\N	100	0
 \.
 
 
@@ -10234,6 +10234,7 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 469011	1	1	13	12	2011-02-15 15:54:58.946	2	4	7	\N	\N	\N	0	\N
 469012	1	1	13	2501	2011-02-15 15:57:25.19	2	4	7	\N	\N	\N	0	\N
 469013	1	1	13	2502	2011-02-15 15:58:35.145	2	4	7	\N	\N	\N	0	\N
+470000	1	1	14	3300	2011-02-15 16:27:10.538	2	3	9	\N	\N	\N	0	\N
 \.
 
 
@@ -11335,6 +11336,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 14	3102	description	1	Bandwidth 1 MB VPN
 14	3202	description	1	iCall Installation Charge
 14	3103	description	1	Voice Modem - Monthly rental
+14	3300	description	1	eSpeed Time Premium Surf
 \.
 
 
@@ -11443,6 +11445,7 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 3103	MODEM-R-02	1	\N	0	0	0	4	2103
 3105	BND20	1	\N	0	1	0	2	2105
 3104	TLDC	1	\N	0	1	0	2	2104
+3300	PL-eSpeed	1	\N	0	0	0	2	2300
 \.
 
 
@@ -11479,6 +11482,7 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 3201	2400
 3103	2500
 3202	2201
+3300	2402
 \.
 
 
@@ -11612,8 +11616,6 @@ promotion	1
 promotion	1
 filter	1
 filter_set	1
-plan	1
-plan_item	1
 permission_type	1
 permission_type	1
 invoice_delivery_method	1
@@ -11634,6 +11636,7 @@ customer	1086
 base_user	1096
 contact_map	7911
 contact_map	7911
+price_model	24
 customer	1086
 contact	1147
 contact_field	2027
@@ -11641,11 +11644,12 @@ partner_payout	1
 process_run_total_pm	1
 process_run_total_pm	1
 report_user	1
+item	34
+plan	2
 report_user	1
 payment_authorization	1
 item_type	26
-price_model	23
-item	33
+plan_item	2
 payment_authorization	1
 paper_invoice_batch	1
 paper_invoice_batch	1
@@ -11660,12 +11664,12 @@ contact_field_type	1
 contact	1147
 contact_field	2027
 base_user	1096
-event_log	470
-event_log	470
+item	34
+event_log	471
+event_log	471
 item_type	26
-item	33
+breadcrumb	239
 recent_item	39
-breadcrumb	234
 \.
 
 
@@ -14593,6 +14597,7 @@ COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 --
 
 COPY plan (id, item_id, description) FROM stdin;
+100	3300	e-Speed (postpaid service)
 \.
 
 
@@ -14601,6 +14606,9 @@ COPY plan (id, item_id, description) FROM stdin;
 --
 
 COPY plan_item (id, plan_id, item_id, price_model_id, precedence, bundled_quantity) FROM stdin;
+100	100	3201	2301	-1	0.0000000000
+101	100	3100	2302	-1	0.0000000000
+102	100	3200	2303	-1	0.0000000000
 \.
 
 
@@ -15004,6 +15012,10 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id, next_
 2102	METERED	1400.0000000000	\N	12	\N
 2202	METERED	50.0000000000	\N	12	\N
 2103	METERED	25.0000000000	\N	12	\N
+2300	METERED	59.9000000000	\N	12	\N
+2301	CAPPED_GRADUATED	0.0500000000	\N	12	\N
+2302	FLAT	0.0000000000	\N	1	\N
+2303	FLAT	0.0000000000	\N	1	\N
 \.
 
 
@@ -15013,6 +15025,8 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id, next_
 
 COPY price_model_attribute (price_model_id, attribute_name, attribute_value) FROM stdin;
 2104	included	0
+2301	max	158
+2301	included	1200
 \.
 
 

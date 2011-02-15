@@ -299,7 +299,9 @@ class OrderBuilderController {
 
                 // if product does not support decimals, drop scale of the given quantity
                 def product = conversation.products?.find{ it.id == line.itemId }
-                if (product.hasDecimals == 0) {
+                if (!product) product = conversation.plans?.find{ it.id == line.itemId }
+
+                if (product?.hasDecimals == 0) {
                     line.quantity = line.getQuantityAsDecimal().setScale(0, RoundingMode.HALF_UP)
                 }
 

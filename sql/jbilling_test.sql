@@ -1912,7 +1912,7 @@ CREATE TABLE price_model (
     strategy_type character varying(20) NOT NULL,
     rate numeric(22,10),
     included_quantity integer,
-    currency_id integer NOT NULL,
+    currency_id integer,
     next_model_id integer
 );
 

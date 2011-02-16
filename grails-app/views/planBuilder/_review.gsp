@@ -28,8 +28,7 @@
         <!-- plan review header -->
         <div class="header">
             <div class="column">
-                <h1>${product.number}</h1>
-                <h3>${product.description}</h3>
+                <h2>${product.description}</h2>
             </div>
             <div class="column">
                 <h2 class="right">

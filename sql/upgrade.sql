@@ -758,5 +758,6 @@ alter tabe price_model add constraint price_model_next_id_FK foreign key (next_m
 -- plan item bundled quantity
 alter table plan_item add column bundled_quantity numeric(22,10) null;
 
--- nullable price model rate
+-- nullable price model rate and currency
 alter table price_model alter column rate drop not null;
+alter table price_model alter column currency_id drop not null;

@@ -24,5 +24,4 @@
     </g:if>
 </g:applyLayout>
 
-<g:hiddenField name="model.${modelIndex}.currencyId" value="${currencies?.asList()?.first()?.id}"/>
 <g:hiddenField name="model.${modelIndex}.rate" value="${BigDecimal.ZERO}"/>

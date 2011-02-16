@@ -3386,13 +3386,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-232	1	product	list	\N	2201	0
-233	1	product	list	\N	2500	0
-234	1	plan	list	\N	\N	0
-235	1	planBuilder	edit	create	\N	0
-236	1	plan	list	\N	100	0
-237	1	planBuilder	edit	update	100	0
-238	1	plan	list	\N	100	0
+262	1	config	index	\N	\N	0
+263	1	plugin	listCategories	\N	\N	0
+264	1	plugin	plugins	\N	7	0
+265	1	plugin	show	\N	9	0
+266	1	plugin	edit	\N	9	0
+267	1	invoice	list	\N	\N	0
+268	1	invoice	list	\N	8600	0
 \.
 
 
@@ -4543,6 +4543,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 114633	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:07:11.931	0	1	\N	0
 11322	\N	Y-14-2, Tropicana Resort Jalan Simpang	\N	Bandar Seri Begawan	\N	BS8711 	BR	Lee	David	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10802	1
 11323	\N	No. 715, Ground Floor, Jalan Roberts	\N	Bandar Seri Begawan	\N	BS8711 	BR	Krishna	Vasanthi	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10803	1
+114700	\N	No. 5 Jalan McArthur, 45, 7th Floor	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivasan	Vasha	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-15 16:50:37.505	0	1	\N	1
 \.
 
 
@@ -6634,6 +6635,9 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 202648	3	114632		0
 202649	2	114632		0
 202650	1	114632		0
+202700	3	114700		0
+202701	2	114700		0
+202702	1	114700		0
 \.
 
 
@@ -7730,6 +7734,7 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 791031	114631	4	10	10955	1
 791032	114632	2	10	10956	1
 791033	114633	4	10	10956	1
+791100	114700	1	39	8600	1
 \.
 
 
@@ -10235,6 +10240,12 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 469012	1	1	13	2501	2011-02-15 15:57:25.19	2	4	7	\N	\N	\N	0	\N
 469013	1	1	13	2502	2011-02-15 15:58:35.145	2	4	7	\N	\N	\N	0	\N
 470000	1	1	14	3300	2011-02-15 16:27:10.538	2	3	9	\N	\N	\N	0	\N
+471000	1	\N	21	107900	2011-02-15 16:26:06.431	2	7	25	\N	\N	\N	0	10791
+471001	1	1	14	3201	2011-02-15 16:26:42.783	2	3	9	\N	\N	\N	0	\N
+472000	1	\N	39	8600	2011-02-15 16:50:37.532	2	9	25	\N	\N	\N	0	10791
+472001	1	\N	21	107900	2011-02-15 16:50:37.63	2	7	13	1	\N	\N	0	10791
+472002	1	1	25	9	2011-02-15 16:57:32.012	2	11	9	\N	\N	\N	0	\N
+472003	1	1	25	9	2011-02-15 16:57:54.309	2	11	9	\N	\N	\N	0	\N
 \.
 
 
@@ -11358,6 +11369,7 @@ COPY invoice (id, create_datetime, billing_process_id, user_id, delegated_invoic
 70	2007-07-26 00:00:00	\N	10743	\N	2007-08-26	20.0000000000	0	27	20.0000000000	0.0000000000	1	0	1	1	\N	\N	11	\N	\N	2007-07-26 18:17:19.113	1
 75	2007-08-16 00:00:00	\N	13	\N	2007-09-16	12.9899997711	0	27	12.9899997711	0.0000000000	1	0	1	1	\N	\N	1	\N	\N	2007-08-16 14:57:08.799	1
 8500	2009-07-20 00:00:00	\N	121	\N	2006-09-10	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	1	\N	\N	1022	\N	\N	2009-07-20 16:42:04.869	1
+8600	2011-02-15 00:00:00	\N	10791	\N	2011-03-15	125.0000000000	0	27	125.0000000000	0.0000000000	1	0	12	0	\N	\N	1023	\N	\N	2011-02-15 16:50:37.314	1
 \.
 
 
@@ -11394,6 +11406,7 @@ COPY invoice_line (id, invoice_id, type_id, amount, quantity, price, deleted, it
 67	70	1	20.0000000000	1.0000000000	20.0000000000	0	2	Lemonade - all you can drink monthly	10743	0	1
 76	75	1	12.9899997711	1.0000000000	12.9899997711	0	4	Poison Ivy juice (cold) Period from 12/07/2006 to 01/06/2007	13	0	1
 8600	8500	4	15.0000000000	\N	\N	0	251	Lemonade plan - Setup Fee	121	0	1
+8700	8600	6	125.0000000000	2500.0000000000	0.0500000000	0	3201	Traffic (Minute)	10791	0	1
 \.
 
 
@@ -11438,7 +11451,6 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 240	DP-4	1	\N	0	1	0	2	2003
 3200	MODEM-R-01	1	\N	0	0	0	1	2200
 3100	BW-2.5	1	\N	0	0	0	3	2100
-3201	TR-MN	1	\N	0	0	0	1	2201
 3101	CARD-01	1	\N	0	0	0	2	2101
 3102	VPN-1MB	1	\N	0	0	0	5	2102
 3202	INSTALL-01	1	\N	0	0	0	1	2202
@@ -11446,6 +11458,7 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 3105	BND20	1	\N	0	1	0	2	2105
 3104	TLDC	1	\N	0	1	0	2	2104
 3300	PL-eSpeed	1	\N	0	0	0	2	2300
+3201	TR-MN	1	\N	0	0	0	2	2201
 \.
 
 
@@ -11461,6 +11474,7 @@ COPY item_type (id, entity_id, description, order_line_type_id, optlock, interna
 2403	2	plans	1	0	t
 2201	1	Voice	1	1	f
 2500	1	Rentals	1	0	f
+2600	1	Usage	1	0	f
 \.
 
 
@@ -11483,6 +11497,7 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 3103	2500
 3202	2201
 3300	2402
+3201	2600
 \.
 
 
@@ -11591,15 +11606,6 @@ notification_message_line	1
 notification_message_line	1
 ageing_entity_step	1
 ageing_entity_step	1
-purchase_order	1079
-purchase_order	1079
-order_line	2081
-order_line	2081
-invoice	86
-invoice	86
-invoice_line	87
-invoice_line	87
-order_process	86
 payment	19
 payment	19
 credit_card	1015
@@ -11621,11 +11627,9 @@ permission_type	1
 invoice_delivery_method	1
 event_log_module	1
 list_field_entity	1
-pluggable_task_parameter	8313
 billing_process_configuration	1
 pluggable_task	606
 notification_message_section	1
-order_process	86
 payment_invoice	1
 mediation_process	1
 mediation_process	1
@@ -11634,12 +11638,8 @@ ach	1
 partner_payout	1
 customer	1086
 base_user	1096
-contact_map	7911
-contact_map	7911
 price_model	24
 customer	1086
-contact	1147
-contact_field	2027
 partner_payout	1
 process_run_total_pm	1
 process_run_total_pm	1
@@ -11648,10 +11648,20 @@ item	34
 plan	2
 report_user	1
 payment_authorization	1
-item_type	26
 plan_item	2
 payment_authorization	1
 paper_invoice_batch	1
+item_type	27
+invoice	87
+invoice	87
+contact_map	7912
+contact_map	7912
+contact	1148
+contact_field	2028
+invoice_line	88
+order_process	87
+order_process	87
+pluggable_task_parameter	8314
 paper_invoice_batch	1
 notification_message_arch	1
 notification_message_arch	1
@@ -11661,15 +11671,20 @@ mediation_record_line	1
 mediation_record_line	1
 contact_type	10
 contact_field_type	1
-contact	1147
-contact_field	2027
 base_user	1096
 item	34
-event_log	471
-event_log	471
-item_type	26
-breadcrumb	239
-recent_item	39
+purchase_order	1080
+purchase_order	1080
+order_line	2082
+order_line	2082
+item_type	27
+contact	1148
+contact_field	2028
+event_log	473
+event_log	473
+invoice_line	88
+recent_item	48
+breadcrumb	269
 \.
 
 
@@ -11906,6 +11921,10 @@ COPY mediation_process (id, configuration_id, start_datetime, end_datetime, orde
 
 COPY mediation_record (id_key, start_datetime, mediation_process_id, optlock, status_id, id) FROM stdin;
 20120	2010-06-04 20:50:46.73041	1	0	32	1
+30001	2011-02-15 00:00:00	1	0	30	2
+30002	2011-02-15 00:00:00	1	0	30	3
+30002	2011-02-15 00:00:00	1	0	30	4
+30002	2011-02-15 00:00:00	1	0	30	5
 \.
 
 
@@ -11914,6 +11933,12 @@ COPY mediation_record (id_key, start_datetime, mediation_process_id, optlock, st
 --
 
 COPY mediation_record_line (id, order_line_id, event_date, amount, quantity, description, optlock, mediation_record_id) FROM stdin;
+1	208100	2011-02-15 00:00:00	50.0000000000	1000.0000000000	Local Usage	0	2
+2	208100	2011-02-15 00:00:00	25.0000000000	500.0000000000	Local Usage	0	2
+3	208100	2011-02-15 00:00:00	25.0000000000	500.0000000000	BMobile	0	2
+4	208100	2011-02-15 00:00:00	5.0000000000	100.0000000000	REN-BUSINESS MFREQUENCEY PHONE	0	3
+5	208100	2011-02-15 00:00:00	10.0000000000	200.0000000000	REN-BUSINESS MFREQUENCEY PHONE	0	4
+6	208100	2011-02-15 00:00:00	10.0000000000	200.0000000000	REN-BUSINESS MFREQUENCEY PHONE	0	5
 \.
 
 
@@ -14232,6 +14257,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 208007	107807	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:20:23.277	0	Lemonade 	21	\N	0
 208008	107808	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:20:44.579	0	Lemonade 	21	\N	0
 208010	107810	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:21:21.348	0	Lemonade 	21	\N	0
+208100	107900	3201	1	125.0000000000	2500.0000000000	0.0500000000	\N	2011-02-15 16:25:57.921	0	Traffic (Minute)	21	\N	1
 \.
 
 
@@ -14275,6 +14301,7 @@ COPY order_process (id, order_id, invoice_id, billing_process_id, periods_includ
 65	45	65	\N	1	2006-09-26	2006-10-26	0	2	1
 75	5	75	\N	1	2006-12-07	2007-01-07	0	2	1
 8500	107500	8500	\N	1	\N	\N	0	2	0
+8600	107900	8600	\N	1	2011-02-15	2011-02-15	0	2	0
 \.
 
 
@@ -14624,7 +14651,6 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 6	1	37	1	2	\N
 7	1	36	1	1	\N
 8	1	10	1	1	\N
-9	1	12	2	1	\N
 10	2	1	1	1	\N
 11	2	3	1	1	\N
 12	2	4	2	1	\N
@@ -14670,6 +14696,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 6030	1	81	1	1	\N
 6040	1	78	1	4	\N
 6050	1	82	2	7	\N
+9	1	12	2	3	
 \.
 
 
@@ -14678,7 +14705,6 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 --
 
 COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_value, optlock) FROM stdin;
-1	9	design	\N	simple_invoice_b2b	\N	1
 2	7	smtp_server	\N		\N	1
 3	7	from	\N	admin@prancingpony.me	\N	1
 4	7	username	\N		\N	1
@@ -14754,6 +14780,9 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 830801	6040	output_filename	\N	InternalEventsRulesTask520.pkg	\N	1
 830802	6040	template_filename	\N	rules-generator-template-integration-test.vm	\N	1
 831200	6050	start_time	\N	20100728-0000	\N	1
+831300	9	sql_query	\N	true	\N	0
+831301	9	language	\N		\N	0
+1	9	design	\N	telbru_invoice	\N	3
 \.
 
 
@@ -14917,8 +14946,8 @@ COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_
 44	26	10	1	200	\N	\N
 45	43	5	1	460	\N	\N
 46	44	5	1	1	\N	\N
-15	19	5	1	1023	\N	\N
 47	49	5	1	\N	\N	5.0000000000
+15	19	5	1	1024	\N	\N
 \.
 
 
@@ -15087,6 +15116,7 @@ COPY promotion_user_map (user_id, promotion_id) FROM stdin;
 --
 
 COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, active_until, cycle_start, create_datetime, next_billable_day, created_by, status_id, currency_id, deleted, notify, last_notified, notification_step, due_date_unit_id, due_date_value, df_fm, anticipate_periods, own_invoice, notes, notes_in_invoice, is_current, optlock) FROM stdin;
+107900	10791	1	1	2011-02-15	\N	\N	2011-02-15 16:25:57.921	\N	1	17	12	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	1
 \.
 
 
@@ -15095,11 +15125,11 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 --
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
-34	PRODUCT	3202	1	0
-35	PRODUCT	3103	1	0
-36	PRODUCT	3104	1	0
-37	PRODUCT	3105	1	0
-38	PRODUCT	3104	1	0
+43	CUSTOMER	10791	1	0
+44	ORDER	107900	1	0
+45	INVOICE	8600	1	0
+46	PLUGIN	9	1	0
+47	INVOICE	8600	1	0
 \.
 
 

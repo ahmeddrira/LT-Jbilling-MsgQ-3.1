@@ -64,6 +64,14 @@
 
                 <g:if test="${customer?.parent}">
                     <tr>
+                        <td><g:message code="prompt.parent.id"/></td>
+                        <td class="value">
+                            <g:link action="list" id="${customer.parent.baseUser.id}">
+                                ${customer.parent.baseUser.id} - ${customer.parent.baseUser.userName}
+                            </g:link>
+                        </td>
+                    </tr>
+                    <tr>
                         <td><g:message code="customer.invoice.if.child.label"/></td>
                         <td class="value">
                             <g:if test="${customer.invoiceChild > 0}">

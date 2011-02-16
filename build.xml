@@ -68,6 +68,12 @@
         <delete dir="${build.resources.dir}"/>
         <delete dir="${build.test.dir}"/>
         <delete dir="${build.test-results.dir}"/>
+
+        <!-- delete output logs and temporary files -->
+        <delete>
+            <fileset dir="${basedir}" includes="velocity.log*"/>
+            <fileset dir="${basedir}" includes="TEST-*.xml"/>
+        </delete>
     </target>
 
     <target name="copy-resources" description="Creates the jbilling 'resources/' directories and copies necessary files.">
@@ -613,6 +619,11 @@
             <arg value="${source.rules.dir}/templates/${rulesTemplateFile}"/>
             <arg value="${source.rules.dir}/${rulesDataFile}"/>
         </java>
+
+        <!-- delete velocity output log -->
+        <delete>
+            <fileset dir="${basedir}" includes="velocity.log*"/>
+        </delete>
     </target>
 
     <target name="export">

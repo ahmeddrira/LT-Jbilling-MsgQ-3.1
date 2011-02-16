@@ -23,6 +23,7 @@
  */
 package com.sapienter.jbilling.server.entity;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlType;
 import javax.validation.constraints.Digits;
 
@@ -37,17 +38,25 @@ public class AchDTO
    private java.lang.Integer id;
    private boolean idHasBeenSet = false;
 
+   @NotNull(message = "validation.error.is.required")
    @Digits(integer=16, fraction=0, message="validation.error.not.a.number")
    private java.lang.String abaRouting;
    private boolean abaRoutingHasBeenSet = false;
 
+   @NotNull(message = "validation.error.is.required")
    @Digits(integer=16, fraction=0, message="validation.error.not.a.number")
    private java.lang.String bankAccount;
    private boolean bankAccountHasBeenSet = false;
+
+   @NotNull(message = "validation.error.is.required")
    private java.lang.Integer accountType;
    private boolean accountTypeHasBeenSet = false;
+
+   @NotNull(message = "validation.error.is.required")
    private java.lang.String bankName;
    private boolean bankNameHasBeenSet = false;
+
+   @NotNull(message = "validation.error.is.required")
    private java.lang.String accountName;
    private boolean accountNameHasBeenSet = false;
    private java.lang.String gatewayKey;

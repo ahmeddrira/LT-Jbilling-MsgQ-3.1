@@ -65,7 +65,9 @@ public class UserWS implements WSSecured, Serializable {
     private int failedAttempts;
     private Integer languageId;
 
+    @Valid
     private CreditCardDTO creditCard = null;
+    @Valid
     private AchDTO ach = null;
 
     @NotNull(message = "validation.error.notnull")

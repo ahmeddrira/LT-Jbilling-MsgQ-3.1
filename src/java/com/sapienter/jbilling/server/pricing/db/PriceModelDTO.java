@@ -174,7 +174,7 @@ public class PriceModelDTO implements Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "currency_id", nullable = false)
+    @JoinColumn(name = "currency_id", nullable = true)
     public CurrencyDTO getCurrency() {
         return currency;
     }

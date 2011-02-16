@@ -26,6 +26,7 @@ package com.sapienter.jbilling.server.user;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -547,27 +548,95 @@ public class UserWS implements WSSecured, Serializable {
     public Integer getOwningUserId() {
         return getUserId();
     }
-   
+
     @Override
     public String toString() {
-        return "UserWS{"
-               + "id=" + id
-               + ", userName='" + userName + '\''
-               + ", currencyId=" + currencyId
-               + ", languageId=" + languageId
-               + ", statusId=" + statusId
-               + ", subscriberStatusId=" + subscriberStatusId
-               + ", deleted=" + deleted
-               + ", isParent=" + isParent
-               + ", parentId=" + parentId
-               + ", creditCardId=" + (creditCard != null ? creditCard.getId() : null)
-               + ", achId=" + (ach != null ? ach.getId() : null)
-               + ", automaticPaymentType=" + automaticPaymentType
-               + ", owingBalance='" + owingBalance + '\''
-               + ", balanceType=" + balanceType
-               + ", dynamicBalance='" + dynamicBalance + '\''
-               + ", autoRecharge='" + autoRecharge + '\''
-               + ", creditLimit='" + creditLimit + '\''
-               + '}';
+        StringBuilder builder = new StringBuilder();
+        builder.append("UserWS [ach=");
+        builder.append(ach);
+        builder.append(", autoRecharge=");
+        builder.append(autoRecharge);
+        builder.append(", automaticPaymentType=");
+        builder.append(automaticPaymentType);
+        builder.append(", balanceType=");
+        builder.append(balanceType);
+        builder.append(", blacklistMatches=");
+        builder.append(Arrays.toString(blacklistMatches));
+        builder.append(", childIds=");
+        builder.append(Arrays.toString(childIds));
+        builder.append(", companyName=");
+        builder.append(companyName);
+        builder.append(", contact=");
+        builder.append(contact);
+        builder.append(", createDatetime=");
+        builder.append(createDatetime);
+        builder.append(", creditCard=");
+        builder.append(creditCard);
+        builder.append(", creditLimit=");
+        builder.append(creditLimit);
+        builder.append(", currencyId=");
+        builder.append(currencyId);
+        builder.append(", customerId=");
+        builder.append(customerId);
+        builder.append(", deleted=");
+        builder.append(deleted);
+        builder.append(", dueDateUnitId=");
+        builder.append(dueDateUnitId);
+        builder.append(", dueDateValue=");
+        builder.append(dueDateValue);
+        builder.append(", dynamicBalance=");
+        builder.append(dynamicBalance);
+        builder.append(", excludeAgeing=");
+        builder.append(excludeAgeing);
+        builder.append(", failedAttempts=");
+        builder.append(failedAttempts);
+        builder.append(", id=");
+        builder.append(id);
+        builder.append(", invoiceChild=");
+        builder.append(invoiceChild);
+        builder.append(", invoiceDeliveryMethodId=");
+        builder.append(invoiceDeliveryMethodId);
+        builder.append(", isParent=");
+        builder.append(isParent);
+        builder.append(", language=");
+        builder.append(language);
+        builder.append(", languageId=");
+        builder.append(languageId);
+        builder.append(", lastLogin=");
+        builder.append(lastLogin);
+        builder.append(", lastStatusChange=");
+        builder.append(lastStatusChange);
+        builder.append(", mainOrderId=");
+        builder.append(mainOrderId);
+        builder.append(", mainRoleId=");
+        builder.append(mainRoleId);
+        builder.append(", nextInvoiceDate=");
+        builder.append(nextInvoiceDate);
+        builder.append(", notes=");
+        builder.append(notes);
+        builder.append(", owingBalance=");
+        builder.append(owingBalance);
+        builder.append(", parentId=");
+        builder.append(parentId);
+        builder.append(", partnerId=");
+        builder.append(partnerId);
+        builder.append(", password=");
+        builder.append(password);
+        builder.append(", role=");
+        builder.append(role);
+        builder.append(", status=");
+        builder.append(status);
+        builder.append(", statusId=");
+        builder.append(statusId);
+        builder.append(", subscriberStatusId=");
+        builder.append(subscriberStatusId);
+        builder.append(", userIdBlacklisted=");
+        builder.append(userIdBlacklisted);
+        builder.append(", userName=");
+        builder.append(userName);
+        builder.append("]");
+        return builder.toString();
     }
+   
+
 }

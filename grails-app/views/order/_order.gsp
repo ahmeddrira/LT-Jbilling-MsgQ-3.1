@@ -1,5 +1,6 @@
 <%@ page import="com.sapienter.jbilling.server.util.Util" %>
 <%@ page import="com.sapienter.jbilling.client.util.Constants" %>
+<%@ page import="com.sapienter.jbilling.server.item.db.ItemDTO; com.sapienter.jbilling.server.item.db.ItemDAS"%>
 
 <div class="column-hold">
 
@@ -112,7 +113,22 @@
                  <tbody>
                      <g:each var="line" in="${order.orderLines}" status="idx">
                          <tr>
-                            <td class="innerContent">${line?.itemId}</td>
+                            <td class="innerContent">
+                                <g:set var="itemDto" value="${new ItemDAS().find(line?.itemId)}"/>
+                                <g:if test="${itemDto?.plans?.size() == 0}">
+                                   <g:remoteLink breadcrumb="id" controller="product" action="show" id="${line?.itemId}" params="['template': 'show']"
+                                        before="register(this);" onSuccess="render(data, next);">
+                                        ${line?.itemId}
+                                   </g:remoteLink>
+                                </g:if>
+                                <g:else>
+                                    <g:set var="planId" value="${itemDto?.plans?.iterator().next()?.id}" />
+                                    <g:remoteLink breadcrumb="id" controller="plan" action="show" id="${planId}" params="['template': 'show']"
+                                        before="register(this);" onSuccess="render(data, next);">
+                                        ${planId}
+                                   </g:remoteLink>
+                                </g:else>
+                            </td>
                             <td class="innerContent">${line.description}</td>
                             <td class="innerContent">${new BigDecimal(line.quantity?: "0.0").intValue()}</td>
                             <td class="innerContent">${Util.formatMoney( new BigDecimal(line?.price?:"0.0"),

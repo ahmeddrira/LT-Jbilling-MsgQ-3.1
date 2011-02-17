@@ -3386,13 +3386,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-262	1	config	index	\N	\N	0
-263	1	plugin	listCategories	\N	\N	0
-264	1	plugin	plugins	\N	7	0
-265	1	plugin	show	\N	9	0
-266	1	plugin	edit	\N	9	0
 267	1	invoice	list	\N	\N	0
 268	1	invoice	list	\N	8600	0
+269	1	invoice	list	\N	\N	0
+270	1	invoice	list	\N	8600	0
+271	1	config	index	\N	\N	0
+272	1	contactFieldConfig	list	\N	\N	0
+273	1	contactTypeConfig	list	\N	\N	0
 \.
 
 
@@ -6646,9 +6646,9 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 --
 
 COPY contact_field_type (id, entity_id, prompt_key, data_type, customer_readonly, optlock) FROM stdin;
-1	1	partner.prompt.fee	string	1	0
-2	1	ccf.payment_processor	integer	1	0
-3	1	ccf.ip_address	string	1	0
+1	1	placeholder_text	String	1	1
+2	1	placeholder_text	String	1	1
+3	1	placeholder_text	String	1	1
 \.
 
 
@@ -10181,8 +10181,8 @@ COPY customer_price (plan_item_id, user_id, create_datetime) FROM stdin;
 --
 
 COPY entity (id, external_id, description, create_datetime, language_id, currency_id, optlock) FROM stdin;
-2	\N	Mordor Inc.	2006-12-07 00:00:00	1	1	1
 1	\N	Telekom Brunei Berhad	2007-03-18 00:00:00	1	12	1
+2	\N	British Telecom	2006-12-07 00:00:00	1	1	1
 \.
 
 
@@ -11334,9 +11334,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	79	description	1	A scheduled task to execute the Mediation Process.
 24	80	title	1	Billing Process Task
 24	80	description	1	A scheduled task to execute the Billing Process.
-99	1	description	1	Referral Fee
 99	2	description	1	Payment Processor
-99	3	description	1	IP Address
 14	3101	description	1	Wave Pre-paid
 14	3104	description	1	Time & Location
 14	3105	description	1	BND 20 First 3 months
@@ -11348,6 +11346,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 14	3202	description	1	iCall Installation Charge
 14	3103	description	1	Voice Modem - Monthly rental
 14	3300	description	1	eSpeed Time Premium Surf
+99	1	description	1	Facebook URL
+99	3	description	1	Tax Code
 \.
 
 
@@ -11684,7 +11684,7 @@ event_log	473
 event_log	473
 invoice_line	88
 recent_item	48
-breadcrumb	269
+breadcrumb	274
 \.
 
 

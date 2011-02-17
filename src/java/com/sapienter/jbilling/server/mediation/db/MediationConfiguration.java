@@ -88,7 +88,8 @@ public class MediationConfiguration implements Serializable {
         this.pluggableTask = pluggableTask;
         this.name = ws.getName();
         this.orderValue = ws.getOrderValue();
-        this.createDatetime = ws.getCreateDatetime();        
+        this.createDatetime = ws.getCreateDatetime();
+        this.versionNum= ws.getVersionNum();
     }
 
     public Integer getId() {

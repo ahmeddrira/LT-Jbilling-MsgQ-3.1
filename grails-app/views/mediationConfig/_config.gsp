@@ -1,4 +1,3 @@
-<%@ page import="com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <script type="text/javascript">
@@ -21,7 +20,7 @@ $(function() {
 <div class="form-edit" style="width:650px">
 
     <div class="heading">
-        <strong><g:message code="configuration.title.contact.fields"/></strong>
+        <strong><g:message code="mediation.config.title"/></strong>
     </div>
 
     <div class="form-hold">
@@ -53,7 +52,7 @@ $(function() {
                                             value="${type.orderValue}"/>
                                     </td>
                                     <td class="large">
-                                        <g:select name="obj[${type.id}].pluggableTaskId" from="${PluggableTaskDTO.list()}"
+                                        <g:select name="obj[${type.id}].pluggableTaskId" from="${readers}"
                                               optionKey="id" optionValue="${{it.type?.className}}"
                                               value="${type?.pluggableTaskId}" style="float: center;width: 350px"/>
                                     </td>
@@ -86,7 +85,7 @@ $(function() {
                                 <td class="small"><g:textField class="inp-bg numericOnly inp2" name="orderValue"  
                                     value=""/></td>
                                 <td class="large">
-                                    <g:select name="pluggableTaskId" from="${PluggableTaskDTO.list()}"
+                                    <g:select name="pluggableTaskId" from="${readers}"
                                          optionKey="id" optionValue="${{it.type?.className}}" value="" style="float: center;width: 350px"/>
                                 </td>
                                 <td></td>

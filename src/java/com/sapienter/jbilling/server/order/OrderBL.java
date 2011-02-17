@@ -730,7 +730,9 @@ public class OrderBL extends ResultList
         LOG.debug("Processing " + lines.size() + " order line(s), creating new orders for bundled items.");
 
         UserDTO baseUser = this.order.getBaseUserByUserId();
+
         Map<Integer, OrderDTO> orders = new HashMap<Integer, OrderDTO>();
+        orders.put(this.order.getOrderPeriod().getId(), this.order);
 
         for (PlanItemDTO planItem : PlanItemBL.collectPlanItems(lines)) {
             if (planItem.getPeriod() != null && planItem.getBundledQuantity() != null) {

@@ -78,4 +78,8 @@ class ConfigController {
 		}
 		redirect (action: 'aging')
 	}
+	
+	def mediation = {
+		redirect controller: 'mediationConfig', action: 'list'
+	}
 }

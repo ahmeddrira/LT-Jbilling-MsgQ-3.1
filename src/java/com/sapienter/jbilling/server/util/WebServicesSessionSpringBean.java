@@ -1590,7 +1590,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throw new SessionInternalError("Exception occurred with plug-in when fetching payment instrument.", e);
         }
 
-        return PaymentBL.getWS(new PaymentDTOEx(instrument));
+        return instrument != null ? PaymentBL.getWS(new PaymentDTOEx(instrument)) : null;
     }
 
     public BigDecimal getTotalRevenueByUser (Integer userId) throws SessionInternalError {

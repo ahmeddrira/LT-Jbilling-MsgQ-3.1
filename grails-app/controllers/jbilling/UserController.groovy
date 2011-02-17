@@ -223,14 +223,18 @@ class UserController {
             def ach = new AchDTO()
             bindData(ach, params, 'ach')
             user.setAch(ach)
+
+            log.debug("ACH ${ach}")
         }
+
+        log.debug("Customer ACH ${user.ach}")
 
         // set automatic payment type
         if (params.creditCardAutoPayment) user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_CC)
         if (params.achAutoPayment) user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
 
         // set password
-        def oldUser = params['user.userId'] ? webServicesSession.getUserWS(params.int('user.userId')) : null
+        def oldUser = (user.userId && user.userId != 0) ? webServicesSession.getUserWS(user.userId) : null
         if (oldUser) {
             if (params.newPassword) {
                 // validate that the entered confirmation password matches the users existing password
@@ -290,8 +294,7 @@ class UserController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-
-
+            company = CompanyDTO.get(session['company_id'])
             render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
             return
         }

@@ -82,19 +82,13 @@ public class PriceModelBL {
             PriceModelDTO root = null;
             PriceModelDTO model = null;
 
-            PriceModelWS next = ws;
-            while (next != null) {
-                if (next.getCurrencyId() == null)
-                    throw new SessionInternalError("PriceModelWS must have a currency.");
-
+            for (PriceModelWS next = ws; next != null; next = next.getNext()) {
                 if (model == null) {
                     model = root = new PriceModelDTO(next, new CurrencyBL(ws.getCurrencyId()).getEntity());
                 } else {
                     model.setNext(new PriceModelDTO(next, new CurrencyBL(ws.getCurrencyId()).getEntity()));
                     model = model.getNext();
                 }
-
-                next = next.getNext();
             }
 
             return root;

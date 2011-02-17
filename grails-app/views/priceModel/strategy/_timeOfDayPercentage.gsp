@@ -23,12 +23,3 @@
         </a>
     </g:if>
 </g:applyLayout>
-
-<g:applyLayout name="form/select">
-    <content tag="label"><g:message code="prompt.user.currency"/></content>
-    <content tag="label.for">model.${modelIndex}.currencyId</content>
-    <g:select name="model.${modelIndex}.currencyId"
-              from="${currencies}"
-              optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
-              value="${model?.currencyId}" />
-</g:applyLayout>

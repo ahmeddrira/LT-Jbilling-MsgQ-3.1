@@ -51,7 +51,7 @@
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="prompt.customer.number"/></content>
 
-                            <g:if test="${user}">
+                            <g:if test="${user && user.userId != 0}">
                                 <span>
                                     <g:link controller="customerInspector" action="inspect" id="${user.userId}" title="${message(code: 'customer.inspect.link')}">${user.userId}</g:link>
                                 </span>

@@ -46,6 +46,8 @@ import java.util.HashMap;
  */
 public class WSTest extends TestCase {
 
+    private static final Integer MONTHLY_PERIOD = 2;
+
     /*
         Testing plan "Crazy Brian's Discount Plan"
         Prices Item 2602 (Lemonade) at $0.05
@@ -103,7 +105,7 @@ public class WSTest extends TestCase {
         OrderWS order = new OrderWS();
     	order.setUserId(user.getUserId());
         order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
-        order.setPeriod(2);
+        order.setPeriod(MONTHLY_PERIOD);
         order.setCurrencyId(1);
         order.setActiveSince(new Date());
 
@@ -171,7 +173,7 @@ public class WSTest extends TestCase {
         OrderWS order = new OrderWS();
     	order.setUserId(user.getUserId());
         order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
-        order.setPeriod(2);
+        order.setPeriod(MONTHLY_PERIOD);
         order.setCurrencyId(1);
         order.setActiveSince(new Date());
 
@@ -247,7 +249,7 @@ public class WSTest extends TestCase {
         OrderWS order = new OrderWS();
     	order.setUserId(user.getUserId());
         order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
-        order.setPeriod(2);
+        order.setPeriod(MONTHLY_PERIOD);
         order.setCurrencyId(1);
         order.setActiveSince(new Date());
 
@@ -338,6 +340,7 @@ public class WSTest extends TestCase {
         PlanWS plan = new PlanWS();
         plan.setItemId(LONG_DISTANCE_PLAN_ITEM);
         plan.setDescription("Discount long distance calls.");
+        plan.setPeriodId(MONTHLY_PERIOD);
         plan.addPlanItem(callPrice);
 
         plan.setId(api.createPlan(plan));
@@ -408,6 +411,7 @@ public class WSTest extends TestCase {
         PlanWS plan = new PlanWS();
         plan.setItemId(LONG_DISTANCE_PLAN_ITEM);
         plan.setDescription("Discount long distance calls.");
+        plan.setPeriodId(MONTHLY_PERIOD);
         plan.addPlanItem(callPrice);
 
         plan.setId(api.createPlan(plan));
@@ -436,7 +440,7 @@ public class WSTest extends TestCase {
         OrderWS order = new OrderWS();
     	order.setUserId(user.getUserId());
         order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
-        order.setPeriod(2);
+        order.setPeriod(MONTHLY_PERIOD);
         order.setCurrencyId(1);
         order.setActiveSince(new Date());
 
@@ -496,7 +500,7 @@ public class WSTest extends TestCase {
         OrderWS order = new OrderWS();
     	order.setUserId(user.getUserId());
         order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
-        order.setPeriod(2);
+        order.setPeriod(MONTHLY_PERIOD);
         order.setCurrencyId(1);
         order.setActiveSince(new Date());
 
@@ -523,7 +527,7 @@ public class WSTest extends TestCase {
         OrderWS testOrder = new OrderWS();
     	testOrder.setUserId(user.getUserId());
         testOrder.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
-        testOrder.setPeriod(2);
+        testOrder.setPeriod(MONTHLY_PERIOD);
         testOrder.setCurrencyId(1);
         testOrder.setActiveSince(new Date());
 
@@ -585,10 +589,12 @@ public class WSTest extends TestCase {
         callPrice.setItemId(LONG_DISTANCE_CALL);
         callPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
         callPrice.setBundledQuantity(new BigDecimal("10"));
+        callPrice.setPeriodId(Constants.ORDER_PERIOD_ONCE);
 
         PlanWS plan = new PlanWS();
         plan.setItemId(LONG_DISTANCE_PLAN_ITEM);
         plan.setDescription("Discount long distance calls.");
+        plan.setPeriodId(MONTHLY_PERIOD);
         plan.addPlanItem(callPrice);
 
         plan.setId(api.createPlan(plan));
@@ -598,7 +604,7 @@ public class WSTest extends TestCase {
         OrderWS order = new OrderWS();
     	order.setUserId(user.getUserId());
         order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
-        order.setPeriod(2);
+        order.setPeriod(MONTHLY_PERIOD);
         order.setCurrencyId(1);
         order.setActiveSince(new Date());
 
@@ -614,11 +620,22 @@ public class WSTest extends TestCase {
         assertNotNull("order created", order.getId());
 
 
-        // verify bundled item quantity in created order
-        assertEquals("order has lines for bundled quantity", 2, order.getOrderLines().length);
+        // verify that a new one-time order was created using the original order as a template
+        Integer[] orderIds = api.getLastOrders(user.getUserId(), 2);
+        assertEquals("extra order created", 2, orderIds.length);
 
+        OrderWS bundledOrder = api.getOrder(orderIds[1]);
+        assertNotNull("bundled order created", bundledOrder);
+
+        assertEquals(Constants.ORDER_PERIOD_ONCE, bundledOrder.getPeriod());
+        assertEquals(order.getCurrencyId(), bundledOrder.getCurrencyId());
+        assertEquals(order.getActiveSince(), bundledOrder.getActiveSince());
+        assertEquals(order.getActiveUntil(), bundledOrder.getActiveUntil());
+        assertEquals(order.getCycleStarts(), bundledOrder.getCycleStarts());
+
+        // verify bundled item quantity added to a new one-time order
         boolean found = false;
-        for (OrderLineWS line : order.getOrderLines()) {
+        for (OrderLineWS line : bundledOrder.getOrderLines()) {
             if (line.getItemId().equals(LONG_DISTANCE_CALL)) {
                 found = true;
                 assertEquals("includes 10 bundled call items", new BigDecimal("10"), line.getQuantityAsDecimal());
@@ -631,6 +648,7 @@ public class WSTest extends TestCase {
         // cleanup
         disablePricingPlugin(api);
         api.deleteOrder(order.getId());
+        api.deleteOrder(bundledOrder.getId());
         api.deleteUser(user.getUserId());
         api.deletePlan(plan.getId());
     }

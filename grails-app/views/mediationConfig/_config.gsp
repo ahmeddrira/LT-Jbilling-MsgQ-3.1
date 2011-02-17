@@ -53,7 +53,7 @@ $(function() {
                                     </td>
                                     <td class="large">
                                         <g:select name="obj[${type.id}].pluggableTaskId" from="${readers}"
-                                              optionKey="id" optionValue="${{it.type?.className}}"
+                                              optionKey="id" optionValue="${{'(Id:' + it.id + ') ' + it.type?.getDescription(session.language_id)}}"
                                               value="${type?.pluggableTaskId}" style="float: center;width: 350px"/>
                                     </td>
                                     <td>
@@ -86,7 +86,7 @@ $(function() {
                                     value=""/></td>
                                 <td class="large">
                                     <g:select name="pluggableTaskId" from="${readers}"
-                                         optionKey="id" optionValue="${{it.type?.className}}" value="" style="float: center;width: 350px"/>
+                                         optionKey="id" optionValue="${{'(Id:' + it.id + ') ' + it.type?.getDescription(session.language_id)}}" value="" style="float: center;width: 350px"/>
                                 </td>
                                 <td></td>
                             </tr>

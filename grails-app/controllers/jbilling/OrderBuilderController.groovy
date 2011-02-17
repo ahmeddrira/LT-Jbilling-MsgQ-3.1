@@ -402,18 +402,44 @@ class OrderBuilderController {
             on("updateLine").to("updateOrderLine")
             on("removeLine").to("removeOrderLine")
             on("update").to("updateOrder")
+
             on("save").to("saveOrder")
-            // on("save").to("beforeSave")
+            // on("save").to("checkItem")  // check to see if an item exists, and show an information page before saving
+            // on("save").to("beforeSave") // show an information page before saving
+
             on("cancel").to("finish")
         }
 
-        // example action that displays a page BEFORE the order is saved.
-        /*
+        /**
+         * Example action that shows a static page before saving if the order contains
+         * a Lemonade item.
+         *
+         * Uncomment the "save" to "checkItem" transition in the builder() state to use.
+         */
+        checkItem {
+            action {
+                def order = conversation.order
+                if (order.orderLines.find{ it.itemId == 2602}) {
+                    // order contains lemonade, show beforeSave.gsp
+                    hasItem();
+                } else {
+                    // order does not contain lemonade, goto save
+                    save();
+                }
+            }
+            on("hasItem").to("beforeSave")
+            on("save").to("saveOrder")
+        }
+
+        /**
+         * Example action that shows a static page before the order is saved.
+         *
+         * Uncomment the "save" to "beforeSave" transition in the builder() state to use.
+         */
         beforeSave {
             on("save").to("saveOrder")
-            on("cancel").to("finish")
+            on("cancel").to("build")
         }
-        */
 
         /**
          * Saves the order and exits the builder flow.

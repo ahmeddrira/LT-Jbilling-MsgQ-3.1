@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.item.PlanWS;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.CascadeType;
@@ -92,15 +93,17 @@ public class PlanDTO implements Serializable {
 
     private Integer id;
     private ItemDTO item; // plan subscription item
+    private OrderPeriodDTO period;
     private String description;
     private List<PlanItemDTO> planItems = new ArrayList<PlanItemDTO>();
 
     public PlanDTO() {
     }
 
-    public PlanDTO(PlanWS ws, ItemDTO item, List<PlanItemDTO> planItems) {
+    public PlanDTO(PlanWS ws, ItemDTO item, OrderPeriodDTO period, List<PlanItemDTO> planItems) {
         this.id = ws.getId();
         this.item = item;
+        this.period = period;
         this.description = ws.getDescription();        
         this.planItems = planItems;
     }
@@ -139,6 +142,16 @@ public class PlanDTO implements Serializable {
     @Transient
     public ItemDTO getPlanSubscriptionItem() {
         return getItem();
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "period_id", nullable = false)
+    public OrderPeriodDTO getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(OrderPeriodDTO period) {
+        this.period = period;
     }
 
     @Column(name = "description", nullable = true, length = 255)

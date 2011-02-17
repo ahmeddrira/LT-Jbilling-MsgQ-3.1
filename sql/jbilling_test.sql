@@ -44,8 +44,10 @@ ALTER TABLE ONLY public.pluggable_task_type DROP CONSTRAINT pluggable_task_type_
 ALTER TABLE ONLY public.pluggable_task_parameter DROP CONSTRAINT pluggable_task_parameter_fk_1;
 ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_fk_2;
 ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_fk_1;
+ALTER TABLE ONLY public.plan DROP CONSTRAINT plan_period_id_fk;
 ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_price_model_id_fk;
 ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_plan_id_fk;
+ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_period_id_fk;
 ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_item_id_fk;
 ALTER TABLE ONLY public.plan DROP CONSTRAINT plan_item_id_fk;
 ALTER TABLE ONLY public.permission_user DROP CONSTRAINT permission_user_fk_2;
@@ -1793,7 +1795,8 @@ ALTER TABLE public.permission_user OWNER TO jbilling;
 CREATE TABLE plan (
     id integer NOT NULL,
     item_id integer NOT NULL,
-    description character varying(255)
+    description character varying(255),
+    period_id integer NOT NULL
 );
 
 
@@ -1809,7 +1812,8 @@ CREATE TABLE plan_item (
     item_id integer NOT NULL,
     price_model_id integer NOT NULL,
     precedence integer NOT NULL,
-    bundled_quantity numeric(22,10)
+    bundled_quantity numeric(22,10),
+    period_id integer
 );
 
 
@@ -15236,9 +15240,9 @@ COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 -- Data for Name: plan; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY plan (id, item_id, description) FROM stdin;
-1	3000	Discount lemonade
-2	4	Saurons discount plan.
+COPY plan (id, item_id, description, period_id) FROM stdin;
+1	3000	Discount lemonade	2
+2	4	Saurons discount plan.	2
 \.
 
 
@@ -15246,8 +15250,8 @@ COPY plan (id, item_id, description) FROM stdin;
 -- Data for Name: plan_item; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY plan_item (id, plan_id, item_id, price_model_id, precedence, bundled_quantity) FROM stdin;
-1	1	2602	2004	-1	\N
+COPY plan_item (id, plan_id, item_id, price_model_id, precedence, bundled_quantity, period_id) FROM stdin;
+1	1	2602	2004	-1	\N	\N
 \.
 
 
@@ -22131,6 +22135,14 @@ ALTER TABLE ONLY plan_item
 
 
 --
+-- Name: plan_item_period_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY plan_item
+    ADD CONSTRAINT plan_item_period_id_fk FOREIGN KEY (period_id) REFERENCES order_period(id);
+
+
+--
 -- Name: plan_item_plan_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
 --
 
@@ -22144,6 +22156,14 @@ ALTER TABLE ONLY plan_item
 
 ALTER TABLE ONLY plan_item
     ADD CONSTRAINT plan_item_price_model_id_fk FOREIGN KEY (price_model_id) REFERENCES price_model(id);
+
+
+--
+-- Name: plan_period_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY plan
+    ADD CONSTRAINT plan_period_id_fk FOREIGN KEY (period_id) REFERENCES order_period(id);
 
 
 --

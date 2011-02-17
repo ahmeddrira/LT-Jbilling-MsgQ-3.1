@@ -1,3 +1,4 @@
+<%@ page import="com.sapienter.jbilling.server.util.Constants" %>
 <%--
   Renders a PlanWS as a quick preview of the plan being built. This view also allows
   individual plan prices to be edited and removed from the order.
@@ -28,13 +29,20 @@
         <!-- plan review header -->
         <div class="header">
             <div class="column">
-                <h2>${product.description}</h2>
+                <h2>${product.description} &nbsp;</h2>
             </div>
             <div class="column">
                 <h2 class="right">
                     <g:set var="currency" value="${currencies.find{ it.id == product.defaultPrice.currencyId }}"/>
                     <g:set var="price" value="${formatNumber(number: product.defaultPrice.getRateAsDecimal(), type: 'currency', currencyCode: currency.code)}"/>
-                    <g:message code="plan.review.period.price" args="[price]"/>
+
+                    <g:if test="${plan.periodId == Constants.ORDER_PERIOD_ONCE}">
+                        <g:message code="plan.review.onetime.price" args="[price]"/>
+                    </g:if>
+                    <g:else>
+                        <g:set var="orderPeriod" value="${orderPeriods.find{ it.id == plan.periodId }}"/>
+                        <g:message code="plan.review.period.price" args="[price, orderPeriod.getDescription(session['language_id'])]"/>
+                    </g:else>
                 </h2>
             </div>
 

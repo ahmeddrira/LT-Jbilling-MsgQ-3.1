@@ -43,11 +43,6 @@ a {
 	text-decoration:none;
     cursor: pointer;
 }
-a img {
-    position: relative;
-    top: 4px;
-    left: 4px;
-}
 a:focus {
 	outline:none;
 }
@@ -1169,6 +1164,11 @@ ul#review-lines {
 	width:1000px;
 	margin:0 auto;
 	padding:14px 0 0;
+}
+.form-columns a img {
+    position: relative;
+    top: 4px;
+    left: 4px;
 }
 .dialog .form-columns {
     width: auto;

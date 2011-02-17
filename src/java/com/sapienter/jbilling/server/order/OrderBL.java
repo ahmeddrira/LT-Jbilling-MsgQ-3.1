@@ -25,6 +25,7 @@ import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.item.PlanBL;
+import com.sapienter.jbilling.server.item.PlanItemBL;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.PlanDTO;
@@ -95,8 +96,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -196,39 +199,8 @@ public class OrderBL extends ResultList
         return order;
     }
 
-
-    /**
-     * Adds the given quantity of an item to this order if the item is not already present.
-     *
-     * @param lines order lines to check for existing item
-     * @param itemId item id to add
-     * @param quantity quantity to add
-     * @param userId user id
-     * @param languageId language id
-     * @param currencyId currency id
-     * @param entityId entity id
-     */
-    public void addItemIfMissing(List<OrderLineDTO> lines, Integer itemId, BigDecimal quantity,
-                                 Integer userId, Integer languageId, Integer currencyId, Integer entityId) {
-
-        if (quantity != null && quantity.compareTo(BigDecimal.ZERO) > 0) {
-            boolean exists = false;
-            for (OrderLineDTO line : lines) {
-                if (line.getItemId().equals(itemId)) {
-                    exists = true;
-                    break;
-                }
-            }
-
-            if (!exists) {
-                LOG.debug("Item " + itemId + " does not exist in the order, adding " + quantity + " units.");
-                addItem(itemId, quantity, languageId, userId, entityId, currencyId, null);
-            }
-        }
-    }
-
-    public void addItem(Integer itemID, BigDecimal quantity, Integer language, Integer userId, Integer entityId,
-                        Integer currencyId, List<Record> records) throws ItemDecimalsException {
+    public void addItem(OrderDTO order, Integer itemID, BigDecimal quantity, Integer language, Integer userId,
+                        Integer entityId, Integer currencyId, List<Record> records) throws ItemDecimalsException {
 
         try {
             PluggableTaskManager<IItemPurchaseManager> taskManager =
@@ -261,6 +233,12 @@ public class OrderBL extends ResultList
         }
 
     }
+
+  public void addItem(Integer itemID, BigDecimal quantity, Integer language, Integer userId,
+                        Integer entityId, Integer currencyId, List<Record> records) {
+
+      addItem(this.order, itemID,  quantity, language, userId, entityId, currencyId, records);
+  }
 
     public void addItem(Integer itemID, BigDecimal quantity, Integer language, Integer userId, Integer entityId,
                         Integer currencyId) throws ItemDecimalsException {
@@ -381,7 +359,7 @@ public class OrderBL extends ResultList
 
                 UserDTO baseUser = orderDto.getBaseUserByUserId();
                 addCustomerPlans(lines, baseUser.getId());
-                addBundledItems(lines, baseUser.getId(), baseUser.getLanguageIdField(), baseUser.getCurrencyId(), entityId);
+                addBundledItems(lines);
             }
 
             order = orderDas.save(orderDto);
@@ -620,11 +598,7 @@ public class OrderBL extends ResultList
         // add new customer plan subscriptions
         if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
             addCustomerPlans(dto.getLines(), order.getUserId());
-            addBundledItems(dto.getLines(),
-                            order.getUserId(),
-                            order.getCurrencyId(),
-                            order.getUser().getLanguage().getId(),
-                            order.getUser().getEntity().getId());
+            addBundledItems(dto.getLines());
         }
 
         // now update this order's lines
@@ -708,7 +682,7 @@ public class OrderBL extends ResultList
      * @param lines lines to process
      * @param userId user id of customer to subscribe
      */
-    public void addCustomerPlans(List<OrderLineDTO> lines, Integer userId) {
+    private void addCustomerPlans(List<OrderLineDTO> lines, Integer userId) {
         LOG.debug("Processing " + lines.size() + " order line(s), adding plans to user " + userId);
         for (OrderLineDTO line : lines) {
             // subscribe customer to plan if they haven't already been subscribed.
@@ -716,22 +690,6 @@ public class OrderBL extends ResultList
                 if (!PlanBL.isSubscribed(userId, line.getItemId())) {
                     LOG.debug("Subscribing user " + userId + " to plan item " + line.getItemId());
                     PlanBL.subscribe(userId, line.getItemId());
-                }
-            }
-        }
-    }
-
-    public void addBundledItems(List<OrderLineDTO> lines, Integer userId, Integer languageId, Integer currencyId, Integer entityId) {
-        LOG.debug("Processing " + lines.size() + " order line(s), adding bundled plan items to order.");
-
-        for (OrderLineDTO line : lines) {
-            if (!line.getItem().getPlans().isEmpty()) {
-                for (PlanDTO plan : new PlanBL().getPlansBySubscriptionItem(line.getItemId())) {
-                    for (PlanItemDTO planItem : plan.getPlanItems()) {
-                        LOG.debug("Adding bundled items from " + planItem);
-                        addItemIfMissing(lines, planItem.getItem().getId(), planItem.getBundledQuantity(),
-                                         userId, languageId, currencyId, entityId);
-                    }
                 }
             }
         }
@@ -746,7 +704,7 @@ public class OrderBL extends ResultList
      * @param lines lines to process
      * @param userId user id of customer to subscribe
      */
-    public void removeCustomerPlans(List<OrderLineDTO> lines, Integer userId) {
+    private void removeCustomerPlans(List<OrderLineDTO> lines, Integer userId) {
         LOG.debug("Processing " + lines.size() + " order line(s), removing plans from user " + userId);
         for (OrderLineDTO line : lines) {
             // make sure the customer is not subscribed to the plan after deleting the order. If the customer
@@ -759,6 +717,77 @@ public class OrderBL extends ResultList
                 }
             }
         }
+    }
+
+
+    /**
+     * Gathers bundled plan items by period, creating a new order for each distinct period containing
+     * the bundled items of any subscribed plan.
+     *
+     * @param lines lines containing plan subscriptions
+     */
+    private void addBundledItems(List<OrderLineDTO> lines) {
+        LOG.debug("Processing " + lines.size() + " order line(s), creating new orders for bundled items.");
+
+        UserDTO baseUser = this.order.getBaseUserByUserId();
+        Map<Integer, OrderDTO> orders = new HashMap<Integer, OrderDTO>();
+
+        for (PlanItemDTO planItem : PlanItemBL.collectPlanItems(lines)) {
+            if (planItem.getPeriod() != null && planItem.getBundledQuantity() != null) {
+
+                // create a new order for the period of the plan item
+                Integer periodId = planItem.getPeriod().getId();
+                if (!orders.containsKey(periodId)) {
+                    LOG.debug("Creating a new order for period " + periodId);
+                    orders.put(periodId, createBundleOrder(this.order, planItem.getPeriod()));
+                }
+
+                // add an order line
+                LOG.debug("Adding " + planItem.getBundledQuantity() + " units of item " + planItem.getItem().getId()
+                          + " to order for period " + periodId);
+
+                OrderDTO bundledOrder = orders.get(planItem.getPeriod().getId());
+                addItem(bundledOrder,
+                        planItem.getItem().getId(),
+                        planItem.getBundledQuantity(),
+                        baseUser.getLanguage().getId(),
+                        baseUser.getId(),
+                        baseUser.getEntity().getId(),
+                        baseUser.getCurrency().getId(),
+                        null);
+            }
+        }
+
+        // create all bundled orders
+        for (OrderDTO bundledOrder : orders.values()) {
+            new OrderBL().create(baseUser.getEntity().getId(), baseUser.getId(), bundledOrder);
+        }
+    }
+
+    /**
+     * Creates a new order using the given order as a template. The new order inherits everything
+     * from the original order except the actual order lines.
+     *
+     * @param template order to inherit details from
+     * @param period period of new order
+     * @return new order
+     */
+    private OrderDTO createBundleOrder(OrderDTO template, OrderPeriodDTO period) {
+        OrderDTO order = new OrderDTO();
+        order.setBaseUserByUserId(template.getBaseUserByUserId());
+        order.setOrderStatus(template.getOrderStatus());
+        order.setOrderBillingType(template.getOrderBillingType());
+        order.setOrderPeriod(period);
+        order.setCurrency(template.getCurrency());
+        order.setActiveSince(template.getActiveSince());
+        order.setActiveUntil(template.getActiveUntil());
+        order.setCycleStarts(template.getCycleStarts());
+        order.setNotesInInvoice(template.getNotesInInvoice());
+
+        // todo: append order notes with plan details
+        order.setNotes(template.getNotes());
+
+        return order;
     }
 
     private void updateEndOfOrderProcess(Date newDate) {

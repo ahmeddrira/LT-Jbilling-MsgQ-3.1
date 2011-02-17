@@ -17,6 +17,7 @@ public class PlanItemWS implements Serializable {
 
     private Integer id;
     private Integer itemId; // affected item
+    private Integer periodId; // item period
     private PriceModelWS model;
     private String bundledQuantity;
     private Integer precedence = DEFAULT_PRECEDENCE;
@@ -37,6 +38,7 @@ public class PlanItemWS implements Serializable {
 
         if (dto.getModel() != null) this.model = new PriceModelWS(dto.getModel());
         if (dto.getItem() != null) this.itemId = dto.getItem().getId();
+        if (dto.getPeriod() != null) this.periodId = dto.getPeriod().getId();
     }
 
     public Integer getId() {
@@ -61,6 +63,14 @@ public class PlanItemWS implements Serializable {
 
     public void setAffectedItemId(Integer affectedItemId) {
         setItemId(affectedItemId);
+    }
+
+    public Integer getPeriodId() {
+        return periodId;
+    }
+
+    public void setPeriodId(Integer periodId) {
+        this.periodId = periodId;
     }
 
     public PriceModelWS getModel() {
@@ -100,6 +110,7 @@ public class PlanItemWS implements Serializable {
         return "PlanItemWS{"
                + "id=" + id
                + ", itemId=" + itemId
+               + ", periodId=" + periodId
                + ", model=" + model
                + ", bundledQuantity=" + bundledQuantity
                + ", precedence=" + precedence

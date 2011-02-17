@@ -753,7 +753,7 @@ insert into item_type (id, entity_id, description, internal, order_line_type_id,
 
 -- price model chaining
 alter table price_model add column next_model_id int null;
-alter tabe price_model add constraint price_model_next_id_FK foreign key (next_model_id) references price_model (id);
+alter table price_model add constraint price_model_next_id_FK foreign key (next_model_id) references price_model (id);
 
 -- plan item bundled quantity
 alter table plan_item add column bundled_quantity numeric(22,10) null;
@@ -761,3 +761,12 @@ alter table plan_item add column bundled_quantity numeric(22,10) null;
 -- nullable price model rate and currency
 alter table price_model alter column rate drop not null;
 alter table price_model alter column currency_id drop not null;
+
+-- target period for plans and plan items
+alter table plan add column period_id int;
+update plan set period_id = (select min(id) from order_period where entity_id = 1);
+alter table plan alter column period_id set not null;
+alter table plan add constraint plan_period_id_FK foreign key (period_id) references order_period (id);
+
+alter table plan_item add column period_id int;
+alter table plan_item add constraint plan_item_period_id_FK foreign key (period_id) references order_period (id);

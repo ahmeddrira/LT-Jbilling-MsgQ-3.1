@@ -46,6 +46,15 @@
             </g:applyLayout>
 
             <g:applyLayout name="form/select">
+                <content tag="label"><g:message code="order.label.period"/></content>
+                <content tag="label.for">plan.periodId</content>
+                <g:select from="${orderPeriods}"
+                          optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
+                          name="plan.periodId"
+                          value="${plan?.periodId}"/>
+            </g:applyLayout>
+
+            <g:applyLayout name="form/select">
                 <content tag="label"><g:message code="prompt.user.currency"/></content>
                 <content tag="label.for">price.currencyId</content>
                 <g:select name="price.currencyId" from="${currencies}"

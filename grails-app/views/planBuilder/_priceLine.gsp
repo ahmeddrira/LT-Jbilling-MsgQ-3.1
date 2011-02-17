@@ -24,7 +24,7 @@
             ${planItem.precedence} &nbsp; ${product.description}
         </span>
         <span class="rate">
-            <g:formatNumber number="${planItem.model.getRateAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
+            <g:formatNumber number="${planItem.model.getRateAsDecimal()}" type="currency" currencyCode="${currency?.code}"/>
         </span>
         <span class="strategy">
             <g:message code="price.strategy.${planItem.model.type}"/>
@@ -46,6 +46,16 @@
                     <content tag="label.for">price.bundledQuantity</content>
                     <g:textField class="field" name="price.bundledQuantity" value="${formatNumber(number: planItem.getBundledQuantityAsDecimal() ?: BigDecimal.ZERO)}"/>
                 </g:applyLayout>
+
+                <g:applyLayout name="form/select">
+                    <content tag="label"><g:message code="order.label.period"/></content>
+                    <content tag="label.for">price.periodId</content>
+                    <g:select from="${orderPeriods}"
+                              optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
+                              name="price.periodId"
+                              value="${planItem?.periodId}"/>
+                </g:applyLayout>
+
                 <br/>
 
                 <g:render template="/priceModel/builderModel" model="[model: planItem.model]"/>

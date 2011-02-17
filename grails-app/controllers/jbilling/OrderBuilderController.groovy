@@ -153,6 +153,24 @@ class OrderBuilderController {
         return plans
     }
 
+    /**
+     * Returns the plan contained in the given order lines.
+     *
+     * @param lines order lines
+     * @param plans plan items
+     * @return matching plan if order lines contains plan item, null if no plan found
+     */
+    def subscribedPlan(List<OrderLineWS> lines, plans) {
+        for (OrderLineWS line : lines) {
+            def planItem = plans.find{ it.id == line.getItemId() }
+            if (planItem) {
+                return planItem.plans.asList()?.first()
+            }
+        }
+
+        return null;
+    }
+
     def editFlow = {
         /**
          * Initializes the order builder, putting necessary data into the flow and conversation
@@ -251,6 +269,7 @@ class OrderBuilderController {
          */
         addOrderLine {
             action {
+
                 // build line
                 def line = new OrderLineWS()
                 line.typeId = Constants.ORDER_LINE_TYPE_ITEM
@@ -278,6 +297,35 @@ class OrderBuilderController {
                 params.template = 'review'
             }
             on("success").to("build")
+        }
+
+        /**
+         * Adds a plan to the order as a new order line and renders the review panel.
+         *
+         * The builder does not allow multiple plans to be added to the same order. If the order
+         * already contains a plan subscription item, an error message will be displayed.
+         */
+        addOrderPlanLine {
+            action {
+                def order = conversation.order
+                def plans = conversation.plans
+
+                if (!subscribedPlan(order.orderLines as List, plans)) {
+                    // update the order to reflect the subscribed plan
+                    def itemId = params.int('id')
+                    def plan = plans.find{ it.id == itemId }?.plans?.asList()?.first()
+
+                    // force order period to the plan's period
+                    order.period = plan.period.id
+
+                } else {
+                    flow.errorMessages = [ message(code: 'validation.error.multiple.plans') ]
+                    params.template = 'review'
+                    error()
+                }
+            }
+            on("success").to("addOrderLine")
+            on("error").to("build")
         }
 
         /**
@@ -367,6 +415,12 @@ class OrderBuilderController {
                 def order = conversation.order
                 bindData(order, params)
 
+                // update the order to reflect the subscribed plan
+                def subscribedPlan = subscribedPlan(order.orderLines as List, conversation.plans);
+                if (subscribedPlan) {
+                    order.period = subscribedPlan.period.id
+                }
+
                 // one time orders are ALWAYS post-paid
                 if (order.period == Constants.ORDER_PERIOD_ONCE)
                     order.billingTypeId = Constants.ORDER_BILLING_POST_PAID
@@ -399,6 +453,7 @@ class OrderBuilderController {
             on("products").to("showProducts")
             on("plans").to("showPlans")
             on("addLine").to("addOrderLine")
+            on("addPlan").to("addOrderPlanLine")
             on("updateLine").to("updateOrderLine")
             on("removeLine").to("removeOrderLine")
             on("update").to("updateOrder")

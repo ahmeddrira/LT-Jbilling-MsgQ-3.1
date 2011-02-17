@@ -359,7 +359,7 @@ public class OrderBL extends ResultList
 
                 UserDTO baseUser = orderDto.getBaseUserByUserId();
                 addCustomerPlans(lines, baseUser.getId());
-                addBundledItems(lines);
+                addBundledItems(orderDto, lines, baseUser);
             }
 
             order = orderDas.save(orderDto);
@@ -598,7 +598,7 @@ public class OrderBL extends ResultList
         // add new customer plan subscriptions
         if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
             addCustomerPlans(dto.getLines(), order.getUserId());
-            addBundledItems(dto.getLines());
+            addBundledItems(order, dto.getLines(), order.getBaseUserByUserId());
         }
 
         // now update this order's lines
@@ -724,15 +724,21 @@ public class OrderBL extends ResultList
      * Gathers bundled plan items by period, creating a new order for each distinct period containing
      * the bundled items of any subscribed plan.
      *
+     * Created "bundled orders" will be based off of the original plan subscription order. Bundled orders
+     * will have the same active dates, billing type etc. as the original order.
+     *
+     * @param order order holding the plan subscription
      * @param lines lines containing plan subscriptions
+     * @param baseUser user to use when adding lines
      */
-    private void addBundledItems(List<OrderLineDTO> lines) {
+    private void addBundledItems(OrderDTO order, List<OrderLineDTO> lines, UserDTO baseUser) {
         LOG.debug("Processing " + lines.size() + " order line(s), creating new orders for bundled items.");
 
-        UserDTO baseUser = this.order.getBaseUserByUserId();
-
         Map<Integer, OrderDTO> orders = new HashMap<Integer, OrderDTO>();
-        orders.put(this.order.getOrderPeriod().getId(), this.order);
+
+        // add the original order so that included items with the same period
+        // get added to the existing recurring order
+        orders.put(order.getOrderPeriod().getId(), order);
 
         for (PlanItemDTO planItem : PlanItemBL.collectPlanItems(lines)) {
             if (planItem.getPeriod() != null && planItem.getBundledQuantity() != null) {
@@ -741,7 +747,7 @@ public class OrderBL extends ResultList
                 Integer periodId = planItem.getPeriod().getId();
                 if (!orders.containsKey(periodId)) {
                     LOG.debug("Creating a new order for period " + periodId);
-                    orders.put(periodId, createBundleOrder(this.order, planItem.getPeriod()));
+                    orders.put(periodId, createBundleOrder(order, planItem.getPeriod()));
                 }
 
                 // add an order line
@@ -759,6 +765,9 @@ public class OrderBL extends ResultList
                         null);
             }
         }
+
+        // remove the original order, it will be persisted when the transaction ends
+        orders.remove(order.getOrderPeriod().getId());
 
         // create all bundled orders
         for (OrderDTO bundledOrder : orders.values()) {

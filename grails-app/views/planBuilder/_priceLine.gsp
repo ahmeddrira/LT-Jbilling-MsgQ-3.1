@@ -24,7 +24,7 @@
             ${planItem.precedence} &nbsp; ${product.description}
         </span>
         <span class="rate">
-            <g:formatNumber number="${planItem.model.getRateAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
+            <g:formatNumber number="${planItem.model.getRateAsDecimal()}" type="currency" currencyCode="${currency?.code}"/>
         </span>
         <span class="strategy">
             <g:message code="price.strategy.${planItem.model.type}"/>

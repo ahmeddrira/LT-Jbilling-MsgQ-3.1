@@ -68,4 +68,32 @@
         </div>
     </li>
 
+    <g:if test="${product.plans}">
+        <g:each var="plan" in="${product.plans}">
+            <g:each var="planItem" in="${plan.planItems}">
+                <g:if test="${planItem.bundledQuantity}">
+                    <li class="bundled">
+                        <span class="description">
+                            ${planItem.item.description}
+                        </span>
+                        <span class="included-qty">
+                            + <g:formatNumber number="${planItem.bundledQuantity}"/>
+                            <g:if test="${planItem.period}">
+                                ${planItem.period.getDescription(session['language_id']).toLowerCase()}
+                            </g:if>
+                        </span>
+                    </li>
+
+                    <li class="bundled-price">
+                        <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">
+                            <tbody>
+                               <g:render template="/plan/priceModel" model="[model: planItem.model]"/>
+                            </tbody>
+                        </table>
+                    </li>
+                </g:if>
+            </g:each>
+        </g:each>
+    </g:if>
+
 </g:formRemote>

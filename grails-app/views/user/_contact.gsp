@@ -1,7 +1,6 @@
 <%@ page import="com.sapienter.jbilling.server.util.db.CountryDTO" %>
 <div id="contact-${contactType.id}" class="contact" style="${contactType.isPrimary > 0 ? '' : 'display: none;'}">
 
-    <g:hiddenField name="contact-${contactType?.id}.type" value="${contactType?.id}"/>
     <g:hiddenField name="contact-${contactType?.id}.id" value="${contact?.id}"/>
 
     <g:applyLayout name="form/input">
@@ -78,6 +77,7 @@
                   from="${CountryDTO.list()}"
                   optionKey="code"
                   optionValue="${{ it.getDescription(session['language_id']) }}"
+                  noSelection="['': message(code: 'default.no.selection')]"
                   value="${contact?.countryCode}"/>
     </g:applyLayout>
 

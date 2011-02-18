@@ -3390,13 +3390,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-310	1	user	list	\N	\N	0
-311	1	user	list	\N	10816	0
-312	1	order	list	\N	\N	0
-313	1	order	showListAndOrder	\N	108000	0
 314	1	orderBuilder	edit	\N	108000	0
 315	1	order	list	\N	\N	0
 316	1	order	showListAndOrder	\N	108000	0
+317	1	config	index	\N	\N	0
+318	1	notifications	listCategories	\N	\N	0
+319	1	notifications	list	\N	3	0
+320	1	notifications	edit	\N	16	0
 \.
 
 
@@ -11612,11 +11612,6 @@ process_run_total	1
 process_run_total	1
 preference	5
 preference	5
-notification_message	1
-notification_message	1
-notification_message_section	1
-notification_message_line	1
-notification_message_line	1
 ageing_entity_step	1
 ageing_entity_step	1
 language	1
@@ -11637,7 +11632,6 @@ event_log_module	1
 list_field_entity	1
 billing_process_configuration	1
 pluggable_task	606
-notification_message_section	1
 mediation_process	1
 mediation_process	1
 ach	1
@@ -11697,7 +11691,13 @@ order_line	2083
 event_log	476
 event_log	476
 recent_item	56
-breadcrumb	317
+breadcrumb	321
+notification_message	2
+notification_message	2
+notification_message_section	2
+notification_message_section	2
+notification_message_line	2
+notification_message_line	2
 \.
 
 
@@ -12091,9 +12091,9 @@ COPY notification_message (id, type_id, entity_id, language_id, use_flag, optloc
 14	17	2	1	1	1
 15	18	2	1	1	1
 16	19	2	1	1	1
-17	16	1	1	1	1
 18	17	1	1	1	1
 19	12	1	1	1	1
+100	16	1	1	1	1
 \.
 
 
@@ -12146,12 +12146,12 @@ COPY notification_message_line (id, message_section_id, content, optlock) FROM s
 30	30	Some text	1
 31	31	It is time to update your credit card	1
 32	32	Some text	1
-33	33	Thank you for your payment	1
-34	34	Some text	1
 35	35	Payment failed	1
 36	36	Some text	1
 43	43	Thank you for using Trend!	1
 44	44	Your trend friends	1
+100	100	Thank you for your payment	1
+101	101	Dear $first_name $last_name\r\n\r\nWe have received your payment. Thank you for being a customer!\r\n\r\n$company_name	1
 \.
 
 
@@ -12188,12 +12188,13 @@ COPY notification_message_section (id, message_id, section, optlock) FROM stdin;
 30	15	2	1
 31	16	1	1
 32	16	2	1
-33	17	1	1
-34	17	2	1
 35	18	1	1
 36	18	2	1
 43	19	1	1
 44	19	2	1
+100	100	1	1
+101	100	2	1
+102	100	3	1
 \.
 
 

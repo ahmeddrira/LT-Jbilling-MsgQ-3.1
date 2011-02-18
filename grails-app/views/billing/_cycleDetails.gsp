@@ -21,13 +21,29 @@
         <g:message code="billing.details.is.review.explain"/></p>
 </div>
 <div class="table-info">
-<p>
+    <p>
+    <strong>
+        <g:if test="${ CommonConstants.REVIEW_STATUS_GENERATED.intValue() == reviewConfiguration?.reviewStatus}">
+            <g:message code="billing.details.review.generated"/>
+        </g:if>
+        <g:if test="${ CommonConstants.REVIEW_STATUS_APPROVED.intValue() == reviewConfiguration?.reviewStatus}">
+            <g:message code="billing.details.review.approved"/>
+        </g:if>
+        <g:if test="${ CommonConstants.REVIEW_STATUS_DISAPPROVED.intValue() == reviewConfiguration?.reviewStatus}">
+            <g:message code="billing.details.review.disapproved"/>
+        </g:if>
+    </strong>
+    </p>
+</div>
+<div class="table-info">
+    &nbsp;<br>
     <a onclick="showConfirm('approve-'+${process?.id});" class="submit">
         <span><g:message code="billing.details.approve"/></span>
-    </a>
+    </a>&nbsp;
     <a onclick="showConfirm('disapprove-'+${process?.id});" class="submit">
         <span><g:message code="billing.details.disapprove"/></span>
-    </a>
+    </a><br>&nbsp;
+    
 </div>
 </g:if>
 <div class="table-info"></div>

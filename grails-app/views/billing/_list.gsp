@@ -23,12 +23,19 @@
 						<td class="medium">
 							${new java.text.SimpleDateFormat("dd-MMM-yyyy").format(dto.billingDate)}
 						</td>
-						<td class="small">${dataHashMap[dto.id][0]}</td>
-						<td class="medium">
-							${Util.formatMoney(new BigDecimal(dataHashMap[dto.id][1]?:"0.0"),
-								session["user_id"],dataHashMap[dto.id][2].id, false)?.substring(2)}
-						</td>
-						<td class="small">${dataHashMap[dto.id][2].code}</td>
+						<g:if test="${dataHashMap[dto.id] != null}">
+                            <td class="small">${dataHashMap[dto.id][0]}</td>
+                            <td class="medium">
+                                ${Util.formatMoney(new BigDecimal(dataHashMap[dto.id][1]?:"0.0"),
+                                    session["user_id"],dataHashMap[dto.id][2].id, false)?.substring(2)}
+                            </td>
+                            <td class="small">${dataHashMap[dto.id][2].code}</td>
+                        </g:if>
+                        <g:else>
+                            <td class="small"></td>
+                            <td class="medium"></td>
+                            <td class="small"></td>
+                        </g:else>
 					</tr>
 				</g:each>
 			</tbody>

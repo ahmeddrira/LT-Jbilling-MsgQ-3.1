@@ -95,7 +95,7 @@
                     <td>
                         <g:message code="billing.details.label.from.invoices"/>:&nbsp;
                         <g:link action="showInvoices" id="${process?.id}">
-                            ${run?.invoicesGenerated}
+                            ${invoicesGenerated}
                         </g:link><br>
                         <g:message code="billing.details.label.from.orders"/>:&nbsp;
                         <g:link action="showOrders" id="${process?.id}">

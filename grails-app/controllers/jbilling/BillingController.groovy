@@ -11,6 +11,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 
 /**
 * BillingController
@@ -108,6 +109,8 @@ class BillingController {
 		Integer processId= params.id.toInteger()
 		BillingProcessDTO process = new BillingProcessDAS().find(processId);
 		
+		def genInvoices= new InvoiceDAS().findByProcess(process)
+		def invoicesGenerated= genInvoices?.size()?:0
 		log.debug "process.orderProcesses: ${process.orderProcesses?.size()}"
 		
 		def das= new BillingProcessDAS() 
@@ -156,7 +159,7 @@ class BillingController {
 		}
 		recentItemService.addRecentItem(processId, RecentItemType.BILLINGPROCESS)
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, processId)
-		[process:process, countAndSumByCurrency: countAndSumByCurrency, mapOfPaymentListByCurrency: mapOfPaymentListByCurrency, failedAmountsByCurrency: failedAmountsByCurrency, reviewConfiguration: webServicesSession.getBillingProcessConfiguration()] 
+		[process:process, invoicesGenerated:invoicesGenerated, countAndSumByCurrency: countAndSumByCurrency, mapOfPaymentListByCurrency: mapOfPaymentListByCurrency, failedAmountsByCurrency: failedAmountsByCurrency, reviewConfiguration: webServicesSession.getBillingProcessConfiguration()] 
 	}
 
 	def showInvoices = {

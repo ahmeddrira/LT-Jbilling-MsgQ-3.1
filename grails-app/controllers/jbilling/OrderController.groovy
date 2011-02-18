@@ -142,12 +142,18 @@ class OrderController {
 			flash.error ='order.error.geninvoice.inactive'
 			redirect (action: 'showListAndOrder', params: [id: params.id as Integer])
 		}
-		
-		Integer invoiceID= webServicesSession.createInvoiceFromOrder(order.getId(), null)
-		
-		flash.message ='order.geninvoice.success'
-		flash.args = [order.getId()]
-		redirect controller: 'invoice', action: 'showListAndInvoice', params: [id: invoiceID]
+		Integer invoiceID= null;
+		try {
+			invoiceID= webServicesSession.createInvoiceFromOrder(order.getId(), null)
+		} catch (SessionInternalError e) {
+			flash.error= 'order.error.generating.invoice'
+			redirect (action: 'showListAndOrder', params: [id: params.id])
+		}
+		if ( null != invoiceID) {
+			flash.message ='order.geninvoice.success'
+			flash.args = [order.getId()]
+			redirect controller: 'invoice', action: 'showListAndInvoice', params: [id: invoiceID]
+		}
 	}
 
 	def applyToInvoice = {

@@ -257,34 +257,19 @@
                 </div>
             </div>
 
-            <!-- address -->
-            <div id="address" class="box-cards">
-                <div class="box-cards-title">
-                    <a class="btn-open"><span><g:message code="customer.inspect.address.title"/></span></a>
-                </div>
-                <div class="box-card-hold">
-                    <div class="form-columns">
-                        <g:render template="address" model="[contact: contact]"/>
-                    </div>
-                </div>
-            </div>
-
-            <!-- extra contacts -->
-            <g:set var="contacts" value="${contacts.findAll { it.id != contact?.id }}"/>
-            <g:if test="${contacts}">
-                <div id="extra-contacts" class="box-cards">
+            <!-- contact information -->
+            <g:each var="contact" in="${contacts}">
+                <div id="contacts-${contact.type}" class="box-cards">
                     <div class="box-cards-title">
-                        <a class="btn-open"><span><g:message code="customer.inspect.extra.contact.title"/></span></a>
+                        <a class="btn-open"><span>${contact.contactTypeDescr} &nbsp;</span></a>
                     </div>
                     <div class="box-card-hold">
                         <div class="form-columns">
-                            <g:each var="extraContact" in="${contacts}">
-                                <g:render template="address" model="[contact: extraContact]"/>
-                            </g:each>
+                            <g:render template="address" model="[contact: contact]"/>
                         </div>
                     </div>
                 </div>
-            </g:if>
+            </g:each>
 
             <!-- last payment -->
             <g:if test="${payment}">

@@ -3390,13 +3390,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-267	1	invoice	list	\N	\N	0
-268	1	invoice	list	\N	8600	0
-269	1	invoice	list	\N	\N	0
-270	1	invoice	list	\N	8600	0
-271	1	config	index	\N	\N	0
-272	1	contactFieldConfig	list	\N	\N	0
-273	1	contactTypeConfig	list	\N	\N	0
+299	1	payment	list	\N	1900	0
+300	1	user	list	\N	\N	0
+301	1	invoice	list	\N	\N	0
+302	1	payment	list	\N	\N	0
+303	1	payment	list	\N	1900	0
+304	1	invoice	list	\N	\N	0
+305	1	invoice	list	\N	8600	0
 \.
 
 
@@ -9012,6 +9012,7 @@ COPY credit_card (id, cc_number, cc_number_plain, cc_expiry, name, cc_type, dele
 101301	9cda913406c15ad25dc3601f8e1baf66	2222	2100-12-01	5064e904bdf462834a9a6ae961d7f8cf6dfff96e1e08386c	2	0	\N	0
 101400	a14159733ae22ce59f51625df2bd1c0649788742506e5046	1152	2100-09-01	09a86cc260cf65aa620eebea721886a0	2	0	\N	0
 101401	a14159733ae22ce59f51625df2bd1c0649788742506e5046	1152	2100-09-01	e8b96c5abe318acf5c4e84e2b8452c25	2	0	\N	0
+101500	a14159733ae22ce59f51625df2bd1c0649788742506e5046	1152	2011-12-01	e0c85a45dff5de33672c266ada39c0daa29b67082f45f344	2	0	\N	0
 \.
 
 
@@ -10250,6 +10251,12 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 472001	1	\N	21	107900	2011-02-15 16:50:37.63	2	7	13	1	\N	\N	0	10791
 472002	1	1	25	9	2011-02-15 16:57:32.012	2	11	9	\N	\N	\N	0	\N
 472003	1	1	25	9	2011-02-15 16:57:54.309	2	11	9	\N	\N	\N	0	\N
+473000	1	1	25	460	2011-02-18 11:12:39.589	2	11	7	\N	\N	\N	0	\N
+473001	1	1	25	21	2011-02-18 11:12:47.643	2	11	7	\N	\N	\N	0	\N
+473002	1	1	25	520	2011-02-18 11:13:05.348	2	11	7	\N	\N	\N	0	\N
+473003	1	1	25	22	2011-02-18 11:13:12.185	2	11	7	\N	\N	\N	0	\N
+473004	1	1	25	20	2011-02-18 11:14:06.728	2	11	9	\N	\N	\N	0	\N
+474000	1	\N	42	1900	2011-02-18 11:21:32.543	2	10	25	\N	\N	\N	0	10791
 \.
 
 
@@ -11373,7 +11380,7 @@ COPY invoice (id, create_datetime, billing_process_id, user_id, delegated_invoic
 70	2007-07-26 00:00:00	\N	10743	\N	2007-08-26	20.0000000000	0	27	20.0000000000	0.0000000000	1	0	1	1	\N	\N	11	\N	\N	2007-07-26 18:17:19.113	1
 75	2007-08-16 00:00:00	\N	13	\N	2007-09-16	12.9899997711	0	27	12.9899997711	0.0000000000	1	0	1	1	\N	\N	1	\N	\N	2007-08-16 14:57:08.799	1
 8500	2009-07-20 00:00:00	\N	121	\N	2006-09-10	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	1	\N	\N	1022	\N	\N	2009-07-20 16:42:04.869	1
-8600	2011-02-15 00:00:00	\N	10791	\N	2011-03-15	125.0000000000	0	27	125.0000000000	0.0000000000	1	0	12	0	\N	\N	1023	\N	\N	2011-02-15 16:50:37.314	1
+8600	2011-02-15 00:00:00	\N	10791	\N	2011-03-15	125.0000000000	1	26	0.0000000000	0.0000000000	1	0	12	0	\N	\N	1023	\N	\N	2011-02-15 16:50:37.314	2
 \.
 
 
@@ -11610,13 +11617,8 @@ notification_message_line	1
 notification_message_line	1
 ageing_entity_step	1
 ageing_entity_step	1
-payment	19
-payment	19
-credit_card	1015
-credit_card	1015
 language	1
 language	1
-payment_invoice	1
 mediation_cfg	4
 blacklist	1
 blacklist	1
@@ -11634,7 +11636,6 @@ list_field_entity	1
 billing_process_configuration	1
 pluggable_task	606
 notification_message_section	1
-payment_invoice	1
 mediation_process	1
 mediation_process	1
 ach	1
@@ -11665,11 +11666,15 @@ contact_field	2028
 invoice_line	88
 order_process	87
 order_process	87
-pluggable_task_parameter	8314
 paper_invoice_batch	1
 notification_message_arch	1
 notification_message_arch	1
 notification_message_arch_line	1
+payment	20
+credit_card	1016
+credit_card	1016
+payment_invoice	2
+payment_invoice	2
 notification_message_arch_line	1
 mediation_record_line	1
 mediation_record_line	1
@@ -11684,11 +11689,13 @@ order_line	2082
 item_type	27
 contact	1148
 contact_field	2028
-event_log	473
-event_log	473
 invoice_line	88
-recent_item	48
-breadcrumb	274
+pluggable_task_parameter	8315
+payment	20
+event_log	475
+event_log	475
+recent_item	52
+breadcrumb	306
 \.
 
 
@@ -14361,6 +14368,7 @@ COPY payment (id, user_id, attempt, result_id, amount, create_datetime, update_d
 1601	10746	1	4	50.0000000000	2009-03-27 00:00:00	\N	2009-03-27	1	\N	1	1	0	\N	1	\N	\N	0.0000000000	1	\N	\N
 1700	10747	1	4	50.0000000000	2009-03-10 00:00:00	\N	2009-03-10	1	\N	1	0	0	\N	1	\N	\N	50.0000000000	1	\N	\N
 1800	10748	1	4	25.0000000000	2009-03-13 00:00:00	\N	2009-03-13	1	\N	1	0	0	\N	1	\N	\N	25.0000000000	1	\N	\N
+1900	10791	1	4	125.0000000000	2011-02-18 11:21:32.283	\N	2011-02-18	2	101500	0	0	0	\N	12	\N	\N	0.0000000000	1	\N	
 \.
 
 
@@ -14394,6 +14402,7 @@ COPY payment_info_cheque (id, payment_id, bank, cheque_number, cheque_date, optl
 
 COPY payment_invoice (id, payment_id, invoice_id, amount, create_datetime, optlock) FROM stdin;
 1	6	15	95.0000000000	2006-12-21 11:08:11.928	1
+100	1900	8600	125.0000000000	2011-02-18 11:21:32.626	0
 \.
 
 
@@ -14665,7 +14674,6 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 17	2	10	1	1	\N
 18	2	12	2	1	\N
 19	1	20	1	1	\N
-21	1	22	2	1	\N
 23	1	23	1	1	\N
 31	1	26	1	1	\N
 420	1	33	1	1	\N
@@ -14673,15 +14681,11 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 431	1	1	2	1	\N
 440	1	40	1	1	\N
 450	1	41	1	1	\N
-460	1	42	1	1	\N
 470	1	43	1	1	\N
 480	1	44	1	1	\N
 490	1	46	1	2	\N
 500	1	47	1	1	\N
 510	1	48	2	1	\N
-520	1	49	3	1	\N
-20	1	21	4	1	\N
-22	1	21	5	1	\N
 530	1	50	3	1	\N
 540	1	53	1	2	\N
 541	1	54	1	1	\N
@@ -14701,6 +14705,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 6040	1	78	1	4	\N
 6050	1	82	2	7	\N
 9	1	12	2	3	
+20	1	21	1	2	A plug-in for testing only, it does not send any requests to any real payment gateway
 \.
 
 
@@ -14731,33 +14736,17 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 21	19	time_between_alarms	30	\N	\N	1
 22	19	email_address	\N		\N	1
 24	20	all	\N	yes	\N	1
-35	20	processor_name	\N	first_fake_processor	\N	1
-36	21	custom_field_id	\N	2	\N	1
-37	21	FAKE_2	\N	22	\N	1
-38	22	all	\N	yes	\N	1
-39	22	processor_name	\N	second_fake_processor	\N	1
-44	21	FAKE_1	\N	20	\N	1
 540	421	format_file	\N	asterisk.xml	\N	1
 550	421	suffix	\N	csv	\N	1
 551	421	batch_size	\N	100	\N	1
 560	450	file	\N	CancelFees.pkg	\N	1
 570	430	file	\N	ItemsRules.pkg	\N	1
 600	1	file	\N	ItemsRules.pkg	\N	1
-610	460	enable_filter_user_id	\N	true	\N	1
-620	460	enable_filter_name	\N	true	\N	1
-630	460	enable_filter_cc_number	\N	true	\N	1
-640	460	enable_filter_address	\N	true	\N	1
-650	460	enable_filter_ip_address	\N	true	\N	1
-660	460	enable_filter_phone_number	\N	true	\N	1
-670	460	ip_address_ccf_id	3	\N	\N	1
 680	490	file	\N	provisioning_commands.pkg	\N	1
 690	23	item_type_id	\N	1	\N	1
 700	510	username	\N	test-username	\N	1
 710	510	password	\N	test-password	\N	1
 720	510	remove	\N	VOID	\N	1
-730	520	USD	\N	20	\N	1
-740	520	AUD	\N	22	\N	1
-750	21	CURRENCY_ROUTER	\N	520	\N	1
 760	530	loginUser	\N	test-username	\N	1
 770	530	loginPassword	\N	test-password	\N	1
 780	530	portalId	\N	test-portalId	\N	1
@@ -14779,7 +14768,6 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 830704	6020	username	\N	jbilling	\N	1
 830705	6020	password	\N		\N	1
 830706	6020	timestamp_column_name	\N	ts	\N	1
-830707	22	accept-ach	\N	true	\N	0
 830800	6040	config_filename	\N	rules-generator-config.xml	\N	1
 830801	6040	output_filename	\N	InternalEventsRulesTask520.pkg	\N	1
 830802	6040	template_filename	\N	rules-generator-template-integration-test.vm	\N	1
@@ -14787,6 +14775,10 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 831300	9	sql_query	\N	true	\N	0
 831301	9	language	\N		\N	0
 1	9	design	\N	telbru_invoice	\N	3
+831400	20	name_prefix	\N		\N	0
+831401	20	code	\N		\N	0
+831402	20	accept-ach	\N		\N	0
+35	20	processor_name	\N	Test Only Processor	\N	2
 \.
 
 
@@ -14948,7 +14940,6 @@ COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_
 42	41	5	1	1	\N	\N
 43	28	5	1	\N	admin@prancingpony.me	\N
 44	26	10	1	200	\N	\N
-45	43	5	1	460	\N	\N
 46	44	5	1	1	\N	\N
 47	49	5	1	\N	\N	5.0000000000
 15	19	5	1	1024	\N	\N
@@ -15129,11 +15120,11 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 --
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
-43	CUSTOMER	10791	1	0
-44	ORDER	107900	1	0
-45	INVOICE	8600	1	0
-46	PLUGIN	9	1	0
 47	INVOICE	8600	1	0
+48	PLUGIN	20	1	0
+49	INVOICE	8600	1	0
+50	PAYMENT	1900	1	0
+51	INVOICE	8600	1	0
 \.
 
 

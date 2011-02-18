@@ -127,12 +127,12 @@
 
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.payment.lifetime.revenue"/></content>
-                        <span><g:formatNumber number="${revenue}" type="currency" currencyCode="${user.currency.code}"/></span>
+                        <span><g:formatNumber number="${revenue}" type="currency" currencySymbol="${user.currency.symbol}"/></span>
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.payment.amount.owed"/></content>
-                        <span><g:formatNumber number="${new UserBL().getBalance(user.id)}" type="currency" currencyCode="${user.currency.code}"/></span>
+                        <span><g:formatNumber number="${new UserBL().getBalance(user.id)}" type="currency" currencySymbol="${user.currency.symbol}"/></span>
                     </g:applyLayout>
                 </div>
             </div>
@@ -304,7 +304,7 @@
                                         <td class="value"><g:formatDate date="${invoice.createDatetime}"/></td>
 
                                         <td><g:message code="invoice.amount.date"/></td>
-                                        <td class="value"><g:formatNumber number="${invoice.total}" type="currency" currencyCode="${invoice.currency.code}"/></td>
+                                        <td class="value"><g:formatNumber number="${invoice.total}" type="currency" currencySymbol="${invoice.currency.symbol}"/></td>
 
                                         <td><g:message code="invoice.label.delegation"/></td>
                                         <td class="value">
@@ -332,7 +332,7 @@
                                         <td class="value"><g:formatDate date="${invoice.dueDate}"/></td>
 
                                         <td><g:message code="invoice.label.balance"/></td>
-                                        <td class="value"><g:formatNumber number="${invoice.balance}" type="currency" currencyCode="${invoice.currency.code}"/></td>
+                                        <td class="value"><g:formatNumber number="${invoice.balance}" type="currency" currencySymbol="${invoice.currency.symbol}"/></td>
 
                                         <td><g:message code="invoice.label.orders"/></td>
                                         <td class="value">
@@ -351,7 +351,7 @@
                                         <td class="value"><g:formatDate date="${invoice.createTimestamp}"/></td>
 
                                         <td><g:message code="invoice.label.carried.bal"/></td>
-                                        <td class="value"><g:formatNumber number="${invoice.carriedBalance}" type="currency" currencyCode="${invoice.currency.code}"/></td>
+                                        <td class="value"><g:formatNumber number="${invoice.carriedBalance}" type="currency" currencySymbol="${invoice.currency.symbol}"/></td>
 
                                         <!-- spacer -->
                                         <td></td><td></td>
@@ -380,10 +380,10 @@
                                             <g:formatNumber number="${invoiceLine.quantity}"/>
                                         </td>
                                         <td class="innerContent">
-                                            <g:formatNumber number="${invoiceLine.price}" type="currency" currencyCode="${invoice.currency.code}"/>
+                                            <g:formatNumber number="${invoiceLine.price}" type="currency" currencySymbol="${invoice.currency.symbol}"/>
                                         </td>
                                         <td class="innerContent">
-                                            <g:formatNumber number="${invoiceLine.amount}" type="currency" currencyCode="${invoice.currency.code}"/>
+                                            <g:formatNumber number="${invoiceLine.amount}" type="currency" currencySymbol="${invoice.currency.symbol}"/>
                                         </td>
                                     </tr>
                                 </g:each>
@@ -447,10 +447,10 @@
                                             <g:formatNumber number="${orderLine.quantity}"/>
                                         </td>
                                         <td class="innerContent">
-                                            <g:formatNumber number="${orderLine.getPriceAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
+                                            <g:formatNumber number="${orderLine.getPriceAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
                                         </td>
                                         <td class="innerContent">
-                                            <g:formatNumber number="${orderLine.getAmountAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
+                                            <g:formatNumber number="${orderLine.getAmountAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
                                         </td>
                                     </tr>
                                 </g:each>

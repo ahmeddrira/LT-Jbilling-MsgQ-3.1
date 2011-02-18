@@ -37,7 +37,7 @@
                     <tr>
                         <td>${plan.item.defaultPrice.currency.code}</td>
                         <td class="value">
-                            <g:formatNumber number="${plan.item.defaultPrice.rate}" type="currency" currencyCode="${plan.item.defaultPrice.currency.code}"/>
+                            <g:formatNumber number="${plan.item.defaultPrice.rate}" type="currency" currencySymbol="${plan.item.defaultPrice.currency.symbol}"/>
                         </td>
                     </tr>
                 </g:if>

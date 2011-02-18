@@ -141,7 +141,7 @@
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.invoiced.amount"/></td>
-                    <td class="value"><g:formatNumber number="${invoice?.total}" type="currency" currencyCode="${selected.currency.code}"/></td>
+                    <td class="value"><g:formatNumber number="${invoice?.total}" type="currency" currencySymbol="${selected.currency.symbol}"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="invoice.label.status"/></td>
@@ -158,11 +158,11 @@
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.amount.owed"/></td>
-                    <td class="value"><g:formatNumber number="${new UserBL().getTotalOwed(selected.id)}" type="currency" currencyCode="${selected.currency.code}"/></td>
+                    <td class="value"><g:formatNumber number="${new UserBL().getTotalOwed(selected.id)}" type="currency"  currencySymbol="${selected.currency.symbol}"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.lifetime.revenue"/></td>
-                    <td class="value"><g:formatNumber number="${revenue}" type="currency" currencyCode="${selected.currency.code}"/></td>
+                    <td class="value"><g:formatNumber number="${revenue}" type="currency"  currencySymbol="${selected.currency.symbol}"/></td>
                 </tr>
             </tbody>
         </table>

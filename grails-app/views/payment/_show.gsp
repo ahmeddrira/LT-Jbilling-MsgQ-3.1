@@ -64,7 +64,7 @@
                 </tr>
                 <tr>
                     <td><g:message code="payment.amount"/></td>
-                    <td class="value"><g:formatNumber number="${selected.amount}" type="currency" currencyCode="${selected.currencyDTO.code}"/></td>
+                    <td class="value"><g:formatNumber number="${selected.amount}" type="currency" currencySymbol="${selected.currencyDTO.symbol}"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="payment.result"/></td>
@@ -85,7 +85,7 @@
                 <tr>
                     <td><g:message code="payment.balance"/></td>
                     <td class="value">
-                        <g:formatNumber number="${selected.balance}" type="currency" currencyCode="${selected.currencyDTO.code}"/>
+                        <g:formatNumber number="${selected.balance}" type="currency" currencySymbol="${selected.currencyDTO.symbol}"/>
                         <g:if test="${selected.balance.compareTo(BigDecimal.ZERO) > 0}">
                             &nbsp; - &nbsp;
                             <g:link controller="payment" action="link" id="${selected.id}">
@@ -126,7 +126,7 @@
                             </g:link>
                         </td>
                         <td class="innerContent">
-                            <g:formatNumber number="${invoicePayment.amount}" type="currency" currencyCode="${selected.currencyDTO.code}"/>
+                            <g:formatNumber number="${invoicePayment.amount}" type="currency" currencySymbol="${selected.currencyDTO.symbol}"/>
                         </td>
                         <td class="innerContent">
                             <g:formatDate date="${invoicePayment.createDatetime}"/>

@@ -76,7 +76,7 @@
                                     %<g:formatNumber number="${plan.percentage}" formatName="money.format"/>
                                 </g:if>
                                 <g:else>
-                                    <g:formatNumber number="${plan.defaultPrice?.rate}" type="currency" currencyCode="${plan.defaultPrice?.currency?.code}"/>
+                                    <g:formatNumber number="${plan.defaultPrice?.rate}" type="currency" currencySymbol="${plan.defaultPrice?.currency?.symbol}"/>
                                 </g:else>
                             </g:remoteLink>
                         </td>

@@ -3356,8 +3356,8 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 --
 
 COPY billing_process (id, entity_id, billing_date, period_unit_id, period_value, is_review, paper_invoice_batch_id, retries_to_do, optlock) FROM stdin;
-2	1	2006-08-26	1	1	1	\N	1	1
-12	1	2006-09-26	1	1	1	\N	0	1
+2	1	2006-08-26	1	1	0	\N	1	1
+12	1	2006-09-26	1	1	0	\N	0	1
 \.
 
 

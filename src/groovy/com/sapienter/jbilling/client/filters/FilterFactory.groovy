@@ -72,6 +72,9 @@ class FilterFactory {
         ],
 		BILLINGPROCESS: [
 			new Filter(type: FilterType.BILLINGPROCESS, constraintType: FilterConstraint.DATE_BETWEEN, field: 'billingDate', template: 'created', visible: true)
+		],
+		MEDIATIONPROCESS:[
+			new Filter(type: FilterType.MEDIATIONPROCESS, constraintType: FilterConstraint.DATE_BETWEEN, field: 'startDatetime', template: 'created', visible: true)
 		] 
     ] as Map).asImmutable()
 

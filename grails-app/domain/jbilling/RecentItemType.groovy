@@ -34,7 +34,8 @@ enum RecentItemType {
     CUSTOMER    ("user", "list", null, "icon12.gif", "recent.item.customer.title"),
     PAYMENT     ("payment", "list", null, "icon11.gif", "recent.item.payment.title"),
     PLUGIN      ("plugin", "list", null, "icon13.gif", "recent.item.plugin.title"),
-	BILLINGPROCESS ("billing", "show", null, "icon13.gif", "recent.item.billing.process.title");
+	BILLINGPROCESS ("billing", "show", null, "icon13.gif", "recent.item.billing.process.title"),
+	MEDIATIONPROCESS("mediation", "show", null, "icon13.gif", "recent.item.mediation.process.title");
 
     String controller
     String action

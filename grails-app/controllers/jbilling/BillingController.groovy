@@ -11,6 +11,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 
 /**
 * BillingController
@@ -51,8 +52,11 @@ class BillingController {
 			Integer _processId= dto.getId()?.toInteger()
 			log.debug "billing_process id: ${_processId}"
 			iter= new BillingProcessDAS().getCountAndSum(_processId)
-			Object[] row = (Object[]) iter.next();
-			row[2]= new CurrencyDAS().find ((Integer)row[2])
+			Object[] row= null;
+			if (null != iter || iter.hasNext()){
+				row = (Object[]) iter.next();
+				row[2]= new CurrencyDAS().find ((Integer)row[2])
+			}
 			dataHashMap.put (_processId, row)
 		}
 		
@@ -105,6 +109,8 @@ class BillingController {
 		Integer processId= params.id.toInteger()
 		BillingProcessDTO process = new BillingProcessDAS().find(processId);
 		
+		def genInvoices= new InvoiceDAS().findByProcess(process)
+		def invoicesGenerated= genInvoices?.size()?:0
 		log.debug "process.orderProcesses: ${process.orderProcesses?.size()}"
 		
 		def das= new BillingProcessDAS() 
@@ -153,7 +159,7 @@ class BillingController {
 		}
 		recentItemService.addRecentItem(processId, RecentItemType.BILLINGPROCESS)
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, processId)
-		[process:process, countAndSumByCurrency: countAndSumByCurrency, mapOfPaymentListByCurrency: mapOfPaymentListByCurrency, failedAmountsByCurrency: failedAmountsByCurrency] 
+		[process:process, invoicesGenerated:invoicesGenerated, countAndSumByCurrency: countAndSumByCurrency, mapOfPaymentListByCurrency: mapOfPaymentListByCurrency, failedAmountsByCurrency: failedAmountsByCurrency, reviewConfiguration: webServicesSession.getBillingProcessConfiguration()] 
 	}
 
 	def showInvoices = {
@@ -177,6 +183,7 @@ class BillingController {
 		} catch (Exception e) {
 			throw new SessionInternalError(e)
 		}
+		flash.message = 'billing.review.approve.success'
 		redirect action: 'list'
 	}
 	def disapprove = {
@@ -185,6 +192,7 @@ class BillingController {
 		} catch (Exception e) {
 			throw new SessionInternalError(e)
 		}
+		flash.message = 'billing.review.disapprove.success'
 		redirect action: 'list'
 	}
 }

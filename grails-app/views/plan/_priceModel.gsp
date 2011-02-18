@@ -6,7 +6,7 @@
         <td><g:message code="plan.model.rate"/></td>
         <td class="value">
             <g:if test="${next.rate}">
-                <g:formatNumber number="${next.rate}" type="currency" currencyCode="${next.currency.code}"/>
+                <g:formatNumber number="${next.rate}" type="currency" currencySymbol="${next.currency?.symbol}"/>
             </g:if>
             <g:else>
                 -

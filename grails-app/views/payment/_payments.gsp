@@ -46,7 +46,7 @@
                     </td>
                     <td class="small">
                         <g:remoteLink class="cell" action="show" id="${payment.id}" before="register(this);" onSuccess="render(data, next);">
-                            <span><g:formatNumber number="${payment.amount}" type="currency" currencyCode="${payment.currencyDTO.code}"/></span>
+                            <span><g:formatNumber number="${payment.amount}" type="currency" currencySymbol="${payment.currencyDTO.symbol}"/></span>
                         </g:remoteLink>
                     </td>
                     <td class="small">

@@ -88,7 +88,7 @@
 
         <!-- order total -->
         <div class="total">
-            <g:message code="order.review.total" args="[formatNumber(number: order.getTotalAsDecimal() ?: new BigDecimal('0.00'), type: 'currency', currencyCode: user.currency.code)]"/>
+            <g:message code="order.review.total" args="[formatNumber(number: order.getTotalAsDecimal() ?: new BigDecimal('0.00'), type: 'currency', currencySymbol: user.currency.symbol)]"/>
         </div>
 
         <!-- order notes -->

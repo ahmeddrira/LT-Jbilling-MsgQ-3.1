@@ -107,7 +107,7 @@ class PaymentController {
 
         def selected = params.id ? PaymentDTO.get(params.int("id")) : null
 
-        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
 
         if (params.applyFilter) {
             render template: 'payments', model: [ payments: payments, selected: selected, filters: filters ]

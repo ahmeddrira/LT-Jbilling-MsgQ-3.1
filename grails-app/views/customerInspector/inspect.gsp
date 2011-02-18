@@ -258,7 +258,18 @@
             </div>
 
             <!-- contact information -->
-            <g:each var="contact" in="${contacts}">
+            <div id="address" class="box-cards">
+                <div class="box-cards-title">
+                    <a class="btn-open"><span><g:message code="customer.inspect.address.title"/></span></a>
+                </div>
+                <div class="box-card-hold">
+                    <div class="form-columns">
+                        <g:render template="address" model="[contact: contact]"/>
+                    </div>
+                </div>
+            </div>
+
+            <g:each var="contact" in="${contacts.findAll{ it.id != contact.id}}">
                 <div id="contacts-${contact.type}" class="box-cards">
                     <div class="box-cards-title">
                         <a class="btn-open"><span>${contact.contactTypeDescr} &nbsp;</span></a>

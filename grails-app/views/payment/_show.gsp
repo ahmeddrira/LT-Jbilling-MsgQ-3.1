@@ -75,6 +75,7 @@
 
         <hr/>
 
+        <!-- payment balance -->
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>
                 <tr>
@@ -88,7 +89,7 @@
                         <g:if test="${selected.balance.compareTo(BigDecimal.ZERO) > 0}">
                             &nbsp; - &nbsp;
                             <g:link controller="payment" action="link" id="${selected.id}">
-                                Pay Invoice
+                                <g:message code="payment.link.invoice.pay" />
                             </g:link>
                         </g:if>
 
@@ -141,6 +142,81 @@
             </table>
         </g:if>
     </div>
+
+
+    <!-- payment authorization -->
+    <g:if test="${selected.paymentAuthorizations}">
+        <g:set var="authorization" value="${selected.paymentAuthorizations.sort { it.createdDate }?.first()}"/>
+
+        <div class="heading">
+            <strong><g:message code="payment.authorization.title" /></strong>
+        </div>
+        <div class="box">
+            <table class="dataTable" cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <td><g:message code="payment.authorization.date" /></td>
+                        <td class="value"><g:formatDate date="${authorization.createDate}"/></td>
+                    </tr>
+                    <tr>
+                        <td><g:message code="payment.processor" /></td>
+                        <td class="value">${authorization.processor}</td>
+                    </tr>
+                    <g:if test="${authorization.code1}">
+                        <tr>
+                            <td><g:message code="payment.code.1" /></td>
+                            <td class="value">${authorization.code1}</td>
+                        </tr>
+                    </g:if>
+                    <g:if test="${authorization.code2}">
+                        <tr>
+                            <td><g:message code="payment.code.2" /></td>
+                            <td class="value">${authorization.code2}</td>
+                        </tr>
+                    </g:if>
+                    <g:if test="${authorization.code3}">
+                        <tr>
+                            <td><g:message code="payment.code.3" /></td>
+                            <td class="value">${authorization.code3}</td>
+                        </tr>
+                    </g:if>
+                    <tr>
+                        <td><g:message code="payment.approval.code" /></td>
+                        <td class="value">${authorization.approvalCode}</td>
+                    </tr>
+                    <g:if test="${authorization.avs}">
+                        <tr>
+                            <td><g:message code="payment.avs.code" /></td>
+                            <td class="value">${authorization.avs}</td>
+                        </tr>
+                    </g:if>
+                    <g:if test="${authorization.cardCode}">
+                        <tr>
+                            <td><g:message code="payment.card.code" /></td>
+                            <td class="value">${authorization.cardCode}</td>
+                        </tr>
+                    </g:if>
+                    <g:if test="${authorization.md5}">
+                        <tr>
+                            <td><g:message code="payment.md5.sum" /></td>
+                            <td class="value">${authorization.md5}</td>
+                        </tr>
+                    </g:if>
+                    <g:if test="${authorization.transactionId}">
+                        <tr>
+                            <td><g:message code="payment.transaction.id" /></td>
+                            <td class="value"> ${authorization.transactionId}</td>
+                        </tr>
+                    </g:if>
+                    <tr>
+                        <td><g:message code="payment.response.message" /></td>
+                        <td class="value">${authorization.responseMessage}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </g:if>
+
 
     <!-- credit card details -->
     <g:if test="${selected.creditCard}">

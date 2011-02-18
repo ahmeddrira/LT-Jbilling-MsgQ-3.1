@@ -3390,13 +3390,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-314	1	orderBuilder	edit	\N	108000	0
-315	1	order	list	\N	\N	0
-316	1	order	showListAndOrder	\N	108000	0
-317	1	config	index	\N	\N	0
-318	1	notifications	listCategories	\N	\N	0
-319	1	notifications	list	\N	3	0
-320	1	notifications	edit	\N	16	0
+340	1	plugin	listCategories	\N	\N	0
+341	1	plugin	plugins	\N	17	0
+342	1	plugin	show	\N	541	0
+343	1	plugin	listCategories	\N	\N	0
+344	1	plugin	plugins	\N	17	0
+345	1	plugin	show	\N	600	0
+346	1	plugin	listCategories	\N	\N	0
 \.
 
 
@@ -10259,6 +10259,14 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 474000	1	\N	42	1900	2011-02-18 11:21:32.543	2	10	25	\N	\N	\N	0	10791
 475000	1	\N	21	108000	2011-02-18 13:03:55.674	2	7	25	\N	\N	\N	0	10816
 475001	1	1	21	108000	2011-02-18 13:04:28.226	2	7	9	\N	\N	\N	0	10816
+476000	1	1	25	570	2011-02-18 16:51:32.71	2	11	7	\N	\N	\N	0	\N
+476001	1	1	25	440	2011-02-18 16:51:39.985	2	11	7	\N	\N	\N	0	\N
+476002	1	1	25	450	2011-02-18 16:51:44.958	2	11	7	\N	\N	\N	0	\N
+476003	1	1	25	470	2011-02-18 16:51:49.827	2	11	7	\N	\N	\N	0	\N
+476004	1	1	25	490	2011-02-18 16:51:54.345	2	11	7	\N	\N	\N	0	\N
+476005	1	1	25	540	2011-02-18 16:52:05.252	2	11	7	\N	\N	\N	0	\N
+476006	1	1	25	541	2011-02-18 16:52:10.507	2	11	7	\N	\N	\N	0	\N
+476007	1	1	25	600	2011-02-18 16:52:16.502	2	11	7	\N	\N	\N	0	\N
 \.
 
 
@@ -11688,16 +11696,16 @@ purchase_order	1081
 purchase_order	1081
 order_line	2083
 order_line	2083
-event_log	476
-event_log	476
 recent_item	56
-breadcrumb	321
 notification_message	2
 notification_message	2
 notification_message_section	2
 notification_message_section	2
 notification_message_line	2
 notification_message_line	2
+event_log	477
+event_log	477
+breadcrumb	347
 \.
 
 
@@ -14683,24 +14691,16 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 420	1	33	1	1	\N
 421	1	32	1	3	\N
 431	1	1	2	1	\N
-440	1	40	1	1	\N
-450	1	41	1	1	\N
-470	1	43	1	1	\N
 480	1	44	1	1	\N
-490	1	46	1	2	\N
 500	1	47	1	1	\N
 510	1	48	2	1	\N
 530	1	50	3	1	\N
-540	1	53	1	2	\N
-541	1	54	1	1	\N
 550	1	55	1	1	\N
 560	1	56	2	3	\N
-570	1	15	1	1	\N
 571	1	71	1	1	\N
 580	2	58	1	1	\N
 590	2	63	1	1	\N
 410	1	79	1	1	\N
-600	1	66	1	1	\N
 1	1	59	1	3	\N
 430	1	60	1	1	\N
 572	1	73	2	0	\N
@@ -14743,10 +14743,8 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 540	421	format_file	\N	asterisk.xml	\N	1
 550	421	suffix	\N	csv	\N	1
 551	421	batch_size	\N	100	\N	1
-560	450	file	\N	CancelFees.pkg	\N	1
 570	430	file	\N	ItemsRules.pkg	\N	1
 600	1	file	\N	ItemsRules.pkg	\N	1
-680	490	file	\N	provisioning_commands.pkg	\N	1
 690	23	item_type_id	\N	1	\N	1
 700	510	username	\N	test-username	\N	1
 710	510	password	\N	test-password	\N	1
@@ -14756,10 +14754,7 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 780	530	portalId	\N	test-portalId	\N	1
 790	530	applicationId	\N	test-applicationId	\N	1
 800	530	bnet	\N	test-bnet	\N	1
-8100	540	file	\N	InternalEventsRulesTask520.pkg	\N	1
 8200	560	file	\N	ValidatePurchaseRules.pkg	\N	1
-8301	570	item	270	\N	\N	1
-8302	570	ageing_step	6	\N	\N	1
 8303	580	contactType	2	\N	\N	1
 8304	580	externalSavingPluginId	590	\N	\N	1
 580	420	file	\N	Mediation.pkg ItemsRules.pkg PricingRules.pkg RateCard.pkg	\N	1

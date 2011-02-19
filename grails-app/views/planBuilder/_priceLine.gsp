@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.item.db.ItemDTO; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 
 <%--
@@ -7,7 +7,7 @@
   @author Brian Cowdery
   @since 24-Jan-2011
 --%>
-<g:set var="product" value="${products?.find{ it.id == planItem.itemId }}"/>
+<g:set var="product" value="${ItemDTO.get(planItem.itemId)}"/>
 <g:set var="strategy" value="${PriceModelStrategy.valueOf(planItem.model.type)?.getStrategy()}"/>
 <g:set var="editable" value="${index == params.int('newLineIndex')}"/>
 

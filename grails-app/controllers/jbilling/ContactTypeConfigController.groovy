@@ -74,6 +74,8 @@ class ContactTypeConfigController {
      */
     def show = {
         def selected = ContactTypeDTO.get(params.int('id'))
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
+
         render template: 'show', model: [ selected: selected, languages: languages ]
     }
 

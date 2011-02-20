@@ -43,11 +43,6 @@ a {
 	text-decoration:none;
     cursor: pointer;
 }
-a img {
-    position: relative;
-    top: 4px;
-    left: 4px;
-}
 a:focus {
 	outline:none;
 }
@@ -1109,6 +1104,17 @@ ul#review-lines {
     font-style: italic;
     color: #5a5a5a;
 }
+#review-lines li.bundled {
+    list-style: disc inside none;
+    margin-left: 15px;
+    font-weight: normal;
+}
+#review-lines li.bundled-price {
+    margin-left: 35px;
+}
+#review-lines li.bundled-price .dataTable {
+    margin: 3px 0 15px;
+}
 #review-lines li span {
     line-height: 25px;
     font-size: 14px;
@@ -1129,7 +1135,7 @@ ul#review-lines {
     width: 120px;
     float: right;
 }
-#review-lines span.sub-total, #review-lines span.rate {
+#review-lines span.sub-total, #review-lines span.rate, #review-lines span.included-qty {
     display: block;
     width: 100px;
     float: right;
@@ -1169,6 +1175,11 @@ ul#review-lines {
 	width:1000px;
 	margin:0 auto;
 	padding:14px 0 0;
+}
+.form-columns a img {
+    position: relative;
+    top: 4px;
+    left: 4px;
 }
 .dialog .form-columns {
     width: auto;
@@ -1581,11 +1592,18 @@ div.box-text {
 	font-weight: bold;
 	padding-left:10px;
 }
+
 .dataTable tr.price {
     background-color: #eaeaea;
 }
+.dataTable tr.price td {
+    width: 25%;
+}
 .dataTable tr.attribute {
     background-color: #fafafa;
+}
+.dataTable tr.attribute td {
+    width: 25%;
 }
 .dataTable tr hr {
     margin: 25px auto;

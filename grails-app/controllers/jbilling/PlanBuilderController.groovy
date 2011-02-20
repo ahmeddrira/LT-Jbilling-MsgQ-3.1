@@ -35,6 +35,8 @@ import com.sapienter.jbilling.server.pricing.util.AttributeUtils
 import com.sapienter.jbilling.server.item.ItemTypeBL
 import com.sapienter.jbilling.server.pricing.PriceModelBL
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO
+import com.sapienter.jbilling.server.util.Constants
 
 /**
  * Plan builder controller
@@ -153,6 +155,9 @@ class PlanBuilderController {
                 def currencies = new CurrencyBL().getCurrencies(session['language_id'], session['company_id'])
                 currencies = currencies.findAll{ it.inUse }
 
+                def orderPeriods = company.orderPeriods.collect { new OrderPeriodDTO(it.id) } << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE)
+                orderPeriods.sort { it.id }
+
                 // subscription product defaults for new plans
                 if (!product.id || product.id == 0) {
                     product.hasDecimals = 0
@@ -168,7 +173,15 @@ class PlanBuilderController {
                     product.defaultPrice = priceModel
                 }
 
+
                 log.debug("plan subscription product ${product}")
+
+                // defaults for new plans
+                if (!plan.id || plan.id == 0) {
+                    plan.periodId = orderPeriods.find{ it.id != Constants.ORDER_PERIOD_ONCE }?.id
+                }
+
+                log.debug("plan ${plan}")
 
                 // add breadcrumb
                 breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
@@ -177,6 +190,7 @@ class PlanBuilderController {
                 flow.company = company
                 flow.itemTypes = itemTypes
                 flow.currencies = currencies
+                flow.orderPeriods = orderPeriods
 
                 // conversation scope
                 conversation.plan = plan

@@ -13,13 +13,14 @@
         <g:hiddenField name="execution" value="${flowExecutionKey}"/>
 
         <div class="form-columns">
+            <g:set var="hasPlan" value="${order.orderLines.find{ l -> plans.find{ p -> p.id == l.itemId }} != null}"/>
             <g:applyLayout name="form/select">
                 <content tag="label"><g:message code="order.label.period"/></content>
                 <content tag="label.for">period</content>
                 <g:select from="${orderPeriods}"
                           optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
                           name="period"
-                          value="${order?.period}"/>
+                          value="${order?.period}" disabled="${hasPlan}"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/select">

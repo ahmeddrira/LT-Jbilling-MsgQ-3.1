@@ -548,7 +548,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         if (invoiceId == null) {
             LOG.debug("Creating a new invoice for order " + order.getId());
             invoice = doCreateInvoice(order.getId());
-
+            if ( null == invoice) { 
+            	throw new SessionInternalError("Invoice could not be generated. The purchase order may not have any applicable periods to be invoiced.");
+            }
         } else {
             LOG.debug("Adding order " + order.getId() + " to invoice " + invoiceId);
             IBillingProcessSessionBean process = (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
@@ -1590,7 +1592,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throw new SessionInternalError("Exception occurred with plug-in when fetching payment instrument.", e);
         }
 
-        return PaymentBL.getWS(new PaymentDTOEx(instrument));
+        return instrument != null ? PaymentBL.getWS(new PaymentDTOEx(instrument)) : null;
     }
 
     public BigDecimal getTotalRevenueByUser (Integer userId) throws SessionInternalError {

@@ -1,0 +1,21 @@
+<html>
+<head>
+    <meta name="layout" content="configuration" />
+</head>
+<body>
+
+<!-- selected configuration menu item -->
+<content tag="menu.item">mediation</content>
+
+<content tag="column1">
+    <g:render template="config" />
+</content>
+
+<content tag="column2">
+    <g:if test="${selected}">
+        <!-- show selected contact type -->
+    </g:if>
+</content>
+
+</body>
+</html>

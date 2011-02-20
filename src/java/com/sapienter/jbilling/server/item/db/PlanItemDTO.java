@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import javax.persistence.CascadeType;
@@ -63,14 +64,16 @@ public class PlanItemDTO implements Serializable {
     private ItemDTO item; // affected item
     private PriceModelDTO model;
     private BigDecimal bundledQuantity;
+    private OrderPeriodDTO period; // period for bundled quantity
     private Integer precedence = DEFAULT_PRECEDENCE;
 
     public PlanItemDTO() {
     }
 
-    public PlanItemDTO(PlanItemWS ws, ItemDTO item, PriceModelDTO model) {
+    public PlanItemDTO(PlanItemWS ws, ItemDTO item, OrderPeriodDTO period, PriceModelDTO model) {
         this.id = ws.getId();
         this.item = item;
+        this.period = period;
         this.model = model;
         this.bundledQuantity = ws.getBundledQuantityAsDecimal();
         this.precedence = ws.getPrecedence();                
@@ -140,6 +143,24 @@ public class PlanItemDTO implements Serializable {
     public void setBundledQuantity(BigDecimal bundledQuantity) {
         this.bundledQuantity = bundledQuantity;
     }
+
+    /**
+     * The period to use for the order containing the bundled quantity. If the period is different than
+     * the order used to subscribe the customer to the plan, then a new order will be created to contain
+     * the bundled items.
+     *
+     * @return order period for the bundled quantity
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "period_id", nullable = true)
+    public OrderPeriodDTO getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(OrderPeriodDTO period) {
+        this.period = period;
+    }
+
 
     @Column(name = "precedence", nullable = false, length = 2)
     public Integer getPrecedence() {

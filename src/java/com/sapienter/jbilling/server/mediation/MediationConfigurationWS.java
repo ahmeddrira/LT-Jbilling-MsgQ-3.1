@@ -40,6 +40,7 @@ public class MediationConfigurationWS implements WSSecured, Serializable {
     private String name;
     private Integer orderValue;
     private Date createDatetime;
+    private Integer versionNum;
 
     public MediationConfigurationWS() {
     }
@@ -51,6 +52,7 @@ public class MediationConfigurationWS implements WSSecured, Serializable {
         this.name = dto.getName();
         this.orderValue = dto.getOrderValue();
         this.createDatetime = dto.getCreateDatetime();
+        this.versionNum= dto.getVersionNum();
     }
 
     public Integer getId() {
@@ -112,6 +114,14 @@ public class MediationConfigurationWS implements WSSecured, Serializable {
     public Integer getOwningUserId() {
         return null;
     }
+    
+    public Integer getVersionNum() {
+        return versionNum;
+    }
+
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
+    }
 
     @Override
     public String toString() {
@@ -122,6 +132,7 @@ public class MediationConfigurationWS implements WSSecured, Serializable {
                + ", name='" + name + '\''
                + ", orderValue=" + orderValue
                + ", createDatetime=" + createDatetime
+               + ", versionNum=" + versionNum
                + '}';
     }
 }

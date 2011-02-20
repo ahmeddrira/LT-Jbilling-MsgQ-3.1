@@ -146,14 +146,13 @@ class InvoiceController {
 		
 		if (params["id"] && params["id"].matches("^[0-9]+")) {
 			
-			int invId= Integer.parseInt(params["id"])
-			log.debug "Template: ${params.template}"
+			Integer invId= params['id'] as Integer
+			log.debug "Template: ${params.template} invId: ${invId}"
 
 			try {
-				invoice= webServicesSession.getInvoiceWS(invId)
+				invoice= webServicesSession.getReviewInvoiceWS(invId)
 
-				//TODO handle this check appropriately
-				//if (!invoice) throw new Exception();
+				log.debug "Invoice User: ${invoice?.getUserId()}, supposed to be 76."
 				
 				user= webServicesSession.getUserWS(invoice?.getUserId())
 				

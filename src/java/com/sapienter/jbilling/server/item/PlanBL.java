@@ -25,6 +25,8 @@ import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.PlanDAS;
 import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
@@ -109,10 +111,16 @@ public class PlanBL {
             if (ws.getItemId() == null)
                 throw new SessionInternalError("PlanDTO must have a plan subscription item.");
 
+            if (ws.getPeriodId() == null)
+                throw new SessionInternalError("PlanDTO must have an applicable order period.");
+
             // subscription plan item
             ItemDTO item = new ItemBL(ws.getItemId()).getEntity();
 
-            return new PlanDTO(ws, item, PlanItemBL.getDTO(ws.getPlanItems()));
+            // plan period
+            OrderPeriodDTO period = new OrderPeriodDAS().find(ws.getPeriodId());
+
+            return new PlanDTO(ws, item, period, PlanItemBL.getDTO(ws.getPlanItems()));
         }
         return null;
     }

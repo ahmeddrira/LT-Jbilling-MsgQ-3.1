@@ -52,7 +52,7 @@ class CustomerInspectorController {
         // extra contacts and contact type descriptions
         def contacts = user ? webServicesSession.getUserContactsWS(user.id) : null
         for (ContactWS contact : contacts) {
-            def contactType = new ContactTypeDAS().find(contact.getContactTypeId())
+            def contactType = new ContactTypeDAS().find(contact.type)
             contact.setContactTypeDescr(contactType?.getDescription(session['language_id'].toInteger()))
         }
 

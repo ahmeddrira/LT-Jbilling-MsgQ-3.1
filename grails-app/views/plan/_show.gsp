@@ -28,12 +28,16 @@
                     <td><g:message code="plan.item.description"/></td>
                     <td class="value">${plan.item.description}</td>
                 </tr>
+                <tr>
+                    <td><g:message code="order.label.period"/></td>
+                    <td class="value">${plan.period.getDescription(session['language_id'])}</td>
+                </tr>
 
                 <g:if test="${plan.item.defaultPrice}">
                     <tr>
                         <td>${plan.item.defaultPrice.currency.code}</td>
                         <td class="value">
-                            <g:formatNumber number="${plan.item.defaultPrice.rate}" type="currency" currencyCode="${plan.item.defaultPrice.currency.code}"/>
+                            <g:formatNumber number="${plan.item.defaultPrice.rate}" type="currency" currencySymbol="${plan.item.defaultPrice.currency.symbol}"/>
                         </td>
                     </tr>
                 </g:if>
@@ -77,6 +81,15 @@
                         ${planItem.item.getDescription(session['language_id'])}
                     </td>
                 </tr>
+
+
+                <g:if test="${planItem.period}">
+                    <tr>
+                        <td><g:message code="order.label.period"/></td>
+                        <td class="value">${planItem.period.getDescription(session['language_id'])}</td>
+                    </tr>
+                </g:if>
+
                 <tr>
                     <td><g:message code="plan.item.precedence"/></td>
                     <td class="value">${planItem.precedence}</td>
@@ -85,40 +98,15 @@
                     <td class="value"><g:formatNumber number="${planItem.bundledQuantity}"/></td>
                 </tr>
 
+                <!-- price model -->
                 <tr><td colspan="4">&nbsp;</td></tr>
+                <g:render template="/plan/priceModel" model="[model: planItem.model]"/>
 
-                <g:set var="next" value="${planItem.model}"/>
-                <g:while test="${next}">
-                    <tr class="price">
-                        <td><g:message code="plan.model.type"/></td>
-                        <td class="value"><g:message code="price.strategy.${next.type.name()}"/></td>
-                        <td><g:message code="plan.model.rate"/></td>
-                        <td class="value">
-                            <g:if test="${next.rate}">
-                                <g:formatNumber number="${next.rate}" type="currency" currencyCode="${next.currency.code}"/>
-                            </g:if>
-                            <g:else>
-                                -
-                            </g:else>
-                        </td>
-                    </tr>
-                    <g:each var="attribute" in="${next.attributes.entrySet()}">
-                        <g:if test="${attribute.value}">
-                            <tr class="attribute">
-                                <td></td><td></td>
-                                <td><g:message code="${attribute.key}"/></td>
-                                <td class="value">${attribute.value}</td>
-                            </tr>
-                        </g:if>
-                    </g:each>
 
-                    <g:set var="next" value="${next.next}"/>
-                </g:while>
-
+                <!-- separator line -->
                 <g:if test="${index < plan.planItems.size()-1}">
                     <tr><td colspan="4"><hr/></td></tr>
                 </g:if>
-
             </g:each>
 
             </tbody>

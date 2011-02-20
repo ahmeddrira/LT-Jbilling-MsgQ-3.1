@@ -5,12 +5,15 @@ resources/
 
 # temp files
 activemq-data/
+out/
 tmp/
 logs/
 *.log
+*.log.*
 *~
 .ant-targets*.xml
 TEST*.xml
+*.jasper
 
 # external libraries
 libs/

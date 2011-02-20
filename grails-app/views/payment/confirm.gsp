@@ -50,10 +50,10 @@
                                         ${invoice.paymentAttempts}
                                     </td>
                                     <td class="innerContent">
-                                        <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
+                                        <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
                                     </td>
                                     <td class="innerContent">
-                                        <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
+                                        <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
                                     </td>
                                     <td class="innerContent">
                                         <g:formatDate date="${invoice.dueDate}"/>

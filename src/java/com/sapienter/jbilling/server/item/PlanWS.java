@@ -13,7 +13,8 @@ import java.util.List;
 public class PlanWS implements Serializable {
 
     private Integer id;
-    private Integer itemId; // plan subscription item    
+    private Integer itemId; // plan subscription item
+    private Integer periodId; // plan item period
     private String description;
     private List<PlanItemWS> planItems = new ArrayList<PlanItemWS>();
 
@@ -26,6 +27,7 @@ public class PlanWS implements Serializable {
         this.planItems = planItems;
 
         if (dto.getItem() != null) this.itemId = dto.getItem().getId();
+        if (dto.getPeriod() != null) this.periodId = dto.getPeriod().getId();
     }
 
     public Integer getId() {
@@ -50,6 +52,14 @@ public class PlanWS implements Serializable {
 
     public void setPlanSubscriptionItemId(Integer planSubscriptionItemId) {
         setItemId(planSubscriptionItemId);
+    }
+
+    public Integer getPeriodId() {
+        return periodId;
+    }
+
+    public void setPeriodId(Integer periodId) {
+        this.periodId = periodId;
     }
 
     public String getDescription() {
@@ -77,6 +87,7 @@ public class PlanWS implements Serializable {
         return "PlanWS{"
                + "id=" + id
                + ", itemId=" + itemId
+               + ", periodId=" + periodId
                + ", description='" + description + '\''
                + ", planItems=" + planItems
                + '}';

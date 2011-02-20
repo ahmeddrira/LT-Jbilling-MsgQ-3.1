@@ -63,10 +63,10 @@
                                             ${invoice.paymentAttempts}
                                         </td>
                                         <td class="innerContent">
-                                            <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
+                                            <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
                                         </td>
                                         <td class="innerContent">
-                                            <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
+                                            <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
                                         </td>
                                         <td class="innerContent">
                                             <g:formatDate date="${invoice.dueDate}"/>
@@ -106,7 +106,7 @@
                         <g:set var="currency" value="${currencies.find { it.id == payment?.currencyId }}"/>
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="prompt.user.currency"/></content>
-                            <span>${currency?.getDescription() ?: payment.currencyId}</span>
+                            <span>${currency?.getDescription(session['language_id']) ?: payment.currencyId}</span>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/text">

@@ -83,7 +83,7 @@ class UserController {
 
         def selected = params.id ? UserDTO.get(params.int("id")) : null
 
-        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
 
         if (params.applyFilter) {
             render template: 'users', model: [users: users, selected: selected, statuses: statuses, filters: filters ]

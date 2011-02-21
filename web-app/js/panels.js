@@ -6,7 +6,7 @@ var first = {
         return 1;
     },
     visible: function() {
-        return true;
+        return $('#viewport .column:first-child').get(0) != null;
     },
     animate: function() {
     }
@@ -17,7 +17,7 @@ var second = {
         return 2;
     },
     visible: function() {
-        return true;
+        return $('#viewport .column:nth-child(2)').get(0) != null;
     },
     animate: function() {
     }
@@ -33,8 +33,11 @@ var third = {
     animate: function() {
         $('#viewport .column:first-child').animate(
             { marginLeft: '-=100%' },
-            1000,
-            function() { $(this).remove(); }
+            500,
+            function() {
+                $(this).empty().remove();
+                calculateColumnId();
+            }
         );
     }
 };
@@ -44,13 +47,21 @@ var next = {
         return clicked + 1;
     },
     visible: function() {
-        return this.index() > 0 && this.index() < 3;
+        var index = this.index();
+        if (index > 2) {
+            return false
+        } else {
+            return $('#viewport .column:nth-child(' + index + ')').get(0) != null;
+        }
     },
     animate: function() {
         $('#viewport .column:first-child').animate(
             { marginLeft: '-=100%' },
-            1000,
-            function() { $(this).remove(); }
+            500,
+            function() {
+                $(this).empty().remove();
+                calculateColumnId();
+            }
         );
     }
 };
@@ -90,20 +101,38 @@ function render(data, target) {
         var column = $('#viewport .column:nth-child(' + target.index() + ')');
         column.find('.column-hold').html(data);
 
-    } else {
-        // re-number columns before shifting view, prevents transversal errors
-        // in embedded javascript while the browser re-calculates the DOM
-        $('#viewport .column:first-child .column-hold').attr('id', '');
-        $('#viewport .column:nth-child(2) .column-hold').attr('id', 'column1');
 
+    } else {
         // build a new column node and append to viewport list
         var column = $('#panel-template').clone().attr('id', '');
-        column.find('.column-hold').attr('id', 'column2').html(data);
+        column.find('.column-hold').html(data);
         column.show();
         $('#viewport').append(column);
 
-        target.animate();
+        // check if target needs animation to become visible after inserting new node
+        if (!target.visible())
+            target.animate();
     }
+}
+
+/**
+ * Re-orders ID's of the columns to reflect they're position. A column in position 1
+ * should always have the id 'column1', position 2 should always have the id 'column2'.
+ */
+function calculateColumnId() {
+    $('#viewport').children().each(function(index, element) {
+        $(element).find('.column-hold').attr('id', 'column' + (index + 1));
+    });
+}
+
+/**
+ * Closes the panel containing the passed element.
+ *
+ * @param element element contained in the panel to close. usually the ajax link or form element.
+ */
+function closePanel(element) {
+    register(element);
+    $('#viewport .column:nth-child(' + clicked + ')').remove();
 }
 
 /**

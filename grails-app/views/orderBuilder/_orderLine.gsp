@@ -1,3 +1,4 @@
+<%@ page import="com.sapienter.jbilling.server.item.db.ItemDTO" %>
 
 <%--
   Renders an OrderLineWS as an editable row for the order builder preview pane.
@@ -6,11 +7,7 @@
   @since 24-Jan-2011
 --%>
 
-<g:set var="product" value="${products?.find{ it.id == line.itemId}}"/>
-<g:if test="${!product}">
-    <g:set var="product" value="${plans?.find{ it.id == line.itemId}}"/>
-</g:if>
-
+<g:set var="product" value="${ItemDTO.get(line.itemId)}"/>
 <g:set var="quantityNumberFormat" value="${product?.hasDecimals ? 'money.format' : 'default.number.format'}"/>
 <g:set var="editable" value="${index == params.int('newLineIndex')}"/>
 

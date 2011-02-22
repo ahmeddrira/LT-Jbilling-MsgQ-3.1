@@ -21,6 +21,8 @@ package com.sapienter.jbilling.server.rule;
 
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -33,6 +35,21 @@ import org.mvel2.optimizers.OptimizerFactory;
  * @author emilc
  */
 public abstract class RulesBaseTask extends PluggableTask {
+    
+    public static final ParameterDescription PARAM_FILE = 
+        new ParameterDescription("file", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAM_URL = 
+        new ParameterDescription("url", false, ParameterDescription.Type.STR);    
+    public static final ParameterDescription PARAM_DIR = 
+        new ParameterDescription("dir", false, ParameterDescription.Type.STR);    
+
+    //initializer for pluggable params
+    { 
+        descriptions.add(PARAM_FILE);
+        descriptions.add(PARAM_URL);
+        descriptions.add(PARAM_DIR);
+    }
+  
     
     protected Logger LOG = getLog(); // to be set by the real plug-in
 

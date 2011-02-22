@@ -17,7 +17,8 @@ import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.order.db.OrderDAS
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO
 import com.sapienter.jbilling.server.payment.db.PaymentDTO
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.user.CustomerPriceBL;
 
 class CustomerInspectorController {
 	
@@ -56,6 +57,9 @@ class CustomerInspectorController {
             contact.setContactTypeDescr(contactType?.getDescription(session['language_id'].toInteger()))
         }
 
+        // all customer prices
+        def prices = new CustomerPriceBL(user.id).getCustomerPrices();
+
         // used to find the next invoice date
         def cycle = new OrderDAS().findEarliestActiveOrder(user.id)
 
@@ -69,6 +73,7 @@ class CustomerInspectorController {
                 invoice: invoice,
                 payment: payment,
                 subscriptions: subscriptions,
+                prices: prices,
                 company: company,
                 currencies: currencies,
                 cycle: cycle,

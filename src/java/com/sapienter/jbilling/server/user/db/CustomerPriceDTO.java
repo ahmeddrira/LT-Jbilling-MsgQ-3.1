@@ -55,6 +55,11 @@ import java.util.Date;
                             + " and price.id.baseUser.id = :user_id "
                             + " order by price.id.planItem.precedence, price.createDatetime desc"),
 
+        @NamedQuery(name = "PlanItemDTO.findAllCustomerPrices",
+                    query = "select price.id.planItem"
+                            + " from CustomerPriceDTO price "
+                            + " where price.id.baseUser.id = :user_id"),
+
         @NamedQuery(name = "PlanItemDTO.findAllCustomerSpecificPrices",
                     query = "select price.id.planItem"
                             + " from CustomerPriceDTO price "

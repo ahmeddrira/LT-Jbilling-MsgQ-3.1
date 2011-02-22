@@ -48,6 +48,7 @@ public class ProcessRunDAS extends AbstractDAS<ProcessRunDTO> {
             "  from ProcessRunDTO a " +
             " where a.billingProcess.entity.id = :entity " +
             "   and a.status.id = " + Constants.PROCESS_RUN_STATUS_SUCCESS +
+            "   and a.billingProcess.isReview = 0 " +
             "order by a.id desc ";
 
         Query query = getSession().createQuery(hql);

@@ -33,7 +33,7 @@ var third = {
     animate: function() {
         $('#viewport .column:first-child').animate(
             { marginLeft: '-=100%' },
-            500,
+            1000,
             function() {
                 $(this).empty().remove();
                 calculateColumnId();
@@ -57,7 +57,7 @@ var next = {
     animate: function() {
         $('#viewport .column:first-child').animate(
             { marginLeft: '-=100%' },
-            500,
+            1000,
             function() {
                 $(this).empty().remove();
                 calculateColumnId();

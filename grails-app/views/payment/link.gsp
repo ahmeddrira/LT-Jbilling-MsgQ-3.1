@@ -28,66 +28,73 @@
             <fieldset>
 
                 <!-- invoices to pay -->
-                <g:if test="${invoices}">
+
                     <div id="invoices" class="box-cards box-cards-open">
                         <div class="box-cards-title">
                             <a class="btn-open"><span><g:message code="payment.payable.invoices.title"/></span></a>
                         </div>
                         <div class="box-card-hold">
 
-                            <table cellpadding="0" cellspacing="0" class="innerTable">
-                                <thead class="innerHeader">
-                                <tr>
-                                    <th><g:message code="invoice.label.number"/></th>
-                                    <th><g:message code="invoice.label.payment.attempts"/></th>
-                                    <th><g:message code="invoice.label.total"/></th>
-                                    <th><g:message code="invoice.label.balance"/></th>
-                                    <th><g:message code="invoice.label.duedate"/></th>
-                                    <th><!-- action --> &nbsp;</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <g:each var="invoice" in="${invoices}">
-                                    <g:set var="currency" value="${currencies.find { it.id == invoice.currencyId }}"/>
-
+                            <g:if test="${invoices}">
+                                <table cellpadding="0" cellspacing="0" class="innerTable">
+                                    <thead class="innerHeader">
                                     <tr>
-                                        <td class="innerContent">
-                                            <g:applyLayout name="form/radio">
-                                                <g:radio id="invoice-${invoice.id}" name="invoiceId" value="${invoice.id}" checked="${invoice.id == invoiceId}"/>
-                                                <label for="invoice-${invoice.id}" class="rb">
-                                                    <g:message code= "payment.link.invoice" args="[invoice.number]"/>
-                                                </label>
-                                            </g:applyLayout>
-                                        </td>
-                                        <td class="innerContent">
-                                            ${invoice.paymentAttempts}
-                                        </td>
-                                        <td class="innerContent">
-                                            <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
-                                        </td>
-                                        <td class="innerContent">
-                                            <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
-                                        </td>
-                                        <td class="innerContent">
-                                            <g:formatDate date="${invoice.dueDate}"/>
-                                        </td>
-                                        <td class="innerContent">
-                                            <g:link controller="invoice" action="list" id="${invoice.id}">
-                                                <g:message code= "payment.link.view.invoice" args="[invoice.number]"/>
-                                            </g:link>
-                                        </td>
+                                        <th><g:message code="invoice.label.number"/></th>
+                                        <th><g:message code="invoice.label.payment.attempts"/></th>
+                                        <th><g:message code="invoice.label.total"/></th>
+                                        <th><g:message code="invoice.label.balance"/></th>
+                                        <th><g:message code="invoice.label.duedate"/></th>
+                                        <th><!-- action --> &nbsp;</th>
                                     </tr>
-                                </g:each>
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                    <g:each var="invoice" in="${invoices}">
+                                        <g:set var="currency" value="${currencies.find { it.id == invoice.currencyId }}"/>
 
-                            <div class="btn-row">
-                                <a onclick="clearInvoiceSelection();" class="submit delete"><span><g:message code="button.clear"/></span></a>
-                            </div>
+                                        <tr>
+                                            <td class="innerContent">
+                                                <g:applyLayout name="form/radio">
+                                                    <g:radio id="invoice-${invoice.id}" name="invoiceId" value="${invoice.id}" checked="${invoice.id == invoiceId}"/>
+                                                    <label for="invoice-${invoice.id}" class="rb">
+                                                        <g:message code= "payment.link.invoice" args="[invoice.number]"/>
+                                                    </label>
+                                                </g:applyLayout>
+                                            </td>
+                                            <td class="innerContent">
+                                                ${invoice.paymentAttempts}
+                                            </td>
+                                            <td class="innerContent">
+                                                <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
+                                            </td>
+                                            <td class="innerContent">
+                                                <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
+                                            </td>
+                                            <td class="innerContent">
+                                                <g:formatDate date="${invoice.dueDate}"/>
+                                            </td>
+                                            <td class="innerContent">
+                                                <g:link controller="invoice" action="list" id="${invoice.id}">
+                                                    <g:message code= "payment.link.view.invoice" args="[invoice.number]"/>
+                                                </g:link>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                    </tbody>
+                                </table>
 
+                                <div class="btn-row">
+                                    <a onclick="clearInvoiceSelection();" class="submit delete"><span><g:message code="button.clear"/></span></a>
+                                </div>
+                            </g:if>
+                            <g:else>
+                                <!-- no payable invoices -->
+                                <div class="form-columns">
+                                    <em><g:message code="payment.no.payable.invoices" args="[user.userId]"/></em>
+                                </div>
+                            </g:else>
                         </div>
                     </div>
-                </g:if>
+
 
                 <!-- payment details  -->
                 <div class="form-columns">
@@ -297,9 +304,11 @@
 
                 <div class="buttons">
                     <ul>
-                        <li>
-                            <a onclick="$('#payment-link-form').submit()" class="submit payment"><span><g:message code="button.link.payment"/></span></a>
-                        </li>
+                        <g:if test="${invoices}">
+                            <li>
+                                <a onclick="$('#payment-link-form').submit()" class="submit payment"><span><g:message code="button.link.payment"/></span></a>
+                            </li>
+                        </g:if>
                         <li>
                             <g:link action="list" class="submit cancel"><span><g:message code="button.cancel"/></span></g:link>
                         </li>

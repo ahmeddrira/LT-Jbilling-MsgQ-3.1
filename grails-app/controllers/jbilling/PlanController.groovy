@@ -24,6 +24,10 @@ import com.sapienter.jbilling.server.item.db.PlanDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.item.CurrencyBL
+import com.sapienter.jbilling.server.item.PlanItemWS
+import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.client.pricing.util.PlanHelper
+import com.sapienter.jbilling.server.item.db.ItemDTO
 
 /**
  * PlanController
@@ -101,5 +105,63 @@ class PlanController {
         // render the partial plan list
         params.applyFilter = true
         list()
+    }
+
+    /**
+     * Get the price to be edited and show the 'editCustomerPrice.gsp' view. If no ID is given
+     * this screen will allow creation of a new customer-specific price.
+     */
+    def editCustomerPrice = {
+        def userId = params.int('userId')
+        def priceId = params.int('id')
+        def price = priceId ? webServicesSession.getCustomerPrices(userId).find{ it.id == priceId } : new PlanItemWS()
+
+        breadcrumbService.addBreadcrumb(controllerName, actionName, priceId ? 'update' : 'create', priceId)
+
+        def products = ItemDTO.createCriteria().list() {
+            and {
+                isEmpty('plans')
+                eq('deleted', 0)
+                eq('entity', new CompanyDTO(session['company_id']))
+            }
+        }
+
+        [ price: price, userId: userId, products: products ]
+    }
+
+    /**
+     * Validate and save a customer-specific price.
+     */
+    def saveCustomerPrice = {
+        def userId = params.int('userId')
+
+        def price = new PlanItemWS()
+        bindData(price, params, 'price')
+
+        price.model = PlanHelper.bindPriceModel(params)
+
+        try {
+            if (!price.id || price.id == 0) {
+                log.debug("creating customer ${userId} specific price ${price}")
+
+                price = webServicesSession.createCustomerPrice(userId, price);
+
+                flash.message = 'created.customer.price'
+                flash.args = [ price.id ]
+            } else {
+                log.debug("updating customer ${userId} specific price ${price.id}")
+
+                webServicesSession.updateCustomerPrice(userId, price);
+
+                flash.message = 'updated.customer.price'
+                flash.args = [ price.id ]
+            }
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e);
+            render view: 'editCustomerPrice', model: [ price: price, userId: userId ]
+            return
+        }
+
+        chain controller: 'customerInspector', action: 'inspect', params: [ id: userId ]
     }
 }

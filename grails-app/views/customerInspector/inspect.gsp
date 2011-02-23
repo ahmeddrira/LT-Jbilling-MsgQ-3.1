@@ -99,7 +99,7 @@
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
-                        <content tag="label">Partner ID</content>
+                        <content tag="label"><g:message code="partner.prompt.id"/></content>
                         <span>${user.partner?.id}</span>
                     </g:applyLayout>
 
@@ -472,6 +472,57 @@
                     </div>
                 </div>
             </g:if>
+
+            <!-- special pricing -->
+            <g:if test="${prices}">
+                <div id="prices" class="box-cards">
+                    <div class="box-cards-title">
+                        <a class="btn-open"><span><g:message code="customer.inspect.prices.title"/></span></a>
+                    </div>
+                    <div class="box-card-hold">
+                        <div class="form-columns">
+
+                        <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">
+                            <tbody>
+
+                            <g:each var="price" status="index" in="${prices.sort{ it.precedence }}">
+                                <tr>
+                                    <td><g:message code="product.internal.number"/></td>
+                                    <td class="value">
+                                        <g:link controller="product" action="list" id="${price.item.id}">
+                                            ${price.item.internalNumber}
+                                        </g:link>
+                                    </td>
+
+                                    <td><g:message code="plan.item.precedence"/></td>
+                                    <td class="value">${price.precedence}</td>
+                                </tr>
+
+                                <tr>
+                                    <td><g:message code="product.description"/></td>
+                                    <td class="value" colspan="3">
+                                        ${price.item.getDescription(session['language_id'])}
+                                    </td>
+                                </tr>
+
+                                <!-- price model -->
+                                <tr><td colspan="4">&nbsp;</td></tr>
+                                <g:render template="/plan/priceModel" model="[model: price.model]"/>
+
+                                <!-- separator line -->
+                                <g:if test="${index < prices.size()-1}">
+                                    <tr><td colspan="4"><hr/></td></tr>
+                                </g:if>
+                            </g:each>
+
+                            </tbody>
+                        </table>
+
+                        </div>
+                    </div>
+                </div>
+            </g:if>
+
 
             <!-- credit card -->
             <g:if test="${user?.creditCards}">

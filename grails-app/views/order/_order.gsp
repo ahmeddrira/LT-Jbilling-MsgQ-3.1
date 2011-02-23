@@ -23,10 +23,11 @@
             </td></tr>
             <tr>
                 <td><g:message code="order.label.user.id"/>:</td>
-                <td class="value"><g:link controller="user" action="list"
-                        id="${user?.id}">
-                    ${user?.id}
-                </g:link></td>
+                <td class="value">
+                    <g:remoteLink controller="user" action="show" id="${user?.id}" before="register(this);" onSuccess="render(data, next);">
+                        ${user?.id}
+                    </g:remoteLink>
+                </td>
             </tr>
             <tr>
                 <td><g:message code="order.label.user.name" />:</td>
@@ -116,14 +117,14 @@
                             <td class="innerContent">
                                 <g:set var="itemDto" value="${new ItemDAS().find(line?.itemId)}"/>
                                 <g:if test="${itemDto?.plans?.size() == 0}">
-                                   <g:remoteLink breadcrumb="id" controller="product" action="show" id="${line?.itemId}" params="['template': 'show']"
+                                   <g:remoteLink controller="product" action="show" id="${line?.itemId}" params="['template': 'show']"
                                         before="register(this);" onSuccess="render(data, next);">
                                         ${line?.itemId}
                                    </g:remoteLink>
                                 </g:if>
                                 <g:else>
                                     <g:set var="planId" value="${itemDto?.plans?.iterator().next()?.id}" />
-                                    <g:remoteLink breadcrumb="id" controller="plan" action="show" id="${planId}" params="['template': 'show']"
+                                    <g:remoteLink controller="plan" action="show" id="${planId}" params="['template': 'show']"
                                         before="register(this);" onSuccess="render(data, next);">
                                         ${planId}
                                    </g:remoteLink>
@@ -167,7 +168,11 @@
                 <tbody>
                      <g:each var="invoice" in="${order.generatedInvoices}" status="idx">
                          <tr>
-                            <td class="innerContent"><g:link controller="invoice" action="list" id="${invoice.id}">${invoice.id}</g:link></td>
+                            <td class="innerContent">
+                                <g:remoteLink controller="invoice" action="show" id="${invoice.id}" before="register(this);" onSuccess="render(data, next);">
+                                    ${invoice.id}
+                                </g:remoteLink>
+                            </td>
                             <td class="innerContent">
                                 <g:formatDate format="dd-MMM-yyyy HH:mm:ss a" date="${invoice?.createDateTime}"/>
                             </td>

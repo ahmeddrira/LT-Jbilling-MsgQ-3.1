@@ -27,7 +27,7 @@
 
 <g:set var="name" value="${[action, id].collect{ it }.join('-')}"/>
 
-<div id="confirm-dialog-${name}" class="bg-lightbox" title="${message(code: 'popup.confirm.title')}">
+<div id="confirm-dialog-${name}" class="bg-lightbox" title="${message(code: 'popup.confirm.title')}" style="display:none;">
     <!-- command form -->
     <g:if test="${ajax}">
         <g:formRemote name="confirm-command-form-${name}" url="[controller: controller, action: action, id: id]" update="${update}">
@@ -64,23 +64,28 @@
 </div>
 
 <script type="text/javascript">
-    $('#confirm-dialog-${name}').dialog({
-        autoOpen: false,
-        height: 200,
-        width: 375,
-        modal: true,
-        buttons: {
-            "${message(code: 'prompt.yes')}": function() {
-                ${onYes};
-                $("#confirm-command-form-${name}").submit();
-                $(this).dialog('close');
-            },
-            "${message(code: 'prompt.no')}": function() {
-                ${onNo};
-                $(this).dialog('close');
-            }
-        }
+    $(function() {
+        setTimeout(function() {
+            $('#confirm-dialog-${name}').dialog({
+                autoOpen: false,
+                height: 200,
+                width: 375,
+                modal: true,
+                buttons: {
+                    "${message(code: 'prompt.yes')}": function() {
+                        ${onYes};
+                        $("#confirm-command-form-${name}").submit();
+                        $(this).dialog('close');
+                    },
+                    "${message(code: 'prompt.no')}": function() {
+                        ${onNo};
+                        $(this).dialog('close');
+                    }
+                }
+            });
+        }, 100);
     });
+
 
     function showConfirm(name) {
         $('#confirm-dialog-' + name).dialog('open');

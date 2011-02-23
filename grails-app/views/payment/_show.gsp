@@ -121,9 +121,9 @@
                     <g:each var="invoicePayment" in="${selected.invoicesMap}">
                     <tr>
                         <td class="innerContent">
-                            <g:link controller="invoice" action="list" id="${invoicePayment.invoiceEntity.id}">
+                            <g:remoteLink controller="invoice" action="show" id="${invoicePayment.invoiceEntity.id}" before="register(this);" onSuccess="render(data, next);">
                                 <g:message code="payment.link.invoice" args="[invoicePayment.invoiceEntity.number]"/>
-                            </g:link>
+                            </g:remoteLink>
                         </td>
                         <td class="innerContent">
                             <g:formatNumber number="${invoicePayment.amount}" type="currency" currencySymbol="${selected.currencyDTO.symbol}"/>

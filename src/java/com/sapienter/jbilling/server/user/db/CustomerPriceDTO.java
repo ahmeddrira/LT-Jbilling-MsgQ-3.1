@@ -47,8 +47,14 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "customer_price")
-@NamedQueries({       
-        @NamedQuery(name = "PlanItemDTO.findCustomerPrice",
+@NamedQueries({
+        @NamedQuery(name = "PlanItemDTO.find",
+                    query = "select price "
+                            + " from CustomerPriceDTO price "
+                            + " where price.id.baseUser.id = :user_id"
+                            + " and price.id.planItem.id = :plan_item_id"),
+
+        @NamedQuery(name = "PlanItemDTO.findCustomerPriceByItem",
                     query = "select price.id.planItem "
                             + " from CustomerPriceDTO price "
                             + " where price.id.planItem.item.id = :item_id "

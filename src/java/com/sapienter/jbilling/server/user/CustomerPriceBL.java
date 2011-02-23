@@ -50,8 +50,10 @@ public class CustomerPriceBL {
 
     private CustomerPriceDAS customerPriceDas;
     private UserBL userBl;
+
     private CustomerDTO customer;
     private Integer userId;
+    private CustomerPriceDTO price;
 
 
     public CustomerPriceBL() {
@@ -60,7 +62,7 @@ public class CustomerPriceBL {
     
     public CustomerPriceBL(Integer userId) {
         _init();
-        set(userId);
+        setUserId(userId);
     }
 
     public CustomerPriceBL(CustomerDTO customer) {
@@ -69,15 +71,31 @@ public class CustomerPriceBL {
         this.userId = customer.getBaseUser().getId();
     }
 
+    public CustomerPriceBL(Integer userId, Integer planItemId) {
+        this(userId);
+        setCustomerPrice(planItemId);
+    }
+
+    public CustomerPriceBL(CustomerDTO customer, Integer planItemId) {
+        this(customer);
+        setCustomerPrice(planItemId);
+
+    }
+
     private void _init() {
         customerPriceDas = new CustomerPriceDAS();
         userBl = new UserBL();
     }
 
-    public void set(Integer userId) {        
+    public void setUserId(Integer userId) {
         userBl.set(userId);
         this.customer = userBl.getEntity().getCustomer();
         this.userId = userId;
+    }
+
+    public void setCustomerPrice(Integer planItemId) {
+        this.price = customerPriceDas.find(userId, planItemId);
+
     }
 
     public CustomerDTO getCustomer() {
@@ -87,6 +105,11 @@ public class CustomerPriceBL {
     public Integer getUserId() {
         return userId;
     }
+
+    public CustomerPriceDTO getEntity() {
+        return price;
+    }
+
 
     /**
      * Adds the given list of plan item prices to this customer, effectively
@@ -115,11 +138,36 @@ public class CustomerPriceBL {
      * @return saved customer price
      */
     public CustomerPriceDTO addPrice(PlanItemDTO planItem) {
+        return create(planItem);
+    }
+
+    public CustomerPriceDTO create(PlanItemDTO planItem) {
         CustomerPriceDTO dto = new CustomerPriceDTO();
         dto.setCustomer(customer);
         dto.setPlanItem(planItem);
 
-        return customerPriceDas.save(dto);
+        this.price = customerPriceDas.save(dto);
+        return this.price;
+    }
+
+    public void update(PlanItemDTO planItem) {
+        if (price != null) {
+            price.setPlanItem(planItem);
+
+            customerPriceDas.save(price);
+        } else {
+
+            LOG.error("Cannot update, CustomerPriceDTO not found or not set!");
+        }
+    }
+
+    public void delete() {
+        if (price != null) {
+            customerPriceDas.delete(price);
+        } else {
+            LOG.error("Cannot delete, CustomerPriceDTO not found or not set!");
+        }
+
     }
 
     /**
@@ -165,7 +213,7 @@ public class CustomerPriceBL {
      * @return customer price, null if no special price found
      */
     public PlanItemDTO getPrice(Integer itemId) {
-        return customerPriceDas.findPrice(userId, itemId);
+        return customerPriceDas.findPriceByItem(userId, itemId);
     }
 
     /**

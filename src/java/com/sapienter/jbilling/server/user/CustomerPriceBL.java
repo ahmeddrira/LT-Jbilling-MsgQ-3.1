@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.user;
 
+import com.sapienter.jbilling.server.item.db.PlanItemDAS;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.CustomerPriceDAS;
@@ -144,6 +145,8 @@ public class CustomerPriceBL {
     public CustomerPriceDTO create(PlanItemDTO planItem) {
         CustomerPriceDTO dto = new CustomerPriceDTO();
         dto.setCustomer(customer);
+
+        planItem = new PlanItemDAS().save(planItem);
         dto.setPlanItem(planItem);
 
         this.price = customerPriceDas.save(dto);
@@ -152,6 +155,7 @@ public class CustomerPriceBL {
 
     public void update(PlanItemDTO planItem) {
         if (price != null) {
+            planItem = new PlanItemDAS().save(planItem);
             price.setPlanItem(planItem);
 
             customerPriceDas.save(price);

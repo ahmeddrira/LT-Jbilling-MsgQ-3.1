@@ -42,6 +42,9 @@ import java.util.Date;
  * Customer pricing mapping class. Provides a list of prices for each customer. New prices
  * are inserted when a customer subscribes to a configured plan.
  *
+ * Due to bug HHH-3441 (http://opensource.atlassian.com/projects/hibernate/browse/HHH-3441) in Hibernate,
+ * both the UserDTO and PlanItemDTO objects must be persisted BEFORE creating a new CustomerPriceDTO.
+ *
  * @author Brian Cowdery
  * @since 26-08-2010
  */
@@ -144,5 +147,14 @@ public class CustomerPriceDTO implements Serializable {
 
     public void setCreateDatetime(Date createDatetime) {
         this.createDatetime = createDatetime;
+    }
+
+    @Override
+    public String toString() {
+        return "CustomerPriceDTO{"
+               + " userId=" + (getBaseUser() != null ? getBaseUser().getId() : null)
+               + ", planItem=" + getPlanItem()
+               + ", createDatetime=" + createDatetime
+               + '}';
     }
 }

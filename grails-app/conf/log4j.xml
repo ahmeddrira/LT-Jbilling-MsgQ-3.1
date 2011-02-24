@@ -118,8 +118,24 @@
       <appender-ref ref="jbillingAppender"/>
   </logger>
 
+//    /*
+//     * Hibernate logging:
+//     * org.hibernate.SQL           Log all SQL DML statements as they are executed
+//     * org.hibernate.type          Log all JDBC parameters
+//     * org.hibernate.tool.hbm2ddl  Log all SQL DDL statements as they are executed
+//     * org.hibernate.pretty        Log the state of all entities (max 20 entities) associated with the session at flush time
+//     * org.hibernate.cache         Log all second-level cache activity
+//     * org.hibernate.transaction   Log transaction related activity
+//     * org.hibernate.jdbc          Log all JDBC resource acquisition
+//     * org.hibernate.hql.ast.AST   Log HQL and SQL ASTs during query parsing
+//     * org.hibernate.secure        Log all JAAS authorization requests
+//     * org.hibernate               Log everything. This is a lot of information but it is useful for troubleshooting
+//     */
 <!--
   <logger name="org.hibernate.SQL">
+      <appender-ref ref="SQL-FILE"/>
+  </logger>
+  <logger name="org.hibernate.type">
       <appender-ref ref="SQL-FILE"/>
   </logger>
 

@@ -1,5 +1,9 @@
 package jbilling
 
+import org.hibernate.criterion.Restrictions
+import org.hibernate.criterion.Criterion
+import org.apache.log4j.Logger;
+
 /*
  jBilling - The Enterprise Open Source Billing System
  Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -28,7 +32,9 @@ package jbilling
  */
 class Filter {
 
-    static transients = [ "value", "name" ]
+    private static final Logger LOG = Logger.getLogger(Filter.class);
+
+    static transients = [ "value", "name", "restrictions" ]
 
     static mapping = {
         id generator: 'org.hibernate.id.enhanced.TableGenerator',
@@ -129,6 +135,39 @@ class Filter {
 
     @Override
     def String toString ( ) {
-        return "Filter{id=${id}, type=${type}, constrainttype=${constraintType}, field=${field}}"
+        return "Filter{id=${id}, type=${type}, constrainttype=${constraintType}, field=${field}, value={$value}}"
+    }
+
+    public Criterion getRestrictions() {
+        if (getValue() == null) {
+            return null;
+        }
+
+        Criterion retValue = null;
+        switch (constraintType) {
+            case FilterConstraint.EQ:
+                retValue = Restrictions.eq(field, getValue())
+            break
+
+            case FilterConstraint.LIKE:
+                retValue = (Restrictions.ilike(field, stringValue))
+            break
+
+            case FilterConstraint.DATE_BETWEEN:
+                if (startDateValue != null && endDateValue != null) {
+                    retValue = Restrictions.between(field, startDateValue, endDateValue);
+                } else if (startDateValue != null) {
+                    retValue = Restrictions.ge(field, startDateValue);
+                } else if (endDateValue != null) {
+                    retValue = Restrictions.le(field, endDateValue);
+                }
+            break
+
+            default:
+                LOG.warn("Filter constraint " + c + " not known, returning null restriction");
+        }
+
+        LOG.debug("Returning " + retValue);
+        return retValue;
     }
 }

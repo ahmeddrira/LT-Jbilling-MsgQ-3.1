@@ -19,6 +19,8 @@
 */
 package com.sapienter.jbilling.server.util.audit.db;
 
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.AbstractDescription;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,7 +39,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @org.hibernate.annotations.Entity(mutable = false)
 @Table(name="event_log_message")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class EventLogMessageDTO  implements java.io.Serializable {
+public class EventLogMessageDTO extends AbstractDescription {
 
     @Id 
     @Column(name="id", unique=true, nullable=false)
@@ -45,6 +47,11 @@ public class EventLogMessageDTO  implements java.io.Serializable {
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="eventLogMessage")
     private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
+
+    @Override
+    protected String getTable() {
+        return Constants.TABLE_EVENT_LOG_MESSAGE;
+    }
 
     protected EventLogMessageDTO() {
     }

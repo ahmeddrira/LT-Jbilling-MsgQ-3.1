@@ -58,7 +58,7 @@
                             </g:remoteLink>
                         </g:elseif>
                         <g:elseif test="${selected.jbillingTable.name == 'pluggable_task'}">
-                            <g:remoteLink controller="plugin" action="show" id="${selected.foreignId}" before="register(this);" onSuccess="render(data, next);">
+                            <g:remoteLink controller="plugin" action="show" params="template:show" id="${selected.foreignId}" before="register(this);" onSuccess="render(data, next);">
                                  ${selected.foreignId}
                             </g:remoteLink>
                         </g:elseif>

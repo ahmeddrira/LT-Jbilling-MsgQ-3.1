@@ -20,7 +20,7 @@
 
 <!-- price models in chain -->
 <g:set var="types" value="${PriceModelStrategy.getStrategyByChainPosition(ChainPosition.END, ChainPosition.MIDDLE)}"/>
-<g:set var="next" value="${model.next}"/>
+<g:set var="next" value="${model?.next}"/>
 <g:while test="${next}">
     <g:set var="type" value="${next?.type ? PriceModelStrategy.valueOf(next.type) : types?.asList()?.first()}"/>
     <g:set var="templateName" value="${WordUtils.uncapitalize(WordUtils.capitalizeFully(type.name(), ['_'] as char[]).replaceAll('_',''))}"/>

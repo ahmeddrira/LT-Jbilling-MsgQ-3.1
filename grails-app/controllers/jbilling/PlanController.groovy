@@ -24,6 +24,11 @@ import com.sapienter.jbilling.server.item.db.PlanDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.item.CurrencyBL
+import com.sapienter.jbilling.server.item.PlanItemWS
+import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.client.pricing.util.PlanHelper
+import com.sapienter.jbilling.server.item.db.ItemDTO
+import com.sapienter.jbilling.server.pricing.PriceModelWS
 
 /**
  * PlanController
@@ -102,4 +107,142 @@ class PlanController {
         params.applyFilter = true
         list()
     }
+
+
+    // Customer specific pricing
+
+    /**
+     * Get the price to be edited and show the 'editCustomerPrice.gsp' view. If no ID is given
+     * this screen will allow creation of a new customer-specific price.
+     */
+    def editCustomerPrice = {
+        def userId = params.int('userId')
+        def priceId = params.int('id')
+        def price = priceId ? webServicesSession.getCustomerPrices(userId).find{ it.id == priceId } : new PlanItemWS()
+        def user = webServicesSession.getUserWS(userId)
+
+        [ price: price, user: user, products: products, currencies: currencies ]
+    }
+
+    def updateStrategy = {
+        def priceModel = PlanHelper.bindPriceModel(params)
+        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+    }
+
+    def addChainModel = {
+        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
+
+        // add new price model to end of chain
+        def model = priceModel
+        while (model.next) {
+            model = model.next
+        }
+        model.next = new PriceModelWS();
+
+        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+    }
+
+    def removeChainModel = {
+        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
+        def modelIndex = params.int('modelIndex')
+
+        // remove price model from the chain
+        def model = priceModel
+        for (int i = 1; model != null; i++) {
+            if (i == modelIndex) {
+                model.next = model.next?.next
+                break
+            }
+            model = model.next
+        }
+
+        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+    }
+
+    def addAttribute = {
+        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
+
+        def modelIndex = params.int('modelIndex')
+        def attribute = message(code: 'plan.new.attribute.key', args: [ params.attributeIndex ])
+
+        // find the model in the chain, and add a new attribute
+        def model = priceModel
+        for (int i = 0; model != null; i++) {
+            if (i == modelIndex) {
+                model.attributes.put(attribute, '')
+            }
+            model = model.next
+        }
+
+        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+    }
+
+    def removeAttribute = {
+        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
+
+        def modelIndex = params.int('modelIndex')
+        def attributeIndex = params.int('attributeIndex')
+
+        // find the model in the chain, remove the attribute
+        def model = priceModel
+        for (int i = 0; model != null; i++) {
+            if (i == modelIndex) {
+                def name = params["model.${modelIndex}.attribute.${attributeIndex}.name"]
+                model.attributes.remove(name)
+            }
+            model = model.next
+        }
+
+        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+    }
+
+    /**
+     * Validate and save a customer-specific price.
+     */
+    def saveCustomerPrice = {
+        def user = webServicesSession.getUserWS(params.int('userId'))
+        def price = new PlanItemWS()
+        bindData(price, params, 'price')
+        price.model = PlanHelper.bindPriceModel(params)
+
+        try {
+            if (!price.id || price.id == 0) {
+                log.debug("creating customer ${user.userId} specific price ${price}")
+
+                price = webServicesSession.createCustomerPrice(user.userId, price);
+
+                flash.message = 'created.customer.price'
+                flash.args = [ price.itemId ]
+            } else {
+                log.debug("updating customer ${user.userId} specific price ${price.id}")
+
+                webServicesSession.updateCustomerPrice(user.userId, price);
+
+                flash.message = 'updated.customer.price'
+                flash.args = [ price.itemId ]
+            }
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e);
+            render view: 'editCustomerPrice', model: [ price: price, user: user, products: products, currencies: currencies ]
+            return
+        }
+
+        chain controller: 'customerInspector', action: 'inspect', params: [ id: user.userId ]
+    }
+
+    def getProducts() {
+        return ItemDTO.createCriteria().list() {
+            and {
+                isEmpty('plans')
+                eq('deleted', 0)
+                eq('entity', new CompanyDTO(session['company_id']))
+            }
+        }
+    }
+
+    def getCurrencies() {
+        def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
+        return currencies.findAll { it.inUse }
+    }
+
 }

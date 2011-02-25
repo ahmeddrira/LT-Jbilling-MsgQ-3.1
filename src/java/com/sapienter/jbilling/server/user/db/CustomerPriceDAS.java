@@ -37,6 +37,14 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
 
     private static final Logger LOG = Logger.getLogger(CustomerPriceDAS.class);
 
+    public CustomerPriceDTO find(Integer userId, Integer planItemId) {
+        Query query = getSession().getNamedQuery("PlanItemDTO.find");
+        query.setParameter("user_id", userId);
+        query.setParameter("plan_item_id", planItemId);
+
+        return (CustomerPriceDTO) query.uniqueResult();
+    }
+
     /**
      * Fetch the customer price for the given customer and item.
      *
@@ -44,8 +52,8 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
      * @param itemId item id of the item being priced
      * @return customer price for the given item, or null if none found
      */
-    public PlanItemDTO findPrice(Integer userId, Integer itemId) {
-        Query query = getSession().getNamedQuery("PlanItemDTO.findCustomerPrice");
+    public PlanItemDTO findPriceByItem(Integer userId, Integer itemId) {
+        Query query = getSession().getNamedQuery("PlanItemDTO.findCustomerPriceByItem");
         query.setParameter("user_id", userId);
         query.setParameter("item_id", itemId);
 

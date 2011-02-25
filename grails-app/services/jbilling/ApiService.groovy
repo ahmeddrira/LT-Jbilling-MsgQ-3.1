@@ -611,6 +611,14 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getPlansByAffectedItem(itemId);
     }
 
+    public PlanItemWS createCustomerPrice(Integer userId, PlanItemWS planItem) {
+        return webServicesSession.createCustomerPrice(userId, planItem);
+    }
+
+    public void updateCustomerPrice(Integer userId, PlanItemWS planItem) {
+        webServicesSession.updateCustomerPrice(userId, planItem);
+    }
+
     public PlanItemWS[] getCustomerPrices(Integer userId) {
         return webServicesSession.getCustomerPrices(userId);
     }

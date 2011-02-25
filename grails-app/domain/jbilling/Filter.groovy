@@ -164,7 +164,7 @@ class Filter {
             break
 
             default:
-                LOG.warn("Filter constraint " + c + " not known, returning null restriction");
+                LOG.warn("Filter constraint " + constraintType + " not known, returning null restriction");
         }
 
         LOG.debug("Returning " + retValue);

@@ -118,6 +118,7 @@
       <appender-ref ref="jbillingAppender"/>
   </logger>
 
+<!--
 //    /*
 //     * Hibernate logging:
 //     * org.hibernate.SQL           Log all SQL DML statements as they are executed
@@ -131,15 +132,14 @@
 //     * org.hibernate.secure        Log all JAAS authorization requests
 //     * org.hibernate               Log everything. This is a lot of information but it is useful for troubleshooting
 //     */
-<!--
+
+
   <logger name="org.hibernate.SQL">
       <appender-ref ref="SQL-FILE"/>
   </logger>
   <logger name="org.hibernate.type">
       <appender-ref ref="SQL-FILE"/>
   </logger>
-
-
   <logger name="org.springmodules.cache">
       <appender-ref ref="jbillingAppender"/>
   </logger>

@@ -18,7 +18,7 @@
                             from="${new JbillingTableDAS().findAll().sort{it.name}}"
                             optionKey="name" 
                             optionValue="name"
-                            noSelection="['': message(code: 'filters.table.empty')]" />
+                            noSelection="['': '']" />
 
                 </div>
                 <label for="filters.${filter.name}.stringValue"><g:message code="filters.table.label"/></label>

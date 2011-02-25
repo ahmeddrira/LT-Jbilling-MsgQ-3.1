@@ -43,8 +43,13 @@ class AuditLogController {
 
             and {
                 filters.each { filter ->
+                    //log.debug("Now processing filter " + filter);
                     if (filter.getValue() != null) {
-                        addToCriteria(filter.getRestrictions());
+                        // avoid adding a filter for no table selection
+                        if (!(filter.getField().equals("table.name") && filter.getStringValue().trim().length() == 0)) {
+                            //log.debug("Adding restriction " + filter.getRestrictions());
+                            addToCriteria(filter.getRestrictions());
+                        }
                     }
                 }
 

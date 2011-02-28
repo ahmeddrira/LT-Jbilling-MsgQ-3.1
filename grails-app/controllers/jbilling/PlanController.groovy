@@ -65,6 +65,7 @@ class PlanController {
             item {
                 eq('entity', new CompanyDTO(session['company_id']))
             }
+            order('id', 'desc')
         }
 
         def selected = params.id ? PlanDTO.get(params.int("id")) : null

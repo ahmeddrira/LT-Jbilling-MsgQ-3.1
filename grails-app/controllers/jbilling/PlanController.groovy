@@ -119,10 +119,20 @@ class PlanController {
     def editCustomerPrice = {
         def userId = params.int('userId')
         def priceId = params.int('id')
-        def price = priceId ? webServicesSession.getCustomerPrices(userId).find{ it.id == priceId } : new PlanItemWS()
+
+
+        def product = webServicesSession.getItem(params.int('itemId'), userId, null)
         def user = webServicesSession.getUserWS(userId)
 
-        [ price: price, user: user, products: products, currencies: currencies ]
+        def price
+        if (priceId) {
+            price = webServicesSession.getCustomerPrices(userId).find{ it.id == priceId }
+        } else {
+            price = new PlanItemWS()
+            price.model = product.defaultPrice
+        }
+
+        [ price: price, product: product, user: user, currencies: currencies ]
     }
 
     def updateStrategy = {
@@ -229,16 +239,6 @@ class PlanController {
         }
 
         chain controller: 'customerInspector', action: 'inspect', params: [ id: user.userId ]
-    }
-
-    def getProducts() {
-        return ItemDTO.createCriteria().list() {
-            and {
-                isEmpty('plans')
-                eq('deleted', 0)
-                eq('entity', new CompanyDTO(session['company_id']))
-            }
-        }
     }
 
     def getCurrencies() {

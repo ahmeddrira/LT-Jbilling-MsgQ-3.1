@@ -18,7 +18,9 @@ import com.sapienter.jbilling.server.order.db.OrderDAS
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO
 import com.sapienter.jbilling.server.payment.db.PaymentDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
-import com.sapienter.jbilling.server.user.CustomerPriceBL;
+import com.sapienter.jbilling.server.user.CustomerPriceBL
+import com.sapienter.jbilling.server.item.db.ItemDTO
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap;
 
 class CustomerInspectorController {
 	
@@ -57,13 +59,16 @@ class CustomerInspectorController {
             contact.setContactTypeDescr(contactType?.getDescription(session['language_id'].toInteger()))
         }
 
-        // all customer prices
-        def prices = new CustomerPriceBL(user.id).getCustomerPrices();
-
         // used to find the next invoice date
         def cycle = new OrderDAS().findEarliestActiveOrder(user.id)
 
+        // all customer prices and products
         def company = CompanyDTO.get(session['company_id'])
+        def itemTypes = company.itemTypes.sort{ it.id }
+        params.typeId = itemTypes?.asList()?.first()?.id
+
+        def products = getProducts(company, params)
+        def prices = new CustomerPriceBL(user.id).getCustomerPrices()
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
@@ -75,14 +80,90 @@ class CustomerInspectorController {
                 subscriptions: subscriptions,
                 prices: prices,
                 company: company,
+                itemTypes: itemTypes,
+                products: products,
                 currencies: currencies,
                 cycle: cycle,
                 revenue: revenue
         ]
     }
 
+    def filterProducts = {
+        def company = CompanyDTO.get(session['company_id'])
+        def itemTypes = company.itemTypes.sort{ it.id }
+
+        // filter using the first item type by default
+        if (params.typeId == null)
+            params.typeId = itemTypes?.asList()?.first()?.id
+
+        def products = getProducts(company, params)
+
+        render template: 'products', model: [ itemTypes: itemTypes, products: products ]
+    }
+
+    def productPrices = {
+        def prices = new CustomerPriceBL(params.int('userId')).getCustomerPrices(params.int('id'))
+
+        render template: 'prices', model: [ prices: prices, userId: params.userId, itemId: params.id ]
+    }
+
+    def showAll = {
+        def prices = new CustomerPriceBL(params.int('userId')).getCustomerPrices()
+
+        render template: 'prices', model: [ prices: prices ]
+    }
+
+    /**
+     * Get a filtered list of products
+     *
+     * @param company company
+     * @param params parameter map containing filter criteria
+     * @return filtered list of products
+     */
+    def getProducts(CompanyDTO company, GrailsParameterMap params) {
+        // filter on item type, item id and internal number
+        def products = ItemDTO.createCriteria().list() {
+            and {
+                if (params.filterBy && params.filterBy != message(code: 'products.filter.by.default')) {
+                    or {
+                        eq('id', params.int('filterBy'))
+                        ilike('internalNumber', "%${params.filterBy}%")
+                    }
+                }
+
+                if (params.typeId) {
+                    itemTypes {
+                        eq('id', params.int('typeId'))
+                    }
+                }
+
+                isEmpty('plans')
+                eq('deleted', 0)
+                eq('entity', company)
+            }
+            order('id', 'asc')
+        }
+
+        // if no results found, try filtering by description
+        if (!products && params.filterBy) {
+            products = ItemDTO.createCriteria().list() {
+                and {
+                    isEmpty('plans')
+                    eq('deleted', 0)
+                    eq('entity', company)
+                }
+                order('id', 'asc')
+            }.findAll {
+                it.getDescription(session['language_id']).toLowerCase().contains(params.filterBy.toLowerCase())
+            }
+        }
+
+        return products
+    }
+
     def getCurrencies() {
         def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
         return currencies.findAll { it.inUse }
     }
+
 }

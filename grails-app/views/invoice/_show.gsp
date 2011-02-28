@@ -23,9 +23,9 @@
                 <em>${user?.contact?.organizationName}</em>
             </td></tr>
             <tr><td><g:message code="invoice.label.user.id"/>:</td><td class="value">
-                <g:link controller="user" action="list" id="${user?.id}">
+                <g:remoteLink controller="user" action="show" id="${user?.id}" before="register(this);" onSuccess="render(data, next);">
                     ${user?.id}
-                </g:link>
+                </g:remoteLink>
             </td></tr>
             <tr><td><g:message code="invoice.label.user.name"/>:</td>
                 <td class="value">${user?.userName}</td>

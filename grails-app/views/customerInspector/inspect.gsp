@@ -320,7 +320,7 @@
                                         <td><g:message code="invoice.label.delegation"/></td>
                                         <td class="value">
                                             <g:each var="delegated" in="${invoice.invoices}" status="i">
-                                                <g:link controller="invoice" action="list" id="${delegated.id}">${delgated.id}</g:link>
+                                                <g:link controller="invoice" action="list" id="${delegated.id}">${delegated.id}</g:link>
                                                 <g:if test="${i < invoice.invoices.size()-1}">, </g:if>
                                             </g:each>
                                         </td>

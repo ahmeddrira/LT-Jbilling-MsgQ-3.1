@@ -7,7 +7,7 @@
 --%>
 <g:if test="${product}">
     <div class="heading">
-        <strong>Default Price</strong>
+        <strong><g:message code="customer.inspect.default.price.title"/></strong>
     </div>
     <div class="box">
         <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">

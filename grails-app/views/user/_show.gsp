@@ -66,9 +66,9 @@
                     <tr>
                         <td><g:message code="prompt.parent.id"/></td>
                         <td class="value">
-                            <g:link action="list" id="${customer.parent.baseUser.id}">
+                            <g:remoteLink action="show" id="${customer.parent.baseUser.id}" before="register(this);" onSuccess="render(data, next);">
                                 ${customer.parent.baseUser.id} - ${customer.parent.baseUser.userName}
-                            </g:link>
+                            </g:remoteLink>
                         </td>
                     </tr>
                     <tr>
@@ -79,9 +79,9 @@
                             </g:if>
                             <g:else>
                                 <g:set var="parent" value="${new CustomerBL(customer.id).getInvoicableParent()}"/>
-                                <g:link action="list" id="${parent.baseUser.id}">
+                                <g:remoteLink action="show" id="${parent.baseUser.id}" before="register(this);" onSuccess="render(data, next);">
                                     <g:message code="customer.invoice.if.child.false" args="[ parent.baseUser.id ]"/>
-                                </g:link>
+                                </g:remoteLink>
                             </g:else>
                         </td>
                     </tr>
@@ -122,17 +122,18 @@
                 <tr>
                     <td><g:message code="customer.detail.payment.invoiced.date"/></td>
                     <td class="value">
-                        <g:link controller="invoice" action="list" id="${invoice?.id}">
+                        <g:remoteLink controller="invoice" action="show" id="${invoice?.id}" before="register(this);" onSuccess="render(data, next);">
                             <g:formatDate format="MMM-dd-yyyy" date="${invoice?.createDatetime}"/>
-                        </g:link>
+                        </g:remoteLink>
                     </td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.paid.date"/></td>
                     <td class="value">
-                        <g:link controller="payment" action="list" id="${payment?.id}">
+                        <g:remoteLink controller="payment" action="show" id="${payment?.id}" before="register(this);" onSuccess="render(data, next);">
                             <g:formatDate format="MMM-dd-yyyy" date="${payment?.paymentDate ?: payment?.createDatetime}"/>
-                        </g:link>
+                        </g:remoteLink>
+
                     </td>
                 </tr>
                 <tr>

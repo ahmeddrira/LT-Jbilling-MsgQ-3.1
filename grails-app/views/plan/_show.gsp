@@ -70,9 +70,9 @@
                 <tr>
                     <td><g:message code="product.internal.number"/></td>
                     <td class="value" colspan="3">
-                        <g:link controller="product" action="show" id="${planItem.item.id}">
+                        <g:remoteLink controller="product" action="show" id="${planItem.item.id}" params="[template: 'show']" before="register(this);" onSuccess="render(data, next);">
                             ${planItem.item.internalNumber}
-                        </g:link>
+                        </g:remoteLink>
                     </td>
                 </tr>
                 <tr>

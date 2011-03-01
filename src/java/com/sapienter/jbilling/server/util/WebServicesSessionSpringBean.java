@@ -50,6 +50,7 @@ import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.CustomerPriceDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import org.apache.log4j.Logger;
@@ -2734,6 +2735,25 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             planIds[i++] = plan.getId();
         }
         return planIds;
+    }
+
+    public PlanItemWS createCustomerPrice(Integer userId, PlanItemWS planItem) {
+        PlanItemDTO dto = PlanItemBL.getDTO(planItem);
+        CustomerPriceDTO price = new CustomerPriceBL(userId).create(dto);
+
+        return PlanItemBL.getWS(price.getPlanItem());
+    }
+
+    public void updateCustomerPrice(Integer userId, PlanItemWS planItem) {
+        PlanItemDTO dto = PlanItemBL.getDTO(planItem);
+        new CustomerPriceBL(userId, dto.getId()).update(dto);
+    }
+
+
+    public PlanItemWS[] getCustomerPrices(Integer userId) {
+        List<PlanItemDTO> prices = new CustomerPriceBL(userId).getCustomerPrices();
+        List<PlanItemWS> ws = PlanItemBL.getWS(prices);
+        return ws.toArray(new PlanItemWS[ws.size()]);
     }
 
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {

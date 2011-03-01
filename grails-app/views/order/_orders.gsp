@@ -11,10 +11,12 @@
     <div class="table-scroll">
         <table id="orders" cellspacing="0" cellpadding="0">
             <thead>
-                <th class="small"><g:message code="order.label.id"/></th>
-                <th class="large"><g:message code="order.label.customer"/></th>
-                <th class="small"><g:message code="order.label.date"/></th>
-                <th class="small"><g:message code="order.label.amount"/></th>
+                <tr>
+                    <th class="small"><g:message code="order.label.id"/></th>
+                    <th class="large"><g:message code="order.label.customer"/></th>
+                    <th class="small"><g:message code="order.label.date"/></th>
+                    <th class="small"><g:message code="order.label.amount"/></th>
+                </tr>
             </thead>
             <tbody>
                 <g:each var="ordr" in="${orders}">

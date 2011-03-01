@@ -178,20 +178,24 @@ public class PlanItemDTO implements Serializable {
 
         PlanItemDTO that = (PlanItemDTO) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (bundledQuantity != null ? !bundledQuantity.equals(that.bundledQuantity) : that.bundledQuantity != null) return false;
-        if (item != null ? !item.equals(that.item) : that.item != null) return false;
+        if (!item.equals(that.item)) return false;
+        if (!model.equals(that.model)) return false;
+        if (period != null ? !period.equals(that.period) : that.period != null) return false;
         if (plan != null ? !plan.equals(that.plan) : that.plan != null) return false;
+        if (!precedence.equals(that.precedence)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
+        int result = plan != null ? plan.hashCode() : 0;
+        result = 31 * result + item.hashCode();
+        result = 31 * result + model.hashCode();
         result = 31 * result + (bundledQuantity != null ? bundledQuantity.hashCode() : 0);
-        result = 31 * result + (plan != null ? plan.hashCode() : 0);
-        result = 31 * result + (item != null ? item.hashCode() : 0);
+        result = 31 * result + (period != null ? period.hashCode() : 0);
+        result = 31 * result + precedence.hashCode();
         return result;
     }
 
@@ -200,8 +204,10 @@ public class PlanItemDTO implements Serializable {
         return "PlanItemDTO{"
                + "id=" + id
                + ", planId=" + (plan != null ? plan.getId() : null)
-               + ", item=" + item
+               + ", itemId=" + (item != null ? item.getId() : null)
                + ", model=" + model
+               + ", bundledQuantity=" + bundledQuantity
+               + ", periodId=" + (period != null ? period.getId() : null)
                + ", precedence=" + precedence
                + '}';
     }

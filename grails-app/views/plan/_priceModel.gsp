@@ -13,6 +13,7 @@
             </g:else>
         </td>
     </tr>
+
     <g:each var="attribute" in="${next.attributes.entrySet()}">
         <g:if test="${attribute.value}">
             <tr class="attribute">

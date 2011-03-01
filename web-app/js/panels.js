@@ -1,4 +1,4 @@
-var width;
+
 var clicked;
 
 var first = {
@@ -6,11 +6,9 @@ var first = {
         return 1;
     },
     visible: function() {
-        var position = $('.columns-holder [index=' + this.index() + ']').position().left;
-        return position > 0 && position < $('.columns-holder').width();
+        return $('#viewport .column:first-child').get(0) != null;
     },
     animate: function() {
-        reset();
     }
 };
 
@@ -19,11 +17,9 @@ var second = {
         return 2;
     },
     visible: function() {
-        var position = $('.columns-holder [index=' + this.index() + ']').position().left;
-        return position > 0 && position < $('.columns-holder').width();
+        return $('#viewport .column:nth-child(2)').get(0) != null;
     },
     animate: function() {
-        reset();
     }
 };
 
@@ -32,12 +28,22 @@ var third = {
         return 3;
     },
     visible: function() {
-        var position = $('.columns-holder [index=' + this.index() + ']').position().left;
-        return position > 0 && position < $('.columns-holder').width();
+        return false;
     },
     animate: function() {
-        reset();
-        next.animate();
+        $('#viewport .column:first-child').animate(
+            {
+                marginLeft: '-=100%'
+            },
+            {
+                duration: 'slow',
+                easing: 'easeInExpo',
+                complete: function() {
+                    $(this).empty().remove();
+                    calculateColumnId();
+                }
+            }
+        );
     }
 };
 
@@ -46,38 +52,27 @@ var next = {
         return clicked + 1;
     },
     visible: function() {
-        var position = $('.columns-holder [index=' + this.index() + ']').position().left;
-        return position > 0 && position < $('.columns-holder').width();
+        var index = this.index();
+        if (index > 2) {
+            return false
+        } else {
+            return $('#viewport .column:nth-child(' + index + ')').get(0) != null;
+        }
     },
     animate: function() {
-        var columns = $('.columns-holder .column');
-        width = columns.first().width();
-
-        columns.each(function() {
-            $(this).animate({
-                left: '-=' + width
-            });
-        });        
-    }
-};
-
-var prev = {
-    index: function() {
-        return clicked - 1;
-    },
-    visible: function() {       
-        var position = $('.columns-holder [index=' + this.index() + ']').position().left;
-        return position > 0 && position < $('.columns-holder').width();
-    },
-    animate: function() {
-        var columns = $('.columns-holder .column');
-        width = columns.first().width();
-
-        columns.each(function() {
-            $(this).animate({
-                left: '+=' + width
-            });
-        });
+        $('#viewport .column:first-child').animate(
+            {
+                marginLeft: '-=100%'
+            },
+            {
+                duration: 'slow',
+                easing: 'easeInExpo',
+                complete: function() {
+                    $(this).empty().remove();
+                    calculateColumnId();
+                }
+            }
+        );
     }
 };
 
@@ -87,7 +82,12 @@ var prev = {
  * @param element source element
  */
 function register(element) {
-    clicked = parseInt($(element).parents('.column').first().attr('index'));
+    var column = $(element).parents('.column');
+    $('#viewport').children().each(function(index, element) {
+        if ($(column).get(0) == $(element).get(0)) {
+            clicked = index + 1;
+        }
+    });
 }
 
 /**
@@ -95,39 +95,54 @@ function register(element) {
  * column is not visible the view will be changed to show the target column.
  *
  * The target column is given as a simple object that can calculate the next column
- * position and animate the transition to show the column (if necessary). Currently
- * supported targets are next and prev.
+ * position and animate the transition to show the column (if necessary).
  *
  * E.g.,
  *      render(data, next);
- *      render(data, prev);
+ *      render(data, first);
+ *      render(data, second); // etc
  *
  * @param data data to render in target column
- * @param target column function. next or prev.
+ * @param target column function.
  */
 function render(data, target) {
-    $('.columns-holder [index= ' + target.index() + '] .column-hold').html(data);
-    if (!target.visible()) target.animate();
+    if (target.visible()) {
+        // render data in visible column
+        var column = $('#viewport .column:nth-child(' + target.index() + ')');
+        column.find('.column-hold').html(data);
+
+
+    } else {
+        // build a new column node and append to viewport list
+        var column = $('#panel-template').clone().attr('id', '');
+        column.find('.column-hold').html(data);
+        column.show();
+        $('#viewport').append(column);
+
+        // check if target needs animation to become visible after inserting new node
+        if (!target.visible())
+            target.animate();
+    }
 }
 
 /**
- * Closes the panel containing the passed element and shifts the view back
- * to the previous position.
- * 
+ * Re-orders ID's of the columns to reflect they're position. A column in position 1
+ * should always have the id 'column1', position 2 should always have the id 'column2'.
+ */
+function calculateColumnId() {
+    $('#viewport').children().each(function(index, element) {
+        $(element).find('.column-hold').attr('id', 'column' + (index + 1));
+    });
+}
+
+/**
+ * Closes the panel containing the passed element.
+ *
  * @param element element contained in the panel to close. usually the ajax link or form element.
  */
 function closePanel(element) {
     register(element);
-    if (!first.visible()) prev.animate(); // animate only if not in the default position.
-    $('.columns-holder [index=' + clicked + '] .column-hold').html('');
-}
-
-/**
- * Resets the view back it's original position.
- */
-function reset() {
-    $('.columns-holder .column').css('left','');
-    width = null;
+    $('#viewport .column:nth-child(' + clicked + ')').remove();
 }
 
 /**
@@ -162,23 +177,5 @@ function getSelectedId(element) {
     var elementId = getSelectedElementId(element);
     return elementId ? elementId.replace(/\D+/, "") : undefined;
 }
-
-$(document).ready(function() {
-    /*
-        Adjust panel width when window is re-sized.
-     */
-    $(window).resize(function() {
-        if (width != null) {
-            var columns = $('.columns-holder .column');
-            var delta = columns.first().width() - width;
-
-            columns.css('left', function(index, val){
-                return parseInt(val) - delta + 'px';
-            });
-
-            width = columns.first().width();
-        }
-    });
-});
 
 

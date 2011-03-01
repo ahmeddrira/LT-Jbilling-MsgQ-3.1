@@ -84,25 +84,14 @@ class PaymentController {
             and {
                 filters.each { filter ->
                     if (filter.value) {
-                        switch (filter.constraintType) {
-                            case FilterConstraint.EQ:
-                                addToCriteria(Restrictions.eq(filter.field, filter.value))
-                                break
-
-                            case FilterConstraint.LIKE:
-                                addToCriteria(Restrictions.like(filter.field, filter.stringValue))
-                                break
-
-                            case FilterConstraint.DATE_BETWEEN:
-                                addToCriteria(Restrictions.between(filter.field, filter.startDateValue, filter.endDateValue))
-                                break
-                        }
+                        addToCriteria(filter.getRestrictions());
                     }
                 }
 
                 eq('u.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
             }
+            order('id', 'desc')
         }
 
         def selected = params.id ? PaymentDTO.get(params.int("id")) : null

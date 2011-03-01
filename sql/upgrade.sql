@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 -- this script will upgrade a database schema from the latest jbilling release
 -- to the code currently at the tip of the trunk.
 -- It is tested on postgreSQL, but it is meant to be ANSI SQL
@@ -770,3 +771,45 @@ alter table plan add constraint plan_period_id_FK foreign key (period_id) refere
 
 alter table plan_item add column period_id int;
 alter table plan_item add constraint plan_item_period_id_FK foreign key (period_id) references order_period (id);
+
+-- descriptions of messages for the audit log screens
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 20, 'description', 1, 'User subscription status has changed');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 32, 'description', 1, 'User subscription status has NOT changed');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 21, 'description', 1, 'User account is now locked');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 33, 'description', 1, 'The dynamic balance of a user has changed');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 34, 'description', 1, 'The invoice if child flag has changed');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 17, 'description', 1, 'The order line has been updated');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 18, 'description', 1, 'The order next billing date has been changed');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 22, 'description', 1, 'The order main subscription flag was changed');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 26, 'description', 1, 'An invoiced order was cancelled, a credit order was created');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 24, 'description', 1, 'A valid payment method was not found. The payment request was cancelled');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 23, 'description', 1, 'All the one-time orders the mediation found were in status finished');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 27, 'description', 1, 'A user id was added to the blacklist');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 28, 'description', 1, 'A user id was removed from the blacklist');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 29, 'description', 1, 'Posted a provisioning command using a UUID');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 30, 'description', 1, 'A command was posted for provisioning');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 31, 'description', 1, 'The provisioning status of an order line has changed');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 25, 'description', 1, 'A new row has been created');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (47, 19, 'description', 1, 'Last API call to get the the user subscription status transitions');
+
+-- lengthen the preference int value to allow for longer mediation "last read ID" values
+-- alter table preference modify int_value int4 null default null; -- mysql
+alter table preference alter int_value type int4; -- postgresql

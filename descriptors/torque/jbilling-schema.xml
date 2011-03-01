@@ -1222,7 +1222,7 @@
         <column name="type_id" type="INTEGER"/>
         <column name="table_id" required="true" type="INTEGER"/>
         <column name="foreign_id" required="true" type="INTEGER"/>
-        <column name="int_value" type="INTEGER"/>
+        <column name="int_value" size="10" type="INTEGER"/>
         <column name="str_value" size="200" type="VARCHAR"/>
         <column name="float_value" type="NUMERIC" size="22" scale="10"/>
         <foreign-key foreignTable="preference_type">

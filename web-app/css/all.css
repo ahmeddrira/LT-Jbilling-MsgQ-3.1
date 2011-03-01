@@ -1587,12 +1587,14 @@ div.box-text {
     line-height:22px;
 }
 
+.dataTable td {
+    vertical-align: top;
+}
 .dataTable td.value {
     margin: 0;
 	font-weight: bold;
-	padding-left:10px;
+	padding: 0 10px;
 }
-
 .dataTable tr.price {
     background-color: #eaeaea;
 }

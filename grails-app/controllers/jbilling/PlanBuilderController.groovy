@@ -37,6 +37,7 @@ import com.sapienter.jbilling.server.pricing.PriceModelBL
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO
 import com.sapienter.jbilling.server.util.Constants
+import com.sapienter.jbilling.client.pricing.util.PlanHelper
 
 /**
  * Plan builder controller
@@ -81,6 +82,7 @@ class PlanBuilderController {
                     }
                 }
 
+                isEmpty('plans')
                 eq('deleted', 0)
                 eq('entity', company)
             }
@@ -91,6 +93,7 @@ class PlanBuilderController {
         if (!products && params.filterBy) {
             products = ItemDTO.createCriteria().list() {
                 and {
+                    isEmpty('plans')
                     eq('deleted', 0)
                     eq('entity', company)
                 }
@@ -101,41 +104,6 @@ class PlanBuilderController {
         }
 
         return products
-    }
-
-    def bindPriceModel(GrailsParameterMap params) {
-        // sort price model parameters by index
-        def sorted = new TreeMap<Integer, GrailsParameterMap>()
-        params.model.each{ k, v ->
-            if (v instanceof Map)
-                sorted.put(k, v)
-        }
-
-        // build price model chain
-        def root = null
-        def model = null
-
-        sorted.each{ i, modelParams ->
-            if (model == null) {
-                model = root = new PriceModelWS()
-            } else {
-                model = model.next = new PriceModelWS()
-            }
-
-            // bind model
-            bindData(model, modelParams)
-
-            // bind model attributes
-            modelParams.attribute.each{ j, attrParams ->
-                if (attrParams instanceof Map)
-                    if (attrParams.name)
-                        model.attributes.put(attrParams.name, attrParams.value)
-            }
-
-            log.debug("price model ${i}: ${model}")
-        }
-
-        return root;
     }
 
     def editFlow = {
@@ -257,7 +225,7 @@ class PlanBuilderController {
                 def planItem = conversation.plan.planItems[index]
 
                 bindData(planItem, params, 'price')
-                planItem.model = bindPriceModel(params)
+                planItem.model = PlanHelper.bindPriceModel(params)
 
                 try {
                     // validate attributes of updated price
@@ -296,7 +264,7 @@ class PlanBuilderController {
                 def planItem = conversation.plan.planItems[index]
 
                 bindData(planItem, params, 'price')
-                planItem.model = bindPriceModel(params)
+                planItem.model = PlanHelper.bindPriceModel(params)
 
                 params.newLineIndex = index
                 params.template = 'review'
@@ -311,7 +279,7 @@ class PlanBuilderController {
             action {
                 def index = params.int('index')
                 def planItem = conversation.plan.planItems[index]
-                planItem.model = bindPriceModel(params)
+                planItem.model = PlanHelper.bindPriceModel(params)
 
                 // add new price model to end of chain
                 def model = planItem.model
@@ -331,7 +299,7 @@ class PlanBuilderController {
                 def index = params.int('index')
                 def modelIndex = params.int('modelIndex')
                 def planItem = conversation.plan.planItems[index]
-                planItem.model = bindPriceModel(params)
+                planItem.model = PlanHelper.bindPriceModel(params)
 
                 // remove price model from the chain
                 def model = planItem.model
@@ -357,7 +325,7 @@ class PlanBuilderController {
             action {
                 def index = params.int('index')
                 def planItem = conversation.plan.planItems[index]
-                planItem.model = bindPriceModel(params)
+                planItem.model = PlanHelper.bindPriceModel(params)
 
                 def modelIndex = params.int('modelIndex')
                 def attribute = message(code: 'plan.new.attribute.key', args: [ params.attributeIndex ])
@@ -385,7 +353,7 @@ class PlanBuilderController {
             action {
                 def index = params.int('index')
                 def planItem = conversation.plan.planItems[index]
-                planItem.model = bindPriceModel(params)
+                planItem.model = PlanHelper.bindPriceModel(params)
 
                 def modelIndex = params.int('modelIndex')
                 def attributeIndex = params.int('attributeIndex')

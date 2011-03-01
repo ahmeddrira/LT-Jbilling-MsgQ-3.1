@@ -14,6 +14,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy
+import com.sapienter.jbilling.client.pricing.util.PlanHelper
 
 @Secured(['isAuthenticated()'])
 class ProductController {
@@ -57,8 +58,11 @@ class ProductController {
                 max:    params.max,
                 offset: params.offset
         ) {
-            eq('internal', false)
-            eq('entity', new CompanyDTO(session['company_id']))
+            and {
+                eq('internal', false)
+                eq('entity', new CompanyDTO(session['company_id']))
+            }
+            order('id', 'desc')
         }
     }
 
@@ -87,15 +91,7 @@ class ProductController {
             and {
                 filters.each { filter ->
                     if (filter.value) {
-                        switch (filter.constraintType) {
-                            case FilterConstraint.EQ:
-                                eq(filter.field, filter.value)
-                                break
-
-                            case FilterConstraint.LIKE:
-                                like(filter.field, filter.stringValue)
-                                break
-                        }
+                        addToCriteria(filter.getRestrictions());
                     }
                 }
                 itemTypes {
@@ -105,6 +101,7 @@ class ProductController {
                 eq('deleted', 0)
                 eq('entity', new CompanyDTO(session['company_id']))
             }
+            order('id', 'desc')
         }
     }
 
@@ -282,12 +279,12 @@ class ProductController {
     }
 
     def updateStrategy = {
-        def priceModel = bindPriceModel(params)
+        def priceModel = PlanHelper.bindPriceModel(params)
         render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
     }
 
     def addChainModel = {
-        PriceModelWS priceModel = bindPriceModel(params)
+        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
 
         // add new price model to end of chain
         def model = priceModel
@@ -300,7 +297,7 @@ class ProductController {
     }
 
     def removeChainModel = {
-        PriceModelWS priceModel = bindPriceModel(params)
+        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
         def modelIndex = params.int('modelIndex')
 
         // remove price model from the chain
@@ -317,7 +314,7 @@ class ProductController {
     }
 
     def addAttribute = {
-        PriceModelWS priceModel = bindPriceModel(params)
+        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
 
         def modelIndex = params.int('modelIndex')
         def attribute = message(code: 'plan.new.attribute.key', args: [ params.attributeIndex ])
@@ -335,7 +332,7 @@ class ProductController {
     }
 
     def removeAttribute = {
-        PriceModelWS priceModel = bindPriceModel(params)
+        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
 
         def modelIndex = params.int('modelIndex')
         def attributeIndex = params.int('attributeIndex')
@@ -397,42 +394,7 @@ class ProductController {
         product.percentage = !params.percentage?.equals('') ? params.percentage : null
 
         // default price model
-        product.defaultPrice = bindPriceModel(params)
-    }
-
-    def bindPriceModel(GrailsParameterMap params) {
-        // sort price model parameters by index
-        def sorted = new TreeMap<Integer, GrailsParameterMap>()
-        params.model.each{ k, v ->
-            if (v instanceof Map)
-                sorted.put(k, v)
-        }
-
-        // build price model chain
-        def root = null
-        def model = null
-
-        sorted.each{ i, modelParams ->
-            if (model == null) {
-                model = root = new PriceModelWS()
-            } else {
-                model = model.next = new PriceModelWS()
-            }
-
-            // bind model
-            bindData(model, modelParams)
-
-            // bind model attributes
-            modelParams.attribute.each{ j, attrParams ->
-                if (attrParams instanceof Map)
-                    if (attrParams.name)
-                        model.attributes.put(attrParams.name, attrParams.value)
-            }
-
-            log.debug("price model ${i}: ${model}")
-        }
-
-        return root;
+        product.defaultPrice = PlanHelper.bindPriceModel(params)
     }
 
     def getCurrencies() {

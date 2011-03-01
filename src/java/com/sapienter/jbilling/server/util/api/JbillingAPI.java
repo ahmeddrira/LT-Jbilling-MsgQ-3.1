@@ -280,6 +280,10 @@ public interface JbillingAPI {
     public Integer[] getPlansBySubscriptionItem(Integer itemId);
     public Integer[] getPlansByAffectedItem(Integer itemId);
 
+    public PlanItemWS createCustomerPrice(Integer userId, PlanItemWS planItem);
+    public void updateCustomerPrice(Integer userId, PlanItemWS planItem);
+
+    public PlanItemWS[] getCustomerPrices(Integer userId);
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId);
     public PlanItemWS[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs);
     public PlanItemWS[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs);

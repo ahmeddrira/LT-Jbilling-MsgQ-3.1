@@ -11,13 +11,15 @@
 	<div class="table-scroll">
 		<table id="invoices" cellspacing="0" cellpadding="0">
 			<thead>
-	            <th ><g:message code="label.gui.date"/></th>
-	            <th class="small"><g:message code="invoice.label.duedate"/></th>
-	            <th class="small"><g:message code="invoice.label.id"/></th>
-	            <th class="small">#</th> <!-- # for Invoice Number -->
-	            <th><g:message code="invoice.label.status"/></th>
-	            <th class="small"><g:message code="invoice.label.amount"/></th>
-	            <th class="small"><g:message code="invoice.label.balance"/></th>
+                <tr>
+                    <th><g:message code="label.gui.date"/></th>
+                    <th class="small"><g:message code="invoice.label.duedate"/></th>
+                    <th class="small"><g:message code="invoice.label.id"/></th>
+                    <th class="small">#</th> <!-- # for Invoice Number -->
+                    <th><g:message code="invoice.label.status"/></th>
+                    <th class="small"><g:message code="invoice.label.amount"/></th>
+                    <th class="small"><g:message code="invoice.label.balance"/></th>
+                </tr>
 	        </thead>
 	        
 	        <tbody>

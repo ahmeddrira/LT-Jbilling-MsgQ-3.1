@@ -88,8 +88,8 @@
                       'id': selectedProduct.id,
                       'formParams': ['category': selectedCategoryId],
                       'ajax': true,
-                      'update': 'column2',
-                      'onYes': 'closePanel($(\'column3\'))'
+                      'update': 'column1',
+                      'onYes': 'closePanel($(\'column2\'))'
                      ]"/>
 </div>
 

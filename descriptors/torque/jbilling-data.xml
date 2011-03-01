@@ -1827,6 +1827,24 @@
 	<InternationalDescription TableId="99" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Referral Fee"/>
     <InternationalDescription TableId="99" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Payment Processor"/>
     <InternationalDescription TableId="99" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="IP Address"/>
+    <InternationalDescription TableId="47" ForeignId="17" PsudoColumn="description" LanguageId="1" Content="The order line has been updated"/>
+    <InternationalDescription TableId="47" ForeignId="18" PsudoColumn="description" LanguageId="1" Content="The order next billing date has been changed"/>
+    <InternationalDescription TableId="47" ForeignId="19" PsudoColumn="description" LanguageId="1" Content="Last API call to get the the user subscription status transitions"/>
+    <InternationalDescription TableId="47" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="User subscription status has changed"/>
+    <InternationalDescription TableId="47" ForeignId="21" PsudoColumn="description" LanguageId="1" Content="User account is now locked"/>
+    <InternationalDescription TableId="47" ForeignId="22" PsudoColumn="description" LanguageId="1" Content="The order main subscription flag was changed"/>
+    <InternationalDescription TableId="47" ForeignId="23" PsudoColumn="description" LanguageId="1" Content="All the one-time orders the mediation found were in status finished"/>
+    <InternationalDescription TableId="47" ForeignId="24" PsudoColumn="description" LanguageId="1" Content="A valid payment method was not found. The payment request was cancelled"/>
+    <InternationalDescription TableId="47" ForeignId="25" PsudoColumn="description" LanguageId="1" Content="A new row has been created"/>
+    <InternationalDescription TableId="47" ForeignId="26" PsudoColumn="description" LanguageId="1" Content="An invoiced order was cancelled, a credit order was created"/>
+    <InternationalDescription TableId="47" ForeignId="27" PsudoColumn="description" LanguageId="1" Content="A user id was added to the blacklist"/>
+    <InternationalDescription TableId="47" ForeignId="28" PsudoColumn="description" LanguageId="1" Content="A user id was removed from the blacklist"/>
+    <InternationalDescription TableId="47" ForeignId="29" PsudoColumn="description" LanguageId="1" Content="Posted a provisioning command using a UUID"/>
+    <InternationalDescription TableId="47" ForeignId="30" PsudoColumn="description" LanguageId="1" Content="A command was posted for provisioning"/>
+    <InternationalDescription TableId="47" ForeignId="31" PsudoColumn="description" LanguageId="1" Content="The provisioning status of an order line has changed"/>
+    <InternationalDescription TableId="47" ForeignId="32" PsudoColumn="description" LanguageId="1" Content="User subscription status has NOT changed"/>
+    <InternationalDescription TableId="47" ForeignId="33" PsudoColumn="description" LanguageId="1" Content="The dynamic balance of a user has changed"/>
+    <InternationalDescription TableId="47" ForeignId="34" PsudoColumn="description" LanguageId="1" Content="The invoice if child flag has changed"/>
     <InvoiceDeliveryMethod Id="1"/>
     <InvoiceDeliveryMethod Id="2"/>
     <InvoiceDeliveryMethod Id="3"/>

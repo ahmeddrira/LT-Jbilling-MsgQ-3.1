@@ -53,25 +53,16 @@ class UserController {
             and {
                 filters.each { filter ->
                     if (filter.value) {
-                        switch (filter.constraintType) {
-                            case FilterConstraint.EQ:
-                                eq(filter.field, filter.value)
-                                break
-
-                            case FilterConstraint.LIKE:
-                                like(filter.field, filter.stringValue)
-                                break
-
-                            case FilterConstraint.DATE_BETWEEN:
-                                between(filter.field, filter.startDateValue, filter.endDateValue)
-                                break
-
-                            case FilterConstraint.STATUS:
-                                eq("userStatus", statuses.find{ it.id == filter.integerValue })
-                                break
+                        // handle user status separately from the other constraints
+                        // we need to find the UserStatusDTO to compare to
+                        if (filter.constraintType == FilterConstraint.STATUS) {
+                            eq("userStatus", statuses.find{ it.id == filter.integerValue })
+                        } else {
+                            addToCriteria(filter.getRestrictions());
                         }
                     }
                 }
+
 				roles {
 					eq('id', Constants.TYPE_CUSTOMER)
 				}
@@ -79,17 +70,17 @@ class UserController {
                 eq('deleted', 0)
 				ne('id',1) /*filter out the admin from customer list*/
             }
-            order('id', 'asc')
+            order('id', 'desc')
         }
 
         def selected = params.id ? UserDTO.get(params.int("id")) : null
 
-        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
 
         if (params.applyFilter) {
             render template: 'users', model: [users: users, selected: selected, statuses: statuses, filters: filters ]
         } else {
-            [ users: users, selected: selected, statuses: statuses, filters: filters ]
+            render view: 'list', model: [ users: users, selected: selected, statuses: statuses, filters: filters ]
         }
     }
 
@@ -135,10 +126,17 @@ class UserController {
      * Updates the notes for the given user id.
      */
     def saveNotes = {
-        webServicesSession.saveCustomerNotes(params.int('id'), params.notes)
+        if (params.id) {
+            webServicesSession.saveCustomerNotes(params.int('id'), params.notes)
 
-        def user = UserDTO.get(params.int('id'))
-        render template: 'show', model: [ selected: user ]
+            log.debug("Updating notes for user ${params.id}.")
+
+            flash.message = 'customer.notes'
+            flash.args = [ params.id ]
+        }
+
+        // render user list with selected id
+        list()
     }
 
     /**
@@ -150,8 +148,6 @@ class UserController {
 
             log.debug("Deleted user ${params.id}.")
 
-            flash.message = 'customer.deleted'
-            flash.args = [ params.id ]
         }
 
         // render the partial user list

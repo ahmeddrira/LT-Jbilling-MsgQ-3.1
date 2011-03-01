@@ -5,11 +5,41 @@
   @author Brian Cowdery
   @since 28-Feb-2011
 --%>
+<g:if test="${product}">
+    <div class="heading">
+        <strong>Default Price</strong>
+    </div>
+    <div class="box">
+        <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">
+            <tbody>
+                <tr>
+                    <td><g:message code="product.internal.number"/></td>
+                    <td class="value" colspan="3">
+                        <g:link controller="product" action="list" id="${product.id}">
+                            ${product.internalNumber}
+                        </g:link>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><g:message code="product.description"/></td>
+                    <td class="value" colspan="3">
+                        ${product.getDescription(session['language_id'])}
+                    </td>
+                </tr>
+
+                <!-- price model -->
+                <tr><td colspan="4">&nbsp;</td></tr>
+                <g:render template="/plan/priceModel" model="[model: product.defaultPrice]"/>
+            </tbody>
+        </table>
+    </div>
+</g:if>
+
 <div class="heading">
-    <g:if test="${itemId}">
+    <g:if test="${product}">
         <strong>
-            <g:set var="itemDescription" value="${product.getDescription(session['language_id'])}"/>
-            <g:message code="customer.inspect.prices.for.title" args="[itemDescription]"/>
+            <g:message code="customer.inspect.customer.prices.title"/>
         </strong>
     </g:if>
     <g:else>
@@ -26,20 +56,32 @@
             <g:each var="price" status="index" in="${prices?.sort{ it.precedence }}">
                 <tr>
                     <td><g:message code="product.internal.number"/></td>
-                    <td class="value">
+                    <td class="value" colspan="2">
                         <g:link controller="product" action="list" id="${price.item.id}">
                             ${price.item.internalNumber}
                         </g:link>
                     </td>
-
-                    <td><g:message code="plan.item.precedence"/></td>
-                    <td class="value">${price.precedence}</td>
+                    <td class="right">
+                        <g:if test="${!price.plan}">
+                            <!-- delete customer-specific price -->
+                            <g:remoteLink action="deleteCustomerPrice" id="${price.id}" params="[userId: user?.id ?: userId, itemId: price.item.id]" update="prices-column">
+                                <img src="${resource(dir:'images', file:'cross.png')}" alt="remove"/>
+                            </g:remoteLink>
+                        </g:if>
+                    </td>
                 </tr>
 
                 <tr>
                     <td><g:message code="product.description"/></td>
                     <td class="value" colspan="3">
                         ${price.item.getDescription(session['language_id'])}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><g:message code="plan.item.precedence"/></td>
+                    <td class="value" colspan="3">
+                        ${price.precedence}
                     </td>
                 </tr>
 
@@ -63,12 +105,12 @@
 </div>
 
 <div class="btn-box">
-    <g:if test="${itemId}">
-        <g:link class="submit add" controller="plan" action="editCustomerPrice" params="[userId: userId, itemId: itemId]">
+    <g:if test="${product}">
+        <g:link class="submit add" action="editCustomerPrice" params="[userId: user?.id ?: userId, itemId: product.id]">
             <span><g:message code="button.add.customer.price"/></span>
         </g:link>
 
-        <g:remoteLink action="allProductPrices" update="prices-column" params="[userId: userId]" class="submit show">
+        <g:remoteLink action="allProductPrices" update="prices-column" params="[userId: user?.id ?: userId]" class="submit show">
             <span><g:message code="button.show.all"/></span>
         </g:remoteLink>
     </g:if>

@@ -58,9 +58,6 @@ h1, h2, h3 {
     margin: 0;
     padding: 0;
 }
-h1.right, h2.right, h3.right {
-    text-align: right;
-}
 h1.capitalize, h2.capitalize, h3.capitalize {
     text-transform: capitalize;
 }
@@ -78,6 +75,9 @@ hr {
     line-height: 0;
     overflow: visible;
 }
+.center {text-align: center;}
+.left {text-align: left;}
+.right {text-align: right;}
 #header {
 	height:123px;
 	position:relative;
@@ -866,9 +866,6 @@ hr {
     padding-top:8px;
 }
 .table-box td a:hover {text-decoration:none;}
-.table-box .center {text-align: center;}
-.table-box .left {text-align: left;}
-.table-box .right {text-align: right;}
 .table-box .block img {
 	margin-top:9px;
 }
@@ -1184,6 +1181,7 @@ ul#review-lines {
     position: relative;
     top: 4px;
     left: 4px;
+    margin-right: 4px;
 }
 .dialog .form-columns {
     width: auto;

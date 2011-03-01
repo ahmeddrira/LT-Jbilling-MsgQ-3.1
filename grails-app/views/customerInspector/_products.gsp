@@ -7,11 +7,16 @@
   @since 28-Feb-2011
 --%>
 
-<div id="product-box">
+<div class="heading">
+    <strong><g:message code="builder.products.title"/></strong>
+</div>
 
+<div class="box no-buttons">
     <!-- filter -->
     <div class="form-columns">
-        <g:formRemote name="products-filter-form" url="[action: 'filterProducts']" update="product-box">
+        <g:formRemote name="products-filter-form" url="[action: 'filterProducts']" update="products-column">
+            <g:hiddenField name="userId" value="${user?.id ?: params.userId}"/>
+
             <g:applyLayout name="form/input">
                 <content tag="label"><g:message code="filters.title"/></content>
                 <content tag="label.for">filterBy</content>
@@ -28,10 +33,33 @@
             </g:applyLayout>
         </g:formRemote>
 
+        <g:formRemote name="show-all-form" url="[action: 'allProductPrices']" update="prices-column">
+            <g:hiddenField name="userId" value="${user?.id ?: params.userId}"/>
+
+            <g:applyLayout name="form/checkbox">
+                <content tag="label"><g:message code="customer.inspect.price.showall"/></content>
+                <content tag="label.for">showAll</content>
+                <g:checkBox class="cb" name="showAll" value="${params.showAll}"/>
+            </g:applyLayout>
+        </g:formRemote>
+
         <script type="text/javascript">
             $(function() {
+                // product filtering
                 $('#filterBy').blur(function() { $('#products-filter-form').submit(); });
                 $('#typeId').change(function() { $('#products-filter-form').submit(); });
+
+                // show all prices toggle
+                $('#showAll').change(function() {
+                    if ($(this).is(':checked')) {
+                        $('#show-all-form').submit();
+                    }
+                    $('#products-column tr.active').removeClass('active')
+                });
+                $('#products tr a.cell').click(function() {
+                    $('#showAll').attr('checked','');
+                });
+
                 placeholder();
             });
         </script>
@@ -46,17 +74,17 @@
                 <g:each var="product" in="${products}">
                     <tr>
                         <td>
-                            <g:remoteLink class="cell double" action="productPrices" id="${product.id}" params="[userId: user?.id]" update="prices-column">
+                            <g:remoteLink class="cell double" action="productPrices" id="${product.id}" params="[userId: user?.id ?: params.userId]" update="prices-column">
                                 <strong>${product.getDescription(session['language_id'])}</strong>
                             </g:remoteLink>
                         </td>
                         <td class="small">
-                            <g:remoteLink class="cell" action="productPrices" id="${product.id}" params="[userId: user?.id]" update="prices-column">
+                            <g:remoteLink class="cell" action="productPrices" id="${product.id}" params="[userId: user?.id ?: params.userId]" update="prices-column">
                                 <span>${product.internalNumber}</span>
                             </g:remoteLink>
                         </td>
                         <td class="medium">
-                            <g:remoteLink class="cell" action="productPrices" id="${product.id}" params="[userId: user?.id]" update="prices-column">
+                            <g:remoteLink class="cell" action="productPrices" id="${product.id}" params="[userId: user?.id ?: params.userId]" update="prices-column">
                                 <g:if test="${product.percentage}">
                                     %<g:formatNumber number="${product.percentage}" formatName="money.format"/>
                                 </g:if>
@@ -72,5 +100,4 @@
             </table>
         </div>
     </div>
-
 </div>

@@ -96,21 +96,22 @@ class CustomerInspectorController {
         if (params.typeId == null)
             params.typeId = itemTypes?.asList()?.first()?.id
 
-        def products = getProducts(company, params)
+        def products =  getProducts(company, params)
 
         render template: 'products', model: [ itemTypes: itemTypes, products: products ]
     }
 
     def productPrices = {
-        def prices = new CustomerPriceBL(params.int('userId')).getCustomerPrices(params.int('id'))
+        def itemId = params.int('id')
+        def prices = new CustomerPriceBL(params.int('userId')).getCustomerPrices(itemId)
+        def product = ItemDTO.get(itemId)
 
-        render template: 'prices', model: [ prices: prices, userId: params.userId, itemId: params.id ]
+        render template: 'prices', model: [ prices: prices, product: product, userId: params.userId, itemId: params.id ]
     }
 
-    def showAll = {
+    def allProductPrices = {
         def prices = new CustomerPriceBL(params.int('userId')).getCustomerPrices()
-
-        render template: 'prices', model: [ prices: prices ]
+        render template: 'prices', model: [ prices: prices, userId: params.userId ]
     }
 
     /**

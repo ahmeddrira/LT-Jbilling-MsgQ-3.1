@@ -33,33 +33,10 @@
             </g:applyLayout>
         </g:formRemote>
 
-        <g:formRemote name="show-all-form" url="[action: 'allProductPrices']" update="prices-column">
-            <g:hiddenField name="userId" value="${user?.id ?: params.userId}"/>
-
-            <g:applyLayout name="form/checkbox">
-                <content tag="label"><g:message code="customer.inspect.price.showall"/></content>
-                <content tag="label.for">showAll</content>
-                <g:checkBox class="cb" name="showAll" value="${params.showAll}"/>
-            </g:applyLayout>
-        </g:formRemote>
-
         <script type="text/javascript">
             $(function() {
-                // product filtering
                 $('#filterBy').blur(function() { $('#products-filter-form').submit(); });
                 $('#typeId').change(function() { $('#products-filter-form').submit(); });
-
-                // show all prices toggle
-                $('#showAll').change(function() {
-                    if ($(this).is(':checked')) {
-                        $('#show-all-form').submit();
-                    }
-                    $('#products-column tr.active').removeClass('active')
-                });
-                $('#products tr a.cell').click(function() {
-                    $('#showAll').attr('checked','');
-                });
-
                 placeholder();
             });
         </script>

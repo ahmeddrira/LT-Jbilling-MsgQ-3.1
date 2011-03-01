@@ -67,5 +67,9 @@
         <g:link class="submit add" controller="plan" action="editCustomerPrice" params="[userId: userId, itemId: itemId]">
             <span><g:message code="button.add.customer.price"/></span>
         </g:link>
+
+        <g:remoteLink action="allProductPrices" update="prices-column" params="[userId: userId]" class="submit show">
+            <span><g:message code="button.show.all"/></span>
+        </g:remoteLink>
     </g:if>
 </div>

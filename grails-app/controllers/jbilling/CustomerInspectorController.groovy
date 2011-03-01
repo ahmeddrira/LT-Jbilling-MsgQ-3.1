@@ -1,35 +1,27 @@
 package jbilling
 
-import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
-import com.sapienter.jbilling.client.ViewUtils
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.common.Constants;
-import com.sapienter.jbilling.server.order.OrderWS;
-import com.sapienter.jbilling.server.invoice.InvoiceWS;
-import com.sapienter.jbilling.server.payment.PaymentWS;
-import com.sapienter.jbilling.server.user.db.SubscriberStatusDTO;
-import com.sapienter.jbilling.server.user.ContactWS;
-import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS
-import com.sapienter.jbilling.server.user.db.UserDTO
-import com.sapienter.jbilling.server.item.CurrencyBL
-import com.sapienter.jbilling.server.order.db.OrderDAS
-import com.sapienter.jbilling.server.invoice.db.InvoiceDTO
-import com.sapienter.jbilling.server.payment.db.PaymentDTO
-import com.sapienter.jbilling.server.user.db.CompanyDTO
-import com.sapienter.jbilling.server.user.CustomerPriceBL
-import com.sapienter.jbilling.server.item.db.ItemDTO
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.client.pricing.util.PlanHelper
+import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO
+import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.item.PlanItemWS
-import com.sapienter.jbilling.server.pricing.PriceModelWS;
+import com.sapienter.jbilling.server.item.db.ItemDTO
+import com.sapienter.jbilling.server.order.db.OrderDAS
+import com.sapienter.jbilling.server.payment.db.PaymentDTO
+import com.sapienter.jbilling.server.pricing.PriceModelWS
+import com.sapienter.jbilling.server.user.ContactWS
+import com.sapienter.jbilling.server.user.CustomerPriceBL
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS
+import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.user.db.UserDTO
 
 class CustomerInspectorController {
 	
-	IWebServicesSessionBean webServicesSession
+	def webServicesSession
+    def viewUtils
 
     def breadcrumbService
+    def productService
 
 	def index = { 
 		redirect action: 'inspect', params: params
@@ -70,7 +62,7 @@ class CustomerInspectorController {
         def itemTypes = company.itemTypes.sort{ it.id }
         params.typeId = itemTypes?.asList()?.first()?.id
 
-        def products = getProducts(company, params)
+        def products = productService.getFilteredProducts(company, params)
         def prices = new CustomerPriceBL(user.id).getCustomerPrices()
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
@@ -102,7 +94,7 @@ class CustomerInspectorController {
         if (params.typeId == null)
             params.typeId = itemTypes?.asList()?.first()?.id
 
-        def products =  getProducts(company, params)
+        def products =  productService.getFilteredProducts(company, params)
 
         render template: 'products', model: [ itemTypes: itemTypes, products: products ]
     }
@@ -272,54 +264,6 @@ class CustomerInspectorController {
 
         // render remaining prices for the priced product
         productPrices(params: [id: params.itemId, userId: userId])
-    }
-
-    /**
-     * Get a filtered list of products
-     *
-     * @param company company
-     * @param params parameter map containing filter criteria
-     * @return filtered list of products
-     */
-    def getProducts(CompanyDTO company, GrailsParameterMap params) {
-        // filter on item type, item id and internal number
-        def products = ItemDTO.createCriteria().list() {
-            and {
-                if (params.filterBy && params.filterBy != message(code: 'products.filter.by.default')) {
-                    or {
-                        eq('id', params.int('filterBy'))
-                        ilike('internalNumber', "%${params.filterBy}%")
-                    }
-                }
-
-                if (params.typeId) {
-                    itemTypes {
-                        eq('id', params.int('typeId'))
-                    }
-                }
-
-                isEmpty('plans')
-                eq('deleted', 0)
-                eq('entity', company)
-            }
-            order('id', 'asc')
-        }
-
-        // if no results found, try filtering by description
-        if (!products && params.filterBy) {
-            products = ItemDTO.createCriteria().list() {
-                and {
-                    isEmpty('plans')
-                    eq('deleted', 0)
-                    eq('entity', company)
-                }
-                order('id', 'asc')
-            }.findAll {
-                it.getDescription(session['language_id']).toLowerCase().contains(params.filterBy.toLowerCase())
-            }
-        }
-
-        return products
     }
 
     def getCurrencies() {

@@ -18,23 +18,23 @@
             <g:applyLayout name="form/input">
                 <content tag="label"><g:message code="filters.title"/></content>
                 <content tag="label.for">filterBy</content>
-                <g:textField name="product.filterBy" class="field default" placeholder="${message(code: 'products.filter.by.default')}" value="${params['product.filterBy']}"/>
+                <g:textField name="filterBy" class="field default" placeholder="${message(code: 'products.filter.by.default')}" value="${params.filterBy}"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/select">
                 <content tag="label"><g:message code="order.label.products.category"/></content>
                 <content tag="label.for">typeId</content>
-                <g:select name="product.typeId" from="${itemTypes}"
+                <g:select name="typeId" from="${itemTypes}"
                           noSelection="['': message(code: 'filters.item.type.empty')]"
                           optionKey="id" optionValue="description"
-                          value="${params['product.typeId']}"/>
+                          value="${params.typeId}"/>
             </g:applyLayout>
         </g:formRemote>
 
         <script type="text/javascript">
             $(function() {
-                $('#product\\.filterBy').blur(function() { $('#products-filter-form').submit(); });
-                $('#product\\.typeId').change(function() { $('#products-filter-form').submit(); });
+                $('#products-filter-form :input[name=filterBy]').blur(function() { $('#products-filter-form').submit(); });
+                $('#products-filter-form :input[name=typeId]').change(function() { $('#products-filter-form').submit(); });
                 placeholder();
             });
         </script>

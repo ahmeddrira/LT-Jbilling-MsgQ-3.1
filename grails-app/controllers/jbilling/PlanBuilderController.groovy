@@ -49,61 +49,13 @@ import com.sapienter.jbilling.client.pricing.util.PlanHelper
 class PlanBuilderController {
 
     def webServicesSession
-    def messageSource
     def viewUtils
 
     def breadcrumbService
+    def productService
 
     def index = {
         redirect action: 'edit'
-    }
-
-    /**
-     * Get a filtered list of products
-     *
-     * @param company company
-     * @param params parameter map containing filter criteria
-     * @return filtered list of products
-     */
-    def getProducts(CompanyDTO company, GrailsParameterMap params) {
-        // filter on item type, item id and internal number
-        def products = ItemDTO.createCriteria().list() {
-            and {
-                if (params.filterBy && params.filterBy != message(code: 'products.filter.by.default')) {
-                    or {
-                        eq('id', params.int('filterBy'))
-                        ilike('internalNumber', "%${params.filterBy}%")
-                    }
-                }
-
-                if (params.typeId) {
-                    itemTypes {
-                        eq('id', params.int('typeId'))
-                    }
-                }
-
-                isEmpty('plans')
-                eq('deleted', 0)
-                eq('entity', company)
-            }
-            order('id', 'asc')
-        }
-
-        // if no results found, try filtering by description
-        if (!products && params.filterBy) {
-            products = ItemDTO.createCriteria().list() {
-                and {
-                    isEmpty('plans')
-                    eq('deleted', 0)
-                    eq('entity', company)
-                }
-                order('id', 'asc')
-            }.findAll {
-                it.getDescription(session['language_id']).toLowerCase().contains(params.filterBy.toLowerCase())
-            }
-        }
-
-        return products
     }
 
     def editFlow = {
@@ -117,8 +69,8 @@ class PlanBuilderController {
                 def product = plan?.itemId ? webServicesSession.getItem(plan.itemId, session['user_id'], null) : new ItemDTOEx()
 
                 def company = CompanyDTO.get(session['company_id'])
-                def itemTypes = company.itemTypes.sort{ it.id }
-                def internalPlansType = new ItemTypeBL().getInternalPlansType(session['company_id'])
+                def itemTypes = productService.getItemTypes()
+                def internalPlansType = productService.getInternalPlansType()
 
                 def currencies = new CurrencyBL().getCurrencies(session['language_id'], session['company_id'])
                 currencies = currencies.findAll{ it.inUse }
@@ -163,7 +115,7 @@ class PlanBuilderController {
                 // conversation scope
                 conversation.plan = plan
                 conversation.product = product
-                conversation.products = getProducts(company, params)
+                conversation.products = productService.getFilteredProducts(company, params)
             }
             on("success").to("build")
         }
@@ -188,7 +140,7 @@ class PlanBuilderController {
                     params.typeId = flow.itemTypes?.asList()?.first()?.id
 
                 params.template = 'products'
-                conversation.products = getProducts(flow.company, params)
+                conversation.products = productService.getFilteredProducts(flow.company, params)
             }
             on("success").to("build")
         }

@@ -37,15 +37,14 @@
 
             <g:applyLayout name="form/input">
                 <content tag="label"><g:message code="filters.title"/></content>
-                <content tag="label.for">plan.filterBy</content>
-                <g:textField name="plan.filterBy" class="field default" placeholder="${message(code: 'products.filter.by.default')}" value="${params['plan.filterBy']}"/>
+                <content tag="label.for">filterBy</content>
+                <g:textField name="filterBy" class="field default" placeholder="${message(code: 'products.filter.by.default')}" value="${params.filterBy}"/>
             </g:applyLayout>
         </g:formRemote>
 
         <script type="text/javascript">
             $(function() {
-                $('#plan\\.filterBy').blur(function() { $('#plans-filter-form').submit(); });
-                $('#plan\\.typeId').change(function() { $('#plans-filter-form').submit(); });
+                $('#plans-filter-form :input[name=filterBy]').blur(function() { $('#plans-filter-form').submit(); });
                 placeholder();
             });
         </script>

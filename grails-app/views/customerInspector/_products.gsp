@@ -4,16 +4,18 @@
   Shows the product list and provides some basic filtering capabilities.
 
   @author Brian Cowdery
-  @since 23-Jan-2011
+  @since 28-Feb-2011
 --%>
 
-<div id="product-box">
+<div class="heading">
+    <strong><g:message code="builder.products.title"/></strong>
+</div>
 
+<div class="box no-buttons">
     <!-- filter -->
     <div class="form-columns">
-        <g:formRemote name="products-filter-form" url="[action: 'edit']" update="ui-tabs-2" method="GET">
-            <g:hiddenField name="_eventId" value="products"/>
-            <g:hiddenField name="execution" value="${flowExecutionKey}"/>
+        <g:formRemote name="products-filter-form" url="[action: 'filterProducts']" update="products-column">
+            <g:hiddenField name="userId" value="${user?.id ?: params.userId}"/>
 
             <g:applyLayout name="form/input">
                 <content tag="label"><g:message code="filters.title"/></content>
@@ -33,8 +35,8 @@
 
         <script type="text/javascript">
             $(function() {
-                $('#products-filter-form :input[name=filterBy]').blur(function() { $('#products-filter-form').submit(); });
-                $('#products-filter-form :input[name=typeId]').change(function() { $('#products-filter-form').submit(); });
+                $('#filterBy').blur(function() { $('#products-filter-form').submit(); });
+                $('#typeId').change(function() { $('#products-filter-form').submit(); });
                 placeholder();
             });
         </script>
@@ -49,18 +51,17 @@
                 <g:each var="product" in="${products}">
                     <tr>
                         <td>
-                            <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'addLine']" update="column2" method="GET">
+                            <g:remoteLink class="cell double" action="productPrices" id="${product.id}" params="[userId: user?.id ?: params.userId]" update="prices-column">
                                 <strong>${product.getDescription(session['language_id'])}</strong>
-                                <em><g:message code="product.id.label" args="[product.id]"/></em>
                             </g:remoteLink>
                         </td>
                         <td class="small">
-                            <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'addLine']" update="column2" method="GET">
+                            <g:remoteLink class="cell" action="productPrices" id="${product.id}" params="[userId: user?.id ?: params.userId]" update="prices-column">
                                 <span>${product.internalNumber}</span>
                             </g:remoteLink>
                         </td>
                         <td class="medium">
-                            <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'addLine']" update="column2" method="GET">
+                            <g:remoteLink class="cell" action="productPrices" id="${product.id}" params="[userId: user?.id ?: params.userId]" update="prices-column">
                                 <g:if test="${product.percentage}">
                                     %<g:formatNumber number="${product.percentage}" formatName="money.format"/>
                                 </g:if>
@@ -76,5 +77,4 @@
             </table>
         </div>
     </div>
-
 </div>

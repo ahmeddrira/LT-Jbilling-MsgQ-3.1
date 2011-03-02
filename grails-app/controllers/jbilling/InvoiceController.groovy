@@ -58,24 +58,21 @@ class InvoiceController {
 			) {
 				and {
 					filters.each { filter ->
+						log.debug "Filter ${filter.field} value: ${filter.value}"
 						if (filter.value) {
-							switch (filter.constraintType) {
-								case FilterConstraint.EQ:
-									eq(filter.field, filter.value)
-									break
-	
-								case FilterConstraint.DATE_BETWEEN:
-									between(filter.field, filter.startDateValue, filter.endDateValue)
-									break
-									
-								case FilterConstraint.LIKE:
-									like(filter.field, filter.stringValue)
-									break
+							//isreview handled exclusively
+							if (filter.getField().equals('isReview')) {
+								if ( filter.stringValue == '0' ) {
+									eq('isReview', 0)
+								}
+							} else {
+								addToCriteria(filter.getRestrictions());
 							}
 						}
 					}
 					eq('deleted', 0)
 				}
+				order("id", "desc")
 			}
 	}
 	

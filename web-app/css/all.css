@@ -58,9 +58,6 @@ h1, h2, h3 {
     margin: 0;
     padding: 0;
 }
-h1.right, h2.right, h3.right {
-    text-align: right;
-}
 h1.capitalize, h2.capitalize, h3.capitalize {
     text-transform: capitalize;
 }
@@ -78,6 +75,9 @@ hr {
     line-height: 0;
     overflow: visible;
 }
+.center {text-align: center;}
+.left {text-align: left;}
+.right {text-align: right;}
 #header {
 	height:123px;
 	position:relative;
@@ -638,6 +638,10 @@ hr {
 }
 .column .box.no-heading {
     border-top: 1px solid #bbb;
+    padding: 11px 9px 10px;
+}
+.column .box.no-buttons {
+    border-bottom: 1px solid #bbb;
 }
 .column .box .edit {
 	width:25px;
@@ -862,9 +866,6 @@ hr {
     padding-top:8px;
 }
 .table-box td a:hover {text-decoration:none;}
-.table-box .center {text-align: center;}
-.table-box .left {text-align: left;}
-.table-box .right {text-align: right;}
 .table-box .block img {
 	margin-top:9px;
 }
@@ -1180,6 +1181,7 @@ ul#review-lines {
     position: relative;
     top: 4px;
     left: 4px;
+    margin-right: 4px;
 }
 .dialog .form-columns {
     width: auto;
@@ -1413,7 +1415,7 @@ ul#review-lines {
 }
 .box-cards .form-columns .column {
 	width:444px;
-	padding-left:0;
+	padding-left: 10px;
 }
 
 div.box-text {

@@ -23,12 +23,17 @@
             <fieldset>
                 <div class="form-columns">
                     <div class="column">
-                        <g:applyLayout name="form/select">
-                            <content tag="label"><g:message code="customer.price.product"/></content>
-                            <content tag="label.for">price.itemId</content>
-                            <g:select name="price.itemId" from="${products}"
-                                      optionKey="id" optionValue="description"
-                                      value="${price.itemId}"/>
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="product.internal.number"/></content>
+                            <g:link controller="product" action="list" id="${product.id}">
+                                ${product.number}
+                            </g:link>
+                            <g:hiddenField name="price.itemId" value="${product.id}"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="product.description"/></content>
+                            ${product.description}
                         </g:applyLayout>
 
                         <g:applyLayout name="form/input">

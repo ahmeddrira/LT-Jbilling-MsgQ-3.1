@@ -63,6 +63,10 @@
                 </tr>
 
                 <g:if test="${customer?.parent}">
+                    <!-- empty spacer row --> 
+                    <tr>
+                        <td colspan="2"><br/></td>
+                    </tr>
                     <tr>
                         <td><g:message code="prompt.parent.id"/></td>
                         <td class="value">
@@ -88,11 +92,11 @@
                 </g:if>
 
                 <g:if test="${customer?.children}">
-                    <!-- empty spacer row -->
+                    <!-- empty spacer row --> 
                     <tr>
                         <td colspan="2"><br/></td>
                     </tr>
-
+                    
                     <!-- direct sub-accounts -->
                     <g:each var="account" in="${customer.children}">
                         <tr>

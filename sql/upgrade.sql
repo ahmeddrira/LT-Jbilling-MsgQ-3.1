@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 -- this script will upgrade a database schema from the latest jbilling release
 -- to the code currently at the tip of the trunk.
 -- It is tested on postgreSQL, but it is meant to be ANSI SQL
@@ -808,3 +809,7 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 values (47, 25, 'description', 1, 'A new row has been created');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
 values (47, 19, 'description', 1, 'Last API call to get the the user subscription status transitions');
+
+-- lengthen the preference int value to allow for longer mediation "last read ID" values
+-- alter table preference modify int_value int4 null default null; -- mysql
+alter table preference alter int_value type int4; -- postgresql

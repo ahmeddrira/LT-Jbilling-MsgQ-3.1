@@ -597,6 +597,10 @@ public class SpringAPI implements JbillingAPI {
         session.updateCustomerPrice(userId, planItem);
     }
 
+    public void deleteCustomerPrice(Integer userId, Integer planItemId) {
+        session.deleteCustomerPrice(userId, planItemId);
+    }
+
     public PlanItemWS[] getCustomerPrices(Integer userId) {
         return session.getCustomerPrices(userId);
     }

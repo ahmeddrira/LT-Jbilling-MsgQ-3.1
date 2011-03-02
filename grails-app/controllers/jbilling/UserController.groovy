@@ -53,32 +53,23 @@ class UserController {
             and {
                 filters.each { filter ->
                     if (filter.value) {
-                        switch (filter.constraintType) {
-                            case FilterConstraint.EQ:
-                                eq(filter.field, filter.value)
-                                break
-
-                            case FilterConstraint.LIKE:
-                                like(filter.field, filter.stringValue)
-                                break
-
-                            case FilterConstraint.DATE_BETWEEN:
-                                between(filter.field, filter.startDateValue, filter.endDateValue)
-                                break
-
-                            case FilterConstraint.STATUS:
-                                eq("userStatus", statuses.find{ it.id == filter.integerValue })
-                                break
+                        // handle user status separately from the other constraints
+                        // we need to find the UserStatusDTO to compare to
+                        if (filter.constraintType == FilterConstraint.STATUS) {
+                            eq("userStatus", statuses.find{ it.id == filter.integerValue })
+                        } else {
+                            addToCriteria(filter.getRestrictions());
                         }
                     }
                 }
+
 				roles {
 					eq('id', Constants.TYPE_CUSTOMER)
 				}
                 eq('company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
             }
-            order('id', 'asc')
+            order('id', 'desc')
         }
 
         def selected = params.id ? UserDTO.get(params.int("id")) : null

@@ -58,8 +58,11 @@ class ProductController {
                 max:    params.max,
                 offset: params.offset
         ) {
-            eq('internal', false)
-            eq('entity', new CompanyDTO(session['company_id']))
+            and {
+                eq('internal', false)
+                eq('entity', new CompanyDTO(session['company_id']))
+            }
+            order('id', 'desc')
         }
     }
 
@@ -88,15 +91,7 @@ class ProductController {
             and {
                 filters.each { filter ->
                     if (filter.value) {
-                        switch (filter.constraintType) {
-                            case FilterConstraint.EQ:
-                                eq(filter.field, filter.value)
-                                break
-
-                            case FilterConstraint.LIKE:
-                                like(filter.field, filter.stringValue)
-                                break
-                        }
+                        addToCriteria(filter.getRestrictions());
                     }
                 }
                 itemTypes {
@@ -106,6 +101,7 @@ class ProductController {
                 eq('deleted', 0)
                 eq('entity', new CompanyDTO(session['company_id']))
             }
+            order('id', 'desc')
         }
     }
 

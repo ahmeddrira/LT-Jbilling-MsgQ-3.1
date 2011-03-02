@@ -31,8 +31,8 @@
     <content tag="builder">
         <div id="builder-tabs">
             <ul>
-                <li><a href="${createLink(action: 'edit', event: 'details')}"><g:message code="plan.details.title"/></a></li>
-                <li><a href="${createLink(action: 'edit', event: 'products')}"><g:message code="plan.products.title"/></a></li>
+                <li><a href="${createLink(action: 'edit', event: 'details')}"><g:message code="builder.details.title"/></a></li>
+                <li><a href="${createLink(action: 'edit', event: 'products')}"><g:message code="builder.products.title"/></a></li>
             </ul>
         </div>
     </content>

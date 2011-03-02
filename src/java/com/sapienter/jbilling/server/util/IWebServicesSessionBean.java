@@ -319,6 +319,7 @@ public interface IWebServicesSessionBean {
 
     public PlanItemWS createCustomerPrice(Integer userId, PlanItemWS planItem);
     public void updateCustomerPrice(Integer userId, PlanItemWS planItem);
+    public void deleteCustomerPrice(Integer userId, Integer planItemId);
 
     public PlanItemWS[] getCustomerPrices(Integer userId);
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId);

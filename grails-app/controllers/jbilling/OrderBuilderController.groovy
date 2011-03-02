@@ -47,110 +47,13 @@ import java.math.RoundingMode
 class OrderBuilderController {
 
     def webServicesSession
-    def messageSource
     def viewUtils
 
     def breadcrumbService
+    def productService
 
     def index = {
         redirect action: 'edit'
-    }
-
-    /**
-     * Get a filtered list of products
-     *
-     * @param company company
-     * @param params parameter map containing filter criteria
-     * @return filtered list of products
-     */
-    def getProducts(CompanyDTO company, GrailsParameterMap params) {
-        def filterBy = params['product.filterBy']
-        def typeId = params.int('product.typeId')
-
-        // filter on item type, item id and internal number
-        def products = ItemDTO.createCriteria().list() {
-            and {
-                if (filterBy && filterBy != message(code: 'products.filter.by.default')) {
-                    or {
-                        eq('id', params.int('filterBy'))
-                        ilike('internalNumber', "%${filterBy}%")
-                    }
-                }
-
-                if (typeId) {
-                    itemTypes {
-                        eq('id', typeId)
-                    }
-                }
-
-                isEmpty('plans')
-                eq('deleted', 0)
-                eq('entity', company)
-            }
-            order('id', 'asc')
-        }
-
-        // if no results found, try filtering by description
-        if (!products && filterBy) {
-            products = ItemDTO.createCriteria().list() {
-                and {
-                    isEmpty('plans')
-                    eq('deleted', 0)
-                    eq('entity', company)
-                }
-                order('id', 'asc')
-            }.findAll {
-                it.getDescription(session['language_id']).toLowerCase().contains(filterBy.toLowerCase())
-            }
-        }
-
-        return products
-    }
-
-    /**
-     * Get a filtered list of plans
-     *
-     * @param company company
-     * @param params parameter map containing filter criteria
-     * @return filtered list of products
-     */
-    def getPlans(CompanyDTO company, GrailsParameterMap params) {
-        def filterBy = params['plan.filterBy']
-
-        // filter on item type, item id and internal number
-        def plans = ItemDTO.createCriteria().list() {
-            and {
-                if (filterBy && filterBy != message(code: 'products.filter.by.default')) {
-                    or {
-                        eq('id', params.int('filterBy'))
-                        ilike('internalNumber', "%${filterBy}%")
-                    }
-                }
-
-                isNotEmpty('plans')
-                eq('deleted', 0)
-                eq('entity', company)
-            }
-            order('id', 'asc')
-        }
-
-        log.debug("Found: ${plans.size()} plans")
-
-        // if no results found, try filtering by description
-        if (!plans && filterBy) {
-            plans = ItemDTO.createCriteria().list() {
-                and {
-                    isNotEmpty('plans')
-                    eq('deleted', 0)
-                    eq('entity', company)
-                }
-                order('id', 'asc')
-            }.findAll {
-                it.getDescription(session['language_id']).toLowerCase().contains(filterBy.toLowerCase())
-            }
-        }
-
-        return plans
     }
 
     /**
@@ -200,7 +103,7 @@ class OrderBuilderController {
 
                 // available order periods, statuses and order types
                 def company = CompanyDTO.get(session['company_id'])
-                def itemTypes = company.itemTypes.sort{ it.id }
+                def itemTypes = productService.getItemTypes()
                 def orderStatuses = OrderStatusDTO.list()
                 def orderPeriods = company.orderPeriods.collect { new OrderPeriodDTO(it.id) } << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE)
                 orderPeriods.sort { it.id }
@@ -221,8 +124,8 @@ class OrderBuilderController {
 
                 // conversation scope
                 conversation.order = order
-                conversation.products = getProducts(company, params)
-                conversation.plans = getPlans(company, params)
+                conversation.products = productService.getFilteredProducts(company, params)
+                conversation.plans = productService.getFilteredPlans(company, params)
             }
             on("success").to("build")
         }
@@ -247,7 +150,7 @@ class OrderBuilderController {
                     params['product.typeId'] = flow.itemTypes?.asList()?.first()?.id
 
                 params.template = 'products'
-                conversation.products = getProducts(flow.company, params)
+                conversation.products = productService.getFilteredProducts(flow.company, params)
             }
             on("success").to("build")
         }
@@ -258,7 +161,7 @@ class OrderBuilderController {
         showPlans {
             action {
                 params.template = 'plans'
-                conversation.plans = getPlans(flow.company, params)
+                conversation.plans = productService.getFilteredPlans(flow.company, params)
             }
             on("success").to("build")
         }

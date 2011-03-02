@@ -93,6 +93,21 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
     }
 
     /**
+     * Fetch a list of all customer prices for a specific item.
+     * @param userId user id of the customer
+     * @param itemId item id
+     * @return list of customer prices, empty list if none found
+     */
+    @SuppressWarnings("unchecked")
+    public List<PlanItemDTO> findAllCustomerPricesByItem(Integer userId, Integer itemId) {
+        Query query = getSession().getNamedQuery("PlanItemDTO.findCustomerPriceByItem");
+        query.setParameter("user_id", userId);
+        query.setParameter("item_id", itemId);
+
+        return query.list();
+    }
+
+    /**
      * Deletes all customer prices for the given plan id for a customer.
      *
      * @param userId user id of the customer

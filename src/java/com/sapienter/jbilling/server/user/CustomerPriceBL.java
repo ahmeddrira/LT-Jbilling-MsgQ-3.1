@@ -239,6 +239,18 @@ public class CustomerPriceBL {
     }
 
     /**
+     * Returns a list of all prices for this customer and the given item id. This will include customer-specific
+     * prices and prices applied because the customer has subscribed to a plan.
+     *
+     * @param itemId item id
+     * @return list of prices, empty list if none
+     */
+    public List<PlanItemDTO> getCustomerPrices(Integer itemId) {
+        return customerPriceDas.findAllCustomerPricesByItem(userId, itemId);
+    }
+
+
+    /**
      * Returns the customer's price for the given item and pricing attributes.
      *
      * @see CustomerPriceDAS#findPriceByAttributes(Integer, Integer, java.util.Map, Integer)

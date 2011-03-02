@@ -2749,6 +2749,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         new CustomerPriceBL(userId, dto.getId()).update(dto);
     }
 
+    public void deleteCustomerPrice(Integer userId, Integer planItemId) {
+        new CustomerPriceBL(userId, planItemId).delete();
+    }
 
     public PlanItemWS[] getCustomerPrices(Integer userId) {
         List<PlanItemDTO> prices = new CustomerPriceBL(userId).getCustomerPrices();

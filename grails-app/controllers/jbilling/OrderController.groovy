@@ -22,6 +22,7 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.order.db.OrderStatusDAS;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
 
 /**
  * 
@@ -93,7 +94,7 @@ class OrderController {
 	}
 	
 	def getFilteredOrders(filters) {
-		//def statuses= new OrderStatusDAS().findAll()
+		
 		params.max = params?.max?.toInteger() ?: pagination.max
 		params.offset = params?.offset?.toInteger() ?: pagination.offset
 		
@@ -104,17 +105,18 @@ class OrderController {
 			and {
 				filters.each { filter ->
 					if (filter.value) {
-						switch (filter.constraintType) {
-							case FilterConstraint.EQ:
-								eq(filter.field, filter.value)
-								break
-
-							case FilterConstraint.DATE_BETWEEN:
-								between(filter.field, filter.startDateValue, filter.endDateValue)
-								break
-							//case FilterConstraint.STATUS:
-							//	eq("orderStatus", statuses.find{ it.id == filter.integerValue })
-							//	break
+						log.debug "Filter value: ${filter.value}"
+						//handle orderStatus & orderPeriod separately
+						if (filter.constraintType == FilterConstraint.STATUS) {
+							if (filter.getField().equals('orderStatus')) {
+								def statuses= new OrderStatusDAS().findAll()
+								eq("orderStatus", statuses.find{ it.id == filter.integerValue })
+							} else if (filter.getField().equals('orderPeriod')) {
+								def statuses= new OrderPeriodDAS().findAll()
+								eq("orderPeriod", statuses.find{ it.id == filter.integerValue })
+							}
+						} else {
+							addToCriteria(filter.getRestrictions());
 						}
 					}
 				}

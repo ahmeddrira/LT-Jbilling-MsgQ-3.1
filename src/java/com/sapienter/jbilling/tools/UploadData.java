@@ -480,7 +480,7 @@ public class UploadData {
                     item.setPercentage(null);
                     item.setCurrencyId(null);
                 }
-                item.setPriceManual(Integer.valueOf(fields[2]));
+
                 if (item.getPercentage() == null) {
                     item.setPrice(new BigDecimal(Float.valueOf(fields[3])));
                 } else {

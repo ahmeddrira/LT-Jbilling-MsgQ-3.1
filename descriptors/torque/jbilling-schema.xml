@@ -639,7 +639,6 @@
         <column name="internal_number" size="50" type="VARCHAR"/>
         <column name="entity_id" type="INTEGER"/>
         <column name="percentage" type="NUMERIC" size="22" scale="10"/>
-        <column name="price_manual" required="true" type="SMALLINT"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
         <column default="0" name="has_decimals" required="true" type="SMALLINT"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>

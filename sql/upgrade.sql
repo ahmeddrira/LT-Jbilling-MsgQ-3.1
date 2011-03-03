@@ -813,3 +813,6 @@ values (47, 19, 'description', 1, 'Last API call to get the the user subscriptio
 -- lengthen the preference int value to allow for longer mediation "last read ID" values
 -- alter table preference modify int_value int4 null default null; -- mysql
 alter table preference alter int_value type int4; -- postgresql
+
+-- drop item manual pricing flag
+alter table item drop column price_manual;

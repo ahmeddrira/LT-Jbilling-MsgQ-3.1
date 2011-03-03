@@ -5,6 +5,7 @@ import com.sapienter.jbilling.common.Constants
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.entity.AchDTO
 import com.sapienter.jbilling.server.entity.CreditCardDTO
+import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.db.CompanyDTO
@@ -12,11 +13,14 @@ import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.user.db.UserStatusDAS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import grails.plugins.springsecurity.Secured
-import com.sapienter.jbilling.server.item.CurrencyBL
-import com.sapienter.jbilling.server.user.EntityBL
-import com.sapienter.jbilling.client.authentication.JBillingPasswordEncoder
-import org.springframework.security.authentication.encoding.PasswordEncoder
+import java.beans.PropertyDescriptor
+import java.lang.reflect.InvocationTargetException
+import org.apache.commons.beanutils.PropertyUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.security.authentication.encoding.PasswordEncoder
+import java.lang.reflect.Method
+import com.sapienter.jbilling.server.util.CSVBeanExporter
+import org.apache.commons.beanutils.BeanUtils
 
 @Secured(['isAuthenticated()'])
 class UserController {
@@ -35,18 +39,11 @@ class UserController {
         redirect action: list, params: params
     }
 
-    /**
-     * Get a list of users and render the list page. If the "applyFilters" parameter is given, the
-     * partial "_users.gsp" template will be rendered instead of the complete user list.
-     */
-    def list = {
-        def filters = filterService.getFilters(FilterType.CUSTOMER, params)
-        def statuses = new UserStatusDAS().findAll()
-
+    def getList(filters, statuses, GrailsParameterMap params) {
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset
 
-        def users = UserDTO.createCriteria().list(
+        return UserDTO.createCriteria().list(
                 max:    params.max,
                 offset: params.offset
         ) {
@@ -71,7 +68,16 @@ class UserController {
             }
             order('id', 'desc')
         }
+    }
 
+    /**
+     * Get a list of users and render the list page. If the "applyFilters" parameter is given, the
+     * partial "_users.gsp" template will be rendered instead of the complete user list.
+     */
+    def list = {
+        def filters = filterService.getFilters(FilterType.CUSTOMER, params)
+        def statuses = new UserStatusDAS().findAll()
+        def users = getList(filters, statuses, params)
         def selected = params.id ? UserDTO.get(params.int("id")) : null
 
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
@@ -81,6 +87,20 @@ class UserController {
         } else {
             render view: 'list', model: [ users: users, selected: selected, statuses: statuses, filters: filters ]
         }
+    }
+
+    /**
+     * Applies the set filters to the user list, and exports it as a CSV for download.
+     */
+    def csv = {
+        def filters = filterService.getFilters(FilterType.CUSTOMER, params)
+        def statuses = new UserStatusDAS().findAll()
+
+        params.max = Integer.MAX_VALUE
+        def users = getList(filters, statuses, params)
+
+        CSVBeanExporter<UserDTO> exporter = CSVBeanExporter.createExporter(UserDTO.class);
+        render text: exporter.export(users), contentType: "text/csv"
     }
 
     /**

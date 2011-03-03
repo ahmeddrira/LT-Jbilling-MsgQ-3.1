@@ -20,17 +20,16 @@
 
 package com.sapienter.jbilling.server.util.api.validation;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-
+import com.sapienter.jbilling.common.SessionInternalError;
 import org.apache.log4j.Logger;
 import org.springframework.aop.MethodBeforeAdvice;
 
-import com.sapienter.jbilling.common.SessionInternalError;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -43,74 +42,14 @@ public class APIValidator implements MethodBeforeAdvice {
     private Validator validator;
     private Set<String> objectsToTest = null;
 
-    public Validator getValidator() {
-		return validator;
-	}
-
 	public void setValidator(Validator validator) {
 		this.validator = validator;
 	}
 
-	public void before(Method method, Object[] args, Object target) throws Throwable {
-		ArrayList<String> errors = new ArrayList<String>();
-		
-        for (Object arg: args) {
-            if (arg != null) {
-            	String objectname = arg.getClass().getName();
-            	if (arg.getClass().isArray() && ((Object[])arg).length > 0) {
-            		objectname= (((Object[])arg)[0]).getClass().getName();
-            	}
-                boolean testThisObject = false;
-                for (String test: objectsToTest) {
-                    if (objectname.endsWith(test)) {
-                        testThisObject = true;
-                        break;
-                    }
-                }
-                if (testThisObject) {
-                	if (arg.getClass().isArray()) { 
-                		Object[] objArr= (Object[]) arg;
-                		for (Object o: objArr) {
-                			errors.addAll(validateObject(method, objectname, o));
-                		}
-                		
-                	} else {
-                		errors.addAll(validateObject(method, objectname, arg));
-                	}
-                }
-            }
-        }
-        
-        if (errors.size() > 0) {
-        	SessionInternalError exception = new SessionInternalError();
-        	exception.setErrorMessages(errors.toArray(new String[errors.size()]));        	            
-        	throw exception;
-        }
-    }
-
-	private ArrayList<String> validateObject(Method method, String objectname, Object arg) {
-		ArrayList<String> errors = new ArrayList<String>(0);
-		// it always does the default
-        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(arg);
-
-        if (method.getName().startsWith("create")) {
-            constraintViolations.addAll(validator.validate(arg, CreateValidationGroup.class));
-        } else if (method.getName().startsWith("update")) {
-            constraintViolations.addAll(validator.validate(arg, UpdateValidationGroup.class));
-        }
-
-        if (constraintViolations.size() > 0) {
-            for (ConstraintViolation<Object> violation: constraintViolations) {
-                // compose the error message
-                String shortObjectName = objectname.substring(objectname.lastIndexOf('.') + 1);
-                errors.add(shortObjectName + "," + violation.getPropertyPath().toString() + "," +
-                           violation.getMessage());
-            }
-            LOG.debug("Calling " + method.getName() + " found an error in " + objectname);
-        }
-        return errors;
+    public Validator getValidator() {
+		return validator;
 	}
-	
+
 	public void setObjectsToTest(Set<String> objectsToTest) {
 		this.objectsToTest = objectsToTest;
 	}
@@ -118,4 +57,104 @@ public class APIValidator implements MethodBeforeAdvice {
 	public Set<String> getObjectsToTest() {
 		return objectsToTest;
 	}
+
+	public void before(Method method, Object[] args, Object target) throws Throwable {
+		ArrayList<String> errors = new ArrayList<String>();
+		
+        for (Object arg: args) {
+            if (arg != null) {
+
+                String objectName = getObjectName(arg);
+            	if (arg.getClass().isArray() && ((Object[])arg).length > 0) {
+            		objectName= (((Object[]) arg) [0]).getClass().getName();
+            	}
+
+                boolean testThisObject = false;
+                for (String test: objectsToTest) {
+                    if (objectName.endsWith(test)) {
+                        testThisObject = true;
+                        break;
+                    }
+                }
+
+                if (testThisObject) {
+                	if (arg.getClass().isArray()) { 
+                		Object[] objArr = (Object[]) arg;
+                		for (Object o : objArr) {
+                			errors.addAll(validateObject(method, objectName, o));
+                		}
+                		
+                	} else {
+                		errors.addAll(validateObject(method, objectName, arg));
+                	}
+                }
+            }
+        }
+        
+        if (!errors.isEmpty()) {
+        	throw new SessionInternalError("Validation of '" + method.getName() + "()' arguments failed.",
+                                           errors.toArray(new String[errors.size()]));
+        }
+    }
+
+    private String getObjectName(Object object) {
+        return object.getClass().getSimpleName();
+    }
+
+
+    private List<String> getErrorMessages(Set<ConstraintViolation<Object>> constraintViolations, String objectName) {
+        List<String> errors = new ArrayList<String>(constraintViolations.size());
+
+        if (!constraintViolations.isEmpty())
+            for (ConstraintViolation<Object> violation: constraintViolations)
+                errors.add(objectName + "," + violation.getPropertyPath().toString() + "," + violation.getMessage());
+
+        return errors;
+    }
+
+    /**
+     * Validates a method call argument, returning a list of error messages to be thrown
+     * as part of a SessionInternalError.
+     *
+     * @param method method to validate
+     * @param objectName object name of method argument to validate
+     * @param arg method argument to validate
+     * @return error messages
+     */
+	private List<String> validateObject(Method method, String objectName, Object arg) {
+        // validate all common validations
+        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(arg);
+
+        // validate "create" or "update" group validations
+        if (method.getName().startsWith("create")) {
+            constraintViolations.addAll(validator.validate(arg, CreateValidationGroup.class));
+        } else if (method.getName().startsWith("update")) {
+            constraintViolations.addAll(validator.validate(arg, UpdateValidationGroup.class));
+        }
+
+        // build error messages
+        return getErrorMessages(constraintViolations, objectName);
+	}
+
+    /**
+     * Validates the given object and throws a SessionInternalError with error messages if
+     * any validation constraint has been violated.
+     *
+     * @param object object to validate
+     * @throws SessionInternalError if validation failed
+     */
+    public void validateObject(Object object) throws SessionInternalError{
+        // run all common validations
+        Set<ConstraintViolation<Object>> constraintViolations = getValidator().validate(object);
+
+        // build error messages
+        String objectName = getObjectName(object);
+        List<String> errors = getErrorMessages(constraintViolations, objectName);
+
+        // throw exception if error messages returned
+        if (!errors.isEmpty()) {
+            throw new SessionInternalError("Validation object '" + objectName + "' failed.",
+                                           errors.toArray(new String[errors.size()]));
+        }
+    }
 }

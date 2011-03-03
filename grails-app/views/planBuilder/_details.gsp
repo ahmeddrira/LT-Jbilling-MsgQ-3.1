@@ -67,12 +67,6 @@
                 <content tag="label.for">price.rate</content>
                 <g:textField class="field" name="price.rate" value="${formatNumber(number: product?.defaultPrice?.rate, formatName: 'money.format')}"/>
             </g:applyLayout>
-
-            <g:applyLayout name="form/checkbox">
-                <content tag="label"><g:message code="product.allow.manual.pricing"/></content>
-                <content tag="label.for">priceManual</content>
-                <g:checkBox class="cb checkbox" name="priceManual" checked="${product?.priceManual > 0}"/>
-            </g:applyLayout>
         </div>
 
         <hr/>

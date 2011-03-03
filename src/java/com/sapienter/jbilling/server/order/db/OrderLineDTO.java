@@ -261,7 +261,6 @@ public class OrderLineDTO implements Serializable, Comparable {
         
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="orderLine")
     @Cascade( value= org.hibernate.annotations.CascadeType.DELETE_ORPHAN )
-    @Fetch (FetchMode.SUBSELECT)
     public List<MediationRecordLineDTO> getEvents() {
         return this.events;
     }

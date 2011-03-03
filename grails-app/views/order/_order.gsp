@@ -66,7 +66,7 @@
                     <td class="value">${Util.formatMoney(order.total as BigDecimal,
                         session["user_id"],
                         order.currencyId, 
-                        false)?.substring(3)}</td></tr>
+                        false)?.substring(2)}</td></tr>
             <tr><td><g:message code="order.label.status"/>:</td>
                 <td class="value">${order?.statusStr}</td></tr>
         </table>
@@ -135,11 +135,11 @@
                             <td class="innerContent">${Util.formatMoney( new BigDecimal(line?.price?:"0.0"),
                                 session["user_id"],
                                 order.currencyId, 
-                                false)?.substring(3)}</td>
+                                false)?.substring(2)}</td>
                             <td class="innerContent">${Util.formatMoney( new BigDecimal(line?.amount?:"0.0"),
                                 session["user_id"],
                                 order.currencyId, 
-                                false)?.substring(3)}</td>
+                                false)?.substring(2)}</td>
                          </tr>
                      </g:each>
                  </tbody>

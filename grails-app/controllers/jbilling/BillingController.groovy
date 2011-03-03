@@ -83,14 +83,7 @@ class BillingController {
 				and {
 					filters.each { filter ->
 						if (filter.value) {
-							switch (filter.constraintType) {
-								case FilterConstraint.DATE_BETWEEN:
-									between(filter.field, filter.startDateValue, filter.endDateValue)
-									break
-								case FilterConstraint.EQ:
-									eq(filter.field, filter.value)
-									break
-							}
+							addToCriteria(filter.getRestrictions());
 						}
 					}
 					//eq('isReview', 0)

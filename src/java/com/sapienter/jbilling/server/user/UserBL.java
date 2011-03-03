@@ -350,6 +350,10 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setDynamicBalance(dto.getCustomer().getDynamicBalance());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
 
+            //additional customer fields
+            user.getCustomer().setNotes(dto.getCustomer().getNotes());
+            user.getCustomer().setAutoPaymentType(dto.getCustomer().getAutoPaymentType());
+            
         } else { // all the rest
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(),
                     dto.getLanguageId(), roles, dto.getCurrencyId(),

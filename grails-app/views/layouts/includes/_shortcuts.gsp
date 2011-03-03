@@ -1,4 +1,3 @@
-
 <%--
   _shortcuts
 
@@ -11,10 +10,22 @@
         <a class="arrow open"><strong><g:message code="shortcut.title"/></strong></a>
         <div class="drop">
             <ul>
-                <li><g:link controller="user" action="create"><g:message code="shortcut.link.customer"/></g:link></li>
-                <li><g:link controller="product" action="create"><g:message code="shortcut.link.product"/></g:link></li>
-                <li><g:link controller="order" action="create"><g:message code="shortcut.link.order"/></g:link></li>
-                <li><g:link controller="user" action="invoice"><g:message code="shortcut.link.invoice"/></g:link></li>
+                <g:each var="shortcut" in="${session['shortcuts']}">
+                    <li>
+                        <g:link controller="${shortcut.controller}" action="${shortcut.action}" id="${shortcut.objectId}">
+                            <g:message code="${shortcut.messageCode}" args="[shortcut.objectId]"/>
+                        </g:link>
+                        <g:remoteLink class="delete" controller="shortcut" action="remove" params="[id: shortcut.id]" update="shortcuts"
+                            style=" width:9px;
+                            height:9px;
+                            text-indent:-9999px;
+                            overflow:hidden;
+                            background:url(../images/icon03.gif) no-repeat;
+                            float:right;
+                            margin:11px 8px 0 0;
+                            padding:0;"/>
+                    </li>
+                </g:each>
             </ul>
         </div>
     </div>

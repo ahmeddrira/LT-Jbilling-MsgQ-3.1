@@ -212,6 +212,7 @@ DROP INDEX public.bp_run_total_run_ix;
 DROP INDEX public.bp_run_process_ix;
 DROP INDEX public.bp_pm_index_total;
 DROP INDEX public.ach_i_2;
+ALTER TABLE ONLY public.shortcut DROP CONSTRAINT shortcut_pkey;
 ALTER TABLE ONLY public.role DROP CONSTRAINT role_pkey;
 ALTER TABLE ONLY public.report_user DROP CONSTRAINT report_user_pkey;
 ALTER TABLE ONLY public.report_type DROP CONSTRAINT report_type_pkey;
@@ -308,6 +309,7 @@ ALTER TABLE ONLY public.ageing_entity_step DROP CONSTRAINT ageing_entity_step_pk
 ALTER TABLE ONLY public.ach DROP CONSTRAINT ach_pkey;
 DROP TABLE public.user_role_map;
 DROP TABLE public.user_credit_card_map;
+DROP TABLE public.shortcut;
 DROP TABLE public.role;
 DROP TABLE public.report_user;
 DROP TABLE public.report_type_map;
@@ -2194,6 +2196,23 @@ CREATE TABLE role (
 
 
 ALTER TABLE public.role OWNER TO jbilling;
+
+--
+-- Name: shortcut; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+--
+
+CREATE TABLE shortcut
+(
+  id integer NOT NULL,
+  user_id integer NOT NULL,
+  controller character varying(255) NOT NULL,
+  "action" character varying(255),
+  "name" character varying(255),
+  object_id integer,
+  "version" integer NOT NULL
+);
+
+ALTER TABLE public.shortcut OWNER TO jbilling;
 
 --
 -- Name: user_credit_card_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -11989,6 +12008,7 @@ mediation_record_line	1
 contact_type	10
 contact_field_type	1
 breadcrumb	11
+shortcut	1
 \.
 
 
@@ -20893,7 +20913,14 @@ ALTER TABLE ONLY report_user
 ALTER TABLE ONLY role
     ADD CONSTRAINT role_pkey PRIMARY KEY (id);
 
+--
+-- Name: shortcut_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
 
+ALTER TABLE ONLY shortcut
+    ADD CONSTRAINT shortcut_pkey PRIMARY KEY (id);
+	
+	
 --
 -- Name: ach_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --

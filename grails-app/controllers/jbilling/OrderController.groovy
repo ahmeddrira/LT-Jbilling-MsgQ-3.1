@@ -252,4 +252,19 @@ class OrderController {
 		render view: 'list', model: [orders:orders, filters:filters]
 	}
 	
+	def delete = {
+		try {
+			webServicesSession.deleteOrder(params.int('id'))
+			flash.message = 'order.delete.success'
+			flash.args = [params.id, params.id]
+		} catch (SessionInternalError e){
+			flash.error ='order.error.delete'
+			viewUtils.resolveException(flash, session.locale, e);
+		} catch (Exception e) {
+			log.error e
+			flash.error= e.getMessage()
+		}
+		redirect action: 'list'
+	}
+	
 }

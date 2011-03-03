@@ -335,23 +335,30 @@ class PaymentController {
 
         // bind cheque object if parameters present
         if (params.cheque.any { key, value -> value }) {
+            log.debug("cheque params ${params.cheque}")
+
             def cheque = new PaymentInfoChequeDTO()
             bindData(cheque, params, 'cheque')
             payment.setCheque(cheque)
 
             payment.setMethodId(Constants.PAYMENT_METHOD_CHEQUE)
+
+
+            log.debug("bound check as ${cheque}")
         }
 
         return payment
     }
 
     def bindExpiryDate(CreditCardDTO creditCard, GrailsParameterMap params) {
-        Calendar calendar = Calendar.getInstance()
-        calendar.clear()
-        calendar.set(Calendar.MONTH, params.int('expiryMonth'))
-        calendar.set(Calendar.YEAR, params.int('expiryYear'))
+        if (params.expiryMonth && params.expiryYear) {
+            Calendar calendar = Calendar.getInstance()
+            calendar.clear()
+            calendar.set(Calendar.MONTH, params.int('expiryMonth'))
+            calendar.set(Calendar.YEAR, params.int('expiryYear'))
 
-        creditCard.expiry = calendar.getTime()
+            creditCard.expiry = calendar.getTime()
+        }
     }
 
     def getCurrencies() {

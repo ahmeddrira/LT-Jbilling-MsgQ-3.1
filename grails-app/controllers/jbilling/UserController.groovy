@@ -13,14 +13,12 @@ import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.user.db.UserStatusDAS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import grails.plugins.springsecurity.Secured
-import java.beans.PropertyDescriptor
-import java.lang.reflect.InvocationTargetException
-import org.apache.commons.beanutils.PropertyUtils
+
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.security.authentication.encoding.PasswordEncoder
-import java.lang.reflect.Method
-import com.sapienter.jbilling.server.util.CSVBeanExporter
-import org.apache.commons.beanutils.BeanUtils
+
+import com.sapienter.jbilling.server.util.csv.CsvExporter
+import com.sapienter.jbilling.server.util.csv.Exporter
 
 @Secured(['isAuthenticated()'])
 class UserController {
@@ -99,8 +97,8 @@ class UserController {
         params.max = Integer.MAX_VALUE
         def users = getList(filters, statuses, params)
 
-        CSVBeanExporter<UserDTO> exporter = CSVBeanExporter.createExporter(UserDTO.class);
-        render text: exporter.export(users), contentType: "text/csv"
+        Exporter<UserDTO> exporter = CsvExporter.createExporter(UserDTO.class);
+        render text: exporter.export(users), contentType: "text/html"
     }
 
     /**

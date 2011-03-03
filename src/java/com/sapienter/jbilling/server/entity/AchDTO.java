@@ -23,335 +23,336 @@
  */
 package com.sapienter.jbilling.server.entity;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlType;
 import javax.validation.constraints.Digits;
+import java.io.Serializable;
 
 /**
  * Value object for AchEntity.
  */
 @XmlType(name = "ach")
-public class AchDTO
-   extends java.lang.Object
-   implements java.io.Serializable
-{
-   private java.lang.Integer id;
-   private boolean idHasBeenSet = false;
+public class AchDTO implements Serializable {
 
-   @NotNull(message = "validation.error.is.required")
-   @Digits(integer=16, fraction=0, message="validation.error.not.a.number")
-   private java.lang.String abaRouting;
-   private boolean abaRoutingHasBeenSet = false;
+    private java.lang.Integer id;
+    private boolean idHasBeenSet = false;
 
-   @NotNull(message = "validation.error.is.required")
-   @Digits(integer=16, fraction=0, message="validation.error.not.a.number")
-   private java.lang.String bankAccount;
-   private boolean bankAccountHasBeenSet = false;
+    @NotEmpty(message="validation.error.notnull")
+    @Digits(integer=16, fraction=0, message="validation.error.not.a.number")
+    private java.lang.String abaRouting;
+    private boolean abaRoutingHasBeenSet = false;
 
-   @NotNull(message = "validation.error.is.required")
-   private java.lang.Integer accountType;
-   private boolean accountTypeHasBeenSet = false;
+    @NotEmpty(message="validation.error.notnull")
+    @Digits(integer=16, fraction=0, message="validation.error.not.a.number")
+    private java.lang.String bankAccount;
+    private boolean bankAccountHasBeenSet = false;
 
-   @NotNull(message = "validation.error.is.required")
-   private java.lang.String bankName;
-   private boolean bankNameHasBeenSet = false;
+    @NotNull(message = "validation.error.notnull")
+    private java.lang.Integer accountType;
+    private boolean accountTypeHasBeenSet = false;
 
-   @NotNull(message = "validation.error.is.required")
-   private java.lang.String accountName;
-   private boolean accountNameHasBeenSet = false;
-   private java.lang.String gatewayKey;
-   private boolean gatewayKeyHasBeenSet = false;
+    @NotEmpty(message="validation.error.notnull")
+    private java.lang.String bankName;
+    private boolean bankNameHasBeenSet = false;
 
-   private java.lang.Integer pk;
+    @NotEmpty(message="validation.error.notnull")
+    private java.lang.String accountName;
+    private boolean accountNameHasBeenSet = false;
+    private java.lang.String gatewayKey;
+    private boolean gatewayKeyHasBeenSet = false;
 
-   public AchDTO()
-   {
-   }
+    private java.lang.Integer pk;
 
-   public AchDTO( java.lang.Integer id,java.lang.String abaRouting,java.lang.String bankAccount,java.lang.Integer accountType,java.lang.String bankName,java.lang.String accountName, String gatewayKey)
-   {
-      this.id = id;
-      idHasBeenSet = true;
-      this.abaRouting = abaRouting;
-      abaRoutingHasBeenSet = true;
-      this.bankAccount = bankAccount;
-      bankAccountHasBeenSet = true;
-      this.accountType = accountType;
-      accountTypeHasBeenSet = true;
-      this.bankName = bankName;
-      bankNameHasBeenSet = true;
-      this.accountName = accountName;
-      accountNameHasBeenSet = true;
-      this.gatewayKey = gatewayKey;
-      gatewayKeyHasBeenSet = true;
-      pk = this.getId();
-   }
+    public AchDTO()
+    {
+    }
 
-   //TODO Cloneable is better than this !
-   public AchDTO( AchDTO otherValue )
-   {
-      this.id = otherValue.id;
-      idHasBeenSet = true;
-      this.abaRouting = otherValue.abaRouting;
-      abaRoutingHasBeenSet = true;
-      this.bankAccount = otherValue.bankAccount;
-      bankAccountHasBeenSet = true;
-      this.accountType = otherValue.accountType;
-      accountTypeHasBeenSet = true;
-      this.bankName = otherValue.bankName;
-      bankNameHasBeenSet = true;
-      this.accountName = otherValue.accountName;
-      accountNameHasBeenSet = true;
-      this.gatewayKey = otherValue.gatewayKey;
-      gatewayKeyHasBeenSet = true;
+    public AchDTO( java.lang.Integer id,java.lang.String abaRouting,java.lang.String bankAccount,java.lang.Integer accountType,java.lang.String bankName,java.lang.String accountName, String gatewayKey)
+    {
+        this.id = id;
+        idHasBeenSet = true;
+        this.abaRouting = abaRouting;
+        abaRoutingHasBeenSet = true;
+        this.bankAccount = bankAccount;
+        bankAccountHasBeenSet = true;
+        this.accountType = accountType;
+        accountTypeHasBeenSet = true;
+        this.bankName = bankName;
+        bankNameHasBeenSet = true;
+        this.accountName = accountName;
+        accountNameHasBeenSet = true;
+        this.gatewayKey = gatewayKey;
+        gatewayKeyHasBeenSet = true;
+        pk = this.getId();
+    }
 
-      pk = this.getId();
-   }
+    //TODO Cloneable is better than this !
+    public AchDTO( AchDTO otherValue )
+    {
+        this.id = otherValue.id;
+        idHasBeenSet = true;
+        this.abaRouting = otherValue.abaRouting;
+        abaRoutingHasBeenSet = true;
+        this.bankAccount = otherValue.bankAccount;
+        bankAccountHasBeenSet = true;
+        this.accountType = otherValue.accountType;
+        accountTypeHasBeenSet = true;
+        this.bankName = otherValue.bankName;
+        bankNameHasBeenSet = true;
+        this.accountName = otherValue.accountName;
+        accountNameHasBeenSet = true;
+        this.gatewayKey = otherValue.gatewayKey;
+        gatewayKeyHasBeenSet = true;
 
-   public java.lang.Integer getPrimaryKey()
-   {
-      return pk;
-   }
+        pk = this.getId();
+    }
 
-   public void setPrimaryKey( java.lang.Integer pk )
-   {
-      // it's also nice to update PK object - just in case
-      // somebody would ask for it later...
-      this.pk = pk;
-      setId( pk );
-   }
+    public java.lang.Integer getPrimaryKey()
+    {
+        return pk;
+    }
 
-   public java.lang.Integer getId()
-   {
-      return this.id;
-   }
+    public void setPrimaryKey( java.lang.Integer pk )
+    {
+        // it's also nice to update PK object - just in case
+        // somebody would ask for it later...
+        this.pk = pk;
+        setId( pk );
+    }
 
-   public void setId( java.lang.Integer id )
-   {
-      this.id = id;
-      idHasBeenSet = true;
+    public java.lang.Integer getId()
+    {
+        return this.id;
+    }
 
-          pk = id;
-   }
+    public void setId( java.lang.Integer id )
+    {
+        this.id = id;
+        idHasBeenSet = true;
 
-   public boolean idHasBeenSet(){
-      return idHasBeenSet;
-   }
-   public java.lang.String getAbaRouting()
-   {
-      return this.abaRouting;
-   }
+        pk = id;
+    }
 
-   public void setAbaRouting( java.lang.String abaRouting )
-   {
-      this.abaRouting = abaRouting;
-      abaRoutingHasBeenSet = true;
+    public boolean idHasBeenSet(){
+        return idHasBeenSet;
+    }
+    public java.lang.String getAbaRouting()
+    {
+        return this.abaRouting;
+    }
 
-   }
+    public void setAbaRouting( java.lang.String abaRouting )
+    {
+        this.abaRouting = abaRouting;
+        abaRoutingHasBeenSet = true;
 
-   public boolean abaRoutingHasBeenSet(){
-      return abaRoutingHasBeenSet;
-   }
-   public java.lang.String getBankAccount()
-   {
-      return this.bankAccount;
-   }
+    }
 
-   public void setBankAccount( java.lang.String bankAccount )
-   {
-      this.bankAccount = bankAccount;
-      bankAccountHasBeenSet = true;
+    public boolean abaRoutingHasBeenSet(){
+        return abaRoutingHasBeenSet;
+    }
+    public java.lang.String getBankAccount()
+    {
+        return this.bankAccount;
+    }
 
-   }
+    public void setBankAccount( java.lang.String bankAccount )
+    {
+        this.bankAccount = bankAccount;
+        bankAccountHasBeenSet = true;
 
-   public boolean bankAccountHasBeenSet(){
-      return bankAccountHasBeenSet;
-   }
-   public java.lang.Integer getAccountType()
-   {
-      return this.accountType;
-   }
+    }
 
-   public void setAccountType( java.lang.Integer accountType )
-   {
-      this.accountType = accountType;
-      accountTypeHasBeenSet = true;
+    public boolean bankAccountHasBeenSet(){
+        return bankAccountHasBeenSet;
+    }
+    public java.lang.Integer getAccountType()
+    {
+        return this.accountType;
+    }
 
-   }
+    public void setAccountType( java.lang.Integer accountType )
+    {
+        this.accountType = accountType;
+        accountTypeHasBeenSet = true;
 
-   public boolean accountTypeHasBeenSet(){
-      return accountTypeHasBeenSet;
-   }
-   public java.lang.String getBankName()
-   {
-      return this.bankName;
-   }
+    }
 
-   public void setBankName( java.lang.String bankName )
-   {
-      this.bankName = bankName;
-      bankNameHasBeenSet = true;
+    public boolean accountTypeHasBeenSet(){
+        return accountTypeHasBeenSet;
+    }
+    public java.lang.String getBankName()
+    {
+        return this.bankName;
+    }
 
-   }
+    public void setBankName( java.lang.String bankName )
+    {
+        this.bankName = bankName;
+        bankNameHasBeenSet = true;
 
-   public boolean bankNameHasBeenSet(){
-      return bankNameHasBeenSet;
-   }
-   public java.lang.String getAccountName()
-   {
-      return this.accountName;
-   }
+    }
 
-   public void setAccountName( java.lang.String accountName )
-   {
-      this.accountName = accountName;
-      accountNameHasBeenSet = true;
+    public boolean bankNameHasBeenSet(){
+        return bankNameHasBeenSet;
+    }
+    public java.lang.String getAccountName()
+    {
+        return this.accountName;
+    }
 
-   }
+    public void setAccountName( java.lang.String accountName )
+    {
+        this.accountName = accountName;
+        accountNameHasBeenSet = true;
 
-   public boolean accountNameHasBeenSet(){
-      return accountNameHasBeenSet;
-   }
+    }
 
-   public String getGatewayKey() {
-    return this.gatewayKey;
-   }
+    public boolean accountNameHasBeenSet(){
+        return accountNameHasBeenSet;
+    }
 
-   public void setGatewayKey(String gatewayKey) {
-    this.gatewayKey = gatewayKey;
-    gatewayKeyHasBeenSet = true;
-   }
+    public String getGatewayKey() {
+        return this.gatewayKey;
+    }
 
-   public boolean gatewayKeyHasBeenSet() {
-    return gatewayKeyHasBeenSet;
-   }
+    public void setGatewayKey(String gatewayKey) {
+        this.gatewayKey = gatewayKey;
+        gatewayKeyHasBeenSet = true;
+    }
 
-   public boolean useGatewayKey() {
-    return (getGatewayKey() != null);
-   }
+    public boolean gatewayKeyHasBeenSet() {
+        return gatewayKeyHasBeenSet;
+    }
 
-   public String toString()
-   {
-      StringBuffer str = new StringBuffer("{");
+    public boolean useGatewayKey() {
+        return (getGatewayKey() != null);
+    }
 
-      str.append("id=" + getId() + " " + "abaRouting=" + getAbaRouting() + " "
-              + "bankAccount=" + getBankAccount() + " " + "accountType=" + getAccountType()
-              + " " + "bankName=" + getBankName() + " " + "accountName=" + getAccountName()
-              + " " + "gatewayKey=" + getGatewayKey());
-      str.append('}');
+    public String toString()
+    {
+        StringBuffer str = new StringBuffer("{");
 
-      return(str.toString());
-   }
+        str.append("id=" + getId() + " " + "abaRouting=" + getAbaRouting() + " "
+                   + "bankAccount=" + getBankAccount() + " " + "accountType=" + getAccountType()
+                   + " " + "bankName=" + getBankName() + " " + "accountName=" + getAccountName()
+                   + " " + "gatewayKey=" + getGatewayKey());
+        str.append('}');
 
-   /**
-    * A Value Object has an identity if the attributes making its Primary Key have all been set. An object without identity is never equal to any other object.
-    *
-    * @return true if this instance has an identity.
-    */
-   protected boolean hasIdentity()
-   {
-      return idHasBeenSet;
-   }
+        return(str.toString());
+    }
 
-   public boolean equals(Object other)
-   {
-      if (this == other)
-         return true;
-      if ( ! hasIdentity() ) return false;
-      if (other instanceof AchDTO)
-      {
-         AchDTO that = (AchDTO) other;
-         if ( ! that.hasIdentity() ) return false;
-         boolean lEquals = true;
-         if( this.id == null )
-         {
-            lEquals = lEquals && ( that.id == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.id.equals( that.id );
-         }
+    /**
+     * A Value Object has an identity if the attributes making its Primary Key have all been set. An object without identity is never equal to any other object.
+     *
+     * @return true if this instance has an identity.
+     */
+    protected boolean hasIdentity()
+    {
+        return idHasBeenSet;
+    }
 
-         lEquals = lEquals && isIdentical(that);
+    public boolean equals(Object other)
+    {
+        if (this == other)
+            return true;
+        if ( ! hasIdentity() ) return false;
+        if (other instanceof AchDTO)
+        {
+            AchDTO that = (AchDTO) other;
+            if ( ! that.hasIdentity() ) return false;
+            boolean lEquals = true;
+            if( this.id == null )
+            {
+                lEquals = lEquals && ( that.id == null );
+            }
+            else
+            {
+                lEquals = lEquals && this.id.equals( that.id );
+            }
 
-         return lEquals;
-      }
-      else
-      {
-         return false;
-      }
-   }
+            lEquals = lEquals && isIdentical(that);
 
-   public boolean isIdentical(Object other)
-   {
-      if (other instanceof AchDTO)
-      {
-         AchDTO that = (AchDTO) other;
-         boolean lEquals = true;
-         if( this.abaRouting == null )
-         {
-            lEquals = lEquals && ( that.abaRouting == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.abaRouting.equals( that.abaRouting );
-         }
-         if( this.bankAccount == null )
-         {
-            lEquals = lEquals && ( that.bankAccount == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.bankAccount.equals( that.bankAccount );
-         }
-         if( this.accountType == null )
-         {
-            lEquals = lEquals && ( that.accountType == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.accountType.equals( that.accountType );
-         }
-         if( this.bankName == null )
-         {
-            lEquals = lEquals && ( that.bankName == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.bankName.equals( that.bankName );
-         }
-         if( this.accountName == null )
-         {
-            lEquals = lEquals && ( that.accountName == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.accountName.equals( that.accountName );
-         }
+            return lEquals;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
-         return lEquals;
-      }
-      else
-      {
-         return false;
-      }
-   }
+    public boolean isIdentical(Object other)
+    {
+        if (other instanceof AchDTO)
+        {
+            AchDTO that = (AchDTO) other;
+            boolean lEquals = true;
+            if( this.abaRouting == null )
+            {
+                lEquals = lEquals && ( that.abaRouting == null );
+            }
+            else
+            {
+                lEquals = lEquals && this.abaRouting.equals( that.abaRouting );
+            }
+            if( this.bankAccount == null )
+            {
+                lEquals = lEquals && ( that.bankAccount == null );
+            }
+            else
+            {
+                lEquals = lEquals && this.bankAccount.equals( that.bankAccount );
+            }
+            if( this.accountType == null )
+            {
+                lEquals = lEquals && ( that.accountType == null );
+            }
+            else
+            {
+                lEquals = lEquals && this.accountType.equals( that.accountType );
+            }
+            if( this.bankName == null )
+            {
+                lEquals = lEquals && ( that.bankName == null );
+            }
+            else
+            {
+                lEquals = lEquals && this.bankName.equals( that.bankName );
+            }
+            if( this.accountName == null )
+            {
+                lEquals = lEquals && ( that.accountName == null );
+            }
+            else
+            {
+                lEquals = lEquals && this.accountName.equals( that.accountName );
+            }
 
-   public int hashCode(){
-      int result = 17;
-      result = 37*result + ((this.id != null) ? this.id.hashCode() : 0);
+            return lEquals;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
-      result = 37*result + ((this.abaRouting != null) ? this.abaRouting.hashCode() : 0);
+    public int hashCode(){
+        int result = 17;
+        result = 37*result + ((this.id != null) ? this.id.hashCode() : 0);
 
-      result = 37*result + ((this.bankAccount != null) ? this.bankAccount.hashCode() : 0);
+        result = 37*result + ((this.abaRouting != null) ? this.abaRouting.hashCode() : 0);
 
-      result = 37*result + ((this.accountType != null) ? this.accountType.hashCode() : 0);
+        result = 37*result + ((this.bankAccount != null) ? this.bankAccount.hashCode() : 0);
 
-      result = 37*result + ((this.bankName != null) ? this.bankName.hashCode() : 0);
+        result = 37*result + ((this.accountType != null) ? this.accountType.hashCode() : 0);
 
-      result = 37*result + ((this.accountName != null) ? this.accountName.hashCode() : 0);
+        result = 37*result + ((this.bankName != null) ? this.bankName.hashCode() : 0);
 
-      return result;
-   }
+        result = 37*result + ((this.accountName != null) ? this.accountName.hashCode() : 0);
+
+        return result;
+    }
 
 }

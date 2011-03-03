@@ -23,6 +23,8 @@
  */
 package com.sapienter.jbilling.server.entity;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
@@ -35,10 +37,10 @@ public class PaymentInfoChequeDTO implements Serializable {
 
     private java.lang.Integer id;
     private boolean idHasBeenSet = false;
-    @NotNull(message="validation.error.notnull")
+    @NotEmpty(message="validation.error.notnull")
     private java.lang.String bank;
     private boolean bankHasBeenSet = false;
-    @NotNull(message="validation.error.notnull")
+    @NotEmpty(message="validation.error.notnull")
     private java.lang.String number;
     private boolean numberHasBeenSet = false;
     @NotNull(message="validation.error.notnull")

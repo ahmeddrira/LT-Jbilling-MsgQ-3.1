@@ -155,7 +155,7 @@
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="payment.amount"/></content>
                             <content tag="label.for">payment.amount</content>
-                            <g:set var="paymentAmount" value="${payment?.getAmountAsDecimal() ?: invoices?.find{ it.id == invoiceId }?.balance }"/>
+                            <g:set var="paymentAmount" value="${payment?.amount ?: invoices?.find{ it.id == invoiceId }?.balance }"/>
                             <g:textField class="field" name="payment.amount" value="${formatNumber(number: paymentAmount, formatName: 'money.format')}"/>
                         </g:applyLayout>
 

@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.order.db;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -44,6 +45,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.util.csv.Exportable;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
@@ -780,13 +782,23 @@ public class OrderDTO implements Serializable, Exportable {
                 "isMainSubscription",
                 "notes",
 
-                // todo: order lines
+                // order lines
+                "lineItemId",
+                "lineProductCode",
+                "lineQuantity",
+                "linePrice",
+                "lineAmount",
+                "lineDescription"
         };
     }
 
     @Transient
-    public Object[] getFieldValues() {
-        return new Object[] {
+    public Object[][] getFieldValues() {
+        List<Object[]> values = new ArrayList<Object[]>();
+
+        // main invoice row
+        values.add(
+            new Object[] {
                 id,
                 (baseUserByUserId != null ? baseUserByUserId.getId() : null),
                 (orderStatusDTO != null ? orderStatusDTO.getDescription() : null),
@@ -801,9 +813,43 @@ public class OrderDTO implements Serializable, Exportable {
                 nextBillableDay,
                 isCurrent,
                 notes
+            }
+        );
 
-                // todo: order lines
-        };
+        // indented row for each order line
+        for (OrderLineDTO line : lines) {
+            if (line.getDeleted() == 0) {
+                values.add(
+                    new Object[] {
+                        // padding for the main invoice columns
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+
+                        // order line
+                        line.getItem().getId(),
+                        line.getItem().getInternalNumber(),
+                        line.getQuantity(),
+                        line.getPrice(),
+                        line.getAmount(),
+                        line.getDescription()
+                    }
+                );
+            }
+        }
+
+        return values.toArray(new Object[values.size()][]);
     }
 }
 

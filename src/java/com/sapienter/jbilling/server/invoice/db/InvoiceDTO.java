@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -521,12 +522,18 @@ public class InvoiceDTO implements Serializable, Exportable {
                 "isReview",
                 "notes",
 
-                // todo: invoice lines
+                // invoice lines
+                "lineItemId",
+                "lineProductCode",
+                "lineQuantity",
+                "linePrice",
+                "lineAmount",
+                "lineDescription"
         };
     }
 
     @Transient
-    public Object[] getFieldValues() {
+    public Object[][] getFieldValues() {
         StringBuffer delegatedInvoiceIds = new StringBuffer();
         for (InvoiceDTO invoice : invoices) {
             delegatedInvoiceIds.append(invoice.getId()).append(" ");
@@ -537,7 +544,11 @@ public class InvoiceDTO implements Serializable, Exportable {
             paymentIds.append(invoicePayment.getPayment().getId()).append(" ");
         }
 
-        return new Object[] {
+        List<Object[]> values = new ArrayList<Object[]>();
+
+        // main invoice row
+        values.add(
+            new Object[] {
                 id,
                 publicNumber,
                 (baseUser != null ? baseUser.getId() : null),
@@ -553,8 +564,43 @@ public class InvoiceDTO implements Serializable, Exportable {
                 paymentIds.toString(),
                 isReview,
                 customerNotes
+            }
+        );
 
-                // todo: invoice lines
-        };
+        // indented row for each invoice line
+        for (InvoiceLineDTO line : invoiceLines) {
+            if (line.getDeleted().equals(0)) {
+                values.add(
+                    new Object[] {
+                        // padding for the main invoice columns
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+
+                        // invoice line
+                        (line.getItem() != null ? line.getItem().getId() : null),
+                        (line.getItem() != null ? line.getItem().getInternalNumber() : null),
+                        line.getQuantity(),
+                        line.getPrice(),
+                        line.getAmount(),
+                        line.getDescription()
+                    }
+                );
+            }
+        }
+
+        return values.toArray(new Object[values.size()][]);
     }
 }

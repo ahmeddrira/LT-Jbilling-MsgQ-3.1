@@ -536,7 +536,7 @@ public class PaymentDTO implements Serializable, Exportable {
     }
 
     @Transient
-    public Object[] getFieldValues() {
+    public Object[][] getFieldValues() {
         StringBuffer invoiceIds = new StringBuffer();
         for (PaymentInvoiceMapDTO paymentInvoice : invoicesMap) {
             invoiceIds.append(paymentInvoice.getInvoiceEntity().getId()).append(" ");
@@ -546,7 +546,8 @@ public class PaymentDTO implements Serializable, Exportable {
                                                            ? paymentAuthorizations.iterator().next()
                                                            : null);
 
-        return new Object[] {
+        return new Object[][] {
+            {
                 id,
                 (baseUser != null ? baseUser.getId() : null),
                 invoiceIds.toString(),
@@ -583,6 +584,7 @@ public class PaymentDTO implements Serializable, Exportable {
                 (paymentInfoCheque != null ? paymentInfoCheque.getBank() : null),
                 (paymentInfoCheque != null ? paymentInfoCheque.getNumber() : null),
                 (paymentInfoCheque != null ? paymentInfoCheque.getDate() : null),
+            }
         };
     }
 }

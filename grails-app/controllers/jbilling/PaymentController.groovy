@@ -116,6 +116,8 @@ class PaymentController {
      */
     def csv = {
         def filters = filterService.getFilters(FilterType.PAYMENT, params)
+
+        params.max = CsvExporter.MAX_RESULTS
         def payments = getList(filters, params)
 
         if (payments.totalCount > CsvExporter.MAX_RESULTS) {

@@ -131,6 +131,8 @@ class OrderController {
      */
     def csv = {
         def filters = filterService.getFilters(FilterType.ORDER, params)
+
+        params.max = CsvExporter.MAX_RESULTS
         def orders = getFilteredOrders(filters, params)
 
         if (orders.totalCount > CsvExporter.MAX_RESULTS) {

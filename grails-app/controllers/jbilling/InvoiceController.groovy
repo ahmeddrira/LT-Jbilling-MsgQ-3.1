@@ -129,6 +129,8 @@ class InvoiceController {
      */
     def csv = {
         def filters = filterService.getFilters(FilterType.INVOICE, params)
+
+        params.max = CsvExporter.MAX_RESULTS
         def invoices = getInvoices(filters, params)
 
         if (invoices.totalCount > CsvExporter.MAX_RESULTS) {

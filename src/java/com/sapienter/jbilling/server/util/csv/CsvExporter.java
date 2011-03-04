@@ -83,8 +83,9 @@ public class CsvExporter<T extends Exportable> implements Exporter<T> {
         writer.writeNext(header);
 
         for (Exportable exportable : list) {
-            String[] values = convertToString(exportable.getFieldValues());
-            writer.writeNext(values);
+            for (Object[] values : exportable.getFieldValues()) {
+                writer.writeNext(convertToString(values));
+            }
         }
 
         try {

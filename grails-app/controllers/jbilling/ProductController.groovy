@@ -87,6 +87,8 @@ class ProductController {
      */
     def csv = {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
+
+        params.max = CsvExporter.MAX_RESULTS
         def products = getItemsByTypeId(params.int('id'), filters)
 
         if (products.totalCount > CsvExporter.MAX_RESULTS) {

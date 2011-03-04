@@ -403,13 +403,14 @@ public class ItemDTO extends AbstractDescription implements Exportable {
     }
 
     @Transient
-    public Object[] getFieldValues() {
+    public Object[][] getFieldValues() {
         StringBuilder itemTypes = new StringBuilder();
         for (ItemTypeDTO type : this.itemTypes) {
             itemTypes.append(type.getDescription()).append(" ");
         }
 
-        return new Object[] {
+        return new Object[][] {
+            {
                 id,
                 internalNumber,
                 itemTypes.toString(),
@@ -418,11 +419,12 @@ public class ItemDTO extends AbstractDescription implements Exportable {
                 (defaultPrice != null ? defaultPrice.getType().name() : null),
 
                 (defaultPrice != null && defaultPrice.getCurrency() != null
-                    ? defaultPrice.getCurrency().getDescription()
-                    : null),
+                 ? defaultPrice.getCurrency().getDescription()
+                 : null),
 
                 (defaultPrice != null ? defaultPrice.getRate() : null),
                 (defaultPrice != null ? defaultPrice.getAttributes() : null),
+            }
         };
     }
 }

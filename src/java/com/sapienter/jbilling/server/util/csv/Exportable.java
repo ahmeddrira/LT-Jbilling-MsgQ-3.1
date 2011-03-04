@@ -29,6 +29,6 @@ package com.sapienter.jbilling.server.util.csv;
 public interface Exportable {
 
     public String[] getFieldNames();
-    public Object[] getFieldValues();
+    public Object[][] getFieldValues();
 
 }

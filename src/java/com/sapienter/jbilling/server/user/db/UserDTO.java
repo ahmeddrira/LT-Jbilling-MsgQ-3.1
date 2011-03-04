@@ -643,13 +643,14 @@ public class UserDTO implements Serializable, Exportable {
     }
 
     @Transient
-    public Object[] getFieldValues() {
+    public Object[][] getFieldValues() {
         ContactBL contactBL = new ContactBL();
         contactBL.set(id);
 
         ContactDTO contact = contactBL.getEntity();
 
-        return new Object[] {
+        return new Object[][] {
+            {
                 id,
                 userName,
                 password,
@@ -667,15 +668,15 @@ public class UserDTO implements Serializable, Exportable {
 
                 // customer
                 (customer != null && customer.getInvoiceDeliveryMethod() != null
-                    ? customer.getInvoiceDeliveryMethod().getId()
-                    : null),
+                 ? customer.getInvoiceDeliveryMethod().getId()
+                 : null),
 
                 (customer != null ? customer.getAutoPaymentType() : null),
                 (customer != null ? customer.getNotes() : null),
 
                 (customer != null && customer.getParent() != null
-                    ? customer.getParent().getBaseUser().getId()
-                    : null),
+                 ? customer.getParent().getBaseUser().getId()
+                 : null),
 
                 (customer != null ? customer.getIsParent() : null),
                 (customer != null ? customer.getInvoiceChild() : null),
@@ -698,6 +699,7 @@ public class UserDTO implements Serializable, Exportable {
                 (contact != null ? contact.getCompletePhoneNumber() : null),
                 (contact != null ? contact.getCompleteFaxNumber() : null),
                 (contact != null ? contact.getEmail() : null),
+            }
         };
     }
 }

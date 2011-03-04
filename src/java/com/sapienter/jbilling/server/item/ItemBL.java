@@ -133,6 +133,7 @@ public class ItemBL {
                 EventLogger.ROW_UPDATED, null, null, null);
 
         item.setNumber(dto.getNumber());
+        item.setGlCode(dto.getGlCode());
         item.setDescription(dto.getDescription(), languageId);
         item.setPercentage(dto.getPercentage());
         item.setHasDecimals(dto.getHasDecimals());
@@ -377,6 +378,7 @@ public class ItemBL {
         ItemDTO dto = new ItemDTO(
             item.getId(),
             item.getInternalNumber(),
+            item.getGlCode(),
             item.getEntity(),
             item.getDescription(languageId),
             item.getDeleted(),
@@ -423,6 +425,7 @@ public class ItemBL {
 
         retValue.setEntity(new CompanyDAS().find(other.getEntityId()));
         retValue.setNumber(other.getNumber());
+        retValue.setGlCode(other.getGlCode());
         retValue.setPercentage(other.getPercentageAsDecimal());
         retValue.setDeleted(other.getDeleted());
         retValue.setHasDecimals(other.getHasDecimals());
@@ -449,6 +452,7 @@ public class ItemBL {
 
         retValue.setEntityId(other.getEntity().getId());
         retValue.setNumber(other.getInternalNumber());
+        retValue.setGlCode(other.getGlCode());
         retValue.setPercentage(other.getPercentage());
         retValue.setDeleted(other.getDeleted());
         retValue.setHasDecimals(other.getHasDecimals());

@@ -216,6 +216,9 @@ class UserController {
             contact.fieldIDs[i] = id.toInteger()
             contact.fieldValues[i] = value
         }
+		contact.type= primaryContactTypeId
+		contact.include= params.get('contact-' + params.primaryContactTypeId + '.include') ? 1 : 0
+
         user.setContact(contact)
 
         log.debug("Primary contact: ${contact}")
@@ -228,6 +231,8 @@ class UserController {
                 def otherContact = new ContactWS()
                 bindData(otherContact, params, "contact-${it.id}")
                 otherContact.type = it.id
+				//checkbox values are not bound automatically since it throws a data conversion error
+				otherContact.include= params.get('contact-' + it.id + '.include') ? 1 : 0
 
                 contacts << otherContact;
             }

@@ -69,6 +69,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
     private int id;
     private CompanyDTO entity;
     private String internalNumber;
+    private String glCode;
     private PriceModelDTO defaultPrice;
     private BigDecimal percentage;
     private Integer deleted;
@@ -95,10 +96,11 @@ public class ItemDTO extends AbstractDescription implements Exportable {
         this.id = id;
     }
 
-    public ItemDTO(int id, String internalNumber, BigDecimal percentage,
+    public ItemDTO(int id, String internalNumber, String glCode,BigDecimal percentage, 
                    Integer hasDecimals, Integer deleted, CompanyDTO entity) {
         this.id = id;
         this.internalNumber = internalNumber;
+        this.glCode = glCode;
         this.percentage = percentage;
         this.hasDecimals = hasDecimals;
         this.deleted = deleted;
@@ -111,12 +113,13 @@ public class ItemDTO extends AbstractDescription implements Exportable {
         this.hasDecimals = hasDecimals;
     }
 
-    public ItemDTO(int id, CompanyDTO entity, String internalNumber, BigDecimal percentage,
+    public ItemDTO(int id, CompanyDTO entity, String internalNumber, String glCode, BigDecimal percentage, 
                    Integer deleted, Integer hasDecimals, Set<OrderLineDTO> orderLineDTOs, Set<ItemTypeDTO> itemTypes,
                    Set<InvoiceLineDTO> invoiceLines) {
         this.id = id;
         this.entity = entity;
         this.internalNumber = internalNumber;
+        this.glCode = glCode;
         this.percentage = percentage;
         this.deleted = deleted;
         this.hasDecimals = hasDecimals;
@@ -126,11 +129,11 @@ public class ItemDTO extends AbstractDescription implements Exportable {
     }
 
     // ItemDTOEx
-    public ItemDTO(int id, String number, CompanyDTO entity, String description, Integer deleted,
+    public ItemDTO(int id, String number, String glCode, CompanyDTO entity, String description, Integer deleted,
                    Integer currencyId, BigDecimal price, BigDecimal percentage, Integer orderLineTypeId,
                    Integer hasDecimals) {
         
-        this(id, number, percentage, hasDecimals, deleted, entity);
+        this(id, number, glCode, percentage, hasDecimals, deleted, entity);
         setDescription(description);
         setCurrencyId(currencyId);
         setOrderLineTypeId(orderLineTypeId);
@@ -171,7 +174,16 @@ public class ItemDTO extends AbstractDescription implements Exportable {
         this.internalNumber = internalNumber;
     }
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Column (name = "gl_code", length = 50)
+    public String getGlCode() {
+		return glCode;
+	}
+
+	public void setGlCode(String glCode) {
+		this.glCode = glCode;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "price_model_id", nullable = true)
     public PriceModelDTO getDefaultPrice() {
         return defaultPrice;

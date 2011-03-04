@@ -423,6 +423,8 @@ public class ContactWS implements Serializable {
                            + (faxAreaCode != null ? faxAreaCode : "")
                            + (faxNumber != null ? faxNumber : "") + '\''
                + ", email='" + email + '\''
+               + ", type='" + type + '\''
+               + ", include='" + include + '\''
                + '}';
     }
 }

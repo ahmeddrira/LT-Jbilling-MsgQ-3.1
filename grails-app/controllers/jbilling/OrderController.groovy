@@ -1,32 +1,26 @@
 package jbilling
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import grails.plugins.springsecurity.Secured;
-import com.sapienter.jbilling.server.order.OrderBL;
-import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.order.OrderWS;
-import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.customer.CustomerBL;
-import com.sapienter.jbilling.server.user.db.CustomerDTO;
-import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.server.user.db.UserDAS;
-import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.order.db.OrderDAS;
-import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
-import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.invoice.InvoiceWS;
-import com.sapienter.jbilling.server.invoice.InvoiceBL;
-import com.sapienter.jbilling.server.item.CurrencyBL;
-import com.sapienter.jbilling.server.order.db.OrderStatusDAS;
+import com.sapienter.jbilling.client.util.Constants
+import com.sapienter.jbilling.client.util.DownloadHelper
+import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.server.customer.CustomerBL
+import com.sapienter.jbilling.server.invoice.InvoiceBL
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS
+import com.sapienter.jbilling.server.item.CurrencyBL
+import com.sapienter.jbilling.server.order.OrderBL
+import com.sapienter.jbilling.server.order.OrderWS
+import com.sapienter.jbilling.server.order.db.OrderDAS
+import com.sapienter.jbilling.server.order.db.OrderDTO
 import com.sapienter.jbilling.server.order.db.OrderPeriodDAS
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import com.sapienter.jbilling.server.util.csv.Exporter
+import com.sapienter.jbilling.server.order.db.OrderStatusDAS
+import com.sapienter.jbilling.server.user.UserWS
+import com.sapienter.jbilling.server.user.db.CustomerDTO
+import com.sapienter.jbilling.server.user.db.UserDAS
+import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.util.csv.CsvExporter
-import com.sapienter.jbilling.client.util.DownloadHelper;
+import com.sapienter.jbilling.server.util.csv.Exporter
+import grails.plugins.springsecurity.Secured
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 /**
  * 
@@ -126,7 +120,6 @@ class OrderController {
 		}
 	}
 
-
     /**
      * Applies the set filters to the order list, and exports it as a CSV for download.
      */
@@ -146,7 +139,6 @@ class OrderController {
             render text: exporter.export(orders), contentType: "text/csv"
         }
     }
-
 
 	/**
 	* Convenience shortcut, this action shows all invoices for the given user id.
@@ -272,6 +264,21 @@ class OrderController {
 		}
 		log.debug("Found ${orders.size()} orders.")
 		render view: 'list', model: [orders:orders, filters:filters]
+	}
+	
+	def delete = {
+		try {
+			webServicesSession.deleteOrder(params.int('id'))
+			flash.message = 'order.delete.success'
+			flash.args = [params.id, params.id]
+		} catch (SessionInternalError e){
+			flash.error ='order.error.delete'
+			viewUtils.resolveException(flash, session.locale, e);
+		} catch (Exception e) {
+			log.error e
+			flash.error= e.getMessage()
+		}
+		redirect action: 'list'
 	}
 	
 }

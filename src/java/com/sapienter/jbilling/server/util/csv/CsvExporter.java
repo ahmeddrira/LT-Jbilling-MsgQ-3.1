@@ -38,6 +38,9 @@ public class CsvExporter<T extends Exportable> implements Exporter<T> {
 
     private static final Logger LOG = Logger.getLogger(CsvExporter.class);
 
+    /** The maximum safe number of exportable elements to processes.  */
+    public static final Integer MAX_RESULTS = 10000;
+
     private Class<T> type;
 
     private CsvExporter(Class<T> type) {

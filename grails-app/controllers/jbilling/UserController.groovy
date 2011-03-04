@@ -94,11 +94,18 @@ class UserController {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()
 
-        params.max = Integer.MAX_VALUE
+        params.max = CsvExporter.MAX_RESULTS
         def users = getList(filters, statuses, params)
 
-        Exporter<UserDTO> exporter = CsvExporter.createExporter(UserDTO.class);
-        render text: exporter.export(users), contentType: "text/html"
+        if (users.totalCount > CsvExporter.MAX_RESULTS) {
+            flash.error = message(code: 'error.export.exceeds.maximum')
+            redirect action: 'list'
+
+        } else {
+
+            Exporter<UserDTO> exporter = CsvExporter.createExporter(UserDTO.class);
+            render text: exporter.export(users), contentType: "text/csv"
+        }
     }
 
     /**

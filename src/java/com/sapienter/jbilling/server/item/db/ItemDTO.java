@@ -24,6 +24,7 @@ import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.csv.Exportable;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -63,7 +64,7 @@ import java.util.Set;
 )
 @Table(name = "item")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class ItemDTO extends AbstractDescription {
+public class ItemDTO extends AbstractDescription implements Exportable {
 
     private int id;
     private CompanyDTO entity;
@@ -384,6 +385,44 @@ public class ItemDTO extends AbstractDescription {
     @Override
     public String toString() {
         return "ItemDTO: id=" + getId();
+    }
+
+    @Transient
+    public String[] getFieldNames() {
+        return new String[] {
+                "id",
+                "productCode",
+                "itemTypes",
+                "hasDecimals",
+                "percentage",
+                "priceStrategy",
+                "currency",
+                "rate",
+                "attributes"
+        };
+    }
+
+    @Transient
+    public Object[] getFieldValues() {
+        StringBuilder itemTypes = new StringBuilder();
+        for (ItemTypeDTO type : this.itemTypes)
+            itemTypes.append(type.getDescription()).append(" ");
+
+        return new Object[] {
+                id,
+                internalNumber,
+                itemTypes.toString(),
+                hasDecimals,
+                percentage,
+                (defaultPrice != null ? defaultPrice.getType().name() : null),
+
+                (defaultPrice != null && defaultPrice.getCurrency() != null
+                    ? defaultPrice.getCurrency().getDescription()
+                    : null),
+
+                (defaultPrice != null ? defaultPrice.getRate() : null),
+                (defaultPrice != null ? defaultPrice.getAttributes() : null),
+        };
     }
 }
 

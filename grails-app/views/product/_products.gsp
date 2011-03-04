@@ -56,19 +56,24 @@
     </div>
 </g:if>
 
-<g:if test="${products?.totalCount > params.max}">
-    <div class="pager-box">
-        <g:set var="paginateAction" value="${actionName == 'products' ? 'products' : 'allProducts'}"/>
+<div class="pager-box">
+    <g:set var="paginateAction" value="${actionName == 'products' ? 'products' : 'allProducts'}"/>
 
-        <div class="row left">
+    <div class="row">
+        <div class="results">
             <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], action: paginateAction, update: 'column2']"/>
         </div>
-
-        <div class="row">
-            <util:remotePaginate controller="product" action="${paginateAction}" id="${selectedCategoryId}" total="${products.totalCount}" update="column2"/>
+        <div class="download">
+            <g:link action="csv" id="${selectedCategoryId}">
+                <g:message code="download.csv.link"/>
+            </g:link>
         </div>
     </div>
-</g:if>
+
+    <div class="row">
+        <util:remotePaginate controller="product" action="${paginateAction}" id="${selectedCategoryId}" total="${products?.totalCount ?: 0}" update="column2"/>
+    </div>
+</div>
 
 <div class="btn-box">
     <g:if test="${selectedCategoryId}">

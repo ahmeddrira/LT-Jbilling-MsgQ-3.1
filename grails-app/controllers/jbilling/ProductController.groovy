@@ -15,6 +15,8 @@ import com.sapienter.jbilling.server.pricing.util.AttributeUtils
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy
 import com.sapienter.jbilling.client.pricing.util.PlanHelper
+import com.sapienter.jbilling.server.util.csv.CsvExporter
+import com.sapienter.jbilling.server.util.csv.Exporter
 
 @Secured(['isAuthenticated()'])
 class ProductController {
@@ -77,6 +79,23 @@ class ProductController {
             breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
 
             render template: 'products', model: [ products: products, selectedCategoryId: params.id ]
+        }
+    }
+
+    /**
+     * Applies the set filters to the product list, and exports it as a CSV for download.
+     */
+    def csv = {
+        def filters = filterService.getFilters(FilterType.PRODUCT, params)
+        def products = getItemsByTypeId(params.int('id'), filters)
+
+        if (products.totalCount > CsvExporter.MAX_RESULTS) {
+            flash.error = message(code: 'error.export.exceeds.maximum')
+            redirect action: 'list', id: params.id
+
+        } else {
+            Exporter<ItemDTO> exporter = CsvExporter.createExporter(ItemDTO.class);
+            render text: exporter.export(products), contentType: "text/csv"
         }
     }
 

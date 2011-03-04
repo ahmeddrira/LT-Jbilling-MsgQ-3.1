@@ -106,7 +106,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="user" action="list" params="[applyFilter: true]" total="${users.totalCount}" update="${updateColumn}"/>
+        <util:remotePaginate controller="user" action="list" params="[applyFilter: true]" total="${users?.totalCount ?: 0}" update="${updateColumn}"/>
     </div>
 </div>
 

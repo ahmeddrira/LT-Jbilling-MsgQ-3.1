@@ -102,7 +102,6 @@ class UserController {
             redirect action: 'list'
 
         } else {
-
             Exporter<UserDTO> exporter = CsvExporter.createExporter(UserDTO.class);
             render text: exporter.export(users), contentType: "text/csv"
         }

@@ -831,3 +831,6 @@ insert into jbilling_seqs values ('shortcut', 1);
 
 --gl code new field in item table
 alter table item add column gl_code character varying (50);
+
+-- drop item manual pricing flag
+alter table item drop column price_manual;

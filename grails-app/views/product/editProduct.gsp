@@ -50,12 +50,6 @@
                             <content tag="label.for">product.hasDecimals</content>
                             <g:checkBox class="cb checkbox" name="product.hasDecimals" checked="${product?.hasDecimals > 0}"/>
                         </g:applyLayout>
-
-                        <g:applyLayout name="form/checkbox">
-                            <content tag="label"><g:message code="product.allow.manual.pricing"/></content>
-                            <content tag="label.for">product.priceManual</content>
-                            <g:checkBox class="cb checkbox" name="product.priceManual" checked="${product?.priceManual > 0}"/>
-                        </g:applyLayout>
                     </div>
 
                     <div class="column">

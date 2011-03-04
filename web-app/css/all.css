@@ -753,10 +753,15 @@ hr {
 .pager-box a.nextLink {
 
 }
-.pager-box .left {
+.pager-box .row {
+    clear: both;
+}
+.pager-box .results {
+    float:left;
     text-align: left;
 }
-.pager-box .right {
+.pager-box .download {
+    float:right;
     text-align: right;
 }
 .btn-box {

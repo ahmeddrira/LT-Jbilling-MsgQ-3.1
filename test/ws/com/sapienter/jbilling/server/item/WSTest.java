@@ -63,7 +63,6 @@ public class WSTest  extends TestCase {
             Integer types[] = new Integer[1];
             types[0] = new Integer(1);
             newItem.setTypes(types);
-            newItem.setPriceManual(new Integer(0));
             
             System.out.println("Creating item ..." + newItem);
             Integer ret = api.createItem(newItem);
@@ -284,7 +283,6 @@ public class WSTest  extends TestCase {
     		System.out.println("Getting item");
 	    	ItemDTOEx item = api.getItem(new Integer(1), new Integer(2), new PricingField[] {} );
 	    	String description = item.getDescription();
-	    	Integer prMan = item.getPriceManual();
 	    	String number = item.getNumber();
 	    	BigDecimal price = item.getPriceAsDecimal();
 	    	BigDecimal perc = item.getPercentageAsDecimal();
@@ -293,7 +291,6 @@ public class WSTest  extends TestCase {
 	
 	    	System.out.println("Changing properties");
 	    	item.setDescription("Another description");
-	    	item.setPriceManual(new Integer(1));
 	    	item.setNumber("NMR-01");
 	    	item.setPrice(new BigDecimal("1.00"));
 	    	
@@ -302,7 +299,6 @@ public class WSTest  extends TestCase {
 	    
 	    	ItemDTOEx itemChanged = api.getItem(new Integer(1), new Integer(2), new PricingField[] {} );
 	    	assertEquals(itemChanged.getDescription(), "Another description");
-	    	assertEquals(itemChanged.getPriceManual(), new Integer(1));
 	    	assertEquals(itemChanged.getNumber(), "NMR-01");
 	    	assertEquals(itemChanged.getPriceAsDecimal(), price);
 	    	assertEquals(itemChanged.getPercentageAsDecimal(), perc);
@@ -311,7 +307,6 @@ public class WSTest  extends TestCase {
 	    
 	    	System.out.println("Restoring initial item state.");
 	    	item.setDescription(description);
-	    	item.setPriceManual(prMan);
 	    	item.setNumber(number);
 	    	api.updateItem(item);
 	    	System.out.println("Done!");

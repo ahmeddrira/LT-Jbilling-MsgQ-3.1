@@ -68,8 +68,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
         dto.setDescription((String) myForm.get(FIELD_DESCRIPTION));
         dto.setEntity(new CompanyDTO((Integer) session.getAttribute(Constants.SESSION_ENTITY_ID_KEY)));
         dto.setNumber((String) myForm.get(FIELD_INTERNAL_NUMBER));
-        dto.setPriceManual((Boolean) myForm.get(FIELD_MANUAL_PRICE) ? 1 : 0);
-        dto.setTypes((Integer[]) myForm.get(FIELD_TYPES));                
+        dto.setTypes((Integer[]) myForm.get(FIELD_TYPES));
         dto.setPercentage(string2decimal((String) myForm.get(FIELD_PERCENTAGE)));
         dto.setHasDecimals((Boolean) myForm.get(FIELD_HAS_DECIMALS) ? 1 : 0);
 
@@ -144,7 +143,6 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
 
         myForm.set(FIELD_INTERNAL_NUMBER, dto.getNumber());
         myForm.set(FIELD_DESCRIPTION, dto.getDescription());
-        myForm.set(FIELD_MANUAL_PRICE, dto.getPriceManual().intValue() > 0);
         myForm.set(FIELD_TYPES, dto.getTypes());
         myForm.set(FIELD_ID, dto.getId());
         myForm.set(FIELD_LANGUAGE, languageId);

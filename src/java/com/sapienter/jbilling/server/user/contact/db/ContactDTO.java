@@ -34,6 +34,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
@@ -282,6 +283,22 @@ public class ContactDTO  implements java.io.Serializable {
     public void setPhoneNumber(String phonePhoneNumber) {
         this.phoneNumber = phonePhoneNumber;
     }
+
+    @Transient
+    public String getCompletePhoneNumber() {
+        StringBuilder phone = new StringBuilder();
+
+        if (phoneCountryCode != null)
+            phone.append(phoneCountryCode).append(" ");
+
+        if (phoneAreaCode != null)
+            phone.append(phoneAreaCode).append(" ");
+
+        if (phoneNumber != null)
+            phone.append(phoneNumber);
+
+        return phone.toString();
+    }
     
     @Column(name="fax_country_code")
     public Integer getFaxCountryCode() {
@@ -308,6 +325,22 @@ public class ContactDTO  implements java.io.Serializable {
     
     public void setFaxNumber(String faxPhoneNumber) {
         this.faxNumber = faxPhoneNumber;
+    }
+
+    @Transient
+    public String getCompleteFaxNumber() {
+        StringBuilder phone = new StringBuilder();
+
+        if (faxCountryCode != null)
+            phone.append(faxCountryCode).append(" ");
+
+        if (faxAreaCode != null)
+            phone.append(faxAreaCode).append(" ");
+
+        if (faxNumber != null)
+            phone.append(faxNumber);
+
+        return phone.toString();
     }
     
     @Column(name="email", length=200)

@@ -45,14 +45,6 @@
                     <g:textField name="line-${index}.quantity" class="field" value="${formatNumber(number: line.getQuantityAsDecimal() ?: BigDecimal.ONE, formatName: quantityNumberFormat)}"/>
                 </g:applyLayout>
 
-                <g:if test="${product?.priceManual > 0}">
-                    <g:applyLayout name="form/input">
-                        <content tag="label"><g:message code="order.label.price.with.currency" args="[user.currency.code]"/></content>
-                        <content tag="label.for">line-${index}.price</content>
-                        <g:textField name="line-${index}.price" class="field" value="${formatNumber(number: line.getPriceAsDecimal(), formatName: 'money.format')}"/>
-                    </g:applyLayout>
-                </g:if>
-
                 <g:hiddenField name="index" value="${index}"/>
             </div>
         </div>

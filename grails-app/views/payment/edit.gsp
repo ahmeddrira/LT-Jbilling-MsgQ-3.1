@@ -155,7 +155,7 @@
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="payment.amount"/></content>
                             <content tag="label.for">payment.amount</content>
-                            <g:set var="paymentAmount" value="${payment?.getAmountAsDecimal() ?: invoices?.find{ it.id == invoiceId }?.balance }"/>
+                            <g:set var="paymentAmount" value="${payment?.amount ?: invoices?.find{ it.id == invoiceId }?.balance }"/>
                             <g:textField class="field" name="payment.amount" value="${formatNumber(number: paymentAmount, formatName: 'money.format')}"/>
                         </g:applyLayout>
 
@@ -237,7 +237,6 @@
 
                 <g:if test="${(creditCardAllowed && isNew) || payment?.creditCard}">
                     <g:set var="creditCard" value="${payment?.creditCard}"/>
-                    <g:hiddenField name="creditCard.id" value="${creditCard?.id}"/>
 
                     <div id="creditCard" class="box-cards ${creditCard ? 'box-cards-open' : ''} payment-type" onOpen="togglePaymentType('#creditCard');">
                         <div class="box-cards-title">
@@ -246,6 +245,8 @@
                         <div class="box-card-hold">
                             <div class="form-columns">
                                 <div class="column">
+                                    <g:hiddenField name="creditCard.id" value="${creditCard?.id}"/>
+
                                     <g:applyLayout name="form/input">
                                         <content tag="label"><g:message code="prompt.credit.card"/></content>
                                         <content tag="label.for">creditCard.number</content>
@@ -310,7 +311,6 @@
 
                 <g:if test="${(achAllowed && isNew) || payment?.ach}">
                     <g:set var="ach" value="${payment?.ach}"/>
-                    <g:hiddenField name="ach.id" value="${ach?.id}"/>
 
                     <div id="ach" class="box-cards ${ach ? 'box-cards-open' : ''} payment-type" onOpen="togglePaymentType('#ach');">
                         <div class="box-cards-title">
@@ -319,6 +319,8 @@
                         <div class="box-card-hold">
                             <div class="form-columns">
                                 <div class="column">
+                                    <g:hiddenField name="ach.id" value="${ach?.id}"/>
+
                                     <g:applyLayout name="form/input">
                                         <content tag="label"><g:message code="prompt.aba.routing.num"/></content>
                                         <content tag="label.for">ach.abaRouting</content>
@@ -381,7 +383,6 @@
 
                 <g:if if="cheque" test="${(chequeAllowed && isNew) || payment?.cheque}">
                     <g:set var="cheque" value="${payment?.cheque}"/>
-                    <g:hiddenField name="cheque.id" value="${cheque?.id}"/>
 
                     <div id="cheque" class="box-cards ${cheque ? 'box-cards-open' : ''} payment-type" onOpen="togglePaymentType('#cheque');">
                         <div class="box-cards-title">
@@ -390,6 +391,8 @@
                         <div class="box-card-hold">
                             <div class="form-columns">
                                 <div class="column">
+                                    <g:hiddenField name="cheque.id" value="${cheque?.id}"/>
+
                                     <g:applyLayout name="form/input">
                                         <content tag="label"><g:message code="prompt.cheque.bank"/></content>
                                         <content tag="label.for">cheque.bank</content>

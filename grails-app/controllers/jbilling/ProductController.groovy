@@ -389,7 +389,6 @@ class ProductController {
         bindData(product, params, 'product')
 
         // bind parameters with odd types (integer booleans, string integers  etc.)
-        product.priceManual = params.priceManual ? 1 : 0
         product.hasDecimals = params.hasDecimals ? 1 : 0
         product.percentage = !params.percentage?.equals('') ? params.percentage : null
 

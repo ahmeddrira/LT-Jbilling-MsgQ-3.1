@@ -52,6 +52,7 @@ class PaymentController {
     static pagination = [ max: 10, offset: 0 ]
 
     def webServicesSession
+    def webServicesValidationAdvice
     def viewUtils
     def filterService
     def recentItemService
@@ -248,9 +249,20 @@ class PaymentController {
 
         def user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
         def invoices = getUnpaidInvoices(user.userId)
+        def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
 
+        // validate before showing the confirmation page
+        try {
+            webServicesValidationAdvice.validateObject(payment)
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.local, e)
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId') ]
+            return
+        }
+
+        // validation passed, render the confirmation page
         def processNow = params.processNow ? true : false
-
         [ payment: payment, user: user, invoices: invoices, currencies: currencies, processNow: processNow, invoiceId: params.invoiceId ]
     }
 
@@ -346,12 +358,14 @@ class PaymentController {
     }
 
     def bindExpiryDate(CreditCardDTO creditCard, GrailsParameterMap params) {
-        Calendar calendar = Calendar.getInstance()
-        calendar.clear()
-        calendar.set(Calendar.MONTH, params.int('expiryMonth'))
-        calendar.set(Calendar.YEAR, params.int('expiryYear'))
+        if (params.expiryMonth && params.expiryYear) {
+            Calendar calendar = Calendar.getInstance()
+            calendar.clear()
+            calendar.set(Calendar.MONTH, params.int('expiryMonth'))
+            calendar.set(Calendar.YEAR, params.int('expiryYear'))
 
-        creditCard.expiry = calendar.getTime()
+            creditCard.expiry = calendar.getTime()
+        }
     }
 
     def getCurrencies() {

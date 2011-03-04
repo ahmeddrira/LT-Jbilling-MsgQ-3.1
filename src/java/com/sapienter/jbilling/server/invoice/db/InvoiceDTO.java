@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -535,13 +536,15 @@ public class InvoiceDTO implements Serializable, Exportable {
     @Transient
     public Object[][] getFieldValues() {
         StringBuffer delegatedInvoiceIds = new StringBuffer();
-        for (InvoiceDTO invoice : invoices) {
-            delegatedInvoiceIds.append(invoice.getId()).append(" ");
+        for (Iterator<InvoiceDTO> it = invoices.iterator(); it.hasNext();) {
+            delegatedInvoiceIds.append(it.next().getId());
+            if (it.hasNext()) delegatedInvoiceIds.append(", ");
         }
 
         StringBuffer paymentIds = new StringBuffer();
-        for (PaymentInvoiceMapDTO invoicePayment : paymentMap) {
-            paymentIds.append(invoicePayment.getPayment().getId()).append(" ");
+        for (Iterator<PaymentInvoiceMapDTO> it = paymentMap.iterator(); it.hasNext();) {
+            paymentIds.append(it.next().getPayment().getId());
+            if (it.hasNext()) paymentIds.append(", ");
         }
 
         List<Object[]> values = new ArrayList<Object[]>();

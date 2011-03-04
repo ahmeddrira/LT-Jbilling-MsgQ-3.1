@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -538,8 +539,9 @@ public class PaymentDTO implements Serializable, Exportable {
     @Transient
     public Object[][] getFieldValues() {
         StringBuffer invoiceIds = new StringBuffer();
-        for (PaymentInvoiceMapDTO paymentInvoice : invoicesMap) {
-            invoiceIds.append(paymentInvoice.getInvoiceEntity().getId()).append(" ");
+        for (Iterator<PaymentInvoiceMapDTO> it = invoicesMap.iterator(); it.hasNext();) {
+            invoiceIds.append(it.next().getInvoiceEntity().getId());
+            if (it.hasNext()) invoiceIds.append(", ");
         }
 
         PaymentAuthorizationDTO latestAuthorization = (!paymentAuthorizations.isEmpty()

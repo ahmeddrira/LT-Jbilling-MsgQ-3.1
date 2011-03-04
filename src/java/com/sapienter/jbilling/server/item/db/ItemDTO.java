@@ -405,8 +405,9 @@ public class ItemDTO extends AbstractDescription implements Exportable {
     @Transient
     public Object[] getFieldValues() {
         StringBuilder itemTypes = new StringBuilder();
-        for (ItemTypeDTO type : this.itemTypes)
+        for (ItemTypeDTO type : this.itemTypes) {
             itemTypes.append(type.getDescription()).append(" ");
+        }
 
         return new Object[] {
                 id,

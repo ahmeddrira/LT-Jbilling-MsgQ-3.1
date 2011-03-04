@@ -111,6 +111,7 @@ class ProductController {
                 filters.each { filter ->
                     if (filter.value) {
                         addToCriteria(filter.getRestrictions());
+
                     }
                 }
                 itemTypes {

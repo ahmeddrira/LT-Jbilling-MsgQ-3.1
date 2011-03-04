@@ -24,13 +24,9 @@
                 </g:link>
             </li>
         </g:each>
-        <li style="width:135px;
-                text-align:center;
-                color:#fff;
-                position:relative;
-                font-weight:bold;
-                float:left;"> 
-            <g:remoteLink controller="shortcut" action="add" params="['template': 'shortcuts']" class="shortcut">
+        <li class="shortcut"> 
+            <g:remoteLink controller="shortcut" action="add" params="['template': 'shortcuts']" class="shortcut" 
+                update="messages">
                 <span><g:message code="shortcut.add"/></span>
             </g:remoteLink>
         </li>

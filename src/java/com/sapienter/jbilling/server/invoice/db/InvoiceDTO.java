@@ -39,6 +39,7 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.util.csv.Exportable;
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Fetch;
@@ -67,7 +68,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         allocationSize = 100)
 @Table(name = "invoice")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class InvoiceDTO implements Serializable {
+public class InvoiceDTO implements Serializable, Exportable {
 
     private static final Logger LOG = Logger.getLogger(InvoiceDTO.class);
 
@@ -499,5 +500,61 @@ public class InvoiceDTO implements Serializable {
             for (OrderProcessDTO process : getOrderProcesses())
                 process.getPurchaseOrder().touch();
         }
+    }
+
+    @Transient
+    public String[] getFieldNames() {
+        return new String[] {
+                "id",
+                "publicNumber",
+                "userId",
+                "status",
+                "currency",
+                "delegatedInvoices",
+                "carriedBalance",
+                "total",
+                "balance",
+                "createdDate",
+                "dueDate",
+                "paymentAttempts",
+                "payments",
+                "isReview",
+                "notes",
+
+                // todo: invoice lines
+        };
+    }
+
+    @Transient
+    public Object[] getFieldValues() {
+        StringBuffer delegatedInvoiceIds = new StringBuffer();
+        for (InvoiceDTO invoice : invoices) {
+            delegatedInvoiceIds.append(invoice.getId()).append(" ");
+        }
+
+        StringBuffer paymentIds = new StringBuffer();
+        for (PaymentInvoiceMapDTO invoicePayment : paymentMap) {
+            paymentIds.append(invoicePayment.getPayment().getId()).append(" ");
+        }
+
+        return new Object[] {
+                id,
+                publicNumber,
+                (baseUser != null ? baseUser.getId() : null),
+                (invoiceStatus != null ? invoiceStatus.getDescription() : null),
+                (currencyDTO != null ? currencyDTO.getDescription() : null),
+                delegatedInvoiceIds.toString(),
+                carriedBalance,
+                total,
+                balance,
+                createDatetime,
+                dueDate,
+                paymentAttempts,
+                paymentIds.toString(),
+                isReview,
+                customerNotes
+
+                // todo: invoice lines
+        };
     }
 }

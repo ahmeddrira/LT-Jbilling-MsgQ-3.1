@@ -9,7 +9,10 @@ import com.sapienter.jbilling.server.util.WebServicesSessionSpringBean;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.common.SessionInternalError
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import com.sapienter.jbilling.server.util.csv.Exporter
+import com.sapienter.jbilling.server.util.csv.CsvExporter;
 
 /**
 * BillingController
@@ -39,7 +42,7 @@ class InvoiceController {
 		}
 		
 		def filters = filterService.getFilters(FilterType.INVOICE, params)
-		def invoiceList= getInvoices(filters)
+		def invoiceList= getInvoices(filters, params)
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 		if (params.applyFilter) {
 			render template: 'lists', model: [invoices:invoiceList, filters:filters]
@@ -48,7 +51,7 @@ class InvoiceController {
 		}
 	}
 
-	def getInvoices(filters) {
+	def getInvoices(filters, GrailsParameterMap params) {
 		params.max = params?.max?.toInteger() ?: pagination.max
 		params.offset = params?.offset?.toInteger() ?: pagination.offset
 		
@@ -83,7 +86,7 @@ class InvoiceController {
 		log.debug "showListAndInvoice(${invId}) called.."
 		
 		def filters = filterService.getFilters(FilterType.INVOICE, params)
-		def invoices= getInvoices(filters)
+		def invoices= getInvoices(filters, params)
 		
 		def invoice= webServicesSession.getInvoiceWS(invId)
 		def user= webServicesSession.getUserWS(invoice?.getUserId())
@@ -120,6 +123,23 @@ class InvoiceController {
 			redirect(action:'list')
 		}
 	}
+
+    /**
+     * Applies the set filters to the order list, and exports it as a CSV for download.
+     */
+    def csv = {
+        def filters = filterService.getFilters(FilterType.INVOICE, params)
+        def invoices = getInvoices(filters, params)
+
+        if (invoices.totalCount > CsvExporter.MAX_RESULTS) {
+            flash.error = message(code: 'error.export.exceeds.maximum')
+            redirect action: 'list', id: params.id
+
+        } else {
+            Exporter<InvoiceDTO> exporter = CsvExporter.createExporter(InvoiceDTO.class);
+            render text: exporter.export(invoices), contentType: "text/csv"
+        }
+    }
 
     /**
      * Convenience shortcut, this action shows all invoices for the given user id.

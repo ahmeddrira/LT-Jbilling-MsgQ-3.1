@@ -22,7 +22,10 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.order.db.OrderStatusDAS;
-import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDAS
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import com.sapienter.jbilling.server.util.csv.Exporter
+import com.sapienter.jbilling.server.util.csv.CsvExporter;
 
 /**
  * 
@@ -47,16 +50,14 @@ class OrderController {
     }
 
 	def list = {
-
 		if (params.id) {
 			redirect (action: 'showListAndOrder', params: [id: params.id as Integer])
 		}
 		
 		def filters = filterService.getFilters(FilterType.ORDER, params)
-		def orders = getFilteredOrders (filters)
+		def orders = getFilteredOrders (filters, params)
 		
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
-		log.debug "Found ${orders?.size()} orders"
 		
 		if (params.applyFilter) {
 			render template: 'orders', model: [orders:orders, filters:filters]
@@ -67,7 +68,6 @@ class OrderController {
 	}
 	
 	def show = {
-		
 		Integer _orderId= params.id as Integer
 		OrderWS order= webServicesSession.getOrder(_orderId)
 		UserWS user= webServicesSession.getUserWS(order.getUserId())
@@ -82,7 +82,7 @@ class OrderController {
 	def showListAndOrder = {
 		
 		def filters = filterService.getFilters(FilterType.ORDER, params)
-		def orders = getFilteredOrders (filters)
+		def orders = getFilteredOrders (filters, params)
 		Integer _orderId= params.id as Integer
 		OrderWS order= webServicesSession.getOrder(_orderId)
 		UserWS user= webServicesSession.getUserWS(order.getUserId())
@@ -93,8 +93,7 @@ class OrderController {
 		render view: 'showListAndOrder', model:[orders:orders, order:order, user:user, filters:filters]
 	}
 	
-	def getFilteredOrders(filters) {
-		
+	def getFilteredOrders(filters, GrailsParameterMap params) {
 		params.max = params?.max?.toInteger() ?: pagination.max
 		params.offset = params?.offset?.toInteger() ?: pagination.offset
 		
@@ -125,7 +124,26 @@ class OrderController {
 			order("id", "desc")
 		}
 	}
-	
+
+
+    /**
+     * Applies the set filters to the order list, and exports it as a CSV for download.
+     */
+    def csv = {
+        def filters = filterService.getFilters(FilterType.ORDER, params)
+        def orders = getFilteredOrders(filters, params)
+
+        if (orders.totalCount > CsvExporter.MAX_RESULTS) {
+            flash.error = message(code: 'error.export.exceeds.maximum')
+            redirect action: 'list', id: params.id
+
+        } else {
+            Exporter<OrderDTO> exporter = CsvExporter.createExporter(OrderDTO.class);
+            render text: exporter.export(orders), contentType: "text/csv"
+        }
+    }
+
+
 	/**
 	* Convenience shortcut, this action shows all invoices for the given user id.
 	*/

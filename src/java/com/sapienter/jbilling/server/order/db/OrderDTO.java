@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.order.db;
 
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collection;
@@ -43,6 +44,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.util.csv.Exportable;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CollectionOfElements;
@@ -72,7 +74,7 @@ import java.util.ArrayList;
         )
 @Table(name="purchase_order")
 // No cache, mutable and critical
-public class OrderDTO implements java.io.Serializable {
+public class OrderDTO implements Serializable, Exportable {
 
     private static Logger LOG = Logger.getLogger(OrderDTO.class);
 
@@ -670,7 +672,31 @@ public class OrderDTO implements java.io.Serializable {
         return count;
     }
 
-    
+    @Transient
+    public List<PricingField> getPricingFields() {
+        return this.pricingFields;
+    }
+
+    public void setPricingFields(List<PricingField> fields) {
+        this.pricingFields = fields;
+    }
+
+    // default values
+    @Transient
+    public void setDefaults() {
+        if (getCreateDate() == null) {
+            setCreateDate(Calendar.getInstance().getTime());
+            setDeleted(0);
+        }
+        if (getOrderStatus() == null) {
+            setOrderStatus(new OrderStatusDAS().find(
+                    Constants.ORDER_STATUS_ACTIVE));
+        }
+        for (OrderLineDTO line : lines) {
+            line.setDefaults();
+        }
+    }
+
     /**
      * Makes sure that all the proxies are loaded, so no session is needed to
      * use the pojo
@@ -697,7 +723,8 @@ public class OrderDTO implements java.io.Serializable {
         if (getOrderStatus() != null)
             getOrderStatus().getId();
     }
-    
+
+    @Override
     public String toString() {
         StringBuffer str = new StringBuffer("Order = " +
          "id=" + id + "," + 
@@ -734,32 +761,50 @@ public class OrderDTO implements java.io.Serializable {
         return str.toString();
 
     }
-    
-    // default values
+
     @Transient
-    public void setDefaults() {
-        if (getCreateDate() == null) {
-            setCreateDate(Calendar.getInstance().getTime());
-            setDeleted(0);
-        }
-        if (getOrderStatus() == null) {
-            setOrderStatus(new OrderStatusDAS().find(
-                    Constants.ORDER_STATUS_ACTIVE));
-        }
-        for (OrderLineDTO line : lines) {
-            line.setDefaults();
-        }
-    }
-    
-    @Transient
-    public List<PricingField> getPricingFields() {
-        return this.pricingFields;
-    }
-    
-    public void setPricingFields(List<PricingField> fields) {
-        this.pricingFields = fields;
+    public String[] getFieldNames() {
+        return new String[] {
+                "id",
+                "userId",
+                "status",
+                "period",
+                "billingType",
+                "currency",
+                "total",
+                "activeSince",
+                "activeUntil",
+                "cycleStart",
+                "createdDate",
+                "nextBillableDay",
+                "isMainSubscription",
+                "notes",
+
+                // todo: order lines
+        };
     }
 
+    @Transient
+    public Object[] getFieldValues() {
+        return new Object[] {
+                id,
+                (baseUserByUserId != null ? baseUserByUserId.getId() : null),
+                (orderStatusDTO != null ? orderStatusDTO.getDescription() : null),
+                (orderPeriodDTO != null ? orderPeriodDTO.getDescription() : null),
+                (orderBillingTypeDTO != null ? orderBillingTypeDTO.getDescription() : null),
+                (currencyDTO != null ? currencyDTO.getDescription() : null),
+                getTotal(),
+                activeSince,
+                activeUntil,
+                cycleStarts,
+                createDate,
+                nextBillableDay,
+                isCurrent,
+                notes
+
+                // todo: order lines
+        };
+    }
 }
 
 

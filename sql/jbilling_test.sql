@@ -1097,7 +1097,8 @@ CREATE TABLE item (
     deleted smallint DEFAULT 0 NOT NULL,
     has_decimals smallint DEFAULT 0 NOT NULL,
     optlock integer NOT NULL,
-    price_model_id integer
+    price_model_id integer,
+	gl_code character varying(50)
 );
 
 

@@ -828,3 +828,6 @@ CREATE TABLE shortcut
 );
 
 insert into jbilling_seqs values ('shortcut', 1);
+
+--gl code new field in item table
+alter table item add column gl_code character varying (50);

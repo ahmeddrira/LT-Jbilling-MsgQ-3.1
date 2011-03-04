@@ -17,6 +17,7 @@ import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy
 import com.sapienter.jbilling.client.pricing.util.PlanHelper
 import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.server.util.csv.Exporter
+import com.sapienter.jbilling.client.util.DownloadHelper
 
 @Secured(['isAuthenticated()'])
 class ProductController {
@@ -96,6 +97,7 @@ class ProductController {
             redirect action: 'list', id: params.id
 
         } else {
+            DownloadHelper.setResponseHeader(response, "products.csv")
             Exporter<ItemDTO> exporter = CsvExporter.createExporter(ItemDTO.class);
             render text: exporter.export(products), contentType: "text/csv"
         }

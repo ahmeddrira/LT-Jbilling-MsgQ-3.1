@@ -12,7 +12,8 @@ import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.common.SessionInternalError
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.util.csv.Exporter
-import com.sapienter.jbilling.server.util.csv.CsvExporter;
+import com.sapienter.jbilling.server.util.csv.CsvExporter
+import com.sapienter.jbilling.client.util.DownloadHelper;
 
 /**
 * BillingController
@@ -138,6 +139,7 @@ class InvoiceController {
             redirect action: 'list', id: params.id
 
         } else {
+            DownloadHelper.setResponseHeader(response, "invoices.csv")
             Exporter<InvoiceDTO> exporter = CsvExporter.createExporter(InvoiceDTO.class);
             render text: exporter.export(invoices), contentType: "text/csv"
         }
@@ -257,17 +259,7 @@ class InvoiceController {
 		Integer invId= params.id as Integer
 		try { 
 			byte[] pdfBytes= webServicesSession.getPaperInvoicePDF(invId)
-			log.debug "Byte Size ${pdfBytes.length}"
-			
-			ServletOutputStream servletOutputStream = response.outputStream
-			
-			response.setContentType("application/pdf")
-			response.setContentLength(pdfBytes.length)
-			
-			response.setHeader("Content-disposition", "inline; filename=Invoice${invId}.pdf")
-			response.setHeader("Expires", "0");
-			response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
-			servletOutputStream << pdfBytes
+            DownloadHelper.sendFile(response, "Invoice-${invId}.pdf", "application/pdf", pdfBytes)
 
 		} catch (Exception e ) {
 			log.error e.getMessage()

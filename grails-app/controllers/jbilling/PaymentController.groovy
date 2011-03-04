@@ -41,6 +41,7 @@ import com.sapienter.jbilling.common.Util
 import com.sapienter.jbilling.common.Constants
 import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.server.util.csv.Exporter
+import com.sapienter.jbilling.client.util.DownloadHelper
 
 /**
  * PaymentController 
@@ -125,6 +126,7 @@ class PaymentController {
             redirect action: 'list', id: params.id
 
         } else {
+            DownloadHelper.setResponseHeader(response, "payments.csv")
             Exporter<PaymentDTO> exporter = CsvExporter.createExporter(PaymentDTO.class);
             render text: exporter.export(payments), contentType: "text/csv"
         }

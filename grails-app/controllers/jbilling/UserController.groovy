@@ -19,6 +19,7 @@ import org.springframework.security.authentication.encoding.PasswordEncoder
 
 import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.server.util.csv.Exporter
+import com.sapienter.jbilling.client.util.DownloadHelper
 
 @Secured(['isAuthenticated()'])
 class UserController {
@@ -102,6 +103,7 @@ class UserController {
             redirect action: 'list'
 
         } else {
+            DownloadHelper.setResponseHeader(response, "users.csv")
             Exporter<UserDTO> exporter = CsvExporter.createExporter(UserDTO.class);
             render text: exporter.export(users), contentType: "text/csv"
         }

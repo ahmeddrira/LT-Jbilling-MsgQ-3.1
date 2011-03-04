@@ -25,7 +25,8 @@ import com.sapienter.jbilling.server.order.db.OrderStatusDAS;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDAS
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.util.csv.Exporter
-import com.sapienter.jbilling.server.util.csv.CsvExporter;
+import com.sapienter.jbilling.server.util.csv.CsvExporter
+import com.sapienter.jbilling.client.util.DownloadHelper;
 
 /**
  * 
@@ -140,6 +141,7 @@ class OrderController {
             redirect action: 'list', id: params.id
 
         } else {
+            DownloadHelper.setResponseHeader(response, "orders.csv")
             Exporter<OrderDTO> exporter = CsvExporter.createExporter(OrderDTO.class);
             render text: exporter.export(orders), contentType: "text/csv"
         }

@@ -21,9 +21,11 @@
 package com.sapienter.jbilling.server.report.db;
 
 import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -32,12 +34,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 import java.io.File;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Report
@@ -60,9 +65,11 @@ public class ReportDTO extends AbstractDescription implements Serializable {
     private static final String BASE_PATH = Util.getSysProp("base_dir") + File.separator + "reports";
 
     private int id;
+    private CompanyDTO entity;
     private ReportTypeDTO type;
     private String name;
     private String fileName;
+    private Set<ReportParameterDTO<?>> parameters = new HashSet<ReportParameterDTO<?>>();
     private Integer versionNum;
 
     @Id
@@ -74,6 +81,16 @@ public class ReportDTO extends AbstractDescription implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entity_id", nullable = false)
+    public CompanyDTO getEntity() {
+        return entity;
+    }
+
+    public void setEntity(CompanyDTO entity) {
+        this.entity = entity;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -106,12 +123,21 @@ public class ReportDTO extends AbstractDescription implements Serializable {
 
     @Transient
     public String getReportFilePath() {
-        return BASE_PATH + File.separator + getFileName();
+        return BASE_PATH + File.separator + getType().getName() + File.separator + getFileName();
     }
 
     @Transient
     public File getReportFile() {
         return fileName != null ? new File(getReportFilePath()) : null;
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "report")
+    public Set<ReportParameterDTO<?>> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Set<ReportParameterDTO<?>> parameters) {
+        this.parameters = parameters;
     }
 
     @Version
@@ -133,6 +159,7 @@ public class ReportDTO extends AbstractDescription implements Serializable {
     public String toString() {
         return "Report{"
                + "id=" + id
+               + ", entityId=" + (entity != null ? entity.getId() : null)
                + ", type=" + (type != null ? type.getName() : null)
                + ", fileName='" + fileName + '\''
                + '}';

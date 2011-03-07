@@ -853,6 +853,7 @@ delete from jbilling_table where name in ('report_field', 'report_type_map', 're
 create table report (
     id int NOT NULL,
     type_id int NOT NULL,
+    entity_id int NOT NULL,
     name varchar(255) NOT NULL,
     file_name varchar(500) NOT NULL,
     OPTLOCK int NOT NULL
@@ -864,8 +865,9 @@ create table report_type (
 );
 create table report_parameter (
     id int NOT NULL,
-    name varchar(255) NOT NULL,
-    dtype varchar(10) NOT NULL
+    report_id int NOT NULL,
+    dtype varchar(10) NOT NULL,
+    name varchar(255) NOT NULL
 );
 
 insert into jbilling_table (id, name) values (100, 'report');
@@ -876,3 +878,6 @@ insert into jbilling_seqs (name, next_id) values ('report', 1);
 insert into jbilling_seqs (name, next_id) values ('report_type', 1);
 insert into jbilling_seqs (name, next_id) values ('report_parameter', 1);
 
+-- new report types
+insert into report_type (id, name, optlock) values (1, 'invoice', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (101, 1, 'description', 1, 'Invoice reports');

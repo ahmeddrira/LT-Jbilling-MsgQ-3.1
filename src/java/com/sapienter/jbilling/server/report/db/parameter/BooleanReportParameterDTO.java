@@ -24,6 +24,7 @@ import com.sapienter.jbilling.server.report.db.ReportParameterDTO;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  * BooleanReportParameterDTO
@@ -37,6 +38,7 @@ public class BooleanReportParameterDTO extends ReportParameterDTO<Boolean> {
 
     private Boolean value;
 
+    @Transient
     public Boolean getValue() {
         return value;
     }

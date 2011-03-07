@@ -28,6 +28,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
@@ -54,6 +56,7 @@ import java.io.Serializable;
 public abstract class ReportParameterDTO<T> implements Serializable {
 
     private Integer id;
+    private ReportDTO report;
     private String name;
 
     @Id
@@ -65,6 +68,16 @@ public abstract class ReportParameterDTO<T> implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "report_id", updatable = false, nullable = false)
+    public ReportDTO getReport() {
+        return report;
+    }
+
+    public void setReport(ReportDTO report) {
+        this.report = report;
     }
 
     @Column(name = "name", updatable = true, nullable = false)

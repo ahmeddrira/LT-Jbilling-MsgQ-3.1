@@ -100,7 +100,6 @@ ALTER TABLE ONLY public.invoice DROP CONSTRAINT invoice_fk_4;
 ALTER TABLE ONLY public.invoice DROP CONSTRAINT invoice_fk_3;
 ALTER TABLE ONLY public.invoice DROP CONSTRAINT invoice_fk_2;
 ALTER TABLE ONLY public.invoice DROP CONSTRAINT invoice_fk_1;
-ALTER TABLE ONLY public.international_description DROP CONSTRAINT international_description_fk_2;
 ALTER TABLE ONLY public.international_description DROP CONSTRAINT international_description_fk_1;
 ALTER TABLE ONLY public.generic_status DROP CONSTRAINT generic_status_fk_1;
 ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_6;
@@ -2078,6 +2077,7 @@ ALTER TABLE public.recent_item OWNER TO jbilling;
 CREATE TABLE report (
     id integer NOT NULL,
     type_id integer NOT NULL,
+    entity_id integer NOT NULL,
     name character varying(255) NOT NULL,
     file_name character varying(500) NOT NULL,
     optlock integer NOT NULL
@@ -2092,8 +2092,9 @@ ALTER TABLE public.report OWNER TO jbilling;
 
 CREATE TABLE report_parameter (
     id integer NOT NULL,
-    name character varying(255) NOT NULL,
-    dtype character varying(10) NOT NULL
+    report_id integer NOT NULL,
+    dtype character varying(10) NOT NULL,
+    name character varying(255) NOT NULL
 );
 
 
@@ -11603,6 +11604,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 47	31	description	1	The provisioning status of an order line has changed
 47	25	description	1	A new row has been created
 47	19	description	1	Last API call to get the the user subscription status transitions
+101	1	description	1	Invoice reports
 \.
 
 
@@ -16712,7 +16714,7 @@ COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
 -- Data for Name: report; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY report (id, type_id, name, file_name, optlock) FROM stdin;
+COPY report (id, type_id, entity_id, name, file_name, optlock) FROM stdin;
 \.
 
 
@@ -16720,7 +16722,7 @@ COPY report (id, type_id, name, file_name, optlock) FROM stdin;
 -- Data for Name: report_parameter; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY report_parameter (id, name, dtype) FROM stdin;
+COPY report_parameter (id, report_id, dtype, name) FROM stdin;
 \.
 
 
@@ -16729,6 +16731,7 @@ COPY report_parameter (id, name, dtype) FROM stdin;
 --
 
 COPY report_type (id, name, optlock) FROM stdin;
+1	invoice	0
 \.
 
 
@@ -20305,14 +20308,6 @@ ALTER TABLE ONLY generic_status
 
 ALTER TABLE ONLY international_description
     ADD CONSTRAINT international_description_fk_1 FOREIGN KEY (language_id) REFERENCES language(id);
-
-
---
--- Name: international_description_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY international_description
-    ADD CONSTRAINT international_description_fk_2 FOREIGN KEY (table_id) REFERENCES jbilling_table(id);
 
 
 --

@@ -79,7 +79,7 @@ public class ReportTypeDTO extends AbstractDescription implements Serializable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.replaceAll(" ", "_");
     }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "type")

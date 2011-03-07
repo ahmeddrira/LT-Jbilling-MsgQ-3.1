@@ -24,6 +24,7 @@ import com.sapienter.jbilling.server.report.db.ReportParameterDTO;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  * IntegerReportParameterDTO
@@ -37,6 +38,7 @@ public class IntegerReportParameterDTO extends ReportParameterDTO<Integer> {
 
     private Integer value;
 
+    @Transient
     public Integer getValue() {
         return value;
     }

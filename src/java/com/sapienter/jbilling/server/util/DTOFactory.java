@@ -20,29 +20,12 @@
 
 package com.sapienter.jbilling.server.util;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.List;
-
-import javax.naming.NamingException;
-
-import org.apache.log4j.Logger;
-
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.payment.blacklist.BlacklistBL;
-import com.sapienter.jbilling.server.report.Field;
-import com.sapienter.jbilling.server.report.ReportDTOEx;
-import com.sapienter.jbilling.server.report.db.ReportDAS;
-import com.sapienter.jbilling.server.report.db.ReportDTO;
-import com.sapienter.jbilling.server.report.db.ReportFieldDTO;
-import com.sapienter.jbilling.server.report.db.ReportTypeDTO;
-import com.sapienter.jbilling.server.report.db.ReportUserDTO;
 import com.sapienter.jbilling.server.user.AchBL;
-import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.MenuOption;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -55,7 +38,10 @@ import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.MenuOptionDAS;
 import com.sapienter.jbilling.server.util.db.MenuOptionDTO;
-import java.util.ArrayList;
+import org.apache.log4j.Logger;
+
+import javax.naming.NamingException;
+import java.util.Locale;
 
 /**
  * 
@@ -203,111 +189,6 @@ public class DTOFactory {
         dto.setBalance(new UserBL().getBalance(dto.getId()));
 
         return dto;
-    }
-
-    public static ReportDTOEx getReportDTOEx(Integer reportId, Integer entityId)
-            throws SessionInternalError {
-        ReportDAS reportHome = new ReportDAS();
-
-        ReportDTO report = reportHome.find(reportId);
-
-        EntityBL entity = new EntityBL(entityId);
-        ReportDTOEx dto = getReportDTOEx(new ReportDAS().find(reportId), entity
-                .getLocale());
-        Collection fields = report.getReportFields();
-
-        for (Iterator it = fields.iterator(); it.hasNext();) {
-            ReportFieldDTO field = (ReportFieldDTO) it.next();
-            Field fieldDto = getFieldDTO(field);
-            fieldDto.setWhereValue(field.getWhereValue());
-
-            dto.addField(fieldDto);
-        }
-        // the fields come sorted by position and id from the DB
-
-        return dto;
-    }
-
-    public static Field getFieldDTO(ReportFieldDTO field) {
-        Field dto = new Field(field.getTableName(), field.getColumnName(),
-                field.getDataType());
-
-        dto.setFunctionName(field.getFunctionName());
-        dto.setFunctionable(field.getFunctionable());
-        dto.setIsGrouped(field.getIsGrouped());
-        dto.setIsShown(field.getIsShown());
-        dto.setOperatorValue(field.getOperatorValue());
-        dto.setOperatorable(field.getOperatorable());
-        dto.setOrdenable(field.getOrdenable());
-        dto.setOrderPosition(field.getOrderPosition());
-        dto.setPositionNumber(field.getPositionNumber());
-        dto.setSelectable(field.getSelectable());
-        dto.setTitleKey(field.getTitleKey());
-        dto.setWherable(field.getWhereable());
-        dto.setWhereValue(field.getWhereValue());
-
-        return dto;
-    }
-
-    public static ReportDTOEx getReportDTOEx(ReportDTO report, Locale locale) {
-
-        ReportDTOEx dto = new ReportDTOEx(report.getTitleKey(), report
-                .getInstructionsKey(), report.getTablesList(), report
-                .getWhereStr(), locale);
-
-        dto.setIdColumn(report.getIdColumn());
-        dto.setId(report.getId());
-        dto.setLink(report.getLink());
-
-        return dto;
-    }
-
-    public static Collection<ReportDTOEx> reportEJB2DTOEx(
-            Collection<ReportDTO> reports, boolean filter) {
-        List<ReportDTOEx> dtos = new ArrayList<ReportDTOEx>();
-
-        for (ReportDTO report : reports) {
-
-            if (filter) {
-                for (ReportTypeDTO type : report.getReportTypes()) {
-                    if (type.getShowable() == 1) {
-                        dtos.add(getReportDTOEx(report, null));
-                        break;
-                    }
-                }
-            } else {
-                dtos.add(getReportDTOEx(report, null));
-            }
-
-        }
-
-        return dtos;
-    }
-
-    public static Collection reportEJB2DTO(Collection<ReportDTO> reports) {
-        List dtos = new ArrayList();
-
-        for (ReportDTO report : reports) {
-            dtos.add(getReportDTOEx(report, null));
-        }
-
-        return dtos;
-    }
-
-    public static Collection reportUserEJB2DTO(Collection reports) {
-        List dtos = new ArrayList();
-
-        for (Iterator it = reports.iterator(); it.hasNext();) {
-            ReportUserDTO reportEJB = (ReportUserDTO) it.next();
-            dtos.add(getReportUserDTO(reportEJB));
-        }
-
-        return dtos;
-    }
-
-    public static ReportUserDTO getReportUserDTO(ReportUserDTO rUser) {
-        return new ReportUserDTO(rUser.getId(), rUser.getBaseUser(), rUser
-                .getReport(), rUser.getCreateDatetime(), rUser.getTitle());
     }
 
     public static MenuOption getMenuOption(Integer id, Integer languageId)

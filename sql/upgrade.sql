@@ -834,3 +834,13 @@ alter table item add column gl_code character varying (50);
 
 -- drop item manual pricing flag
 alter table item drop column price_manual;
+
+-- drop legacy reporting tables
+drop table report_field;
+drop table report_type_map;
+drop table report_type;
+drop table report_user;
+drop table report_entity_map;
+drop table report;
+
+

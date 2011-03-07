@@ -34,7 +34,6 @@
     <bean id="pluggableTaskSession" class="com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionBean"/>
     <bean id="paymentSession" class="com.sapienter.jbilling.server.payment.PaymentSessionBean"/>
     <bean id="mediationSession" class="com.sapienter.jbilling.server.mediation.MediationSessionBean"/>
-    <bean id="reportSession" class="com.sapienter.jbilling.server.report.ReportSessionBean"/>
     <bean id="billingProcessSession" class="com.sapienter.jbilling.server.process.BillingProcessSessionBean"/>
     <bean id="provisioningProcessSession" class="com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionBean"/>
 

@@ -55,7 +55,6 @@ import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.server.process.db.AgeingEntityStepDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
-import com.sapienter.jbilling.server.report.db.ReportDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
@@ -63,33 +62,33 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
 @Entity
-@Table(name="entity")
+@Table(name = "entity")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class CompanyDTO  implements java.io.Serializable {
+public class CompanyDTO implements java.io.Serializable {
 
 
-     private int id;
-     private CurrencyDTO currencyDTO;
-     private LanguageDTO language;
-     private String externalId;
-     private String description;
-     private Date createDatetime;
-     private Set<AgeingEntityStepDTO> ageingEntitySteps = new HashSet<AgeingEntityStepDTO>(0);
-     private Set<PaymentMethodDTO> paymentMethods = new HashSet<PaymentMethodDTO>(0);
-     private Set<OrderPeriodDTO> orderPeriodDTOs = new HashSet<OrderPeriodDTO>(0);
-     private Set<BillingProcessDTO> billingProcesses = new HashSet<BillingProcessDTO>(0);
-     private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
-     private Set<ContactTypeDTO> contactTypes = new HashSet<ContactTypeDTO>(0);
-     private Set<ItemDTO> items = new HashSet<ItemDTO>(0);
-     private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
-     private Set<NotificationMessageDTO> notificationMessages = new HashSet<NotificationMessageDTO>(0);
-     private Set<ReportDTO> reports = new HashSet<ReportDTO>(0);
-     private Set<ContactFieldTypeDTO> contactFieldTypes = new HashSet<ContactFieldTypeDTO>(0);
-     private Set<CurrencyDTO> currencyDTOs = new HashSet<CurrencyDTO>(0);
-     private Set<ItemTypeDTO> itemTypes = new HashSet<ItemTypeDTO>(0);
-     private Set<BillingProcessConfigurationDTO> billingProcessConfigurations = new HashSet<BillingProcessConfigurationDTO>(0);
-     private Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods = new HashSet<InvoiceDeliveryMethodDTO>(0);
-     private Set<ListEntityDTO> listEntities = new HashSet<ListEntityDTO>(0);
+    private int id;
+    private CurrencyDTO currencyDTO;
+    private LanguageDTO language;
+    private String externalId;
+    private String description;
+    private Date createDatetime;
+    private Set<AgeingEntityStepDTO> ageingEntitySteps = new HashSet<AgeingEntityStepDTO>(0);
+    private Set<PaymentMethodDTO> paymentMethods = new HashSet<PaymentMethodDTO>(0);
+    private Set<OrderPeriodDTO> orderPeriodDTOs = new HashSet<OrderPeriodDTO>(0);
+    private Set<BillingProcessDTO> billingProcesses = new HashSet<BillingProcessDTO>(0);
+    private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
+    private Set<ContactTypeDTO> contactTypes = new HashSet<ContactTypeDTO>(0);
+    private Set<ItemDTO> items = new HashSet<ItemDTO>(0);
+    private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
+    private Set<NotificationMessageDTO> notificationMessages = new HashSet<NotificationMessageDTO>(0);
+    private Set<ContactFieldTypeDTO> contactFieldTypes = new HashSet<ContactFieldTypeDTO>(0);
+    private Set<CurrencyDTO> currencyDTOs = new HashSet<CurrencyDTO>(0);
+    private Set<ItemTypeDTO> itemTypes = new HashSet<ItemTypeDTO>(0);
+    private Set<BillingProcessConfigurationDTO> billingProcessConfigurations
+            = new HashSet<BillingProcessConfigurationDTO>(0);
+    private Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods = new HashSet<InvoiceDeliveryMethodDTO>(0);
+    private Set<ListEntityDTO> listEntities = new HashSet<ListEntityDTO>(0);
 
     public CompanyDTO() {
     }
@@ -97,7 +96,7 @@ public class CompanyDTO  implements java.io.Serializable {
     public CompanyDTO(int i) {
         id = i;
     }
-    
+
     public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String description, Date createDatetime) {
         this.id = id;
         this.currencyDTO = currencyDTO;
@@ -105,245 +104,255 @@ public class CompanyDTO  implements java.io.Serializable {
         this.description = description;
         this.createDatetime = createDatetime;
     }
-    public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String externalId, String description, Date createDatetime, Set<AgeingEntityStepDTO> ageingEntitySteps, Set<PaymentMethodDTO> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<UserDTO> baseUsers, Set<ContactTypeDTO> contactTypes, Set<ItemDTO> items, Set<EventLogDTO> eventLogs, Set<NotificationMessageDTO> notificationMessages, Set<ReportDTO> reports, Set<ContactFieldTypeDTO> contactFieldTypes, Set<CurrencyDTO> currencyDTOs, Set<ItemTypeDTO> itemTypes, Set<BillingProcessConfigurationDTO> billingProcessConfigurations, Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods, Set<ListEntityDTO> listEntities) {
-       this.id = id;
-       this.currencyDTO = currencyDTO;
-       this.language = language;
-       this.externalId = externalId;
-       this.description = description;
-       this.createDatetime = createDatetime;
-       this.ageingEntitySteps = ageingEntitySteps;
-       this.paymentMethods = paymentMethods;
-       this.orderPeriodDTOs = orderPeriodDTOs;
-       this.billingProcesses = billingProcesses;
-       this.baseUsers = baseUsers;
-       this.contactTypes = contactTypes;
-       this.items = items;
-       this.eventLogs = eventLogs;
-       this.notificationMessages = notificationMessages;
-       this.reports = reports;
-       this.contactFieldTypes = contactFieldTypes;
-       this.currencyDTOs = currencyDTOs;
-       this.itemTypes = itemTypes;
-       this.billingProcessConfigurations = billingProcessConfigurations;
-       this.invoiceDeliveryMethods = invoiceDeliveryMethods;
-       this.listEntities = listEntities;
+
+    public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String externalId, String description,
+                      Date createDatetime, Set<AgeingEntityStepDTO> ageingEntitySteps,
+                      Set<PaymentMethodDTO> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs,
+                      Set<BillingProcessDTO> billingProcesses, Set<UserDTO> baseUsers, Set<ContactTypeDTO> contactTypes,
+                      Set<ItemDTO> items, Set<EventLogDTO> eventLogs, Set<NotificationMessageDTO> notificationMessages,
+                      Set<ContactFieldTypeDTO> contactFieldTypes, Set<CurrencyDTO> currencyDTOs,
+                      Set<ItemTypeDTO> itemTypes, Set<BillingProcessConfigurationDTO> billingProcessConfigurations,
+                      Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods, Set<ListEntityDTO> listEntities) {
+        this.id = id;
+        this.currencyDTO = currencyDTO;
+        this.language = language;
+        this.externalId = externalId;
+        this.description = description;
+        this.createDatetime = createDatetime;
+        this.ageingEntitySteps = ageingEntitySteps;
+        this.paymentMethods = paymentMethods;
+        this.orderPeriodDTOs = orderPeriodDTOs;
+        this.billingProcesses = billingProcesses;
+        this.baseUsers = baseUsers;
+        this.contactTypes = contactTypes;
+        this.items = items;
+        this.eventLogs = eventLogs;
+        this.notificationMessages = notificationMessages;
+        this.contactFieldTypes = contactFieldTypes;
+        this.currencyDTOs = currencyDTOs;
+        this.itemTypes = itemTypes;
+        this.billingProcessConfigurations = billingProcessConfigurations;
+        this.invoiceDeliveryMethods = invoiceDeliveryMethods;
+        this.listEntities = listEntities;
     }
-   
-     @Id 
-    
-    @Column(name="id", unique=true, nullable=false)
+
+    @Id
+
+    @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return this.id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="currency_id", nullable=false)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency_id", nullable = false)
     public CurrencyDTO getCurrency() {
         return this.currencyDTO;
     }
-    
+
     public void setCurrency(CurrencyDTO currencyDTO) {
         this.currencyDTO = currencyDTO;
     }
-    
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="language_id", nullable=false)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "language_id", nullable = false)
     public LanguageDTO getLanguage() {
         return this.language;
     }
-    
+
     public void setLanguage(LanguageDTO language) {
         this.language = language;
     }
-    
-    @Column(name="external_id", length=20)
+
+    @Column(name = "external_id", length = 20)
     public String getExternalId() {
         return this.externalId;
     }
-    
+
     public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
-    
-    @Column(name="description", nullable=false, length=100)
+
+    @Column(name = "description", nullable = false, length = 100)
     public String getDescription() {
         return this.description;
     }
-    
+
     public void setDescription(String description) {
         this.description = description;
     }
 
-    @Column(name="create_datetime", nullable=false, length=29)
+    @Column(name = "create_datetime", nullable = false, length = 29)
     public Date getCreateDatetime() {
         return this.createDatetime;
     }
-    
+
     public void setCreateDatetime(Date createDatetime) {
         this.createDatetime = createDatetime;
     }
 
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="company")
-    @OrderBy (
-        clause = "status_id"
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "company")
+    @OrderBy(
+            clause = "status_id"
     )
     public Set<AgeingEntityStepDTO> getAgeingEntitySteps() {
         return this.ageingEntitySteps;
     }
-    
+
     public void setAgeingEntitySteps(Set<AgeingEntityStepDTO> ageingEntitySteps) {
         this.ageingEntitySteps = ageingEntitySteps;
     }
-@ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="entity_payment_method_map", joinColumns = { 
-        @JoinColumn(name="entity_id", updatable=false) }, inverseJoinColumns = { 
-        @JoinColumn(name="payment_method_id", updatable=false) })
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "entity_payment_method_map", joinColumns = {
+            @JoinColumn(name = "entity_id", updatable = false)
+    }, inverseJoinColumns = {
+            @JoinColumn(name = "payment_method_id", updatable = false)
+    })
     public Set<PaymentMethodDTO> getPaymentMethods() {
         return this.paymentMethods;
     }
-    
+
     public void setPaymentMethods(Set<PaymentMethodDTO> paymentMethods) {
         this.paymentMethods = paymentMethods;
     }
-    
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="company")
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "company")
     public Set<OrderPeriodDTO> getOrderPeriods() {
         return this.orderPeriodDTOs;
     }
+
     public void setOrderPeriods(Set<OrderPeriodDTO> orderPeriodDTOs) {
         this.orderPeriodDTOs = orderPeriodDTOs;
     }
 
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "entity")
     public Set<BillingProcessDTO> getBillingProcesses() {
         return this.billingProcesses;
     }
-    
+
     public void setBillingProcesses(Set<BillingProcessDTO> billingProcesses) {
         this.billingProcesses = billingProcesses;
     }
-    
+
     /**
-     * Never use this method. It will run out of memory.
-     * Instead use UserDAS().findByEntityId
+     * Never use this method. It will run out of memory. Instead use UserDAS().findByEntityId
+     *
      * @return
      */
-    @OneToMany(cascade=CascadeType.ALL, mappedBy="company")
-    @LazyCollection(value=LazyCollectionOption.EXTRA)
-    @BatchSize(size=100)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
+    @LazyCollection(value = LazyCollectionOption.EXTRA)
+    @BatchSize(size = 100)
     public Set<UserDTO> getBaseUsers() {
         return this.baseUsers;
     }
-    
+
     public void setBaseUsers(Set<UserDTO> baseUsers) {
         this.baseUsers = baseUsers;
     }
-    
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
-    @OrderBy (
-        clause = "id"
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "entity")
+    @OrderBy(
+            clause = "id"
     )
     public Set<ContactTypeDTO> getContactTypes() {
         return this.contactTypes;
     }
+
     public void setContactTypes(Set<ContactTypeDTO> contactTypes) {
         this.contactTypes = contactTypes;
     }
-    
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "entity")
     public Set<ItemDTO> getItems() {
         return this.items;
     }
-    
+
     public void setItems(Set<ItemDTO> items) {
         this.items = items;
     }
-    
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="company")
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "company")
     public Set<EventLogDTO> getEventLogs() {
         return this.eventLogs;
     }
-    
+
     public void setEventLogs(Set<EventLogDTO> eventLogs) {
         this.eventLogs = eventLogs;
     }
-    
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "entity")
     public Set<NotificationMessageDTO> getNotificationMessages() {
         return this.notificationMessages;
     }
-    
+
     public void setNotificationMessages(Set<NotificationMessageDTO> notificationMessages) {
         this.notificationMessages = notificationMessages;
     }
-@ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="report_entity_map",joinColumns = { 
-        @JoinColumn(name="entity_id", updatable=false) }, inverseJoinColumns = { 
-        @JoinColumn(name="report_id", updatable=false) })
-    public Set<ReportDTO> getReports() {
-        return this.reports;
-    }
-    
-    public void setReports(Set<ReportDTO> reports) {
-        this.reports = reports;
-    }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "entity")
     public Set<ContactFieldTypeDTO> getContactFieldTypes() {
         return this.contactFieldTypes;
     }
-    
+
     public void setContactFieldTypes(Set<ContactFieldTypeDTO> contactFieldTypes) {
         this.contactFieldTypes = contactFieldTypes;
     }
-@ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="currency_entity_map", joinColumns = { 
-        @JoinColumn(name="entity_id", updatable=false) }, inverseJoinColumns = { 
-        @JoinColumn(name="currency_id", updatable=false) })
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "currency_entity_map", joinColumns = {
+            @JoinColumn(name = "entity_id", updatable = false)
+    }, inverseJoinColumns = {
+            @JoinColumn(name = "currency_id", updatable = false)
+    })
     public Set<CurrencyDTO> getCurrencies() {
         return this.currencyDTOs;
     }
-    
+
     public void setCurrencies(Set<CurrencyDTO> currencyDTOs) {
         this.currencyDTOs = currencyDTOs;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "entity")
     public Set<ItemTypeDTO> getItemTypes() {
         return this.itemTypes;
     }
-    
+
     public void setItemTypes(Set<ItemTypeDTO> itemTypes) {
         this.itemTypes = itemTypes;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "entity")
     public Set<BillingProcessConfigurationDTO> getBillingProcessConfigurations() {
         return this.billingProcessConfigurations;
     }
-    
+
     public void setBillingProcessConfigurations(Set<BillingProcessConfigurationDTO> billingProcessConfigurations) {
         this.billingProcessConfigurations = billingProcessConfigurations;
     }
-@ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="entity_delivery_method_map", joinColumns = { 
-        @JoinColumn(name="entity_id", updatable=false) }, inverseJoinColumns = { 
-        @JoinColumn(name="method_id", updatable=false) })
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "entity_delivery_method_map", joinColumns = {
+            @JoinColumn(name = "entity_id", updatable = false)
+    }, inverseJoinColumns = {
+            @JoinColumn(name = "method_id", updatable = false)
+    })
     public Set<InvoiceDeliveryMethodDTO> getInvoiceDeliveryMethods() {
         return this.invoiceDeliveryMethods;
     }
-    
+
     public void setInvoiceDeliveryMethods(Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods) {
         this.invoiceDeliveryMethods = invoiceDeliveryMethods;
     }
 
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "entity")
     public Set<ListEntityDTO> getListEntities() {
         return this.listEntities;
     }
-    
+
     public void setListEntities(Set<ListEntityDTO> listEntities) {
         this.listEntities = listEntities;
     }
@@ -355,15 +364,13 @@ public class CompanyDTO  implements java.io.Serializable {
     public Integer getCurrencyId() {
         return currencyDTO.getId();
     }
-    
+
     @Transient
     public Integer getLanguageId() {
         return language.getId();
     }
-    
+
     public String toString() {
         return " CompanyDTO: " + id;
     }
-
-
 }

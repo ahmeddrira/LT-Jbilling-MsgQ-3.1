@@ -843,4 +843,8 @@ drop table report_user;
 drop table report_entity_map;
 drop table report;
 
-
+delete from jbilling_seqs where name in ('report_field', 'report_type_map', 'report_type', 'report_user', 'report_entity_map', 'report');
+delete from international_description where table_id in (
+  select id from jbilling_table where name in ('report_field', 'report_type_map', 'report_type', 'report_user', 'report_entity_map', 'report')
+)
+delete from jbilling_table where name in ('report_field', 'report_type_map', 'report_type', 'report_user', 'report_entity_map', 'report');

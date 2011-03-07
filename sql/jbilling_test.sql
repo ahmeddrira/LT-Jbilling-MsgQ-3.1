@@ -300,6 +300,9 @@ DROP TABLE public.user_role_map;
 DROP TABLE public.user_credit_card_map;
 DROP TABLE public.shortcut;
 DROP TABLE public.role;
+DROP TABLE public.report_type;
+DROP TABLE public.report_parameter;
+DROP TABLE public.report;
 DROP TABLE public.recent_item;
 DROP TABLE public.purchase_order;
 DROP TABLE public.promotion_user_map;
@@ -2067,6 +2070,47 @@ CREATE TABLE recent_item (
 
 
 ALTER TABLE public.recent_item OWNER TO jbilling;
+
+--
+-- Name: report; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE report (
+    id integer NOT NULL,
+    type_id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    file_name character varying(500) NOT NULL,
+    optlock integer NOT NULL
+);
+
+
+ALTER TABLE public.report OWNER TO jbilling;
+
+--
+-- Name: report_parameter; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE report_parameter (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    dtype character varying(10) NOT NULL
+);
+
+
+ALTER TABLE public.report_parameter OWNER TO jbilling;
+
+--
+-- Name: report_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE report_type (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    optlock integer NOT NULL
+);
+
+
+ALTER TABLE public.report_type OWNER TO jbilling;
 
 --
 -- Name: role; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -11719,8 +11763,6 @@ user_credit_card_map	5
 permission_role_map	279
 user_role_map	13
 currency_entity_map	10
-report_entity_map	113
-report_type_map	19
 subscriber_status	7
 order_line_provisioning_status	1
 balance_type	0
@@ -11733,8 +11775,6 @@ user_credit_card_map	5
 permission_role_map	279
 user_role_map	13
 currency_entity_map	10
-report_entity_map	113
-report_type_map	19
 subscriber_status	7
 order_line_provisioning_status	1
 balance_type	0
@@ -11753,8 +11793,6 @@ invoice_line_type	1
 invoice_line_type	1
 currency	1
 currency	1
-report_type	1
-report_type	1
 payment_method	1
 payment_method	1
 payment_result	1
@@ -11780,8 +11818,6 @@ currency_exchange	3
 billing_process_configuration	1
 order_period	1
 order_period	1
-report	1
-report	1
 partner_range	2
 partner_range	2
 partner	2
@@ -11796,8 +11832,6 @@ period_unit	1
 period_unit	1
 payment_info_cheque	17
 payment_info_cheque	17
-report_field	18
-report_field	18
 billing_process	2
 billing_process	2
 process_run	1
@@ -11875,8 +11909,6 @@ recent_item	3
 partner_payout	1
 process_run_total_pm	1
 process_run_total_pm	1
-report_user	1
-report_user	1
 payment_authorization	1
 payment_authorization	1
 paper_invoice_batch	1
@@ -11891,6 +11923,9 @@ contact_type	10
 contact_field_type	1
 breadcrumb	11
 shortcut	1
+report	1
+report_type	1
+report_parameter	1
 \.
 
 
@@ -11899,8 +11934,6 @@ shortcut	1
 --
 
 COPY jbilling_table (id, name) FROM stdin;
-0	report
-1	report_field
 4	currency
 5	entity
 6	period_unit
@@ -11948,10 +11981,6 @@ COPY jbilling_table (id, name) FROM stdin;
 68	currency_entity_map
 69	ageing_entity_step
 70	partner_payout
-71	report_user
-72	report_entity_map
-73	report_type
-74	report_type_map
 75	ach
 77	list_entity
 78	list_field_entity
@@ -11996,6 +12025,9 @@ COPY jbilling_table (id, name) FROM stdin;
 97	plan_item
 98	customer_price
 99	contact_field_type
+100	report
+101	report_type
+102	report_parameter
 \.
 
 
@@ -16673,6 +16705,30 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
 1	PRODUCT	3000	1	0
 2	PRODUCT	2602	1	0
+\.
+
+
+--
+-- Data for Name: report; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY report (id, type_id, name, file_name, optlock) FROM stdin;
+\.
+
+
+--
+-- Data for Name: report_parameter; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY report_parameter (id, name, dtype) FROM stdin;
+\.
+
+
+--
+-- Data for Name: report_type; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY report_type (id, name, optlock) FROM stdin;
 \.
 
 

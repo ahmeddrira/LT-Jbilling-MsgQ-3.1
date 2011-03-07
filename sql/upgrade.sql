@@ -848,3 +848,31 @@ delete from international_description where table_id in (
   select id from jbilling_table where name in ('report_field', 'report_type_map', 'report_type', 'report_user', 'report_entity_map', 'report')
 )
 delete from jbilling_table where name in ('report_field', 'report_type_map', 'report_type', 'report_user', 'report_entity_map', 'report');
+
+-- new reports tables
+create table report (
+    id int NOT NULL,
+    type_id int NOT NULL,
+    name varchar(255) NOT NULL,
+    file_name varchar(500) NOT NULL,
+    OPTLOCK int NOT NULL
+);
+create table report_type (
+    id int NOT NULL,
+    name varchar(255) NOT NULL,
+    OPTLOCK int NOT NULL
+);
+create table report_parameter (
+    id int NOT NULL,
+    name varchar(255) NOT NULL,
+    dtype varchar(10) NOT NULL
+);
+
+insert into jbilling_table (id, name) values (100, 'report');
+insert into jbilling_table (id, name) values (101, 'report_type');
+insert into jbilling_table (id, name) values (102, 'report_parameter');
+
+insert into jbilling_seqs (name, next_id) values ('report', 1);
+insert into jbilling_seqs (name, next_id) values ('report_type', 1);
+insert into jbilling_seqs (name, next_id) values ('report_parameter', 1);
+

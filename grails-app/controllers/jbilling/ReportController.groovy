@@ -22,11 +22,10 @@ package jbilling
 
 import com.sapienter.jbilling.server.report.db.ReportDTO
 import grails.plugins.springsecurity.Secured
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.report.db.ReportTypeDTO
 import com.sapienter.jbilling.server.report.ReportBL
-import net.sf.jasperreports.engine.JasperPrint
 
 /**
  * ReportController 
@@ -110,8 +109,6 @@ class ReportController {
             }
         }
 
-        JasperPrint output = new ReportBL(report, session.locale)
-
-        // todo: jasper viewer?
+        new ReportBL(report, session.locale).renderHtml(response)
     }
 }

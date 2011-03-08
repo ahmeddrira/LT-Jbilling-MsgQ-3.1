@@ -71,7 +71,7 @@ import java.util.Set;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class ReportDTO extends AbstractDescription implements Serializable {
 
-    private static final String BASE_PATH = Util.getSysProp("base_dir") + File.separator + "reports";
+    public static final String BASE_PATH = Util.getSysProp("base_dir") + File.separator + "reports";
 
     private int id;
     private CompanyDTO entity;
@@ -131,14 +131,23 @@ public class ReportDTO extends AbstractDescription implements Serializable {
     }
 
     /**
-     * Returns the expected path for the Jasper Report file on disk. The path is constructed
-     * in the format <code>{base_dir}/{report_type}/{report_filename}</code>.
+     * Returns the base path for this Jasper Report file on disk.
+     *
+     * @return base path for the Jasper Report file
+     */
+    @Transient
+    public String getReportBaseDir() {
+        return BASE_PATH + File.separator;
+    }
+
+    /**
+     * Returns the expected path for the Jasper Report file on disk.
      *
      * @return path to Jasper Report file.
      */
     @Transient
     public String getReportFilePath() {
-        return BASE_PATH + File.separator + getType().getName() + File.separator + getFileName();
+        return getReportBaseDir() + File.separator + getFileName();
     }
 
     /**

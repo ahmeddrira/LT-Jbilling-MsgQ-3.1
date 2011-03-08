@@ -25,17 +25,22 @@ import com.sapienter.jbilling.server.report.db.ReportDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Context;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.export.JRHtmlExporter;
+import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.util.Locale;
 import java.util.Map;
@@ -49,6 +54,8 @@ import java.util.Map;
 public class ReportBL {
 
     private static final Logger LOG = Logger.getLogger(ReportBL.class);
+
+    public static final String PARAMETER_SUBREPORT_DIR = "SUBREPORT_DIR";
 
     private ReportDTO report;
     private Locale locale;
@@ -88,6 +95,36 @@ public class ReportBL {
     }
 
     /**
+     * Render report as HTML to the given HTTP response stream.
+     *
+     * @param response response stream
+     */
+    public void renderHtml(HttpServletResponse response) {
+        response.setContentType("text/html");
+
+        PrintWriter writer = null;
+        try {
+            writer = response.getWriter();
+        } catch (IOException e) {
+            LOG.error("Exception occurred retrieving the print writer for the response stream.", e);
+            return;
+        }
+
+        JasperPrint print = run();
+
+        JRHtmlExporter exporter = new JRHtmlExporter();
+        exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+        exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, writer);
+        exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "image?image=");
+
+        try {
+            exporter.exportReport();
+        } catch (JRException e) {
+            LOG.error("Exception occurred exporting jasper report to HTML.", e);
+        }
+    }
+
+    /**
      * Run this report.
      *
      * This method assumes that the report object contains parameters that have been populated
@@ -96,20 +133,22 @@ public class ReportBL {
      * @return JasperPrint output file
      */
     public JasperPrint run() {
-        return run(report.getReportFile(), report.getParameterMap(), locale);
+        return run(report.getReportFile(), report.getReportBaseDir(), report.getParameterMap(), locale);
     }
 
     /**
      * Run the given report design file with the given parameter list.
      *
      * @param report report design file
+     * @param baseDir report base directory
      * @param parameters report parameters
      * @param locale user locale
      * @return JasperPrint output file
      */
-    public static JasperPrint run(File report, Map<String, Object> parameters, Locale locale) {
-        // add user locale to report parameters
+    public static JasperPrint run(File report,String baseDir, Map<String, Object> parameters, Locale locale) {
+        // add user locale and sub report directory
         parameters.put(JRParameter.REPORT_LOCALE, locale);
+        parameters.put(PARAMETER_SUBREPORT_DIR, baseDir);
 
         // get database connection
         DataSource dataSource = Context.getBean(Context.Name.DATA_SOURCE);
@@ -117,10 +156,10 @@ public class ReportBL {
 
         // run report
         FileInputStream inputStream = null;
-        JasperPrint output = null;
+        JasperPrint print = null;
         try {
             inputStream = new FileInputStream(report);
-            output = JasperFillManager.fillReport(inputStream, parameters, connection);
+            print = JasperFillManager.fillReport(inputStream, parameters, connection);
 
         } catch (FileNotFoundException e) {
             LOG.error("Report design file " + report.getPath() + " not found.", e);
@@ -141,6 +180,6 @@ public class ReportBL {
         // release connection
         DataSourceUtils.releaseConnection(connection, dataSource);
 
-        return output;
+        return print;
     }
 }

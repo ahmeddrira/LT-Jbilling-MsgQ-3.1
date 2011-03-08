@@ -25,6 +25,8 @@ import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.report.db.ReportTypeDTO
+import com.sapienter.jbilling.server.report.ReportBL
+import net.sf.jasperreports.engine.JasperPrint
 
 /**
  * ReportController 
@@ -108,6 +110,8 @@ class ReportController {
             }
         }
 
-        // todo: run report!
+        JasperPrint output = new ReportBL(report, session.locale)
+
+        // todo: jasper viewer?
     }
 }

@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -39,6 +41,7 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.util.csv.Exportable;
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Fetch;
@@ -67,7 +70,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         allocationSize = 100)
 @Table(name = "invoice")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class InvoiceDTO implements Serializable {
+public class InvoiceDTO implements Serializable, Exportable {
 
     private static final Logger LOG = Logger.getLogger(InvoiceDTO.class);
 
@@ -499,5 +502,108 @@ public class InvoiceDTO implements Serializable {
             for (OrderProcessDTO process : getOrderProcesses())
                 process.getPurchaseOrder().touch();
         }
+    }
+
+    @Transient
+    public String[] getFieldNames() {
+        return new String[] {
+                "id",
+                "publicNumber",
+                "userId",
+                "status",
+                "currency",
+                "delegatedInvoices",
+                "carriedBalance",
+                "total",
+                "balance",
+                "createdDate",
+                "dueDate",
+                "paymentAttempts",
+                "payments",
+                "isReview",
+                "notes",
+
+                // invoice lines
+                "lineItemId",
+                "lineProductCode",
+                "lineQuantity",
+                "linePrice",
+                "lineAmount",
+                "lineDescription"
+        };
+    }
+
+    @Transient
+    public Object[][] getFieldValues() {
+        StringBuffer delegatedInvoiceIds = new StringBuffer();
+        for (Iterator<InvoiceDTO> it = invoices.iterator(); it.hasNext();) {
+            delegatedInvoiceIds.append(it.next().getId());
+            if (it.hasNext()) delegatedInvoiceIds.append(", ");
+        }
+
+        StringBuffer paymentIds = new StringBuffer();
+        for (Iterator<PaymentInvoiceMapDTO> it = paymentMap.iterator(); it.hasNext();) {
+            paymentIds.append(it.next().getPayment().getId());
+            if (it.hasNext()) paymentIds.append(", ");
+        }
+
+        List<Object[]> values = new ArrayList<Object[]>();
+
+        // main invoice row
+        values.add(
+            new Object[] {
+                id,
+                publicNumber,
+                (baseUser != null ? baseUser.getId() : null),
+                (invoiceStatus != null ? invoiceStatus.getDescription() : null),
+                (currencyDTO != null ? currencyDTO.getDescription() : null),
+                delegatedInvoiceIds.toString(),
+                carriedBalance,
+                total,
+                balance,
+                createDatetime,
+                dueDate,
+                paymentAttempts,
+                paymentIds.toString(),
+                isReview,
+                customerNotes
+            }
+        );
+
+        // indented row for each invoice line
+        for (InvoiceLineDTO line : invoiceLines) {
+            if (line.getDeleted().equals(0)) {
+                values.add(
+                    new Object[] {
+                        // padding for the main invoice columns
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+
+                        // invoice line
+                        (line.getItem() != null ? line.getItem().getId() : null),
+                        (line.getItem() != null ? line.getItem().getInternalNumber() : null),
+                        line.getQuantity(),
+                        line.getPrice(),
+                        line.getAmount(),
+                        line.getDescription()
+                    }
+                );
+            }
+        }
+
+        return values.toArray(new Object[values.size()][]);
     }
 }

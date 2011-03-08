@@ -48,10 +48,13 @@ import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.report.db.ReportUserDTO;
+import com.sapienter.jbilling.server.user.ContactBL;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
+import com.sapienter.jbilling.server.util.csv.Exportable;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
@@ -66,7 +69,7 @@ import com.sapienter.jbilling.server.util.db.LanguageDTO;
         )
 // No cache, mutable and critical
 @Table(name = "base_user")
-public class UserDTO implements Serializable {
+public class UserDTO implements Serializable, Exportable {
 
     private int id;
     private String userName;
@@ -588,5 +591,115 @@ public class UserDTO implements Serializable {
         if (getPartner() != null) {
             getPartner().touch();
         }
+    }
+
+    @Transient
+    public String[] getFieldNames() {
+        return new String[] {
+                "id",
+                "userName",
+                "password",
+                "status",
+                "subscriberStatus",
+                "deleted",
+                "accountExpired",
+                "accountLocked",
+                "passwordExpired",
+                "lastLogin",
+                "lastStatusChange",
+                "createdDateTime",
+                "language",
+                "currency",
+
+                // customer
+                "invoiceDeliveryMethod",
+                "autoPaymentType",
+                "notes",
+                "parentUserId",
+                "isParent",
+                "invoiceIfChild",
+                "excludeAging",
+                "balanceType",
+                "dynamicBalance",
+                "creditLimit",
+                "autoRecharge",
+
+                // contact
+                "organizationName",
+                "title",
+                "firstName",
+                "lastName",
+                "initial",
+                "address1",
+                "address2",
+                "city",
+                "stateProvince",
+                "postalCode",
+                "countryCode",
+                "phoneNumber",
+                "faxNumber",
+                "email"
+        };
+    }
+
+    @Transient
+    public Object[][] getFieldValues() {
+        ContactBL contactBL = new ContactBL();
+        contactBL.set(id);
+
+        ContactDTO contact = contactBL.getEntity();
+
+        return new Object[][] {
+            {
+                id,
+                userName,
+                password,
+                (userStatus != null ? userStatus.getDescription() : null),
+                (subscriberStatus != null ? subscriberStatus.getDescription() : null),
+                deleted,
+                accountExpired,
+                accountLocked,
+                passwordExpired,
+                lastLogin,
+                lastStatusChange,
+                createDatetime,
+                (language != null ? language.getDescription() : null),
+                (currencyDTO != null ? currencyDTO.getDescription() : null),
+
+                // customer
+                (customer != null && customer.getInvoiceDeliveryMethod() != null
+                 ? customer.getInvoiceDeliveryMethod().getId()
+                 : null),
+
+                (customer != null ? customer.getAutoPaymentType() : null),
+                (customer != null ? customer.getNotes() : null),
+
+                (customer != null && customer.getParent() != null
+                 ? customer.getParent().getBaseUser().getId()
+                 : null),
+
+                (customer != null ? customer.getIsParent() : null),
+                (customer != null ? customer.getInvoiceChild() : null),
+                (customer != null ? customer.getExcludeAging() : null),
+                (customer != null ? customer.getBalanceType() : null),
+                (customer != null ? customer.getDynamicBalance() : null),
+                (customer != null ? customer.getCreditLimit() : null),
+                (customer != null ? customer.getAutoRecharge() : null),
+
+                // contact
+                (contact != null ? contact.getOrganizationName() : null),
+                (contact != null ? contact.getTitle() : null),
+                (contact != null ? contact.getFirstName() : null),
+                (contact != null ? contact.getLastName() : null),
+                (contact != null ? contact.getInitial() : null),
+                (contact != null ? contact.getCity() : null),
+                (contact != null ? contact.getStateProvince() : null),
+                (contact != null ? contact.getPostalCode() : null),
+                (contact != null ? contact.getCountryCode() : null),
+                (contact != null ? contact.getCompletePhoneNumber() : null),
+                (contact != null ? contact.getCompleteFaxNumber() : null),
+                (contact != null ? contact.getEmail() : null),
+            }
+        };
     }
 }

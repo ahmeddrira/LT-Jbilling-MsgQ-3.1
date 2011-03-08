@@ -24,5 +24,11 @@
                 </g:link>
             </li>
         </g:each>
+        <li class="shortcut"> 
+            <g:remoteLink controller="shortcut" action="add" params="['template': 'shortcuts']" class="shortcut" 
+                update="messages">
+                <span><g:message code="shortcut.add"/></span>
+            </g:remoteLink>
+        </li>
     </ul>
 </div>

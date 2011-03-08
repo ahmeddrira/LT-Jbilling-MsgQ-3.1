@@ -242,6 +242,7 @@ class OrderBuilderController {
                 def index = params.int('index')
                 def line = order.orderLines[index]
                 bindData(line, params["line-${index}"])
+                line.useItem = true
 
                 // must have a quantity
                 if (!line.quantity) {
@@ -256,14 +257,6 @@ class OrderBuilderController {
                     line.quantity = line.getQuantityAsDecimal().setScale(0, RoundingMode.HALF_UP)
                 }
 
-                // line may have a price if "allow manual pricing" is set on the item
-                // if there is no price, use the item
-                if (!params["line-${index}.price"] || !line.price) {
-                    line.useItem = true
-                }
-
-                log.debug("Updated line: " + line)
-
                 // add line to order
                 order.orderLines[index] = line
 
@@ -275,6 +268,9 @@ class OrderBuilderController {
                         viewUtils.resolveException(flow, session.locale, e)
                     }
                 }
+
+                // sort order lines
+                order.orderLines = order.orderLines.sort { it.itemId }
                 conversation.order = order
 
                 params.template = 'review'
@@ -336,6 +332,9 @@ class OrderBuilderController {
                         viewUtils.resolveException(flow, session.locale, e)
                     }
                 }
+
+                // sort order lines
+                order.orderLines = order.orderLines.sort { it.itemId }
                 conversation.order = order
 
                 params.template = 'review'

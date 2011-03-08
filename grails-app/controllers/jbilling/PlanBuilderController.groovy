@@ -58,6 +58,19 @@ class PlanBuilderController {
         redirect action: 'edit'
     }
 
+    /**
+     * Sorts a list of PlanItemWS objects by precedence and itemId.
+     *
+     * @param planItems plan items
+     * @return sorted list of plan items
+     */
+    def sortPlanItems(planItems) {
+        // precedence in ascending order, item id in descending
+        return planItems.sort { a, b->
+            (b.precedence <=> a.precedence) ?: (a.itemId <=> b.itemId)
+        }
+    }
+
     def editFlow = {
         /**
          * Initializes the plan builder, putting necessary data into the flow and conversation
@@ -184,7 +197,7 @@ class PlanBuilderController {
                     PriceModelBL.validateAttributes(planItem.model)
 
                     // re-order plan items by precedence, unless a validation exception is thrown
-                    conversation.plan.planItems = conversation.plan.planItems.sort { it.precedence }.reverse()
+                    conversation.plan.planItems = sortPlanItems(conversation.plan.planItems)
 
                 } catch (SessionInternalError e) {
                     viewUtils.resolveException(flow, session.locale, e)
@@ -336,10 +349,8 @@ class PlanBuilderController {
                 bindData(conversation.product, params, 'product')
                 bindData(conversation.product.defaultPrice, params, 'price')
 
-                conversation.product.priceManual = params.priceManual ? 1 : 0
-
                 // sort prices by precedence
-                conversation.plan.planItems = conversation.plan.planItems.sort { it.precedence }.reverse()
+                conversation.plan.planItems = sortPlanItems(conversation.plan.planItems)
 
                 params.template = 'review'
             }

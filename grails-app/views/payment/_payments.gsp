@@ -67,16 +67,22 @@
     </div>
 </div>
 
-<g:if test="${payments?.totalCount > params.max}">
-    <div class="pager-box">
-        <div class="row left">
+<div class="pager-box">
+    <div class="row">
+        <div class="results">
             <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], update: 'column1']"/>
         </div>
-        <div class="row">
-            <util:remotePaginate controller="payment" action="list" params="[applyFilter: true]" total="${payments.totalCount}" update="column1"/>
+        <div class="download">
+            <g:link action="csv" id="${selected?.id}">
+                <g:message code="download.csv.link"/>
+            </g:link>
         </div>
     </div>
-</g:if>
+
+    <div class="row">
+        <util:remotePaginate controller="payment" action="list" params="[applyFilter: true]" total="${payments?.totalCount ?: 0}" update="column1"/>
+    </div>
+</div>
 
 <div class="btn-box">
     <g:link action="create" class="submit payment"><span><g:message code="button.create.payment"/></span></g:link>

@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -45,6 +46,7 @@ import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
+import com.sapienter.jbilling.server.util.csv.Exportable;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -59,7 +61,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         allocationSize = 100)
 @Table(name = "payment")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class PaymentDTO implements Serializable {
+public class PaymentDTO implements Serializable, Exportable {
 
     private int id;
     private UserDTO baseUser;
@@ -486,5 +488,105 @@ public class PaymentDTO implements Serializable {
 
     public void setPaymentPeriod(Integer period){
         this.paymentPeriod = period;
+    }
+
+    @Transient
+    public String[] getFieldNames() {
+        return new String[] {
+                "id",
+                "userId",
+                "linkedInvoices",
+                "paymentMethod",
+                "currency",
+                "amount",
+                "balance",
+                "isRefund",
+                "isPreauth",
+                "createdDate",
+                "paymentDate",
+                "paymentNotes",
+
+                // payment auth
+                "paymentProcessor",
+                "code1",
+                "code2",
+                "code3",
+                "approvalCode",
+                "avs",
+                "transactionId",
+                "md5",
+                "cardCode",
+                "responseMessage",
+
+                // credit card
+                "cardName",
+                "cardNumber",
+                "cardType",
+                "cardExpiry",
+
+                // ach
+                "achAccountName",
+                "achBankName",
+                "achAccountType",
+
+                // cheque
+                "chequeBankName",
+                "chequeNumber",
+                "chequeDate",
+        };
+    }
+
+    @Transient
+    public Object[][] getFieldValues() {
+        StringBuffer invoiceIds = new StringBuffer();
+        for (Iterator<PaymentInvoiceMapDTO> it = invoicesMap.iterator(); it.hasNext();) {
+            invoiceIds.append(it.next().getInvoiceEntity().getId());
+            if (it.hasNext()) invoiceIds.append(", ");
+        }
+
+        PaymentAuthorizationDTO latestAuthorization = (!paymentAuthorizations.isEmpty()
+                                                           ? paymentAuthorizations.iterator().next()
+                                                           : null);
+
+        return new Object[][] {
+            {
+                id,
+                (baseUser != null ? baseUser.getId() : null),
+                invoiceIds.toString(),
+                (paymentMethod != null ? paymentMethod.getDescription() : null),
+                (currencyDTO != null ? currencyDTO.getDescription() : null),
+                amount,
+                balance,
+                isRefund,
+                isPreauth,
+                createDatetime,
+                paymentDate,
+                paymentNotes,
+
+                (latestAuthorization != null ? latestAuthorization.getProcessor() : null),
+                (latestAuthorization != null ? latestAuthorization.getCode1() : null),
+                (latestAuthorization != null ? latestAuthorization.getCode2() : null),
+                (latestAuthorization != null ? latestAuthorization.getCode3() : null),
+                (latestAuthorization != null ? latestAuthorization.getApprovalCode() : null),
+                (latestAuthorization != null ? latestAuthorization.getAvs() : null),
+                (latestAuthorization != null ? latestAuthorization.getTransactionId() : null),
+                (latestAuthorization != null ? latestAuthorization.getMD5() : null),
+                (latestAuthorization != null ? latestAuthorization.getCardCode() : null),
+                (latestAuthorization != null ? latestAuthorization.getResponseMessage() : null),
+
+                (creditCard != null ? creditCard.getName() : null),
+                (creditCard != null ? creditCard.getCcNumberPlain() : null),
+                (creditCard != null ? creditCard.getCcType() : null),
+                (creditCard != null ? creditCard.getExpiry() : null),
+
+                (ach != null ? ach.getAccountName() : null),
+                (ach != null ? ach.getBankName() : null),
+                (ach != null ? ach.getAccountType() : null),
+
+                (paymentInfoCheque != null ? paymentInfoCheque.getBank() : null),
+                (paymentInfoCheque != null ? paymentInfoCheque.getNumber() : null),
+                (paymentInfoCheque != null ? paymentInfoCheque.getDate() : null),
+            }
+        };
     }
 }

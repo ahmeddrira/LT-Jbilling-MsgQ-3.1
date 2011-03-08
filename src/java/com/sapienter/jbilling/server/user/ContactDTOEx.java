@@ -116,7 +116,7 @@ public class ContactDTOEx extends ContactDTO implements Serializable  {
         setInclude(ws.getInclude());
 
         // contacts from ws are always included in notifications
-        setInclude(new Integer(1));
+        //setInclude(new Integer(1));
 
         // now add the custom fields
         if (ws.getFieldIDs() == null || ws.getFieldIDs().length == 0) {

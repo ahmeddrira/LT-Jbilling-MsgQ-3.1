@@ -39,9 +39,11 @@
                 <g:render template="/layouts/includes/filterSaveDialog"/>
             </g:if>
 
-            <!-- shortcuts -->
+            <!-- shortcuts 
             <g:render template="/layouts/includes/shortcuts"/>
-
+            -->
+            <inc:include controller="shortcut" action="index"/>
+            
             <!-- recently viewed items -->
             <g:render template="/layouts/includes/recent"/>
         </div>

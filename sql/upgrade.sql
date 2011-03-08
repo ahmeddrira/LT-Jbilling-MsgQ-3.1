@@ -813,3 +813,24 @@ values (47, 19, 'description', 1, 'Last API call to get the the user subscriptio
 -- lengthen the preference int value to allow for longer mediation "last read ID" values
 -- alter table preference modify int_value int4 null default null; -- mysql
 alter table preference alter int_value type int4; -- postgresql
+
+--shortcut tables
+CREATE TABLE shortcut
+(
+  id integer NOT NULL,
+  user_id integer NOT NULL,
+  controller character varying(255) NOT NULL,
+  "action" character varying(255),
+  "name" character varying(255),
+  object_id integer,
+  "version" integer NOT NULL,
+  PRIMARY KEY (id)
+);
+
+insert into jbilling_seqs values ('shortcut', 1);
+
+--gl code new field in item table
+alter table item add column gl_code character varying (50);
+
+-- drop item manual pricing flag
+alter table item drop column price_manual;

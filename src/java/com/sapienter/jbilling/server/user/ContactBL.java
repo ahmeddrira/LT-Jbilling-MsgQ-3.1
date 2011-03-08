@@ -63,7 +63,7 @@ public class ContactBL {
     private JbillingTableDAS jbDAS = null;
     private EventLogger eLogger = null;
     
-    public ContactBL(Integer contactId) 
+    public ContactBL(Integer contactId)
             throws NamingException {
         init();
         contact = contactDas.find(contactId);

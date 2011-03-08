@@ -39,6 +39,9 @@ import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.common.Util
 import com.sapienter.jbilling.common.Constants
+import com.sapienter.jbilling.server.util.csv.CsvExporter
+import com.sapienter.jbilling.server.util.csv.Exporter
+import com.sapienter.jbilling.client.util.DownloadHelper
 
 /**
  * PaymentController 
@@ -52,6 +55,7 @@ class PaymentController {
     static pagination = [ max: 10, offset: 0 ]
 
     def webServicesSession
+    def webServicesValidationAdvice
     def viewUtils
     def filterService
     def recentItemService
@@ -61,17 +65,11 @@ class PaymentController {
         redirect action: list, params: params
     }
 
-    /**
-     * Gets a list of payments and renders the the list page. If the "applyFilters" parameter is given,
-     * the partial "_payments.gsp" template will be rendered instead of the complete payments list page.
-     */
-    def list = {
-        def filters = filterService.getFilters(FilterType.PAYMENT, params)
-
+    def getList(filters, GrailsParameterMap params) {
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset
 
-        def payments = PaymentDTO.createCriteria().list(
+        return PaymentDTO.createCriteria().list(
                 max:    params.max,
                 offset: params.offset
         ) {
@@ -93,6 +91,15 @@ class PaymentController {
             }
             order('id', 'desc')
         }
+    }
+
+    /**
+     * Gets a list of payments and renders the the list page. If the "applyFilters" parameter is given,
+     * the partial "_payments.gsp" template will be rendered instead of the complete payments list page.
+     */
+    def list = {
+        def filters = filterService.getFilters(FilterType.PAYMENT, params)
+        def payments = getList(filters, params)
 
         def selected = params.id ? PaymentDTO.get(params.int("id")) : null
 
@@ -102,6 +109,26 @@ class PaymentController {
             render template: 'payments', model: [ payments: payments, selected: selected, filters: filters ]
         } else {
             [ payments: payments, selected: selected, filters: filters ]
+        }
+    }
+
+    /**
+     * Applies the set filters to the payment list, and exports it as a CSV for download.
+     */
+    def csv = {
+        def filters = filterService.getFilters(FilterType.PAYMENT, params)
+
+        params.max = CsvExporter.MAX_RESULTS
+        def payments = getList(filters, params)
+
+        if (payments.totalCount > CsvExporter.MAX_RESULTS) {
+            flash.error = message(code: 'error.export.exceeds.maximum')
+            redirect action: 'list', id: params.id
+
+        } else {
+            DownloadHelper.setResponseHeader(response, "payments.csv")
+            Exporter<PaymentDTO> exporter = CsvExporter.createExporter(PaymentDTO.class);
+            render text: exporter.export(payments), contentType: "text/csv"
         }
     }
 
@@ -248,9 +275,20 @@ class PaymentController {
 
         def user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
         def invoices = getUnpaidInvoices(user.userId)
+        def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
 
+        // validate before showing the confirmation page
+        try {
+            webServicesValidationAdvice.validateObject(payment)
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.local, e)
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId') ]
+            return
+        }
+
+        // validation passed, render the confirmation page
         def processNow = params.processNow ? true : false
-
         [ payment: payment, user: user, invoices: invoices, currencies: currencies, processNow: processNow, invoiceId: params.invoiceId ]
     }
 
@@ -346,12 +384,14 @@ class PaymentController {
     }
 
     def bindExpiryDate(CreditCardDTO creditCard, GrailsParameterMap params) {
-        Calendar calendar = Calendar.getInstance()
-        calendar.clear()
-        calendar.set(Calendar.MONTH, params.int('expiryMonth'))
-        calendar.set(Calendar.YEAR, params.int('expiryYear'))
+        if (params.expiryMonth && params.expiryYear) {
+            Calendar calendar = Calendar.getInstance()
+            calendar.clear()
+            calendar.set(Calendar.MONTH, params.int('expiryMonth'))
+            calendar.set(Calendar.YEAR, params.int('expiryYear'))
 
-        creditCard.expiry = calendar.getTime()
+            creditCard.expiry = calendar.getTime()
+        }
     }
 
     def getCurrencies() {

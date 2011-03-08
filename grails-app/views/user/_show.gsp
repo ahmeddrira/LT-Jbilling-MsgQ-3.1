@@ -25,7 +25,6 @@
     </div>
     <div class="box edit">
         <g:remoteLink action="show" id="${selected.id}" params="[template: 'notes']" before="register(this);" onSuccess="render(data, next);" class="edit"/>
-        <strong><g:message code="customer.detail.note.title"/></strong>
         <g:if test="${customer?.notes}">
             <p>${customer.notes}</p>
         </g:if>

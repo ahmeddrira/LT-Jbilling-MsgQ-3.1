@@ -24,6 +24,7 @@ import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.csv.Exportable;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -63,14 +64,14 @@ import java.util.Set;
 )
 @Table(name = "item")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class ItemDTO extends AbstractDescription {
+public class ItemDTO extends AbstractDescription implements Exportable {
 
     private int id;
     private CompanyDTO entity;
     private String internalNumber;
+    private String glCode;
     private PriceModelDTO defaultPrice;
     private BigDecimal percentage;
-    private Integer priceManual;
     private Integer deleted;
     private Integer hasDecimals;
     private Set<OrderLineDTO> orderLineDTOs = new HashSet<OrderLineDTO>(0);
@@ -95,32 +96,31 @@ public class ItemDTO extends AbstractDescription {
         this.id = id;
     }
 
-    public ItemDTO(int id, String internalNumber, BigDecimal percentage, Integer priceManual,
+    public ItemDTO(int id, String internalNumber, String glCode,BigDecimal percentage, 
                    Integer hasDecimals, Integer deleted, CompanyDTO entity) {
         this.id = id;
         this.internalNumber = internalNumber;
+        this.glCode = glCode;
         this.percentage = percentage;
-        this.priceManual = priceManual;
         this.hasDecimals = hasDecimals;
         this.deleted = deleted;
         this.entity = entity;
     }
 
-    public ItemDTO(int id, Integer priceManual, Integer deleted, Integer hasDecimals) {
+    public ItemDTO(int id, Integer deleted, Integer hasDecimals) {
         this.id = id;
-        this.priceManual = priceManual;
         this.deleted = deleted;
         this.hasDecimals = hasDecimals;
     }
 
-    public ItemDTO(int id, CompanyDTO entity, String internalNumber, BigDecimal percentage, Integer priceManual,
+    public ItemDTO(int id, CompanyDTO entity, String internalNumber, String glCode, BigDecimal percentage, 
                    Integer deleted, Integer hasDecimals, Set<OrderLineDTO> orderLineDTOs, Set<ItemTypeDTO> itemTypes,
                    Set<InvoiceLineDTO> invoiceLines) {
         this.id = id;
         this.entity = entity;
         this.internalNumber = internalNumber;
+        this.glCode = glCode;
         this.percentage = percentage;
-        this.priceManual = priceManual;
         this.deleted = deleted;
         this.hasDecimals = hasDecimals;
         this.orderLineDTOs = orderLineDTOs;
@@ -129,11 +129,11 @@ public class ItemDTO extends AbstractDescription {
     }
 
     // ItemDTOEx
-    public ItemDTO(int id, String number, CompanyDTO entity, String description, Integer manualPrice, Integer deleted,
+    public ItemDTO(int id, String number, String glCode, CompanyDTO entity, String description, Integer deleted,
                    Integer currencyId, BigDecimal price, BigDecimal percentage, Integer orderLineTypeId,
                    Integer hasDecimals) {
         
-        this(id, number, percentage, manualPrice, hasDecimals, deleted, entity);
+        this(id, number, glCode, percentage, hasDecimals, deleted, entity);
         setDescription(description);
         setCurrencyId(currencyId);
         setOrderLineTypeId(orderLineTypeId);
@@ -174,7 +174,16 @@ public class ItemDTO extends AbstractDescription {
         this.internalNumber = internalNumber;
     }
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Column (name = "gl_code", length = 50)
+    public String getGlCode() {
+		return glCode;
+	}
+
+	public void setGlCode(String glCode) {
+		this.glCode = glCode;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "price_model_id", nullable = true)
     public PriceModelDTO getDefaultPrice() {
         return defaultPrice;
@@ -191,15 +200,6 @@ public class ItemDTO extends AbstractDescription {
 
     public void setPercentage(BigDecimal percentage) {
         this.percentage = percentage;
-    }
-
-    @Column(name = "price_manual", nullable = false)
-    public Integer getPriceManual() {
-        return this.priceManual;
-    }
-
-    public void setPriceManual(Integer priceManual) {
-        this.priceManual = priceManual;
     }
 
     @Column(name = "deleted", nullable = false)
@@ -397,6 +397,47 @@ public class ItemDTO extends AbstractDescription {
     @Override
     public String toString() {
         return "ItemDTO: id=" + getId();
+    }
+
+    @Transient
+    public String[] getFieldNames() {
+        return new String[] {
+                "id",
+                "productCode",
+                "itemTypes",
+                "hasDecimals",
+                "percentage",
+                "priceStrategy",
+                "currency",
+                "rate",
+                "attributes"
+        };
+    }
+
+    @Transient
+    public Object[][] getFieldValues() {
+        StringBuilder itemTypes = new StringBuilder();
+        for (ItemTypeDTO type : this.itemTypes) {
+            itemTypes.append(type.getDescription()).append(" ");
+        }
+
+        return new Object[][] {
+            {
+                id,
+                internalNumber,
+                itemTypes.toString(),
+                hasDecimals,
+                percentage,
+                (defaultPrice != null ? defaultPrice.getType().name() : null),
+
+                (defaultPrice != null && defaultPrice.getCurrency() != null
+                 ? defaultPrice.getCurrency().getDescription()
+                 : null),
+
+                (defaultPrice != null ? defaultPrice.getRate() : null),
+                (defaultPrice != null ? defaultPrice.getAttributes() : null),
+            }
+        };
     }
 }
 

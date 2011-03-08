@@ -191,14 +191,23 @@
                 <a href="${createLink (action: 'generateInvoice', params: [id: order?.id])}" class="submit order">
                     <span><g:message code="order.button.generate"/></span>
                 </a>
-                </div><div class="row">
                 <a href="${createLink (action: 'applyToInvoice', params: [id: order?.id, userId: user?.id])}" class="submit order">
                     <span><g:message code="order.button.apply.invoice"/></span>
                 </a>
             </g:if>
             <a href="${createLink (controller: 'orderBuilder', action: 'edit', params: [id: order?.id])}" class="submit edit">
                 <span><g:message code="order.button.edit"/>
-            </span></a>
-        </div>
+            </span></a></div><div class="row">
+            <a onclick="showConfirm('delete-' + ${order?.id});" class="submit delete">
+                <span><g:message code="order.button.delete"/></span>
+            </a>
+	   </div>
     </div>
 </div>
+
+<g:render template="/confirm"
+     model="['message':'order.prompt.are.you.sure',
+             'controller':'order',
+             'action':'delete',
+             'id':order.id,
+            ]"/>

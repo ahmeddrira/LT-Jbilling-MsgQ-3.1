@@ -143,6 +143,15 @@
         </g:if>
     </div>
 
+    <!-- payment notes -->
+    <g:if test="${selected.paymentNotes}">
+        <div class="heading">
+            <strong><g:message code="payment.notes"/></strong>
+        </div>
+        <div class="box">
+            <p>${selected.paymentNotes}</p>
+        </div>
+    </g:if>
 
     <!-- payment authorization -->
     <g:if test="${selected.paymentAuthorizations}">

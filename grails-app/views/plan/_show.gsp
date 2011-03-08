@@ -44,13 +44,6 @@
             </tbody>
         </table>
 
-        <table class="dataTable" cellspacing="0" cellpadding="0">
-            <tr>
-                <td><em><g:message code="product.detail.manual.pricing"/></em></td>
-                <td class="value"><em><g:formatBoolean boolean="${plan.item.priceManual > 0}"/></em></td>
-            </tr>
-        </table>
-
         <p class="description">
             ${plan.description}
         </p>

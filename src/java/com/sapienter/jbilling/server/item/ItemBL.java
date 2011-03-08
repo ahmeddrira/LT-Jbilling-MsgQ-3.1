@@ -133,7 +133,7 @@ public class ItemBL {
                 EventLogger.ROW_UPDATED, null, null, null);
 
         item.setNumber(dto.getNumber());
-        item.setPriceManual(dto.getPriceManual());
+        item.setGlCode(dto.getGlCode());
         item.setDescription(dto.getDescription(), languageId);
         item.setPercentage(dto.getPercentage());
         item.setHasDecimals(dto.getHasDecimals());
@@ -238,7 +238,7 @@ public class ItemBL {
      * the users current usage in the pricing calculation.
      *
      * This method does not execute any pricing plug-ins and does not use quantity or usage
-     * values for {@link PriceModelDTO#applyTo(PricingResult, BigDecimal, Usage)}
+     * values for {@link PriceModelDTO#applyTo(PricingResult, List, BigDecimal, Usage)}
      * price calculations.
      *
      * @param item item to price
@@ -378,9 +378,9 @@ public class ItemBL {
         ItemDTO dto = new ItemDTO(
             item.getId(),
             item.getInternalNumber(),
+            item.getGlCode(),
             item.getEntity(),
             item.getDescription(languageId),
-            item.getPriceManual(),
             item.getDeleted(),
             currencyId,
             null,
@@ -425,8 +425,8 @@ public class ItemBL {
 
         retValue.setEntity(new CompanyDAS().find(other.getEntityId()));
         retValue.setNumber(other.getNumber());
+        retValue.setGlCode(other.getGlCode());
         retValue.setPercentage(other.getPercentageAsDecimal());
-        retValue.setPriceManual(other.getPriceManual());
         retValue.setDeleted(other.getDeleted());
         retValue.setHasDecimals(other.getHasDecimals());
         retValue.setDescription(other.getDescription());
@@ -452,8 +452,8 @@ public class ItemBL {
 
         retValue.setEntityId(other.getEntity().getId());
         retValue.setNumber(other.getInternalNumber());
+        retValue.setGlCode(other.getGlCode());
         retValue.setPercentage(other.getPercentage());
-        retValue.setPriceManual(other.getPriceManual());
         retValue.setDeleted(other.getDeleted());
         retValue.setHasDecimals(other.getHasDecimals());
         retValue.setDescription(other.getDescription());

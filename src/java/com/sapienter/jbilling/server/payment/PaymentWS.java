@@ -25,7 +25,11 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.security.WSSecured;
-import com.sapienter.jbilling.server.util.Constants;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -36,10 +40,16 @@ import java.util.Date;
  */
 public class PaymentWS implements WSSecured, Serializable {
 
+    @NotNull(message="validation.error.notnull")
     private Integer userId = null;
+
+    @Valid
     private PaymentInfoChequeDTO cheque = null;
+    @Valid
     private CreditCardDTO creditCard = null;
+    @Valid
     private AchDTO ach = null;
+
     private String method = null;
     private Integer invoiceIds[] = null;
 
@@ -48,10 +58,15 @@ public class PaymentWS implements WSSecured, Serializable {
     private PaymentAuthorizationDTO authorization = null;
 
     //missing properties from PaymentDTO
+    @NotEmpty(message="validation.error.notnull")
+    @Digits(integer=22, fraction=10, message="validation.error.not.a.number")
     private String amount;
+    @NotNull(message="validation.error.notnull")
     private Integer isRefund;
     private Integer paymentMethodId;
+    @NotNull(message="validation.error.notnull")
     private Date paymentDate;
+    @NotNull(message="validation.error.notnull")
     private Integer currencyId;
     private int id;
     private Integer isPreauth;

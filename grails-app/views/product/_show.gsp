@@ -43,10 +43,6 @@
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>
                 <tr>
-                    <td><em><g:message code="product.detail.manual.pricing"/></em></td>
-                    <td class="value"><em><g:formatBoolean boolean="${selectedProduct.priceManual > 0}"/></em></td>
-                </tr>
-                <tr>
                     <td><em><g:message code="product.detail.decimal"/></em></td>
                     <td class="value"><em><g:formatBoolean boolean="${selectedProduct.hasDecimals > 0}"/></em></td>
                 </tr>

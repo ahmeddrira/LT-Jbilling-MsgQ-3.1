@@ -90,20 +90,25 @@
     </table>
 </div>
 
-<g:if test="${users?.totalCount > params.max}">
-    <div class="pager-box">
-        %{-- remote pager does not support "onSuccess" for panel rendering, take a guess at the update column --}%
-        <g:set var="updateColumn" value="${actionName == 'subaccounts' ? 'column2' : 'column1'}"/>
+<div class="pager-box">
+    %{-- remote pager does not support "onSuccess" for panel rendering, take a guess at the update column --}%
+    <g:set var="updateColumn" value="${actionName == 'subaccounts' ? 'column2' : 'column1'}"/>
 
-        <div class="row left">
+    <div class="row">
+        <div class="results">
             <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], update: updateColumn]"/>
         </div>
-
-        <div class="row">
-            <util:remotePaginate controller="user" action="list" params="[applyFilter: true]" total="${users.totalCount}" update="${updateColumn}"/>
+        <div class="download">
+            <g:link action="csv">
+                <g:message code="download.csv.link"/>
+            </g:link>
         </div>
     </div>
-</g:if>
+
+    <div class="row">
+        <util:remotePaginate controller="user" action="list" params="[applyFilter: true]" total="${users?.totalCount ?: 0}" update="${updateColumn}"/>
+    </div>
+</div>
 
 <div class="btn-box">
     <g:if test="${parent?.customer?.isParent > 0}">

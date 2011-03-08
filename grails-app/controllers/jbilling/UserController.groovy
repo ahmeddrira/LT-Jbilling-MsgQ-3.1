@@ -5,6 +5,7 @@ import com.sapienter.jbilling.common.Constants
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.entity.AchDTO
 import com.sapienter.jbilling.server.entity.CreditCardDTO
+import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.db.CompanyDTO
@@ -12,11 +13,13 @@ import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.user.db.UserStatusDAS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import grails.plugins.springsecurity.Secured
-import com.sapienter.jbilling.server.item.CurrencyBL
-import com.sapienter.jbilling.server.user.EntityBL
-import com.sapienter.jbilling.client.authentication.JBillingPasswordEncoder
-import org.springframework.security.authentication.encoding.PasswordEncoder
+
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.security.authentication.encoding.PasswordEncoder
+
+import com.sapienter.jbilling.server.util.csv.CsvExporter
+import com.sapienter.jbilling.server.util.csv.Exporter
+import com.sapienter.jbilling.client.util.DownloadHelper
 
 @Secured(['isAuthenticated()'])
 class UserController {
@@ -35,18 +38,11 @@ class UserController {
         redirect action: list, params: params
     }
 
-    /**
-     * Get a list of users and render the list page. If the "applyFilters" parameter is given, the
-     * partial "_users.gsp" template will be rendered instead of the complete user list.
-     */
-    def list = {
-        def filters = filterService.getFilters(FilterType.CUSTOMER, params)
-        def statuses = new UserStatusDAS().findAll()
-
+    def getList(filters, statuses, GrailsParameterMap params) {
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset
 
-        def users = UserDTO.createCriteria().list(
+        return UserDTO.createCriteria().list(
                 max:    params.max,
                 offset: params.offset
         ) {
@@ -72,7 +68,16 @@ class UserController {
             }
             order('id', 'desc')
         }
+    }
 
+    /**
+     * Get a list of users and render the list page. If the "applyFilters" parameter is given, the
+     * partial "_users.gsp" template will be rendered instead of the complete user list.
+     */
+    def list = {
+        def filters = filterService.getFilters(FilterType.CUSTOMER, params)
+        def statuses = new UserStatusDAS().findAll()
+        def users = getList(filters, statuses, params)
         def selected = params.id ? UserDTO.get(params.int("id")) : null
 
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
@@ -81,6 +86,27 @@ class UserController {
             render template: 'users', model: [users: users, selected: selected, statuses: statuses, filters: filters ]
         } else {
             render view: 'list', model: [ users: users, selected: selected, statuses: statuses, filters: filters ]
+        }
+    }
+
+    /**
+     * Applies the set filters to the user list, and exports it as a CSV for download.
+     */
+    def csv = {
+        def filters = filterService.getFilters(FilterType.CUSTOMER, params)
+        def statuses = new UserStatusDAS().findAll()
+
+        params.max = CsvExporter.MAX_RESULTS
+        def users = getList(filters, statuses, params)
+
+        if (users.totalCount > CsvExporter.MAX_RESULTS) {
+            flash.error = message(code: 'error.export.exceeds.maximum')
+            redirect action: 'list'
+
+        } else {
+            DownloadHelper.setResponseHeader(response, "users.csv")
+            Exporter<UserDTO> exporter = CsvExporter.createExporter(UserDTO.class);
+            render text: exporter.export(users), contentType: "text/csv"
         }
     }
 
@@ -191,6 +217,9 @@ class UserController {
             contact.fieldIDs[i] = id.toInteger()
             contact.fieldValues[i] = value
         }
+		contact.type= primaryContactTypeId
+		contact.include= params.get('contact-' + params.primaryContactTypeId + '.include') ? 1 : 0
+
         user.setContact(contact)
 
         log.debug("Primary contact: ${contact}")
@@ -203,6 +232,8 @@ class UserController {
                 def otherContact = new ContactWS()
                 bindData(otherContact, params, "contact-${it.id}")
                 otherContact.type = it.id
+				//checkbox values are not bound automatically since it throws a data conversion error
+				otherContact.include= params.get('contact-' + it.id + '.include') ? 1 : 0
 
                 contacts << otherContact;
             }

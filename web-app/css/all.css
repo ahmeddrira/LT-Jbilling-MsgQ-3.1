@@ -301,6 +301,24 @@ hr {
 .breadcrumbs ul li a:hover {
 	color:#0e61b1;
 }
+.breadcrumbs ul li.shortcut {
+	width:135px;
+	text-align:center;
+	color:#fff;
+	position:relative;
+	font-weight:bold;
+	float:left;
+}
+.shortcut2 {
+	width:9px; position: relative;
+    height:9px;
+    text-indent:-9999px;
+    overflow:hidden;
+    background:url(../images/icon03.gif) no-repeat;
+    float:right;
+    margin:11px 8px 0 0;
+    padding:0;
+}
 .heading {
 	background:url(../images/bg-heading.gif) repeat-x;
 	border:1px solid #1b437d;
@@ -735,10 +753,15 @@ hr {
 .pager-box a.nextLink {
 
 }
-.pager-box .left {
+.pager-box .row {
+    clear: both;
+}
+.pager-box .results {
+    float:left;
     text-align: left;
 }
-.pager-box .right {
+.pager-box .download {
+    float:right;
     text-align: right;
 }
 .btn-box {

@@ -41,9 +41,9 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer id;
     @NotNull @Size (min=1,max=50, message="validation.error.size,1,50")
     private String number;
+    private String glCode;
     @Digits(integer=3, fraction=2, message="validation.error.not.a.number")
     private String percentage;
-    private Integer priceManual;
     private Integer hasDecimals;
     private Integer deleted;
     private Integer entityId;
@@ -63,23 +63,23 @@ public class ItemDTOEx implements WSSecured, Serializable {
     public ItemDTOEx() {
     }
 
-    public ItemDTOEx(Integer id,String number, Integer entity, String description, Integer manualPrice,
+    public ItemDTOEx(Integer id,String number, String glCode, Integer entity, String description, 
                      Integer deleted, Integer currencyId, BigDecimal price, BigDecimal percentage,
                      Integer orderLineTypeId, Integer hasDecimals) {
 
-        this(id, number, percentage, manualPrice, hasDecimals, deleted, entity);
+        this(id, number, glCode, percentage, hasDecimals, deleted, entity);
         setDescription(description);
         setCurrencyId(currencyId);
         setPrice(price);
         setOrderLineTypeId(orderLineTypeId);
     }
 
-    public ItemDTOEx(Integer id, String number, BigDecimal percentage, Integer priceManual, Integer hasDecimals,
+    public ItemDTOEx(Integer id, String number, String glCode, BigDecimal percentage, Integer hasDecimals,
                      Integer deleted, Integer entityId) {
         this.id = id;
         this.number = number;
+        this.glCode= glCode;
         this.percentage = percentage != null ? percentage.toString() : null;
-        this.priceManual = priceManual;
         this.hasDecimals = hasDecimals;
         this.deleted = deleted;
         this.entityId = entityId;
@@ -88,8 +88,8 @@ public class ItemDTOEx implements WSSecured, Serializable {
     public ItemDTOEx(ItemDTOEx otherValue) {
         this.id = otherValue.id;
         this.number = otherValue.number;
+        this.glCode = otherValue.glCode;
         this.percentage = otherValue.percentage;
-        this.priceManual = otherValue.priceManual;
         this.hasDecimals = otherValue.hasDecimals;
         this.deleted = otherValue.deleted;
         this.entityId = otherValue.entityId;
@@ -111,7 +111,15 @@ public class ItemDTOEx implements WSSecured, Serializable {
         this.number = number;
     }
 
-    public String getPercentage() {
+    public String getGlCode() {
+		return glCode;
+	}
+
+	public void setGlCode(String glCode) {
+		this.glCode = glCode;
+	}
+
+	public String getPercentage() {
         return this.percentage;
     }
 
@@ -125,14 +133,6 @@ public class ItemDTOEx implements WSSecured, Serializable {
 
     public void setPercentage(BigDecimal percentage) {
         this.percentage = (percentage != null ? percentage.toString() : null);
-    }
-
-    public Integer getPriceManual() {
-        return this.priceManual;
-    }
-
-    public void setPriceManual(Integer priceManual) {
-        this.priceManual = priceManual;
     }
 
     public Integer getHasDecimals() {
@@ -263,15 +263,15 @@ public class ItemDTOEx implements WSSecured, Serializable {
             } else {
                 lEquals = lEquals && this.number.equals(that.number);
             }
+            if (this.glCode == null) {
+                lEquals = lEquals && (that.glCode == null);
+            } else {
+                lEquals = lEquals && this.glCode.equals(that.glCode);
+            }
             if (this.percentage == null) {
                 lEquals = lEquals && (that.percentage == null);
             } else {
                 lEquals = lEquals && this.percentage.equals(that.percentage);
-            }
-            if (this.priceManual == null) {
-                lEquals = lEquals && (that.priceManual == null);
-            } else {
-                lEquals = lEquals && this.priceManual.equals(that.priceManual);
             }
             if (this.hasDecimals == null) {
                 lEquals = lEquals && (that.hasDecimals == null);
@@ -320,8 +320,8 @@ public class ItemDTOEx implements WSSecured, Serializable {
         int result = 17;
         result = 37*result + ((this.id != null) ? this.id.hashCode() : 0);
         result = 37*result + ((this.number != null) ? this.number.hashCode() : 0);
+        result = 37*result + ((this.glCode != null) ? this.glCode.hashCode() : 0);
         result = 37*result + ((this.percentage != null) ? this.percentage.hashCode() : 0);
-        result = 37*result + ((this.priceManual != null) ? this.priceManual.hashCode() : 0);
         result = 37*result + ((this.hasDecimals != null) ? this.hasDecimals.hashCode() : 0);
         result = 37*result + ((this.deleted != null) ? this.deleted.hashCode() : 0);
         result = 37*result + ((this.entityId != null) ? this.entityId.hashCode() : 0);
@@ -346,14 +346,14 @@ public class ItemDTOEx implements WSSecured, Serializable {
         builder.append(id);
         builder.append(", number=");
         builder.append(number);
+        builder.append(", glCode=");
+        builder.append(glCode);
         builder.append(", orderLineTypeId=");
         builder.append(orderLineTypeId);
         builder.append(", percentage=");
         builder.append(percentage);
         builder.append(", price=");
         builder.append(price);
-        builder.append(", priceManual=");
-        builder.append(priceManual);
         builder.append(", promoCode=");
         builder.append(promoCode);
         builder.append(", types=");

@@ -293,7 +293,7 @@
                                         <content tag="label"><g:message code="prompt.cheque.date"/></content>
                                         <content tag="label.for">cheque.date</content>
                                         <span><g:formatDate date="${cheque?.date}" formatName="date.format"/></span>
-                                        <g:hiddenField name="cheque.date" value="${cheque?.date}"/>
+                                        <g:hiddenField name="cheque.date" value="${formatDate(date: cheque?.date, formatName: 'datepicker.format')}"/>
                                     </g:applyLayout>
                                 </div>
                             </div>

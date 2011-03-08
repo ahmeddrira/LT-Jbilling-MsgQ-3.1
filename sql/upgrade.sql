@@ -879,4 +879,12 @@ insert into jbilling_seqs (name, next_id) values ('report_parameter', 1);
 
 -- new report types
 insert into report_type (id, name, optlock) values (1, 'invoice', 0);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (101, 1, 'description', 1, 'Invoice reports');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (101, 1, 'description', 1, 'Invoice Reports');
+
+-- new report
+insert into report (id, type_id, entity_id, name, file_name, optlock) values (1, 1, 1, 'total_invoiced', 'total_invoiced.jasper', 0);
+insert into report_parameter (id, report_id, dtype, name) values (1, 1, 'date', 'start_date');
+insert into report_parameter (id, report_id, dtype, name) values (2, 1, 'date', 'end_date');
+insert into report_parameter (id, report_id, dtype, name) values (3, 1, 'integer', 'period');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 1, 'description', 1, 'Total amount invoiced grouped by period.');

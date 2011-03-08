@@ -11604,7 +11604,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 47	31	description	1	The provisioning status of an order line has changed
 47	25	description	1	A new row has been created
 47	19	description	1	Last API call to get the the user subscription status transitions
-101	1	description	1	Invoice reports
+100	1	description	1	Total amount invoiced grouped by period.
+101	1	description	1	Invoice Reports
 \.
 
 
@@ -16715,6 +16716,7 @@ COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
 --
 
 COPY report (id, type_id, entity_id, name, file_name, optlock) FROM stdin;
+1	1	1	total_invoiced	total_invoiced.jasper	0
 \.
 
 
@@ -16723,6 +16725,9 @@ COPY report (id, type_id, entity_id, name, file_name, optlock) FROM stdin;
 --
 
 COPY report_parameter (id, report_id, dtype, name) FROM stdin;
+1	1	date	start_date
+2	1	date	end_date
+3	1	integer	period
 \.
 
 

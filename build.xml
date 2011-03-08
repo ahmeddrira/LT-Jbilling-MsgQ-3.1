@@ -136,7 +136,7 @@
         <delete dir="${basedir}/tmp"/>
     </target>
 
-    <target name="compile-reports">
+    <target name="compile-reports" description="Compiles jasper report designs.">
         <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask">
             <classpath refid="compile.classpath"/>
         </taskdef>
@@ -239,7 +239,7 @@
     <target name="test" depends="prepare-test, test-unit, test-ws, test-integration"/>
 
     <target name="prepare-test"
-            depends="clean, copy-resources, compile-designs, compile-rules, prepare-test-db"
+            depends="clean, copy-resources, compile-designs, compile-reports, compile-rules, prepare-test-db"
             description="Prepares the testing environment">
 
         <echo message="Environment prepared for test run. Start grails with './run-app' and run 'ant test'."/>

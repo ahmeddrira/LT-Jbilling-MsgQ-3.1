@@ -102,13 +102,17 @@ class ReportController {
 
     def run = {
         def report = ReportDTO.get(params.int('id'))
-
         params.parameters.each { name, value ->
             if (value instanceof Map) {
                 bindData(report.getParameter(name), value)
             }
         }
 
-        new ReportBL(report, session.locale).renderHtml(response)
+        new ReportBL(report, session.locale).renderHtml(response, session)
+    }
+
+    def images = {
+        Map images = session[ReportBL.SESSION_IMAGE_MAP]
+        response.outputStream << images.get(params.name)
     }
 }

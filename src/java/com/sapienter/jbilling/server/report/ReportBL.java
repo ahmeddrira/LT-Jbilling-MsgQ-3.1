@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +43,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -55,6 +57,7 @@ public class ReportBL {
 
     private static final Logger LOG = Logger.getLogger(ReportBL.class);
 
+    public static final String SESSION_IMAGE_MAP = "jasper_images";
     public static final String PARAMETER_SUBREPORT_DIR = "SUBREPORT_DIR";
 
     private ReportDTO report;
@@ -95,13 +98,13 @@ public class ReportBL {
     }
 
     /**
-     * Render report as HTML to the given HTTP response stream.
+     * Render report as HTML to the given HTTP response stream. This method also dumps
+     * the generated report image files into a session Map (<code>Map<String, byte[]></code>)
+     * so that they can be retrieved and rendered.
      *
      * @param response response stream
      */
-    public void renderHtml(HttpServletResponse response) {
-        response.setContentType("text/html");
-
+    public void renderHtml(HttpServletResponse response, HttpSession session) {
         PrintWriter writer = null;
         try {
             writer = response.getWriter();
@@ -111,11 +114,16 @@ public class ReportBL {
         }
 
         JasperPrint print = run();
+        Map<String, byte[]> images = new HashMap<String, byte[]>();
+
+        response.setContentType("text/html");
+        session.setAttribute(SESSION_IMAGE_MAP, images);
 
         JRHtmlExporter exporter = new JRHtmlExporter();
         exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
         exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, writer);
-        exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "image?image=");
+        exporter.setParameter(JRHtmlExporterParameter.IMAGES_MAP, images);
+        exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "images?name=");
 
         try {
             exporter.exportReport();
@@ -145,10 +153,13 @@ public class ReportBL {
      * @param locale user locale
      * @return JasperPrint output file
      */
-    public static JasperPrint run(File report,String baseDir, Map<String, Object> parameters, Locale locale) {
+    public static JasperPrint run(File report, String baseDir, Map<String, Object> parameters, Locale locale) {
         // add user locale and sub report directory
         parameters.put(JRParameter.REPORT_LOCALE, locale);
         parameters.put(PARAMETER_SUBREPORT_DIR, baseDir);
+
+        LOG.debug("Generating report " + report.getPath() + " ...");
+        LOG.debug(parameters.toString());
 
         // get database connection
         DataSource dataSource = Context.getBean(Context.Name.DATA_SOURCE);

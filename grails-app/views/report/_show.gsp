@@ -42,7 +42,7 @@
         <hr/>
 
         <!-- report parameter form -->
-        <g:form name="run-report-form" url="[action: 'run']">
+        <g:form name="run-report-form" url="[action: 'run']" target="_blank">
             <g:hiddenField name="id" value="${selected.id}"/>
 
             <g:render template="/report/${selected.type.name}/${selected.name}"/>

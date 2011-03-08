@@ -267,7 +267,7 @@ class OrderController {
 		render view: 'list', model: [orders:orders, filters:filters]
 	}
 	
-	def delete = {
+	def deleteOrder = {
 		try {
 			webServicesSession.deleteOrder(params.int('id'))
 			flash.message = 'order.delete.success'

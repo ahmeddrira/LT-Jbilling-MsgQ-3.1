@@ -26,6 +26,10 @@
                     <td class="value">${selectedProduct.internalNumber}</td>
                 </tr>
                 <tr>
+                    <td><g:message code="product.detail.gl.code"/></td>
+                    <td class="value">${selectedProduct.glCode}</td>
+                </tr>
+                <tr>
                     <td><g:message code="product.detail.percentage"/></td>
                     <td class="value">${selectedProduct.percentage ?: '-'}</td>
                 </tr>

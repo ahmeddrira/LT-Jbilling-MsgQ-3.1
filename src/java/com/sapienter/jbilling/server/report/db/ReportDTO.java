@@ -24,6 +24,10 @@ import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -41,7 +45,11 @@ import javax.persistence.Transient;
 import javax.persistence.Version;
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -60,6 +68,7 @@ import java.util.Set;
     pkColumnValue = "report",
     allocationSize = 10
 )
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class ReportDTO extends AbstractDescription implements Serializable {
 
     private static final String BASE_PATH = Util.getSysProp("base_dir") + File.separator + "reports";
@@ -69,7 +78,7 @@ public class ReportDTO extends AbstractDescription implements Serializable {
     private ReportTypeDTO type;
     private String name;
     private String fileName;
-    private Set<ReportParameterDTO<?>> parameters = new HashSet<ReportParameterDTO<?>>();
+    private List<ReportParameterDTO<?>> parameters = new ArrayList<ReportParameterDTO<?>>();
     private Integer versionNum;
 
     @Id
@@ -121,23 +130,66 @@ public class ReportDTO extends AbstractDescription implements Serializable {
         this.fileName = fileName;
     }
 
+    /**
+     * Returns the expected path for the Jasper Report file on disk. The path is constructed
+     * in the format <code>{base_dir}/{report_type}/{report_filename}</code>.
+     *
+     * @return path to Jasper Report file.
+     */
     @Transient
     public String getReportFilePath() {
         return BASE_PATH + File.separator + getType().getName() + File.separator + getFileName();
     }
 
+    /**
+     * Returns a File object for the Jasper Report file.
+     *
+     * @return Jasper Report file.
+     */
     @Transient
     public File getReportFile() {
         return fileName != null ? new File(getReportFilePath()) : null;
     }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "report")
-    public Set<ReportParameterDTO<?>> getParameters() {
+    @Fetch(FetchMode.SELECT)
+    public List<ReportParameterDTO<?>> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Set<ReportParameterDTO<?>> parameters) {
+    public void setParameters(List<ReportParameterDTO<?>> parameters) {
         this.parameters = parameters;
+    }
+
+    /**
+     * Returns a ReportParameterDTO instance by name.
+     *
+     * @param name parameter name
+     * @return found parameter in report parameters list
+     */
+    @Transient
+    public ReportParameterDTO<?> getParameter(String name) {
+        for (ReportParameterDTO<?> parameter : parameters) {
+            if (parameter.getName().equals(name)) {
+                return parameter;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Converts the report parameters list to a map of objects. Parameter names
+     * are used as keys and the set parameter values are used as map values.
+     *
+     * @return map of objects.
+     */
+    @Transient
+    public Map<String, Object> getParameterMap() {
+        Map<String, Object> map = new HashMap<String, Object>();
+        for (ReportParameterDTO<?> parameter : parameters) {
+            map.put(parameter.getName(), parameter.getValue());
+        }
+        return map;
     }
 
     @Version

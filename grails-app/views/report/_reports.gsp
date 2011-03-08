@@ -20,7 +20,7 @@
 
                 <g:each var="report" in="${reports}">
 
-                    <tr id="report-${report.id}" class="${selectedReport?.id == report.id ? 'active' : ''}">
+                    <tr id="report-${report.id}">
                         <td>
                             <g:remoteLink class="cell double" action="show" id="${report.id}" before="register(this);" onSuccess="render(data, next);">
                                 <strong><g:message code="${report.name}"/></strong>

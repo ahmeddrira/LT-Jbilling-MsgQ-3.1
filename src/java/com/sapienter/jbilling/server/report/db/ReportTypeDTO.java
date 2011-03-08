@@ -22,6 +22,8 @@ package com.sapienter.jbilling.server.report.db;
 
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -55,6 +57,7 @@ import java.util.Set;
     pkColumnValue = "report_type",
     allocationSize = 10
 )
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class ReportTypeDTO extends AbstractDescription implements Serializable {
 
     private int id;

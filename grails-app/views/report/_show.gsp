@@ -26,12 +26,15 @@
                     <td class="value">${selected.type.getDescription(session['language_id'])}</td>
                 </tr>
                 <tr>
-                    <td>Report File</td>
-                    <td class="value"><em>${selected.fileName}</em></td>
+                    <td>Report Design File</td>
+                    <td class="value">
+                        <em title="${selected.reportFilePath}">${selected.fileName}</em>
+                    </td>
                 </tr>
             </tbody>
         </table>
 
+        <!-- report description -->
         <p class="description">
             ${selected.getDescription(session['language_id'])}
         </p>
@@ -39,12 +42,19 @@
         <hr/>
 
         <!-- report parameter form -->
+        <g:form name="run-report-form" url="[action: 'run']">
+            <g:hiddenField name="id" value="${selected.id}"/>
 
+            <g:render template="/report/${selected.type.name}/${selected.name}"/>
+        </g:form>
+
+        <br/>&nbsp;
     </div>
 
     <div class="btn-box">
-        <g:link action="run" id="${selected.id}" class="submit edit"><span><g:message code="button.run.report"/></span></g:link>
+        <a class="submit edit" onclick="$('#run-report-form').submit();">
+            <span><g:message code="button.run.report"/></span>
+        </a>
     </div>
-
 </div>
 

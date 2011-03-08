@@ -20,9 +20,13 @@
 
 package com.sapienter.jbilling.server.report.db;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -51,6 +55,7 @@ import java.io.Serializable;
     pkColumnValue = "report_parameter",
     allocationSize = 10
 )
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "dtype")
 public abstract class ReportParameterDTO<T> implements Serializable {
@@ -70,7 +75,7 @@ public abstract class ReportParameterDTO<T> implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id", updatable = false, nullable = false)
     public ReportDTO getReport() {
         return report;

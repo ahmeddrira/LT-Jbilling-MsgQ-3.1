@@ -72,8 +72,8 @@ class ReportController {
 
     def list = {
         def types = getReportTypes()
-        def typeId = params.int('id')
-        def reports = typeId ? getReports(typeId) : types?.first()?.getReports()
+        def typeId = params.int ? params.int('id') : types?.first()?.id
+        def reports = getReports(typeId)
 
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, typeId)
 
@@ -97,5 +97,17 @@ class ReportController {
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, report?.id)
 
         render template: 'show', model: [ selected: report ]
+    }
+
+    def run = {
+        def report = ReportDTO.get(params.int('id'))
+
+        params.parameters.each { name, value ->
+            if (value instanceof Map) {
+                bindData(report.getParameter(name), value)
+            }
+        }
+
+        // todo: run report!
     }
 }

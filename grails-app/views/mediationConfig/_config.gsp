@@ -3,8 +3,8 @@
 <script type="text/javascript">
 $(function() {
     $(".numericOnly").keydown(function(event){
-    	// Allow only backspace and delete
-        if ( event.keyCode==37 || event.keyCode== 39 || event.keyCode == 46 || event.keyCode == 8 ) {
+    	// Allow only backspace, delete, left & right 
+        if ( event.keyCode==37 || event.keyCode== 39 || event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 ) {
             // let it happen, don't do anything
         }
         else {

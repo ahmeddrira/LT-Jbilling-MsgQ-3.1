@@ -1,23 +1,21 @@
 <%@page import="com.sapienter.jbilling.server.process.db.AgeingEntityStepDTO" %>
 
 <script type="text/javascript">
-function numericOnly(event) {
-	// Allow only backspace and delete
-	if ( event.keyCode == 46 || event.keyCode == 8 ) {
-		// let it happen, don't do anything
-	}
-	else {
-		// Ensure that it is a number and stop the keypress
-		if (event.keyCode < 48 || event.keyCode > 57 ) {
-			event.preventDefault();	
-		}	
-	}
-}
 
 $(function() {
 	$(".numericOnly").keydown(function(event){
-    	numericOnly(event);
+    	// Allow only backspace, delete, left & right 
+        if ( event.keyCode==37 || event.keyCode== 39 || event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 ) {
+            // let it happen, don't do anything
+        }
+        else {
+            // Ensure that it is a number and stop the keypress
+            if (event.keyCode < 48 || event.keyCode > 57 ) {
+                event.preventDefault(); 
+            }   
+        }
     });
+    
     $(".numericOnly").change(function (event){
         //alert( $(this).parent().parent().find(":input[type=checkbox]").is(':checked'));
         if ($(this).val() > 0 ) {

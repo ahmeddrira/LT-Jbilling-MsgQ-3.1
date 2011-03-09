@@ -11,8 +11,8 @@
         <table id="report-types" cellspacing="0" cellpadding="0">
             <thead>
                 <tr>
-                    <th>Report Type</th>
-                    <th class="small">Reports</th>
+                    <th><g:message code="report.th.type"/></th>
+                    <th class="small"><g:message code="report.th.count"/></th>
                 </tr>
             </thead>
             <tbody>

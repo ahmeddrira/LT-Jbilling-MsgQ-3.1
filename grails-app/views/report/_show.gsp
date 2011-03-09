@@ -18,15 +18,15 @@
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>
                 <tr>
-                    <td>Report Id</td>
+                    <td><g:message code="report.label.id"/></td>
                     <td class="value">${selected.id}</td>
                 </tr>
                 <tr>
-                    <td>Report Type</td>
+                    <td><g:message code="report.label.type"/></td>
                     <td class="value">${selected.type.getDescription(session['language_id'])}</td>
                 </tr>
                 <tr>
-                    <td>Report Design File</td>
+                    <td><g:message code="report.label.design"/></td>
                     <td class="value">
                         <em title="${selected.reportFilePath}">${selected.fileName}</em>
                     </td>

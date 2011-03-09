@@ -13,7 +13,7 @@
             <table id="reports" cellspacing="0" cellpadding="0">
                 <thead>
                     <tr>
-                        <th>Report</th>
+                        <th><g:message code="report.th.name"/></th>
                     </tr>
                 </thead>
                 <tbody>

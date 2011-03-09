@@ -58,10 +58,12 @@ public class ReportBL {
     private static final Logger LOG = Logger.getLogger(ReportBL.class);
 
     public static final String SESSION_IMAGE_MAP = "jasper_images";
+    public static final String PARAMETER_ENTITY_ID = "entity_id";
     public static final String PARAMETER_SUBREPORT_DIR = "SUBREPORT_DIR";
 
     private ReportDTO report;
     private Locale locale;
+    private Integer entityId;
 
     private ReportDAS reportDas;
 
@@ -116,21 +118,24 @@ public class ReportBL {
         }
 
         JasperPrint print = run();
-        Map<String, byte[]> images = new HashMap<String, byte[]>();
 
-        response.setContentType("text/html");
-        session.setAttribute(SESSION_IMAGE_MAP, images);
+        if (print != null) {
+            Map<String, byte[]> images = new HashMap<String, byte[]>();
 
-        JRHtmlExporter exporter = new JRHtmlExporter();
-        exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
-        exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, writer);
-        exporter.setParameter(JRHtmlExporterParameter.IMAGES_MAP, images);
-        exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, imagesUrl);
+            response.setContentType("text/html");
+            session.setAttribute(SESSION_IMAGE_MAP, images);
 
-        try {
-            exporter.exportReport();
-        } catch (JRException e) {
-            LOG.error("Exception occurred exporting jasper report to HTML.", e);
+            JRHtmlExporter exporter = new JRHtmlExporter();
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, writer);
+            exporter.setParameter(JRHtmlExporterParameter.IMAGES_MAP, images);
+            exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, imagesUrl);
+
+            try {
+                exporter.exportReport();
+            } catch (JRException e) {
+                LOG.error("Exception occurred exporting jasper report to HTML.", e);
+            }
         }
     }
 
@@ -144,14 +149,16 @@ public class ReportBL {
         LOG.debug("Exporting report to " + format.name() + " ...");
 
         JasperPrint print = run();
-        ReportExportDTO export = null;
-        try {
 
-            export = format.export(report.getName(), print);
-        } catch (JRException e) {
-            LOG.error("Exception occurred exporting jasper report to " + format.name(), e);
-        } catch (IOException e) {
-            LOG.error("Exception occurred getting exported bytes", e);
+        ReportExportDTO export = null;
+        if (print != null) {
+            try {
+                export = format.export(print);
+            } catch (JRException e) {
+                LOG.error("Exception occurred exporting jasper report to " + format.name(), e);
+            } catch (IOException e) {
+                LOG.error("Exception occurred getting exported bytes", e);
+            }
         }
 
         return export;
@@ -166,21 +173,31 @@ public class ReportBL {
      * @return JasperPrint output file
      */
     public JasperPrint run() {
-        return run(report.getReportFile(), report.getReportBaseDir(), report.getParameterMap(), locale);
+        return run(report.getName(),
+                   report.getReportFile(),
+                   report.getReportBaseDir(),
+                   report.getParameterMap(),
+                   locale,
+                   report.getEntity().getId());
     }
 
     /**
      * Run the given report design file with the given parameter list.
      *
+     * @param reportName report name
      * @param report report design file
      * @param baseDir report base directory
      * @param parameters report parameters
      * @param locale user locale
+     * @param entityId entity ID
      * @return JasperPrint output file
      */
-    public static JasperPrint run(File report, String baseDir, Map<String, Object> parameters, Locale locale) {
-        // add user locale and sub report directory
+    public static JasperPrint run(String reportName, File report, String baseDir, Map<String, Object> parameters,
+                                  Locale locale, Integer entityId) {
+
+        // add user locale, entity id and sub report directory
         parameters.put(JRParameter.REPORT_LOCALE, locale);
+        parameters.put(PARAMETER_ENTITY_ID, entityId);
         parameters.put(PARAMETER_SUBREPORT_DIR, baseDir);
 
         LOG.debug("Generating report " + report.getPath() + " ...");
@@ -196,6 +213,7 @@ public class ReportBL {
         try {
             inputStream = new FileInputStream(report);
             print = JasperFillManager.fillReport(inputStream, parameters, connection);
+            print.setName(reportName);
 
         } catch (FileNotFoundException e) {
             LOG.error("Report design file " + report.getPath() + " not found.", e);

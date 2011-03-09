@@ -38,7 +38,7 @@ import java.io.IOException;
 public enum ReportExportFormat {
 
     PDF {
-        public ReportExportDTO export(String reportName, JasperPrint print) throws JRException, IOException {
+        public ReportExportDTO export(JasperPrint print) throws JRException, IOException {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             JasperExportManager.exportReportToPdfStream(print, baos);
@@ -46,12 +46,12 @@ public enum ReportExportFormat {
             byte[] bytes = baos.toByteArray();
             baos.close();
 
-            return new ReportExportDTO(reportName + ".pdf", "application/pdf", bytes);
+            return new ReportExportDTO(print.getName() + ".pdf", "application/pdf", bytes);
         }
     },
 
     XLS {
-        public ReportExportDTO export(String reportName, JasperPrint print) throws JRException, IOException {
+        public ReportExportDTO export(JasperPrint print) throws JRException, IOException {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             JExcelApiExporter exporter = new JExcelApiExporter();
@@ -61,13 +61,15 @@ public enum ReportExportFormat {
             exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, true);
             exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, baos);
 
+            exporter.exportReport();
+
             byte[] bytes = baos.toByteArray();
             baos.close();
 
-            return new ReportExportDTO(reportName + ".xls", "application/vnd.ms-excel", bytes);
+            return new ReportExportDTO(print.getName() + ".xls", "application/vnd.ms-excel", bytes);
         }
     };
 
-    public abstract ReportExportDTO export(String reportName, JasperPrint print) throws JRException, IOException;
+    public abstract ReportExportDTO export(JasperPrint print) throws JRException, IOException;
 
 }

@@ -71,7 +71,7 @@ import java.util.Set;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class ReportDTO extends AbstractDescription implements Serializable {
 
-    public static final String BASE_PATH = Util.getSysProp("base_dir") + File.separator + "reports";
+    public static final String BASE_PATH = Util.getSysProp("base_dir") + File.separator + "reports" + File.separator;
 
     private int id;
     private CompanyDTO entity;
@@ -147,7 +147,7 @@ public class ReportDTO extends AbstractDescription implements Serializable {
      */
     @Transient
     public String getReportFilePath() {
-        return getReportBaseDir() + File.separator + getFileName();
+        return getReportBaseDir() + getFileName();
     }
 
     /**

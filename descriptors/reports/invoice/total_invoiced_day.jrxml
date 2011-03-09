@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="blinkmind_sub_onetime" pageWidth="540" pageHeight="802" columnWidth="540" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="total_invoiced_day" pageWidth="540" pageHeight="802" columnWidth="540" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -14,8 +14,10 @@
               to_char(i.create_datetime, 'Dy') as day
             from
               invoice i
+              inner join base_user u on i.user_id = u.id
             where
-              i.deleted = 0
+              u.entity_id = $P{entityId}
+              and i.deleted = 0
               and i.is_review = 0
               and i.create_datetime >= $P{startDate}
               and i.create_datetime <= $P{endDate}
@@ -23,8 +25,8 @@
             order by day]]>
 	</queryString>
 	<field name="total" class="java.math.BigDecimal"/>
-	<field name="count" class="java.lang.Integer"/>
-	<field name="day_of_week" class="java.lang.Integer"/>
+	<field name="count" class="java.lang.Long"/>
+	<field name="day_of_week" class="java.lang.String"/>
 	<field name="day" class="java.lang.String"/>
 	<variable name="subtotal" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{total}]]></variableExpression>
@@ -66,7 +68,7 @@
 			<textField>
 				<reportElement x="0" y="0" width="120" height="20"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{count}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Long"><![CDATA[$F{count}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="120" y="0" width="100" height="20"/>

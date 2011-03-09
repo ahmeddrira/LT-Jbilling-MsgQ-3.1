@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelStrategy; com.sapienter.jbilling.server.util.Util"%>
+<%@ page import="com.sapienter.jbilling.server.report.ReportExportFormat"%>
 
 <%--
   Report details template.
@@ -7,16 +7,16 @@
   @since  07-Mar-2011
 --%>
 
-
 <div class="column-hold">
     <div class="heading">
-	    <strong><g:message code="${selected.name}"/></strong>
-	</div>
+        <strong><g:message code="${selected.name}"/></strong>
+    </div>
 
-	<div class="box">
-        <!-- report info -->
-        <table class="dataTable" cellspacing="0" cellpadding="0">
-            <tbody>
+    <g:form name="run-report-form" url="[action: 'run', id: selected.id]" target="_blank" method="GET">
+        <div class="box">
+            <!-- report info -->
+            <table class="dataTable" cellspacing="0" cellpadding="0">
+                <tbody>
                 <tr>
                     <td><g:message code="report.label.id"/></td>
                     <td class="value">${selected.id}</td>
@@ -31,30 +31,35 @@
                         <em title="${selected.reportFilePath}">${selected.fileName}</em>
                     </td>
                 </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
 
-        <!-- report description -->
-        <p class="description">
-            ${selected.getDescription(session['language_id'])}
-        </p>
+            <!-- report description -->
+            <p class="description">
+                ${selected.getDescription(session['language_id'])}
+            </p>
 
-        <hr/>
+            <hr/>
 
-        <!-- report parameter form -->
-        <g:form name="run-report-form" url="[action: 'run']" target="_blank">
-            <g:hiddenField name="id" value="${selected.id}"/>
-
+            <!-- report parameters -->
             <g:render template="/report/${selected.type.name}/${selected.name}"/>
-        </g:form>
 
-        <br/>&nbsp;
-    </div>
+            <br/>&nbsp;
+        </div>
 
-    <div class="btn-box">
-        <a class="submit edit" onclick="$('#run-report-form').submit();">
-            <span><g:message code="button.run.report"/></span>
-        </a>
-    </div>
+        <div class="btn-box">
+            <a class="submit edit" onclick="$('#run-report-form').submit();">
+                <span><g:message code="button.run.report"/></span>
+            </a>
+
+            <span>
+                <g:select name="format"
+                          from="${ReportExportFormat.values()}"
+                          noSelection="['': message(code: 'report.format.HTML')]"
+                          valueMessagePrefix="report.format"/>
+            </span>
+        </div>
+
+    </g:form>
 </div>
 

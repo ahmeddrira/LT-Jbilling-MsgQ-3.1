@@ -103,8 +103,10 @@ public class ReportBL {
      * so that they can be retrieved and rendered.
      *
      * @param response response stream
+     * @param session session to place images map
+     * @param imagesUrl the URL of the action where the image map can be accessed by name - e.g., "images?image="
      */
-    public void renderHtml(HttpServletResponse response, HttpSession session) {
+    public void renderHtml(HttpServletResponse response, HttpSession session, String imagesUrl) {
         PrintWriter writer = null;
         try {
             writer = response.getWriter();
@@ -123,13 +125,36 @@ public class ReportBL {
         exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
         exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, writer);
         exporter.setParameter(JRHtmlExporterParameter.IMAGES_MAP, images);
-        exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "images?name=");
+        exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, imagesUrl);
 
         try {
             exporter.exportReport();
         } catch (JRException e) {
             LOG.error("Exception occurred exporting jasper report to HTML.", e);
         }
+    }
+
+    /**
+     * Exports a report using the given format.
+     *
+     * @param format export type
+     * @return exported report
+     */
+    public ReportExportDTO export(ReportExportFormat format) {
+        LOG.debug("Exporting report to " + format.name() + " ...");
+
+        JasperPrint print = run();
+        ReportExportDTO export = null;
+        try {
+
+            export = format.export(report.getName(), print);
+        } catch (JRException e) {
+            LOG.error("Exception occurred exporting jasper report to " + format.name(), e);
+        } catch (IOException e) {
+            LOG.error("Exception occurred getting exported bytes", e);
+        }
+
+        return export;
     }
 
     /**

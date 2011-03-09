@@ -20,9 +20,9 @@
 
                 <g:each var="report" in="${reports}">
 
-                    <tr id="report-${report.id}">
+                    <tr id="report-${report.id}" class="${selected?.id == report.id ? 'active' : ''}">
                         <td>
-                            <g:remoteLink class="cell double" action="show" id="${report.id}" before="register(this);" onSuccess="render(data, next);">
+                            <g:remoteLink class="cell double" action="show" id="${report.id}" params="[template: 'show']" before="register(this);" onSuccess="render(data, next);">
                                 <strong><g:message code="${report.name}"/></strong>
                                 <em>${report.fileName}</em>
                             </g:remoteLink>

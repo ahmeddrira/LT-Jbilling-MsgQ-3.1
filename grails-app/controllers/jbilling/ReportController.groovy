@@ -77,10 +77,10 @@ class ReportController {
 
     def list = {
         def types = getReportTypes()
-        def typeId = params.int ? params.int('id') : types?.first()?.id
-        def reports = getReports(typeId)
+        def reports = params.id ? getReports(params.int('id')) : null
+        def typeId = params.id ? reports.get(0)?.type?.id : null
 
-        breadcrumbService.addBreadcrumb(controllerName, 'list', null, typeId)
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
 
         render view: 'list', model: [ types: types, reports: reports, selectedTypeId: typeId ]
     }
@@ -88,6 +88,8 @@ class ReportController {
     def reports = {
         def typeId = params.int('id')
         def reports = typeId ? getReports(typeId) : null
+
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, typeId)
 
         render template: 'reports', model: [ reports: reports, selectedTypeId: typeId ]
     }
@@ -99,9 +101,20 @@ class ReportController {
 
     def show = {
         ReportDTO report = ReportDTO.get(params.int('id'))
-        breadcrumbService.addBreadcrumb(controllerName, 'list', null, report?.id)
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, report?.id)
 
-        render template: 'show', model: [ selected: report ]
+        if (params.template) {
+            // render requested template, usually "_show.gsp"
+            render template: params.template, model: [ selected: report ]
+
+        } else {
+            // render default "list" view - needed so a breadcrumb can link to a reports by id
+            def typeId = report?.type?.id
+            def types = getReportTypes()
+            def reports = getReports(typeId)
+
+            render view: 'list', model: [ types: types, reports: reports, selected: report, selectedTypeId: typeId ]
+        }
     }
 
     /**

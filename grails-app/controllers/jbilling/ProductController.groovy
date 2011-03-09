@@ -40,7 +40,7 @@ class ProductController {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
         def categories = getCategories()
         def products = params.id ? getProducts(params.int('id'), filters) : null
-        def categoryId = params.int('id') ?: products ? products.get(0)?.itemTypes?.asList()?.get(0)?.id : null
+        def categoryId = params.id ?: products ? products.get(0)?.itemTypes?.asList()?.get(0)?.id : null
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 

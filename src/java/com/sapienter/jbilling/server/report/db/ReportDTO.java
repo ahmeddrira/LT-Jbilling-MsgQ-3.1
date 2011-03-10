@@ -137,7 +137,7 @@ public class ReportDTO extends AbstractDescription implements Serializable {
      */
     @Transient
     public String getReportBaseDir() {
-        return BASE_PATH;
+        return BASE_PATH + getType().getName() + File.separator;
     }
 
     /**

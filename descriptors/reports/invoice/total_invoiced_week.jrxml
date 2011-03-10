@@ -3,6 +3,32 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<subDataset name="chart_dataset">
+		<parameter name="entityId" class="java.lang.Integer"/>
+		<parameter name="startDate" class="java.util.Date"/>
+		<parameter name="endDate" class="java.util.Date"/>
+		<queryString>
+			<![CDATA[select
+              sum(i.total) as total,
+              count(i.id) as count,
+              to_char(i.create_datetime, 'WW') as week_of_year,
+              to_char(i.create_datetime, 'yyyy') as year
+            from
+              invoice i
+              inner join base_user u on i.user_id = u.id
+            where
+              u.entity_id = $P{entityId}
+              and i.deleted = 0
+              and i.is_review = 0
+              and i.create_datetime >= $P{startDate}
+              and i.create_datetime <= $P{endDate}
+            group by week_of_year, year
+            order by year, week_of_year]]>
+		</queryString>
+		<field name="total" class="java.math.BigDecimal"/>
+		<field name="week_of_year" class="java.lang.String"/>
+		<field name="year" class="java.lang.String"/>
+	</subDataset>
 	<parameter name="entityId" class="java.lang.Integer"/>
 	<parameter name="startDate" class="java.util.Date"/>
 	<parameter name="endDate" class="java.util.Date"/>
@@ -32,6 +58,56 @@
 		<variableExpression><![CDATA[$F{total}]]></variableExpression>
 		<initialValueExpression><![CDATA[new BigDecimal("0.00")]]></initialValueExpression>
 	</variable>
+	<pageHeader>
+		<band height="200">
+			<barChart>
+				<chart isShowLegend="false">
+					<reportElement x="30" y="0" width="480" height="200"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="chart_dataset">
+							<datasetParameter name="entityId">
+								<datasetParameterExpression><![CDATA[$P{entityId}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="startDate">
+								<datasetParameterExpression><![CDATA[$P{startDate}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="endDate">
+								<datasetParameterExpression><![CDATA[$P{endDate}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{week_of_year} + "-" + $F{year}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{total}]]></valueExpression>
+						<labelExpression><![CDATA["Week " + $F{week_of_year} + ", " + $F{year}]]></labelExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot>
+					<plot/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+					<categoryAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+				</barPlot>
+			</barChart>
+		</band>
+	</pageHeader>
 	<columnHeader>
 		<band height="21">
 			<staticText>
@@ -71,7 +147,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="27">
+		<band height="20">
 			<textField>
 				<reportElement x="0" y="0" width="120" height="20"/>
 				<textElement verticalAlignment="Middle"/>

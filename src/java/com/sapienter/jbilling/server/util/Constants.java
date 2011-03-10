@@ -88,11 +88,7 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_NOTIFICATION_MESSAGE_ARCHIVE = "notification_message_arch";
     public static final String TABLE_NOTIFICATION_MESSAGE_ARCHIVE_LINE = "notification_message_arch_line";
     public static final String TABLE_REPORT = "report";
-    public static final String TABLE_REPORT_USER = "report_user";
-    public static final String TABLE_REPORT_ENTITY_MAP = "report_entity_map";
-    public static final String TABLE_REPORT_FIELD = "report_field";
     public static final String TABLE_REPORT_TYPE = "report_type";
-    public static final String TABLE_REPORT_TYPE_MAP = "report_type_map";
     public static final String TABLE_PERMISSION = "permission";
     public static final String TABLE_PERMISSION_TYPE = "permission_type";
     public static final String TABLE_ROLE= "role";

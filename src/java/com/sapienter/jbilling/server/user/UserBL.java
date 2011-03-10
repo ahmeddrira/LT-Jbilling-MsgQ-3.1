@@ -41,8 +41,6 @@ import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.AgeingBL;
-import com.sapienter.jbilling.server.report.db.ReportUserDAS;
-import com.sapienter.jbilling.server.report.db.ReportUserDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.AchDAS;
@@ -778,11 +776,6 @@ public class UserBL extends ResultList implements UserSQL {
         }
         // permisions
         user.getPermissions().clear();
-        // user saved reports
-        for (ReportUserDTO report: user.getReports()) {
-            new ReportUserDAS().delete(report);
-        }
-        user.getReports().clear();
         // roles
         user.getRoles().clear();
 

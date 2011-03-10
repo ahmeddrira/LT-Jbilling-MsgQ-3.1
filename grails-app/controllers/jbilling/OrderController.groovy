@@ -131,6 +131,7 @@ class OrderController {
 
         if (orders.totalCount > CsvExporter.MAX_RESULTS) {
             flash.error = message(code: 'error.export.exceeds.maximum')
+            flash.args = [ CsvExporter.MAX_RESULTS ]
             redirect action: 'list', id: params.id
 
         } else {

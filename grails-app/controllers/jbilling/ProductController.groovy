@@ -40,7 +40,7 @@ class ProductController {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
         def categories = getCategories()
         def products = params.id ? getProducts(params.int('id'), filters) : null
-        def categoryId = params.int('id') ?: products ? products.get(0)?.itemTypes?.asList()?.get(0)?.id : null
+        def categoryId = params.id ?: products ? products.get(0)?.itemTypes?.asList()?.get(0)?.id : null
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
@@ -92,6 +92,7 @@ class ProductController {
 
         if (products.totalCount > CsvExporter.MAX_RESULTS) {
             flash.error = message(code: 'error.export.exceeds.maximum')
+            flash.args = [ CsvExporter.MAX_RESULTS ]
             redirect action: 'list', id: params.id
 
         } else {

@@ -18,16 +18,32 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sapienter.jbilling.server.report.db;
+package com.sapienter.jbilling.server.report.db.parameter;
 
-import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import com.sapienter.jbilling.server.report.db.ReportParameterDTO;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
- * ReportDAS
+ * StringReportParameterDTO
  *
  * @author Brian Cowdery
  * @since 07/03/11
  */
-public class ReportDAS extends AbstractDAS<ReportDTO> {
+@Entity
+@DiscriminatorValue("string")
+public class StringReportParameterDTO extends ReportParameterDTO<String> {
 
+    private String value;
+
+    @Transient
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

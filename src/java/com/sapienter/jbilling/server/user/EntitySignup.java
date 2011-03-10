@@ -634,6 +634,7 @@ public final class EntitySignup {
         processTable(table);
 
         //REPORT_ENTITY_MAP
+/*
         String reportEntityColumns[] =
         {
             "i_entity_id",
@@ -665,7 +666,8 @@ public final class EntitySignup {
                 reportEntityColumns, 
                 reportEntityData, false);
         processTable(table);
-        
+*/
+
         //AGEING_ENTITY_STEP
         String ageingEntityStepColumns[] =
                 {"i_id", "i_entity_id", "i_status_id", "i_days", "i_optlock"};

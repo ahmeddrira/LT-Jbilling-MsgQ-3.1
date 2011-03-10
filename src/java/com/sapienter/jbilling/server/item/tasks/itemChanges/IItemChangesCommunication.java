@@ -18,32 +18,16 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sapienter.jbilling.server.item.event;
+package com.sapienter.jbilling.server.item.tasks.itemChanges;
 
-import com.sapienter.jbilling.server.item.db.ItemDTO;
-import com.sapienter.jbilling.server.system.event.Event;
+import com.sapienter.jbilling.server.item.event.ItemDeletedEvent;
+import com.sapienter.jbilling.server.item.event.ItemUpdatedEvent;
+import com.sapienter.jbilling.server.item.event.NewItemEvent;
+import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
-public abstract class AbstractItemEvent implements Event {
-
-    private ItemDTO item;
-    private Integer entityId;
-
-    public AbstractItemEvent(ItemDTO item) {
-        this.item = item;
-        entityId = item.getEntityId();
-    }
-
-    public ItemDTO getItem() {
-        return item;
-    }
-
-    public Integer getEntityId() {
-        return entityId;
-    }
-
-    @Override
-    public String toString() {
-        return "Event: " + getName() + " itemId: " + item.getId() + 
-                "entityId: " + entityId;
-    }
+public interface IItemChangesCommunication {
+    public void process(NewItemEvent event) throws PluggableTaskException;
+    public void process(ItemUpdatedEvent event) throws PluggableTaskException;
+    public void process(ItemDeletedEvent event) throws PluggableTaskException;
 }

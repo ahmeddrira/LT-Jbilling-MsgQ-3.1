@@ -888,3 +888,6 @@ insert into report_parameter (id, report_id, dtype, name) values (2, 1, 'date', 
 insert into report_parameter (id, report_id, dtype, name) values (3, 1, 'integer', 'period');
 
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 1, 'description', 1, 'Total amount invoiced grouped by period.');
+
+-- sequence for new entities
+insert into jbilling_seqs (name, next_id) values('entity', 2);

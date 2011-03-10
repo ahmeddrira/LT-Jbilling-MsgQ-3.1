@@ -204,6 +204,9 @@ public final class Constants implements CommonConstants {
     public static final Integer PREFERENCE_TYPE_NO_OF_DAYS_INVOICE_GEN_1_REMINDER = new Integer(22);
     public static final Integer PREFERENCE_TYPE_NO_OF_DAYS_NEXT_REMINDER = new Integer(23);
 
+    // contact type
+    public static final Integer ENTITY_CONTACT_TYPE = new Integer(1);
+
     //Jbilling Table Ids
     public static final Integer ENTITY_TABLE_ID = new Integer(5);
 }

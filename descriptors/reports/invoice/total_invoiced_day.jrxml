@@ -9,50 +9,47 @@
 		<parameter name="endDate" class="java.util.Date"/>
 		<queryString>
 			<![CDATA[select
-              sum(i.total) as total,
-              to_char(i.create_datetime, 'D') as day_of_week,
-              to_char(i.create_datetime, 'Dy') as day
+                sum(i.total) as total,
+                      count(i.id) as count,
+                i.create_datetime
             from
-              invoice i
-              inner join base_user u on i.user_id = u.id
+                invoice i
+                inner join base_user u on i.user_id = u.id
             where
-              u.entity_id = $P{entityId}
-              and i.deleted = 0
-              and i.is_review = 0
-              and i.create_datetime >= $P{startDate}
-              and i.create_datetime <= $P{endDate}
-            group by day_of_week, day
-            order by day]]>
+                u.entity_id = $P{entityId}
+                and i.deleted = 0
+                and i.is_review = 0
+                      and i.create_datetime >= $P{startDate}
+                      and i.create_datetime <= $P{endDate}
+            group by i.create_datetime]]>
 		</queryString>
 		<field name="total" class="java.math.BigDecimal"/>
-		<field name="day_of_week" class="java.lang.String"/>
-		<field name="day" class="java.lang.String"/>
+		<field name="count" class="java.lang.Long"/>
+		<field name="create_datetime" class="java.sql.Timestamp"/>
 	</subDataset>
 	<parameter name="entityId" class="java.lang.Integer"/>
 	<parameter name="startDate" class="java.util.Date"/>
 	<parameter name="endDate" class="java.util.Date"/>
 	<queryString>
 		<![CDATA[select
-              sum(i.total) as total,
-              count(i.id) as count,
-              to_char(i.create_datetime, 'D') as day_of_week,
-              to_char(i.create_datetime, 'Dy') as day
-            from
-              invoice i
-              inner join base_user u on i.user_id = u.id
-            where
-              u.entity_id = $P{entityId}
-              and i.deleted = 0
-              and i.is_review = 0
-              and i.create_datetime >= $P{startDate}
-              and i.create_datetime <= $P{endDate}
-            group by day_of_week, day
-            order by day]]>
+            sum(i.total) as total,
+            count(i.id) as count,
+            i.create_datetime
+        from
+            invoice i
+            inner join base_user u on i.user_id = u.id
+        where
+            u.entity_id = $P{entityId}
+            and i.deleted = 0
+            and i.is_review = 0
+                  and i.create_datetime >= $P{startDate}
+                  and i.create_datetime <= $P{endDate}
+        group by i.create_datetime
+        order by i.create_datetime]]>
 	</queryString>
 	<field name="total" class="java.math.BigDecimal"/>
 	<field name="count" class="java.lang.Long"/>
-	<field name="day_of_week" class="java.lang.String"/>
-	<field name="day" class="java.lang.String"/>
+	<field name="create_datetime" class="java.sql.Timestamp"/>
 	<variable name="subtotal" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{total}]]></variableExpression>
 		<initialValueExpression><![CDATA[new BigDecimal("0.00")]]></initialValueExpression>
@@ -61,7 +58,7 @@
 		<band height="200">
 			<barChart>
 				<chart isShowLegend="false">
-					<reportElement x="30" y="10" width="480" height="180"/>
+					<reportElement x="26" y="0" width="480" height="200"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -82,12 +79,12 @@
 						</datasetRun>
 					</dataset>
 					<categorySeries>
-						<seriesExpression><![CDATA[$F{day}]]></seriesExpression>
-						<categoryExpression><![CDATA[$F{day}]]></categoryExpression>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{create_datetime})]]></categoryExpression>
 						<valueExpression><![CDATA[$F{total}]]></valueExpression>
 					</categorySeries>
 				</categoryDataset>
-				<barPlot isShowLabels="false" isShowTickLabels="true" isShowTickMarks="false">
+				<barPlot>
 					<plot/>
 					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
 					<categoryAxisFormat>
@@ -123,11 +120,11 @@
 				<text><![CDATA[Number of Invoices]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="120" y="0" width="100" height="20"/>
+				<reportElement x="120" y="0" width="130" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Day]]></text>
+				<text><![CDATA[Date]]></text>
 			</staticText>
 			<line>
 				<reportElement x="0" y="20" width="540" height="1"/>
@@ -144,10 +141,10 @@
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Long"><![CDATA[$F{count}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="120" y="0" width="100" height="20"/>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="120" y="0" width="130" height="20"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{day}]]></textFieldExpression>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{create_datetime}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
 				<reportElement x="407" y="0" width="120" height="20"/>

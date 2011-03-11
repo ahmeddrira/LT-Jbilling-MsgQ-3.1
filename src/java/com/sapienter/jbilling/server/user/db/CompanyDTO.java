@@ -29,6 +29,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -36,7 +38,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
@@ -63,6 +67,14 @@ import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
 @Entity
 @Table(name = "entity")
+@TableGenerator(
+    name = "entity_GEN",
+    table = "jbilling_seqs",
+    pkColumnName = "name",
+    valueColumnName = "next_id",
+    pkColumnValue = "entity",
+    allocationSize = 10
+)
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class CompanyDTO implements java.io.Serializable {
 
@@ -85,10 +97,10 @@ public class CompanyDTO implements java.io.Serializable {
     private Set<ContactFieldTypeDTO> contactFieldTypes = new HashSet<ContactFieldTypeDTO>(0);
     private Set<CurrencyDTO> currencyDTOs = new HashSet<CurrencyDTO>(0);
     private Set<ItemTypeDTO> itemTypes = new HashSet<ItemTypeDTO>(0);
-    private Set<BillingProcessConfigurationDTO> billingProcessConfigurations
-            = new HashSet<BillingProcessConfigurationDTO>(0);
+    private Set<BillingProcessConfigurationDTO> billingProcessConfigurations = new HashSet<BillingProcessConfigurationDTO>(0);
     private Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods = new HashSet<InvoiceDeliveryMethodDTO>(0);
     private Set<ListEntityDTO> listEntities = new HashSet<ListEntityDTO>(0);
+    private int versionNum;
 
     public CompanyDTO() {
     }
@@ -137,7 +149,7 @@ public class CompanyDTO implements java.io.Serializable {
     }
 
     @Id
-
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "entity_GEN")
     @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return this.id;
@@ -370,6 +382,17 @@ public class CompanyDTO implements java.io.Serializable {
         return language.getId();
     }
 
+    @Version
+    @Column(name = "OPTLOCK")
+    public Integer getVersionNum() {
+        return versionNum;
+    }
+
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
+    }
+
+    @Override
     public String toString() {
         return " CompanyDTO: " + id;
     }

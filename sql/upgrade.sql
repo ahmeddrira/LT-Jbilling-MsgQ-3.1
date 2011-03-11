@@ -849,25 +849,37 @@ delete from international_description where table_id in (
 delete from jbilling_table where name in ('report_field', 'report_type_map', 'report_type', 'report_user', 'report_entity_map', 'report');
 
 -- new reports tables
+drop table if exists report;
 create table report (
     id int NOT NULL,
     type_id int NOT NULL,
-    entity_id int NOT NULL,
     name varchar(255) NOT NULL,
     file_name varchar(500) NOT NULL,
-    OPTLOCK int NOT NULL
+    OPTLOCK int NOT NULL,
+    PRIMARY KEY (id)
 );
+drop table if exists report_type;
 create table report_type (
     id int NOT NULL,
     name varchar(255) NOT NULL,
-    OPTLOCK int NOT NULL
+    OPTLOCK int NOT NULL,
+    PRIMARY KEY (id)
 );
+drop table if exists report_parameter;
 create table report_parameter (
     id int NOT NULL,
     report_id int NOT NULL,
     dtype varchar(10) NOT NULL,
-    name varchar(255) NOT NULL
+    name varchar(255) NOT NULL,
+    PRIMARY KEY (id)
 );
+drop table if exists entity_report_map;
+create table entity_report_map (
+    report_id int NOT NULL,
+    entity_id int NOT NULL
+);
+alter table entity_report_map add constraint report_map_report_id_FK foreign key (report_id) references report (id);
+alter table entity_report_map add constraint report_map_entity_id_FK foreign key (entity_id) references entity (id);
 
 insert into jbilling_table (id, name) values (100, 'report');
 insert into jbilling_table (id, name) values (101, 'report_type');
@@ -882,12 +894,14 @@ insert into report_type (id, name, optlock) values (1, 'invoice', 0);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (101, 1, 'description', 1, 'Invoice Reports');
 
 -- new report
-insert into report (id, type_id, entity_id, name, file_name, optlock) values (1, 1, 1, 'total_invoiced', 'total_invoiced.jasper', 0);
+insert into report (id, type_id, name, file_name, optlock) values (1, 1, 'total_invoiced', 'total_invoiced.jasper', 0);
 insert into report_parameter (id, report_id, dtype, name) values (1, 1, 'date', 'start_date');
 insert into report_parameter (id, report_id, dtype, name) values (2, 1, 'date', 'end_date');
 insert into report_parameter (id, report_id, dtype, name) values (3, 1, 'integer', 'period');
 
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 1, 'description', 1, 'Total amount invoiced grouped by period.');
+
+insert into entity_report_map (report_id, entity_id) values (1, 1);
 
 -- sequence for new entities
 insert into jbilling_seqs (name, next_id) values('entity', 2);

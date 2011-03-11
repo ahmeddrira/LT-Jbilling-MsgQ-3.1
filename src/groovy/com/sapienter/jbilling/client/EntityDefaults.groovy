@@ -47,6 +47,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO
 import com.sapienter.jbilling.server.user.db.UserStatusDAS
 import com.sapienter.jbilling.server.util.db.CurrencyDTO
+import com.sapienter.jbilling.server.report.db.ReportDTO
 
 /**
  * EntityDefaults 
@@ -109,6 +110,15 @@ class EntityDefaults {
         InvoiceDeliveryMethodDTO.get(Constants.D_METHOD_EMAIL).entities << company
         InvoiceDeliveryMethodDTO.get(Constants.D_METHOD_PAPER).entities << company
         InvoiceDeliveryMethodDTO.get(Constants.D_METHOD_EMAIL_AND_PAPER).entities << company
+
+
+        /*
+            Reports
+         */
+        // todo: for now add all reports to the company. restrict this to core reports once they've been written.
+        ReportDTO.list().each { report ->
+            report.entities << company
+        }
 
 
         /*

@@ -71,16 +71,18 @@ public class ReportBL {
         _init();
     }
 
-    public ReportBL(Integer id, Integer userId) {
+    public ReportBL(Integer id, Integer userId, Integer entityId) {
         _init();
         set(id);
         setLocale(userId);
+        this.entityId = entityId;
     }
 
-    public ReportBL(ReportDTO report, Locale locale) {
+    public ReportBL(ReportDTO report, Locale locale, Integer entityId) {
         _init();
         this.report = report;
         this.locale = locale;
+        this.entityId = entityId;
     }
 
     private void _init() {
@@ -93,6 +95,10 @@ public class ReportBL {
 
     public void setLocale(Integer userId) {
         this.locale = new UserBL(userId).getLocale();
+    }
+
+    public void setEntityId(Integer entityId) {
+        this.entityId = entityId;
     }
 
     public ReportDTO getEntity() {
@@ -178,7 +184,7 @@ public class ReportBL {
                    report.getReportBaseDir(),
                    report.getParameterMap(),
                    locale,
-                   report.getEntity().getId());
+                   entityId);
     }
 
     /**

@@ -13,6 +13,8 @@ SET search_path = public, pg_catalog;
 
 ALTER TABLE ONLY public.user_role_map DROP CONSTRAINT user_role_map_fk_2;
 ALTER TABLE ONLY public.user_role_map DROP CONSTRAINT user_role_map_fk_1;
+ALTER TABLE ONLY public.entity_report_map DROP CONSTRAINT report_map_report_id_fk;
+ALTER TABLE ONLY public.entity_report_map DROP CONSTRAINT report_map_entity_id_fk;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_5;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_4;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_3;
@@ -206,6 +208,9 @@ DROP INDEX public.bp_pm_index_total;
 DROP INDEX public.ach_i_2;
 ALTER TABLE ONLY public.shortcut DROP CONSTRAINT shortcut_pkey;
 ALTER TABLE ONLY public.role DROP CONSTRAINT role_pkey;
+ALTER TABLE ONLY public.report_type DROP CONSTRAINT report_type_pkey;
+ALTER TABLE ONLY public.report DROP CONSTRAINT report_pkey;
+ALTER TABLE ONLY public.report_parameter DROP CONSTRAINT report_parameter_pkey;
 ALTER TABLE ONLY public.recent_item DROP CONSTRAINT recent_item_pkey;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_pkey;
 ALTER TABLE ONLY public.promotion DROP CONSTRAINT promotion_pkey;
@@ -377,6 +382,7 @@ DROP TABLE public.filter;
 DROP TABLE public.event_log_module;
 DROP TABLE public.event_log_message;
 DROP TABLE public.event_log;
+DROP TABLE public.entity_report_map;
 DROP TABLE public.entity_payment_method_map;
 DROP TABLE public.entity_delivery_method_map;
 DROP TABLE public.entity;
@@ -856,6 +862,18 @@ CREATE TABLE entity_payment_method_map (
 
 
 ALTER TABLE public.entity_payment_method_map OWNER TO jbilling;
+
+--
+-- Name: entity_report_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE entity_report_map (
+    report_id integer NOT NULL,
+    entity_id integer NOT NULL
+);
+
+
+ALTER TABLE public.entity_report_map OWNER TO jbilling;
 
 --
 -- Name: event_log; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -2077,7 +2095,6 @@ ALTER TABLE public.recent_item OWNER TO jbilling;
 CREATE TABLE report (
     id integer NOT NULL,
     type_id integer NOT NULL,
-    entity_id integer NOT NULL,
     name character varying(255) NOT NULL,
     file_name character varying(500) NOT NULL,
     optlock integer NOT NULL
@@ -9857,6 +9874,15 @@ COPY entity_payment_method_map (entity_id, payment_method_id) FROM stdin;
 
 
 --
+-- Data for Name: entity_report_map; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY entity_report_map (report_id, entity_id) FROM stdin;
+1	1
+\.
+
+
+--
 -- Data for Name: event_log; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -11604,8 +11630,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 47	31	description	1	The provisioning status of an order line has changed
 47	25	description	1	A new row has been created
 47	19	description	1	Last API call to get the the user subscription status transitions
-100	1	description	1	Total amount invoiced grouped by period.
 101	1	description	1	Invoice Reports
+100	1	description	1	Total amount invoiced grouped by period.
 \.
 
 
@@ -16716,8 +16742,8 @@ COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
 -- Data for Name: report; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY report (id, type_id, entity_id, name, file_name, optlock) FROM stdin;
-1	1	1	total_invoiced	total_invoiced.jasper	0
+COPY report (id, type_id, name, file_name, optlock) FROM stdin;
+1	1	total_invoiced	total_invoiced.jasper	0
 \.
 
 
@@ -19531,6 +19557,30 @@ ALTER TABLE ONLY recent_item
 
 
 --
+-- Name: report_parameter_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY report_parameter
+    ADD CONSTRAINT report_parameter_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: report_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY report
+    ADD CONSTRAINT report_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: report_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY report_type
+    ADD CONSTRAINT report_type_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: role_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -21010,6 +21060,22 @@ ALTER TABLE ONLY purchase_order
 
 ALTER TABLE ONLY purchase_order
     ADD CONSTRAINT purchase_order_fk_5 FOREIGN KEY (created_by) REFERENCES base_user(id);
+
+
+--
+-- Name: report_map_entity_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY entity_report_map
+    ADD CONSTRAINT report_map_entity_id_fk FOREIGN KEY (entity_id) REFERENCES entity(id);
+
+
+--
+-- Name: report_map_report_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY entity_report_map
+    ADD CONSTRAINT report_map_report_id_fk FOREIGN KEY (report_id) REFERENCES report(id);
 
 
 --

@@ -37,6 +37,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -74,7 +76,7 @@ public class ReportDTO extends AbstractDescription implements Serializable {
     public static final String BASE_PATH = Util.getSysProp("base_dir") + File.separator + "reports" + File.separator;
 
     private int id;
-    private CompanyDTO entity;
+    private Set<CompanyDTO> entities = new HashSet<CompanyDTO>();
     private ReportTypeDTO type;
     private String name;
     private String fileName;
@@ -92,14 +94,21 @@ public class ReportDTO extends AbstractDescription implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "entity_id", nullable = false)
-    public CompanyDTO getEntity() {
-        return entity;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "entity_report_map",
+           joinColumns = {
+                   @JoinColumn(name = "report_id", updatable = false)
+           },
+           inverseJoinColumns = {
+                   @JoinColumn(name = "entity_id", updatable = false)
+           }
+    )
+    public Set<CompanyDTO> getEntities() {
+        return entities;
     }
 
-    public void setEntity(CompanyDTO entity) {
-        this.entity = entity;
+    public void setEntities(Set<CompanyDTO> entities) {
+        this.entities = entities;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -220,7 +229,6 @@ public class ReportDTO extends AbstractDescription implements Serializable {
     public String toString() {
         return "Report{"
                + "id=" + id
-               + ", entityId=" + (entity != null ? entity.getId() : null)
                + ", type=" + (type != null ? type.getName() : null)
                + ", fileName='" + fileName + '\''
                + '}';

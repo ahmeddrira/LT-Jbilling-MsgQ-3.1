@@ -69,7 +69,9 @@ class ReportController {
                         eq('id', typeId)
                     }
                 }
-                eq('entity', new CompanyDTO(session['company_id']))
+                entities {
+                    eq('id', session['company_id'])
+                }
             }
             order('id', 'desc')
         }
@@ -126,16 +128,18 @@ class ReportController {
         def report = ReportDTO.get(params.int('id'))
         bindParameters(report, params)
 
+        def runner = new ReportBL(report, session['locale'], session['company_id'])
+
         if (params.format) {
             // export to selected format
             def format = ReportExportFormat.valueOf(params.format)
-            def export = new ReportBL(report, session.locale).export(format);
+            def export = runner.export(format);
             DownloadHelper.sendFile(response, export.fileName, export.contentType, export.bytes)
 
         } else {
             // render as HTML
             def imageUrl = createLink(controller: 'report', action: 'images', params: [name: '']).toString()
-            new ReportBL(report, session.locale).renderHtml(response, session, imageUrl)
+            runner.renderHtml(response, session, imageUrl)
         }
     }
 

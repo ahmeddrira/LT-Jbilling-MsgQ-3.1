@@ -204,6 +204,28 @@ public final class Constants implements CommonConstants {
     public static final Integer PREFERENCE_TYPE_NO_OF_DAYS_INVOICE_GEN_1_REMINDER = new Integer(22);
     public static final Integer PREFERENCE_TYPE_NO_OF_DAYS_NEXT_REMINDER = new Integer(23);
 
+    // notification message types
+    public static final Integer NOTIFICATION_TYPE_INVOICE_EMAIL = 1;
+    public static final Integer NOTIFICATION_TYPE_USER_REACTIVATED = 2;
+    public static final Integer NOTIFICATION_TYPE_USER_OVERDUE = 3;
+    public static final Integer NOTIFICATION_TYPE_USER_OVERDUE_2 = 4;
+    public static final Integer NOTIFICATION_TYPE_USER_OVERDUE_3 = 5;
+    public static final Integer NOTIFICATION_TYPE_USER_SUSPENDED = 6;
+    public static final Integer NOTIFICATION_TYPE_USER_SUSPENDED_2 = 7;
+    public static final Integer NOTIFICATION_TYPE_USER_SUSPENDED_3 = 8;
+    public static final Integer NOTIFICATION_TYPE_USER_DELETED = 9;
+    public static final Integer NOTIFICATION_TYPE_PAYOUT_REMINDER = 10;
+    public static final Integer NOTIFICATION_TYPE_PARTNER_PAYOUT = 11;
+    public static final Integer NOTIFICATION_TYPE_INVOICE_PAPER = 12;
+    public static final Integer NOTIFICATION_TYPE_ORDER_EXPIRE_1 = 13;
+    public static final Integer NOTIFICATION_TYPE_ORDER_EXPIRE_2 = 14;
+    public static final Integer NOTIFICATION_TYPE_ORDER_EXPIRE_3 = 15;
+    public static final Integer NOTIFICATION_TYPE_PAYMENT_SUCCESS = 16;
+    public static final Integer NOTIFICATION_TYPE_PAYMENT_FAILED = 17;
+    public static final Integer NOTIFICATION_TYPE_INVOICE_REMINDER = 18;
+    public static final Integer NOTIFICATION_TYPE_CREDIT_CARD_UPDATE = 19;
+    public static final Integer NOTIFICATION_TYPE_LOST_PASSWORD = 20;
+
     // contact type
     public static final Integer ENTITY_CONTACT_TYPE = new Integer(1);
 

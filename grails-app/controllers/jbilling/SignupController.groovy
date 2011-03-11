@@ -33,6 +33,7 @@ import com.sapienter.jbilling.server.user.permisson.db.RoleDTO
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO
 import com.sapienter.jbilling.server.user.contact.db.ContactMapDTO
 import com.sapienter.jbilling.server.util.db.JbillingTable
+import com.sapienter.jbilling.client.EntityDefaults
 
 /**
  * SignupController 
@@ -41,6 +42,9 @@ import com.sapienter.jbilling.server.util.db.JbillingTable
  * @since 10/03/11
  */
 class SignupController {
+
+    def messageSource
+    def passwordEncoder
 
     def index = {
     }
@@ -68,30 +72,29 @@ class SignupController {
         def language = LanguageDTO.get(params.languageId)
         def currency = CurrencyDTO.get(params.currencyId)
         def company = createCompany(language, currency)
-        log.debug("saved company ${company}")
+        def companyContact = createCompanyContact(company)
 
-        // root admin user
+        // create root user and contact information
         def user = createUser(language, currency, company)
-        log.debug("saved user ${user}")
-
-        // primary contact type
         def primaryContactType = createPrimaryContactType(language, company)
-        log.debug("saved primary contact type ${primaryContactType}")
-
-        // contact information
         def userContact = createUserContact(user, primaryContactType)
-        log.debug("saved user contact ${userContact}")
 
-        def entityContact = createEntityContact(company)
-        log.debug("saved entity contact ${entityContact}")
+        // set all entity defaults
+        new EntityDefaults(company, user, language, messageSource).init()
 
 
         flash.message = 'signup.successful'
-        flash.args = [ entityContact.organizationName, user.userName ]
-        render view: 'login', action: 'auth', model: [ userName: user.userName, companyId: company.id ]
+        flash.args = [ companyContact.organizationName, user.userName ]
+        redirect controller: 'login', action: 'auth', params: [ userName: user.userName, companyId: company.id ]
     }
 
-
+    /**
+     * Create a new company for the given language and currency.
+     *
+     * @param language
+     * @param currency
+     * @return created company
+     */
     def createCompany(language, currency) {
         def company = new CompanyDTO(
                 description: params['contact.organizationName'],
@@ -103,9 +106,18 @@ class SignupController {
         return company
     }
 
+    /**
+     * Create new root user for the given company, currency, and language.
+     *
+     * @param language
+     * @param currency
+     * @param company
+     * @return created root user
+     */
     def createUser(language, currency, company) {
         def user = new UserDTO()
         bindData(user, params, 'user')
+        user.password = passwordEncoder.encodePassword(params['user.password'], null)
         user.deleted = 0
         user.userStatus = new UserStatusDAS().find(UserDTOEx.STATUS_ACTIVE)
         user.subscriberStatus = new SubscriberStatusDAS().find(UserDTOEx.SUBSCRIBER_ACTIVE)
@@ -119,6 +131,13 @@ class SignupController {
         return user
     }
 
+    /**
+     * Create the companies primary contact type.
+     *
+     * @param language
+     * @param company
+     * @return created primary contact type
+     */
     def createPrimaryContactType(language, company) {
         def primaryContactType = new ContactTypeDTO(
                 entity: company,
@@ -130,6 +149,13 @@ class SignupController {
         return primaryContactType
     }
 
+    /**
+     * Create a new primary contact for the given user.
+     *
+     * @param user
+     * @param primaryContactType primary contact type
+     * @return created user contact
+     */
     def createUserContact(user, primaryContactType) {
         def userContact = new ContactDTO()
         bindData(userContact, params, 'contact')
@@ -149,7 +175,13 @@ class SignupController {
         return userContact
     }
 
-    def createEntityContact(company) {
+    /**
+     * Create a new contact for the company.
+     *
+     * @param company
+     * @return created company contact
+     */
+    def createCompanyContact(company) {
         def entityContact = new ContactDTO()
         bindData(entityContact, params, 'contact')
         entityContact.deleted = 0

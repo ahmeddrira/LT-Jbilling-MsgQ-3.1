@@ -78,11 +78,9 @@
     PromotionUserMap|
     PurchaseOrder|
     Report|
-    ReportEntityMap|
-    ReportField|
     ReportType|
-    ReportTypeMap|
-    ReportUser|
+    ReportParameter|
+    ReportMap|
     Role|
     UserCreditCardMap|
     UserRoleMap|
@@ -869,62 +867,29 @@
 <!ELEMENT Report EMPTY>
 <!ATTLIST Report
     Id CDATA #REQUIRED
-    Titlekey CDATA #IMPLIED
-    Instructionskey CDATA #IMPLIED
-    TablesList CDATA #REQUIRED
-    WhereStr CDATA #REQUIRED
-    IdColumn CDATA #REQUIRED
-    Link CDATA #IMPLIED
->
-
-<!ELEMENT ReportEntityMap EMPTY>
-<!ATTLIST ReportEntityMap
-    EntityId CDATA #IMPLIED
-    ReportId CDATA #IMPLIED
->
-
-<!ELEMENT ReportField EMPTY>
-<!ATTLIST ReportField
-    Id CDATA #REQUIRED
-    ReportId CDATA #IMPLIED
-    ReportUserId CDATA #IMPLIED
-    PositionNumber CDATA #REQUIRED
-    TableName CDATA #REQUIRED
-    ColumnName CDATA #REQUIRED
-    OrderPosition CDATA #IMPLIED
-    WhereValue CDATA #IMPLIED
-    TitleKey CDATA #IMPLIED
-    FunctionName CDATA #IMPLIED
-    IsGrouped CDATA #REQUIRED
-    IsShown CDATA #REQUIRED
-    DataType CDATA #REQUIRED
-    OperatorValue CDATA #IMPLIED
-    Functionable CDATA #REQUIRED
-    Selectable CDATA #REQUIRED
-    Ordenable CDATA #REQUIRED
-    Operatorable CDATA #REQUIRED
-    Whereable CDATA #REQUIRED
+    TypeId CDATA #IMPLIED
+    Name CDATA #IMPLIED
+    FileName CDATA #REQUIRED
 >
 
 <!ELEMENT ReportType EMPTY>
 <!ATTLIST ReportType
     Id CDATA #REQUIRED
-    Showable CDATA #REQUIRED
+    Name CDATA #REQUIRED
 >
 
-<!ELEMENT ReportTypeMap EMPTY>
-<!ATTLIST ReportTypeMap
-    ReportId CDATA #IMPLIED
-    TypeId CDATA #IMPLIED
->
-
-<!ELEMENT ReportUser EMPTY>
-<!ATTLIST ReportUser
+<!ELEMENT ReportParameter EMPTY>
+<!ATTLIST ReportParameter
     Id CDATA #REQUIRED
-    UserId CDATA #IMPLIED
-    ReportId CDATA #IMPLIED
-    CreateDatetime CDATA #REQUIRED
-    Title CDATA #IMPLIED
+    ReportId CDATA #REQUIRED
+    Dtype CDATA #REQUIRED
+    Name CDATA #REQUIRED
+>
+
+<!ELEMENT ReportMap EMPTY>
+<!ATTLIST ReportMap
+    ReportId CDATA #REQUIRED
+    EntityId CDATA #REQUIRED
 >
 
 <!ELEMENT Role EMPTY>

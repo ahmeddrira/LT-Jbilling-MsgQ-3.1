@@ -11852,7 +11852,6 @@ partner_range	2
 partner	2
 partner	2
 entity	1
-entity	1
 contact_type	1
 contact_type	1
 contact_map	7910
@@ -11955,7 +11954,6 @@ shortcut	1
 report	1
 report_type	1
 report_parameter	1
-entity	3
 \.
 
 

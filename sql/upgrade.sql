@@ -854,10 +854,11 @@ create table report (
     id int NOT NULL,
     type_id int NOT NULL,
     name varchar(255) NOT NULL,
-    file_name varchar(500) NOT NULL,
+    file_name varchar(255) NOT NULL,
     OPTLOCK int NOT NULL,
     PRIMARY KEY (id)
 );
+
 drop table if exists report_type;
 create table report_type (
     id int NOT NULL,
@@ -865,6 +866,8 @@ create table report_type (
     OPTLOCK int NOT NULL,
     PRIMARY KEY (id)
 );
+alter table report add constraint report_type_id_FK foreign key (type_id) references report_type (id);
+
 drop table if exists report_parameter;
 create table report_parameter (
     id int NOT NULL,
@@ -873,10 +876,13 @@ create table report_parameter (
     name varchar(255) NOT NULL,
     PRIMARY KEY (id)
 );
+alter table report_parameter add constraint report_param_report_id_FK foreign key (report_id) references report (id);
+
 drop table if exists entity_report_map;
 create table entity_report_map (
     report_id int NOT NULL,
-    entity_id int NOT NULL
+    entity_id int NOT NULL,
+    PRIMARY KEY (report_id, entity_id)
 );
 alter table entity_report_map add constraint report_map_report_id_FK foreign key (report_id) references report (id);
 alter table entity_report_map add constraint report_map_entity_id_FK foreign key (entity_id) references entity (id);
@@ -902,6 +908,3 @@ insert into report_parameter (id, report_id, dtype, name) values (3, 1, 'integer
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 1, 'description', 1, 'Total amount invoiced grouped by period.');
 
 insert into entity_report_map (report_id, entity_id) values (1, 1);
-
--- sequence for new entities
-insert into jbilling_seqs (name, next_id) values('entity', 2);

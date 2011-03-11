@@ -1320,21 +1320,31 @@
     </table>
     <table name="report">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="titlekey" size="50" type="VARCHAR"/>
-        <column name="instructionskey" size="50" type="VARCHAR"/>
-        <column name="tables_list" required="true" size="1000" type="VARCHAR"/>
-        <column name="where_str" required="true" size="1000" type="VARCHAR"/>
-        <column name="id_column" required="true" type="SMALLINT"/>
-        <column name="link" size="200" type="VARCHAR"/>
+        <column name="type_id" required="true" type="INTEGER"/>
+        <column name="name" required="true" size="255" type="VARCHAR"/>
+        <column name="file_name" required="true" size="255" type="VARCHAR"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
+        <foreign-key foreignTable="report_type">
+            <reference foreign="id" local="type_id"/>
+        </foreign-key>
+    </table>
+    <table name="report_type">
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="name" required="true" size="255" type="VARCHAR"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
     </table>
-    <table name="report_entity_map">
-        <column name="entity_id" type="INTEGER"/>
-        <column name="report_id" type="INTEGER"/>
-        <index name="report_entity_map_i_2">
-            <index-column name="entity_id"/>
-            <index-column name="report_id"/>
-        </index>
+    <table name="report_parameter">
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="report_id" required="true" type="INTEGER"/>
+        <column name="dtype" required="true" size="10" type="VARCHAR"/>
+        <column name="name" required="true" size="255" type="VARCHAR"/>
+        <foreign-key foreignTable="report">
+            <reference foreign="id" local="report_id"/>
+        </foreign-key>
+    </table>
+    <table name="entity_report_map">
+        <column name="report_id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="entity_id" primaryKey="true" required="true" type="INTEGER"/>
         <foreign-key foreignTable="report">
             <reference foreign="id" local="report_id"/>
         </foreign-key>
@@ -1342,60 +1352,6 @@
             <reference foreign="id" local="entity_id"/>
         </foreign-key>
     </table>
-    <table name="report_field">
-        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="report_id" type="INTEGER"/>
-        <column name="report_user_id" type="INTEGER"/>
-        <column name="position_number" required="true" type="INTEGER"/>
-        <column name="table_name" required="true" size="50" type="VARCHAR"/>
-        <column name="column_name" required="true" size="50" type="VARCHAR"/>
-        <column name="order_position" type="INTEGER"/>
-        <column name="where_value" size="50" type="VARCHAR"/>
-        <column name="title_key" size="50" type="VARCHAR"/>
-        <column name="function_name" size="10" type="VARCHAR"/>
-        <column name="is_grouped" required="true" type="INTEGER"/>
-        <column name="is_shown" required="true" type="SMALLINT"/>
-        <column name="data_type" required="true" size="10" type="VARCHAR"/>
-        <column name="operator_value" size="2" type="VARCHAR"/>
-        <column name="functionable" required="true" type="SMALLINT"/>
-        <column name="selectable" required="true" type="SMALLINT"/>
-        <column name="ordenable" required="true" type="SMALLINT"/>
-        <column name="operatorable" required="true" type="SMALLINT"/>
-        <column name="whereable" required="true" type="SMALLINT"/>
-        <column name="OPTLOCK" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="report">
-            <reference foreign="id" local="report_id"/>
-        </foreign-key>
-    </table>
-    <table name="report_type">
-        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="showable" required="true" type="SMALLINT"/>
-        <column name="OPTLOCK" required="true" type="INTEGER"/>
-    </table>
-    <table name="report_type_map">
-        <column name="report_id" type="INTEGER"/>
-        <column name="type_id" type="INTEGER"/>
-        <foreign-key foreignTable="report_type">
-            <reference foreign="id" local="type_id"/>
-        </foreign-key>
-        <foreign-key foreignTable="report">
-            <reference foreign="id" local="report_id"/>
-        </foreign-key>
-    </table>
-    <table name="report_user">
-        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="user_id" type="INTEGER"/>
-        <column name="report_id" type="INTEGER"/>
-        <column name="create_datetime" required="true" type="TIMESTAMP"/>
-        <column name="title" size="50" type="VARCHAR"/>
-        <column name="OPTLOCK" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="base_user">
-            <reference foreign="id" local="user_id"/>
-        </foreign-key>
-        <foreign-key foreignTable="report">
-            <reference foreign="id" local="report_id"/>
-        </foreign-key>
-    </table>    
     <table name="role">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
     </table>

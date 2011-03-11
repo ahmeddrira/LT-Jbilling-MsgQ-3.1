@@ -161,14 +161,17 @@
                         <g:if test="${contactTypes.size > 1}">
                             <g:applyLayout name="form/select">
                                 <content tag="label"><g:message code="prompt.contact.type"/></content>
-                                <g:select name="contactType" from="${contactTypes}"
-                                          optionKey="id" optionValue="description" value="${contact?.type}"  />
+                                <g:select name="contactType"
+                                          from="${contactTypes}"
+                                          optionKey="id"
+                                          optionValue="${{it.getDescription(session['language_id'])}}"
+                                          value="${contact?.type}"  />
                             </g:applyLayout>
                         </g:if>
                         <g:else>
                             <g:applyLayout name="form/text">
                                 <content tag="label"><g:message code="prompt.contact.type"/></content>
-                                <span>${contact?.type ?: contactTypes?.get(0)}</span>
+                                <span>${(contact?.type ?: contactTypes?.get(0)).getDescription(session['language_id'])}</span>
                             </g:applyLayout>
                         </g:else>
 
@@ -381,7 +384,7 @@
 
                 <!-- box text -->
                 <div class="box-text">
-                    <label><g:message code="customer.detail.note.title"/></label>
+                    <label><g:message code="prompt.notes"/></label>
                     <g:textArea name="user.notes" value="${user?.notes}" rows="5" cols="60"/>
                 </div>
 

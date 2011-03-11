@@ -211,19 +211,23 @@ class UserController {
 
         // bind primary user contact and custom contact fields
         def contact = new ContactWS()
-        bindData(contact, params, 'contact-' + params.primaryContactTypeId)
-        contact.fieldIDs = new Integer[params.contactField.size()]
-        contact.fieldValues = new Integer[params.contactField.size()]
-        params.contactField.eachWithIndex { id, value, i ->
-            contact.fieldIDs[i] = id.toInteger()
-            contact.fieldValues[i] = value
+        bindData(contact, params, "contact-${params.primaryContactTypeId}")
+        contact.type = primaryContactTypeId
+		contact.include = params.get("contact-${params.primaryContactTypeId}.include") ? 1 : 0
+
+        if (params.contactField) {
+            contact.fieldIDs = new Integer[params.contactField.size()]
+            contact.fieldValues = new Integer[params.contactField.size()]
+            params.contactField.eachWithIndex { id, value, i ->
+                contact.fieldIDs[i] = id.toInteger()
+                contact.fieldValues[i] = value
+            }
         }
-		contact.type= primaryContactTypeId
-		contact.include= params.get('contact-' + params.primaryContactTypeId + '.include') ? 1 : 0
 
         user.setContact(contact)
 
         log.debug("Primary contact: ${contact}")
+
 
         // bind secondary contact types
         def contacts = []
@@ -241,6 +245,7 @@ class UserController {
         }
 
         log.debug("Secondary contacts: ${contacts}")
+
 
         // bind credit card object if parameters present
         if (params.creditCard.any { key, value -> value }) {
@@ -263,6 +268,7 @@ class UserController {
         }
 
         log.debug("Customer ACH ${user.ach}")
+
 
         // set automatic payment type
         if (params.creditCardAutoPayment) user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_CC)

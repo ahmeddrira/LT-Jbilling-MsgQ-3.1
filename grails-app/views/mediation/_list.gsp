@@ -50,8 +50,18 @@
 	</div>
 </div>
 
-<g:if test="${processes?.totalCount > params.max}">
-    <div class="pager-box">
-        <util:remotePaginate controller="mediation" action="index" params="[applyFilter: true]" total="${processes?.totalCount}" update="column1"/>
+<div class="pager-box">
+    <div class="row">
+        <div class="results">
+            <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], update: 'column1']"/>
+        </div>
     </div>
-</g:if>
+
+    <div class="row">
+        <util:remotePaginate controller="mediation" action="index" params="[applyFilter: true]" total="${processes?.totalCount ?: 0}" update="column1"/>
+    </div>
+</div>
+
+<div class="btn-box">
+    <div class="row"></div>
+</div>

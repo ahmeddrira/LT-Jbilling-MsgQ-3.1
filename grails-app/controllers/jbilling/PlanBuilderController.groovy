@@ -94,7 +94,6 @@ class PlanBuilderController {
                 // subscription product defaults for new plans
                 if (!product.id || product.id == 0) {
                     product.hasDecimals = 0
-                    product.priceManual = 0
                     product.types = [ internalPlansType.id ]
                     product.entityId = company.id
 
@@ -149,7 +148,7 @@ class PlanBuilderController {
         showProducts {
             action {
                 // filter using the first item type by default
-                if (params.typeId == null)
+                if (params.typeId == null && flow.itemTypes)
                     params.typeId = flow.itemTypes?.asList()?.first()?.id
 
                 params.template = 'products'

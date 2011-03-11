@@ -13,13 +13,7 @@
 </head>
 <body>
 
-    <g:if test='${flash.message}'>
-        <div class="msg-box login error">
-            <img src="${resource(dir:'images', file:'icon14.gif')}" alt="${message(code:'error.icon.alt',default:'Error')}"/>
-            <strong><g:message code="flash.error.title" args="${flash.args}"/></strong>
-            <p>${flash.message}</p>
-        </div>
-    </g:if>
+    <g:render template="/layouts/includes/messages"/>
 
     <div id="login" class="form-edit">
         <div class="heading">

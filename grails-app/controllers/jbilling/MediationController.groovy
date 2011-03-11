@@ -56,7 +56,10 @@ class MediationController {
 						addToCriteria(filter.getRestrictions());
 					}
 				}
-				
+
+                configuration {
+                    eq('entityId', session['company_id'])
+                }
 			}
 			order("id", "desc")
 		}

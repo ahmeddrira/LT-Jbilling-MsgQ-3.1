@@ -13,7 +13,8 @@ import com.sapienter.jbilling.common.SessionInternalError
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.util.csv.Exporter
 import com.sapienter.jbilling.server.util.csv.CsvExporter
-import com.sapienter.jbilling.client.util.DownloadHelper;
+import com.sapienter.jbilling.client.util.DownloadHelper
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 /**
 * BillingController
@@ -37,7 +38,6 @@ class InvoiceController {
     }
 
 	def list = {
-
 		if (params.id) {
 			redirect (action: 'showListAndInvoice', params: [id: params.id as Integer])
 		}
@@ -74,7 +74,11 @@ class InvoiceController {
 							}
 						}
 					}
-					eq('deleted', 0)
+
+                    baseUser {
+                        eq('company', new CompanyDTO(session['company_id']))
+                    }
+                    eq('deleted', 0)
 				}
 				order("id", "desc")
 			}

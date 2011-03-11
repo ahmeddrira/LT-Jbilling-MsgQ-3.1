@@ -13,13 +13,6 @@ SET search_path = public, pg_catalog;
 
 ALTER TABLE ONLY public.user_role_map DROP CONSTRAINT user_role_map_fk_2;
 ALTER TABLE ONLY public.user_role_map DROP CONSTRAINT user_role_map_fk_1;
-ALTER TABLE ONLY public.report_user DROP CONSTRAINT report_user_fk_2;
-ALTER TABLE ONLY public.report_user DROP CONSTRAINT report_user_fk_1;
-ALTER TABLE ONLY public.report_type_map DROP CONSTRAINT report_type_map_fk_2;
-ALTER TABLE ONLY public.report_type_map DROP CONSTRAINT report_type_map_fk_1;
-ALTER TABLE ONLY public.report_field DROP CONSTRAINT report_field_fk_1;
-ALTER TABLE ONLY public.report_entity_map DROP CONSTRAINT report_entity_map_fk_2;
-ALTER TABLE ONLY public.report_entity_map DROP CONSTRAINT report_entity_map_fk_1;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_5;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_4;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_3;
@@ -152,7 +145,6 @@ DROP INDEX public.user_role_map_i_role;
 DROP INDEX public.user_role_map_i_2;
 DROP INDEX public.user_credit_card_map_i_2;
 DROP INDEX public.transaction_id;
-DROP INDEX public.report_entity_map_i_2;
 DROP INDEX public.purchase_order_i_user;
 DROP INDEX public.purchase_order_i_notif;
 DROP INDEX public.promotion_user_map_i_2;
@@ -213,10 +205,6 @@ DROP INDEX public.bp_pm_index_total;
 DROP INDEX public.ach_i_2;
 ALTER TABLE ONLY public.shortcut DROP CONSTRAINT shortcut_pkey;
 ALTER TABLE ONLY public.role DROP CONSTRAINT role_pkey;
-ALTER TABLE ONLY public.report_user DROP CONSTRAINT report_user_pkey;
-ALTER TABLE ONLY public.report_type DROP CONSTRAINT report_type_pkey;
-ALTER TABLE ONLY public.report DROP CONSTRAINT report_pkey;
-ALTER TABLE ONLY public.report_field DROP CONSTRAINT report_field_pkey;
 ALTER TABLE ONLY public.recent_item DROP CONSTRAINT recent_item_pkey;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_pkey;
 ALTER TABLE ONLY public.promotion DROP CONSTRAINT promotion_pkey;
@@ -310,11 +298,8 @@ DROP TABLE public.user_role_map;
 DROP TABLE public.user_credit_card_map;
 DROP TABLE public.shortcut;
 DROP TABLE public.role;
-DROP TABLE public.report_user;
-DROP TABLE public.report_type_map;
 DROP TABLE public.report_type;
-DROP TABLE public.report_field;
-DROP TABLE public.report_entity_map;
+DROP TABLE public.report_parameter;
 DROP TABLE public.report;
 DROP TABLE public.recent_item;
 DROP TABLE public.purchase_order;
@@ -2090,12 +2075,10 @@ ALTER TABLE public.recent_item OWNER TO jbilling;
 
 CREATE TABLE report (
     id integer NOT NULL,
-    titlekey character varying(50),
-    instructionskey character varying(50),
-    tables_list character varying(1000) NOT NULL,
-    where_str character varying(1000) NOT NULL,
-    id_column smallint NOT NULL,
-    link character varying(200),
+    type_id integer NOT NULL,
+    entity_id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    file_name character varying(500) NOT NULL,
     optlock integer NOT NULL
 );
 
@@ -2103,46 +2086,18 @@ CREATE TABLE report (
 ALTER TABLE public.report OWNER TO jbilling;
 
 --
--- Name: report_entity_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+-- Name: report_parameter; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
-CREATE TABLE report_entity_map (
-    entity_id integer,
-    report_id integer
-);
-
-
-ALTER TABLE public.report_entity_map OWNER TO jbilling;
-
---
--- Name: report_field; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE report_field (
+CREATE TABLE report_parameter (
     id integer NOT NULL,
-    report_id integer,
-    report_user_id integer,
-    position_number integer NOT NULL,
-    table_name character varying(50) NOT NULL,
-    column_name character varying(50) NOT NULL,
-    order_position integer,
-    where_value character varying(50),
-    title_key character varying(50),
-    function_name character varying(10),
-    is_grouped integer NOT NULL,
-    is_shown smallint NOT NULL,
-    data_type character varying(10) NOT NULL,
-    operator_value character varying(2),
-    functionable smallint NOT NULL,
-    selectable smallint NOT NULL,
-    ordenable smallint NOT NULL,
-    operatorable smallint NOT NULL,
-    whereable smallint NOT NULL,
-    optlock integer NOT NULL
+    report_id integer NOT NULL,
+    dtype character varying(10) NOT NULL,
+    name character varying(255) NOT NULL
 );
 
 
-ALTER TABLE public.report_field OWNER TO jbilling;
+ALTER TABLE public.report_parameter OWNER TO jbilling;
 
 --
 -- Name: report_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -2150,40 +2105,12 @@ ALTER TABLE public.report_field OWNER TO jbilling;
 
 CREATE TABLE report_type (
     id integer NOT NULL,
-    showable smallint NOT NULL,
+    name character varying(255) NOT NULL,
     optlock integer NOT NULL
 );
 
 
 ALTER TABLE public.report_type OWNER TO jbilling;
-
---
--- Name: report_type_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE report_type_map (
-    report_id integer,
-    type_id integer
-);
-
-
-ALTER TABLE public.report_type_map OWNER TO jbilling;
-
---
--- Name: report_user; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE report_user (
-    id integer NOT NULL,
-    user_id integer,
-    report_id integer,
-    create_datetime timestamp without time zone NOT NULL,
-    title character varying(50),
-    optlock integer NOT NULL
-);
-
-
-ALTER TABLE public.report_user OWNER TO jbilling;
 
 --
 -- Name: role; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -11158,15 +11085,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 64	237	description	1	Zimbabwe
 69	1	welcome_message	1	<div> <br/> <p style='font-size:19px; font-weight: bold;'>Welcome to Prancing Pony Billing!</p> <br/> <p style='font-size:14px; text-align=left; padding-left: 15;'>From here, you can review your latest invoice and get it paid instantly. You can also view all your previous invoices and payments, and set up the system for automatic payment with your credit card.</p> <p style='font-size:14px; text-align=left; padding-left: 15;'>What would you like to do today? </p> <ul style='font-size:13px; text-align=left; padding-left: 25;'> <li >To submit a credit card payment, follow the link on the left bar.</li> <li >To view a list of your invoices, click on the âInvoicesâ menu option. The first invoice on the list is your latest invoice. Click on it to see its details.</li> <li>To view a list of your payments, click on the âPaymentsâ menu option. The first payment on the list is your latest payment. Click on it to see its details.</li> <li>To provide a credit card to enable automatic payment, click on the menu option 'Account', and then on 'Edit Credit Card'.</li> </ul> </div>
 69	2	welcome_message	1	<div> <br/> <p style='font-size:19px; font-weight: bold;'>Welcome to Mordor Inc. Billing!</p> <br/> <p style='font-size:14px; text-align=left; padding-left: 15;'>From here, you can review your latest invoice and get it paid instantly. You can also view all your previous invoices and payments, and set up the system for automatic payment with your credit card.</p> <p style='font-size:14px; text-align=left; padding-left: 15;'>What would you like to do today? </p> <ul style='font-size:13px; text-align=left; padding-left: 25;'> <li >To submit a credit card payment, follow the link on the left bar.</li> <li >To view a list of your invoices, click on the âInvoicesâ menu option. The first invoice on the list is your latest invoice. Click on it to see its details.</li> <li>To view a list of your payments, click on the âPaymentsâ menu option. The first payment on the list is your latest payment. Click on it to see its details.</li> <li>To provide a credit card to enable automatic payment, click on the menu option 'Account', and then on 'Edit Credit Card'.</li> </ul> </div>
-73	1	description	1	Order
-73	2	description	1	Invoice
-73	3	description	1	Payment
-73	4	description	1	Refund
-73	5	description	1	Customer
-73	6	description	1	Partner
-73	7	description	1	Partner selected
-73	8	description	1	User
-73	9	description	1	Item
 81	1	description	1	Active
 81	2	description	1	Pending Unsubscription
 81	3	description	1	Unsubscribed
@@ -11559,8 +11477,6 @@ user_credit_card_map	5
 permission_role_map	279
 user_role_map	13
 currency_entity_map	10
-report_entity_map	113
-report_type_map	19
 subscriber_status	7
 order_line_provisioning_status	1
 balance_type	0
@@ -11573,8 +11489,6 @@ user_credit_card_map	5
 permission_role_map	279
 user_role_map	13
 currency_entity_map	10
-report_entity_map	113
-report_type_map	19
 subscriber_status	7
 order_line_provisioning_status	1
 balance_type	0
@@ -11593,8 +11507,6 @@ invoice_line_type	1
 invoice_line_type	1
 currency	1
 currency	1
-report_type	1
-report_type	1
 payment_method	1
 payment_method	1
 payment_result	1
@@ -11620,8 +11532,6 @@ currency_exchange	3
 billing_process_configuration	1
 order_period	1
 order_period	1
-report	1
-report	1
 partner_range	2
 partner_range	2
 partner	2
@@ -11634,8 +11544,6 @@ period_unit	1
 period_unit	1
 payment_info_cheque	17
 payment_info_cheque	17
-report_field	18
-report_field	18
 billing_process	2
 billing_process	2
 process_run	1
@@ -11675,10 +11583,8 @@ customer	1086
 partner_payout	1
 process_run_total_pm	1
 process_run_total_pm	1
-report_user	1
 item	34
 plan	2
-report_user	1
 payment_authorization	1
 plan_item	2
 payment_authorization	1
@@ -11731,6 +11637,8 @@ pluggable_task	607
 event_log	479
 event_log	479
 shortcut	1
+report_parameter	1
+entity	2
 \.
 
 
@@ -11739,8 +11647,6 @@ shortcut	1
 --
 
 COPY jbilling_table (id, name) FROM stdin;
-0	report
-1	report_field
 4	currency
 5	entity
 6	period_unit
@@ -11788,10 +11694,6 @@ COPY jbilling_table (id, name) FROM stdin;
 68	currency_entity_map
 69	ageing_entity_step
 70	partner_payout
-71	report_user
-72	report_entity_map
-73	report_type
-74	report_type_map
 75	ach
 77	list_entity
 78	list_field_entity
@@ -11836,6 +11738,7 @@ COPY jbilling_table (id, name) FROM stdin;
 97	plan_item
 98	customer_price
 99	contact_field_type
+102	report_parameter
 \.
 
 
@@ -15148,1240 +15051,19 @@ COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
 -- Data for Name: report; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY report (id, titlekey, instructionskey, tables_list, where_str, id_column, link, optlock) FROM stdin;
-1	report.general_orders.title	report.general_orders.instr	 base_user, purchase_order, order_period, order_billing_type, international_description id, jbilling_table bt, international_description id2, jbilling_table bt2, contact_map cm, contact , jbilling_table bt3	 bt3.name = 'base_user' and bt3.id = cm.table_id and cm.foreign_id = base_user.id and contact.id = cm.contact_id and base_user.id = purchase_order.user_id and bt.name = 'order_period' and bt2.name = 'order_billing_type' and id.table_id = bt.id and id2.table_id = bt2.id and id.foreign_id = order_period.id and id2.foreign_id = order_billing_type.id and purchase_order.period_id = order_period.id and purchase_order.billing_type_id = order_billing_type.id and id.language_id = id2.language_id	1	/orderMaintain.do?action=view	1
-3	report.general_payments.title	report.general_payments.instr	base_user, payment, payment_method, payment_result, international_description id, jbilling_table bt, international_description id2, jbilling_table bt2	base_user.id = payment.user_id and bt.name = 'payment_method' and bt2.name = 'payment_result' and id.table_id = bt.id and id2.table_id = bt2.id and id.foreign_id = payment_method.id and id2.foreign_id = payment_result.id and payment.method_id = payment_method.id and payment.result_id = payment_result.id and id.language_id = id2.language_id	1	/paymentMaintain.do?action=view	1
-4	report.general_order_line.title	report.general_order_line.instr	base_user, purchase_order, order_line, order_line_type,international_description id, jbilling_table bt, international_description id2, international_description id3, international_description id4	base_user.id = purchase_order.user_id and purchase_order.id = order_line.order_id and bt.name = 'order_line_type' and id.table_id = bt.id and id.foreign_id = order_line_type.id and order_line.type_id = order_line_type.id and id2.table_id = 17 and id2.foreign_id = purchase_order.period_id and id2.language_id = id.language_id and id3.table_id = 19 and id3.foreign_id = purchase_order.billing_type_id and id3.language_id = id.language_id and id4.table_id = 20 and id4.foreign_id = purchase_order.status_id and id4.language_id = id.language_id	1	/orderMaintain.do?action=view	1
-5	report.general_refunds.title	report.general_refunds.instr	base_user, payment, payment_method, payment_result, international_description id, jbilling_table bt, international_description id2, jbilling_table bt2	base_user.id = payment.user_id and bt.name = 'payment_method' and bt2.name = 'payment_result' and id.table_id = bt.id and id2.table_id = bt2.id and id.foreign_id = payment_method.id and id2.foreign_id = payment_result.id and payment.method_id = payment_method.id and payment.result_id = payment_result.id and id.language_id = id2.language_id	1	/paymentMaintain.do?action=view	1
-6	report.invoices_total.title	report.invoices_total.instr	base_user, invoice	base_user.id = invoice.user_id	0	\N	1
-7	report.payments_total.title	report.payments_total.instr	base_user, payment	base_user.id = payment.user_id and payment.result_id in (1,4) 	0	\N	1
-8	report.refunds_total.title	report.refunds_total.instr	base_user, payment	base_user.id = payment.user_id and payment.result_id in (1,4) 	0	\N	1
-9	report.orders_total.title	report.orders_total.instr	base_user, purchase_order, order_line	base_user.id = purchase_order.user_id and purchase_order.id = order_line.order_id and purchase_order.deleted = 0 and order_line.deleted = 0	0	\N	1
-10	report.customers_overdue.title	report.customers_overdue.instr	base_user, invoice	base_user.id = invoice.user_id and invoice.deleted = 0 and to_process = 1	1	/invoiceMaintain.do	1
-11	report.customers_carring.title	report.customers_carring.instr	base_user, invoice, currency	base_user.id = invoice.user_id and invoice.currency_id = currency.id and invoice.deleted = 0 and to_process = 1	1	/invoiceMaintain.do	1
-12	report.partners_orders.title	report.partners_orders.instr	base_user, purchase_order, order_period, international_description id, jbilling_table bt, customer 	base_user.id = purchase_order.user_id and bt.name = 'order_period' and id.table_id = bt.id and base_user.id = customer.user_id and id.foreign_id = order_period.id and purchase_order.status_id = 1 and purchase_order.deleted = 0 and purchase_order.period_id = order_period.id 	1	/orderMaintain.do?action=view	1
-13	report.partners_payments.title	report.partners_payments.instr	base_user, payment, payment_method, payment_result, international_description id, jbilling_table bt, customer , international_description id2, jbilling_table bt2	base_user.id = payment.user_id and payment.deleted = 0 and payment.is_refund = 0 and bt.name = 'payment_method' and bt2.name = 'payment_result' and base_user.id = customer.user_id and id.table_id = bt.id and id2.table_id = bt2.id and id.foreign_id = payment_method.id and id2.foreign_id = payment_result.id and payment.method_id = payment_method.id and payment.result_id = payment_result.id and id.language_id = id2.language_id	1	/paymentMaintain.do?action=view	1
-14	report.partners_refunds.title	report.partners_refunds.instr	base_user, payment, payment_method, payment_result, international_description id, jbilling_table bt, customer , international_description id2, jbilling_table bt2	base_user.id = payment.user_id and payment.deleted = 0 and payment.is_refund = 1 and bt.name = 'payment_method' and bt2.name = 'payment_result' and base_user.id = customer.user_id and id.table_id = bt.id and id2.table_id = bt2.id and id.foreign_id = payment_method.id and id2.foreign_id = payment_result.id and payment.method_id = payment_method.id and payment.result_id = payment_result.id and id.language_id = id2.language_id	1	/paymentMaintain.do?action=view	1
-15	report.partners.title	report.partners.instr	partner, base_user, period_unit pu, international_description id, jbilling_table bt 	id.table_id = bt.id and bt.name = 'period_unit' and id.foreign_id = pu.id and partner.period_unit_id = pu.id and id.psudo_column = 'description' and base_user.id = partner.user_id and base_user.deleted = 0	1	/partnerMaintain.do?action=view	1
-16	report.payouts.title	report.payouts.instr	partner, partner_payout, base_user, payment, payment_result,international_description id, jbilling_table bt	partner_payout.partner_id = partner.id and base_user.id = partner.user_id and partner.id = partner_payout.partner_id and payment.id = partner_payout.payment_id and bt.name = 'payment_result' and bt.id = id.table_id and payment_result.id = payment.result_id and payment_result.id = id.foreign_id and base_user.deleted = 0	1	/payout.do?action=view	1
-17	report.invoice_line.title	report.invoice_line.instr	base_user, currency, invoice, invoice_line_type, invoice_line left outer join item on invoice_line.item_id = item.id	base_user.id = invoice.user_id and invoice.currency_id = currency.id and invoice.id = invoice_line.invoice_id and invoice_line.type_id = invoice_line_type.id and invoice_line.deleted = 0 and invoice.is_review = 0	1	/invoiceMaintain.do	1
-18	report.user.title	report.user.instr	base_user, contact_map, contact, jbilling_table bt1, user_status, user_role_map, jbilling_table bt2, jbilling_table bt3, international_description it1, international_description it2, language, international_description it3, country, jbilling_table bt4 	base_user.id = contact_map.foreign_id and bt1.name = 'base_user' and bt1.id = contact_map.table_id and contact_map.contact_id = contact.id  and base_user.status_id = user_status.id and base_user.id = user_role_map.user_id and bt2.name = 'user_status' and bt3.name = 'role' and it1.table_id = bt2.id and it1.foreign_id = user_status.id and it1.psudo_column = 'description' and it2.table_id = bt3.id and it2.foreign_id = user_role_map.role_id and it2.psudo_column = 'title' and it2.language_id = it1.language_id and base_user.deleted = 0 and base_user.language_id = language.id and contact.country_code = country.code and country.id = it3.foreign_id and it3.language_id = it2.language_id and it3.table_id = bt4.id and bt4.name = 'country' and it3.psudo_column = 'description'	1	/userMaintain.do?action=setup	1
-19	report.item.title	report.item.instr	item_type, item_type_map, entity, international_description itd, item left outer join item_price left outer join currency on item_price.currency_id = currency.id on item.id = item_price.item_id	deleted = 0 and item.id = item_type_map.item_id and item_type.id = item_type_map.type_id and entity.id = item.entity_id and itd.language_id = entity.language_id and itd.table_id = 14 and itd.foreign_id = item.id and itd.psudo_column = 'description'	1	/itemMaintain.do?action=setup&mode=item	1
-20	report.transactions.title	report.transactions.instr	base_user, payment, payment_method, payment_result, international_description id, international_description id2, payment_authorization pa	base_user.id = payment.user_id and id.table_id = 35 and id2.table_id = 41 and id.psudo_column = 'description' and id2.psudo_column = 'description' and id.foreign_id = payment_method.id and id2.foreign_id = payment_result.id and payment.method_id = payment_method.id and payment.result_id = payment_result.id and id.language_id = id2.language_id and pa.payment_id = payment.id and base_user.deleted = 0 and payment.deleted = 0	1	/paymentMaintain.do?action=view	1
-21	report.subscriptions.title	report.subscriptions.instr	purchase_order po, base_user bu, user_role_map urm, order_line ol, item i, international_description id1, international_description id2, international_description id3	po.user_id = bu.id and po.deleted = 0 and bu.deleted = 0 and ol.deleted = 0 and i.deleted = 0 and ol.order_id = po.id and urm.user_id = bu.id and urm.role_id in (5) and po.period_id <> 1 and id1.table_id = 81 and id1.foreign_id = bu.subscriber_status and id1.psudo_column = 'description' and id2.table_id = 14 and id2.foreign_id = i.id and id2.psudo_column = 'description' and id2.language_id  = id1.language_id and i.id = ol.item_id and bu.entity_id = i.entity_id and id3.table_id = 20 and id3.psudo_column = 'description' and id3.foreign_id = po.status_id and id3.language_id  = id2.language_id	1	/userMaintain.do?action=setup	1
-22	report.transitions.title	report.transitions.instr	purchase_order po, base_user bu, user_role_map urm, order_line ol, item i, international_description id1, international_description id2, international_description id3, international_description id4, event_log el	po.user_id = bu.id and po.deleted = 0 and bu.deleted = 0 and ol.deleted = 0 and i.deleted = 0 and ol.order_id = po.id  and urm.user_id = bu.id  and urm.role_id in (5) and id1.table_id = 81 and id1.foreign_id = bu.subscriber_status and id1.psudo_column = 'description' and id2.table_id = 14 and id2.foreign_id = i.id and id2.psudo_column = 'description' and id2.language_id = id1.language_id and id3.table_id = 20 and id3.foreign_id = po.status_id and id3.psudo_column='description' and id3.language_id = id2.language_id and id4.table_id = 81 and id4.foreign_id = el.old_num and id4.psudo_column = 'description' and id4.language_id = id3.language_id and i.id = ol.item_id  and po.period_id <> 1 and bu.entity_id = i.entity_id and el.foreign_id = bu.id  and el.entity_id = i.entity_id  and el.module_id = 2 and el.message_id = 20	1	/userMaintain.do?action=setup	1
-23	report.subscriptionTransitions.title	report.subscriptionTransitions.instr	purchase_order po, base_user bu, order_line ol, order_line ol1, international_description id1, international_description id2, international_description id3, international_description id4, event_log el	po.user_id = bu.id and po.deleted = 0 and bu.deleted = 0 and ol.id = el.foreign_id and ol1.id = el.old_num and ol.order_id = po.id and id1.table_id = 14 and id1.foreign_id = ol.item_id and id1.psudo_column = 'description' and id2.table_id = 81 and id2.psudo_column = 'description' and id2.foreign_id = bu.subscriber_status and id2.language_id = id1.language_id and bu.entity_id = el.entity_id and id3.table_id = 14 and id3.psudo_column = 'description' and id3.foreign_id = ol1.item_id and id3.language_id = id1.language_id and id4.table_id = 20 and id4.psudo_column = 'description' and id4.foreign_id = po.status_id and id4.language_id  = id1.language_id and el.module_id = 7 and el.message_id = 17	1	/orderMaintain.do?action=view	1
-2	report.general_invoices.title	report.general_invoices.instr	base_user, invoice, currency , international_description, generic_status	base_user.id = invoice.user_id and invoice.currency_id = currency.id and invoice.status_id = generic_status.id and generic_status.dtype = 'invoice_status' and international_description.foreign_id = generic_status.status_value and international_description.table_id = 90	1	/invoiceMaintain.do	1
+COPY report (id, type_id, entity_id, name, file_name, optlock) FROM stdin;
+1	1	1	total_invoiced	total_invoiced.jasper	0
 \.
 
 
 --
--- Data for Name: report_entity_map; Type: TABLE DATA; Schema: public; Owner: jbilling
+-- Data for Name: report_parameter; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY report_entity_map (entity_id, report_id) FROM stdin;
-1	1
-1	2
-1	3
-1	4
-1	5
-1	6
-1	7
-1	8
-1	9
-1	10
-1	11
-1	12
-1	13
-1	14
-1	15
-1	16
-1	17
-1	18
-2	1
-2	2
-2	3
-2	4
-2	5
-2	6
-2	7
-2	8
-2	9
-2	10
-2	11
-2	12
-2	13
-2	14
-2	15
-2	16
-2	17
-2	18
-\.
-
-
---
--- Data for Name: report_field; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY report_field (id, report_id, report_user_id, position_number, table_name, column_name, order_position, where_value, title_key, function_name, is_grouped, is_shown, data_type, operator_value, functionable, selectable, ordenable, operatorable, whereable, optlock) FROM stdin;
-1	1	\N	1	purchase_order	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-2	1	\N	1	base_user	user_name	\N	\N	report.prompt.base_user.user_name	\N	0	1	string	\N	1	1	1	1	1	1
-3	1	\N	1	purchase_order	id	\N	\N	report.prompt.purchase_order.id	\N	0	1	integer	=	1	1	1	1	1	1
-4	1	\N	3	purchase_order	period_id	\N	\N	order.prompt.periodId	\N	0	1	integer	=	1	1	1	1	1	1
-5	1	\N	4	purchase_order	billing_type_id	\N	\N	order.prompt.billingTypeId	\N	0	1	integer	=	1	1	1	1	1	1
-6	1	\N	5	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	1	date	=	1	1	1	1	1	1
-7	1	\N	5	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	0	date	\N	0	0	0	1	1	1
-8	1	\N	6	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	1	date	=	1	1	1	1	1	1
-9	1	\N	6	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	0	date	\N	0	0	0	1	1	1
-10	1	\N	7	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	1	date	=	1	1	1	1	1	1
-11	1	\N	7	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	\N	0	0	0	1	1	1
-12	1	\N	8	purchase_order	created_by	\N	\N	report.prompt.purchase_order.created_by	\N	0	1	integer	=	1	1	1	1	1	1
-13	1	\N	9	purchase_order	status_id	\N	\N	report.prompt.purchase_order.status	\N	0	1	integer	=	1	1	1	1	1	1
-14	1	\N	10	purchase_order	next_billable_day	\N	\N	order.prompt.nextBillableDay	\N	0	1	date	\N	1	1	1	1	1	1
-15	1	\N	10	purchase_order	next_billable_day	\N	\N	order.prompt.nextBillableDay	\N	0	0	date	\N	0	0	0	1	1	1
-16	1	\N	10	purchase_order	deleted	\N	0	\N	\N	0	0	integer	=	0	0	0	0	0	1
-17	1	\N	11	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-18	1	\N	11	base_user	id	\N	\N	\N	\N	0	0	integer	=	0	0	0	0	0	1
-19	1	\N	12	id	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-20	1	\N	3	id	content	\N	\N	order.prompt.period	\N	0	1	string	\N	1	1	0	0	0	1
-21	1	\N	4	id2	content	\N	\N	order.prompt.billingType	\N	0	1	string	\N	1	1	0	0	0	1
-22	\N	1	1	purchase_order	deleted	\N	0	\N	\N	0	1	integer	=	0	0	0	0	0	1
-23	2	\N	1	invoice	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-24	2	\N	2	invoice	id	\N	\N	invoice.id.prompt	\N	0	1	integer	\N	1	1	1	1	1	1
-25	2	\N	3	base_user	user_name	\N	\N	user.prompt.username	\N	0	1	string	\N	1	1	1	1	1	1
-26	2	\N	99	base_user	id	\N	\N	\N	\N	0	0	integer	=	0	0	0	0	0	1
-27	2	\N	4	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	1	date	\N	1	1	1	1	1	1
-28	2	\N	5	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	0	date	\N	0	0	0	1	1	1
-29	2	\N	6	invoice	billing_process_id	\N	\N	process.external.id	\N	0	1	integer	\N	1	1	1	1	1	1
-30	2	\N	7	invoice	delegated_invoice_id	\N	\N	invoice.delegated.prompt	\N	0	1	integer	\N	1	1	1	1	1	1
-31	2	\N	8	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	1	date	\N	1	1	1	1	1	1
-32	2	\N	9	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	\N	0	0	0	1	1	1
-33	2	\N	10	currency	symbol	\N	\N	currency.external.prompt.name	\N	0	1	string	\N	1	1	1	0	0	1
-34	2	\N	11	invoice	total	\N	\N	invoice.total.prompt	\N	0	1	float	\N	1	1	1	1	1	1
-35	2	\N	12	invoice	payment_attempts	\N	\N	invoice.attempts.prompt	\N	0	1	integer	\N	1	1	1	1	1	1
-37	2	\N	14	invoice	balance	\N	\N	invoice.balance.prompt	\N	0	1	float	\N	1	1	1	1	1	1
-38	2	\N	15	invoice	carried_balance	\N	\N	invoice.carriedBalance.prompt	\N	0	1	float	\N	1	1	1	1	1	1
-39	2	\N	16	invoice	deleted	\N	0	\N	\N	0	0	integer	=	0	0	0	0	0	1
-40	2	\N	17	invoice	is_review	\N	0	\N	\N	0	0	integer	=	0	0	0	0	0	1
-41	2	\N	18	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-42	3	\N	1	payment	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-43	3	\N	2	payment	id	\N	\N	payment.id	\N	0	1	integer	\N	1	1	1	1	1	1
-44	3	\N	3	base_user	user_name	\N	\N	user.prompt.username	\N	0	1	string	\N	1	1	1	1	1	1
-45	3	\N	11	base_user	id	\N	\N	\N	\N	0	0	integer	=	0	0	0	0	0	1
-46	3	\N	4	payment	attempt	\N	\N	payment.attempt	\N	0	1	integer	\N	1	1	1	1	1	1
-47	3	\N	5	payment	result_id	\N	\N	payment.resultId	\N	0	1	integer	\N	1	1	1	1	1	1
-48	3	\N	6	payment	amount	\N	\N	payment.amount	\N	0	1	float	\N	1	1	1	1	1	1
-49	3	\N	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	1	date	\N	1	1	1	1	1	1
-50	3	\N	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	\N	0	0	0	1	1	1
-51	3	\N	9	payment	payment_date	\N	\N	payment.date	\N	0	1	date	\N	1	1	1	1	1	1
-52	3	\N	8	payment	payment_date	\N	\N	payment.date	\N	0	0	date	\N	0	0	0	1	1	1
-53	3	\N	9	payment	method_id	\N	\N	payment.methodId	\N	0	1	integer	\N	1	1	1	1	1	1
-54	3	\N	12	payment	deleted	\N	0	\N	\N	0	0	integer	=	0	0	0	0	0	1
-55	3	\N	12	payment	is_refund	\N	0	\N	\N	0	0	integer	=	0	0	0	0	0	1
-56	3	\N	12	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-57	3	\N	14	id	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-58	3	\N	12	id	content	\N	\N	payment.method	\N	0	1	string	\N	1	1	0	0	0	1
-59	3	\N	13	id2	content	\N	\N	payment.result	\N	0	1	string	\N	1	1	0	0	0	1
-60	4	\N	0	purchase_order	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-61	4	\N	1	base_user	user_name	\N	\N	user.prompt.username	\N	0	1	string	\N	1	1	1	1	1	1
-62	4	\N	2	purchase_order	id	\N	\N	order.external.prompt.id	\N	0	1	integer	\N	1	1	1	1	1	1
-63	4	\N	3	order_line	item_id	\N	\N	item.prompt.number	\N	0	1	integer	\N	1	1	1	1	1	1
-64	4	\N	4	order_line	type_id	\N	\N	order.line.prompt.typeid	\N	0	1	integer	\N	1	1	1	1	1	1
-65	4	\N	5	id	content	\N	\N	order.line.prompt.type	\N	0	1	string	\N	1	1	0	0	0	1
-66	4	\N	6	order_line	description	\N	\N	order.line.prompt.description	\N	0	1	string	\N	1	1	1	1	1	1
-67	4	\N	7	order_line	amount	\N	\N	order.line.prompt.amount	\N	0	1	float	\N	1	1	1	1	1	1
-68	4	\N	8	order_line	quantity	\N	\N	order.line.prompt.quantity	\N	0	1	float	\N	1	1	1	1	1	1
-69	4	\N	9	order_line	price	\N	\N	order.line.prompt.price	\N	0	1	float	\N	1	1	1	1	1	1
-70	4	\N	10	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	1	date	=	1	1	1	1	1	1
-71	4	\N	10	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	\N	0	0	0	1	1	1
-72	4	\N	0	purchase_order	deleted	\N	0	\N	\N	0	0	integer	=	0	0	0	0	0	1
-73	4	\N	0	order_line	deleted	\N	0	\N	\N	0	0	integer	=	0	0	0	0	0	1
-74	4	\N	0	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-75	4	\N	1	id	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-76	5	\N	1	payment	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-77	5	\N	2	payment	id	\N	\N	payment.id	\N	0	1	integer	\N	1	1	1	1	1	1
-78	5	\N	3	base_user	user_name	\N	\N	user.prompt.username	\N	0	1	string	\N	1	1	1	1	1	1
-79	5	\N	11	base_user	id	\N	\N	\N	\N	0	0	integer	=	0	0	0	0	0	1
-80	5	\N	4	payment	attempt	\N	\N	payment.attempt	\N	0	1	integer	\N	1	1	1	1	1	1
-81	5	\N	5	payment	result_id	\N	\N	payment.resultId	\N	0	1	integer	\N	1	1	1	1	1	1
-82	5	\N	6	payment	amount	\N	\N	payment.amount	\N	0	1	float	\N	1	1	1	1	1	1
-83	5	\N	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	1	date	\N	1	1	1	1	1	1
-84	5	\N	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	\N	0	0	0	1	1	1
-85	5	\N	9	payment	payment_date	\N	\N	payment.date	\N	0	1	date	\N	1	1	1	1	1	1
-86	5	\N	8	payment	payment_date	\N	\N	payment.date	\N	0	0	date	\N	0	0	0	1	1	1
-87	5	\N	9	payment	method_id	\N	\N	payment.methodId	\N	0	1	integer	\N	1	1	1	1	1	1
-88	5	\N	10	payment	payout_id	\N	\N	payout.external.prompt.id	\N	0	1	integer	\N	1	1	1	1	1	1
-89	5	\N	12	payment	deleted	\N	0	\N	\N	0	0	integer	=	0	0	0	0	0	1
-90	5	\N	12	payment	is_refund	\N	1	\N	\N	0	0	integer	=	0	0	0	0	0	1
-91	5	\N	12	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-92	5	\N	14	id	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-93	5	\N	12	id	content	\N	\N	payment.method	\N	0	1	string	\N	1	1	0	0	0	1
-94	5	\N	13	id2	content	\N	\N	payment.result	\N	0	1	string	\N	1	1	0	0	0	1
-95	6	\N	1	invoice	total	\N	\N	invoice.total.prompt	sum	0	1	float	\N	0	0	0	0	0	1
-96	6	\N	1	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	0	date	>=	0	0	0	0	1	1
-97	6	\N	2	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	0	date	<	0	0	0	0	1	1
-98	6	\N	0	invoice	deleted	\N	0	\N	\N	0	0	integer	=	0	0	0	0	0	1
-99	6	\N	0	invoice	is_review	\N	0	\N	\N	0	0	integer	=	0	0	0	0	0	1
-100	6	\N	0	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-101	7	\N	1	payment	amount	\N	\N	payment.amount	sum	0	1	float	\N	0	0	0	0	0	1
-102	7	\N	2	payment	payment_date	\N	\N	payment.date	\N	0	0	date	>=	0	0	0	0	1	1
-103	7	\N	3	payment	payment_date	\N	\N	payment.date	\N	0	0	date	<	0	0	0	0	1	1
-104	7	\N	0	payment	deleted	\N	0	\N	\N	0	0	integer	=	0	0	0	0	0	1
-105	7	\N	0	payment	is_refund	\N	0	\N	\N	0	0	integer	=	0	0	0	0	0	1
-106	7	\N	14	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-107	8	\N	1	payment	amount	\N	\N	payment.amount	sum	0	1	float	\N	0	0	0	0	0	1
-108	8	\N	2	payment	payment_date	\N	\N	payment.date	\N	0	0	date	>=	0	0	0	0	1	1
-109	8	\N	3	payment	payment_date	\N	\N	payment.date	\N	0	0	date	<	0	0	0	0	1	1
-110	8	\N	0	payment	deleted	\N	0	\N	\N	0	0	integer	=	0	0	0	0	0	1
-111	8	\N	0	payment	is_refund	\N	1	\N	\N	0	0	integer	=	0	0	0	0	0	1
-112	8	\N	14	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-113	9	\N	1	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	>=	0	0	0	0	1	1
-114	9	\N	2	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	<	0	0	0	0	1	1
-115	9	\N	1	order_line	amount	\N	\N	order.line.prompt.amount	sum	0	1	float	\N	0	0	0	0	0	1
-116	9	\N	0	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-117	10	\N	1	invoice	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-118	10	\N	2	invoice	id	\N	\N	invoice.id.prompt	\N	0	1	integer	\N	0	0	0	0	0	1
-119	10	\N	3	base_user	user_name	\N	\N	user.prompt.username	\N	0	1	string	\N	0	0	0	0	0	1
-120	10	\N	4	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	1	date	\N	0	0	0	0	0	1
-121	10	\N	5	invoice	total	\N	\N	invoice.total.prompt	\N	0	1	float	\N	0	0	0	0	0	1
-122	10	\N	10	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-123	10	\N	11	invoice	due_date	\N	?	invoice.due_date	\N	0	1	date	<	0	0	0	0	0	1
-124	11	\N	1	invoice	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-125	11	\N	2	invoice	id	\N	\N	invoice.number	\N	0	1	integer	\N	0	0	0	0	0	1
-126	11	\N	3	base_user	user_name	\N	\N	user.prompt.username	\N	0	1	string	\N	0	0	0	0	0	1
-127	11	\N	4	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	1	date	\N	0	0	0	0	0	1
-128	11	\N	5	currency	symbol	\N	\N	currency.external.prompt.name	\N	0	1	string	\N	0	0	0	0	0	1
-129	11	\N	6	invoice	total	\N	\N	invoice.total.prompt	\N	0	1	float	\N	0	0	0	0	0	1
-130	11	\N	99	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-131	11	\N	99	invoice	carried_balance	\N	0	invoice.due_date	\N	0	1	float	>	0	0	0	0	0	1
-132	12	\N	1	purchase_order	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-133	12	\N	2	base_user	id	\N	\N	customer.prompt.id	\N	0	1	integer	\N	0	1	1	1	1	1
-134	12	\N	3	base_user	user_name	\N	\N	report.prompt.base_user.user_name	\N	0	1	string	\N	1	1	1	1	1	1
-135	12	\N	4	purchase_order	id	\N	\N	report.prompt.purchase_order.id	\N	0	1	integer	=	1	1	1	1	1	1
-136	12	\N	5	purchase_order	period_id	\N	\N	order.prompt.periodId	\N	0	1	integer	=	1	1	1	1	1	1
-137	12	\N	6	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	1	date	=	1	1	1	1	1	1
-138	12	\N	7	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	0	date	\N	0	0	0	1	1	1
-139	12	\N	8	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	1	date	=	1	1	1	1	1	1
-140	12	\N	9	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	0	date	\N	0	0	0	1	1	1
-141	12	\N	10	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	1	date	=	1	1	1	1	1	1
-142	12	\N	11	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	\N	0	0	0	1	1	1
-143	12	\N	12	customer	partner_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-144	12	\N	13	id	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-145	12	\N	14	id	content	\N	\N	order.prompt.period	\N	0	1	string	\N	1	1	0	0	0	1
-146	13	\N	1	payment	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-147	13	\N	2	payment	id	\N	\N	payment.id	\N	0	1	integer	\N	1	1	1	1	1	1
-149	13	\N	4	base_user	id	\N	\N	customer.prompt.id	\N	0	1	integer	\N	0	1	1	1	1	1
-150	13	\N	5	payment	attempt	\N	\N	payment.attempt	\N	0	1	integer	\N	1	1	1	1	1	1
-151	13	\N	6	payment	result_id	\N	\N	payment.resultId	\N	0	1	integer	\N	1	1	1	1	1	1
-152	13	\N	7	id2	content	\N	\N	payment.result	\N	0	1	string	\N	1	1	0	0	0	1
-153	13	\N	8	payment	amount	\N	\N	payment.amount	\N	0	1	float	\N	1	1	1	1	1	1
-154	13	\N	9	payment	create_datetime	\N	\N	payment.createDate	\N	0	1	date	\N	1	1	1	1	1	1
-155	13	\N	10	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	\N	0	0	0	1	1	1
-156	13	\N	11	payment	payment_date	\N	\N	payment.date	\N	0	1	date	\N	1	1	1	1	1	1
-157	13	\N	12	payment	payment_date	\N	\N	payment.date	\N	0	0	date	\N	0	0	0	1	1	1
-158	13	\N	13	payment	method_id	\N	\N	payment.methodId	\N	0	1	integer	\N	1	1	1	1	1	1
-159	13	\N	14	id	content	\N	\N	payment.method	\N	0	1	string	\N	1	1	0	0	0	1
-160	13	\N	15	customer	partner_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-161	13	\N	16	id	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-162	14	\N	1	payment	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-163	14	\N	2	payment	id	\N	\N	payment.id	\N	0	1	integer	\N	1	1	1	1	1	1
-164	14	\N	3	base_user	user_name	\N	\N	user.prompt.username	\N	0	1	string	\N	1	1	1	1	1	1
-165	14	\N	4	base_user	id	\N	\N	customer.prompt.id	\N	0	1	integer	=	0	1	1	1	1	1
-166	14	\N	5	payment	attempt	\N	\N	payment.attempt	\N	0	1	integer	\N	1	1	1	1	1	1
-167	14	\N	6	payment	result_id	\N	\N	payment.resultId	\N	0	1	integer	\N	1	1	1	1	1	1
-168	14	\N	7	id2	content	\N	\N	payment.result	\N	0	1	string	\N	1	1	0	0	0	1
-169	14	\N	8	payment	amount	\N	\N	payment.amount	\N	0	1	float	\N	1	1	1	1	1	1
-170	14	\N	9	payment	create_datetime	\N	\N	payment.createDate	\N	0	1	date	\N	1	1	1	1	1	1
-171	14	\N	10	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	\N	0	0	0	1	1	1
-172	14	\N	11	payment	payment_date	\N	\N	payment.date	\N	0	1	date	\N	1	1	1	1	1	1
-173	14	\N	12	payment	payment_date	\N	\N	payment.date	\N	0	0	date	\N	0	0	0	1	1	1
-174	14	\N	13	payment	method_id	\N	\N	payment.methodId	\N	0	1	integer	\N	1	1	1	1	1	1
-175	14	\N	14	id	content	\N	\N	payment.method	\N	0	1	string	\N	1	1	0	0	0	1
-176	14	\N	15	customer	partner_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-177	14	\N	16	id	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-178	15	\N	1	base_user	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-179	15	\N	2	partner	id	\N	\N	partner.prompt.id	\N	0	1	integer	\N	1	1	1	1	1	1
-180	15	\N	3	base_user	user_name	\N	\N	user.prompt.username	\N	0	1	string	\N	1	1	1	1	1	1
-181	15	\N	4	partner	balance	\N	\N	partner.prompt.balance	\N	0	1	float	\N	1	1	1	1	1	1
-182	15	\N	5	partner	total_payments	\N	\N	partner.prompt.totalPayments	\N	0	1	float	\N	1	1	1	1	1	1
-183	15	\N	6	partner	total_refunds	\N	\N	partner.prompt.totalRefunds	\N	0	1	float	\N	1	1	1	1	1	1
-184	15	\N	7	partner	total_payouts	\N	\N	partner.prompt.totalPayouts	\N	0	1	float	\N	1	1	1	1	1	1
-185	15	\N	8	partner	percentage_rate	\N	\N	partner.prompt.rate	\N	0	1	float	\N	1	1	1	1	1	1
-186	15	\N	9	partner	referral_fee	\N	\N	partner.prompt.fee	\N	0	1	float	\N	1	1	1	1	1	1
-187	15	\N	10	partner	one_time	\N	\N	partner.prompt.onetime	\N	0	1	integer	\N	1	1	1	1	1	1
-188	15	\N	11	partner	period_unit_id	\N	\N	partner.prompt.periodId	\N	0	1	integer	\N	1	1	1	1	1	1
-189	15	\N	12	id	content	\N	\N	partner.prompt.period	\N	0	1	string	\N	1	1	0	0	0	1
-190	15	\N	13	partner	period_value	\N	\N	partner.prompt.periodValue	\N	0	1	integer	\N	1	1	1	1	1	1
-191	15	\N	14	partner	next_payout_date	\N	\N	partner.prompt.nextPayout	\N	0	1	date	\N	1	1	1	1	1	1
-192	15	\N	15	partner	next_payout_date	\N	\N	partner.prompt.nextPayout	\N	0	0	date	\N	0	0	0	1	1	1
-193	15	\N	16	partner	automatic_process	\N	\N	partner.prompt.process	\N	0	1	integer	\N	1	1	1	1	1	1
-194	15	\N	17	partner	related_clerk	\N	\N	partner.prompt.clerk	\N	0	1	integer	\N	1	1	1	1	1	1
-195	15	\N	18	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-196	15	\N	19	id	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-197	16	\N	1	partner_payout	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-198	16	\N	2	partner	id	\N	\N	partner.external.prompt.id	\N	0	1	integer	\N	1	1	1	1	1	1
-199	16	\N	3	base_user	user_name	\N	\N	user.prompt.username	\N	0	1	string	\N	1	1	1	1	1	1
-200	16	\N	4	partner_payout	starting_date	\N	\N	payout.prompt.startDate	\N	0	1	date	\N	1	1	1	1	1	1
-201	16	\N	5	partner_payout	ending_date	\N	\N	payout.prompt.endDate	\N	0	1	date	\N	1	1	1	1	1	1
-202	16	\N	6	partner_payout	payments_amount	\N	\N	payout.prompt.payments	\N	0	1	float	\N	1	1	1	1	1	1
-203	16	\N	7	partner_payout	refunds_amount	\N	\N	payout.prompt.refunds	\N	0	1	float	\N	1	1	1	1	1	1
-204	16	\N	8	partner_payout	balance_left	\N	\N	payout.prompt.balance	\N	0	1	float	\N	1	1	1	1	1	1
-205	16	\N	9	payment	amount	\N	\N	payout.prompt.paid	\N	0	1	float	\N	1	1	1	1	1	1
-206	16	\N	10	payment	create_datetime	\N	\N	payout.prompt.date	\N	0	1	date	\N	1	1	1	1	1	1
-207	16	\N	11	payment	create_datetime	\N	\N	payout.prompt.date	\N	0	0	date	\N	0	0	0	1	1	1
-208	16	\N	12	payment	method_id	\N	\N	payment.methodId	\N	0	1	integer	\N	1	1	1	1	1	1
-209	16	\N	13	id	content	\N	\N	payment.method	\N	0	1	string	\N	1	1	0	0	0	1
-210	16	\N	14	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-211	16	\N	15	id	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-212	\N	2	0	purchase_order	id	\N	\N	report.prompt.purchase_order.id	\N	0	1	integer	\N	0	0	0	0	0	1
-213	\N	2	0	purchase_order	deleted	\N	0	report.prompt.purchase_order.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-214	\N	2	0	order_line	deleted	\N	0	report.prompt.order_line.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-215	\N	2	0	base_user	entity_id	\N	277	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-216	\N	2	1	base_user	user_name	\N		user.prompt.username	\N	0	0	string	=	1	1	1	1	1	1
-217	\N	2	1	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-218	\N	2	2	purchase_order	id	\N		order.external.prompt.id	\N	0	0	integer	=	1	1	1	1	1	1
-219	\N	2	3	order_line	item_id	\N	70	item.prompt.number	\N	0	0	integer	=	1	1	1	1	1	1
-220	\N	2	4	order_line	type_id	\N		order.line.prompt.typeid	\N	0	0	integer	=	1	1	1	1	1	1
-221	\N	2	5	id	content	\N	\N	order.line.prompt.type	\N	0	0	string	\N	1	1	0	0	0	1
-222	\N	2	6	order_line	description	\N		order.line.prompt.description	\N	0	0	string	=	1	1	1	1	1	1
-223	\N	2	7	order_line	amount	\N		order.line.prompt.amount	\N	0	0	float	=	1	1	1	1	1	1
-224	\N	2	8	order_line	quantity	\N		order.line.prompt.quantity	sum	0	1	float	=	1	1	1	1	1	1
-225	\N	2	9	order_line	price	\N		order.line.prompt.price	\N	0	0	float	=	1	1	1	1	1	1
-226	\N	2	10	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	=	1	1	1	1	1	1
-227	\N	2	10	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	=	0	0	0	1	1	1
-260	1	\N	1	contact	organization_name	\N	\N	contact.prompt.organizationName	\N	0	1	string	\N	1	1	1	0	0	1
-261	1	\N	1	contact	first_name	\N	\N	contact.prompt.firstName	\N	0	1	string	\N	1	1	1	0	0	1
-262	1	\N	1	contact	last_name	\N	\N	contact.prompt.lastName	\N	0	1	string	\N	1	1	1	0	0	1
-263	1	\N	1	contact	phone_phone_number	\N	\N	contact.prompt.phoneNumber	\N	0	1	string	\N	1	1	1	0	0	1
-264	\N	35	1	purchase_order	id	\N	\N	report.prompt.purchase_order.id	\N	0	1	integer	\N	0	0	0	0	0	1
-265	\N	35	1	base_user	user_name	\N		report.prompt.base_user.user_name	\N	0	0	string	=	1	1	1	1	1	1
-266	\N	35	1	purchase_order	id	\N		report.prompt.purchase_order.id	\N	0	1	integer	=	1	1	1	1	1	1
-267	\N	35	1	contact	organization_name	\N	\N	contact.prompt.organizationName	\N	0	1	string	\N	1	1	1	0	0	1
-268	\N	35	1	contact	first_name	\N	\N	contact.prompt.firstName	\N	0	1	string	\N	1	1	1	0	0	1
-269	\N	35	1	contact	last_name	\N	\N	contact.prompt.lastName	\N	0	1	string	\N	1	1	1	0	0	1
-270	\N	35	1	contact	phone_phone_number	\N	\N	contact.prompt.phoneNumber	\N	0	1	string	\N	1	1	1	0	0	1
-271	\N	35	3	purchase_order	period_id	\N		order.prompt.periodId	\N	0	0	integer	=	1	1	1	1	1	1
-272	\N	35	3	id	content	\N	\N	order.prompt.period	\N	0	1	string	\N	1	1	0	0	0	1
-273	\N	35	4	purchase_order	billing_type_id	\N		order.prompt.billingTypeId	\N	0	0	integer	=	1	1	1	1	1	1
-274	\N	35	4	id2	content	\N	\N	order.prompt.billingType	\N	0	0	string	\N	1	1	0	0	0	1
-275	\N	35	5	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	1	date	=	1	1	1	1	1	1
-276	\N	35	5	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	0	date	=	0	0	0	1	1	1
-277	\N	35	6	purchase_order	active_until	1	2004-08-01	report.prompt.purchase_order.active_until	\N	0	1	date	>=	1	1	1	1	1	1
-278	\N	35	6	purchase_order	active_until	\N	2004-09-01	report.prompt.purchase_order.active_until	\N	0	0	date	<	0	0	0	1	1	1
-279	\N	35	7	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	=	1	1	1	1	1	1
-280	\N	35	7	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	=	0	0	0	1	1	1
-281	\N	35	8	purchase_order	created_by	\N		report.prompt.purchase_order.created_by	\N	0	0	integer	=	1	1	1	1	1	1
-282	\N	35	9	purchase_order	status_id	\N		report.prompt.purchase_order.status	\N	0	0	integer	=	1	1	1	1	1	1
-283	\N	35	10	purchase_order	next_billable_day	\N	\N	order.prompt.nextBillableDay	\N	0	0	date	=	1	1	1	1	1	1
-284	\N	35	10	purchase_order	next_billable_day	\N	\N	order.prompt.nextBillableDay	\N	0	0	date	=	0	0	0	1	1	1
-285	\N	35	10	purchase_order	deleted	\N	0	report.prompt.purchase_order.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-286	\N	35	11	base_user	entity_id	\N	?	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-287	\N	35	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-288	\N	35	12	id	language_id	\N	?	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-289	17	\N	1	invoice	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-290	17	\N	2	invoice	id	\N	\N	invoice.id.prompt	\N	0	1	integer	\N	1	1	1	1	1	1
-291	17	\N	2	invoice	public_number	\N	\N	invoice.number.prompt	\N	0	1	integer	\N	1	1	1	1	1	1
-292	17	\N	2	invoice_line	type_id	\N	\N	report.prompt.invoice_line.type_id	\N	0	1	integer	\N	1	1	1	1	1	1
-293	17	\N	3	invoice_line_type	description	\N	\N	report.prompt.invoice_line.type	\N	0	1	string	\N	1	1	0	0	0	1
-294	17	\N	4	invoice_line	item_id	\N	\N	report.prompt.invoice_line.item_id	\N	0	1	integer	\N	1	1	1	1	1	1
-295	17	\N	5	invoice_line	description	\N	\N	report.prompt.invoice_line.description	\N	0	1	string	\N	1	1	1	1	1	1
-296	17	\N	6	invoice_line	amount	\N	\N	report.prompt.invoice_line.amount	\N	0	1	float	\N	1	1	1	1	1	1
-297	17	\N	7	invoice_line	quantity	\N	\N	report.prompt.invoice_line.quantity	\N	0	1	float	\N	1	1	1	1	1	1
-298	17	\N	8	invoice_line	price	\N	\N	report.prompt.invoice_line.price	\N	0	1	float	\N	1	1	1	1	1	1
-299	17	\N	9	currency	symbol	\N	\N	currency.external.prompt.name	\N	0	1	string	\N	1	1	0	0	0	1
-300	17	\N	10	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-301	18	\N	1	base_user	id	\N	\N	\N	\N	0	1	integer	\N	0	0	0	0	0	1
-302	18	\N	2	base_user	id	\N	\N	user.prompt.id	\N	0	1	integer	\N	1	1	1	1	1	1
-303	18	\N	3	base_user	user_name	\N	\N	user.prompt.username	\N	0	1	string	\N	1	1	1	1	1	1
-304	18	\N	4	base_user	language_id	\N	\N	report.prompt.user.languageCode	\N	0	1	integer	\N	1	1	1	1	1	1
-305	18	\N	4	language	description	\N	\N	user.prompt.language	\N	0	1	string	\N	1	1	0	0	0	1
-306	18	\N	5	base_user	status_id	\N	\N	report.prompt.user.statusCode	\N	0	1	integer	\N	1	1	1	1	1	1
-307	18	\N	6	it1	content	\N	\N	user.prompt.status	\N	0	1	string	\N	1	1	0	0	0	1
-308	18	\N	7	base_user	create_datetime	\N	\N	report.prompt.user.create	\N	0	1	date	\N	1	1	1	1	1	1
-309	18	\N	8	base_user	create_datetime	\N	\N	report.prompt.user.create	\N	0	0	date	\N	0	0	0	1	1	1
-310	18	\N	9	base_user	last_status_change	\N	\N	report.prompt.user.status_change	\N	0	1	date	\N	1	1	1	1	1	1
-311	18	\N	10	base_user	last_status_change	\N	\N	report.prompt.user.status_change	\N	0	0	date	\N	0	0	0	1	1	1
-312	18	\N	11	user_role_map	role_id	\N	\N	report.prompt.user.roleCode	\N	0	1	integer	\N	1	1	1	1	1	1
-313	18	\N	12	it2	content	\N	\N	report.prompt.user.role	\N	0	1	string	\N	1	1	0	0	0	1
-314	18	\N	13	contact	organization_name	\N	\N	contact.prompt.organizationName	\N	0	1	string	\N	1	1	1	1	1	1
-315	18	\N	14	contact	street_addres1	\N	\N	contact.prompt.address1	\N	0	1	string	\N	1	1	1	1	1	1
-316	18	\N	15	contact	street_addres2	\N	\N	contact.prompt.address2	\N	0	1	string	\N	1	1	1	1	1	1
-317	18	\N	16	contact	city	\N	\N	contact.prompt.city	\N	0	1	string	\N	1	1	1	1	1	1
-318	18	\N	17	contact	state_province	\N	\N	contact.prompt.stateProvince	\N	0	1	string	\N	1	1	1	1	1	1
-319	18	\N	18	contact	postal_code	\N	\N	contact.prompt.postalCode	\N	0	1	string	\N	1	1	1	1	1	1
-320	18	\N	19	contact	country_code	\N	\N	report.prompt.user.countryCode	\N	0	1	string	\N	1	1	1	1	1	1
-321	18	\N	20	it3	content	\N	\N	contact.prompt.countryCode	\N	0	1	string	\N	1	1	0	0	0	1
-322	18	\N	21	contact	last_name	\N	\N	contact.prompt.lastName	\N	0	1	string	\N	1	1	1	1	1	1
-323	18	\N	22	contact	first_name	\N	\N	contact.prompt.firstName	\N	0	1	string	\N	1	1	1	1	1	1
-324	18	\N	23	contact	phone_country_code	\N	\N	contact.prompt.phoneCountryCode	\N	0	1	integer	\N	1	1	1	1	1	1
-325	18	\N	24	contact	phone_area_code	\N	\N	contact.prompt.phoneAreaCode	\N	0	1	integer	\N	1	1	1	1	1	1
-326	18	\N	25	contact	phone_phone_number	\N	\N	contact.prompt.phoneNumber	\N	0	1	string	\N	1	1	1	1	1	1
-327	18	\N	26	contact	email	\N	\N	contact.prompt.email	\N	0	1	string	\N	1	1	1	1	1	1
-328	18	\N	27	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-329	18	\N	28	it1	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-330	1	\N	11	purchase_order	notify	\N	\N	report.prompt.purchase_order.notify	\N	0	0	integer	\N	1	1	1	1	1	1
-331	2	\N	2	invoice	public_number	\N	\N	invoice.number.prompt	\N	0	1	string	\N	1	1	1	1	1	1
-332	17	\N	10	invoice	create_datetime	\N	\N	invoice.createDateTime.prompt	\N	0	1	date	\N	1	1	1	1	1	1
-333	17	\N	11	invoice	create_datetime	\N	\N	invoice.createDateTime.prompt	\N	0	0	date	\N	0	0	0	1	1	1
-334	17	\N	12	invoice	user_id	\N	\N	invoice.userId.prompt	\N	0	1	integer	\N	1	1	1	1	1	1
-398	\N	72	1	invoice	id	\N	\N	report.prompt.invoice.id	\N	0	1	integer	\N	0	0	0	0	0	1
-399	\N	72	2	invoice	id	\N		invoice.id.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-400	\N	72	2	invoice	public_number	\N		invoice.number.prompt	\N	0	0	string	=	1	1	1	1	1	1
-401	\N	72	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-402	\N	72	4	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	0	date	=	1	1	1	1	1	1
-403	\N	72	5	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	0	date	=	0	0	0	1	1	1
-404	\N	72	6	invoice	billing_process_id	\N		process.external.id	\N	0	0	integer	=	1	1	1	1	1	1
-405	\N	72	7	invoice	delegated_invoice_id	\N		invoice.delegated.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-406	\N	72	8	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	1	1	1	1	1	1
-407	\N	72	9	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	0	0	0	1	1	1
-408	\N	72	10	currency	symbol	\N	\N	currency.external.prompt.name	\N	0	0	string	\N	1	1	1	0	0	1
-409	\N	72	11	invoice	total	\N		invoice.total.prompt	sum	0	1	float	=	1	1	1	1	1	1
-410	\N	72	12	invoice	payment_attempts	\N		invoice.attempts.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-411	\N	72	13	invoice	to_process	\N		invoice.is_payable	\N	0	0	integer	=	1	1	1	1	1	1
-412	\N	72	14	invoice	balance	\N		invoice.balance.prompt	\N	0	0	float	=	1	1	1	1	1	1
-413	\N	72	15	invoice	carried_balance	\N		invoice.carriedBalance.prompt	\N	0	0	float	=	1	1	1	1	1	1
-414	\N	72	16	invoice	deleted	\N	0	report.prompt.invoice.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-415	\N	72	17	invoice	is_review	\N	0	report.prompt.invoice.is_review	\N	0	0	integer	=	0	0	0	0	0	1
-416	\N	72	18	base_user	entity_id	\N	303	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-417	\N	72	99	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-418	4	\N	10	purchase_order	status_id	\N	\N	report.prompt.purchase_order.status	\N	0	0	integer	=	0	0	0	1	1	1
-419	10	\N	2	invoice	public_number	\N	\N	invoice.number.prompt	\N	0	1	string	\N	0	0	0	0	0	1
-420	18	\N	29	base_user	last_login	\N	\N	user.prompt.lastLogin	\N	0	1	date	\N	1	1	1	1	1	1
-421	18	\N	29	base_user	last_login	\N	\N	user.prompt.lastLogin	\N	0	0	date	\N	0	0	0	1	1	1
-422	\N	86	1	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	1	integer	\N	0	0	0	0	0	1
-423	\N	86	2	base_user	id	\N		user.prompt.id	\N	0	1	integer	=	1	1	1	1	1	1
-424	\N	86	3	base_user	user_name	\N		user.prompt.username	\N	0	1	string	=	1	1	1	1	1	1
-425	\N	86	4	base_user	language_id	\N		report.prompt.user.languageCode	\N	0	0	integer	=	1	1	1	1	1	1
-426	\N	86	4	language	description	\N	\N	user.prompt.language	\N	0	0	string	\N	1	1	0	0	0	1
-427	\N	86	5	base_user	status_id	\N		report.prompt.user.statusCode	\N	0	0	integer	=	1	1	1	1	1	1
-428	\N	86	6	it1	content	\N	\N	user.prompt.status	\N	0	0	string	\N	1	1	0	0	0	1
-429	\N	86	7	base_user	create_datetime	\N	\N	report.prompt.user.create	\N	0	1	date	=	1	1	1	1	1	1
-430	\N	86	8	base_user	create_datetime	\N	\N	report.prompt.user.create	\N	0	0	date	=	0	0	0	1	1	1
-431	\N	86	9	base_user	last_status_change	\N	\N	report.prompt.user.status_change	\N	0	0	date	=	1	1	1	1	1	1
-432	\N	86	10	base_user	last_status_change	\N	\N	report.prompt.user.status_change	\N	0	0	date	=	0	0	0	1	1	1
-433	\N	86	11	user_role_map	role_id	\N	5	report.prompt.user.roleCode	\N	0	0	integer	=	1	1	1	1	1	1
-434	\N	86	12	it2	content	\N	\N	report.prompt.user.role	\N	0	0	string	\N	1	1	0	0	0	1
-435	\N	86	13	contact	organization_name	\N		contact.prompt.organizationName	\N	0	1	string	=	1	1	1	1	1	1
-436	\N	86	14	contact	street_addres1	\N		contact.prompt.address1	\N	0	0	string	=	1	1	1	1	1	1
-437	\N	86	15	contact	street_addres2	\N		contact.prompt.address2	\N	0	0	string	=	1	1	1	1	1	1
-438	\N	86	16	contact	city	\N		contact.prompt.city	\N	0	0	string	=	1	1	1	1	1	1
-439	\N	86	17	contact	state_province	\N		contact.prompt.stateProvince	\N	0	0	string	=	1	1	1	1	1	1
-440	\N	86	18	contact	postal_code	\N		contact.prompt.postalCode	\N	0	0	string	=	1	1	1	1	1	1
-441	\N	86	19	contact	country_code	\N		report.prompt.user.countryCode	\N	0	0	string	=	1	1	1	1	1	1
-442	\N	86	20	it3	content	\N	\N	contact.prompt.countryCode	\N	0	0	string	\N	1	1	0	0	0	1
-443	\N	86	21	contact	last_name	\N		contact.prompt.lastName	\N	0	1	string	=	1	1	1	1	1	1
-444	\N	86	22	contact	first_name	\N		contact.prompt.firstName	\N	0	1	string	=	1	1	1	1	1	1
-445	\N	86	23	contact	phone_country_code	\N		contact.prompt.phoneCountryCode	\N	0	0	integer	=	1	1	1	1	1	1
-446	\N	86	24	contact	phone_area_code	\N		contact.prompt.phoneAreaCode	\N	0	0	integer	=	1	1	1	1	1	1
-447	\N	86	25	contact	phone_phone_number	\N		contact.prompt.phoneNumber	\N	0	0	string	=	1	1	1	1	1	1
-448	\N	86	26	contact	email	\N		contact.prompt.email	\N	0	0	string	=	1	1	1	1	1	1
-449	\N	86	27	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-450	\N	86	28	it1	language_id	\N	1	report.prompt.it1.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-451	\N	86	29	base_user	last_login	1	\N	user.prompt.lastLogin	\N	0	1	date	=	1	1	1	1	1	1
-452	\N	86	29	base_user	last_login	\N	\N	user.prompt.lastLogin	\N	0	0	date	=	0	0	0	1	1	1
-498	\N	105	1	invoice	id	\N	\N	report.prompt.invoice.id	\N	0	1	integer	\N	0	0	0	0	0	1
-499	\N	105	2	invoice	id	\N		invoice.id.prompt	\N	1	1	integer	=	1	1	1	1	1	1
-500	\N	105	2	invoice	public_number	\N		invoice.number.prompt	\N	1	1	string	=	1	1	1	1	1	1
-501	\N	105	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-502	\N	105	4	invoice	create_datetime	1	2004-09-01	invoice.create_date	\N	1	1	date	>=	1	1	1	1	1	1
-503	\N	105	5	invoice	create_datetime	\N	2004-09-12	invoice.create_date	\N	0	0	date	<=	0	0	0	1	1	1
-504	\N	105	6	invoice	billing_process_id	\N		process.external.id	\N	1	1	integer	=	1	1	1	1	1	1
-505	\N	105	7	invoice	delegated_invoice_id	\N		invoice.delegated.prompt	\N	1	1	integer	=	1	1	1	1	1	1
-506	\N	105	8	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	1	1	date	<=	1	1	1	1	1	1
-507	\N	105	9	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	<=	0	0	0	1	1	1
-508	\N	105	10	currency	symbol	\N	\N	currency.external.prompt.name	\N	1	1	string	\N	1	1	1	0	0	1
-509	\N	105	11	invoice	total	\N		invoice.total.prompt	\N	1	1	float	=	1	1	1	1	1	1
-510	\N	105	12	invoice	payment_attempts	\N		invoice.attempts.prompt	\N	1	1	integer	=	1	1	1	1	1	1
-511	\N	105	13	invoice	to_process	\N		invoice.is_payable	\N	1	1	integer	=	1	1	1	1	1	1
-512	\N	105	14	invoice	balance	\N	0.00	invoice.balance.prompt	\N	1	1	float	>	1	1	1	1	1	1
-513	\N	105	15	invoice	carried_balance	\N		invoice.carriedBalance.prompt	\N	1	1	float	=	1	1	1	1	1	1
-514	\N	105	16	invoice	deleted	\N	0	report.prompt.invoice.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-515	\N	105	17	invoice	is_review	\N	0	report.prompt.invoice.is_review	\N	0	0	integer	=	0	0	0	0	0	1
-516	\N	105	18	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-517	\N	105	99	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-528	\N	120	1	invoice	id	\N	\N	report.prompt.invoice.id	\N	0	1	integer	\N	0	0	0	0	0	1
-529	\N	120	2	invoice	id	\N		invoice.id.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-530	\N	120	2	invoice	public_number	\N		invoice.number.prompt	\N	0	0	string	=	1	1	1	1	1	1
-531	\N	120	3	base_user	user_name	\N		user.prompt.username	\N	0	1	string	=	1	1	1	1	1	1
-532	\N	120	4	invoice	create_datetime	\N	2004-09-01	invoice.create_date	\N	0	0	date	>=	1	1	1	1	1	1
-533	\N	120	5	invoice	create_datetime	\N	2004-09-30	invoice.create_date	\N	0	0	date	<=	0	0	0	1	1	1
-534	\N	120	6	invoice	billing_process_id	\N		process.external.id	\N	0	0	integer	=	1	1	1	1	1	1
-535	\N	120	7	invoice	delegated_invoice_id	\N		invoice.delegated.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-536	\N	120	8	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	1	1	1	1	1	1
-537	\N	120	9	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	0	0	0	1	1	1
-538	\N	120	10	currency	symbol	\N	\N	currency.external.prompt.name	\N	0	0	string	\N	1	1	1	0	0	1
-539	\N	120	11	invoice	total	\N		invoice.total.prompt	\N	0	1	float	=	1	1	1	1	1	1
-540	\N	120	12	invoice	payment_attempts	\N		invoice.attempts.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-541	\N	120	13	invoice	to_process	\N		invoice.is_payable	\N	0	0	integer	=	1	1	1	1	1	1
-542	\N	120	14	invoice	balance	\N		invoice.balance.prompt	\N	0	0	float	=	1	1	1	1	1	1
-543	\N	120	15	invoice	carried_balance	\N		invoice.carriedBalance.prompt	\N	0	0	float	=	1	1	1	1	1	1
-544	\N	120	16	invoice	deleted	\N	0	report.prompt.invoice.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-545	\N	120	17	invoice	is_review	\N	0	report.prompt.invoice.is_review	\N	0	0	integer	=	0	0	0	0	0	1
-546	\N	120	18	base_user	entity_id	\N	277	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-547	\N	120	99	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-562	\N	137	1	invoice	id	\N	\N	report.prompt.invoice.id	\N	0	1	integer	\N	0	0	0	0	0	1
-563	\N	137	2	invoice	id	\N		invoice.id.prompt	\N	1	1	integer	=	1	1	1	1	1	1
-564	\N	137	2	invoice	public_number	\N		invoice.number.prompt	\N	1	1	string	=	1	1	1	1	1	1
-565	\N	137	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-566	\N	137	4	invoice	create_datetime	1	\N	invoice.create_date	\N	1	1	date	=	1	1	1	1	1	1
-567	\N	137	5	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	0	date	=	0	0	0	1	1	1
-568	\N	137	6	invoice	billing_process_id	\N		process.external.id	\N	1	1	integer	=	1	1	1	1	1	1
-569	\N	137	7	invoice	delegated_invoice_id	\N		invoice.delegated.prompt	\N	1	1	integer	=	1	1	1	1	1	1
-570	\N	137	8	invoice	due_date	\N	2004-9-1	invoice.dueDate.prompt	\N	1	1	date	>=	1	1	1	1	1	1
-571	\N	137	9	invoice	due_date	\N	2004-9-15	invoice.dueDate.prompt	\N	0	0	date	<=	0	0	0	1	1	1
-572	\N	137	10	currency	symbol	\N	\N	currency.external.prompt.name	\N	1	1	string	\N	1	1	1	0	0	1
-573	\N	137	11	invoice	total	\N		invoice.total.prompt	\N	1	1	float	=	1	1	1	1	1	1
-574	\N	137	12	invoice	payment_attempts	\N		invoice.attempts.prompt	\N	1	1	integer	=	1	1	1	1	1	1
-575	\N	137	13	invoice	to_process	\N		invoice.is_payable	\N	1	1	integer	=	1	1	1	1	1	1
-576	\N	137	14	invoice	balance	\N	0.0	invoice.balance.prompt	\N	1	1	float	>	1	1	1	1	1	1
-577	\N	137	15	invoice	carried_balance	\N		invoice.carriedBalance.prompt	\N	1	1	float	=	1	1	1	1	1	1
-578	\N	137	16	invoice	deleted	\N	0	report.prompt.invoice.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-579	\N	137	17	invoice	is_review	\N	0	report.prompt.invoice.is_review	\N	0	0	integer	=	0	0	0	0	0	1
-580	\N	137	18	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-581	\N	137	99	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-582	\N	138	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-583	\N	138	2	payment	id	\N		payment.id	\N	1	1	integer	=	1	1	1	1	1	1
-584	\N	138	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-585	\N	138	4	payment	attempt	\N		payment.attempt	sum	0	1	integer	=	1	1	1	1	1	1
-586	\N	138	5	payment	result_id	\N		payment.resultId	sum	0	1	integer	=	1	1	1	1	1	1
-587	\N	138	6	payment	amount	\N		payment.amount	sum	0	1	float	=	1	1	1	1	1	1
-588	\N	138	8	payment	create_datetime	\N	\N	payment.createDate	\N	1	1	date	=	1	1	1	1	1	1
-589	\N	138	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	=	0	0	0	1	1	1
-590	\N	138	8	payment	payment_date	\N	2004-9-1	payment.date	\N	0	0	date	>=	0	0	0	1	1	1
-591	\N	138	9	payment	payment_date	1	2004-9-15	payment.date	\N	1	1	date	<=	1	1	1	1	1	1
-592	\N	138	9	payment	method_id	\N		payment.methodId	sum	0	1	integer	=	1	1	1	1	1	1
-593	\N	138	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-594	\N	138	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-595	\N	138	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-596	\N	138	12	id	content	\N	\N	payment.method	\N	1	1	string	\N	1	1	0	0	0	1
-597	\N	138	12	base_user	entity_id	\N	?	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-598	\N	138	13	id2	content	\N	\N	payment.result	\N	1	1	string	\N	1	1	0	0	0	1
-599	\N	138	14	id	language_id	\N	?	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-631	\N	155	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-632	\N	155	2	payment	id	\N		payment.id	\N	1	1	integer	=	1	1	1	1	1	1
-633	\N	155	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-634	\N	155	4	payment	attempt	\N		payment.attempt	sum	0	1	integer	=	1	1	1	1	1	1
-635	\N	155	5	payment	result_id	\N		payment.resultId	sum	0	1	integer	=	1	1	1	1	1	1
-636	\N	155	6	payment	amount	\N		payment.amount	sum	0	1	float	=	1	1	1	1	1	1
-637	\N	155	8	payment	create_datetime	\N	\N	payment.createDate	\N	1	1	date	=	1	1	1	1	1	1
-638	\N	155	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	=	0	0	0	1	1	1
-639	\N	155	8	payment	payment_date	\N	2004-9-1	payment.date	\N	0	0	date	>=	0	0	0	1	1	1
-640	\N	155	9	payment	payment_date	1	2004-10-1	payment.date	\N	1	1	date	<=	1	1	1	1	1	1
-641	\N	155	9	payment	method_id	\N		payment.methodId	sum	0	1	integer	=	1	1	1	1	1	1
-642	\N	155	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-643	\N	155	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-644	\N	155	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-645	\N	155	12	id	content	\N	\N	payment.method	\N	1	1	string	\N	1	1	0	0	0	1
-646	\N	155	12	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-647	\N	155	13	id2	content	\N	\N	payment.result	\N	1	1	string	\N	1	1	0	0	0	1
-648	\N	155	14	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-649	\N	156	1	invoice	id	\N	\N	report.prompt.invoice.id	\N	0	1	integer	\N	0	0	0	0	0	1
-650	\N	156	2	invoice	id	\N		invoice.id.prompt	\N	1	1	integer	=	1	1	1	1	1	1
-651	\N	156	2	invoice	public_number	\N		invoice.number.prompt	\N	1	1	string	=	1	1	1	1	1	1
-652	\N	156	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-653	\N	156	4	invoice	create_datetime	1	\N	invoice.create_date	\N	1	1	date	=	1	1	1	1	1	1
-654	\N	156	5	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	0	date	=	0	0	0	1	1	1
-655	\N	156	6	invoice	billing_process_id	\N		process.external.id	\N	1	1	integer	=	1	1	1	1	1	1
-656	\N	156	7	invoice	delegated_invoice_id	\N		invoice.delegated.prompt	\N	1	1	integer	=	1	1	1	1	1	1
-657	\N	156	8	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	1	1	date	=	1	1	1	1	1	1
-658	\N	156	9	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	0	0	0	1	1	1
-659	\N	156	10	currency	symbol	\N	\N	currency.external.prompt.name	\N	1	1	string	\N	1	1	1	0	0	1
-660	\N	156	11	invoice	total	\N		invoice.total.prompt	\N	1	1	float	=	1	1	1	1	1	1
-661	\N	156	12	invoice	payment_attempts	\N		invoice.attempts.prompt	\N	1	1	integer	=	1	1	1	1	1	1
-662	\N	156	13	invoice	to_process	\N		invoice.is_payable	\N	1	1	integer	=	1	1	1	1	1	1
-663	\N	156	14	invoice	balance	\N	0.00	invoice.balance.prompt	\N	1	1	float	>	1	1	1	1	1	1
-664	\N	156	15	invoice	carried_balance	\N		invoice.carriedBalance.prompt	\N	1	1	float	=	1	1	1	1	1	1
-665	\N	156	16	invoice	deleted	\N	0	report.prompt.invoice.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-666	\N	156	17	invoice	is_review	\N	0	report.prompt.invoice.is_review	\N	0	0	integer	=	0	0	0	0	0	1
-667	\N	156	18	base_user	entity_id	\N	?	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-668	\N	156	99	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-755	\N	190	1	purchase_order	id	\N	\N	report.prompt.purchase_order.id	\N	0	1	integer	\N	0	0	0	0	0	1
-756	\N	190	1	base_user	user_name	\N		report.prompt.base_user.user_name	\N	0	1	string	=	1	1	1	1	1	1
-757	\N	190	1	purchase_order	id	\N		report.prompt.purchase_order.id	\N	0	1	integer	=	1	1	1	1	1	1
-758	\N	190	1	contact	organization_name	\N	\N	contact.prompt.organizationName	\N	0	1	string	\N	1	1	1	0	0	1
-759	\N	190	1	contact	first_name	\N	\N	contact.prompt.firstName	\N	0	1	string	\N	1	1	1	0	0	1
-760	\N	190	1	contact	last_name	\N	\N	contact.prompt.lastName	\N	0	1	string	\N	1	1	1	0	0	1
-761	\N	190	1	contact	phone_phone_number	\N	\N	contact.prompt.phoneNumber	\N	0	0	string	\N	1	1	1	0	0	1
-762	\N	190	3	purchase_order	period_id	\N		order.prompt.periodId	\N	0	0	integer	=	1	1	1	1	1	1
-763	\N	190	3	id	content	\N	\N	order.prompt.period	\N	0	0	string	\N	1	1	0	0	0	1
-764	\N	190	4	purchase_order	billing_type_id	\N		order.prompt.billingTypeId	\N	0	0	integer	=	1	1	1	1	1	1
-765	\N	190	4	id2	content	\N	\N	order.prompt.billingType	\N	0	0	string	\N	1	1	0	0	0	1
-766	\N	190	5	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	1	date	=	1	1	1	1	1	1
-767	\N	190	5	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	0	date	=	0	0	0	1	1	1
-768	\N	190	6	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	1	date	=	1	1	1	1	1	1
-769	\N	190	6	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	0	date	=	0	0	0	1	1	1
-770	\N	190	7	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	1	date	=	1	1	1	1	1	1
-771	\N	190	7	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	=	0	0	0	1	1	1
-772	\N	190	8	purchase_order	created_by	\N		report.prompt.purchase_order.created_by	\N	0	0	integer	=	1	1	1	1	1	1
-773	\N	190	9	purchase_order	status_id	\N		report.prompt.purchase_order.status	\N	0	0	integer	=	1	1	1	1	1	1
-774	\N	190	10	purchase_order	next_billable_day	\N	\N	order.prompt.nextBillableDay	\N	0	1	date	=	1	1	1	1	1	1
-775	\N	190	10	purchase_order	next_billable_day	\N	\N	order.prompt.nextBillableDay	\N	0	0	date	=	0	0	0	1	1	1
-776	\N	190	10	purchase_order	deleted	\N	0	report.prompt.purchase_order.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-777	\N	190	11	base_user	entity_id	\N	306	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-778	\N	190	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-779	\N	190	11	purchase_order	notify	\N		report.prompt.purchase_order.notify	\N	0	1	integer	=	1	1	1	1	1	1
-780	\N	190	12	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-781	\N	191	0	base_user	entity_id	\N	?	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-782	\N	191	1	purchase_order	create_datetime	\N	2004-10-15	report.prompt.purchase_order.create_datetime	\N	0	0	date	>=	0	0	0	0	1	1
-783	\N	191	1	order_line	amount	\N	\N	order.line.prompt.amount	sum	0	1	float	\N	0	0	0	0	0	1
-784	\N	191	2	purchase_order	create_datetime	\N	2005-10-15	report.prompt.purchase_order.create_datetime	\N	0	0	date	<	0	0	0	0	1	1
-785	\N	192	0	base_user	entity_id	\N	306	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-786	\N	192	1	purchase_order	create_datetime	\N	2004-10-15	report.prompt.purchase_order.create_datetime	\N	0	0	date	>=	0	0	0	0	1	1
-787	\N	192	1	order_line	amount	\N	\N	order.line.prompt.amount	sum	0	1	float	\N	0	0	0	0	0	1
-788	\N	192	2	purchase_order	create_datetime	\N	2005-10-15	report.prompt.purchase_order.create_datetime	\N	0	0	date	<	0	0	0	0	1	1
-789	\N	193	0	purchase_order	id	\N	\N	report.prompt.purchase_order.id	\N	0	1	integer	\N	0	0	0	0	0	1
-790	\N	193	0	purchase_order	deleted	\N	0	report.prompt.purchase_order.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-791	\N	193	0	order_line	deleted	\N	0	report.prompt.order_line.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-792	\N	193	0	base_user	entity_id	\N	?	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-793	\N	193	1	base_user	user_name	\N		user.prompt.username	\N	0	1	string	=	1	1	1	1	1	1
-794	\N	193	1	id	language_id	\N	?	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-795	\N	193	2	purchase_order	id	\N		order.external.prompt.id	\N	0	1	integer	=	1	1	1	1	1	1
-796	\N	193	3	order_line	item_id	\N		item.prompt.number	\N	0	1	integer	=	1	1	1	1	1	1
-797	\N	193	4	order_line	type_id	\N		order.line.prompt.typeid	\N	0	1	integer	=	1	1	1	1	1	1
-798	\N	193	5	id	content	\N	\N	order.line.prompt.type	\N	0	1	string	\N	1	1	0	0	0	1
-799	\N	193	6	order_line	description	\N		order.line.prompt.description	\N	0	1	string	=	1	1	1	1	1	1
-800	\N	193	7	order_line	amount	\N		order.line.prompt.amount	\N	0	1	float	=	1	1	1	1	1	1
-801	\N	193	8	order_line	quantity	\N		order.line.prompt.quantity	\N	0	1	float	=	1	1	1	1	1	1
-802	\N	193	9	order_line	price	\N		order.line.prompt.price	\N	0	1	float	=	1	1	1	1	1	1
-803	\N	193	10	purchase_order	status_id	\N		report.prompt.purchase_order.status	\N	0	0	integer	=	0	0	0	1	1	1
-804	\N	193	10	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	1	date	=	1	1	1	1	1	1
-805	\N	193	10	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	=	0	0	0	1	1	1
-806	\N	194	1	invoice	id	\N	\N	report.prompt.invoice.id	\N	0	1	integer	\N	0	0	0	0	0	1
-807	\N	194	2	invoice	id	\N		invoice.id.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-808	\N	194	2	invoice	public_number	\N		invoice.number.prompt	\N	0	0	string	=	1	1	1	1	1	1
-809	\N	194	3	base_user	user_name	\N		user.prompt.username	\N	0	0	string	=	1	1	1	1	1	1
-810	\N	194	4	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	0	date	=	1	1	1	1	1	1
-811	\N	194	5	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	0	date	=	0	0	0	1	1	1
-812	\N	194	6	invoice	billing_process_id	\N		process.external.id	\N	0	0	integer	=	1	1	1	1	1	1
-813	\N	194	7	invoice	delegated_invoice_id	\N		invoice.delegated.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-814	\N	194	8	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	1	1	1	1	1	1
-815	\N	194	9	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	0	0	0	1	1	1
-816	\N	194	10	currency	symbol	\N	\N	currency.external.prompt.name	\N	0	0	string	\N	1	1	1	0	0	1
-817	\N	194	11	invoice	total	\N		invoice.total.prompt	\N	0	1	float	=	1	1	1	1	1	1
-818	\N	194	12	invoice	payment_attempts	\N		invoice.attempts.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-819	\N	194	13	invoice	to_process	\N		invoice.is_payable	\N	0	0	integer	=	1	1	1	1	1	1
-820	\N	194	14	invoice	balance	\N		invoice.balance.prompt	\N	0	0	float	=	1	1	1	1	1	1
-821	\N	194	15	invoice	carried_balance	\N		invoice.carriedBalance.prompt	\N	0	0	float	=	1	1	1	1	1	1
-822	\N	194	16	invoice	deleted	\N	0	report.prompt.invoice.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-823	\N	194	17	invoice	is_review	\N	0	report.prompt.invoice.is_review	\N	0	0	integer	=	0	0	0	0	0	1
-824	\N	194	18	base_user	entity_id	\N	?	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-825	\N	194	99	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-826	\N	195	1	invoice	id	\N	\N	report.prompt.invoice.id	\N	0	1	integer	\N	0	0	0	0	0	1
-827	\N	195	2	invoice	id	\N		invoice.id.prompt	\N	0	1	integer	=	1	1	1	1	1	1
-828	\N	195	2	invoice	public_number	\N		invoice.number.prompt	\N	0	1	string	=	1	1	1	1	1	1
-829	\N	195	3	base_user	user_name	\N		user.prompt.username	\N	0	1	string	=	1	1	1	1	1	1
-830	\N	195	4	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	1	date	=	1	1	1	1	1	1
-1619	20	\N	14	payment	is_refund	\N	\N	\N	\N	0	0	integer	=	0	0	0	0	0	1
-831	\N	195	5	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	0	date	=	0	0	0	1	1	1
-832	\N	195	6	invoice	billing_process_id	\N		process.external.id	\N	0	1	integer	=	1	1	1	1	1	1
-833	\N	195	7	invoice	delegated_invoice_id	\N		invoice.delegated.prompt	\N	0	1	integer	=	1	1	1	1	1	1
-834	\N	195	8	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	1	date	=	1	1	1	1	1	1
-835	\N	195	9	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	0	0	0	1	1	1
-836	\N	195	10	currency	symbol	\N	\N	currency.external.prompt.name	\N	0	1	string	\N	1	1	1	0	0	1
-837	\N	195	11	invoice	total	\N		invoice.total.prompt	\N	0	1	float	=	1	1	1	1	1	1
-838	\N	195	12	invoice	payment_attempts	\N		invoice.attempts.prompt	\N	0	1	integer	=	1	1	1	1	1	1
-839	\N	195	13	invoice	to_process	\N		invoice.is_payable	\N	0	1	integer	=	1	1	1	1	1	1
-840	\N	195	14	invoice	balance	\N		invoice.balance.prompt	\N	0	1	float	=	1	1	1	1	1	1
-841	\N	195	15	invoice	carried_balance	\N		invoice.carriedBalance.prompt	\N	0	1	float	=	1	1	1	1	1	1
-842	\N	195	16	invoice	deleted	\N	0	report.prompt.invoice.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-843	\N	195	17	invoice	is_review	\N	0	report.prompt.invoice.is_review	\N	0	0	integer	=	0	0	0	0	0	1
-844	\N	195	18	base_user	entity_id	\N	?	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-845	\N	195	99	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-854	\N	197	0	invoice	deleted	\N	0	report.prompt.invoice.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-855	\N	197	0	invoice	is_review	\N	0	report.prompt.invoice.is_review	\N	0	0	integer	=	0	0	0	0	0	1
-856	\N	197	0	base_user	entity_id	\N	?	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-857	\N	197	1	invoice	total	\N	\N	invoice.total.prompt	sum	0	1	float	\N	0	0	0	0	0	1
-858	\N	197	1	invoice	create_datetime	\N	2004-10-01	invoice.create_date	\N	0	0	date	>=	0	0	0	0	1	1
-859	\N	197	2	invoice	create_datetime	\N	2005-10-01	invoice.create_date	\N	0	0	date	<	0	0	0	0	1	1
-860	\N	198	1	purchase_order	id	\N	\N	report.prompt.purchase_order.id	\N	0	1	integer	\N	0	0	0	0	0	1
-861	\N	198	1	base_user	user_name	\N		report.prompt.base_user.user_name	\N	0	1	string	=	1	1	1	1	1	1
-862	\N	198	1	purchase_order	id	\N		report.prompt.purchase_order.id	\N	0	1	integer	=	1	1	1	1	1	1
-863	\N	198	1	contact	organization_name	\N	\N	contact.prompt.organizationName	\N	0	0	string	\N	1	1	1	0	0	1
-864	\N	198	1	contact	first_name	\N	\N	contact.prompt.firstName	\N	0	0	string	\N	1	1	1	0	0	1
-865	\N	198	1	contact	last_name	\N	\N	contact.prompt.lastName	\N	0	0	string	\N	1	1	1	0	0	1
-866	\N	198	1	contact	phone_phone_number	\N	\N	contact.prompt.phoneNumber	\N	0	0	string	\N	1	1	1	0	0	1
-867	\N	198	3	purchase_order	period_id	\N		order.prompt.periodId	\N	0	0	integer	=	1	1	1	1	1	1
-868	\N	198	3	id	content	\N	\N	order.prompt.period	\N	0	0	string	\N	1	1	0	0	0	1
-869	\N	198	4	purchase_order	billing_type_id	\N		order.prompt.billingTypeId	\N	0	0	integer	=	1	1	1	1	1	1
-870	\N	198	4	id2	content	\N	\N	order.prompt.billingType	\N	0	1	string	\N	1	1	0	0	0	1
-871	\N	198	5	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	0	date	=	1	1	1	1	1	1
-872	\N	198	5	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	0	date	=	0	0	0	1	1	1
-873	\N	198	6	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	0	date	=	1	1	1	1	1	1
-874	\N	198	6	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	0	date	=	0	0	0	1	1	1
-875	\N	198	7	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	=	1	1	1	1	1	1
-876	\N	198	7	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	=	0	0	0	1	1	1
-877	\N	198	8	purchase_order	created_by	\N		report.prompt.purchase_order.created_by	\N	0	0	integer	=	1	1	1	1	1	1
-878	\N	198	9	purchase_order	status_id	\N		report.prompt.purchase_order.status	\N	0	1	integer	=	1	1	1	1	1	1
-879	\N	198	10	purchase_order	next_billable_day	\N	\N	order.prompt.nextBillableDay	\N	0	1	date	=	1	1	1	1	1	1
-880	\N	198	10	purchase_order	next_billable_day	\N	\N	order.prompt.nextBillableDay	\N	0	0	date	=	0	0	0	1	1	1
-881	\N	198	10	purchase_order	deleted	\N	0	report.prompt.purchase_order.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-882	\N	198	11	base_user	entity_id	\N	306	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-883	\N	198	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-884	\N	198	11	purchase_order	notify	\N		report.prompt.purchase_order.notify	\N	0	0	integer	=	1	1	1	1	1	1
-885	\N	198	12	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-902	\N	205	0	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-903	\N	205	0	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-904	\N	205	1	payment	amount	\N	\N	payment.amount	sum	0	1	float	\N	0	0	0	0	0	1
-905	\N	205	2	payment	payment_date	\N	2004-10-1	payment.date	\N	0	0	date	>=	0	0	0	0	1	1
-906	\N	205	3	payment	payment_date	\N	2005-10-1	payment.date	\N	0	0	date	<	0	0	0	0	1	1
-907	\N	205	14	base_user	entity_id	\N	306	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-908	\N	206	0	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-909	\N	206	0	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-910	\N	206	1	payment	amount	\N	\N	payment.amount	sum	0	1	float	\N	0	0	0	0	0	1
-911	\N	206	2	payment	payment_date	\N	2004-10-1	payment.date	\N	0	0	date	>=	0	0	0	0	1	1
-912	\N	206	3	payment	payment_date	\N	2005-10-1	payment.date	\N	0	0	date	<	0	0	0	0	1	1
-913	\N	206	14	base_user	entity_id	\N	306	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-914	\N	207	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-915	\N	207	2	payment	id	\N		payment.id	\N	0	0	integer	=	1	1	1	1	1	1
-916	\N	207	3	base_user	user_name	\N		user.prompt.username	\N	0	1	string	=	1	1	1	1	1	1
-917	\N	207	4	payment	attempt	\N		payment.attempt	\N	0	0	integer	=	1	1	1	1	1	1
-918	\N	207	5	payment	result_id	\N		payment.resultId	\N	0	0	integer	=	1	1	1	1	1	1
-919	\N	207	6	payment	amount	\N		payment.amount	\N	0	1	float	=	1	1	1	1	1	1
-920	\N	207	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	1	date	=	1	1	1	1	1	1
-921	\N	207	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	=	0	0	0	1	1	1
-922	\N	207	8	payment	payment_date	\N	\N	payment.date	\N	0	0	date	=	0	0	0	1	1	1
-923	\N	207	9	payment	payment_date	\N	\N	payment.date	\N	0	1	date	=	1	1	1	1	1	1
-924	\N	207	9	payment	method_id	\N		payment.methodId	\N	0	0	integer	=	1	1	1	1	1	1
-925	\N	207	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-926	\N	207	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-927	\N	207	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-928	\N	207	12	id	content	\N	\N	payment.method	\N	0	1	string	\N	1	1	0	0	0	1
-929	\N	207	12	base_user	entity_id	\N	?	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-930	\N	207	13	id2	content	\N	\N	payment.result	\N	0	1	string	\N	1	1	0	0	0	1
-931	\N	207	14	id	language_id	\N	?	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-932	\N	157	1	purchase_order	id	\N	\N	report.prompt.purchase_order.id	\N	0	1	integer	\N	0	0	0	0	0	1
-933	\N	157	1	base_user	user_name	\N		report.prompt.base_user.user_name	\N	0	0	string	=	1	1	1	1	1	1
-934	\N	157	1	purchase_order	id	\N		report.prompt.purchase_order.id	\N	0	0	integer	=	1	1	1	1	1	1
-935	\N	157	1	contact	organization_name	\N	\N	contact.prompt.organizationName	\N	0	1	string	\N	1	1	1	0	0	1
-936	\N	157	1	contact	first_name	\N	\N	contact.prompt.firstName	\N	0	0	string	\N	1	1	1	0	0	1
-937	\N	157	1	contact	last_name	\N	\N	contact.prompt.lastName	\N	0	0	string	\N	1	1	1	0	0	1
-938	\N	157	1	contact	phone_phone_number	\N	\N	contact.prompt.phoneNumber	\N	0	0	string	\N	1	1	1	0	0	1
-939	\N	157	3	purchase_order	period_id	\N		order.prompt.periodId	\N	0	0	integer	=	1	1	1	1	1	1
-940	\N	157	3	id	content	\N	\N	order.prompt.period	\N	0	0	string	\N	1	1	0	0	0	1
-941	\N	157	4	purchase_order	billing_type_id	\N		order.prompt.billingTypeId	\N	0	0	integer	=	1	1	1	1	1	1
-942	\N	157	4	id2	content	\N	\N	order.prompt.billingType	\N	0	0	string	\N	1	1	0	0	0	1
-943	\N	157	5	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	0	date	=	1	1	1	1	1	1
-944	\N	157	5	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	0	date	=	0	0	0	1	1	1
-945	\N	157	6	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	0	date	=	1	1	1	1	1	1
-946	\N	157	6	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	0	date	=	0	0	0	1	1	1
-947	\N	157	7	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	=	1	1	1	1	1	1
-948	\N	157	7	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	=	0	0	0	1	1	1
-949	\N	157	8	purchase_order	created_by	\N		report.prompt.purchase_order.created_by	\N	0	0	integer	=	1	1	1	1	1	1
-950	\N	157	9	purchase_order	status_id	\N		report.prompt.purchase_order.status	\N	0	0	integer	=	1	1	1	1	1	1
-1188	\N	199	9	payment	method_id	\N		payment.methodId	\N	0	1	integer	=	1	1	1	1	1	1
-951	\N	157	10	purchase_order	next_billable_day	\N	\N	order.prompt.nextBillableDay	\N	0	0	date	=	1	1	1	1	1	1
-952	\N	157	10	purchase_order	next_billable_day	\N	\N	order.prompt.nextBillableDay	\N	0	0	date	=	0	0	0	1	1	1
-953	\N	157	10	purchase_order	deleted	\N	0	report.prompt.purchase_order.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-954	\N	157	11	base_user	entity_id	\N	277	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-955	\N	157	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-956	\N	157	11	purchase_order	notify	\N		report.prompt.purchase_order.notify	\N	0	0	integer	=	1	1	1	1	1	1
-957	\N	157	12	id	language_id	\N	4	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-958	\N	158	1	invoice	id	\N	\N	report.prompt.invoice.id	\N	0	1	integer	\N	0	0	0	0	0	1
-959	\N	158	2	invoice	id	\N		invoice.id.prompt	\N	1	1	integer	=	1	1	1	1	1	1
-960	\N	158	2	invoice	public_number	\N		invoice.number.prompt	\N	1	1	string	=	1	1	1	1	1	1
-961	\N	158	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-962	\N	158	4	invoice	create_datetime	1	\N	invoice.create_date	\N	1	1	date	=	1	1	1	1	1	1
-963	\N	158	5	invoice	create_datetime	\N	\N	invoice.create_date	\N	0	0	date	<=	0	0	0	1	1	1
-964	\N	158	6	invoice	billing_process_id	\N		process.external.id	\N	1	1	integer	=	1	1	1	1	1	1
-965	\N	158	7	invoice	delegated_invoice_id	\N		invoice.delegated.prompt	\N	1	1	integer	=	1	1	1	1	1	1
-966	\N	158	8	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	1	1	date	=	1	1	1	1	1	1
-967	\N	158	9	invoice	due_date	\N	2004-11-1	invoice.dueDate.prompt	\N	0	0	date	<=	0	0	0	1	1	1
-968	\N	158	10	currency	symbol	\N	\N	currency.external.prompt.name	\N	1	1	string	\N	1	1	1	0	0	1
-969	\N	158	11	invoice	total	\N		invoice.total.prompt	\N	1	1	float	=	1	1	1	1	1	1
-970	\N	158	12	invoice	payment_attempts	\N		invoice.attempts.prompt	\N	1	1	integer	=	1	1	1	1	1	1
-971	\N	158	13	invoice	to_process	\N		invoice.is_payable	\N	1	1	integer	=	1	1	1	1	1	1
-972	\N	158	14	invoice	balance	\N		invoice.balance.prompt	\N	1	1	float	=	1	1	1	1	1	1
-973	\N	158	15	invoice	carried_balance	\N	0.0	invoice.carriedBalance.prompt	\N	1	1	float	>	1	1	1	1	1	1
-974	\N	158	16	invoice	deleted	\N	0	report.prompt.invoice.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-975	\N	158	17	invoice	is_review	\N	0	report.prompt.invoice.is_review	\N	0	0	integer	=	0	0	0	0	0	1
-976	\N	158	18	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-977	\N	158	99	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-998	\N	160	1	invoice	id	\N	\N	report.prompt.invoice.id	\N	0	1	integer	\N	0	0	0	0	0	1
-999	\N	160	2	invoice	id	\N		invoice.id.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-1000	\N	160	2	invoice	public_number	\N		invoice.number.prompt	\N	0	0	string	=	1	1	1	1	1	1
-1001	\N	160	3	base_user	user_name	\N		user.prompt.username	\N	0	0	string	=	1	1	1	1	1	1
-1002	\N	160	4	invoice	create_datetime	\N	2004-11-1	invoice.create_date	\N	0	0	date	>=	1	1	1	1	1	1
-1003	\N	160	5	invoice	create_datetime	\N	2004-11-23	invoice.create_date	\N	0	0	date	<=	0	0	0	1	1	1
-1004	\N	160	6	invoice	billing_process_id	\N		process.external.id	\N	0	0	integer	=	1	1	1	1	1	1
-1620	20	\N	15	id2	content	\N	\N	payment.result	\N	0	1	string	\N	1	1	0	0	0	1
-1422	\N	270	13	id2	content	\N	\N	payment.result	\N	1	1	string	\N	1	1	0	0	0	1
-1005	\N	160	7	invoice	delegated_invoice_id	\N		invoice.delegated.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-1500	\N	281	13	id2	content	\N	\N	payment.result	\N	1	1	string	\N	1	1	0	0	0	1
-1006	\N	160	8	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	1	1	1	1	1	1
-1007	\N	160	9	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	0	0	0	1	1	1
-1008	\N	160	10	currency	symbol	\N	\N	currency.external.prompt.name	\N	0	0	string	\N	1	1	1	0	0	1
-1009	\N	160	11	invoice	total	1	0	invoice.total.prompt	sum	0	1	float	>	1	1	1	1	1	1
-1010	\N	160	12	invoice	payment_attempts	\N		invoice.attempts.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-1011	\N	160	13	invoice	to_process	\N		invoice.is_payable	\N	0	0	integer	=	1	1	1	1	1	1
-1012	\N	160	14	invoice	balance	\N		invoice.balance.prompt	\N	0	0	float	=	1	1	1	1	1	1
-1013	\N	160	15	invoice	carried_balance	\N	0	invoice.carriedBalance.prompt	\N	0	0	float	=	1	1	1	1	1	1
-1014	\N	160	16	invoice	deleted	\N	0	report.prompt.invoice.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1015	\N	160	17	invoice	is_review	\N	0	report.prompt.invoice.is_review	\N	0	0	integer	=	0	0	0	0	0	1
-1016	\N	160	18	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1017	\N	160	99	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1018	\N	161	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1019	\N	161	2	payment	id	\N		payment.id	\N	0	0	integer	=	1	1	1	1	1	1
-1020	\N	161	3	base_user	user_name	\N		user.prompt.username	\N	0	0	string	=	1	1	1	1	1	1
-1021	\N	161	4	payment	attempt	\N		payment.attempt	\N	0	0	integer	=	1	1	1	1	1	1
-1022	\N	161	5	payment	result_id	\N		payment.resultId	\N	0	0	integer	=	1	1	1	1	1	1
-1023	\N	161	6	payment	amount	\N		payment.amount	sum	0	1	float	=	1	1	1	1	1	1
-1024	\N	161	8	payment	create_datetime	\N	2004-11-1	payment.createDate	\N	0	0	date	>=	1	1	1	1	1	1
-1025	\N	161	8	payment	create_datetime	\N	2004-11-23	payment.createDate	\N	0	0	date	<=	0	0	0	1	1	1
-1026	\N	161	8	payment	payment_date	\N	\N	payment.date	\N	0	0	date	=	0	0	0	1	1	1
-1027	\N	161	9	payment	payment_date	\N	\N	payment.date	\N	0	0	date	=	1	1	1	1	1	1
-1028	\N	161	9	payment	method_id	\N		payment.methodId	\N	0	0	integer	=	1	1	1	1	1	1
-1029	\N	161	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1030	\N	161	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1031	\N	161	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-1032	\N	161	12	id	content	\N	\N	payment.method	\N	0	0	string	\N	1	1	0	0	0	1
-1033	\N	161	12	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1034	\N	161	13	id2	content	\N	\N	payment.result	\N	0	0	string	\N	1	1	0	0	0	1
-1035	\N	161	14	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1038	18	\N	29	contact_map	type_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-1065	\N	172	1	purchase_order	id	\N	\N	report.prompt.purchase_order.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1066	\N	172	1	base_user	user_name	\N		report.prompt.base_user.user_name	\N	0	1	string	=	1	1	1	1	1	1
-1067	\N	172	1	purchase_order	id	\N		report.prompt.purchase_order.id	\N	0	0	integer	=	1	1	1	1	1	1
-1068	\N	172	1	contact	organization_name	\N	\N	contact.prompt.organizationName	\N	0	1	string	\N	1	1	1	0	0	1
-1069	\N	172	1	contact	first_name	\N	\N	contact.prompt.firstName	\N	0	0	string	\N	1	1	1	0	0	1
-1070	\N	172	1	contact	last_name	\N	\N	contact.prompt.lastName	\N	0	0	string	\N	1	1	1	0	0	1
-1071	\N	172	1	contact	phone_phone_number	\N	\N	contact.prompt.phoneNumber	\N	0	0	string	\N	1	1	1	0	0	1
-1072	\N	172	3	purchase_order	period_id	\N		order.prompt.periodId	\N	0	0	integer	=	1	1	1	1	1	1
-1073	\N	172	3	id	content	\N	\N	order.prompt.period	\N	0	1	string	\N	1	1	0	0	0	1
-1074	\N	172	4	purchase_order	billing_type_id	\N		order.prompt.billingTypeId	\N	0	0	integer	=	1	1	1	1	1	1
-1075	\N	172	4	id2	content	\N	\N	order.prompt.billingType	\N	0	1	string	\N	1	1	0	0	0	1
-1076	\N	172	5	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	0	date	=	1	1	1	1	1	1
-1077	\N	172	5	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	0	date	=	0	0	0	1	1	1
-1078	\N	172	6	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	0	date	=	1	1	1	1	1	1
-1079	\N	172	6	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	0	date	=	0	0	0	1	1	1
-1080	\N	172	7	purchase_order	create_datetime	1	2004-10-1	report.prompt.purchase_order.create_datetime	\N	0	1	date	>=	1	1	1	1	1	1
-1081	\N	172	7	purchase_order	create_datetime	\N	2004-11-1	report.prompt.purchase_order.create_datetime	\N	0	0	date	<	0	0	0	1	1	1
-1082	\N	172	8	purchase_order	created_by	\N		report.prompt.purchase_order.created_by	\N	0	0	integer	=	1	1	1	1	1	1
-1083	\N	172	9	purchase_order	status_id	\N		report.prompt.purchase_order.status	\N	0	0	integer	=	1	1	1	1	1	1
-1084	\N	172	10	purchase_order	next_billable_day	\N	\N	order.prompt.nextBillableDay	\N	0	0	date	=	1	1	1	1	1	1
-1085	\N	172	10	purchase_order	next_billable_day	\N	\N	order.prompt.nextBillableDay	\N	0	0	date	=	0	0	0	1	1	1
-1086	\N	172	10	purchase_order	deleted	\N	0	report.prompt.purchase_order.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1087	\N	172	11	base_user	entity_id	\N	303	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1088	\N	172	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1089	\N	172	11	purchase_order	notify	\N		report.prompt.purchase_order.notify	\N	0	0	integer	=	1	1	1	1	1	1
-1090	\N	172	12	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1106	4	\N	20	purchase_order	period_id	\N	\N	order.prompt.periodId	\N	0	1	integer	\N	1	1	1	1	1	1
-1107	4	\N	30	purchase_order	status_id	\N	\N	report.prompt.purchase_order.status	\N	0	1	integer	\N	1	1	1	1	1	1
-1108	4	\N	40	purchase_order	billing_type_id	\N	\N	order.prompt.billingTypeId	\N	0	1	integer	\N	1	1	1	1	1	1
-1109	4	\N	50	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	1	date	\N	1	1	1	1	1	1
-1110	4	\N	51	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	0	date	\N	0	0	0	1	1	1
-1111	4	\N	60	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	1	date	\N	1	1	1	1	1	1
-1250	\N	229	0	order_line	deleted	\N	0	report.prompt.order_line.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1328	\N	249	9	payment	method_id	\N		payment.methodId	\N	0	1	integer	=	1	1	1	1	1	1
-1112	4	\N	61	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	0	date	\N	0	0	0	1	1	1
-1113	4	\N	21	id2	content	\N	\N	order.prompt.period	\N	0	1	string	\N	1	1	0	0	0	1
-1114	4	\N	41	id3	content	\N	\N	order.prompt.billingType	\N	0	1	string	\N	1	1	0	0	0	1
-1115	4	\N	31	id4	content	\N	\N	order.prompt.status	\N	0	1	string	\N	1	1	0	0	0	1
-1116	19	\N	1	item	id	\N	\N	item.prompt.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1117	19	\N	10	item	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-1118	19	\N	20	item	id	\N	\N	item.prompt.id	\N	0	1	integer	\N	1	1	1	1	1	1
-1119	19	\N	30	item	internal_number	\N	\N	item.prompt.internalNumber	\N	0	1	string	\N	1	1	1	1	1	1
-1120	19	\N	35	itd	content	\N	\N	item.prompt.description	\N	0	1	string	\N	1	1	1	1	1	1
-1121	19	\N	40	item	percentage	\N	\N	item.prompt.pricePercentage	\N	0	1	float	\N	1	1	1	1	1	1
-1122	19	\N	50	item	price_manual	\N	\N	item.prompt.priceManual	\N	0	1	integer	\N	1	1	1	1	1	1
-1123	19	\N	60	item_type	description	\N	\N	item.prompt.types	\N	0	1	string	\N	1	1	1	1	1	1
-1124	19	\N	70	item_price	price	\N	\N	item.prompt.price	\N	0	1	float	\N	1	1	1	1	1	1
-1125	19	\N	70	currency	code	\N	\N	item.prompt.currency	\N	0	1	string	\N	1	1	1	1	1	1
-1157	17	\N	4	item	internal_number	\N	\N	item.prompt.internalNumber	\N	0	1	string	\N	1	1	1	1	1	1
-1178	\N	199	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1179	\N	199	2	payment	id	\N		payment.id	\N	0	1	integer	=	1	1	1	1	1	1
-1180	\N	199	3	base_user	user_name	\N		user.prompt.username	\N	0	1	string	=	1	1	1	1	1	1
-1181	\N	199	4	payment	attempt	\N		payment.attempt	\N	0	1	integer	=	1	1	1	1	1	1
-1182	\N	199	5	payment	result_id	\N		payment.resultId	\N	0	1	integer	=	1	1	1	1	1	1
-1183	\N	199	6	payment	amount	\N		payment.amount	\N	0	1	float	=	1	1	1	1	1	1
-1184	\N	199	8	payment	create_datetime	1	2004-12-1	payment.createDate	\N	0	1	date	>=	1	1	1	1	1	1
-1185	\N	199	8	payment	create_datetime	\N	2004-12-31	payment.createDate	\N	0	0	date	<=	0	0	0	1	1	1
-1186	\N	199	8	payment	payment_date	\N	\N	payment.date	\N	0	0	date	=	0	0	0	1	1	1
-1187	\N	199	9	payment	payment_date	\N	\N	payment.date	\N	0	1	date	=	1	1	1	1	1	1
-1189	\N	199	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1190	\N	199	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1191	\N	199	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-1192	\N	199	12	id	content	\N	\N	payment.method	\N	0	1	string	\N	1	1	0	0	0	1
-1193	\N	199	12	base_user	entity_id	\N	?	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1194	\N	199	13	id2	content	\N	\N	payment.result	\N	0	1	string	\N	1	1	0	0	0	1
-1195	\N	199	14	id	language_id	\N	?	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1208	\N	219	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1209	\N	219	2	payment	id	\N		payment.id	\N	0	0	integer	=	1	1	1	1	1	1
-1210	\N	219	3	base_user	user_name	\N		user.prompt.username	\N	0	1	string	=	1	1	1	1	1	1
-1211	\N	219	4	payment	attempt	\N		payment.attempt	\N	0	0	integer	=	1	1	1	1	1	1
-1212	\N	219	5	payment	result_id	\N		payment.resultId	\N	0	0	integer	=	1	1	1	1	1	1
-1213	\N	219	6	payment	amount	\N		payment.amount	\N	0	1	float	=	1	1	1	1	1	1
-1214	\N	219	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	=	1	1	1	1	1	1
-1215	\N	219	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	=	0	0	0	1	1	1
-1216	\N	219	8	payment	payment_date	\N	2005-01-01	payment.date	\N	0	0	date	>=	0	0	0	1	1	1
-1217	\N	219	9	payment	payment_date	1	2005-02-01	payment.date	\N	0	1	date	<	1	1	1	1	1	1
-1218	\N	219	9	payment	method_id	\N		payment.methodId	\N	0	0	integer	=	1	1	1	1	1	1
-1219	\N	219	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1220	\N	219	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1221	\N	219	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-1222	\N	219	12	id	content	\N	\N	payment.method	\N	0	0	string	\N	1	1	0	0	0	1
-1223	\N	219	12	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1224	\N	219	13	id2	content	\N	\N	payment.result	\N	0	1	string	\N	1	1	0	0	0	1
-1225	\N	219	14	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1226	\N	220	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1227	\N	220	2	payment	id	\N		payment.id	\N	0	0	integer	=	1	1	1	1	1	1
-1228	\N	220	3	base_user	user_name	\N		user.prompt.username	\N	0	0	string	=	1	1	1	1	1	1
-1229	\N	220	4	payment	attempt	\N		payment.attempt	\N	0	0	integer	=	1	1	1	1	1	1
-1230	\N	220	5	payment	result_id	\N	2	payment.resultId	\N	0	0	integer	!=	1	1	1	1	1	1
-1231	\N	220	6	payment	amount	\N		payment.amount	sum	0	1	float	=	1	1	1	1	1	1
-1232	\N	220	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	=	1	1	1	1	1	1
-1233	\N	220	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	=	0	0	0	1	1	1
-1234	\N	220	8	payment	payment_date	\N	2005-2-1	payment.date	\N	0	0	date	>=	0	0	0	1	1	1
-1235	\N	220	9	payment	payment_date	\N	2005-3-1	payment.date	\N	0	0	date	<	1	1	1	1	1	1
-1236	\N	220	9	payment	method_id	\N		payment.methodId	\N	0	0	integer	=	1	1	1	1	1	1
-1237	\N	220	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1238	\N	220	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1239	\N	220	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-1240	\N	220	12	id	content	\N	\N	payment.method	\N	0	0	string	\N	1	1	0	0	0	1
-1241	\N	220	12	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1242	\N	220	13	id2	content	\N	\N	payment.result	\N	0	0	string	\N	1	1	0	0	0	1
-1243	\N	220	14	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1248	\N	229	0	purchase_order	id	\N	\N	report.prompt.purchase_order.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1249	\N	229	0	purchase_order	deleted	\N	0	report.prompt.purchase_order.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1251	\N	229	0	base_user	entity_id	\N	307	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1252	\N	229	1	base_user	user_name	\N		user.prompt.username	\N	0	1	string	=	1	1	1	1	1	1
-1253	\N	229	1	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1254	\N	229	2	purchase_order	id	\N		order.external.prompt.id	\N	0	1	integer	=	1	1	1	1	1	1
-1255	\N	229	3	order_line	item_id	\N		item.prompt.number	\N	0	1	integer	=	1	1	1	1	1	1
-1256	\N	229	4	order_line	type_id	\N		order.line.prompt.typeid	\N	0	0	integer	=	1	1	1	1	1	1
-1257	\N	229	5	id	content	\N	\N	order.line.prompt.type	\N	0	0	string	\N	1	1	0	0	0	1
-1258	\N	229	6	order_line	description	\N		order.line.prompt.description	\N	0	1	string	=	1	1	1	1	1	1
-1259	\N	229	7	order_line	amount	\N	69	order.line.prompt.amount	\N	0	1	float	!=	1	1	1	1	1	1
-1260	\N	229	8	order_line	quantity	\N		order.line.prompt.quantity	\N	0	0	float	=	1	1	1	1	1	1
-1261	\N	229	9	order_line	price	\N		order.line.prompt.price	\N	0	0	float	=	1	1	1	1	1	1
-1262	\N	229	10	purchase_order	status_id	\N	1	report.prompt.purchase_order.status	\N	0	0	integer	=	0	0	0	1	1	1
-1263	\N	229	10	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	=	1	1	1	1	1	1
-1264	\N	229	10	purchase_order	create_datetime	\N	\N	report.prompt.purchase_order.create_datetime	\N	0	0	date	=	0	0	0	1	1	1
-1265	\N	229	20	purchase_order	period_id	\N		order.prompt.periodId	\N	0	0	integer	=	1	1	1	1	1	1
-1266	\N	229	21	id2	content	\N	\N	order.prompt.period	\N	0	0	string	\N	1	1	0	0	0	1
-1267	\N	229	30	purchase_order	status_id	\N		report.prompt.purchase_order.status	\N	0	1	integer	=	1	1	1	1	1	1
-1268	\N	229	31	id4	content	\N	\N	order.prompt.status	\N	0	1	string	\N	1	1	0	0	0	1
-1269	\N	229	40	purchase_order	billing_type_id	\N		order.prompt.billingTypeId	\N	0	1	integer	=	1	1	1	1	1	1
-1270	\N	229	41	id3	content	\N	\N	order.prompt.billingType	\N	0	0	string	\N	1	1	0	0	0	1
-1271	\N	229	50	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	0	date	=	1	1	1	1	1	1
-1272	\N	229	51	purchase_order	active_since	\N	\N	report.prompt.purchase_order.active_since	\N	0	0	date	=	0	0	0	1	1	1
-1273	\N	229	60	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	0	date	=	1	1	1	1	1	1
-1274	\N	229	61	purchase_order	active_until	\N	\N	report.prompt.purchase_order.active_until	\N	0	0	date	=	0	0	0	1	1	1
-1278	\N	239	1	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1279	\N	239	2	base_user	id	\N		user.prompt.id	\N	0	0	integer	=	1	1	1	1	1	1
-1280	\N	239	3	base_user	user_name	\N		user.prompt.username	\N	0	1	string	=	1	1	1	1	1	1
-1281	\N	239	4	base_user	language_id	\N		report.prompt.user.languageCode	\N	0	0	integer	=	1	1	1	1	1	1
-1282	\N	239	4	language	description	\N	\N	user.prompt.language	\N	0	0	string	\N	1	1	0	0	0	1
-1283	\N	239	5	base_user	status_id	\N		report.prompt.user.statusCode	\N	0	0	integer	=	1	1	1	1	1	1
-1284	\N	239	6	it1	content	\N	\N	user.prompt.status	\N	0	0	string	\N	1	1	0	0	0	1
-1285	\N	239	7	base_user	create_datetime	\N	\N	report.prompt.user.create	\N	0	0	date	=	1	1	1	1	1	1
-1286	\N	239	8	base_user	create_datetime	\N	\N	report.prompt.user.create	\N	0	0	date	=	0	0	0	1	1	1
-1287	\N	239	9	base_user	last_status_change	\N	\N	report.prompt.user.status_change	\N	0	0	date	=	1	1	1	1	1	1
-1288	\N	239	10	base_user	last_status_change	\N	\N	report.prompt.user.status_change	\N	0	0	date	=	0	0	0	1	1	1
-1289	\N	239	11	user_role_map	role_id	\N		report.prompt.user.roleCode	\N	0	0	integer	=	1	1	1	1	1	1
-1290	\N	239	12	it2	content	\N	\N	report.prompt.user.role	\N	0	0	string	\N	1	1	0	0	0	1
-1291	\N	239	13	contact	organization_name	1		contact.prompt.organizationName	\N	0	1	string	=	1	1	1	1	1	1
-1292	\N	239	14	contact	street_addres1	\N		contact.prompt.address1	\N	0	1	string	=	1	1	1	1	1	1
-1293	\N	239	15	contact	street_addres2	\N		contact.prompt.address2	\N	0	1	string	=	1	1	1	1	1	1
-1294	\N	239	16	contact	city	\N		contact.prompt.city	\N	0	1	string	=	1	1	1	1	1	1
-1295	\N	239	17	contact	state_province	\N		contact.prompt.stateProvince	\N	0	1	string	=	1	1	1	1	1	1
-1296	\N	239	18	contact	postal_code	\N		contact.prompt.postalCode	\N	0	1	string	=	1	1	1	1	1	1
-1297	\N	239	19	contact	country_code	\N		report.prompt.user.countryCode	\N	0	0	string	=	1	1	1	1	1	1
-1298	\N	239	20	it3	content	\N	\N	contact.prompt.countryCode	\N	0	0	string	\N	1	1	0	0	0	1
-1299	\N	239	21	contact	last_name	\N		contact.prompt.lastName	\N	0	0	string	=	1	1	1	1	1	1
-1300	\N	239	22	contact	first_name	\N		contact.prompt.firstName	\N	0	0	string	=	1	1	1	1	1	1
-1301	\N	239	23	contact	phone_country_code	\N		contact.prompt.phoneCountryCode	\N	0	0	integer	=	1	1	1	1	1	1
-1302	\N	239	24	contact	phone_area_code	\N		contact.prompt.phoneAreaCode	\N	0	0	integer	=	1	1	1	1	1	1
-1303	\N	239	25	contact	phone_phone_number	\N		contact.prompt.phoneNumber	\N	0	0	string	=	1	1	1	1	1	1
-1304	\N	239	26	contact	email	\N		contact.prompt.email	\N	0	1	string	=	1	1	1	1	1	1
-1305	\N	239	27	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1306	\N	239	28	it1	language_id	\N	1	report.prompt.it1.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1307	\N	239	29	base_user	last_login	\N	\N	user.prompt.lastLogin	\N	0	0	date	=	1	1	1	1	1	1
-1308	\N	239	29	base_user	last_login	\N	\N	user.prompt.lastLogin	\N	0	0	date	=	0	0	0	1	1	1
-1309	\N	239	29	contact_map	type_id	\N	3	report.prompt.contact_map.type_id	\N	0	0	integer	=	0	0	0	0	0	1
-1318	\N	249	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1319	\N	249	2	payment	id	\N		payment.id	\N	0	1	integer	=	1	1	1	1	1	1
-1320	\N	249	3	base_user	user_name	\N		user.prompt.username	\N	0	1	string	=	1	1	1	1	1	1
-1321	\N	249	4	payment	attempt	\N		payment.attempt	\N	0	1	integer	=	1	1	1	1	1	1
-1322	\N	249	5	payment	result_id	\N	1	payment.resultId	\N	0	1	integer	!=	1	1	1	1	1	1
-1323	\N	249	6	payment	amount	\N		payment.amount	\N	0	1	float	=	1	1	1	1	1	1
-1324	\N	249	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	1	date	=	1	1	1	1	1	1
-1325	\N	249	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	=	0	0	0	1	1	1
-1326	\N	249	8	payment	payment_date	\N	\N	payment.date	\N	0	0	date	=	0	0	0	1	1	1
-1327	\N	249	9	payment	payment_date	\N	\N	payment.date	\N	0	1	date	=	1	1	1	1	1	1
-1329	\N	249	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1330	\N	249	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1331	\N	249	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-1332	\N	249	12	id	content	\N	\N	payment.method	\N	0	1	string	\N	1	1	0	0	0	1
-1333	\N	249	12	base_user	entity_id	\N	307	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1334	\N	249	13	id2	content	\N	\N	payment.result	\N	0	1	string	\N	1	1	0	0	0	1
-1335	\N	249	14	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1338	\N	259	0	invoice	deleted	\N	0	report.prompt.invoice.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1339	\N	259	0	invoice	is_review	\N	0	report.prompt.invoice.is_review	\N	0	0	integer	=	0	0	0	0	0	1
-1340	\N	259	0	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1341	\N	259	1	invoice	total	\N	\N	invoice.total.prompt	sum	0	1	float	\N	0	0	0	0	0	1
-1342	\N	259	1	invoice	create_datetime	\N	2004-01-01	invoice.create_date	\N	0	0	date	>=	0	0	0	0	1	1
-1343	\N	259	2	invoice	create_datetime	\N	2005-01-01	invoice.create_date	\N	0	0	date	<	0	0	0	0	1	1
-1344	\N	260	1	invoice	id	\N	\N	report.prompt.invoice.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1345	\N	260	2	invoice	id	\N		invoice.id.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-1346	\N	260	2	invoice	public_number	\N		invoice.number.prompt	\N	0	0	string	=	1	1	1	1	1	1
-1347	\N	260	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-1348	\N	260	4	invoice	create_datetime	1	2005-1-1	invoice.create_date	\N	1	1	date	>=	1	1	1	1	1	1
-1349	\N	260	5	invoice	create_datetime	\N	2005-1-31	invoice.create_date	\N	0	0	date	<=	0	0	0	1	1	1
-1350	\N	260	6	invoice	billing_process_id	\N		process.external.id	\N	0	0	integer	=	1	1	1	1	1	1
-1351	\N	260	7	invoice	delegated_invoice_id	\N		invoice.delegated.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-1352	\N	260	8	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	1	1	1	1	1	1
-1353	\N	260	9	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	0	0	0	1	1	1
-1354	\N	260	10	currency	symbol	\N	\N	currency.external.prompt.name	\N	0	0	string	\N	1	1	1	0	0	1
-1355	\N	260	11	invoice	total	\N		invoice.total.prompt	sum	0	1	float	=	1	1	1	1	1	1
-1356	\N	260	12	invoice	payment_attempts	\N		invoice.attempts.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-1357	\N	260	13	invoice	to_process	\N		invoice.is_payable	\N	0	0	integer	=	1	1	1	1	1	1
-1358	\N	260	14	invoice	balance	\N		invoice.balance.prompt	sum	0	1	float	=	1	1	1	1	1	1
-1359	\N	260	15	invoice	carried_balance	\N		invoice.carriedBalance.prompt	sum	0	1	float	=	1	1	1	1	1	1
-1360	\N	260	16	invoice	deleted	\N	0	report.prompt.invoice.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1361	\N	260	17	invoice	is_review	\N	0	report.prompt.invoice.is_review	\N	0	0	integer	=	0	0	0	0	0	1
-1362	\N	260	18	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1363	\N	260	99	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1388	\N	269	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1389	\N	269	2	payment	id	\N		payment.id	\N	0	1	integer	=	1	1	1	1	1	1
-1390	\N	269	3	base_user	user_name	\N		user.prompt.username	\N	0	1	string	=	1	1	1	1	1	1
-1391	\N	269	4	payment	attempt	\N		payment.attempt	\N	0	1	integer	=	1	1	1	1	1	1
-1392	\N	269	5	payment	result_id	\N		payment.resultId	\N	0	1	integer	=	1	1	1	1	1	1
-1393	\N	269	6	payment	amount	\N		payment.amount	\N	0	1	float	=	1	1	1	1	1	1
-1394	\N	269	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	1	date	=	1	1	1	1	1	1
-1395	\N	269	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	=	0	0	0	1	1	1
-1396	\N	269	8	payment	payment_date	\N	\N	payment.date	\N	0	0	date	=	0	0	0	1	1	1
-1397	\N	269	9	payment	payment_date	\N	\N	payment.date	\N	0	1	date	=	1	1	1	1	1	1
-1398	\N	269	9	payment	method_id	\N		payment.methodId	\N	0	1	integer	=	1	1	1	1	1	1
-1399	\N	269	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1400	\N	269	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1401	\N	269	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-1402	\N	269	12	id	content	\N	\N	payment.method	\N	0	1	string	\N	1	1	0	0	0	1
-1403	\N	269	12	base_user	entity_id	\N	303	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1404	\N	269	13	id2	content	\N	\N	payment.result	\N	0	1	string	\N	1	1	0	0	0	1
-1405	\N	269	14	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1406	\N	270	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1407	\N	270	2	payment	id	\N		payment.id	\N	0	0	integer	=	1	1	1	1	1	1
-1408	\N	270	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-1409	\N	270	4	payment	attempt	\N		payment.attempt	\N	1	1	integer	=	1	1	1	1	1	1
-1410	\N	270	5	payment	result_id	\N		payment.resultId	\N	1	1	integer	=	1	1	1	1	1	1
-1411	\N	270	6	payment	amount	\N		payment.amount	\N	1	1	float	=	1	1	1	1	1	1
-1412	\N	270	8	payment	create_datetime	\N	2005-1-1	payment.createDate	\N	1	1	date	>=	1	1	1	1	1	1
-1413	\N	270	8	payment	create_datetime	\N	2005-2-1	payment.createDate	\N	0	0	date	<	0	0	0	1	1	1
-1414	\N	270	8	payment	payment_date	\N	\N	payment.date	\N	0	0	date	=	0	0	0	1	1	1
-1415	\N	270	9	payment	payment_date	1	\N	payment.date	\N	1	1	date	=	1	1	1	1	1	1
-1416	\N	270	9	payment	method_id	2	1	payment.methodId	\N	1	1	integer	>	1	1	1	1	1	1
-1417	\N	270	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1418	\N	270	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1419	\N	270	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-1420	\N	270	12	id	content	\N	\N	payment.method	\N	1	1	string	\N	1	1	0	0	0	1
-1421	\N	270	12	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1423	\N	270	14	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1424	\N	271	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1425	\N	271	2	payment	id	\N		payment.id	\N	0	1	integer	=	1	1	1	1	1	1
-1426	\N	271	3	base_user	user_name	\N		user.prompt.username	\N	0	1	string	=	1	1	1	1	1	1
-1427	\N	271	4	payment	attempt	\N		payment.attempt	\N	0	1	integer	=	1	1	1	1	1	1
-1428	\N	271	5	payment	result_id	\N		payment.resultId	\N	0	1	integer	=	1	1	1	1	1	1
-1429	\N	271	6	payment	amount	\N		payment.amount	\N	0	1	float	=	1	1	1	1	1	1
-1430	\N	271	8	payment	create_datetime	\N	2005-04-12	payment.createDate	\N	0	1	date	=	1	1	1	1	1	1
-1431	\N	271	8	payment	create_datetime	\N	\N	payment.createDate	\N	0	0	date	=	0	0	0	1	1	1
-1432	\N	271	8	payment	payment_date	\N	\N	payment.date	\N	0	0	date	=	0	0	0	1	1	1
-1433	\N	271	9	payment	payment_date	\N	\N	payment.date	\N	0	1	date	=	1	1	1	1	1	1
-1434	\N	271	9	payment	method_id	\N		payment.methodId	\N	0	1	integer	=	1	1	1	1	1	1
-1435	\N	271	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1436	\N	271	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1437	\N	271	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-1438	\N	271	12	id	content	\N	\N	payment.method	\N	0	1	string	\N	1	1	0	0	0	1
-1439	\N	271	12	base_user	entity_id	\N	?	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1440	\N	271	13	id2	content	\N	\N	payment.result	\N	0	1	string	\N	1	1	0	0	0	1
-1441	\N	271	14	id	language_id	\N	?	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1448	\N	279	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1449	\N	279	2	payment	id	\N		payment.id	\N	0	0	integer	=	1	1	1	1	1	1
-1450	\N	279	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-1451	\N	279	4	payment	attempt	\N		payment.attempt	\N	1	1	integer	=	1	1	1	1	1	1
-1452	\N	279	5	payment	result_id	\N		payment.resultId	\N	1	1	integer	=	1	1	1	1	1	1
-1453	\N	279	6	payment	amount	\N		payment.amount	\N	1	1	float	=	1	1	1	1	1	1
-1454	\N	279	8	payment	create_datetime	\N	2005-1-1	payment.createDate	\N	1	1	date	>=	1	1	1	1	1	1
-1455	\N	279	8	payment	create_datetime	\N	2005-2-1	payment.createDate	\N	0	0	date	<	0	0	0	1	1	1
-1456	\N	279	8	payment	payment_date	\N	\N	payment.date	\N	0	0	date	=	0	0	0	1	1	1
-1457	\N	279	9	payment	payment_date	1	\N	payment.date	\N	1	1	date	=	1	1	1	1	1	1
-1458	\N	279	9	payment	method_id	2	2	payment.methodId	\N	1	1	integer	=	1	1	1	1	1	1
-1459	\N	279	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1460	\N	279	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1461	\N	279	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-1462	\N	279	12	id	content	\N	\N	payment.method	\N	1	1	string	\N	1	1	0	0	0	1
-1463	\N	279	12	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1464	\N	279	13	id2	content	\N	\N	payment.result	\N	1	1	string	\N	1	1	0	0	0	1
-1465	\N	279	14	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1466	\N	280	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1467	\N	280	2	payment	id	\N		payment.id	\N	0	0	integer	=	1	1	1	1	1	1
-1468	\N	280	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-1469	\N	280	4	payment	attempt	\N		payment.attempt	\N	1	1	integer	=	1	1	1	1	1	1
-1470	\N	280	5	payment	result_id	\N		payment.resultId	\N	1	1	integer	=	1	1	1	1	1	1
-1471	\N	280	6	payment	amount	\N		payment.amount	\N	1	1	float	=	1	1	1	1	1	1
-1472	\N	280	8	payment	create_datetime	\N	2005-1-1	payment.createDate	\N	1	1	date	>=	1	1	1	1	1	1
-1473	\N	280	8	payment	create_datetime	\N	2005-2-1	payment.createDate	\N	0	0	date	<	0	0	0	1	1	1
-1474	\N	280	8	payment	payment_date	\N	\N	payment.date	\N	0	0	date	=	0	0	0	1	1	1
-1475	\N	280	9	payment	payment_date	1	\N	payment.date	\N	1	1	date	=	1	1	1	1	1	1
-1476	\N	280	9	payment	method_id	2	3	payment.methodId	\N	1	1	integer	=	1	1	1	1	1	1
-1477	\N	280	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1478	\N	280	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1479	\N	280	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-1480	\N	280	12	id	content	\N	\N	payment.method	\N	1	1	string	\N	1	1	0	0	0	1
-1481	\N	280	12	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1482	\N	280	13	id2	content	\N	\N	payment.result	\N	1	1	string	\N	1	1	0	0	0	1
-1483	\N	280	14	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1484	\N	281	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1485	\N	281	2	payment	id	\N		payment.id	\N	0	0	integer	=	1	1	1	1	1	1
-1486	\N	281	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-1487	\N	281	4	payment	attempt	\N		payment.attempt	\N	1	1	integer	=	1	1	1	1	1	1
-1488	\N	281	5	payment	result_id	\N		payment.resultId	\N	1	1	integer	=	1	1	1	1	1	1
-1489	\N	281	6	payment	amount	\N		payment.amount	\N	1	1	float	=	1	1	1	1	1	1
-1490	\N	281	8	payment	create_datetime	\N	2005-1-1	payment.createDate	\N	1	1	date	>=	1	1	1	1	1	1
-1491	\N	281	8	payment	create_datetime	\N	2005-2-1	payment.createDate	\N	0	0	date	<	0	0	0	1	1	1
-1492	\N	281	8	payment	payment_date	\N	\N	payment.date	\N	0	0	date	=	0	0	0	1	1	1
-1493	\N	281	9	payment	payment_date	1	\N	payment.date	\N	1	1	date	=	1	1	1	1	1	1
-1494	\N	281	9	payment	method_id	2	4	payment.methodId	\N	1	1	integer	=	1	1	1	1	1	1
-1495	\N	281	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1496	\N	281	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1497	\N	281	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-1498	\N	281	12	id	content	\N	\N	payment.method	\N	1	1	string	\N	1	1	0	0	0	1
-1618	20	\N	13	payment	deleted	\N	\N	\N	\N	0	0	integer	=	0	0	0	0	0	1
-1499	\N	281	12	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1501	\N	281	14	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1528	\N	289	1	invoice	id	\N	\N	report.prompt.invoice.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1529	\N	289	2	invoice	id	\N		invoice.id.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-1530	\N	289	2	invoice	public_number	\N		invoice.number.prompt	\N	0	0	string	=	1	1	1	1	1	1
-1531	\N	289	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-1532	\N	289	4	invoice	create_datetime	\N	2005-4-1	invoice.create_date	\N	1	1	date	>=	1	1	1	1	1	1
-1533	\N	289	5	invoice	create_datetime	\N	2005-4-30	invoice.create_date	\N	0	0	date	<=	0	0	0	1	1	1
-1534	\N	289	6	invoice	billing_process_id	\N		process.external.id	\N	0	0	integer	=	1	1	1	1	1	1
-1535	\N	289	7	invoice	delegated_invoice_id	\N		invoice.delegated.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-1536	\N	289	8	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	1	1	1	1	1	1
-1537	\N	289	9	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	0	0	0	1	1	1
-1538	\N	289	10	currency	symbol	\N	\N	currency.external.prompt.name	\N	0	0	string	\N	1	1	1	0	0	1
-1539	\N	289	11	invoice	total	\N		invoice.total.prompt	sum	0	1	float	=	1	1	1	1	1	1
-1540	\N	289	12	invoice	payment_attempts	\N		invoice.attempts.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-1541	\N	289	13	invoice	to_process	\N		invoice.is_payable	\N	0	0	integer	=	1	1	1	1	1	1
-1542	\N	289	14	invoice	balance	1		invoice.balance.prompt	sum	0	1	float	=	1	1	1	1	1	1
-1543	\N	289	15	invoice	carried_balance	\N		invoice.carriedBalance.prompt	sum	0	1	float	=	1	1	1	1	1	1
-1544	\N	289	16	invoice	deleted	\N	0	report.prompt.invoice.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1545	\N	289	17	invoice	is_review	\N	0	report.prompt.invoice.is_review	\N	0	0	integer	=	0	0	0	0	0	1
-1546	\N	289	18	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1547	\N	289	99	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1568	\N	309	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1569	\N	309	2	payment	id	\N		payment.id	\N	0	0	integer	=	1	1	1	1	1	1
-1570	\N	309	3	base_user	user_name	\N		user.prompt.username	\N	1	1	string	=	1	1	1	1	1	1
-1571	\N	309	4	payment	attempt	\N		payment.attempt	\N	1	1	integer	=	1	1	1	1	1	1
-1572	\N	309	5	payment	result_id	\N		payment.resultId	\N	1	1	integer	=	1	1	1	1	1	1
-1573	\N	309	6	payment	amount	\N		payment.amount	\N	1	1	float	=	1	1	1	1	1	1
-1574	\N	309	8	payment	create_datetime	\N	2005-1-1	payment.createDate	\N	1	1	date	>=	1	1	1	1	1	1
-1575	\N	309	8	payment	create_datetime	\N	2005-2-1	payment.createDate	\N	0	0	date	<	0	0	0	1	1	1
-1576	\N	309	8	payment	payment_date	\N	\N	payment.date	\N	0	0	date	=	0	0	0	1	1	1
-1577	\N	309	9	payment	payment_date	1	\N	payment.date	\N	1	1	date	=	1	1	1	1	1	1
-1578	\N	309	9	payment	method_id	2	1	payment.methodId	\N	1	1	integer	=	1	1	1	1	1	1
-1579	\N	309	11	base_user	id	\N	\N	report.prompt.base_user.id	\N	0	0	integer	=	0	0	0	0	0	1
-1580	\N	309	12	payment	deleted	\N	0	report.prompt.payment.deleted	\N	0	0	integer	=	0	0	0	0	0	1
-1581	\N	309	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
-1582	\N	309	12	id	content	\N	\N	payment.method	\N	1	1	string	\N	1	1	0	0	0	1
-1583	\N	309	12	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1584	\N	309	13	id2	content	\N	\N	payment.result	\N	1	1	string	\N	1	1	0	0	0	1
-1585	\N	309	14	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
-1588	\N	319	1	invoice	id	\N	\N	report.prompt.invoice.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1589	\N	319	2	invoice	id	\N		invoice.id.prompt	\N	0	1	integer	=	1	1	1	1	1	1
-1590	\N	319	2	invoice	public_number	\N		invoice.number.prompt	\N	0	1	integer	=	1	1	1	1	1	1
-1591	\N	319	2	invoice_line	type_id	\N		report.prompt.invoice_line.type_id	\N	0	1	integer	=	1	1	1	1	1	1
-1592	\N	319	3	invoice_line_type	description	\N	\N	report.prompt.invoice_line.type	\N	0	1	string	\N	1	1	0	0	0	1
-1593	\N	319	4	invoice_line	item_id	\N		report.prompt.invoice_line.item_id	\N	0	1	integer	=	1	1	1	1	1	1
-1594	\N	319	4	item	internal_number	\N		item.prompt.internalNumber	\N	0	1	string	=	1	1	1	1	1	1
-1595	\N	319	5	invoice_line	description	\N		report.prompt.invoice_line.description	\N	0	1	string	=	1	1	1	1	1	1
-1596	\N	319	6	invoice_line	amount	\N		report.prompt.invoice_line.amount	\N	0	0	float	=	1	1	1	1	1	1
-1597	\N	319	7	invoice_line	quantity	\N		report.prompt.invoice_line.quantity	\N	0	0	float	=	1	1	1	1	1	1
-1598	\N	319	8	invoice_line	price	\N		report.prompt.invoice_line.price	\N	0	1	float	=	1	1	1	1	1	1
-1599	\N	319	9	currency	symbol	\N	\N	currency.external.prompt.name	\N	0	0	string	\N	1	1	0	0	0	1
-1600	\N	319	10	invoice	create_datetime	\N	\N	invoice.createDateTime.prompt	\N	0	0	date	=	1	1	1	1	1	1
-1601	\N	319	10	base_user	entity_id	\N	?	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1602	\N	319	11	invoice	create_datetime	\N	\N	invoice.createDateTime.prompt	\N	0	0	date	=	0	0	0	1	1	1
-1603	\N	319	12	invoice	user_id	\N		invoice.userId.prompt	\N	0	0	integer	=	1	1	1	1	1	1
-1604	20	\N	1	payment	id	\N	\N		\N	0	1	integer	\N	0	0	0	0	0	1
-1605	20	\N	2	payment	id	\N	\N	transaction.payment.id	\N	0	1	integer	\N	1	1	1	1	1	1
-1606	20	\N	3	base_user	user_name	\N	\N	user.prompt.username	\N	0	1	string	\N	1	1	1	1	1	1
-1607	20	\N	4	payment	attempt	\N	\N	payment.attempt	\N	0	1	integer	\N	1	1	1	1	1	1
-1608	20	\N	5	payment	result_id	\N	\N	payment.resultId	\N	0	1	integer	\N	1	1	1	1	1	1
-1609	20	\N	6	payment	amount	\N	\N	payment.amount	\N	0	1	float	\N	1	1	1	1	1	1
-1610	20	\N	7	pa	create_datetime	\N	\N	transaction.createDate	\N	0	1	date	>=	1	1	1	1	1	1
-1611	20	\N	8	pa	create_datetime	\N	\N	transaction.createDate	\N	0	0	date	\N	0	0	0	1	1	1
-1614	20	\N	9	payment	method_id	\N	\N	payment.methodId	\N	0	1	integer	\N	1	1	1	1	1	1
-1615	20	\N	10	base_user	id	\N	\N	\N	\N	0	0	integer	=	0	0	0	0	0	1
-1616	20	\N	11	id	content	\N	\N	payment.method	\N	0	1	string	\N	1	1	0	0	0	1
-1617	20	\N	12	base_user	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-1621	20	\N	16	id	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-1622	20	\N	17	pa	processor	\N	\N	transaction.processor	\N	0	1	string	=	1	1	1	1	1	1
-1623	20	\N	18	pa	transaction_id	\N	\N	transaction.id	\N	0	1	string	>=	1	1	1	1	1	1
-1624	20	\N	19	pa	transaction_id	\N	\N	transaction.id	\N	0	0	string	\N	0	0	0	1	1	1
-1625	20	\N	20	pa	code1	\N	\N	transaction.code1	\N	0	1	string	=	1	1	1	1	1	1
-1626	20	\N	21	pa	code2	\N	\N	transaction.code2	\N	0	1	string	=	1	1	1	1	1	1
-1627	20	\N	22	pa	code3	\N	\N	transaction.code3	\N	0	1	string	=	1	1	1	1	1	1
-1628	20	\N	23	pa	avs	\N	\N	transaction.avs	\N	0	1	string	=	1	1	1	1	1	1
-1629	20	\N	24	pa	md5	\N	\N	transaction.md5	\N	0	1	string	=	1	1	1	1	1	1
-1630	20	\N	25	pa	approval_code	\N	\N	transaction.approvalCode	\N	0	1	string	=	1	1	1	1	1	1
-1631	20	\N	26	pa	card_code	\N	\N	transaction.cardCode	\N	0	1	string	=	1	1	1	1	1	1
-1632	21	\N	1	bu	id	\N	\N	subscription.userId	\N	0	1	integer	=	0	0	0	0	0	1
-1633	21	\N	2	bu	create_datetime	\N	\N	subscription.createDate	\N	0	1	date	>=	1	1	1	1	1	1
-1634	21	\N	3	bu	create_datetime	\N	\N	subscription.createDate	\N	0	0	date	\N	0	0	0	1	1	1
-1635	21	\N	4	i	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-1636	21	\N	5	bu	subscriber_status	\N	\N	subscription.statusId	\N	0	1	integer	=	1	1	1	1	1	1
-1637	21	\N	6	id1	content	\N	\N	subscription.subscriptionStatus	\N	0	1	string	=	1	1	0	0	0	1
-1638	21	\N	7	po	id	\N	\N	subscription.orderId	\N	0	1	integer	=	1	1	1	1	1	1
-1639	21	\N	8	po	status_id	\N	\N	subscription.orderStatusId	\N	0	1	integer	=	1	1	1	1	1	1
-1640	21	\N	9	id3	content	\N	\N	subscription.orderStatus	\N	0	1	string	=	1	1	0	0	11	1
-1641	21	\N	10	i	internal_number	\N	\N	subscription.internalNumber	\N	0	1	string	=	1	1	1	1	1	1
-1642	21	\N	11	id2	content	\N	\N	subscription.description	\N	0	1	string	=	1	1	0	0	0	1
-1643	21	\N	12	id1	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-1644	21	\N	12	i	id	\N	\N	item.id	\N	0	1	integer	=	1	1	1	1	1	1
-1676	22	\N	7	id4	content	\N	\N	transition.fromStatus	\N	0	1	string	=	1	1	0	0	0	1
-1677	22	\N	14	id3	content	\N	\N	subscription.orderStatus	\N	0	1	string	=	1	1	0	0	0	1
-1678	22	\N	13	po	status_id	\N	\N	subscription.orderStatusId	\N	0	1	integer	=	1	1	1	1	1	1
-1679	22	\N	1	bu	id	\N	\N	subscription.userId	\N	0	1	integer	=	1	1	1	1	1	1
-1680	22	\N	2	bu	id	\N	\N	subscription.userId	\N	0	1	integer	\N	0	0	0	0	0	1
-1681	22	\N	3	el	create_datetime	\N	\N	transition.createDate	\N	0	1	date	>=	1	1	1	1	1	1
-1682	22	\N	3	el	create_datetime	\N	\N	transition.createDate	\N	0	0	date	\N	0	0	0	1	1	1
-1683	22	\N	4	bu	subscriber_status	\N	\N	transition.statusId	\N	0	1	integer	=	1	1	1	1	1	1
-1684	22	\N	6	el	old_num	\N	\N	transition.oldNum	\N	0	1	integer	=	1	1	1	1	1	1
-1685	22	\N	10	id2	content	\N	\N	subscription.description	\N	0	1	string	=	1	1	1	0	0	1
-1686	22	\N	11	i	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-1687	22	\N	12	id1	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-1688	22	\N	5	id1	content	\N	\N	transition.userStatus	\N	0	1	string	=	1	1	0	0	0	1
-1689	22	\N	9	i	id	\N	\N	item.id	\N	0	1	string	=	1	1	1	1	1	1
-1690	22	\N	8	el	old_str	\N	\N	transition.oldStr	\N	0	1	string	=	1	1	1	1	1	1
-1691	23	\N	1	po	id	\N	\N	subscriptionTransition.orderId	\N	0	1	integer	=	1	1	1	1	1	1
-1692	23	\N	4	bu	id	\N	\N	subscription.userId	\N	0	1	integer	=	1	1	1	1	1	1
-1693	23	\N	5	el	create_datetime	\N	\N	subscriptionTransition.createDate	\N	0	1	date	>=	1	1	1	1	1	1
-1694	23	\N	6	el	create_datetime	\N	\N	subscriptionTransition.createDate	\N	0	0	date	\N	0	0	0	1	1	1
-1695	23	\N	7	ol1	item_id	\N	\N	subscriptionTransition.oldNum	\N	0	1	integer	=	1	1	1	1	1	1
-1696	23	\N	8	id3	content	\N	\N	subscriptionTransition.oldStr	\N	0	1	string	=	1	1	0	0	0	1
-1697	23	\N	9	el	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-1698	23	\N	10	ol	item_id	\N	\N	subscriptionTransition.newItemId	\N	0	1	string	=	1	1	1	1	1	1
-1699	23	\N	11	id1	language_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-1700	23	\N	12	id1	content	\N	\N	subscriptionTransition.description	\N	0	1	string	=	1	1	0	0	0	1
-1701	23	\N	13	bu	subscriber_status	\N	\N	subscriptionTransition.subscriberStatus	\N	0	1	integer	=	1	1	1	1	1	1
-1702	23	\N	14	id2	content	\N	\N	subscriptionTransition.subscriberStatusDesc	\N	0	1	string	=	1	1	0	0	0	1
-1703	23	\N	1	po	id	\N	\N	subscriptionTransition.orderId	\N	0	1	integer	=	0	0	0	0	0	1
-1704	23	\N	2	po	status_id	\N	\N	subscriptionTransition.orderStatusId	\N	0	1	integer	=	1	1	1	1	1	1
-1705	23	\N	3	id4	content	\N	\N	subscriptionTransition.orderStatus	\N	0	1	string	=	1	1	0	0	0	1
-1706	20	\N	27	pa	response_message	\N	\N	transaction.responseMessage	\N	0	1	string	=	0	1	0	0	0	1
-1707	19	\N	1	item	id	\N	\N	item.prompt.id	\N	0	1	integer	\N	0	0	0	0	0	1
-1708	19	\N	10	item	entity_id	\N	?	\N	\N	0	0	integer	=	0	0	0	0	0	1
-1709	19	\N	20	item	id	\N	\N	item.prompt.id	\N	0	1	integer	\N	1	1	1	1	1	1
-1710	19	\N	30	item	internal_number	\N	\N	item.prompt.internalNumber	\N	0	1	string	\N	1	1	1	1	1	1
-1711	19	\N	35	itd	content	\N	\N	item.prompt.description	\N	0	1	string	\N	1	1	1	1	1	1
-1712	19	\N	40	item	percentage	\N	\N	item.prompt.pricePercentage	\N	0	1	float	\N	1	1	1	1	1	1
-1713	19	\N	50	item	price_manual	\N	\N	item.prompt.priceManual	\N	0	1	integer	\N	1	1	1	1	1	1
-1714	19	\N	60	item_type	description	\N	\N	item.prompt.types	\N	0	1	string	\N	1	1	1	1	1	1
-1715	19	\N	70	item_price	price	\N	\N	item.prompt.price	\N	0	1	float	\N	1	1	1	1	1	1
-1716	19	\N	70	currency	code	\N	\N	item.prompt.currency	\N	0	1	string	\N	1	1	1	1	1	1
-1717	17	\N	4	item	internal_number	\N	\N	item.prompt.internalNumber	\N	0	1	string	\N	1	1	1	1	1	1
-1718	22	\N	3	bu	user_name	\N	\N	report.prompt.base_user.user_name	\N	0	1	string	\N	1	1	0	1	1	1
-36	2	\N	13	international_description	content	\N	\N	invoice.is_payable	\N	0	1	integer	\N	1	1	1	1	1	1
+COPY report_parameter (id, report_id, dtype, name) FROM stdin;
+1	1	date	start_date
+2	1	date	end_date
+3	1	integer	period
 \.
 
 
@@ -16389,57 +15071,8 @@ COPY report_field (id, report_id, report_user_id, position_number, table_name, c
 -- Data for Name: report_type; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY report_type (id, showable, optlock) FROM stdin;
-1	1	1
-2	1	1
-3	1	1
-4	1	1
-5	1	1
-6	1	1
-7	0	1
-8	1	1
-9	1	1
-\.
-
-
---
--- Data for Name: report_type_map; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY report_type_map (report_id, type_id) FROM stdin;
-1	1
-2	2
-3	3
-4	1
-5	4
-6	2
-7	3
-8	4
-9	1
-10	2
-10	5
-11	2
-11	5
-12	7
-13	7
-14	7
-15	6
-16	6
-17	2
-18	8
-19	9
-20	3
-21	8
-22	8
-23	8
-\.
-
-
---
--- Data for Name: report_user; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY report_user (id, user_id, report_id, create_datetime, title, optlock) FROM stdin;
+COPY report_type (id, name, optlock) FROM stdin;
+1	invoice	0
 \.
 
 
@@ -19300,38 +17933,6 @@ ALTER TABLE ONLY recent_item
 
 
 --
--- Name: report_field_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY report_field
-    ADD CONSTRAINT report_field_pkey PRIMARY KEY (id);
-
-
---
--- Name: report_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY report
-    ADD CONSTRAINT report_pkey PRIMARY KEY (id);
-
-
---
--- Name: report_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY report_type
-    ADD CONSTRAINT report_type_pkey PRIMARY KEY (id);
-
-
---
--- Name: report_user_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY report_user
-    ADD CONSTRAINT report_user_pkey PRIMARY KEY (id);
-
-
---
 -- Name: role_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -19751,13 +18352,6 @@ CREATE INDEX purchase_order_i_notif ON purchase_order USING btree (active_until,
 --
 
 CREATE INDEX purchase_order_i_user ON purchase_order USING btree (user_id, deleted);
-
-
---
--- Name: report_entity_map_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE INDEX report_entity_map_i_2 ON report_entity_map USING btree (entity_id, report_id);
 
 
 --
@@ -20810,62 +19404,6 @@ ALTER TABLE ONLY purchase_order
 
 ALTER TABLE ONLY purchase_order
     ADD CONSTRAINT purchase_order_fk_5 FOREIGN KEY (created_by) REFERENCES base_user(id);
-
-
---
--- Name: report_entity_map_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY report_entity_map
-    ADD CONSTRAINT report_entity_map_fk_1 FOREIGN KEY (report_id) REFERENCES report(id);
-
-
---
--- Name: report_entity_map_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY report_entity_map
-    ADD CONSTRAINT report_entity_map_fk_2 FOREIGN KEY (entity_id) REFERENCES entity(id);
-
-
---
--- Name: report_field_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY report_field
-    ADD CONSTRAINT report_field_fk_1 FOREIGN KEY (report_id) REFERENCES report(id);
-
-
---
--- Name: report_type_map_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY report_type_map
-    ADD CONSTRAINT report_type_map_fk_1 FOREIGN KEY (type_id) REFERENCES report_type(id);
-
-
---
--- Name: report_type_map_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY report_type_map
-    ADD CONSTRAINT report_type_map_fk_2 FOREIGN KEY (report_id) REFERENCES report(id);
-
-
---
--- Name: report_user_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY report_user
-    ADD CONSTRAINT report_user_fk_1 FOREIGN KEY (user_id) REFERENCES base_user(id);
-
-
---
--- Name: report_user_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY report_user
-    ADD CONSTRAINT report_user_fk_2 FOREIGN KEY (report_id) REFERENCES report(id);
 
 
 --

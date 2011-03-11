@@ -149,7 +149,7 @@ class PlanBuilderController {
         showProducts {
             action {
                 // filter using the first item type by default
-                if (params.typeId == null)
+                if (params.typeId == null && flow.itemTypes)
                     params.typeId = flow.itemTypes?.asList()?.first()?.id
 
                 params.template = 'products'

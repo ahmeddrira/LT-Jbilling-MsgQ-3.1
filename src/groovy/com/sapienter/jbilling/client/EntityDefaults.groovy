@@ -46,6 +46,7 @@ import com.sapienter.jbilling.server.user.UserBL
 import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO
 import com.sapienter.jbilling.server.user.db.UserStatusDAS
+import com.sapienter.jbilling.server.util.db.CurrencyDTO
 
 /**
  * EntityDefaults 
@@ -76,6 +77,10 @@ class EntityDefaults {
      * Initialize the entity, creating the necessary preferences, plugins and other defaults.
      */
     def init() {
+        // add company currency to the entity currency map
+        // it's annoying that we need to build this association manually, it would be better mapped through CompanyDTO
+        company.currency.entities_1 << company
+
         /*
             Order periods
          */
@@ -156,8 +161,8 @@ class EntityDefaults {
         /*
             Preferences
          */
-        new PreferenceDTO(jbillingTable: entityTable, foreignId: company.id, preferenceType: new PreferenceTypeDTO(1), intValue: 0).save()  // no automatic payment processing
-        new PreferenceDTO(jbillingTable: entityTable, foreignId: company.id, preferenceType: new PreferenceTypeDTO(4), intValue: 5).save()  // ageing grace period
+        new PreferenceDTO(jbillingTable: entityTable, foreignId: company.id, preferenceType: new PreferenceTypeDTO(Constants.PREFERENCE_GRACE_PERIOD), intValue: 5).save()
+        new PreferenceDTO(jbillingTable: entityTable, foreignId: company.id, preferenceType: new PreferenceTypeDTO(Constants.PREFERENCE_SHOW_NOTE_IN_INVOICE), intValue: 1).save()
 
 
         /*

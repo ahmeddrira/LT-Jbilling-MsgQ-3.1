@@ -5,8 +5,7 @@ class ShortcutController {
 	def breadcrumbService
 
 	def index = {
-		log.debug "ShortcutController.index action"
-		session['shortcuts']= getShortcuts().asList()
+		session['shortcuts'] = getShortcuts().asList()
         render template: "/layouts/includes/shortcuts"
     }
 
@@ -16,7 +15,6 @@ class ShortcutController {
 	 * @return list of user's Shortcuts
 	 */
 	def Object getShortcuts() {
-		log.debug "ShortcutController.getShortcuts() method."
 		return Shortcut.withCriteria {
 			eq("userId", session["user_id"])
 			order("id", "asc")
@@ -24,15 +22,12 @@ class ShortcutController {
 	}
 
 	def add = {
-		log.debug "ShortcutController.add action"
-		
-		def crumbs = breadcrumbService.getBreadcrumbs()
+        def crumbs = breadcrumbService.getBreadcrumbs()
 		def lastCrumb= !crumbs.isEmpty() ? crumbs.getAt(-1) : null
 
 		if (lastCrumb) {
 			def shortcuts= getShortcuts().asList()
-			Shortcut shortcut= new Shortcut(controller: lastCrumb.controller,
-				action: lastCrumb.action, name: lastCrumb.name, objectId: lastCrumb.objectId)
+			Shortcut shortcut= new Shortcut(controller: lastCrumb.controller, action: lastCrumb.action, name: lastCrumb.name, objectId: lastCrumb.objectId)
 			shortcut.userId= session['user_id']
 			
 			Shortcut exists= shortcuts.find { it == shortcut }

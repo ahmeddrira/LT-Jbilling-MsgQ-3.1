@@ -76,8 +76,8 @@
             <li class="${controllerName == 'mediation' ? 'active' : ''}">
                 <g:link controller="mediation"><span><g:message code="menu.link.mediation"/></span><em></em></g:link>
             </li>
-            <li class="${controllerName == 'reports' ? 'active' : ''}">
-                <g:link controller="reports"><span><g:message code="menu.link.reports"/></span><em></em></g:link>
+            <li class="${controllerName == 'report' ? 'active' : ''}">
+                <g:link controller="report"><span><g:message code="menu.link.reports"/></span><em></em></g:link>
             </li>
             <li class="${controllerName == 'product' ? 'active' : ''}">
                 <g:link controller="product"><span><g:message code="menu.link.products"/></span><em></em></g:link>

@@ -1,27 +1,33 @@
 /*
-    jBilling - The Enterprise Open Source Billing System
-    Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
+ jBilling - The Enterprise Open Source Billing System
+ Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
-    This file is part of jbilling.
+ This file is part of jbilling.
 
-    jbilling is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jbilling is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jbilling is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+ jbilling is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
 
-    You should have received a copy of the GNU Affero General Public License
-    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.sapienter.jbilling.server.report.db;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.AbstractDescription;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,181 +37,192 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 import javax.persistence.Version;
+import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.hibernate.annotations.OrderBy;
-
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
-
+/**
+ * Report
+ *
+ * @author Brian Cowdery
+ * @since 07/03/11
+ */
 @Entity
-@TableGenerator(
-        name = "report_GEN", 
-        table = "jbilling_seqs", 
-        pkColumnName = "name", 
-        valueColumnName = "next_id", 
-        pkColumnValue = "report", 
-        allocationSize = 100)
 @Table(name = "report")
-public class ReportDTO implements Serializable {
+@TableGenerator(
+    name = "report_GEN",
+    table = "jbilling_seqs",
+    pkColumnName = "name",
+    valueColumnName = "next_id",
+    pkColumnValue = "report",
+    allocationSize = 10
+)
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+public class ReportDTO extends AbstractDescription implements Serializable {
+
+    public static final String BASE_PATH = Util.getSysProp("base_dir") + File.separator + "reports" + File.separator;
 
     private int id;
-    private String titleKey;
-    private String instructionskey;
-    private String tablesList;
-    private String whereStr;
-    private int idColumn;
-    private String link;
-    private Set<CompanyDTO> entities = new HashSet<CompanyDTO>(0);
-    private Set<ReportFieldDTO> reportFields = new HashSet<ReportFieldDTO>(0);
-    private Set<ReportTypeDTO> reportTypes = new HashSet<ReportTypeDTO>(0);
-    private Set<ReportUserDTO> reportUsers = new HashSet<ReportUserDTO>(0);
-    private int versionNum;
-
-    public ReportDTO() {
-    }
-
-    public ReportDTO(int id, String tablesList, String whereStr, int idColumn) {
-        this.id = id;
-        this.tablesList = tablesList;
-        this.whereStr = whereStr;
-        this.idColumn = idColumn;
-    }
-
-    public ReportDTO(int id, String titlekey, String instructionskey,
-            String tablesList, String whereStr, int idColumn, String link,
-            Set<CompanyDTO> entities, Set<ReportFieldDTO> reportFields,
-            Set<ReportTypeDTO> reportTypes, Set<ReportUserDTO> reportUsers) {
-        this.id = id;
-        this.titleKey = titlekey;
-        this.instructionskey = instructionskey;
-        this.tablesList = tablesList;
-        this.whereStr = whereStr;
-        this.idColumn = idColumn;
-        this.link = link;
-        this.entities = entities;
-        this.reportFields = reportFields;
-        this.reportTypes = reportTypes;
-        this.reportUsers = reportUsers;
-    }
+    private CompanyDTO entity;
+    private ReportTypeDTO type;
+    private String name;
+    private String fileName;
+    private List<ReportParameterDTO<?>> parameters = new ArrayList<ReportParameterDTO<?>>();
+    private Integer versionNum;
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "report_GEN")
     @Column(name = "id", unique = true, nullable = false)
     public int getId() {
-        return this.id;
+        return id;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    @Column(name = "titlekey", length = 50)
-    public String getTitleKey() {
-        return this.titleKey;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entity_id", nullable = false)
+    public CompanyDTO getEntity() {
+        return entity;
     }
 
-    public void setTitleKey(String titlekey) {
-        this.titleKey = titlekey;
+    public void setEntity(CompanyDTO entity) {
+        this.entity = entity;
     }
 
-    @Column(name = "instructionskey", length = 50)
-    public String getInstructionsKey() {
-        return this.instructionskey;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_id", nullable = false)
+    public ReportTypeDTO getType() {
+        return type;
     }
 
-    public void setInstructionsKey(String instructionskey) {
-        this.instructionskey = instructionskey;
+    public void setType(ReportTypeDTO type) {
+        this.type = type;
     }
 
-    @Column(name = "tables_list", nullable = false, length = 1000)
-    public String getTablesList() {
-        return this.tablesList;
+    @Column(name = "name", updatable = true, nullable = false)
+    public String getName() {
+        return name;
     }
 
-    public void setTablesList(String tablesList) {
-        this.tablesList = tablesList;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    @Column(name = "where_str", nullable = false, length = 1000)
-    public String getWhereStr() {
-        return this.whereStr;
+    @Column(name = "file_name", updatable = true, nullable = false)
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setWhereStr(String whereStr) {
-        this.whereStr = whereStr;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
-    @Column(name = "id_column", nullable = false)
-    public int getIdColumn() {
-        return this.idColumn;
+    /**
+     * Returns the base path for this Jasper Report file on disk.
+     *
+     * @return base path for the Jasper Report file
+     */
+    @Transient
+    public String getReportBaseDir() {
+        return BASE_PATH + getType().getName() + File.separator;
     }
 
-    public void setIdColumn(int idColumn) {
-        this.idColumn = idColumn;
+    /**
+     * Returns the expected path for the Jasper Report file on disk.
+     *
+     * @return path to Jasper Report file.
+     */
+    @Transient
+    public String getReportFilePath() {
+        return getReportBaseDir() + getFileName();
     }
 
-    @Column(name = "link", length = 200)
-    public String getLink() {
-        return this.link;
+    /**
+     * Returns a File object for the Jasper Report file.
+     *
+     * @return Jasper Report file.
+     */
+    @Transient
+    public File getReportFile() {
+        return fileName != null ? new File(getReportFilePath()) : null;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "report")
+    @Fetch(FetchMode.SELECT)
+    public List<ReportParameterDTO<?>> getParameters() {
+        return parameters;
     }
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "report_entity_map", joinColumns = { @JoinColumn(name = "report_id", updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "entity_id", updatable = false) })
-    public Set<CompanyDTO> getEntities() {
-        return this.entities;
+    public void setParameters(List<ReportParameterDTO<?>> parameters) {
+        this.parameters = parameters;
     }
 
-    public void setEntities(Set<CompanyDTO> entities) {
-        this.entities = entities;
+    /**
+     * Returns a ReportParameterDTO instance by name.
+     *
+     * @param name parameter name
+     * @return found parameter in report parameters list
+     */
+    @Transient
+    public ReportParameterDTO<?> getParameter(String name) {
+        for (ReportParameterDTO<?> parameter : parameters) {
+            if (parameter.getName().equals(name)) {
+                return parameter;
+            }
+        }
+        return null;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "report")
-    @OrderBy( clause="position_number, id" )
-    public Set<ReportFieldDTO> getReportFields() {
-        return this.reportFields;
-    }
-
-    public void setReportFields(Set<ReportFieldDTO> reportFields) {
-        this.reportFields = reportFields;
-    }
-
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "report_type_map", joinColumns = { @JoinColumn(name = "report_id", updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "type_id", updatable = false) })
-    public Set<ReportTypeDTO> getReportTypes() {
-        return this.reportTypes;
-    }
-
-    public void setReportTypes(Set<ReportTypeDTO> reportTypes) {
-        this.reportTypes = reportTypes;
-    }
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "report")
-    @OrderBy( clause="id")
-    public Set<ReportUserDTO> getReportUsers() {
-        return this.reportUsers;
-    }
-
-    public void setReportUsers(Set<ReportUserDTO> reportUsers) {
-        this.reportUsers = reportUsers;
+    /**
+     * Converts the report parameters list to a map of objects. Parameter names
+     * are used as keys and the set parameter values are used as map values.
+     *
+     * @return map of objects.
+     */
+    @Transient
+    public Map<String, Object> getParameterMap() {
+        Map<String, Object> map = new HashMap<String, Object>();
+        for (ReportParameterDTO<?> parameter : parameters) {
+            map.put(parameter.getName(), parameter.getValue());
+        }
+        return map;
     }
 
     @Version
     @Column(name = "OPTLOCK")
-    public int getVersionNum() {
+    public Integer getVersionNum() {
         return versionNum;
     }
 
-    public void setVersionNum(int versionNum) {
+    public void setVersionNum(Integer versionNum) {
         this.versionNum = versionNum;
     }
 
+    @Transient
+    protected String getTable() {
+        return Constants.TABLE_REPORT;
+    }
+
+    @Override
+    public String toString() {
+        return "Report{"
+               + "id=" + id
+               + ", entityId=" + (entity != null ? entity.getId() : null)
+               + ", type=" + (type != null ? type.getName() : null)
+               + ", fileName='" + fileName + '\''
+               + '}';
+    }
 }

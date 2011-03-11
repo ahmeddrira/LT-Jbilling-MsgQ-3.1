@@ -86,4 +86,5 @@
 </div>
 
 <div class="btn-box">
+    <div class="row"></div>
 </div>

@@ -21,6 +21,7 @@ import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.server.util.csv.Exporter
 import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import com.sapienter.jbilling.server.user.db.CompanyDTO
 
 /**
  * 
@@ -114,6 +115,10 @@ class OrderController {
 						}
 					}
 				}
+
+                baseUserByUserId {
+                    eq('company', new CompanyDTO(session['company_id']))
+                }
 				eq('deleted', 0)
 			}
 			order("id", "desc")

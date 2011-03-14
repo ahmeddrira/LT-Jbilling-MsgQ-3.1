@@ -3336,13 +3336,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-378	1	user	list	\N	\N	0
-379	1	invoice	list	\N	\N	0
-380	1	user	list	\N	\N	0
-381	1	payment	list	\N	\N	0
-382	1	billing	list	\N	\N	0
-383	1	order	list	\N	\N	0
-384	1	config	index	\N	\N	0
+430	1	product	show	\N	3406	0
+431	1	product	list	\N	\N	0
+432	1	product	list	\N	2401	0
+433	1	product	editCategory	update	2401	0
+434	1	product	list	\N	2401	0
+435	1	product	editProduct	create	\N	0
+436	1	product	show	\N	3407	0
 \.
 
 
@@ -10218,6 +10218,19 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 477002	1	1	25	31	2011-02-19 10:23:01.471	2	11	7	\N	\N	\N	0	\N
 477003	1	1	25	1	2011-02-19 10:23:23.172	2	11	7	\N	\N	\N	0	\N
 478000	1	1	25	6060	2011-02-20 10:53:27.821	2	11	25	\N	\N	\N	0	\N
+479000	1	1	14	3300	2011-03-14 16:00:11.554	2	3	7	\N	\N	\N	0	\N
+479001	1	1	14	3202	2011-03-14 16:00:21.668	2	3	7	\N	\N	\N	0	\N
+479002	1	1	14	3201	2011-03-14 16:00:24.553	2	3	7	\N	\N	\N	0	\N
+479003	1	1	14	3200	2011-03-14 16:00:38.441	2	3	7	\N	\N	\N	0	\N
+479004	1	1	14	3103	2011-03-14 16:00:42.24	2	3	7	\N	\N	\N	0	\N
+479005	1	1	14	3102	2011-03-14 16:00:52.676	2	3	7	\N	\N	\N	0	\N
+479006	1	1	14	3101	2011-03-14 16:00:57.827	2	3	7	\N	\N	\N	0	\N
+479007	1	1	14	3100	2011-03-14 16:01:06.032	2	3	7	\N	\N	\N	0	\N
+479008	1	1	13	2600	2011-03-14 16:01:40.531	2	4	7	\N	\N	\N	0	\N
+479009	1	1	13	2500	2011-03-14 16:01:43.864	2	4	7	\N	\N	\N	0	\N
+479010	1	1	13	2400	2011-03-14 16:01:47.557	2	4	7	\N	\N	\N	0	\N
+479011	1	1	13	2201	2011-03-14 16:01:50.949	2	4	7	\N	\N	\N	0	\N
+479012	1	1	13	2401	2011-03-14 16:14:34.459	2	4	9	\N	Data 	\N	0	\N
 \.
 
 
@@ -11313,6 +11326,14 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 99	3	description	1	Tax Code
 101	1	description	1	Invoice Reports
 100	1	description	1	Total amount invoiced grouped by period.
+14	3400	description	1	Account Setup
+14	3401	description	1	SIM status live - recurring charges
+14	3402	description	1	SIM - status sleep - recurring charges
+14	3403	description	1	SIM - status suspended - recurring charges
+14	3404	description	1	SIM card supply fee
+14	3405	description	1	Data Traffic (1MB) - Standard
+14	3406	description	1	Data Traffic (1MB) - Roaming
+14	3407	description	1	SMS message
 \.
 
 
@@ -11414,16 +11435,24 @@ COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, op
 2900	CALL-LD-GEN	1	\N	1	0	2	1900	\N
 3000	PL-02	1	\N	1	0	4	2001	\N
 240	DP-4	1	\N	1	0	2	2003	\N
-3200	MODEM-R-01	1	\N	0	0	1	2200	\N
-3100	BW-2.5	1	\N	0	0	3	2100	\N
-3101	CARD-01	1	\N	0	0	2	2101	\N
-3102	VPN-1MB	1	\N	0	0	5	2102	\N
-3202	INSTALL-01	1	\N	0	0	1	2202	\N
-3103	MODEM-R-02	1	\N	0	0	4	2103	\N
 3105	BND20	1	\N	1	0	2	2105	\N
 3104	TLDC	1	\N	1	0	2	2104	\N
-3300	PL-eSpeed	1	\N	0	0	2	2300	\N
-3201	TR-MN	1	\N	0	0	2	2201	\N
+3300	PL-eSpeed	1	\N	1	0	3	2300	\N
+3202	INSTALL-01	1	\N	1	0	2	2202	\N
+3201	TR-MN	1	\N	1	0	3	2201	\N
+3200	MODEM-R-01	1	\N	1	0	2	2200	\N
+3103	MODEM-R-02	1	\N	1	0	5	2103	\N
+3102	VPN-1MB	1	\N	1	0	6	2102	\N
+3101	CARD-01	1	\N	1	0	3	2101	\N
+3100	BW-2.5	1	\N	1	0	4	2100	\N
+3400	FEE-01-STP	1	\N	0	0	1	2400	00001
+3401	SIM-C-L	1	\N	0	0	1	2401	00002
+3402	SIM-C-S	1	\N	0	0	1	2402	00003
+3403	SIM-C-U	1	\N	0	0	1	2403	00004
+3404	SIM-SUP	1	\N	0	0	1	2404	00005
+3407	SMS	1	\N	0	0	1	2407	00007
+3405	DAT-ST	1	\N	0	1	1	2405	00006
+3406	DAT-RO	1	\N	0	1	1	2406	00006
 \.
 
 
@@ -11433,13 +11462,11 @@ COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, op
 
 COPY item_type (id, entity_id, description, order_line_type_id, optlock, internal) FROM stdin;
 2	2	Drinks	1	1	f
-2401	1	Data 	1	0	f
-2400	1	Broadband	1	2	f
 2402	1	plans	1	0	t
 2403	2	plans	1	0	t
-2201	1	Voice	1	1	f
-2500	1	Rentals	1	0	f
-2600	1	Usage	1	0	f
+2700	1	SIMs	1	0	f
+2701	1	Fees	1	0	f
+2401	1	Usage	1	1	f
 \.
 
 
@@ -11449,20 +11476,16 @@ COPY item_type (id, entity_id, description, order_line_type_id, optlock, interna
 
 COPY item_type_map (item_id, type_id) FROM stdin;
 4	2
-2800	2201
-2801	2201
-2900	2201
-3100	2400
-3101	2400
 3102	2401
-3103	2201
-3200	2500
-3200	2400
-3201	2400
-3103	2500
-3202	2201
 3300	2402
-3201	2600
+3400	2701
+3401	2700
+3402	2700
+3403	2700
+3404	2700
+3405	2401
+3406	2401
+3407	2401
 \.
 
 
@@ -11580,18 +11603,15 @@ ach	1
 partner_payout	1
 customer	1086
 base_user	1096
-price_model	24
 customer	1086
 partner_payout	1
 process_run_total_pm	1
 process_run_total_pm	1
-item	34
 plan	2
 payment_authorization	1
 plan_item	2
 payment_authorization	1
 paper_invoice_batch	1
-item_type	27
 invoice	87
 invoice	87
 contact_map	7912
@@ -11616,8 +11636,6 @@ mediation_record_line	1
 contact_type	10
 contact_field_type	1
 base_user	1096
-item	34
-item_type	27
 contact	1148
 contact_field	2028
 invoice_line	88
@@ -11627,22 +11645,27 @@ purchase_order	1081
 purchase_order	1081
 order_line	2083
 order_line	2083
-recent_item	56
 notification_message	2
 notification_message	2
 notification_message_section	2
+item_type	28
+price_model	25
+item	35
 notification_message_section	2
 notification_message_line	2
 notification_message_line	2
 pluggable_task	607
-event_log	479
-event_log	479
 shortcut	1
-breadcrumb	385
 report	1
 report_type	1
 report_parameter	1
 entity	2
+event_log	480
+event_log	480
+item_type	28
+item	35
+recent_item	71
+breadcrumb	437
 \.
 
 
@@ -14583,7 +14606,6 @@ COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 --
 
 COPY plan (id, item_id, description, period_id) FROM stdin;
-100	3300	e-Speed (postpaid service)	2
 \.
 
 
@@ -14592,9 +14614,6 @@ COPY plan (id, item_id, description, period_id) FROM stdin;
 --
 
 COPY plan_item (id, plan_id, item_id, price_model_id, precedence, bundled_quantity, period_id) FROM stdin;
-100	100	3201	2301	-1	0.0000000000	\N
-101	100	3100	2302	-1	0.0000000000	\N
-102	100	3200	2303	-1	0.0000000000	\N
 \.
 
 
@@ -14962,9 +14981,14 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id, next_
 2202	METERED	50.0000000000	\N	3	\N
 2103	METERED	25.0000000000	\N	3	\N
 2300	METERED	59.9000000000	\N	3	\N
-2301	CAPPED_GRADUATED	0.0500000000	\N	3	\N
-2302	FLAT	0.0000000000	\N	3	\N
-2303	FLAT	0.0000000000	\N	3	\N
+2400	METERED	1000.0000000000	\N	3	\N
+2401	METERED	3.0000000000	\N	3	\N
+2402	METERED	0.4000000000	\N	3	\N
+2403	METERED	0.8000000000	\N	3	\N
+2404	METERED	2.0000000000	\N	3	\N
+2405	METERED	1.5000000000	\N	3	\N
+2406	METERED	2.5000000000	\N	3	\N
+2407	METERED	0.0500000000	\N	3	\N
 \.
 
 
@@ -14974,8 +14998,6 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id, next_
 
 COPY price_model_attribute (price_model_id, attribute_name, attribute_value) FROM stdin;
 2104	included	0
-2301	max	158
-2301	included	1200
 \.
 
 
@@ -15046,11 +15068,11 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 --
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
-51	INVOICE	8600	1	0
-52	MEDIATIONPROCESS	1	1	0
-53	ORDER	107900	1	0
-54	CUSTOMER	10816	1	0
-55	ORDER	108000	1	0
+66	PRODUCT	3403	1	0
+67	PRODUCT	3404	1	0
+68	PRODUCT	3405	1	0
+69	PRODUCT	3406	1	0
+70	PRODUCT	3407	1	0
 \.
 
 

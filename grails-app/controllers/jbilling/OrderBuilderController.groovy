@@ -146,7 +146,7 @@ class OrderBuilderController {
         showProducts {
             action {
                 // filter using the first item type by default
-                if (params['product.typeId'] == null)
+                if (params['product.typeId'] == null && flow.itemTypes)
                     params['product.typeId'] = flow.itemTypes?.asList()?.first()?.id
 
                 params.template = 'products'

@@ -60,8 +60,12 @@ public class PluggableTaskTypeDTO extends AbstractDescription implements Seriali
     public PluggableTaskTypeDTO() {
         // default
     }
-    // method useful to get a detached copy 
 
+    public PluggableTaskTypeDTO(Integer id) {
+        this.pk = id;
+    }
+
+    // method useful to get a detached copy
     public PluggableTaskTypeDTO(PluggableTaskTypeDTO otherDto) {
         pk = otherDto.getId();
         className = otherDto.getClassName();
@@ -75,6 +79,10 @@ public class PluggableTaskTypeDTO extends AbstractDescription implements Seriali
 
     public int getId() {
         return pk;
+    }
+
+    public void setId(Integer id) {
+        this.pk = id;
     }
 
     public String getClassName() {

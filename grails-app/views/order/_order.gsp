@@ -198,7 +198,7 @@
             <a href="${createLink (controller: 'orderBuilder', action: 'edit', params: [id: order?.id])}" class="submit edit">
                 <span><g:message code="order.button.edit"/>
             </span></a></div><div class="row">
-            <a onclick="showConfirm('delete-' + ${order?.id});" class="submit delete">
+            <a onclick="showConfirm('deleteOrder-' + ${order?.id});" class="submit delete">
                 <span><g:message code="order.button.delete"/></span>
             </a>
 	   </div>
@@ -208,6 +208,6 @@
 <g:render template="/confirm"
      model="['message':'order.prompt.are.you.sure',
              'controller':'order',
-             'action':'delete',
+             'action':'deleteOrder',
              'id':order.id,
             ]"/>

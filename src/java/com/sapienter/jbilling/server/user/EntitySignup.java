@@ -561,22 +561,14 @@ public final class EntitySignup {
         addTaskParameter(table, firstPT, "all", null, "yes", null);
         
         // email parameters. They are all optional
-        addTaskParameter(table, firstPT + 7, "smtp_server", null, 
-                null, null);
-        addTaskParameter(table, firstPT + 7, "from", null, 
-                contact.getEmail(), null);
-        addTaskParameter(table, firstPT + 7, "username", null, 
-                null, null);
-        addTaskParameter(table, firstPT + 7, "password", null, 
-                null, null);
-        addTaskParameter(table, firstPT + 7, "port", null, 
-                null, null);
-        addTaskParameter(table, firstPT + 7, "reply_to", null, 
-                null, null);
-        addTaskParameter(table, firstPT + 7, "bcc_to", null, 
-                null, null);
-        addTaskParameter(table, firstPT + 7, "from_name", null, 
-                contact.getOrganizationName(), null);
+        addTaskParameter(table, firstPT + 7, "smtp_server", null, null, null);
+        addTaskParameter(table, firstPT + 7, "from", null, contact.getEmail(), null);
+        addTaskParameter(table, firstPT + 7, "username", null, null, null);
+        addTaskParameter(table, firstPT + 7, "password", null, null, null);
+        addTaskParameter(table, firstPT + 7, "port", null, null, null);
+        addTaskParameter(table, firstPT + 7, "reply_to", null, null, null);
+        addTaskParameter(table, firstPT + 7, "bcc_to", null, null, null);
+        addTaskParameter(table, firstPT + 7, "from_name", null, contact.getOrganizationName(), null);
         
         updateBettyTablesRows(table.index, table.nextId);
         
@@ -634,6 +626,7 @@ public final class EntitySignup {
         processTable(table);
 
         //REPORT_ENTITY_MAP
+/*
         String reportEntityColumns[] =
         {
             "i_entity_id",
@@ -665,18 +658,22 @@ public final class EntitySignup {
                 reportEntityColumns, 
                 reportEntityData, false);
         processTable(table);
-        
+*/
+
         //AGEING_ENTITY_STEP
         String ageingEntityStepColumns[] =
                 {"i_id", "i_entity_id", "i_status_id", "i_days", "i_optlock"};
         String ageingEntityStepMessageData[][] = {
             {String.valueOf(newEntityId), "1", "0", "0"}, // active (for the welcome message)
         };
+
         String ageingEntityStepIntColumns[][][] =
         { 
             { { "welcome_message", "<div> <br/> <p style='font-size:19px; font-weight: bold;'>Welcome to " + 
                 contact.getOrganizationName() + " Billing!</p> <br/> <p style='font-size:14px; text-align=left; padding-left: 15;'>From here, you can review your latest invoice and get it paid instantly. You can also view all your previous invoices and payments, and set up the system for automatic payment with your credit card.</p> <p style='font-size:14px; text-align=left; padding-left: 15;'>What would you like to do today? </p> <ul style='font-size:13px; text-align=left; padding-left: 25;'> <li >To submit a credit card payment, follow the link on the left bar.</li> <li >To view a list of your invoices, click on the �Invoices� menu option. The first invoice on the list is your latest invoice. Click on it to see its details.</li> <li>To view a list of your payments, click on the �Payments� menu option. The first payment on the list is your latest payment. Click on it to see its details.</li> <li>To provide a credit card to enable automatic payment, click on the menu option 'Account', and then on 'Edit Credit Card'.</li> </ul> </div>" }, }, // act
         };
+
+
         table = addTable(Constants.TABLE_AGEING_ENTITY_STEP, 
                 ageingEntityStepColumns, 
                 ageingEntityStepMessageData, 
@@ -699,8 +696,10 @@ public final class EntitySignup {
             "i_review_status",
             "i_period_unit_id",
             "i_period_value",
+
             "i_due_date_unit_id",
             "i_due_date_value",
+
             "i_only_recurring",
             "i_invoice_date_process",
             "i_auto_payment",
@@ -708,7 +707,10 @@ public final class EntitySignup {
         };
         String billingProcessConfigurationData[][] = {
             { String.valueOf(newEntityId), inAMonth, 
-                "1", "0", "1", "3", "1", "2", "1", "1", "1", "1", "0", "0", "0" },
+                "1", "0", "1", "3",
+                "1", "2", "1",
+                "1", "1",
+                "1", "0", "0", "0" },
         };
         
         table = addTable(Constants.TABLE_BILLING_PROCESS_CONFIGURATION, 

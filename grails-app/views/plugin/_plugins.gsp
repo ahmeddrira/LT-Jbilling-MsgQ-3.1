@@ -1,9 +1,11 @@
 <div class="table-box">
 <table cellpadding="0" cellspacing="0">
     <thead>
-        <th class="small"><g:message code="plugins.plugin.id"/></th>
-    	<th class="medium"><g:message code="plugins.plugin.type"/></th>
-    	<th class="tiny"><g:message code="plugins.plugin.order"/></th>
+        <tr>
+            <th class="small"><g:message code="plugins.plugin.id"/></th>
+    	    <th class="medium"><g:message code="plugins.plugin.type"/></th>
+    	    <th class="tiny"><g:message code="plugins.plugin.order"/></th>
+        </tr>
     </thead>
 
     <tbody>

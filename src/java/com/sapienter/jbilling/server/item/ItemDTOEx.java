@@ -41,6 +41,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer id;
     @NotNull @Size (min=1,max=50, message="validation.error.size,1,50")
     private String number;
+    @Size (min=1,max=50, message="validation.error.size,1,50")
     private String glCode;
     @Digits(integer=3, fraction=2, message="validation.error.not.a.number")
     private String percentage;

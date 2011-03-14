@@ -76,6 +76,12 @@
         </delete>
     </target>
 
+    <target name="setup"
+            depends="clean, copy-resources, compile-designs, compile-rules"
+            description="Prepares jBilling by copying and compiling all the required resources.">
+        <echo message="Setup jBilling environment. Start grails with './run-app'."/>
+    </target>
+
     <target name="copy-resources" description="Creates the jbilling 'resources/' directories and copies necessary files.">
         <!-- create invoice design and pdf invoice target directories -->
         <mkdir dir="${build.resources.dir}/designs"/>
@@ -118,6 +124,35 @@
              xmlvalidation="true">
             <src>
                 <fileset dir="${source.descriptor.dir}/designs">
+                    <include name="**/*.jrxml"/>
+                </fileset>
+            </src>
+
+            <classpath>
+                <path refid="compile.classpath"/>
+                <pathelement path="${build.classes.dir}"/>
+            </classpath>
+        </jrc>
+        <delete dir="${basedir}/tmp"/>
+    </target>
+
+    <target name="compile-reports" description="Compiles jasper report designs.">
+        <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask">
+            <classpath refid="compile.classpath"/>
+        </taskdef>
+
+        <!-- clean old designs -->
+        <delete dir="${build.resources.dir}/reports"/>
+        <mkdir dir="${build.resources.dir}/reports"/>
+
+        <!-- compile designs -->
+        <mkdir dir="${basedir}/tmp"/>
+        <jrc destdir="${build.resources.dir}/reports"
+             tempdir="${basedir}/tmp"
+             keepjava="true"
+             xmlvalidation="true">
+            <src>
+                <fileset dir="${source.descriptor.dir}/reports">
                     <include name="**/*.jrxml"/>
                 </fileset>
             </src>
@@ -204,7 +239,7 @@
     <target name="test" depends="prepare-test, test-unit, test-ws, test-integration"/>
 
     <target name="prepare-test"
-            depends="clean, copy-resources, compile-designs, compile-rules, prepare-test-db"
+            depends="clean, copy-resources, compile-designs, compile-reports, compile-rules, prepare-test-db"
             description="Prepares the testing environment">
 
         <echo message="Environment prepared for test run. Start grails with './run-app' and run 'ant test'."/>

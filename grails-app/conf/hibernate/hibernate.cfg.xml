@@ -16,11 +16,14 @@
         <!-- Mappings, only needed to help GROM, otherwise all the mappings are done with annotations -->
         <mapping package="com.sapienter.jbilling.server.provisioning.db" />
         <mapping class="com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDTO" />
-        <mapping package="com.sapienter.jbilling.server.report.db" />
-        <mapping class="com.sapienter.jbilling.server.report.db.ReportFieldDTO" />
-        <mapping class="com.sapienter.jbilling.server.report.db.ReportTypeDTO" />
-        <mapping class="com.sapienter.jbilling.server.report.db.ReportDTO" />
-        <mapping class="com.sapienter.jbilling.server.report.db.ReportUserDTO" />
+        <mapping package="com.sapienter.jbilling.server.report.db"/>
+        <mapping class="com.sapienter.jbilling.server.report.db.ReportDTO"/>
+        <mapping class="com.sapienter.jbilling.server.report.db.ReportTypeDTO"/>
+        <mapping class="com.sapienter.jbilling.server.report.db.ReportParameterDTO"/>
+        <mapping class="com.sapienter.jbilling.server.report.db.parameter.BooleanReportParameterDTO"/>
+        <mapping class="com.sapienter.jbilling.server.report.db.parameter.DateReportParameterDTO"/>
+        <mapping class="com.sapienter.jbilling.server.report.db.parameter.IntegerReportParameterDTO"/>
+        <mapping class="com.sapienter.jbilling.server.report.db.parameter.StringReportParameterDTO"/>
         <mapping package="com.sapienter.jbilling.server.process.db" />
         <mapping class="com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO" />
         <mapping class="com.sapienter.jbilling.server.process.db.ProcessRunTotalPmDTO" />

@@ -47,7 +47,6 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
-import com.sapienter.jbilling.server.report.db.ReportUserDTO;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
@@ -99,7 +98,6 @@ public class UserDTO implements Serializable, Exportable {
 
     private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
     private Set<AchDTO> achs = new HashSet<AchDTO>(0);
-    private Set<ReportUserDTO> reports = new HashSet<ReportUserDTO>(0);
     private Set<Partner> partnersForRelatedClerk = new HashSet<Partner>(0);
     private Set<OrderDTO> purchaseOrdersForCreatedBy = new HashSet<OrderDTO>(0);
     private Set<OrderDTO> orders = new HashSet<OrderDTO>(0);
@@ -126,7 +124,7 @@ public class UserDTO implements Serializable, Exportable {
     public UserDTO(int id, CurrencyDTO currencyDTO, CompanyDTO entity, SubscriberStatusDTO subscriberStatus,
             UserStatusDTO userStatus, LanguageDTO language, String password, short deleted, Date createDatetime,
             Date lastStatusChange, Date lastLogin, String userName, int failedAttempts, Set<PaymentDTO> payments,
-            Set<AchDTO> achs, Set<PermissionUserDTO> permissionUsers, Set<ReportUserDTO> reportUsers,
+            Set<AchDTO> achs, Set<PermissionUserDTO> permissionUsers,
             Set<Partner> partnersForRelatedClerk, CustomerDTO customer, Partner partnersForUserId,
             Set<OrderDTO> purchaseOrdersForCreatedBy, Set<OrderDTO> purchaseOrdersForUserId,
             Set<CreditCardDTO> creditCards, Set<NotificationMessageArchDTO> notificationMessageArchs, Set<RoleDTO> roles,
@@ -147,7 +145,6 @@ public class UserDTO implements Serializable, Exportable {
         this.payments = payments;
         this.achs = achs;
         this.permissions = permissionUsers;
-        this.reports = reportUsers;
         this.partnersForRelatedClerk = partnersForRelatedClerk;
         this.customer = customer;
         this.partnersForUserId = partnersForUserId;
@@ -179,7 +176,6 @@ public class UserDTO implements Serializable, Exportable {
         setPayments(another.getPayments());
         setAchs(another.getAchs());
         setPermissions(another.getPermissions());
-        setReports(another.getReports());
         setPartnersForRelatedClerk(another.getPartnersForRelatedClerk());
         setPurchaseOrdersForCreatedBy(another.getPurchaseOrdersForCreatedBy());
         setOrders(another.getOrders());
@@ -453,16 +449,6 @@ public class UserDTO implements Serializable, Exportable {
 
     public void setAchs(Set<AchDTO> achs) {
         this.achs = achs;
-    }
-
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "baseUser")
-    public Set<ReportUserDTO> getReports() {
-        return this.reports;
-    }
-
-    public void setReports(Set<ReportUserDTO> reportUsers) {
-        this.reports = reportUsers;
     }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "baseUserByRelatedClerk")

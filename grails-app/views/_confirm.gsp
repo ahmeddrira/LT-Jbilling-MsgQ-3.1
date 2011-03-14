@@ -53,7 +53,7 @@
     <!-- confirm dialog content body -->
     <table style="margin: 3px 0 0 10px">
         <tbody><tr>
-            <td>
+            <td valign="top">
                 <img src="/jbilling/images/icon34.gif" alt="">
             </td>
             <td class="col2" style="padding-left: 7px">

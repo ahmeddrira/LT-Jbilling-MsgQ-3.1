@@ -1,6 +1,6 @@
 /*
  jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
+ Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
  This file is part of jbilling.
 
@@ -22,6 +22,12 @@ package com.sapienter.jbilling.server.report.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
+/**
+ * ReportDAS
+ *
+ * @author Brian Cowdery
+ * @since 07/03/11
+ */
 public class ReportDAS extends AbstractDAS<ReportDTO> {
 
 }

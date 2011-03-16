@@ -42,7 +42,6 @@ public class Context {
         PLUGGABLE_TASK_SESSION          ("pluggableTaskSession"),
         PAYMENT_SESSION                 ("paymentSession"),
         MEDIATION_SESSION               ("mediationSession"),
-        REPORT_SESSION                  ("reportSession"),
         BILLING_PROCESS_SESSION         ("billingProcessSession"),
         PROVISIONING_PROCESS_SESSION    ("provisioningProcessSession"),
         WEB_SERVICES_SESSION            ("webServicesSession"),

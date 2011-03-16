@@ -15,7 +15,6 @@
                     <th><g:message code="label.gui.date"/></th>
                     <th class="small"><g:message code="invoice.label.duedate"/></th>
                     <th class="small"><g:message code="invoice.label.id"/></th>
-                    <th class="small">#</th> <!-- # for Invoice Number -->
                     <th><g:message code="invoice.label.status"/></th>
                     <th class="small"><g:message code="invoice.label.amount"/></th>
                     <th class="small"><g:message code="invoice.label.balance"/></th>
@@ -46,14 +45,6 @@
 				     			before="register(this);" onSuccess="render(data, next);">
 							<strong>
 								${inv.id }
-							</strong>
-						</g:remoteLink>
-					</td>
-					<td class="small">
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
-				     			before="register(this);" onSuccess="render(data, next);">
-							<strong>
-								${inv.number }
 							</strong>
 						</g:remoteLink>
 					</td>
@@ -117,3 +108,6 @@
     </div>
 </div>
 
+<div class="btn-box">
+    <div class="row"></div>
+</div>

@@ -1,404 +1,245 @@
 /*
-    jBilling - The Enterprise Open Source Billing System
-    Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
+ jBilling - The Enterprise Open Source Billing System
+ Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
-    This file is part of jbilling.
+ This file is part of jbilling.
 
-    jbilling is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ jbilling is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    jbilling is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+ jbilling is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
 
-    You should have received a copy of the GNU Affero General Public License
-    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.sapienter.jbilling.server.report;
 
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import javax.naming.NamingException;
-
-import org.apache.log4j.Logger;
-
-import sun.jdbc.rowset.CachedRowSet;
-
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.report.db.ReportDAS;
 import com.sapienter.jbilling.server.report.db.ReportDTO;
-import com.sapienter.jbilling.server.report.db.ReportFieldDAS;
-import com.sapienter.jbilling.server.report.db.ReportFieldDTO;
-import com.sapienter.jbilling.server.report.db.ReportTypeDAS;
-import com.sapienter.jbilling.server.report.db.ReportUserDAS;
-import com.sapienter.jbilling.server.report.db.ReportUserDTO;
 import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.user.db.CompanyDAS;
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import com.sapienter.jbilling.server.util.DTOFactory;
-import com.sapienter.jbilling.server.util.Util;
-import java.text.SimpleDateFormat;
+import com.sapienter.jbilling.server.util.Context;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.export.JRHtmlExporter;
+import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
+import org.apache.log4j.Logger;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 
-public class ReportBL extends ResultList {
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
-    Logger log = null;
-    ReportUserDAS reportUserDas = null;
-    ReportUserDTO report = null;
-    ReportDAS reportDas = null;
-    ReportFieldDAS reportFieldDas = null;
-    ReportTypeDAS reportTypeDas = null;
+/**
+ * ReportBL
+ *
+ * @author Brian Cowdery
+ * @since 08/03/11
+ */
+public class ReportBL {
 
-    JNDILookup EJBFactory = null;
+    private static final Logger LOG = Logger.getLogger(ReportBL.class);
 
-    public ReportBL() throws NamingException {
-        log = Logger.getLogger(ReportBL.class);
-        EJBFactory = JNDILookup.getFactory(false);
+    public static final String SESSION_IMAGE_MAP = "jasper_images";
+    public static final String PARAMETER_ENTITY_ID = "entity_id";
+    public static final String PARAMETER_SUBREPORT_DIR = "SUBREPORT_DIR";
 
-        reportUserDas = new ReportUserDAS();
+    private ReportDTO report;
+    private Locale locale;
+    private Integer entityId;
 
-        reportDas = new ReportDAS();
+    private ReportDAS reportDas;
 
-        reportFieldDas = new ReportFieldDAS();
-
-        reportTypeDas = new ReportTypeDAS();
-
+    public ReportBL() {
+        _init();
     }
 
-    private String parseSQL(ReportDTOEx report) throws SessionInternalError {
-        StringBuffer select = new StringBuffer("select ");
-        StringBuffer from = new StringBuffer("from " + report.getTablesList());
-        StringBuffer where = new StringBuffer("where " + report.getWhereStr());
-        StringBuffer orderBy = new StringBuffer("order by ");
-        StringBuffer groupBy = new StringBuffer("group by ");
-        String selectSeparator = "";
-        String whereSeparator;
-        String orderBySeparator = "";
-        String groupBySeparator = "";
-        String columnHelper[] = new String[report.getFields().size()];
-        int orderedColumns = 0;
-        boolean isGrouped = false;
-        int firstField = 0; // normaly 0, but if is agregated and
-        // with id column it has to skip the first
+    public ReportBL(Integer id, Integer userId, Integer entityId) {
+        _init();
+        set(id);
+        setLocale(userId);
+        this.entityId = entityId;
+    }
 
-        // the first column has to be always the id column, due to the
-        // insertRowTag. For agregated reports or those that don't have one,
-        // a static 1 is added.
-        if (report.getIdColumn() != 1 || report.getAgregated().booleanValue()) {
-            select.append("1,");
+    public ReportBL(ReportDTO report, Locale locale, Integer entityId) {
+        _init();
+        this.report = report;
+        this.locale = locale;
+        this.entityId = entityId;
+    }
+
+    private void _init() {
+        this.reportDas = new ReportDAS();
+    }
+
+    public void set(Integer id) {
+        this.report = reportDas.find(id);
+    }
+
+    public void setLocale(Integer userId) {
+        this.locale = new UserBL(userId).getLocale();
+    }
+
+    public void setEntityId(Integer entityId) {
+        this.entityId = entityId;
+    }
+
+    public ReportDTO getEntity() {
+        return this.report;
+    }
+
+    /**
+     * Render report as HTML to the given HTTP response stream. This method also dumps
+     * the generated report image files into a session Map (<code>Map<String, byte[]></code>)
+     * so that they can be retrieved and rendered.
+     *
+     * @param response response stream
+     * @param session session to place images map
+     * @param imagesUrl the URL of the action where the image map can be accessed by name - e.g., "images?image="
+     */
+    public void renderHtml(HttpServletResponse response, HttpSession session, String imagesUrl) {
+        PrintWriter writer = null;
+        try {
+            writer = response.getWriter();
+        } catch (IOException e) {
+            LOG.error("Exception occurred retrieving the print writer for the response stream.", e);
+            return;
         }
 
-        // reports with id column that are run agregated have to loose their
-        // id column
-        firstField = report.getFirstFieldIndex();
+        JasperPrint print = run();
 
-        for (int f = firstField; f < report.getFields().size(); f++) {
-            Field field = (Field) report.getFields().get(f);
+        if (print != null) {
+            Map<String, byte[]> images = new HashMap<String, byte[]>();
 
-            // add the column to the select
-            if (field.getIsShown().intValue() == 1) {
+            response.setContentType("text/html");
+            session.setAttribute(SESSION_IMAGE_MAP, images);
 
-                if (field.getFunctionName() != null) {
-                    columnHelper[f] = field.getFunctionName() + "("
-                            + field.getTableName() + "."
-                            + field.getColumnName() + ")";
-                } else {
-                    columnHelper[f] = field.getTableName() + "."
-                            + field.getColumnName();
+            JRHtmlExporter exporter = new JRHtmlExporter();
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, writer);
+            exporter.setParameter(JRHtmlExporterParameter.IMAGES_MAP, images);
+            exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, imagesUrl);
+
+            try {
+                exporter.exportReport();
+            } catch (JRException e) {
+                LOG.error("Exception occurred exporting jasper report to HTML.", e);
+            }
+        }
+    }
+
+    /**
+     * Exports a report using the given format.
+     *
+     * @param format export type
+     * @return exported report
+     */
+    public ReportExportDTO export(ReportExportFormat format) {
+        LOG.debug("Exporting report to " + format.name() + " ...");
+
+        JasperPrint print = run();
+
+        ReportExportDTO export = null;
+        if (print != null) {
+            try {
+                export = format.export(print);
+            } catch (JRException e) {
+                LOG.error("Exception occurred exporting jasper report to " + format.name(), e);
+            } catch (IOException e) {
+                LOG.error("Exception occurred getting exported bytes", e);
+            }
+        }
+
+        return export;
+    }
+
+    /**
+     * Run this report.
+     *
+     * This method assumes that the report object contains parameters that have been populated
+     * with a value to use when running the report.
+     *
+     * @return JasperPrint output file
+     */
+    public JasperPrint run() {
+        return run(report.getName(),
+                   report.getReportFile(),
+                   report.getReportBaseDir(),
+                   report.getParameterMap(),
+                   locale,
+                   entityId);
+    }
+
+    /**
+     * Run the given report design file with the given parameter list.
+     *
+     * @param reportName report name
+     * @param report report design file
+     * @param baseDir report base directory
+     * @param parameters report parameters
+     * @param locale user locale
+     * @param entityId entity ID
+     * @return JasperPrint output file
+     */
+    public static JasperPrint run(String reportName, File report, String baseDir, Map<String, Object> parameters,
+                                  Locale locale, Integer entityId) {
+
+        // add user locale, entity id and sub report directory
+        parameters.put(JRParameter.REPORT_LOCALE, locale);
+        parameters.put(PARAMETER_ENTITY_ID, entityId);
+        parameters.put(PARAMETER_SUBREPORT_DIR, baseDir);
+
+        LOG.debug("Generating report " + report.getPath() + " ...");
+        LOG.debug(parameters.toString());
+
+        // get database connection
+        DataSource dataSource = Context.getBean(Context.Name.DATA_SOURCE);
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+
+        // run report
+        FileInputStream inputStream = null;
+        JasperPrint print = null;
+        try {
+            inputStream = new FileInputStream(report);
+            print = JasperFillManager.fillReport(inputStream, parameters, connection);
+            print.setName(reportName);
+
+        } catch (FileNotFoundException e) {
+            LOG.error("Report design file " + report.getPath() + " not found.", e);
+
+        } catch (JRException e) {
+            LOG.error("Exception occurred generating jasper report.", e);
+
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    /* ignore*/
                 }
-                select.append(selectSeparator + columnHelper[f]);
-                selectSeparator = ",";
-            }
-
-            // add the condition to the where
-            if (report.getWhereStr() != null
-                    && report.getWhereStr().length() > 0) {
-                whereSeparator = " and ";
-            } else {
-                whereSeparator = "";
-            }
-            if (field.getWhereValue() != null
-                    && field.getWhereValue().length() > 0) {
-                // now we can only state the where, we can't put the value
-                // or we would clogg the database cache
-                if (field.getDataType().equals(Field.TYPE_INTEGER)
-                        && field.getWhereValue().indexOf(',') >= 0) {
-                    String oper;
-                    if (field.getOperatorValue().equals(Field.OPERATOR_EQUAL)) {
-                        oper = " in";
-                    } else if (field.getOperatorValue().equals(
-                            Field.OPERATOR_DIFFERENT)) {
-                        oper = " not in";
-                    } else {
-                        throw new SessionInternalError("operator mismatch for "
-                                + "null value");
-                    }
-                    where.append(whereSeparator + field.getTableName() + "."
-                            + field.getColumnName() + oper + "(");
-                    StringTokenizer tok = new StringTokenizer(field
-                            .getWhereValue().toString(), ",");
-                    for (int ff = 0; ff < tok.countTokens(); ff++) {
-                        where.append("?");
-                        if (ff + 1 < tok.countTokens()) {
-                            where.append(",");
-                        }
-                    }
-                    where.append(")");
-                } else {
-                    String oper = field.getOperatorValue();
-                    if (field.getWhereValue().equalsIgnoreCase("null")) {
-
-                        if (field.getOperatorValue().equals(
-                                Field.OPERATOR_EQUAL)) {
-                            oper = "is";
-                        } else if (field.getOperatorValue().equals(
-                                Field.OPERATOR_DIFFERENT)) {
-                            oper = "is not";
-                        } else {
-                            throw new SessionInternalError(
-                                    "operator mismatch for " + "null value");
-                        }
-                    }
-                    where.append(whereSeparator + field.getTableName() + "."
-                            + field.getColumnName() + " " + oper + " ?");
-                }
-                whereSeparator = " and ";
-            }
-
-            // the order can only be marked, as it has to follow a particular
-            // order
-            if (field.getOrderPosition() != null) {
-                orderedColumns++;
-            }
-
-            // the group by
-            if (field.getIsGrouped().intValue() == 1) {
-                isGrouped = true;
-                groupBy.append(groupBySeparator + field.getTableName() + "."
-                        + field.getColumnName());
-                groupBySeparator = ",";
             }
         }
 
-        // now take care of the order by
-        orderBySeparator = "";
-        if (orderedColumns > 0) {
-            for (int done = 1; done <= orderedColumns; done++) {
-                int f;
-                for (f = 0; f < report.getFields().size(); f++) {
-                    Field field = (Field) report.getFields().get(f);
-                    if (field.getOrderPosition() != null
-                            && field.getOrderPosition().intValue() == done) {
-                        String orderByStr = null;
-                        if (field.getIsShown().intValue() == 1) {
-                            orderByStr = columnHelper[f];
-                        } else {
-                            orderByStr = field.getTableName() + "."
-                                    + field.getColumnName();
-                        }
-                        log.debug("Adding to orderby " + orderBySeparator
-                                + orderByStr);
-                        orderBy.append(orderBySeparator + orderByStr);
-                        orderBySeparator = ",";
-                        break;
-                    }
-                }
-                if (f >= report.getFields().size()) {
-                    throw new SessionInternalError("The ordered fields are"
-                            + "inconsistent. Can't find field " + done);
-                }
-            }
-        }
+        // release connection
+        DataSourceUtils.releaseConnection(connection, dataSource);
 
-        // construct the query string
-        // first the select - from - where
-        StringBuffer completeQuery = new StringBuffer(select + " " + from + " "
-                + where);
-        // then the group by
-        if (isGrouped) {
-            completeQuery.append(" " + groupBy);
-        }
-        // last the order by
-        if (orderedColumns > 0) {
-            completeQuery.append(" " + orderBy);
-        }
-        log.debug("Generated:[" + completeQuery.toString() + "]");
-        return completeQuery.toString();
-    }
-
-    protected CachedRowSet execute(ReportDTOEx reportDto) throws SQLException,
-            NamingException, SessionInternalError, Exception {
-        int index = 1;
-        int dynamicVariableIndex = 0;
-        // make the preparation
-        prepareStatement(parseSQL(reportDto));
-
-        // set all the variables of the query
-        for (int f = 0; f < reportDto.getFields().size(); f++) {
-            Field field = (Field) reportDto.getFields().get(f);
-            if (field.getWhereValue() != null
-                    && field.getWhereValue().length() > 0) {
-                if (field.getWhereValue().equals("?")) {
-                    // this is a dynamic variable, the value it's not known in
-                    // the field
-                    // record nor is entered by the user
-                    field.setWhereValue(reportDto
-                            .getDynamicParameter(dynamicVariableIndex));
-                    dynamicVariableIndex++;
-                }
-
-                log.debug("Setting " + field.getColumnName() + " index "
-                        + index + " value " + field.getWhereValue());
-                // see if this is just a null
-                if (field.getWhereValue().equalsIgnoreCase("null")) {
-                    cachedResults
-                            .setNull(index, toSQLType(field.getDataType()));
-                } else {
-                    if (field.getDataType().equals(Field.TYPE_DATE)) {
-                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                        cachedResults.setDate(index, new java.sql.Date(format.parse(field.getWhereValue()).getTime()));
-                    } else if (field.getDataType().equals(Field.TYPE_STRING)) {
-                        cachedResults.setString(index, field.getWhereValue());
-                    } else if (field.getDataType().equals(Field.TYPE_INTEGER)) {
-                        if (field.getWhereValue().indexOf(',') >= 0) {
-                            // it is an 'in' with many values
-                            StringTokenizer tok = new StringTokenizer(field
-                                    .getWhereValue(), ",");
-                            int ff = 0;
-                            for (; tok.hasMoreElements(); ff++) {
-                                log.debug("    in(...) value. index "
-                                        + (index + ff));
-                                cachedResults.setInt(index + ff, Integer
-                                        .valueOf(tok.nextToken()).intValue());
-                            }
-                            index += ff - 1;
-                        } else {
-                            cachedResults.setInt(index, Integer.valueOf(
-                                    field.getWhereValue()).intValue());
-                        }
-                    } else if (field.getDataType().equals(Field.TYPE_FLOAT)) {
-                        cachedResults.setFloat(index, Util.string2float(
-                                field.getWhereValue(), reportDto.getLocale())
-                                .floatValue());
-                    }
-                }
-
-                index++;
-            }
-        }
-
-        execute();
-        conn.close();
-        return cachedResults;
-    }
-
-    public ReportDTOEx getReport(Integer reportId, Integer entityId)
-            throws NamingException, SessionInternalError {
-        log.debug("Getting report " + reportId + " for entity " + entityId);
-        return DTOFactory.getReportDTOEx(reportId, entityId);
-    }
-
-    public ReportDTOEx getReport(Integer userReportId) throws NamingException,
-            SessionInternalError {
-        log.debug("Getting user report " + userReportId);
-        ReportDTOEx reportDto = null;
-
-        ReportUserDTO reportUser = reportUserDas.find(userReportId);
-
-        // create the initial report dto from the relationship
-        UserBL user = new UserBL(reportUser.getBaseUser());
-        reportDto = DTOFactory.getReportDTOEx(new ReportDAS().find(reportUser
-                .getReport().getId()), user.getLocale());
-        reportDto.setUserReportId(userReportId);
-
-        // find this user's saved fields
-        Collection fields = reportUser.getFields();
-
-        // convert these entities to dtos
-        for (Iterator it = fields.iterator(); it.hasNext();) {
-            ReportFieldDTO field = (ReportFieldDTO) it.next();
-            reportDto.addField(DTOFactory.getFieldDTO(field));
-        }
-
-        return reportDto;
-    }
-
-    public Collection getList(Integer entityId) throws SQLException, Exception {
-
-        CompanyDTO entity = new CompanyDAS().find(entityId);
-
-        Set<ReportDTO> reports = entity.getReports();
-        return DTOFactory.reportEJB2DTOEx(reports, true);
-
-    }
-
-    public Collection getListByType(Integer typeId) {
-        return DTOFactory.reportEJB2DTOEx(new ReportTypeDAS().find(typeId)
-                .getReports(), false);
-    }
-
-    public void save(ReportDTOEx report, Integer userId, String title) {
-
-        ReportDTO reportRow = reportDas.find(report.getId());
-        // create the report user row
-        ReportUserDTO reportUser = reportUserDas.create(title, reportRow,
-                userId);
-
-        // now all the fields rows
-        for (int f = 0; f < report.getFields().size(); f++) {
-            Field field = (Field) report.getFields().get(f);
-
-            ReportFieldDTO fieldRow = reportFieldDas.create(field
-                    .getPositionNumber(), field.getTableName(), field
-                    .getColumnName(), field.getIsGrouped(), field.getIsShown(),
-                    field.getDataType(), field.getFunctionable(), field
-                            .getSelectable(), field.getOrdenable(), field
-                            .getOperatorable(), field.getWhereable());
-
-            fieldRow.setOrderPosition(field.getOrderPosition());
-            fieldRow.setWhereValue(field.getWhereValue());
-            fieldRow.setTitleKey(field.getTitleKey());
-            fieldRow.setFunctionName(field.getFunctionName());
-            fieldRow.setOperatorValue(field.getOperatorValue());
-
-            fieldRow.setReportUser(reportUser);
-            reportUser.getFields().add(fieldRow);
-        }
-    }
-
-    public void delete(Integer userReportId) {
-        report = reportUserDas.find(userReportId);
-        if (report != null) {
-            reportUserDas.delete(report);
-        }
-    }
-
-    public Collection getUserList(Integer report, Integer userId) {
-        Collection reports = reportUserDas.findByTypeUser(report, userId);
-        return DTOFactory.reportUserEJB2DTO(reports);
-    }
-
-    private static int toSQLType(String type) throws SessionInternalError {
-        if (type.equals(Field.TYPE_DATE)) {
-            return Types.DATE;
-        } else if (type.equals(Field.TYPE_FLOAT)) {
-            return Types.FLOAT;
-        } else if (type.equals(Field.TYPE_INTEGER)) {
-            return Types.INTEGER;
-        } else if (type.equals(Field.TYPE_STRING)) {
-            return Types.VARCHAR;
-        } else {
-            throw new SessionInternalError(type + " is not a supported type");
-        }
+        return print;
     }
 }

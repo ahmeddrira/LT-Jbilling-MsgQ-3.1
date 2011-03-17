@@ -2,6 +2,7 @@
 -- PostgreSQL database dump
 --
 
+SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
@@ -2495,7 +2496,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 365	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:53.107	\N	\N	testUserName-1189624252907	0	1
 366	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:53.406	\N	\N	testUserName-1189624253301	0	1
 367	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:53.662	\N	\N	testUserName-1189624253537	0	1
-368	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:53.90	\N	\N	testUserName-1189624253793	0	1
+368	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:53.9	\N	\N	testUserName-1189624253793	0	1
 369	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:54.149	\N	\N	testUserName-1189624254034	0	1
 370	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:54.567	\N	\N	testUserName-1189624254359	0	1
 371	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:55.091	\N	\N	testUserName-1189624254888	0	1
@@ -2503,7 +2504,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 373	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:55.866	\N	\N	testUserName-1189624255756	0	1
 374	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:56.117	\N	\N	testUserName-1189624256003	0	1
 375	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:56.349	\N	\N	testUserName-1189624256243	0	1
-376	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:56.60	\N	\N	testUserName-1189624256479	0	1
+376	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:56.6	\N	\N	testUserName-1189624256479	0	1
 377	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:56.989	\N	\N	testUserName-1189624256797	0	1
 378	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:57.509	\N	\N	testUserName-1189624257297	0	1
 379	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:10:58.003	\N	\N	testUserName-1189624257822	0	1
@@ -2524,7 +2525,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 394	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:03.343	\N	\N	testUserName-1189624263153	0	1
 395	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:03.706	\N	\N	testUserName-1189624263581	0	1
 396	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:03.951	\N	\N	testUserName-1189624263838	0	1
-397	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:04.20	\N	\N	testUserName-1189624264078	0	1
+397	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:04.2	\N	\N	testUserName-1189624264078	0	1
 398	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:04.452	\N	\N	testUserName-1189624264328	0	1
 399	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:04.784	\N	\N	testUserName-1189624264591	0	1
 400	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:05.295	\N	\N	testUserName-1189624265102	0	1
@@ -2598,7 +2599,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 468	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:29.69	\N	\N	testUserName-1189624289500	0	1
 469	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:30.015	\N	\N	testUserName-1189624289895	0	1
 470	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:30.246	\N	\N	testUserName-1189624290142	0	1
-471	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:30.50	\N	\N	testUserName-1189624290373	0	1
+471	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:30.5	\N	\N	testUserName-1189624290373	0	1
 472	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:30.748	\N	\N	testUserName-1189624290633	0	1
 473	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:31.124	\N	\N	testUserName-1189624290926	0	1
 474	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:31.638	\N	\N	testUserName-1189624291450	0	1
@@ -2631,7 +2632,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 501	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:41.204	\N	\N	testUserName-1189624301084	0	1
 502	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:41.576	\N	\N	testUserName-1189624301383	0	1
 503	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:42.033	\N	\N	testUserName-1189624301855	0	1
-504	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:42.50	\N	\N	testUserName-1189624302312	0	1
+504	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:42.5	\N	\N	testUserName-1189624302312	0	1
 505	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:42.978	\N	\N	testUserName-1189624302793	0	1
 506	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:43.291	\N	\N	testUserName-1189624303176	0	1
 507	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:11:43.544	\N	\N	testUserName-1189624303422	0	1
@@ -2744,7 +2745,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 614	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:22.075	\N	\N	testUserName-1189624341958	0	1
 615	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:22.325	\N	\N	testUserName-1189624342202	0	1
 616	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:22.559	\N	\N	testUserName-1189624342445	0	1
-617	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:22.80	\N	\N	testUserName-1189624342682	0	1
+617	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:22.8	\N	\N	testUserName-1189624342682	0	1
 618	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:23.279	\N	\N	testUserName-1189624343056	0	1
 619	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:23.77	\N	\N	testUserName-1189624343567	0	1
 620	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:24.246	\N	\N	testUserName-1189624344059	0	1
@@ -2753,13 +2754,13 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 623	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:25.076	\N	\N	testUserName-1189624344966	0	1
 624	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:25.314	\N	\N	testUserName-1189624345206	0	1
 625	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:25.688	\N	\N	testUserName-1189624345507	0	1
-626	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:26.20	\N	\N	testUserName-1189624346012	0	1
+626	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:26.2	\N	\N	testUserName-1189624346012	0	1
 627	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:26.688	\N	\N	testUserName-1189624346467	0	1
 628	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:27.095	\N	\N	testUserName-1189624346959	0	1
 629	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:27.349	\N	\N	testUserName-1189624347229	0	1
 630	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:27.588	\N	\N	testUserName-1189624347475	0	1
 631	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:27.826	\N	\N	testUserName-1189624347718	0	1
-632	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:28.10	\N	\N	testUserName-1189624347954	0	1
+632	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:28.1	\N	\N	testUserName-1189624347954	0	1
 633	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:28.584	\N	\N	testUserName-1189624348389	0	1
 634	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:29.048	\N	\N	testUserName-1189624348854	0	1
 635	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:29.513	\N	\N	testUserName-1189624349333	0	1
@@ -2769,7 +2770,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 639	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:30.646	\N	\N	testUserName-1189624350533	0	1
 640	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:30.941	\N	\N	testUserName-1189624350775	0	1
 641	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:31.415	\N	\N	testUserName-1189624351244	0	1
-642	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:31.90	\N	\N	testUserName-1189624351695	0	1
+642	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:31.9	\N	\N	testUserName-1189624351695	0	1
 643	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:32.355	\N	\N	testUserName-1189624352205	0	1
 644	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:32.602	\N	\N	testUserName-1189624352493	0	1
 645	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:32.836	\N	\N	testUserName-1189624352731	0	1
@@ -2794,7 +2795,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 664	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:39.661	\N	\N	testUserName-1189624359452	0	1
 665	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:40.138	\N	\N	testUserName-1189624359954	0	1
 666	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:40.463	\N	\N	testUserName-1189624360339	0	1
-667	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:40.70	\N	\N	testUserName-1189624360586	0	1
+667	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:40.7	\N	\N	testUserName-1189624360586	0	1
 668	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:40.958	\N	\N	testUserName-1189624360827	0	1
 669	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:41.202	\N	\N	testUserName-1189624361080	0	1
 670	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:12:41.625	\N	\N	testUserName-1189624361429	0	1
@@ -2855,7 +2856,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 725	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:01.294	\N	\N	testUserName-1189624381104	0	1
 726	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:01.605	\N	\N	testUserName-1189624381495	0	1
 727	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:01.845	\N	\N	testUserName-1189624381734	0	1
-728	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:02.10	\N	\N	testUserName-1189624381983	0	1
+728	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:02.1	\N	\N	testUserName-1189624381983	0	1
 729	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:02.343	\N	\N	testUserName-1189624382230	0	1
 730	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:02.702	\N	\N	testUserName-1189624382530	0	1
 731	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:03.167	\N	\N	testUserName-1189624382982	0	1
@@ -2942,7 +2943,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 812	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:32.12	\N	\N	testUserName-1189624411927	0	1
 813	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:32.548	\N	\N	testUserName-1189624412359	0	1
 814	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:33.006	\N	\N	testUserName-1189624412813	0	1
-815	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:33.30	\N	\N	testUserName-1189624413194	0	1
+815	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:33.3	\N	\N	testUserName-1189624413194	0	1
 816	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:33.542	\N	\N	testUserName-1189624413429	0	1
 817	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:33.774	\N	\N	testUserName-1189624413672	0	1
 818	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:13:34.022	\N	\N	testUserName-1189624413906	0	1
@@ -3036,7 +3037,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 906	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:14:05.382	\N	\N	testUserName-1189624445255	0	1
 907	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:14:05.772	\N	\N	testUserName-1189624445587	0	1
 908	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:14:06.226	\N	\N	testUserName-1189624446035	0	1
-909	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:14:06.70	\N	\N	testUserName-1189624446488	0	1
+909	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:14:06.7	\N	\N	testUserName-1189624446488	0	1
 910	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:14:07.15	\N	\N	testUserName-1189624447006	0	1
 911	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:14:07.394	\N	\N	testUserName-1189624447281	0	1
 912	1	eee0f3c319c7bdaf6311559eec5058e1	1	1	1	14	3	2007-09-12 12:14:07.647	\N	\N	testUserName-1189624447526	0	1
@@ -3293,6 +3294,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 10954	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	3	2011-02-04 03:06:39.032	\N	\N	network	0	1
 10955	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	3	2011-02-04 03:06:53.727	\N	\N	database	0	1
 10956	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	3	2011-02-04 03:07:11.783	\N	\N	others	0	1
+10960	1	e99a18c428cb38d5f260853678922e03	0	1	1	9	1	2011-03-17 17:30:00.536	\N	\N	TierPriceTest	0	1
 \.
 
 
@@ -3335,13 +3337,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-433	1	product	editCategory	update	2401	0
-434	1	product	list	\N	2401	0
-435	1	product	editProduct	create	\N	0
-436	1	product	show	\N	3407	0
-437	1	plan	list	\N	\N	0
-438	1	planBuilder	edit	create	\N	0
-439	1	plan	list	\N	200	0
+517	1	product	show	\N	3600	0
+518	1	order	list	\N	\N	0
+519	1	order	showListAndOrder	\N	108200	0
+520	1	orderBuilder	edit	\N	108200	0
+521	1	order	list	\N	\N	0
+522	1	order	showListAndOrder	\N	108200	0
+523	1	product	show	\N	3600	0
 \.
 
 
@@ -3350,7 +3352,7 @@ COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM
 --
 
 COPY cdrentries (id, accountcode, src, dst, dcontext, clid, channel, dstchannel, lastapp, lastdatat, start, answer, "end", duration, billsec, disposition, amaflags, userfield, ts) FROM stdin;
-1	20121	4033211001	4501231533	jb-test-ctx	Filler Events <1234>	IAX2/0282119604-13	SIP/8315-b791bcc0	Dial	dial data	2007-11-17 11:09:01	2007-11-17 11:09:59	2007-11-17 11:27:31	200	12000	ANSWERED	3	mediation-batch-test-13	\N
+1	20121	4033211001	4501231533	jb-test-ctx	Filler Events <1234>	IAX2/0282119604-13	SIP/8315-b791bcc0	Dial	dial data	2007-11-17 11:09:01	2007-11-17 11:09:59	2007-11-17 11:27:31	200	12000	ANSWERED	3	mediation-batch-test-13	2011-03-17 17:30:00.239
 \.
 
 
@@ -3408,7 +3410,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 149	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:16.659	1	1	97	1
 150	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:16.918	1	1	98	1
 151	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:17.17	1	1	99	1
-152	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:17.70	1	1	100	1
+152	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:17.7	1	1	100	1
 153	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:18.236	1	1	101	1
 154	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:18.586	1	1	102	1
 155	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:18.846	1	1	103	1
@@ -3600,7 +3602,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 338	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:24.248	1	1	286	1
 339	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:24.723	1	1	287	1
 340	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:25.239	1	1	288	1
-341	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:25.60	1	1	289	1
+341	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:25.6	1	1	289	1
 342	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:25.855	1	1	290	1
 343	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:26.105	1	1	291	1
 344	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:26.343	1	1	292	1
@@ -3683,7 +3685,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 421	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:54.162	1	1	369	1
 422	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:54.628	1	1	370	1
 423	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:55.133	1	1	371	1
-424	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:55.60	1	1	372	1
+424	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:55.6	1	1	372	1
 425	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:55.88	1	1	373	1
 426	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:56.129	1	1	374	1
 427	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:10:56.372	1	1	375	1
@@ -3788,7 +3790,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 526	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:31.668	1	1	474	1
 527	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:32.169	1	1	475	1
 528	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:32.562	1	1	476	1
-529	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:32.80	1	1	477	1
+529	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:32.8	1	1	477	1
 530	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:33.059	1	1	478	1
 531	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:33.301	1	1	479	1
 532	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:33.628	1	1	480	1
@@ -3834,7 +3836,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 572	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:48.325	1	1	520	1
 573	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:48.597	1	1	521	1
 574	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:48.856	1	1	522	1
-575	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:49.10	1	1	523	1
+575	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:49.1	1	1	523	1
 576	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:49.337	1	1	524	1
 577	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:49.796	1	1	525	1
 578	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:11:50.246	1	1	526	1
@@ -3882,7 +3884,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 620	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:05.728	1	1	568	1
 621	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:06.108	1	1	569	1
 622	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:06.35	1	1	570	1
-623	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:06.60	1	1	571	1
+623	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:06.6	1	1	571	1
 624	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:06.841	1	1	572	1
 625	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:07.118	1	1	573	1
 626	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:07.578	1	1	574	1
@@ -3941,7 +3943,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 679	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:26.727	1	1	627	1
 680	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:27.111	1	1	628	1
 681	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:27.361	1	1	629	1
-682	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:27.60	1	1	630	1
+682	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:27.6	1	1	630	1
 683	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:27.847	1	1	631	1
 684	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:28.155	1	1	632	1
 685	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:28.623	1	1	633	1
@@ -4033,7 +4035,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 771	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:59.076	1	1	719	1
 772	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:59.322	1	1	720	1
 773	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:59.572	1	1	721	1
-774	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:59.90	1	1	722	1
+774	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:12:59.9	1	1	722	1
 775	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:00.343	1	1	723	1
 776	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:00.837	1	1	724	1
 777	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:01.327	1	1	725	1
@@ -4146,7 +4148,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 884	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:39.248	1	1	832	1
 885	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:39.482	1	1	833	1
 886	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:39.811	1	1	834	1
-887	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:40.30	1	1	835	1
+887	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:40.3	1	1	835	1
 888	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:40.81	1	1	836	1
 889	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:41.244	1	1	837	1
 890	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:13:41.49	1	1	838	1
@@ -4208,7 +4210,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 946	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:01.331	1	1	894	1
 947	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:01.848	1	1	895	1
 948	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:02.149	1	1	896	1
-949	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:02.40	1	1	897	1
+949	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:02.4	1	1	897	1
 950	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:02.644	1	1	898	1
 951	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:02.894	1	1	899	1
 952	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:03.344	1	1	900	1
@@ -4251,7 +4253,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 989	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:16.573	1	1	937	1
 990	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:17.128	1	1	938	1
 991	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:17.657	1	1	939	1
-992	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:17.90	1	1	940	1
+992	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:17.9	1	1	940	1
 993	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:18.134	1	1	941	1
 994	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:18.393	1	1	942	1
 995	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:18.658	1	1	943	1
@@ -4371,7 +4373,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 1109	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:59.216	1	1	1057	1
 1110	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:14:59.668	1	1	1058	1
 1111	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:00.061	1	1	1059	1
-1112	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:00.30	1	1	1060	1
+1112	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:00.3	1	1	1060	1
 1113	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:00.549	1	1	1061	1
 1114	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:00.801	1	1	1062	1
 1115	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:15:01.126	1	1	1063	1
@@ -4484,7 +4486,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 114622	\N								CS DIV	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:05:19.848	0	1	10951	1
 114623	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:05:19.903	0	1	\N	0
 114624	\N								Operation DIV	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:05:46.07	0	1	10952	1
-114625	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:05:46.10	0	1	\N	0
+114625	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:05:46.1	0	1	\N	0
 114626	\N								Billing Group	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:14.737	0	1	10953	1
 114627	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:14.768	0	1	\N	0
 114632	\N								Others Group	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:07:11.815	0	1	10956	1
@@ -4493,6 +4495,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 11323	\N	No. 715, Ground Floor, Jalan Roberts	\N	Bandar Seri Begawan	\N	BS8711 	BR	Krishna	Vasanthi	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10803	1
 114700	\N	No. 5 Jalan McArthur, 45, 7th Floor	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivasan	Vasha	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-15 16:50:37.505	0	1	\N	1
 2	Telekom Austria Group	Lassallestraße 9	\N	Vienna	\N	1020	AT	Strator	Admin	\N	\N	\N	123	321-1234	\N	\N	\N	admin@prancingpony.me	2007-03-18 00:00:00	0	1	1	1
+114800									TierPriceTest	\N	\N	\N	\N		\N	\N	\N		2011-03-17 17:30:00.579	0	0	10960	1
 \.
 
 
@@ -6587,6 +6590,9 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 202700	3	114700		0
 202701	2	114700		0
 202702	1	114700		0
+202800	3	114800		0
+202801	2	114800		0
+202802	1	114800		0
 \.
 
 
@@ -7684,6 +7690,7 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 791032	114632	2	10	10956	1
 791033	114633	4	10	10956	1
 791100	114700	1	39	8600	1
+791200	114800	2	10	10960	1
 \.
 
 
@@ -10115,6 +10122,7 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 108514	10954	\N	\N	1	\N	\N	\N	\N	\N	108512	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
 108515	10955	\N	\N	1	\N	\N	\N	\N	\N	108512	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
 108516	10956	\N	\N	1	\N	\N	\N	\N	\N	108512	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108600	10960	\N	\N	1		\N	\N	\N	\N	\N	0	0	\N	\N	1	1	0.0000000000	0.0000000000	0.0000000000
 \.
 
 
@@ -10230,6 +10238,25 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 479010	1	1	13	2400	2011-03-14 16:01:47.557	2	4	7	\N	\N	\N	0	\N
 479011	1	1	13	2201	2011-03-14 16:01:50.949	2	4	7	\N	\N	\N	0	\N
 479012	1	1	13	2401	2011-03-14 16:14:34.459	2	4	9	\N	Data 	\N	0	\N
+480000	1	\N	10	10960	2011-03-17 17:30:00.56	2	2	25	\N	\N	\N	0	10960
+480001	\N	\N	27	114800	2011-03-17 17:30:00.624	2	2	25	\N	\N	\N	0	\N
+480002	1	\N	21	108100	2011-03-17 17:30:32.518	2	7	25	\N	\N	\N	0	10960
+480003	1	1	14	3600	2011-03-17 17:33:46.508	2	3	9	\N	\N	\N	0	\N
+481000	1	1	21	108100	2011-03-17 17:50:52.516	2	7	9	\N	\N	\N	0	10960
+481001	1	1	21	108100	2011-03-17 17:59:33.189	2	7	9	1	\N	\N	0	10960
+481002	1	\N	21	108200	2011-03-17 17:59:33.319	2	7	25	\N	\N	\N	0	10960
+481003	1	1	22	208401	2011-03-17 17:59:33.331	2	7	17	208300	Tiered Product	\N	0	10960
+481004	1	1	21	108100	2011-03-17 17:59:33.332	2	7	9	\N	\N	\N	0	10960
+481005	1	1	21	108200	2011-03-17 17:59:54.644	2	7	9	\N	\N	\N	0	10960
+481006	1	\N	21	108201	2011-03-17 18:00:20.656	2	7	25	\N	\N	\N	0	10960
+481007	1	1	21	108100	2011-03-17 18:00:20.674	2	7	9	\N	\N	\N	0	10960
+481008	1	1	21	108100	2011-03-17 18:02:19.601	2	7	7	\N	\N	\N	0	10960
+481009	1	1	21	108201	2011-03-17 18:02:23.022	2	7	7	\N	\N	\N	0	10960
+481010	1	1	14	3700	2011-03-17 18:02:27.005	2	3	7	\N	\N	\N	0	\N
+482000	1	1	21	108200	2011-03-17 18:30:59.396	2	7	9	\N	\N	\N	0	10960
+482001	1	1	14	3600	2011-03-17 18:33:47.59	2	3	9	\N	\N	\N	0	\N
+482002	1	1	14	3600	2011-03-17 18:35:09.643	2	3	9	\N	\N	\N	0	\N
+482003	1	1	21	108200	2011-03-17 18:35:42.548	2	7	9	\N	\N	\N	0	10960
 \.
 
 
@@ -11334,6 +11361,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 14	3406	description	1	Data Traffic (1MB) - Roaming
 14	3407	description	1	SMS message
 14	3500	description	1	eHealth
+14	3600	description	1	Tiered Product
+14	3700	description	1	Tiered Pricing Plan 
 \.
 
 
@@ -11454,6 +11483,8 @@ COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, op
 3405	DAT-ST	1	\N	0	1	1	2405	00006
 3406	DAT-RO	1	\N	0	1	1	2406	00006
 3500	PLAN-EH	1	\N	0	0	1	2500	\N
+3700	PLTIER1	1	\N	1	0	2	2700	\N
+3600	TEIR101	1	\N	0	0	4	2600	00023
 \.
 
 
@@ -11488,6 +11519,8 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 3406	2401
 3407	2401
 3500	2402
+3600	2700
+3700	2402
 \.
 
 
@@ -11520,7 +11553,6 @@ subscriber_status	7
 order_line_provisioning_status	1
 balance_type	0
 invoice_status	4
-mediation_record	1
 invoice_delivery_method	1
 order_line_type	1
 order_line_type	1
@@ -11598,14 +11630,9 @@ invoice_delivery_method	1
 event_log_module	1
 list_field_entity	1
 billing_process_configuration	1
-mediation_process	1
-mediation_process	1
 ach	1
 ach	1
 partner_payout	1
-customer	1086
-base_user	1096
-customer	1086
 partner_payout	1
 process_run_total_pm	1
 process_run_total_pm	1
@@ -11614,10 +11641,6 @@ payment_authorization	1
 paper_invoice_batch	1
 invoice	87
 invoice	87
-contact_map	7912
-contact_map	7912
-contact	1148
-contact_field	2028
 invoice_line	88
 order_process	87
 order_process	87
@@ -11635,16 +11658,9 @@ mediation_record_line	1
 mediation_record_line	1
 contact_type	10
 contact_field_type	1
-base_user	1096
-contact	1148
-contact_field	2028
 invoice_line	88
 pluggable_task_parameter	8315
 payment	20
-purchase_order	1081
-purchase_order	1081
-order_line	2083
-order_line	2083
 notification_message	2
 notification_message	2
 notification_message_section	2
@@ -11655,19 +11671,36 @@ notification_message_line	2
 pluggable_task	607
 shortcut	1
 report	1
+purchase_order	1083
+purchase_order	1083
+order_line	2085
+order_line	2085
 report_type	1
 report_parameter	1
 entity	2
-plan	3
-plan_item	3
-event_log	480
-event_log	480
 item_type	28
-recent_item	71
-price_model	26
-item	36
-item	36
-breadcrumb	440
+mediation_record	2
+base_user	1097
+base_user	1097
+customer	1087
+customer	1087
+contact_map	7913
+contact_map	7913
+contact	1149
+contact	1149
+contact_field	2029
+contact_field	2029
+price_model	28
+item	38
+item	38
+plan	4
+plan_item	4
+mediation_process	6
+mediation_process	6
+event_log	483
+event_log	483
+recent_item	88
+breadcrumb	524
 \.
 
 
@@ -11892,6 +11925,40 @@ COPY mediation_order_map (mediation_process_id, order_id) FROM stdin;
 
 COPY mediation_process (id, configuration_id, start_datetime, end_datetime, orders_affected, optlock) FROM stdin;
 1	10	2010-06-04 20:50:43.259058	2010-06-04 20:50:43.259058	0	0
+10	10	2011-03-17 17:30:00.099	2011-03-17 17:30:00.108	0	1
+11	30	2011-03-17 17:30:00.129	2011-03-17 17:30:03.17	0	1
+12	20	2011-03-17 17:30:03.18	2011-03-17 17:30:03.267	0	1
+13	10	2011-03-17 17:35:00.059	2011-03-17 17:35:00.08	0	1
+14	30	2011-03-17 17:35:00.086	2011-03-17 17:35:00.176	0	1
+15	20	2011-03-17 17:35:00.182	2011-03-17 17:35:00.213	0	1
+20	10	2011-03-17 17:45:00.167	2011-03-17 17:45:00.228	0	1
+21	30	2011-03-17 17:45:00.296	2011-03-17 17:45:00.419	0	1
+22	20	2011-03-17 17:45:00.427	2011-03-17 17:45:00.507	0	1
+23	10	2011-03-17 17:50:00.062	2011-03-17 17:50:00.088	0	1
+24	30	2011-03-17 17:50:00.095	2011-03-17 17:50:00.2	0	1
+25	20	2011-03-17 17:50:00.207	2011-03-17 17:50:00.254	0	1
+26	10	2011-03-17 17:55:00.063	2011-03-17 17:55:00.09	0	1
+27	30	2011-03-17 17:55:00.096	2011-03-17 17:55:00.207	0	1
+28	20	2011-03-17 17:55:00.214	2011-03-17 17:55:00.248	0	1
+29	10	2011-03-17 18:00:00.06	2011-03-17 18:00:00.064	0	1
+30	30	2011-03-17 18:00:00.087	2011-03-17 18:00:00.208	0	1
+31	20	2011-03-17 18:00:00.217	2011-03-17 18:00:00.262	0	1
+32	10	2011-03-17 18:05:00.053	2011-03-17 18:05:00.056	0	1
+33	30	2011-03-17 18:05:00.073	2011-03-17 18:05:00.156	0	1
+34	20	2011-03-17 18:05:00.161	2011-03-17 18:05:00.192	0	1
+35	10	2011-03-17 18:10:00.054	2011-03-17 18:10:00.079	0	1
+36	30	2011-03-17 18:10:00.085	2011-03-17 18:10:00.182	0	1
+37	20	2011-03-17 18:10:00.188	2011-03-17 18:10:00.211	0	1
+38	10	2011-03-17 18:15:00.059	2011-03-17 18:15:00.081	0	1
+39	30	2011-03-17 18:15:00.087	2011-03-17 18:15:00.212	0	1
+40	20	2011-03-17 18:15:00.218	2011-03-17 18:15:00.254	0	1
+41	10	2011-03-17 18:20:00.051	2011-03-17 18:20:00.066	0	1
+42	30	2011-03-17 18:20:00.072	2011-03-17 18:20:00.163	0	1
+43	20	2011-03-17 18:20:00.168	2011-03-17 18:20:00.193	0	1
+44	10	2011-03-17 18:25:00.047	2011-03-17 18:25:00.07	0	1
+45	30	2011-03-17 18:25:00.076	2011-03-17 18:25:00.172	0	1
+46	20	2011-03-17 18:25:00.177	2011-03-17 18:25:00.203	0	1
+50	10	2011-03-17 18:30:00.183	\N	0	0
 \.
 
 
@@ -11905,6 +11972,7 @@ COPY mediation_record (id_key, start_datetime, mediation_process_id, optlock, st
 30002	2011-02-15 00:00:00	1	0	30	3
 30002	2011-02-15 00:00:00	1	0	30	4
 30002	2011-02-15 00:00:00	1	0	30	5
+20121	2011-03-17 17:30:00.266	11	1	31	100
 \.
 
 
@@ -12313,7 +12381,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 147	100	2	1	1200.0000000000	60.0000000000	20.0000000000	\N	2007-09-12 12:09:24.326	0	Second line	\N	\N	1
 148	101	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:09:24.722	0	First line	\N	\N	1
 149	101	2	1	1220.0000000000	61.0000000000	20.0000000000	\N	2007-09-12 12:09:24.731	0	Second line	\N	\N	1
-150	102	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:09:25.20	0	First line	\N	\N	1
+150	102	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:09:25.2	0	First line	\N	\N	1
 151	102	2	1	1640.0000000000	82.0000000000	20.0000000000	\N	2007-09-12 12:09:25.21	0	Second line	\N	\N	1
 152	103	1	1	140.0000000000	14.0000000000	10.0000000000	\N	2007-09-12 12:09:25.702	0	First line	\N	\N	1
 153	103	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:09:25.707	0	Second line	\N	\N	1
@@ -12419,7 +12487,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 253	153	2	1	520.0000000000	26.0000000000	20.0000000000	\N	2007-09-12 12:09:43.482	0	Second line	\N	\N	1
 254	154	1	1	230.0000000000	23.0000000000	10.0000000000	\N	2007-09-12 12:09:43.953	0	First line	\N	\N	1
 255	154	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:09:43.955	0	Second line	\N	\N	1
-256	155	1	1	890.0000000000	89.0000000000	10.0000000000	\N	2007-09-12 12:09:44.20	0	First line	\N	\N	1
+256	155	1	1	890.0000000000	89.0000000000	10.0000000000	\N	2007-09-12 12:09:44.2	0	First line	\N	\N	1
 257	155	2	1	340.0000000000	17.0000000000	20.0000000000	\N	2007-09-12 12:09:44.202	0	Second line	\N	\N	1
 258	156	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:09:44.44	0	First line	\N	\N	1
 259	156	2	1	940.0000000000	47.0000000000	20.0000000000	\N	2007-09-12 12:09:44.442	0	Second line	\N	\N	1
@@ -12445,7 +12513,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 279	166	2	1	1700.0000000000	85.0000000000	20.0000000000	\N	2007-09-12 12:09:47.925	0	Second line	\N	\N	1
 280	167	1	1	850.0000000000	85.0000000000	10.0000000000	\N	2007-09-12 12:09:48.389	0	First line	\N	\N	1
 281	167	2	1	160.0000000000	8.0000000000	20.0000000000	\N	2007-09-12 12:09:48.396	0	Second line	\N	\N	1
-282	168	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:09:48.90	0	First line	\N	\N	1
+282	168	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:09:48.9	0	First line	\N	\N	1
 283	168	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:09:48.917	0	Second line	\N	\N	1
 284	169	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:09:49.28	0	First line	\N	\N	1
 285	169	2	1	1780.0000000000	89.0000000000	20.0000000000	\N	2007-09-12 12:09:49.282	0	Second line	\N	\N	1
@@ -12603,7 +12671,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 437	245	2	1	1740.0000000000	87.0000000000	20.0000000000	\N	2007-09-12 12:10:15.968	0	Second line	\N	\N	1
 438	246	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:10:16.593	0	First line	\N	\N	1
 439	246	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:10:16.643	0	Second line	\N	\N	1
-440	247	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:10:17.20	0	First line	\N	\N	1
+440	247	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:10:17.2	0	First line	\N	\N	1
 441	247	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:10:17.208	0	Second line	\N	\N	1
 442	248	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:10:17.618	0	First line	\N	\N	1
 443	248	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:10:17.62	0	Second line	\N	\N	1
@@ -12625,7 +12693,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 459	256	2	1	660.0000000000	33.0000000000	20.0000000000	\N	2007-09-12 12:10:20.419	0	Second line	\N	\N	1
 460	257	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:10:20.658	0	First line	\N	\N	1
 461	257	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:10:20.66	0	Second line	\N	\N	1
-462	258	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:10:20.90	0	First line	\N	\N	1
+462	258	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:10:20.9	0	First line	\N	\N	1
 463	258	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:10:20.902	0	Second line	\N	\N	1
 464	259	1	1	620.0000000000	62.0000000000	10.0000000000	\N	2007-09-12 12:10:21.142	0	First line	\N	\N	1
 465	259	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:10:21.144	0	Second line	\N	\N	1
@@ -12637,7 +12705,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 471	262	2	1	940.0000000000	47.0000000000	20.0000000000	\N	2007-09-12 12:10:22.587	0	Second line	\N	\N	1
 472	263	1	1	190.0000000000	19.0000000000	10.0000000000	\N	2007-09-12 12:10:22.946	0	First line	\N	\N	1
 473	263	2	1	340.0000000000	17.0000000000	20.0000000000	\N	2007-09-12 12:10:22.949	0	Second line	\N	\N	1
-474	264	1	1	70.0000000000	7.0000000000	10.0000000000	\N	2007-09-12 12:10:23.20	0	First line	\N	\N	1
+474	264	1	1	70.0000000000	7.0000000000	10.0000000000	\N	2007-09-12 12:10:23.2	0	First line	\N	\N	1
 475	264	2	1	120.0000000000	6.0000000000	20.0000000000	\N	2007-09-12 12:10:23.202	0	Second line	\N	\N	1
 476	265	1	1	460.0000000000	46.0000000000	10.0000000000	\N	2007-09-12 12:10:23.439	0	First line	\N	\N	1
 477	265	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:10:23.441	0	Second line	\N	\N	1
@@ -12718,7 +12786,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 552	303	1	1	280.0000000000	28.0000000000	10.0000000000	\N	2007-09-12 12:10:37.642	0	First line	\N	\N	1
 553	303	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:10:37.644	0	Second line	\N	\N	1
 554	304	1	1	850.0000000000	85.0000000000	10.0000000000	\N	2007-09-12 12:10:37.897	0	First line	\N	\N	1
-555	304	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:10:37.90	0	Second line	\N	\N	1
+555	304	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:10:37.9	0	Second line	\N	\N	1
 556	305	1	1	360.0000000000	36.0000000000	10.0000000000	\N	2007-09-12 12:10:38.14	0	First line	\N	\N	1
 557	305	2	1	580.0000000000	29.0000000000	20.0000000000	\N	2007-09-12 12:10:38.143	0	Second line	\N	\N	1
 558	306	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:10:38.39	0	First line	\N	\N	1
@@ -12732,7 +12800,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 566	310	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:10:40.144	0	First line	\N	\N	1
 567	310	2	1	560.0000000000	28.0000000000	20.0000000000	\N	2007-09-12 12:10:40.146	0	Second line	\N	\N	1
 568	311	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:10:40.398	0	First line	\N	\N	1
-569	311	2	1	120.0000000000	6.0000000000	20.0000000000	\N	2007-09-12 12:10:40.40	0	Second line	\N	\N	1
+569	311	2	1	120.0000000000	6.0000000000	20.0000000000	\N	2007-09-12 12:10:40.4	0	Second line	\N	\N	1
 570	312	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:10:40.638	0	First line	\N	\N	1
 571	312	2	1	20.0000000000	1.0000000000	20.0000000000	\N	2007-09-12 12:10:40.64	0	Second line	\N	\N	1
 572	313	1	1	470.0000000000	47.0000000000	10.0000000000	\N	2007-09-12 12:10:40.881	0	First line	\N	\N	1
@@ -13099,7 +13167,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 933	493	2	1	180.0000000000	9.0000000000	20.0000000000	\N	2007-09-12 12:11:45.202	0	Second line	\N	\N	1
 934	494	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:11:45.637	0	First line	\N	\N	1
 935	494	2	1	820.0000000000	41.0000000000	20.0000000000	\N	2007-09-12 12:11:45.641	0	Second line	\N	\N	1
-936	495	1	1	550.0000000000	55.0000000000	10.0000000000	\N	2007-09-12 12:11:45.90	0	First line	\N	\N	1
+936	495	1	1	550.0000000000	55.0000000000	10.0000000000	\N	2007-09-12 12:11:45.9	0	First line	\N	\N	1
 937	495	2	1	1300.0000000000	65.0000000000	20.0000000000	\N	2007-09-12 12:11:45.902	0	Second line	\N	\N	1
 938	496	1	1	460.0000000000	46.0000000000	10.0000000000	\N	2007-09-12 12:11:46.154	0	First line	\N	\N	1
 939	496	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:11:46.156	0	Second line	\N	\N	1
@@ -13319,7 +13387,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 1153	603	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:12:24.712	0	Second line	\N	\N	1
 1154	604	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:12:24.961	0	First line	\N	\N	1
 1155	604	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:12:24.963	0	Second line	\N	\N	1
-1156	605	1	1	60.0000000000	6.0000000000	10.0000000000	\N	2007-09-12 12:12:25.20	0	First line	\N	\N	1
+1156	605	1	1	60.0000000000	6.0000000000	10.0000000000	\N	2007-09-12 12:12:25.2	0	First line	\N	\N	1
 1157	605	2	1	1880.0000000000	94.0000000000	20.0000000000	\N	2007-09-12 12:12:25.202	0	Second line	\N	\N	1
 1158	606	1	1	240.0000000000	24.0000000000	10.0000000000	\N	2007-09-12 12:12:25.485	0	First line	\N	\N	1
 1159	606	2	1	1940.0000000000	97.0000000000	20.0000000000	\N	2007-09-12 12:12:25.492	0	Second line	\N	\N	1
@@ -13487,7 +13555,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 1321	687	2	1	1260.0000000000	63.0000000000	20.0000000000	\N	2007-09-12 12:12:54.105	0	Second line	\N	\N	1
 1322	688	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:12:54.342	0	First line	\N	\N	1
 1323	688	2	1	560.0000000000	28.0000000000	20.0000000000	\N	2007-09-12 12:12:54.35	0	Second line	\N	\N	1
-1324	689	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:12:54.80	0	First line	\N	\N	1
+1324	689	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:12:54.8	0	First line	\N	\N	1
 1325	689	2	1	380.0000000000	19.0000000000	20.0000000000	\N	2007-09-12 12:12:54.818	0	Second line	\N	\N	1
 1326	690	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:12:55.279	0	First line	\N	\N	1
 1327	690	2	1	320.0000000000	16.0000000000	20.0000000000	\N	2007-09-12 12:12:55.289	0	Second line	\N	\N	1
@@ -13520,7 +13588,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 1354	704	1	1	470.0000000000	47.0000000000	10.0000000000	\N	2007-09-12 12:13:00.115	0	First line	\N	\N	1
 1355	704	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:13:00.122	0	Second line	\N	\N	1
 1356	705	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:13:00.593	0	First line	\N	\N	1
-1357	705	2	1	160.0000000000	8.0000000000	20.0000000000	\N	2007-09-12 12:13:00.60	0	Second line	\N	\N	1
+1357	705	2	1	160.0000000000	8.0000000000	20.0000000000	\N	2007-09-12 12:13:00.6	0	Second line	\N	\N	1
 1358	706	1	1	470.0000000000	47.0000000000	10.0000000000	\N	2007-09-12 12:13:01.085	0	First line	\N	\N	1
 1359	706	2	1	1980.0000000000	99.0000000000	20.0000000000	\N	2007-09-12 12:13:01.093	0	Second line	\N	\N	1
 1360	707	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:13:01.49	0	First line	\N	\N	1
@@ -13693,7 +13761,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 1527	790	2	1	260.0000000000	13.0000000000	20.0000000000	\N	2007-09-12 12:13:30.856	0	Second line	\N	\N	1
 1528	791	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:13:31.103	0	First line	\N	\N	1
 1529	791	2	1	180.0000000000	9.0000000000	20.0000000000	\N	2007-09-12 12:13:31.105	0	Second line	\N	\N	1
-1530	792	1	1	130.0000000000	13.0000000000	10.0000000000	\N	2007-09-12 12:13:31.40	0	First line	\N	\N	1
+1530	792	1	1	130.0000000000	13.0000000000	10.0000000000	\N	2007-09-12 12:13:31.4	0	First line	\N	\N	1
 1531	792	2	1	640.0000000000	32.0000000000	20.0000000000	\N	2007-09-12 12:13:31.412	0	Second line	\N	\N	1
 1532	793	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:13:31.908	0	First line	\N	\N	1
 1533	793	2	1	1460.0000000000	73.0000000000	20.0000000000	\N	2007-09-12 12:13:31.913	0	Second line	\N	\N	1
@@ -13707,9 +13775,9 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 1541	797	2	1	40.0000000000	2.0000000000	20.0000000000	\N	2007-09-12 12:13:33.425	0	Second line	\N	\N	1
 1542	798	1	1	50.0000000000	5.0000000000	10.0000000000	\N	2007-09-12 12:13:33.666	0	First line	\N	\N	1
 1543	798	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:13:33.669	0	Second line	\N	\N	1
-1544	799	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:13:33.90	0	First line	\N	\N	1
+1544	799	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:13:33.9	0	First line	\N	\N	1
 1545	799	2	1	1080.0000000000	54.0000000000	20.0000000000	\N	2007-09-12 12:13:33.903	0	Second line	\N	\N	1
-1546	800	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:13:34.20	0	First line	\N	\N	1
+1546	800	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:13:34.2	0	First line	\N	\N	1
 1547	800	2	1	1200.0000000000	60.0000000000	20.0000000000	\N	2007-09-12 12:13:34.213	0	Second line	\N	\N	1
 1548	801	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:13:34.856	0	First line	\N	\N	1
 1549	801	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:13:34.863	0	Second line	\N	\N	1
@@ -13795,7 +13863,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 1629	841	2	1	300.0000000000	15.0000000000	20.0000000000	\N	2007-09-12 12:13:49.213	0	Second line	\N	\N	1
 1630	842	1	1	240.0000000000	24.0000000000	10.0000000000	\N	2007-09-12 12:13:49.463	0	First line	\N	\N	1
 1631	842	2	1	260.0000000000	13.0000000000	20.0000000000	\N	2007-09-12 12:13:49.465	0	Second line	\N	\N	1
-1632	843	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:13:49.70	0	First line	\N	\N	1
+1632	843	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:13:49.7	0	First line	\N	\N	1
 1633	843	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:13:49.702	0	Second line	\N	\N	1
 1634	844	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:13:49.946	0	First line	\N	\N	1
 1635	844	2	1	1640.0000000000	82.0000000000	20.0000000000	\N	2007-09-12 12:13:49.948	0	Second line	\N	\N	1
@@ -13814,7 +13882,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 1648	851	1	1	310.0000000000	31.0000000000	10.0000000000	\N	2007-09-12 12:13:52.452	0	First line	\N	\N	1
 1649	851	2	1	560.0000000000	28.0000000000	20.0000000000	\N	2007-09-12 12:13:52.455	0	Second line	\N	\N	1
 1650	852	1	1	390.0000000000	39.0000000000	10.0000000000	\N	2007-09-12 12:13:52.698	0	First line	\N	\N	1
-1651	852	2	1	1720.0000000000	86.0000000000	20.0000000000	\N	2007-09-12 12:13:52.70	0	Second line	\N	\N	1
+1651	852	2	1	1720.0000000000	86.0000000000	20.0000000000	\N	2007-09-12 12:13:52.7	0	Second line	\N	\N	1
 1652	853	1	1	950.0000000000	95.0000000000	10.0000000000	\N	2007-09-12 12:13:53.146	0	First line	\N	\N	1
 1653	853	2	1	320.0000000000	16.0000000000	20.0000000000	\N	2007-09-12 12:13:53.161	0	Second line	\N	\N	1
 1654	854	1	1	100.0000000000	10.0000000000	10.0000000000	\N	2007-09-12 12:13:53.613	0	First line	\N	\N	1
@@ -13840,7 +13908,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 1674	864	1	1	830.0000000000	83.0000000000	10.0000000000	\N	2007-09-12 12:13:57.257	0	First line	\N	\N	1
 1675	864	2	1	140.0000000000	7.0000000000	20.0000000000	\N	2007-09-12 12:13:57.259	0	Second line	\N	\N	1
 1676	865	1	1	840.0000000000	84.0000000000	10.0000000000	\N	2007-09-12 12:13:57.498	0	First line	\N	\N	1
-1677	865	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:13:57.50	0	Second line	\N	\N	1
+1677	865	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:13:57.5	0	Second line	\N	\N	1
 1678	866	1	1	700.0000000000	70.0000000000	10.0000000000	\N	2007-09-12 12:13:57.745	0	First line	\N	\N	1
 1679	866	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:13:57.747	0	Second line	\N	\N	1
 1680	867	1	1	540.0000000000	54.0000000000	10.0000000000	\N	2007-09-12 12:13:58.036	0	First line	\N	\N	1
@@ -13930,7 +13998,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 1764	909	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:14:13.149	0	First line	\N	\N	1
 1765	909	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:14:13.151	0	Second line	\N	\N	1
 1766	910	1	1	90.0000000000	9.0000000000	10.0000000000	\N	2007-09-12 12:14:13.398	0	First line	\N	\N	1
-1767	910	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:14:13.40	0	Second line	\N	\N	1
+1767	910	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:14:13.4	0	Second line	\N	\N	1
 1768	911	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:14:13.645	0	First line	\N	\N	1
 1769	911	2	1	1140.0000000000	57.0000000000	20.0000000000	\N	2007-09-12 12:14:13.647	0	Second line	\N	\N	1
 1770	912	1	1	890.0000000000	89.0000000000	10.0000000000	\N	2007-09-12 12:14:14.081	0	First line	\N	\N	1
@@ -14046,7 +14114,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 1880	967	1	1	270.0000000000	27.0000000000	10.0000000000	\N	2007-09-12 12:14:33.957	0	First line	\N	\N	1
 1881	967	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:14:33.96	0	Second line	\N	\N	1
 1882	968	1	1	870.0000000000	87.0000000000	10.0000000000	\N	2007-09-12 12:14:34.198	0	First line	\N	\N	1
-1883	968	2	1	960.0000000000	48.0000000000	20.0000000000	\N	2007-09-12 12:14:34.20	0	Second line	\N	\N	1
+1883	968	2	1	960.0000000000	48.0000000000	20.0000000000	\N	2007-09-12 12:14:34.2	0	Second line	\N	\N	1
 1884	969	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:14:34.438	0	First line	\N	\N	1
 1885	969	2	1	260.0000000000	13.0000000000	20.0000000000	\N	2007-09-12 12:14:34.44	0	Second line	\N	\N	1
 1886	970	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:14:34.743	0	First line	\N	\N	1
@@ -14240,6 +14308,9 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 208010	107810	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:21:21.348	0	Lemonade 	21	\N	0
 208100	107900	3201	1	125.0000000000	2500.0000000000	0.0500000000	\N	2011-02-15 16:25:57.921	0	Traffic (Minute)	21	\N	1
 208200	108000	3103	1	2500.0000000000	100.0000000000	25.0000000000	\N	2011-02-18 13:01:04.096	0	Voice Modem - Monthly rental	21	\N	1
+208401	108100	3700	1	0.0000000000	10000.0000000000	0.0000000000	\N	2011-03-17 17:59:20.36	1	Tiered Pricing Plan 	21	\N	2
+208402	108201	3600	1	0.0000000000	0.0000000000	0.0000000000	\N	2011-03-17 18:00:20.655	1	Tiered Product	21	\N	1
+208400	108200	3600	1	5100.0000000000	3200.0000000000	1.5937500000	\N	2011-03-17 17:59:33.29	0	Tiered Product	21	\N	3
 \.
 
 
@@ -14998,6 +15069,8 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id, next_
 2500	METERED	0.0000000000	\N	3	\N
 2501	METERED	1000.0000000000	\N	3	\N
 2502	METERED	2.5000000000	\N	3	\N
+2700	METERED	0.0000000000	\N	3	\N
+2600	TIERED	\N	\N	1	\N
 \.
 
 
@@ -15007,6 +15080,10 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id, next_
 
 COPY price_model_attribute (price_model_id, attribute_name, attribute_value) FROM stdin;
 2104	included	0
+2600	5000	0.5
+2600	3000	1
+2600	1500	2
+2600	500	3
 \.
 
 
@@ -15069,6 +15146,9 @@ COPY promotion_user_map (user_id, promotion_id) FROM stdin;
 COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, active_until, cycle_start, create_datetime, next_billable_day, created_by, status_id, currency_id, deleted, notify, last_notified, notification_step, due_date_unit_id, due_date_value, df_fm, anticipate_periods, own_invoice, notes, notes_in_invoice, is_current, optlock) FROM stdin;
 107900	10791	1	1	2011-02-15	\N	\N	2011-02-15 16:25:57.921	\N	1	17	12	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	1
 108000	10816	2	1	2011-02-01	\N	\N	2011-02-18 13:01:04.096	\N	1	16	12	0	\N	\N	\N	\N	\N	\N	\N	\N	To replace an old modem that is too old	\N	\N	1
+108100	10960	2	1	2011-03-15	\N	\N	2011-03-17 17:30:19.612	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N		\N	0	5
+108201	10960	1	1	2011-03-15	\N	\N	2011-03-17 18:00:20.655	\N	10960	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N		\N	0	1
+108200	10960	1	1	2011-03-15	\N	\N	2011-03-17 17:59:33.29	\N	10960	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N		\N	0	3
 \.
 
 
@@ -15077,11 +15157,11 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 --
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
-66	PRODUCT	3403	1	0
-67	PRODUCT	3404	1	0
-68	PRODUCT	3405	1	0
-69	PRODUCT	3406	1	0
-70	PRODUCT	3407	1	0
+83	PRODUCT	3600	1	0
+84	ORDER	108200	1	0
+85	PRODUCT	3600	1	0
+86	ORDER	108200	1	0
+87	PRODUCT	3600	1	0
 \.
 
 
@@ -17255,6 +17335,7 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 10954	5
 10955	5
 10956	5
+10960	5
 \.
 
 
@@ -19473,3 +19554,4 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
+

@@ -91,17 +91,18 @@ public class TieredPricingStrategyTest extends BigDecimalTestCase {
         BigDecimal rate = new BigDecimal("1.00"); // round numbers for easy math :)
         //planPrice.setRate(rate);
         planPrice.addAttribute("500",  "3");
-        planPrice.addAttribute("1000", "2");
-        planPrice.addAttribute("1500", "1");
+        planPrice.addAttribute("1500", "2");
+        planPrice.addAttribute("3000", "1");
+        planPrice.addAttribute("5000", "0.5");
 
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(result, null, planPrice, new BigDecimal(600), getUsage(new BigDecimal(990))); 
+        strategy.applyTo(result, null, planPrice, new BigDecimal(1000), getUsage(new BigDecimal(2200))); 
 
-        assertEquals(new BigDecimal("2.25786"), result.getPrice());
+        assertEquals(new BigDecimal("1.59375"), result.getPrice());
 
         PricingResult result2 = new PricingResult(1, 2, 3);
-        strategy.applyTo(result2, null, planPrice, new BigDecimal(100), getUsage(new BigDecimal(1000)));
+        strategy.applyTo(result2, null, planPrice, new BigDecimal(100), getUsage(new BigDecimal(5000)));
 
-        assertEquals(new BigDecimal("2.4545"), result2.getPrice());
+        assertEquals(new BigDecimal("1.1765"), result2.getPrice());
     }
 }

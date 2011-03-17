@@ -93,7 +93,7 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
 
        //This may need to be done on 'Tiered Based on Time'
        BigDecimal total = quantity.add(usage.getQuantity());
-       System.out.println("Total: " + quantity + " + " + usage.getQuantity() + " = " + total);
+       LOG.debug("Total: " + quantity + " + " + usage.getQuantity() + " = " + total);
        BigDecimal toRateQty= BigDecimal.ZERO;
        BigDecimal totalCost= BigDecimal.ZERO;
        /**
@@ -102,12 +102,12 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
         *    getAttributes(), order by maxQty ascending
         *    
         */
-       System.out.println("planPrice.getAttributes().size(): " + planPrice.getAttributes().size());
+       LOG.debug("planPrice.getAttributes().size(): " + planPrice.getAttributes().size());
        
        if (null == planPrice.getAttributes() || planPrice.getAttributes().size() == 0 ) {
     	   //no bands specified, default behaviour of no price
     	   result.setPrice(BigDecimal.ZERO);
-    	   System.out.println("Setting price to BigDecimal.ZERO");
+    	   LOG.debug("Setting price to BigDecimal.ZERO");
        } else {
     	   
     	   Map<String, String> map = planPrice.getAttributes();
@@ -118,33 +118,38 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
            ArrayList<BigDecimal> maxValues= new ArrayList<BigDecimal>(priceMap.keySet());
            Collections.sort(maxValues);
            boolean priceSet= false;
-           System.out.println("Run bandMax.compareTo(" + total + ")");
+           LOG.debug("Run bandMax.compareTo(" + total + ")");
            
            BigDecimal availableQty= total;
            //iterating bands with ascending order
-           for (BigDecimal b: maxValues) {
+           for (int iter=0 ; iter < maxValues.size(); iter++ ) {
+        	   
+        	   //BigDecimal b= (BigDecimal) maxValues.get(iter);
+        	   BigDecimal currentTierQty= null;
+        	   BigDecimal tierCumulativQty= (BigDecimal) maxValues.get(iter);
+        	   currentTierQty= (iter == 0) ? tierCumulativQty : tierCumulativQty.subtract(((BigDecimal) maxValues.get(iter - 1 ))); 
 
         	   if (availableQty.compareTo(BigDecimal.ZERO) > 0) {
         		   //quantity to rate is either equal to total if lower than band max value, 
         		   //else it is equal to the band max value
         		   BigDecimal useQty=null;
-        		   if (availableQty.compareTo(b) < 0) {
+        		   if (availableQty.compareTo(currentTierQty) < 0) {
         			   useQty= availableQty;
         			   availableQty= BigDecimal.ZERO;
         		   } else {
-        			   useQty= b;
+        			   useQty= currentTierQty;
         			   availableQty= availableQty.subtract(useQty); 
         		   }
-        		   totalCost= totalCost.add(((BigDecimal)priceMap.get(b)).multiply(useQty));
+        		   totalCost= totalCost.add(((BigDecimal)priceMap.get(tierCumulativQty)).multiply(useQty));
         		   toRateQty= toRateQty.add(useQty);
-        		   System.out.println("Use Qty: " + useQty + " Price: " + priceMap.get(b));
+        		   LOG.debug("Use Qty: " + useQty + " Price: " + priceMap.get(tierCumulativQty));
         		   priceSet= true;
         	   }
         	   
         	   //if total usage falls under or equivalent to the max value of this band, use it
         	   /*if (!priceSet && b.compareTo(total) >= 0) {
         		   result.setPrice(priceMap.get(b));
-        		   System.out.println("Setting price to: " + priceMap.get(b));
+        		   LOG.debug("Setting price to: " + priceMap.get(b));
         		   priceSet= true;
         		   break;
         	   }*/
@@ -153,21 +158,22 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
            //therefore, the last tier quantity acts as 'under max or more'
            if (availableQty.compareTo(BigDecimal.ZERO) > 0) {
         	   BigDecimal extraQty=  total.subtract(toRateQty);
-        	   totalCost= totalCost.add(((BigDecimal)priceMap.get(maxValues.get((maxValues.size()-1)))).multiply(availableQty));
+        	   totalCost= totalCost.add(((BigDecimal)priceMap.get(maxValues.get((maxValues.size()-1)))).multiply(extraQty));
         	   toRateQty= toRateQty.add(availableQty);
-    		   System.out.println("Extra Qty: " + extraQty + ", Available Qty: " + availableQty);
+    		   LOG.debug("Extra Qty: " + extraQty + ", Available Qty: " + availableQty);
            }
-           System.out.println("totalCost: " + totalCost + " toRateQty: " + toRateQty + ", and is equal to total " + (toRateQty.compareTo(total)== 0) );
-           System.out.println("priceSet: " + priceSet);
+           LOG.debug("totalCost: " + totalCost + " total: " + total + " toRateQty: " + toRateQty + ", and is equal to total " + (toRateQty.compareTo(total)== 0) );
+           LOG.debug("priceSet: " + priceSet);
            
            if ( priceSet) {
+        	   LOG.debug("result.setPrice=" + totalCost.divide(total, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
         	   result.setPrice(totalCost.divide(total, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
            } else {
         	   result.setPrice(BigDecimal.ZERO);
-        	   System.out.println("Setting price to BigDecimal.ZERO");
+        	   LOG.debug("Setting price to BigDecimal.ZERO");
 /*               if (total.compareTo(maxValues.get((maxValues.size()-1))) > 0 ) {
             	   result.setPrice(priceMap.get( maxValues.get((maxValues.size()-1)) ));
-            	   System.out.println("Setting price to: " + result.getPrice());
+            	   LOG.debug("Setting price to: " + result.getPrice());
                }*/
            }
        }

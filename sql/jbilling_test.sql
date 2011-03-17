@@ -3295,6 +3295,9 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 10955	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	3	2011-02-04 03:06:53.727	\N	\N	database	0	1
 10956	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	3	2011-02-04 03:07:11.783	\N	\N	others	0	1
 10960	1	e99a18c428cb38d5f260853678922e03	0	1	1	9	1	2011-03-17 17:30:00.536	\N	\N	TierPriceTest	0	1
+10970	1	e99a18c428cb38d5f260853678922e03	0	1	1	9	1	2011-03-17 18:55:12.214	\N	\N	ParentTest753	0	1
+10971	1	bbf2dead374654cbb32a917afd236656	0	1	1	9	1	2011-03-17 18:57:01.604	\N	\N	SUBAC753	0	1
+10980	1	e99a18c428cb38d5f260853678922e03	0	1	1	9	1	2011-03-18 01:08:17.939	\N	\N	SUBAC-2-753	0	1
 \.
 
 
@@ -3337,13 +3340,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-517	1	product	show	\N	3600	0
-518	1	order	list	\N	\N	0
-519	1	order	showListAndOrder	\N	108200	0
-520	1	orderBuilder	edit	\N	108200	0
-521	1	order	list	\N	\N	0
-522	1	order	showListAndOrder	\N	108200	0
-523	1	product	show	\N	3600	0
+760	1	order	showListAndOrder	\N	108700	0
+761	1	order	showListAndOrder	\N	108300	0
+762	1	order	showListAndOrder	\N	108701	0
+763	1	orderBuilder	edit	\N	108701	0
+764	1	order	list	\N	\N	0
+765	1	order	showListAndOrder	\N	108701	0
+766	1	order	showListAndOrder	\N	108300	0
 \.
 
 
@@ -4496,6 +4499,10 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 114700	\N	No. 5 Jalan McArthur, 45, 7th Floor	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivasan	Vasha	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-15 16:50:37.505	0	1	\N	1
 2	Telekom Austria Group	Lassallestraße 9	\N	Vienna	\N	1020	AT	Strator	Admin	\N	\N	\N	123	321-1234	\N	\N	\N	admin@prancingpony.me	2007-03-18 00:00:00	0	1	1	1
 114800									TierPriceTest	\N	\N	\N	\N		\N	\N	\N		2011-03-17 17:30:00.579	0	0	10960	1
+114900									ParentTest753	\N	\N	\N	\N		\N	\N	\N		2011-03-17 18:55:12.248	0	0	10970	1
+114901									SUBAC753	\N	\N	\N	\N		\N	\N	\N		2011-03-17 18:57:01.619	0	0	10971	1
+115000									ParentTest753	\N	\N	\N	\N		\N	\N	\N		2011-03-17 22:27:37	0	0	\N	1
+115100									SUBAC2	\N	\N	\N	\N		\N	\N	\N		2011-03-18 01:08:18.039	0	0	10980	1
 \.
 
 
@@ -6593,6 +6600,18 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 202800	3	114800		0
 202801	2	114800		0
 202802	1	114800		0
+202900	3	114900		0
+202901	2	114900		0
+202902	1	114900		0
+202903	3	114901		0
+202904	2	114901		0
+202905	1	114901		0
+203000	3	115000		0
+203001	2	115000		0
+203002	1	115000		0
+203100	3	115100		0
+203101	2	115100		0
+203102	1	115100		0
 \.
 
 
@@ -7691,6 +7710,10 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 791033	114633	4	10	10956	1
 791100	114700	1	39	8600	1
 791200	114800	2	10	10960	1
+791300	114900	2	10	10970	1
+791301	114901	2	10	10971	1
+791400	115000	1	39	8700	1
+791500	115100	2	10	10980	1
 \.
 
 
@@ -10123,6 +10146,9 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 108515	10955	\N	\N	1	\N	\N	\N	\N	\N	108512	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
 108516	10956	\N	\N	1	\N	\N	\N	\N	\N	108512	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
 108600	10960	\N	\N	1		\N	\N	\N	\N	\N	0	0	\N	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108701	10971	\N	\N	1		\N	\N	\N	\N	108700	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108800	10980	\N	\N	1	Second sub-account for 753 testing pooling connected consumer gadget.	\N	\N	\N	\N	108700	0	0	0	\N	1	1	0.0000000000	0.0000000000	0.0000000000
+108700	10970	\N	\N	1		\N	\N	\N	\N	\N	1	0	\N	108300	2	1	0.0000000000	0.0000000000	0.0000000000
 \.
 
 
@@ -10257,6 +10283,38 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 482001	1	1	14	3600	2011-03-17 18:33:47.59	2	3	9	\N	\N	\N	0	\N
 482002	1	1	14	3600	2011-03-17 18:35:09.643	2	3	9	\N	\N	\N	0	\N
 482003	1	1	21	108200	2011-03-17 18:35:42.548	2	7	9	\N	\N	\N	0	10960
+483000	1	\N	10	10970	2011-03-17 18:55:12.231	2	2	25	\N	\N	\N	0	10970
+483001	\N	\N	27	114900	2011-03-17 18:55:12.276	2	2	25	\N	\N	\N	0	\N
+483002	1	\N	21	108300	2011-03-17 18:55:25.976	2	7	25	\N	\N	\N	0	10970
+483003	1	\N	10	10971	2011-03-17 18:57:01.605	2	2	25	\N	\N	\N	0	10971
+483004	\N	\N	27	114901	2011-03-17 18:57:01.638	2	2	25	\N	\N	\N	0	\N
+483005	1	1	21	108300	2011-03-17 18:58:46.374	2	7	9	\N	\N	\N	0	10970
+484000	1	1	21	108300	2011-03-17 20:15:56.209	2	7	9	\N	\N	\N	0	10970
+484001	1	1	25	6070	2011-03-17 20:18:27.009	2	11	25	\N	\N	\N	0	\N
+484002	1	1	21	108300	2011-03-17 20:18:41.696	2	7	9	\N	\N	\N	0	10970
+485000	1	1	21	108300	2011-03-17 21:28:50.978	2	7	9	\N	\N	\N	0	10970
+485001	1	1	21	108300	2011-03-17 21:30:43.259	2	7	9	\N	\N	\N	0	10970
+486000	1	1	21	108300	2011-03-17 21:39:40.689	2	7	9	\N	\N	\N	0	10970
+487000	1	1	21	108300	2011-03-17 21:42:47.009	2	7	9	\N	\N	\N	0	10970
+488000	1	\N	21	108400	2011-03-17 22:14:26.798	2	7	25	\N	\N	\N	0	10971
+489001	1	\N	39	8700	2011-03-17 22:27:37.026	2	9	25	\N	\N	\N	0	10970
+489002	1	\N	21	108400	2011-03-17 22:27:37.102	2	7	13	1	\N	\N	0	10971
+489003	1	\N	21	108500	2011-03-17 22:28:18.542	2	7	25	\N	\N	\N	0	10971
+493000	1	1	21	108400	2011-03-18 00:16:05.667	2	7	7	\N	\N	\N	0	10971
+493001	1	1	21	108500	2011-03-18 00:16:20.606	2	7	9	\N	\N	\N	0	10971
+494000	1	1	21	108500	2011-03-18 00:45:50.639	2	7	9	\N	\N	\N	0	10971
+495000	1	1	21	108500	2011-03-18 00:55:34.925	2	7	9	\N	\N	\N	0	10971
+495001	1	1	21	108500	2011-03-18 00:56:13.819	2	7	9	\N	\N	\N	0	10971
+496000	1	\N	10	10980	2011-03-18 01:08:17.996	2	2	25	\N	\N	\N	0	10980
+496001	\N	\N	27	115100	2011-03-18 01:08:18.13	2	2	25	\N	\N	\N	0	\N
+496002	1	\N	21	108600	2011-03-18 01:08:44.347	2	7	25	\N	\N	\N	0	10980
+496003	1	1	21	108300	2011-03-18 01:24:47.024	2	7	22	\N	\N	\N	0	10970
+496004	1	1	21	108300	2011-03-18 01:24:47.029	2	7	9	\N	\N	\N	0	10970
+497000	1	1	21	108600	2011-03-18 02:16:39.144	2	7	7	\N	\N	\N	0	10980
+497001	1	\N	21	108700	2011-03-18 02:17:11.767	2	7	25	\N	\N	\N	0	10970
+497002	1	1	21	108500	2011-03-18 02:17:46.767	2	7	9	\N	\N	\N	0	10971
+497003	1	\N	21	108701	2011-03-18 02:18:21.412	2	7	25	\N	\N	\N	0	10980
+497004	1	1	21	108701	2011-03-18 02:18:42.859	2	7	9	\N	\N	\N	0	10980
 \.
 
 
@@ -11363,6 +11421,10 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 14	3500	description	1	eHealth
 14	3600	description	1	Tiered Product
 14	3700	description	1	Tiered Pricing Plan 
+14	3800	description	1	SIMCARD
+14	3801	description	1	Total traffic by sub-accounts
+14	3802	description	1	TRAFFIC POOLED PLAN
+14	3803	description	1	Traffic
 \.
 
 
@@ -11385,6 +11447,7 @@ COPY invoice (id, create_datetime, billing_process_id, user_id, delegated_invoic
 75	2007-08-16 00:00:00	\N	13	\N	2007-09-16	12.9899997711	0	27	12.9899997711	0.0000000000	1	0	1	1	\N	\N	1	\N	\N	2007-08-16 14:57:08.799	1
 8500	2009-07-20 00:00:00	\N	121	\N	2006-09-10	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	1	\N	\N	1022	\N	\N	2009-07-20 16:42:04.869	1
 8600	2011-02-15 00:00:00	\N	10791	\N	2011-03-15	125.0000000000	1	26	0.0000000000	0.0000000000	1	0	12	0	\N	\N	1023	\N	\N	2011-02-15 16:50:37.314	2
+8700	2011-03-17 00:00:00	\N	10970	\N	2011-04-17	0.0000000000	0	26	0.0000000000	0.0000000000	1	0	1	0	\N	\N	1024	\N	\N	2011-03-17 22:27:36.89	1
 \.
 
 
@@ -11422,6 +11485,7 @@ COPY invoice_line (id, invoice_id, type_id, amount, quantity, price, deleted, it
 76	75	1	12.9899997711	1.0000000000	12.9899997711	0	4	Poison Ivy juice (cold) Period from 12/07/2006 to 01/06/2007	13	0	1
 8600	8500	4	15.0000000000	\N	\N	0	251	Lemonade plan - Setup Fee	121	0	1
 8700	8600	6	125.0000000000	2500.0000000000	0.0500000000	0	3201	Traffic (Minute)	10791	0	1
+8800	8700	5	0.0000000000	10.0000000000	0.0000000000	0	3803	Traffic	10971	0	1
 \.
 
 
@@ -11485,6 +11549,10 @@ COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, op
 3500	PLAN-EH	1	\N	0	0	1	2500	\N
 3700	PLTIER1	1	\N	1	0	2	2700	\N
 3600	TEIR101	1	\N	0	0	4	2600	00023
+3800	SIM753	1	\N	0	0	1	2800	SIM753
+3801	TRA753	1	\N	0	0	1	2801	TRA753
+3802	TRAPP753	1	\N	0	0	1	2802	\N
+3803	TRAF753	1	\N	0	0	1	2804	TRAF753
 \.
 
 
@@ -11521,6 +11589,10 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 3500	2402
 3600	2700
 3700	2402
+3800	2700
+3801	2401
+3802	2402
+3803	2401
 \.
 
 
@@ -11639,11 +11711,6 @@ process_run_total_pm	1
 payment_authorization	1
 payment_authorization	1
 paper_invoice_batch	1
-invoice	87
-invoice	87
-invoice_line	88
-order_process	87
-order_process	87
 paper_invoice_batch	1
 notification_message_arch	1
 notification_message_arch	1
@@ -11658,8 +11725,6 @@ mediation_record_line	1
 mediation_record_line	1
 contact_type	10
 contact_field_type	1
-invoice_line	88
-pluggable_task_parameter	8315
 payment	20
 notification_message	2
 notification_message	2
@@ -11668,39 +11733,46 @@ item_type	28
 notification_message_section	2
 notification_message_line	2
 notification_message_line	2
-pluggable_task	607
 shortcut	1
 report	1
-purchase_order	1083
-purchase_order	1083
-order_line	2085
-order_line	2085
+invoice	88
+invoice	88
+invoice_line	89
+invoice_line	89
+pluggable_task	608
+pluggable_task_parameter	8316
+purchase_order	1088
+purchase_order	1088
+order_process	88
+order_process	88
+order_line	2091
+order_line	2091
 report_type	1
 report_parameter	1
 entity	2
 item_type	28
+contact	1152
+contact	1152
+contact_field	2032
+contact_field	2032
 mediation_record	2
-base_user	1097
-base_user	1097
-customer	1087
-customer	1087
-contact_map	7913
-contact_map	7913
-contact	1149
-contact	1149
-contact_field	2029
-contact_field	2029
-price_model	28
-item	38
-item	38
-plan	4
-plan_item	4
+event_log	498
+event_log	498
 mediation_process	6
 mediation_process	6
-event_log	483
-event_log	483
-recent_item	88
-breadcrumb	524
+breadcrumb	767
+recent_item	183
+price_model	29
+item	39
+item	39
+plan	5
+plan_item	5
+base_user	1099
+base_user	1099
+customer	1089
+customer	1089
+contact_map	7916
+contact_map	7916
 \.
 
 
@@ -14311,6 +14383,14 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 208401	108100	3700	1	0.0000000000	10000.0000000000	0.0000000000	\N	2011-03-17 17:59:20.36	1	Tiered Pricing Plan 	21	\N	2
 208402	108201	3600	1	0.0000000000	0.0000000000	0.0000000000	\N	2011-03-17 18:00:20.655	1	Tiered Product	21	\N	1
 208400	108200	3600	1	5100.0000000000	3200.0000000000	1.5937500000	\N	2011-03-17 17:59:33.29	0	Tiered Product	21	\N	3
+208500	108300	3802	1	0.0000000000	1.0000000000	0.0000000000	\N	2011-03-17 18:55:22.088	0	TRAFFIC POOLED PLAN	21	\N	1
+208600	108400	3803	1	0.0000000000	10.0000000000	0.0000000000	\N	2011-03-17 22:14:08.981	1	Traffic	21	\N	2
+208501	108300	3800	1	100.0000000000	10.0000000000	10.0000000000	\N	2011-03-17 18:58:39.636	0	SIMCARD	21	\N	7
+208900	108600	3803	1	0.0000000000	100.0000000000	0.0000000000	\N	2011-03-18 01:08:32.378	1	Traffic	21	\N	2
+209000	108700	3800	1	10.0000000000	1.0000000000	10.0000000000	\N	2011-03-18 02:17:05.844	0	SIMCARD	21	\N	1
+208700	108500	3803	1	0.0000000000	400.0000000000	0.0000000000	\N	2011-03-17 22:27:54.06	0	Traffic	21	\N	6
+209001	108701	3803	1	0.0000000000	140.0000000000	0.0000000000	\N	2011-03-18 02:18:09.366	0	Traffic	21	\N	2
+208800	108300	3803	1	0.0000000000	740.0000000000	0.0000000000	\N	2011-03-18 00:55:34.975	0	Traffic	21	\N	5
 \.
 
 
@@ -14355,6 +14435,7 @@ COPY order_process (id, order_id, invoice_id, billing_process_id, periods_includ
 75	5	75	\N	1	2006-12-07	2007-01-07	0	2	1
 8500	107500	8500	\N	1	\N	\N	0	2	0
 8600	107900	8600	\N	1	2011-02-15	2011-02-15	0	2	0
+8700	108400	8700	\N	1	2011-03-17	2011-03-17	0	2	0
 \.
 
 
@@ -14680,6 +14761,7 @@ COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 
 COPY plan (id, item_id, description, period_id) FROM stdin;
 200	3500	Moving device, incremental pricing, combination subscription and usage fee, roaming, account setup fee	2
+400	3802		1
 \.
 
 
@@ -14690,6 +14772,7 @@ COPY plan (id, item_id, description, period_id) FROM stdin;
 COPY plan_item (id, plan_id, item_id, price_model_id, precedence, bundled_quantity, period_id) FROM stdin;
 200	200	3400	2501	-1	1.0000000000	1
 201	200	3406	2502	-1	0.0000000000	2
+400	400	3801	2803	-1	0.0000000000	1
 \.
 
 
@@ -14736,6 +14819,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 9	1	12	2	3	
 20	1	21	1	2	A plug-in for testing only, it does not send any requests to any real payment gateway
 6060	1	28	1	1	
+6070	1	87	1	1	Pooled Tarrif Plan Task \r\nAdd 3800\r\nReceive 3801\r\nUsage 3803\r\nMultiplier 5
 \.
 
 
@@ -14798,6 +14882,10 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 831401	20	code	\N		\N	0
 831402	20	accept-ach	\N		\N	0
 35	20	processor_name	\N	Test Only Processor	\N	2
+831500	6070	quantity_multiplier	\N	5	\N	0
+831501	6070	pool_user_product_id	\N	3803	\N	0
+831502	6070	pool_receive_product_id	\N	3801	\N	0
+831503	6070	pool_add_product_id	\N	3800	\N	0
 \.
 
 
@@ -14963,7 +15051,7 @@ COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_
 44	26	10	1	200	\N	\N
 46	44	5	1	1	\N	\N
 47	49	5	1	\N	\N	5.0000000000
-15	19	5	1	1024	\N	\N
+15	19	5	1	1025	\N	\N
 \.
 
 
@@ -15071,6 +15159,11 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id, next_
 2502	METERED	2.5000000000	\N	3	\N
 2700	METERED	0.0000000000	\N	3	\N
 2600	TIERED	\N	\N	1	\N
+2800	METERED	10.0000000000	\N	1	\N
+2801	FLAT	0.0000000000	\N	3	\N
+2802	METERED	0.0000000000	\N	1	\N
+2803	GRADUATED	10.0000000000	\N	1	\N
+2804	FLAT	0.0000000000	\N	3	\N
 \.
 
 
@@ -15084,6 +15177,7 @@ COPY price_model_attribute (price_model_id, attribute_name, attribute_value) FRO
 2600	3000	1
 2600	1500	2
 2600	500	3
+2803	included	140.0000000000
 \.
 
 
@@ -15149,6 +15243,12 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 108100	10960	2	1	2011-03-15	\N	\N	2011-03-17 17:30:19.612	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N		\N	0	5
 108201	10960	1	1	2011-03-15	\N	\N	2011-03-17 18:00:20.655	\N	10960	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N		\N	0	1
 108200	10960	1	1	2011-03-15	\N	\N	2011-03-17 17:59:33.29	\N	10960	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N		\N	0	3
+108400	10971	1	1	2011-03-17	\N	\N	2011-03-17 22:14:08.981	\N	1	17	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	2
+108300	10970	1	1	2011-03-17	\N	\N	2011-03-17 18:55:22.088	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1	9
+108600	10980	1	1	2011-03-18	\N	\N	2011-03-18 01:08:32.378	\N	1	16	1	1	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	1
+108700	10970	1	1	2011-03-18	\N	\N	2011-03-18 02:17:05.844	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	0
+108500	10971	1	1	2011-03-17	\N	\N	2011-03-17 22:27:52.665	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	5
+108701	10980	1	1	2011-03-18	\N	\N	2011-03-18 02:18:09.366	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	1
 \.
 
 
@@ -15157,11 +15257,11 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 --
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
-83	PRODUCT	3600	1	0
-84	ORDER	108200	1	0
-85	PRODUCT	3600	1	0
-86	ORDER	108200	1	0
-87	PRODUCT	3600	1	0
+178	ORDER	108701	1	0
+179	ORDER	108700	1	0
+180	ORDER	108300	1	0
+181	ORDER	108701	1	0
+182	ORDER	108300	1	0
 \.
 
 
@@ -17336,6 +17436,9 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 10955	5
 10956	5
 10960	5
+10970	5
+10971	5
+10980	5
 \.
 
 

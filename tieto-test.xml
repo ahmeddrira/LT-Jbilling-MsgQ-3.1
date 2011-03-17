@@ -36,7 +36,7 @@
         <pathelement location="${source.spring.descriptor.dir}"/>
     </path>
 
-    <target name="test" depends="731">
+    <target name="test" depends="731,732">
     </target>
 
     <target name="build" depends="test.init">
@@ -62,5 +62,15 @@
             <test name="com.sapienter.jbilling.tieto.CreateUser731"/>
         </junit>
     </target>
+
+    <target name="732" depends="build">
+        <junit printsummary="off" haltonfailure="true" fork="yes">
+            <classpath refid="compile.classpath"/>
+            <classpath refid="test.classpath"/>
+            <formatter type="brief" usefile="false"/>
+            <test name="com.sapienter.jbilling.tieto.BulkOrderExchange732"/>
+        </junit>
+    </target>
+
 
 </project>

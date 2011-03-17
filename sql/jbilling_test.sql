@@ -3339,13 +3339,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-760	1	order	showListAndOrder	\N	108700	0
-761	1	order	showListAndOrder	\N	108300	0
-762	1	order	showListAndOrder	\N	108701	0
-763	1	orderBuilder	edit	\N	108701	0
-764	1	order	list	\N	\N	0
-765	1	order	showListAndOrder	\N	108701	0
-766	1	order	showListAndOrder	\N	108300	0
+768	1	product	show	\N	3800	0
+769	1	product	show	\N	3803	0
+770	1	config	index	\N	\N	0
+771	1	plugin	listCategories	\N	\N	0
+772	1	plugin	plugins	\N	17	0
+773	1	plugin	show	\N	6070	0
+774	1	plugin	edit	\N	6070	0
 \.
 
 
@@ -10314,6 +10314,9 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 497002	1	1	21	108500	2011-03-18 02:17:46.767	2	7	9	\N	\N	\N	0	10971
 497003	1	\N	21	108701	2011-03-18 02:18:21.412	2	7	25	\N	\N	\N	0	10980
 497004	1	1	21	108701	2011-03-18 02:18:42.859	2	7	9	\N	\N	\N	0	10980
+498000	1	1	14	3800	2011-03-17 16:24:16.115	2	3	7	\N	\N	\N	0	\N
+498001	1	1	14	3803	2011-03-17 16:24:25.439	2	3	7	\N	\N	\N	0	\N
+498002	1	1	25	6070	2011-03-17 16:26:08.286	2	11	9	\N	\N	\N	0	\N
 \.
 
 
@@ -11548,10 +11551,10 @@ COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, op
 3500	PLAN-EH	1	\N	0	0	1	2500	\N
 3700	PLTIER1	1	\N	1	0	2	2700	\N
 3600	TEIR101	1	\N	0	0	4	2600	00023
-3800	SIM753	1	\N	0	0	1	2800	SIM753
 3801	TRA753	1	\N	0	0	1	2801	TRA753
 3802	TRAPP753	1	\N	0	0	1	2802	\N
-3803	TRAF753	1	\N	0	0	1	2804	TRAF753
+3800	SIM753	1	\N	1	0	2	2800	SIM753
+3803	TRAF753	1	\N	1	0	2	2804	TRAF753
 \.
 
 
@@ -11755,23 +11758,23 @@ contact	1152
 contact_field	2032
 contact_field	2032
 mediation_record	2
-event_log	498
-event_log	498
 mediation_process	6
 mediation_process	6
-breadcrumb	767
-recent_item	183
 price_model	29
 item	39
 item	39
 plan	5
 plan_item	5
+recent_item	186
+event_log	499
 base_user	1099
 base_user	1099
 customer	1089
 customer	1089
 contact_map	7916
 contact_map	7916
+event_log	499
+breadcrumb	775
 \.
 
 
@@ -14818,7 +14821,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 9	1	12	2	3	
 20	1	21	1	2	A plug-in for testing only, it does not send any requests to any real payment gateway
 6060	1	28	1	1	
-6070	1	87	1	1	Pooled Tarrif Plan Task \r\nAdd 3800\r\nReceive 3801\r\nUsage 3803\r\nMultiplier 5
+6070	1	87	1	2	Pooled Tarrif Plan Task \r\nAdd 3404\r\nReceive 3801\r\nUsage 3405\r\nMultiplier 5
 \.
 
 
@@ -14882,9 +14885,9 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 831402	20	accept-ach	\N		\N	0
 35	20	processor_name	\N	Test Only Processor	\N	2
 831500	6070	quantity_multiplier	\N	5	\N	0
-831501	6070	pool_user_product_id	\N	3803	\N	0
 831502	6070	pool_receive_product_id	\N	3801	\N	0
-831503	6070	pool_add_product_id	\N	3800	\N	0
+831501	6070	pool_user_product_id	\N	3405	\N	1
+831503	6070	pool_add_product_id	\N	3404	\N	1
 \.
 
 
@@ -15256,11 +15259,11 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 --
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
-178	ORDER	108701	1	0
-179	ORDER	108700	1	0
-180	ORDER	108300	1	0
 181	ORDER	108701	1	0
 182	ORDER	108300	1	0
+183	PRODUCT	3800	1	0
+184	PRODUCT	3803	1	0
+185	PLUGIN	6070	1	0
 \.
 
 

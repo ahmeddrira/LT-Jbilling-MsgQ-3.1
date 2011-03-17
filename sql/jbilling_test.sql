@@ -3336,13 +3336,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-430	1	product	show	\N	3406	0
-431	1	product	list	\N	\N	0
-432	1	product	list	\N	2401	0
-433	1	product	editCategory	update	2401	0
-434	1	product	list	\N	2401	0
-435	1	product	editProduct	create	\N	0
 436	1	product	show	\N	3407	0
+437	1	plan	list	\N	\N	0
+438	1	user	list	\N	\N	0
+439	1	invoice	list	\N	\N	0
+440	1	order	list	\N	\N	0
+441	1	billing	list	\N	\N	0
+442	1	config	index	\N	\N	0
 \.
 
 
@@ -3351,7 +3351,7 @@ COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM
 --
 
 COPY cdrentries (id, accountcode, src, dst, dcontext, clid, channel, dstchannel, lastapp, lastdatat, start, answer, "end", duration, billsec, disposition, amaflags, userfield, ts) FROM stdin;
-1	20121	4033211001	4501231533	jb-test-ctx	Filler Events <1234>	IAX2/0282119604-13	SIP/8315-b791bcc0	Dial	dial data	2007-11-17 11:09:01	2007-11-17 11:09:59	2007-11-17 11:27:31	200	12000	ANSWERED	3	mediation-batch-test-13	\N
+1	20121	4033211001	4501231533	jb-test-ctx	Filler Events <1234>	IAX2/0282119604-13	SIP/8315-b791bcc0	Dial	dial data	2007-11-17 11:09:01	2007-11-17 11:09:59	2007-11-17 11:27:31	200	12000	ANSWERED	3	mediation-batch-test-13	2011-03-17 14:35:00.683
 \.
 
 
@@ -11518,7 +11518,6 @@ subscriber_status	7
 order_line_provisioning_status	1
 balance_type	0
 invoice_status	4
-mediation_record	1
 invoice_delivery_method	1
 order_line_type	1
 order_line_type	1
@@ -11596,8 +11595,6 @@ invoice_delivery_method	1
 event_log_module	1
 list_field_entity	1
 billing_process_configuration	1
-mediation_process	1
-mediation_process	1
 ach	1
 ach	1
 partner_payout	1
@@ -11665,7 +11662,10 @@ event_log	480
 item_type	28
 item	35
 recent_item	71
-breadcrumb	437
+breadcrumb	443
+mediation_process	2
+mediation_process	2
+mediation_record	2
 \.
 
 
@@ -11890,6 +11890,12 @@ COPY mediation_order_map (mediation_process_id, order_id) FROM stdin;
 
 COPY mediation_process (id, configuration_id, start_datetime, end_datetime, orders_affected, optlock) FROM stdin;
 1	10	2010-06-04 20:50:43.259058	2010-06-04 20:50:43.259058	0	0
+10	10	2011-03-17 14:35:00.266	2011-03-17 14:35:00.339	0	1
+11	30	2011-03-17 14:35:00.365	2011-03-17 14:35:02.93	0	1
+12	20	2011-03-17 14:35:02.943	2011-03-17 14:35:03.338	0	1
+13	10	2011-03-17 14:40:00.053	2011-03-17 14:40:00.083	0	1
+14	30	2011-03-17 14:40:00.101	2011-03-17 14:40:00.232	0	1
+15	20	2011-03-17 14:40:00.239	2011-03-17 14:40:00.277	0	1
 \.
 
 
@@ -11903,6 +11909,7 @@ COPY mediation_record (id_key, start_datetime, mediation_process_id, optlock, st
 30002	2011-02-15 00:00:00	1	0	30	3
 30002	2011-02-15 00:00:00	1	0	30	4
 30002	2011-02-15 00:00:00	1	0	30	5
+20121	2011-03-17 14:35:00.869	11	1	31	100
 \.
 
 
@@ -14811,6 +14818,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 84	17	com.sapienter.jbilling.server.payment.tasks.SaveACHExternallyTask	1
 85	20	com.sapienter.jbilling.server.process.task.BillableUserOrdersBillingProcessFilterTask	0
 86	17	com.sapienter.jbilling.server.item.tasks.ItemChangesExternalTask	0
+87	17	com.sapienter.jbilling.server.order.task.PooledTarrifPlanTask	0
 \.
 
 

@@ -2177,7 +2177,6 @@ COPY ach (id, user_id, aba_routing, bank_account, account_type, bank_name, accou
 
 COPY ageing_entity_step (id, entity_id, status_id, days, optlock) FROM stdin;
 1	1	1	5	1
-2	2	1	0	1
 3	1	2	3	1
 4	1	3	1	1
 5	1	5	2	1
@@ -2192,8 +2191,6 @@ COPY ageing_entity_step (id, entity_id, status_id, days, optlock) FROM stdin;
 
 COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscriber_status, currency_id, create_datetime, last_status_change, last_login, user_name, failed_attempts, optlock) FROM stdin;
 2	1	6a204bd89f3c8348afd5c77c717a097a	1	1	1	9	3	2006-07-26 09:29:19.596	\N	\N	gandalf	0	1
-12	2	46f94c8de14fb36680850768ff1b7f2a	1	1	1	9	3	2006-12-07 00:00:00	\N	2007-08-16 14:56:18.752	mordor	0	1
-13	2	9369e99369e9	1	1	1	9	3	2006-12-07 14:56:32.79	\N	\N	orc1	0	1
 23	1	9369e99369e9	1	1	5	9	3	2007-01-12 15:41:42.382	2007-01-12 15:41:59.907	\N	inactive	0	1
 33	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	3	2007-02-10 10:56:43.359	\N	\N	authuser	0	1
 43	1	46f94c8de14fb36680850768ff1b7f2a	1	1	1	14	3	2007-05-22 16:03:39.707	\N	\N	parent	0	1
@@ -3316,7 +3313,6 @@ COPY billing_process (id, entity_id, billing_date, period_unit_id, period_value,
 
 COPY billing_process_configuration (id, entity_id, next_run_date, generate_report, retries, days_for_retry, days_for_report, review_status, period_unit_id, period_value, due_date_unit_id, due_date_value, df_fm, only_recurring, invoice_date_process, optlock, auto_payment, maximum_periods, auto_payment_application) FROM stdin;
 1	1	2006-10-26	1	0	1	3	1	1	1	1	1	0	1	0	1	0	1	1
-2	2	2007-01-07	1	0	1	3	1	2	1	1	1	\N	1	0	1	0	1	0
 \.
 
 
@@ -3374,13 +3370,8 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 114629	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:39.092	0	1	\N	0
 114630	\N								Database Group	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:53.735	0	1	10955	1
 114631	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:53.773	0	1	\N	0
-1125	\N	\N	\N	\N	\N	\N	\N	Baggins	Bilbo	\N	\N	\N	\N	\N	\N	\N	\N	\N	2008-09-26 00:00:00	0	1	\N	1
-1126	\N	123 Main Rd.	\N	Vancouver	BC	V6B2E2	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	2008-09-26 00:00:00	0	1	\N	1
-1127	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	61	2	55512345	\N	\N	\N	\N	2008-09-26 00:00:00	0	1	\N	1
-1128	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	2008-09-26 00:00:00	0	1	\N	1
 112700	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2009-07-20 16:42:04.934	0	1	\N	1
 3	\N	\N	\N	Rivendel	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	gandalf@prancingpony.me	2006-07-26 09:29:19.766	1	1	2	1
-15	\N	\N	\N	\N	\N	\N	AF	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	orc1@mordor.com	2006-12-07 14:56:32.85	1	1	13	1
 65	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	authuser@pp.com	2007-05-10 10:56:43.379	1	1	33	4
 75	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	parent@pp.com	2007-05-22 16:03:39.757	1	1	43	1
 95	\N	123 Fake Street	\N	Calgary	AB	H0H 0H0	CA	Test	User 53	\N	\N	\N	\N	\N	\N	\N	\N	test-admin@jbilling.com	2007-08-09 14:38:28.089	1	1	53	1
@@ -3442,8 +3433,6 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 179	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:27.498	1	1	127	1
 180	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:28.034	1	1	128	1
 1	Prancing Pony	1234 Great East Road	\N	Bree	Middle Earth	54321	CA	\N	\N	\N	\N	\N	123	321-1234	\N	\N	\N	admin@prancingpony.me	2007-03-18 00:00:00	0	1	\N	1
-13	Mordor Inc.	1 Mount Doom Drive 	\N	Mordor	AA	66666	AF	\N	\N	\N	\N	\N	123	12312312	\N	\N	\N	boss@mordor.com	2006-12-07 00:00:00	0	1	\N	1
-14	Mordor Inc.	1 Mount Doom Drive 	\N	Mordor	AA	66666	AF	Baltimore	Lord	\N	\N	\N	123	12312312	\N	\N	\N	boss@mordor.com	2006-12-07 00:00:00	1	1	12	1
 181	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:28.464	1	1	129	1
 182	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:28.716	1	1	130	1
 183	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 12:09:28.967	1	1	131	1
@@ -4396,8 +4385,6 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 112609	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner-customer3@partners.com	2009-06-23 20:34:20.542	1	1	10748	1
 112600	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner1@partners.com	2009-06-23 16:25:44.594	1	1	10740	4
 112602	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner3@partners.com	2009-06-23 16:37:05.548	1	1	10742	4
-112603	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 10:10:01.034	1	1	10743	1
-112604	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 10:10:02.556	1	1	10744	1
 112800	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	a@a.com	2009-10-15 11:12:45.18	1	1	10750	1
 112900	Long Distance Plan A	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-01@test.com	2009-12-15 16:17:40.847	1	1	10760	5
 112901	Long Distance Plan B	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-02@test.com	2009-12-15 16:18:05.824	1	1	10761	4
@@ -4415,60 +4402,12 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 113010	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-14@test.com	2009-12-17 13:38:54.151	1	1	10780	1
 113011	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-15@test.com	2009-12-17 13:39:09.738	1	1	10781	1
 114604	\N								XYZ AP	\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:59:40.027	0	1	10942	1
-11311	\N	No. 5 Jalan McArthur, 45, 7th Floor	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivasan	Vasha	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10791	1
-11312	\N	No. 1 Jalan McArthur, 4A, 4th Floor	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivas	Vashanti	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10792	1
-11313	\N	No. 5, Jalan Budiman, Taman Kin	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivas	Thiru	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10793	1
-11314	\N	Spg 2169, Unit No 9, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu	\N	Bandar Seri Begawan	\N	BS8711 	BR	Said	Nasha	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10794	1
-11315	\N	40, Jalan Simpang Empat	\N	Bandar Seri Begawan	\N	BS8711 	BR	Zahman	Rahim	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10795	1
-11316	\N	No. 24A-2, Jalan Bebatik, Mukim Sengkurong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohd	Zaiham	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10796	1
-11317	\N	A-2, Jalan Simpang Empat	\N	Bandar Seri Begawan	\N	BS8711 	BR	Halim	Noor	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10797	1
-11318	\N	68, Kampong Salar Industrial Estate,Spg 557, Jalan Muara	\N	Bandar Seri Begawan	\N	BU1429	BR	Abdullah	Nizam	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10798	1
-11319	\N	28-GB, Sri TTDI Apartment	\N	Bandar Seri Begawan	\N	BS8711 	BR	Abdullah	Zaman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10799	1
-11320	\N	No. 7, Ground Floor, Jalan Roberts	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ibraham	Ahmad	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10800	1
 114628	\N								Network Group	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:39.039	0	1	10954	1
-11330	\N	Spg 2169, Unit No 15, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu	\N	Bandar Seri Begawan	\N	BS8711 	BR	Saad	Azlin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10810	1
-11333	\N	11, Jalan Enggang,Taman Keramat Taman Keramat	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ariffin	Zarina	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10813	1
-11337	\N	Spg 2169, Unit No 20, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ahmad	Yusof	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10817	1
-11340	\N	12, Kampong CStar, Spg 57, Jalan Mara	\N	Bandar Seri Begawan	\N	BU1429	BR	Hussien	Jeffrey	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10820	1
-11342	\N	Spg 2169, Unit No 25, Block F Junjongan Light Industrial Park, Mukim Pengkalan Batu	\N	Bandar Seri Begawan	\N	BS8711 	BR	Johan	Eizu	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10822	1
-11343	\N	18, Kampong AlorStar, Spg 557, Jalan Mutiara	\N	Bandar Seri Begawan	\N	BU1429	BR	Budiman	Adnan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10823	1
-11347	\N	214, Kampong Setia, Spg 57, Jalan Maju	\N	Bandar Seri Begawan	\N	BU1429	BR	Abdullah	Noor	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10827	1
-11351	\N	99C Jalan Mckerron, Kuala Belait	\N	Bandar Seri Begawan	\N	BS8711 	BR	Hussien	Saiful	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10831	1
-11353	\N	6, Kampong Salar Industrial Estate,Spg 557, Jalan Muara	\N	Bandar Seri Begawan	\N	BU1429	BR	Hussien	Syalwa	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10833	1
-11354	\N	65, Taman Bukit Jaya, Jalan Antarabangsa	\N	Bandar Seri Begawan	\N	BU1429	BR	Halim	Azila	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10834	1
-11356	\N	61, Kampong Salar Industrial Estate,Spg 557, Jalan Muara	\N	Bandar Seri Begawan	\N	BU1429	BR	Muhamad	Arifin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10836	1
-11357	\N	65, Taman Desaria, Jalan Tegas	\N	Bandar Seri Begawan	\N	BU1429	BR	Yusof	Osman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10837	1
-11359	\N	201, Kampong Damai, Spg 57, Jalan Desa Cemerlang	\N	Bandar Seri Begawan	\N	BU1429	BR	Zariff	Osman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10839	1
-11360	\N	18, Kampong AlorStar, Spg 557, Jalan Mutiara	\N	Bandar Seri Begawan	\N	BU1429	BR	Hussien	Adnan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10840	1
 114600	\N								XYZ Global Berhad	\N	\N	\N	\N		\N	\N	\N	mail@xyzglobal.com	2011-02-04 02:55:33.679	0	1	10940	1
 114601	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:55:33.764	0	1	\N	0
 114602	\N								CEO Global	\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:58:06.621	0	1	10941	1
 114603	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:58:06.666	0	1	\N	0
 114605	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 02:59:40.064	0	1	\N	0
-11325	\N	90, Jalan Simpang Empat	\N	Bandar Seri Begawan	\N	BS8711 	BR	George	Anthony	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10805	1
-11324	\N	56-ET, Sri TTDI Apartment	\N	Bandar Seri Begawan	\N	BS8711 	BR	Johan	Sanj	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10804	1
-11327	\N	No. 76A-2, Jalan Bebatik, Mukim Sengkurong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Abdullah	Azhan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10807	1
-11326	\N	No. 12, Ground Floor, Jalan Roberts	\N	Bandar Seri Begawan	\N	BS8711 	BR	Saad	Adrin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10806	1
-11328	\N	290, Jalan TTDI	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ismail	Mohamed	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10808	1
-11329	\N	No. 23, 1st Floor, Jalan Roberts	\N	Bandar Seri Begawan	\N	BS8711 	BR	Ismail	Harun	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10809	1
-11331	\N	D5, Shakirin Complex, Simpang 88, Kiulap	\N	Bandar Seri Begawan	\N	BS8711 	BR	Julianna	Azlin	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10811	1
-11332	\N	523, Shakirin Parade, Simpang 20, Kiulap	\N	Bandar Seri Begawan	\N	BS8711 	BR	Krishna	Suriyah	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10812	1
-11335	\N	Lot 13 - 15, Serasa Industrial Complex. PO Box 1031 BSB	\N	Bandar Seri Begawan	\N	BS8672	BR	Mohd	Yus	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10815	1
-11334	\N	No. 5, Jalan Bebatik, Mukim Sengkurong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohamed	Hamad	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10814	1
-11336	\N	Komplex Perindustrian Beribi II, Km7, Gadong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohd	Saadiah	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10816	1
-11338	\N	No. 45, Serasa Industrial Complex. PO Box 1031 BSB	\N	Bandar Seri Begawan	\N	BS8672	BR	Yusof	Mohamed	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10818	1
-11341	\N	No. 75, Jalan Bebatik, Mukim Sengkurong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Kasim	Azerina	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10821	1
-11344	\N	263-AB, Sri TTDI Apartment	\N	Bandar Seri Begawan	\N	BS8711 	BR	Gordan	Jeffrey	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10824	1
-11346	\N	No. 35, Jalan Bebatik, Mukim Sengkurong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Gregory	Johan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10826	1
-11345	\N	D5, Sha Complex, Simpang 99, Kiulap	\N	Bandar Seri Begawan	\N	BS8711 	BR	Fitri	Nuryaman	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10825	1
-11348	\N	No. 124A-8, Jalan Bebatik, Mukim Sengkurong	\N	Bandar Seri Begawan	\N	BS8711 	BR	Smith	John	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10828	1
-11350	\N	123, Sha Parade, Simpang 99, Kiulap	\N	Bandar Seri Begawan	\N	BS8711 	BR	Abdullah	Din	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10830	1
-11349	\N	No. 56, Jalan PJS 1, MAS Garden	\N	Bandar Seri Begawan	\N	BS8711 	BR	Zaman	Zulkifli	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10829	1
-11358	\N	No. 5, Jalan PJS 56, Mayang Garden	\N	Bandar Seri Begawan	\N	BS8711 	BR	Mohamad	Yusairi	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10838	1
-11355	\N	No. 3, Jalan PJS 91, MAS Garden	\N	Bandar Seri Begawan	\N	BS8711 	BR	Osman	Ahmad	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10835	1
-11352	\N	23, Jalan TTDI	\N	Bandar Seri Begawan	\N	BS8711 	BR	Chen	Gordan	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10832	1
-11339	\N	43-WE, Sri TTDI Apartment	\N	Bandar Seri Begawan	\N	BS8711 	BR	Yusof	Zarina	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10819	1
-11321	\N	20, Jalan TTDI	\N	Bandar Seri Begawan	\N	BS8711 	BR	Wong	George	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10801	1
 114606	\N								XYZ EU	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:00:21.381	0	1	10943	1
 114607	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:00:21.45	0	1	\N	0
 114608	\N								XYZ OT	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:00:47.046	0	1	10944	1
@@ -4493,8 +4432,6 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 114627	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:06:14.768	0	1	\N	0
 114632	\N								Others Group	\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:07:11.815	0	1	10956	1
 114633	\N									\N	\N	\N	\N		\N	\N	\N		2011-02-04 03:07:11.931	0	1	\N	0
-11322	\N	Y-14-2, Tropicana Resort Jalan Simpang	\N	Bandar Seri Begawan	\N	BS8711 	BR	Lee	David	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10802	1
-11323	\N	No. 715, Ground Floor, Jalan Roberts	\N	Bandar Seri Begawan	\N	BS8711 	BR	Krishna	Vasanthi	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-04 00:00:00	0	1	10803	1
 114700	\N	No. 5 Jalan McArthur, 45, 7th Floor	\N	Bandar Seri Begawan	\N	BS8711 	BR	Srinivasan	Vasha	\N	\N	\N	\N	\N	\N	\N	\N	\N	2011-02-15 16:50:37.505	0	1	\N	1
 2	Telekom Austria Group	Lassallestraße 9	\N	Vienna	\N	1020	AT	Strator	Admin	\N	\N	\N	123	321-1234	\N	\N	\N	admin@prancingpony.me	2007-03-18 00:00:00	0	1	1	1
 114800									TierPriceTest	\N	\N	\N	\N		\N	\N	\N		2011-03-17 17:30:00.579	0	0	10960	1
@@ -6516,7 +6453,6 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 2019	2	1124	FAKE_2	1
 2020	1	1124	serial-from-ws	1
 2047	3	1057	123.123.123.123	1
-2048	3	1128	123.123.123.123	1
 2049	3	1058	124.124.124.124	1
 202100	3	112500	255.255.255.3	1
 202101	2	112500	CURRENCY_ROUTER	0
@@ -6633,9 +6569,6 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 6780	1	1	5	1	1
 6781	2	2	10	1	1
 6782	3	2	10	2	1
-6792	13	1	5	2	1
-6793	14	3	10	12	1
-6794	15	3	10	13	1
 6804	25	1	39	5	1
 6814	35	1	39	15	1
 6824	45	1	39	25	1
@@ -7723,7 +7656,6 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 COPY contact_type (id, entity_id, is_primary, optlock) FROM stdin;
 1	\N	\N	0
 2	1	1	0
-3	2	1	0
 4	1	0	0
 \.
 
@@ -9015,7 +8947,6 @@ COPY currency (id, symbol, code, country_code) FROM stdin;
 --
 
 COPY currency_entity_map (currency_id, entity_id) FROM stdin;
-1	2
 1	1
 3	1
 \.
@@ -9047,7 +8978,6 @@ COPY currency_exchange (id, entity_id, currency_id, rate, create_datetime, optlo
 --
 
 COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_method_id, notes, auto_payment_type, due_date_unit_id, due_date_value, df_fm, parent_id, is_parent, exclude_aging, invoice_child, current_order_id, optlock, balance_type, dynamic_balance, credit_limit, auto_recharge) FROM stdin;
-2	13	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N	\N
 12	23	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	1	1	\N	\N	\N
 22	33	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N	\N
 32	43	\N	0	1	\N	1	\N	\N	\N	\N	1	0	\N	\N	1	1	\N	\N	\N
@@ -10164,7 +10094,6 @@ COPY customer_price (plan_item_id, user_id, create_datetime) FROM stdin;
 --
 
 COPY entity (id, external_id, description, create_datetime, language_id, currency_id, optlock) FROM stdin;
-2	\N	British Telecom	2006-12-07 00:00:00	1	1	1
 1	\N	Telekom Austria Group	2007-03-18 00:00:00	1	3	1
 \.
 
@@ -10177,9 +10106,6 @@ COPY entity_delivery_method_map (method_id, entity_id) FROM stdin;
 1	1
 2	1
 3	1
-1	2
-2	2
-3	2
 \.
 
 
@@ -10191,10 +10117,6 @@ COPY entity_payment_method_map (entity_id, payment_method_id) FROM stdin;
 1	1
 1	2
 1	3
-2	1
-2	2
-2	3
-2	9
 1	5
 \.
 
@@ -11450,7 +11372,6 @@ COPY invoice (id, create_datetime, billing_process_id, user_id, delegated_invoic
 55	2007-08-09 00:00:00	\N	53	\N	2007-09-09	10.0000000000	0	27	10.0000000000	0.0000000000	1	0	1	1	\N	\N	9	\N	\N	2007-08-09 14:42:13.196	1
 65	2007-08-09 00:00:00	\N	63	\N	2007-09-09	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	1	\N	\N	10	\N	\N	2007-08-09 14:59:04.418	1
 70	2007-07-26 00:00:00	\N	10743	\N	2007-08-26	20.0000000000	0	27	20.0000000000	0.0000000000	1	0	1	1	\N	\N	11	\N	\N	2007-07-26 18:17:19.113	1
-75	2007-08-16 00:00:00	\N	13	\N	2007-09-16	12.9899997711	0	27	12.9899997711	0.0000000000	1	0	1	1	\N	\N	1	\N	\N	2007-08-16 14:57:08.799	1
 8500	2009-07-20 00:00:00	\N	121	\N	2006-09-10	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	1	\N	\N	1022	\N	\N	2009-07-20 16:42:04.869	1
 8600	2011-02-15 00:00:00	\N	10791	\N	2011-03-15	125.0000000000	1	26	0.0000000000	0.0000000000	1	0	12	0	\N	\N	1023	\N	\N	2011-02-15 16:50:37.314	2
 8700	2011-03-17 00:00:00	\N	10970	\N	2011-04-17	0.0000000000	0	26	0.0000000000	0.0000000000	1	0	1	0	\N	\N	1024	\N	\N	2011-03-17 22:27:36.89	1
@@ -11488,7 +11409,6 @@ COPY invoice_line (id, invoice_id, type_id, amount, quantity, price, deleted, it
 56	55	1	10.0000000000	1.0000000000	10.0000000000	0	1	Lemonade - 1 per day monthly pass Period from 10/01/2006 to 10/31/2006	53	0	1
 66	65	1	15.0000000000	1.0000000000	15.0000000000	0	3	Coffee - one per day - Monthly Period from 09/26/2006 to 10/25/2006	63	0	1
 67	70	1	20.0000000000	1.0000000000	20.0000000000	0	2	Lemonade - all you can drink monthly	10743	0	1
-76	75	1	12.9899997711	1.0000000000	12.9899997711	0	4	Poison Ivy juice (cold) Period from 12/07/2006 to 01/06/2007	13	0	1
 8600	8500	4	15.0000000000	\N	\N	0	251	Lemonade plan - Setup Fee	121	0	1
 8700	8600	6	125.0000000000	2500.0000000000	0.0500000000	0	3201	Traffic (Minute)	10791	0	1
 8800	8700	5	0.0000000000	10.0000000000	0.0000000000	0	3803	Traffic	10971	0	1
@@ -11518,7 +11438,6 @@ COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, op
 1	DP-1	1	\N	1	0	3	1	\N
 2	DP-2	1	\N	1	0	1	2	\N
 3	DP-3	1	\N	1	0	1	3	\N
-4	01	2	\N	1	0	1	4	\N
 24	F-1	1	\N	1	0	1	14	\N
 250	PL-01	1	\N	1	0	2	150	\N
 251	ST-01	1	\N	1	0	2	151	\N
@@ -11568,9 +11487,7 @@ COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, op
 --
 
 COPY item_type (id, entity_id, description, order_line_type_id, optlock, internal) FROM stdin;
-2	2	Drinks	1	1	f
 2402	1	plans	1	0	t
-2403	2	plans	1	0	t
 2700	1	SIMs	1	0	f
 2701	1	Fees	1	0	f
 2401	1	Usage	1	1	f
@@ -11582,7 +11499,6 @@ COPY item_type (id, entity_id, description, order_line_type_id, optlock, interna
 --
 
 COPY item_type_map (item_id, type_id) FROM stdin;
-4	2
 3102	2401
 3300	2402
 3400	2701
@@ -11917,10 +11833,6 @@ COPY list_entity (id, list_id, entity_id, total_records, last_update, optlock) F
 2	2	1	6	2006-12-20	1
 3	3	1	4	2006-12-20	1
 4	4	1	4	2006-12-20	1
-5	1	2	1	2006-12-20	1
-6	2	2	0	2006-12-20	1
-7	3	2	1	2006-12-20	1
-8	4	2	0	2006-12-20	1
 \.
 
 
@@ -11965,10 +11877,6 @@ COPY list_field_entity (id, list_field_id, list_entity_id, min_value, max_value,
 2	9	2	1	15	\N	\N	\N	\N	1
 3	16	3	1	4	\N	\N	\N	\N	1
 4	20	4	1	4	\N	\N	\N	\N	1
-5	1	5	13	13	\N	\N	\N	\N	1
-6	9	6	0	0	\N	\N	\N	\N	1
-7	16	7	5	5	\N	\N	\N	\N	1
-8	20	8	0	0	\N	\N	\N	\N	1
 \.
 
 
@@ -12198,14 +12106,6 @@ COPY notification_message (id, type_id, entity_id, language_id, use_flag, optloc
 4	13	1	1	1	1
 7	18	1	1	1	1
 8	19	1	1	1	1
-9	1	2	1	1	1
-10	2	2	1	1	1
-11	3	2	1	1	1
-12	13	2	1	1	1
-13	16	2	1	1	1
-14	17	2	1	1	1
-15	18	2	1	1	1
-16	19	2	1	1	1
 18	17	1	1	1	1
 19	12	1	1	1	1
 100	16	1	1	1	1
@@ -12245,22 +12145,6 @@ COPY notification_message_line (id, message_section_id, content, optlock) FROM s
 14	14	Some text	1
 15	15	Some text	1
 16	16	Some text	1
-17	17	Billing Statement from |company_name|	1
-18	18	Some text	1
-19	19	You account is now up to date	1
-20	20	Some text	1
-21	21	Overdue Balance	1
-22	22	Some text	1
-23	23	Your service from |company_name| is about to expire	1
-24	24	Some text	1
-25	25	Thank you for your payment	1
-26	26	Some text	1
-27	27	Payment failed	1
-28	28	Some text	1
-29	29	Invoice reminder	1
-30	30	Some text	1
-31	31	It is time to update your credit card	1
-32	32	Some text	1
 35	35	Payment failed	1
 36	36	Some text	1
 43	43	Thank you for using Trend!	1
@@ -12287,22 +12171,6 @@ COPY notification_message_section (id, message_id, section, optlock) FROM stdin;
 14	7	2	1
 15	8	1	1
 16	8	2	1
-17	9	1	1
-18	9	2	1
-19	10	1	1
-20	10	2	1
-21	11	1	1
-22	11	2	1
-23	12	1	1
-24	12	2	1
-25	13	1	1
-26	13	2	1
-27	14	1	1
-28	14	2	1
-29	15	1	1
-30	15	2	1
-31	16	1	1
-32	16	2	1
 35	18	1	1
 36	18	2	1
 43	19	1	1
@@ -12362,7 +12230,6 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 3	3	3	1	15.0000000000	1.0000000000	15.0000000000	0	2006-07-26 09:49:38.659	0	Coffee - one per day - Monthly	\N	\N	1
 4	3	2	1	20.0000000000	1.0000000000	20.0000000000	0	2006-07-26 09:49:38.659	0	Lemonade - all you can drink monthly	\N	\N	1
 5	4	2	1	20.0000000000	1.0000000000	20.0000000000	0	2006-07-26 09:50:34.319	0	Lemonade - all you can drink monthly	\N	\N	1
-6	5	4	1	12.9899997711	1.0000000000	12.9899997711	0	2006-12-07 14:58:53.163	0	Poison Ivy juice (cold)	\N	\N	1
 16	15	3	1	15.0000000000	1.0000000000	15.0000000000	0	2007-01-16 14:39:49.152	0	Coffee - one per day - Monthly	\N	\N	1
 26	25	2	1	20.0000000000	1.0000000000	20.0000000000	0	2007-07-12 13:20:22.284	0	Lemonade - all you can drink monthly	\N	\N	1
 36	35	1	1	10.0000000000	1.0000000000	10.0000000000	0	2007-08-09 14:41:51.222	0	Lemonade - 1 per day monthly pass	\N	\N	1
@@ -14420,7 +14287,6 @@ COPY order_line_type (id, editable) FROM stdin;
 COPY order_period (id, entity_id, value, unit_id, optlock) FROM stdin;
 1	\N	\N	\N	1
 2	1	1	1	1
-3	2	1	1	1
 \.
 
 
@@ -14759,7 +14625,6 @@ COPY permission_type (id, description) FROM stdin;
 COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 120	1	1	1
 137	1	1	2
-120	12	1	3
 \.
 
 
@@ -14800,15 +14665,6 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 6	1	37	1	2	\N
 7	1	36	1	1	\N
 8	1	10	1	1	\N
-10	2	1	1	1	\N
-11	2	3	1	1	\N
-12	2	4	2	1	\N
-13	2	5	1	1	\N
-14	2	6	1	1	\N
-15	2	7	1	1	\N
-16	2	9	1	1	\N
-17	2	10	1	1	\N
-18	2	12	2	1	\N
 23	1	23	1	1	\N
 420	1	33	1	1	\N
 421	1	32	1	3	\N
@@ -14820,8 +14676,6 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 550	1	55	1	1	\N
 560	1	56	2	3	\N
 571	1	71	1	1	\N
-580	2	58	1	1	\N
-590	2	63	1	1	\N
 410	1	79	1	1	\N
 572	1	73	2	0	\N
 6020	1	44	1	1	\N
@@ -14848,15 +14702,6 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 7	7	reply_to	\N		\N	1
 8	7	bcc_to	\N		\N	1
 9	7	from_name	\N	Prancing Pony	\N	1
-10	18	design	\N	simple_invoice_b2b	\N	1
-11	16	smtp_server	\N	\N	\N	1
-12	16	from	\N	boss@mordor.com	\N	1
-13	16	username	\N	\N	\N	1
-14	16	password	\N	\N	\N	1
-15	16	port	\N	\N	\N	1
-16	16	reply_to	\N	\N	\N	1
-17	16	bcc_to	\N	\N	\N	1
-18	16	from_name	\N	Mordor Inc.	\N	1
 24	20	all	\N	yes	\N	1
 540	421	format_file	\N	asterisk.xml	\N	1
 550	421	suffix	\N	csv	\N	1
@@ -14871,8 +14716,6 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 790	530	applicationId	\N	test-applicationId	\N	1
 800	530	bnet	\N	test-bnet	\N	1
 8200	560	file	\N	ValidatePurchaseRules.pkg	\N	1
-8303	580	contactType	2	\N	\N	1
-8304	580	externalSavingPluginId	590	\N	\N	1
 580	420	file	\N	Mediation.pkg ItemsRules.pkg PricingRules.pkg RateCard.pkg	\N	1
 8305	572	url	\N	jdbc:postgresql://localhost:5432/jbilling_test	\N	1
 8306	572	username	\N	jbilling	\N	1
@@ -15041,23 +14884,8 @@ COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_
 12	12	5	1	1	\N	\N
 13	13	5	1	1	\N	\N
 14	14	5	1	0	\N	\N
-25	1	5	2	0	\N	\N
-26	2	5	2	\N	/billing/css/jbilling.css	\N
-27	3	5	2	\N	/billing/graphics/jbilling.jpg	\N
-28	4	5	2	5	\N	\N
-29	5	5	2	\N	\N	10.0000000000
-30	6	5	2	\N	\N	0.0000000000
-31	7	5	2	0	\N	\N
-32	8	5	2	1	\N	\N
-33	9	5	2	1	\N	\N
-34	10	5	2	0	\N	\N
-35	11	5	2	12	\N	\N
-36	12	5	2	1	\N	\N
-37	13	5	2	1	\N	\N
-38	14	5	2	0	\N	\N
 39	39	5	1	3	\N	\N
 40	40	5	1	60	\N	\N
-41	19	5	2	2	\N	\N
 42	41	5	1	1	\N	\N
 43	28	5	1	\N	admin@prancingpony.me	\N
 44	26	10	1	200	\N	\N
@@ -16358,8 +16186,6 @@ COPY user_credit_card_map (user_id, credit_card_id) FROM stdin;
 COPY user_role_map (user_id, role_id) FROM stdin;
 1	2
 2	5
-12	2
-13	5
 23	5
 33	5
 43	5

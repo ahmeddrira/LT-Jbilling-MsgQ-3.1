@@ -3339,13 +3339,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-768	1	product	show	\N	3800	0
-769	1	product	show	\N	3803	0
-770	1	config	index	\N	\N	0
-771	1	plugin	listCategories	\N	\N	0
-772	1	plugin	plugins	\N	17	0
-773	1	plugin	show	\N	6070	0
-774	1	plugin	edit	\N	6070	0
+776	1	plan	list	\N	200	0
+777	1	planBuilder	edit	update	200	0
+778	1	plan	list	\N	200	0
+779	1	planBuilder	edit	update	200	0
+780	1	plan	list	\N	200	0
+781	1	planBuilder	edit	update	200	0
+782	1	plan	list	\N	200	0
 \.
 
 
@@ -10317,6 +10317,9 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 498000	1	1	14	3800	2011-03-17 16:24:16.115	2	3	7	\N	\N	\N	0	\N
 498001	1	1	14	3803	2011-03-17 16:24:25.439	2	3	7	\N	\N	\N	0	\N
 498002	1	1	25	6070	2011-03-17 16:26:08.286	2	11	9	\N	\N	\N	0	\N
+499000	1	1	14	3500	2011-03-17 16:43:46.93	2	3	9	\N	\N	\N	0	\N
+499001	1	1	14	3500	2011-03-17 16:47:10.127	2	3	9	\N	\N	\N	0	\N
+499002	1	1	14	3500	2011-03-17 16:58:24.728	2	3	9	\N	\N	\N	0	\N
 \.
 
 
@@ -11548,13 +11551,13 @@ COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, op
 3407	SMS	1	\N	0	0	1	2407	00007
 3405	DAT-ST	1	\N	0	1	1	2405	00006
 3406	DAT-RO	1	\N	0	1	1	2406	00006
-3500	PLAN-EH	1	\N	0	0	1	2500	\N
 3700	PLTIER1	1	\N	1	0	2	2700	\N
 3600	TEIR101	1	\N	0	0	4	2600	00023
 3801	TRA753	1	\N	0	0	1	2801	TRA753
 3802	TRAPP753	1	\N	0	0	1	2802	\N
 3800	SIM753	1	\N	1	0	2	2800	SIM753
 3803	TRAF753	1	\N	1	0	2	2804	TRAF753
+3500	PLAN-EH	1	\N	0	0	4	2500	\N
 \.
 
 
@@ -11760,21 +11763,21 @@ contact_field	2032
 mediation_record	2
 mediation_process	6
 mediation_process	6
-price_model	29
 item	39
 item	39
 plan	5
-plan_item	5
 recent_item	186
-event_log	499
+price_model	30
+event_log	500
+plan_item	6
 base_user	1099
 base_user	1099
 customer	1089
 customer	1089
 contact_map	7916
 contact_map	7916
-event_log	499
-breadcrumb	775
+event_log	500
+breadcrumb	783
 \.
 
 
@@ -14773,8 +14776,9 @@ COPY plan (id, item_id, description, period_id) FROM stdin;
 
 COPY plan_item (id, plan_id, item_id, price_model_id, precedence, bundled_quantity, period_id) FROM stdin;
 200	200	3400	2501	-1	1.0000000000	1
-201	200	3406	2502	-1	0.0000000000	2
 400	400	3801	2803	-1	0.0000000000	1
+500	200	3404	2900	-1	0.0000000000	2
+501	200	3401	2901	-1	0.0000000000	2
 \.
 
 
@@ -15158,7 +15162,6 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id, next_
 2407	METERED	0.0500000000	\N	3	\N
 2500	METERED	0.0000000000	\N	3	\N
 2501	METERED	1000.0000000000	\N	3	\N
-2502	METERED	2.5000000000	\N	3	\N
 2700	METERED	0.0000000000	\N	3	\N
 2600	TIERED	\N	\N	1	\N
 2800	METERED	10.0000000000	\N	1	\N
@@ -15166,6 +15169,8 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id, next_
 2802	METERED	0.0000000000	\N	1	\N
 2803	GRADUATED	10.0000000000	\N	1	\N
 2804	FLAT	0.0000000000	\N	3	\N
+2900	TIERED	\N	\N	3	\N
+2901	TIERED	\N	\N	3	\N
 \.
 
 
@@ -15180,6 +15185,12 @@ COPY price_model_attribute (price_model_id, attribute_name, attribute_value) FRO
 2600	1500	2
 2600	500	3
 2803	included	140.0000000000
+2900	10000	2
+2900	15000	1.8
+2900	15001	1.7
+2901	10000	3
+2901	20000	2.8
+2901	30000	2.5
 \.
 
 

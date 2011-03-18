@@ -3339,13 +3339,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-776	1	plan	list	\N	200	0
-777	1	planBuilder	edit	update	200	0
-778	1	plan	list	\N	200	0
 779	1	planBuilder	edit	update	200	0
 780	1	plan	list	\N	200	0
 781	1	planBuilder	edit	update	200	0
 782	1	plan	list	\N	200	0
+783	1	planBuilder	edit	create	\N	0
+784	1	plan	list	\N	500	0
+785	1	user	list	\N	\N	0
 \.
 
 
@@ -11430,6 +11430,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 14	3801	description	1	Total traffic by sub-accounts
 14	3802	description	1	TRAFFIC POOLED PLAN
 14	3803	description	1	Traffic
+14	3900	description	1	eHealth - SIM
 \.
 
 
@@ -11558,6 +11559,7 @@ COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, op
 3800	SIM753	1	\N	1	0	2	2800	SIM753
 3803	TRAF753	1	\N	1	0	2	2804	TRAF753
 3500	PLAN-EH	1	\N	0	0	4	2500	\N
+3900	PLAN-eH-SIM	1	\N	0	0	1	3000	\N
 \.
 
 
@@ -11598,6 +11600,7 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 3801	2401
 3802	2402
 3803	2401
+3900	2402
 \.
 
 
@@ -11763,21 +11766,21 @@ contact_field	2032
 mediation_record	2
 mediation_process	6
 mediation_process	6
-item	39
-item	39
-plan	5
 recent_item	186
-price_model	30
 event_log	500
-plan_item	6
 base_user	1099
 base_user	1099
+plan	6
+plan_item	7
 customer	1089
 customer	1089
 contact_map	7916
 contact_map	7916
 event_log	500
-breadcrumb	783
+price_model	31
+item	40
+item	40
+breadcrumb	786
 \.
 
 
@@ -14767,6 +14770,7 @@ COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 COPY plan (id, item_id, description, period_id) FROM stdin;
 200	3500	Moving device, incremental pricing, combination subscription and usage fee, roaming, account setup fee	2
 400	3802		1
+500	3900	This plan provides the rating for usage needed for a sub-account that represents a SIM card.	2
 \.
 
 
@@ -14779,6 +14783,8 @@ COPY plan_item (id, plan_id, item_id, price_model_id, precedence, bundled_quanti
 400	400	3801	2803	-1	0.0000000000	1
 500	200	3404	2900	-1	0.0000000000	2
 501	200	3401	2901	-1	0.0000000000	2
+600	500	3405	3001	-1	0.0000000000	2
+601	500	3406	3002	-1	0.0000000000	2
 \.
 
 
@@ -15171,6 +15177,9 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id, next_
 2804	FLAT	0.0000000000	\N	3	\N
 2900	TIERED	\N	\N	3	\N
 2901	TIERED	\N	\N	3	\N
+3000	METERED	0.0000000000	\N	3	\N
+3001	GRADUATED	2.5000000000	\N	3	\N
+3002	METERED	2.5000000000	\N	3	\N
 \.
 
 
@@ -15191,6 +15200,7 @@ COPY price_model_attribute (price_model_id, attribute_name, attribute_value) FRO
 2901	10000	3
 2901	20000	2.8
 2901	30000	2.5
+3001	included	5
 \.
 
 

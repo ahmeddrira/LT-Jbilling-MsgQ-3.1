@@ -43,12 +43,15 @@ import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.order.OrderLineBL;
+import com.sapienter.jbilling.server.order.db.OrderDAS;
 
 /**
  * @author Vikas Bodani
  * @since 17 March 2011
  */
 public class PooledTarrifPlanTask extends PluggableTask implements IInternalEventsTask {
+
+	private static final Logger LOG = Logger.getLogger(PooledTarrifPlanTask.class);
 
 	private static final ParameterDescription PARAMETER_POOL_ADD_PRODUCT_ID 
 		= new ParameterDescription("pool_add_product_id", true, ParameterDescription.Type.STR);
@@ -67,7 +70,6 @@ public class PooledTarrifPlanTask extends PluggableTask implements IInternalEven
     	descriptions.add(PARAMETER_POOL_ADD_PRODUCT_ID);
     }
     
-	private static final Logger LOG = Logger.getLogger(PooledTarrifPlanTask.class);
 	
 	@SuppressWarnings("unchecked")
     private static final Class<Event> events[] = new Class[] { 
@@ -80,6 +82,9 @@ public class PooledTarrifPlanTask extends PluggableTask implements IInternalEven
 		return events;
 	}
 
+	/**
+	 * 
+	 */
 	public void process(Event event) throws PluggableTaskException {
 		LOG.debug(PARAMETER_POOL_ADD_PRODUCT_ID + " value is " + parameters.get(PARAMETER_POOL_ADD_PRODUCT_ID.getName()));
 		LOG.debug(PARAMETER_POOL_USER_PRODUCT_ID + " value is " + parameters.get(PARAMETER_POOL_USER_PRODUCT_ID.getName()));
@@ -89,8 +94,8 @@ public class PooledTarrifPlanTask extends PluggableTask implements IInternalEven
 		if (event instanceof NewQuantityEvent) {
 			LOG.debug("NewQuantityEvent");
             NewQuantityEvent nq = (NewQuantityEvent) event;
-            //nq.getOrderLine will never be null. The purpose of getting this orderLine
-            //is to strictly find the matching ITem ID
+            //The purpose of using getOrderLine
+            //is to strictly find the matching Item ID
             handleUpdateAction(nq.getOrderLine(), event);
 		} else if (event instanceof NewOrderEvent) {
 			LOG.debug("NewOrderEvent");
@@ -101,27 +106,41 @@ public class PooledTarrifPlanTask extends PluggableTask implements IInternalEven
 		}
 	}
 	
+	/**
+	 * 
+	 * @param orderLine
+	 * @param event
+	 * @throws PluggableTaskException
+	 */
 	private void handleUpdateAction(OrderLineDTO orderLine, Event event) throws PluggableTaskException { 
 		try { 
 			LOG.debug("Order Line ID " + orderLine.getId());
 			LOG.debug("orderLine.getItemId()=" + orderLine.getItemId());
             //check if the item of this Order matches the item that needs to be pooled/added
             if (orderLine.getItemId().equals(new Integer((String) parameters.get(PARAMETER_POOL_ADD_PRODUCT_ID.getName())))) {
-            	updateIncludedQuantity(orderLine, event);
+            	updatePooledQuantity(orderLine, event);
             } else if (orderLine.getItemId().equals(new Integer((String) parameters.get(PARAMETER_POOL_USER_PRODUCT_ID.getName())))) {
-            	updateParentsCurrentOrderQuantity(orderLine, event);
+            	passUsageToParentAccount(orderLine, event);
             }
         } catch (NumberFormatException e) {
         	throw new PluggableTaskException("PooledTarrifPlanTask parameter values must be an integer!", e);
         }
 	}
 	
-	private void updateParentsCurrentOrderQuantity(OrderLineDTO line, Event event) {
-		LOG.debug("Method: updateParentsCurrentOrderQuantity");
-		//OrderLineDTO line= nq.getOrderLine();
+	/**
+	 * 
+	 * @param orderLine
+	 * @param event
+	 */
+	private void updatePooledQuantity(OrderLineDTO orderLine, Event event) {
+		LOG.debug("updatePooledQuantity");
+
+		UserDTO user= getUserFromEvent(event);
 		
-		CustomerDTO customer= line.getPurchaseOrder().getBaseUserByUserId().getCustomer();
+		//get customer 
+		CustomerDTO customer= user.getCustomer();
 		
+		//if its okay to invoice this customer, return
 		if ( customer.getInvoiceChild().intValue() > 0 ) {
 			//do nothing, the customer is invoiced as child
 			LOG.debug("Returning, doing nothing. Customer is invoiced as child.");
@@ -129,88 +148,8 @@ public class PooledTarrifPlanTask extends PluggableTask implements IInternalEven
 		}
 		//else invoice to parent's current order
 		CustomerDTO parent= customer.getParent();
-		UserDTO user= parent.getBaseUser();
+		user= parent.getBaseUser();
 		
-		if (null != user) { 
-    		//find the user's current Order
-    		outer:
-    		for (OrderDTO order: user.getOrders()) {
-    			LOG.debug("Is User Order Current: " + " Order ID " + order.getId() + " is " + (order.getIsCurrent().intValue() > 0));
-    			if (order.getIsCurrent().intValue() > 0 ) {
-    				//new lines can be added to the usage of parent only in case of additional usage
-    				//usage cannot be negetive
-    				
-    				BigDecimal addlQty= determineAdditionalQuantity(event, line);
-    				if (addlQty.compareTo(BigDecimal.ZERO) > 0 )
-    				{
-    					//below, toAdd line is same as Order Line for NewOrderEvent.
-    					//Whereas in case of NewQuantityEvent, we have to be careful
-    					//to get the right OrderLineDTO
-    					OrderLineDTO toAdd= line;
-    					if (event instanceof NewQuantityEvent) {
-    						NewQuantityEvent nq = (NewQuantityEvent) event;
-	    					if (nq.getOldQuantity().intValue() == 0 ) { 
-	    						toAdd=nq.getOrderLine();
-	    					} else {
-	    						toAdd= nq.getNewOrderLine();
-	    					}
-    					}
-    					LOG.debug("Item ID: " + toAdd.getItemId());
-    					boolean orderExists= false;
-    					for(OrderLineDTO orderLine: order.getLines()) {
-    						LOG.debug("Order Line Item: " + (null != orderLine? orderLine.getItemId() : null) );
-    						if (orderLine.getItemId().intValue() == Integer.parseInt((String) parameters.get(PARAMETER_POOL_USER_PRODUCT_ID.getName()))) {
-    							//found an existing orderLine with the usage item, update its quantity
-    							orderExists=true;
-    							orderLine.setQuantity(orderLine.getQuantity().add(addlQty));
-    							LOG.debug("New Quantity set to " + orderLine.getQuantity());
-    						}
-    					}
-    					//if a matching OrderLineItem was not found, add this line to the order 
-    					if (!orderExists) { 
-	    					addLineToOrder(order, toAdd);
-    					}
-    					//order.getLines().add(nq.getNewOrderLine());
-    				}
-    				break outer;
-    			}
-    		}
-		}
-		
-	}
-	
-	private static void addLineToOrder(OrderDTO order, OrderLineDTO toAdd) {
-		OrderLineDTO temp= new OrderLineDTO();
-		temp.setOrderLineType(toAdd.getOrderLineType());
-        temp.setItem(toAdd.getItem());
-        temp.setAmount(toAdd.getAmount());
-        temp.setQuantity(toAdd.getQuantity());
-        temp.setPrice(toAdd.getPrice());
-        temp.setCreateDatetime(new java.util.Date());
-        LOG.debug("Adding new Order Line.. " + temp);
-		OrderLineBL.addLine(order, temp, false);
-	}
-	
-	//OrderLineDTO line passed here is utilized only in case of a NewOrderEvent. 
-	//Only in a new Order event, the quantity will come from the Order Line itself.
-	private static BigDecimal determineAdditionalQuantity(Event event, OrderLineDTO line) {
-		BigDecimal retVal= null;
-		if (event instanceof NewQuantityEvent) {
-            NewQuantityEvent nq = (NewQuantityEvent) event;
-            LOG.debug("New quantity: " + nq.getNewQuantity() + " Old Quantity: " + nq.getOldQuantity());
-            retVal= nq.getNewQuantity().subtract(nq.getOldQuantity());
-		} else if (event instanceof NewOrderEvent) {
-			retVal= line.getQuantity();
-		}
-		return retVal;
-	}
-	
-	private void updateIncludedQuantity(OrderLineDTO orderLine, Event event) {
-		LOG.debug("updateIncludedQuantity");
-
-    	UserDTO user= orderLine.getPurchaseOrder().getBaseUserByUserId();
-    	LOG.debug("For User Id: " + user.getId());
-    	
     	if (null != user) { 
     		//find if one of the items of the user's orders matches the item that receives the pool
     		outer:
@@ -261,4 +200,157 @@ public class PooledTarrifPlanTask extends PluggableTask implements IInternalEven
     	}
 	}
 
+	/**
+	 * 
+	 * @param line
+	 * @param event
+	 */
+	private void passUsageToParentAccount(OrderLineDTO line, Event event) {
+		LOG.debug("Method: passUsageToParentAccount");
+		
+		//get the user for this order
+		UserDTO user= getUserFromEvent(event);
+		
+		//get customer 
+		CustomerDTO customer= user.getCustomer();
+		
+		//if its okay to invoice this customer, return
+		if ( customer.getInvoiceChild().intValue() > 0 ) {
+			//do nothing, the customer is invoiced as child
+			LOG.debug("Returning, doing nothing. Customer is invoiced as child.");
+			return;
+		}
+		//else invoice to parent's current order
+		CustomerDTO parent= customer.getParent();
+		user= parent.getBaseUser();
+	
+		//get this use's graduated pricing order which contains a pooled tarrif plan
+		OrderDTO order= getUsersGraduatedPricingOrder(user);
+		if (null != order) {
+			BigDecimal addlQty= determineAdditionalQuantity(event, line);
+			if (addlQty.compareTo(BigDecimal.ZERO) > 0 )
+			{
+				//below, toAdd line is same as Order Line for NewOrderEvent.
+				//Whereas in case of NewQuantityEvent, we have to be careful
+				//to get the right OrderLineDTO
+				OrderLineDTO toAdd= line;
+				if (event instanceof NewQuantityEvent) {
+					NewQuantityEvent nq = (NewQuantityEvent) event;
+					if (nq.getOldQuantity().intValue() == 0 ) { 
+						toAdd=nq.getOrderLine();
+					} else {
+						toAdd= nq.getNewOrderLine();
+					}
+				}
+				LOG.debug("Item ID: " + toAdd.getItemId());
+				boolean orderExists= false;
+				for(OrderLineDTO orderLine: order.getLines()) {
+					LOG.debug("Order Line Item: " + (null != orderLine? orderLine.getItemId() : null) );
+					if (orderLine.getItemId().intValue() == Integer.parseInt((String) parameters.get(PARAMETER_POOL_USER_PRODUCT_ID.getName()))) {
+						//found an existing orderLine with the usage item, update its quantity
+						orderExists=true;
+						orderLine.setQuantity(orderLine.getQuantity().add(addlQty));
+						LOG.debug("New Quantity set to " + orderLine.getQuantity());
+					}
+				}
+				//if a matching OrderLineItem was not found, add this line to the order 
+				if (!orderExists) { 
+					addLineToOrder(order, toAdd);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Get the Order that we want to update for both pool expansion/contraction
+	 * as well as for reflecting the sum of Usage of sub-accounts 
+	 * @param user
+	 * @return
+	 */
+	private OrderDTO getUsersGraduatedPricingOrder(UserDTO user) {
+		
+		if (null != user) { 
+    		//find if one of the items of the user's orders matches the item that receives the pool
+    		outer:
+    		for (OrderDTO order: user.getOrders()) {
+    			LOG.debug("User " + user.getId() + " order " + order.getId());
+    			for(OrderLineDTO line: order.getLines()) {
+    				LOG.debug("Line Item iD: " + line.getItemId() );
+    				ItemDTO lineItem= line.getItem();
+    				if ( null != lineItem && lineItem.getPlans().size() > 0 ) {
+    					//we need to match the receive item it with the item id of the PlanItem of the orders items
+    					for (PlanDTO plan: lineItem.getPlans()) {
+    						for (PlanItemDTO planItem: plan.getPlanItems()) {
+    							LOG.debug("Plan Items Item ID: " + planItem.getItem().getId());
+    							//check if planItems itemid matches the receive product id
+    							if (planItem.getItem().getId() == Integer.parseInt(parameters.get(PARAMETER_POOL_RECEIVE_PRODUCT_ID.getName())) ) {
+    								LOG.debug("Found matching item id to update included quantity");
+    								LOG.debug("PlanItem has PriceModelDTO. " + planItem.getModel().getType());
+    								//check if the plan item has graduated pricing
+    								if (planItem.getModel().getType().equals(PriceModelStrategy.GRADUATED)) {
+    									return order;
+    								}
+    							}
+    						}
+    					}
+    				}
+    			}
+    		}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	private static UserDTO getUserFromEvent(Event event) {
+		UserDTO user= null;
+		if (event instanceof NewQuantityEvent) {
+            NewQuantityEvent nq = (NewQuantityEvent) event;
+            OrderDTO order= new OrderDAS().find(nq.getOrderId());
+            user= order.getBaseUserByUserId();
+		} else if (event instanceof NewOrderEvent) {
+			user= ((NewOrderEvent)event).getOrder().getBaseUserByUserId();
+		}
+		return user;
+	}
+	
+ 	/**
+	 * 
+	 * @param order
+	 * @param toAdd
+	 */
+	private static void addLineToOrder(OrderDTO order, OrderLineDTO toAdd) {
+		OrderLineDTO temp= new OrderLineDTO();
+		temp.setOrderLineType(toAdd.getOrderLineType());
+        temp.setItem(toAdd.getItem());
+        temp.setAmount(toAdd.getAmount());
+        temp.setQuantity(toAdd.getQuantity());
+        temp.setPrice(toAdd.getPrice());
+        temp.setCreateDatetime(new java.util.Date());
+        LOG.debug("Adding new Order Line.. " + temp);
+		OrderLineBL.addLine(order, temp, false);
+	}
+	
+	
+	/**
+	 * 
+	 * @param event
+	 * @param line line passed here is utilized only in case of a NewOrderEvent
+	 * @return
+	 */
+	//Only in a new Order event, the quantity will come from the Order Line itself.
+	private static BigDecimal determineAdditionalQuantity(Event event, OrderLineDTO line) {
+		BigDecimal retVal= null;
+		if (event instanceof NewQuantityEvent) {
+            NewQuantityEvent nq = (NewQuantityEvent) event;
+            LOG.debug("New quantity: " + nq.getNewQuantity() + " Old Quantity: " + nq.getOldQuantity());
+            retVal= nq.getNewQuantity().subtract(nq.getOldQuantity());
+		} else if (event instanceof NewOrderEvent) {
+			retVal= line.getQuantity();
+		}
+		return retVal;
+	}
+	
 }

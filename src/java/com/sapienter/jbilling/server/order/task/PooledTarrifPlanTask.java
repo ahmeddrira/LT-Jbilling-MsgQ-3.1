@@ -141,7 +141,8 @@ public class PooledTarrifPlanTask extends PluggableTask implements IInternalEven
 		CustomerDTO customer= user.getCustomer();
 		
 		//if its okay to invoice this customer, return
-		if ( customer.getInvoiceChild().intValue() > 0 ) {
+		if (customer.getParent() == null || customer.getInvoiceChild() == null ||
+                customer.getInvoiceChild().intValue() > 0 ) {
 			//do nothing, the customer is invoiced as child
 			LOG.debug("Returning, doing nothing. Customer is invoiced as child.");
 			return;

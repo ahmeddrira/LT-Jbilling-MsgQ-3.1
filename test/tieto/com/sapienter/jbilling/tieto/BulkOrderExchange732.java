@@ -90,6 +90,31 @@ public class BulkOrderExchange732 extends TestCase {
             System.out.println("User was created. Id: " + 
                     customer.getUserId());
 
+            /*
+               We know that this customer has been just created so there is not
+               orders for him yet, but as an example, let's check.
+
+               To check you use 'isUserSubscribedTo()
+               It returns a String with a decimal number: if it is 0, then there is no subscription
+             *                                            if it is > 0, then there is a subscription
+             */
+
+            assertEquals("The user can not be subscribed yet", 0,
+                    Integer.valueOf(api.isUserSubscribedTo(customer.getUserId(), SIM_PLAN_ITEM_ID)).intValue());
+
+            /*
+             * No we will subscribe the customer to this plan (the same plan used by the
+             * SIM sub-account).
+             */
+            OrderWS customerPlanOrder = generateOrder(
+                    customer.getUserId(), SIM_PLAN_ITEM_ID);
+
+            // make the call
+            System.out.println("Creating plan subscription order for customer account.");
+            Integer customerPlanOrderId = api.createOrder(
+                    customerPlanOrder);
+            assertNotNull("The order was not created", customerPlanOrderId);
+
 
             /* Create the SIM child user account (MSISDN 12345678912345). */
 

@@ -42,19 +42,13 @@
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="product.percentage"/></content>
                             <content tag="label.for">product.percentage</content>
-                            <g:textField class="field" name="product.percentage" value="${formatNumber(number: product?.percentage, formatName: 'money.format')}" size="5"/>
+                            <g:textField class="field" name="product.percentage" value="${formatNumber(number: product?.percentage, formatName: 'decimal.format')}" size="5"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/checkbox">
                             <content tag="label"><g:message code="product.allow.decimal.quantity"/></content>
                             <content tag="label.for">product.hasDecimals</content>
                             <g:checkBox class="cb checkbox" name="product.hasDecimals" checked="${product?.hasDecimals > 0}"/>
-                        </g:applyLayout>
-                        
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="product.gl.code"/></content>
-                            <content tag="label.for">product.glCode</content>
-                            <g:textField class="field" name="product.glCode" value="${product?.glCode}" size="40"/>
                         </g:applyLayout>
                     </div>
 
@@ -63,6 +57,12 @@
                             <content tag="label"><g:message code="product.internal.number"/></content>
                             <content tag="label.for">product.number</content>
                             <g:textField class="field" name="product.number" value="${product?.number}" size="40"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="product.gl.code"/></content>
+                            <content tag="label.for">product.glCode</content>
+                            <g:textField class="field" name="product.glCode" value="${product?.glCode}" size="40"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/select">

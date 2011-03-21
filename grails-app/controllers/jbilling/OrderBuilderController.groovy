@@ -93,6 +93,7 @@ class OrderBuilderController {
                     order.period        = Constants.ORDER_PERIOD_ONCE
                     order.billingTypeId = Constants.ORDER_BILLING_POST_PAID
                     order.activeSince   = new Date()
+                    order.isCurrent     = 0
                     order.orderLines    = []
                 }
 
@@ -313,6 +314,9 @@ class OrderBuilderController {
             action {
                 def order = conversation.order
                 bindData(order, params)
+
+                order.isCurrent = params.isCurrent ? 1 : 0
+                order.notify = params.notify ? 1 : 0
 
                 // update the order to reflect the subscribed plan
                 def subscribedPlan = subscribedPlan(order.orderLines as List, conversation.plans);

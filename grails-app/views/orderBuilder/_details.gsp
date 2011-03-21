@@ -62,7 +62,7 @@
             <g:applyLayout name="form/checkbox">
                 <content tag="label"><g:message code="order.label.main.subscription"/></content>
                 <content tag="label.for">mainSubscription</content>
-                <g:checkBox class="cb checkbox" name="mainSubscription"/>
+                <g:checkBox class="cb checkbox" name="isCurrent" value="${order?.isCurrent > 0}"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/checkbox">

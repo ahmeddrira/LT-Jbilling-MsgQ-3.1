@@ -390,8 +390,8 @@ class ProductController {
         bindData(product, params, 'product')
 
         // bind parameters with odd types (integer booleans, string integers  etc.)
-        product.hasDecimals = params.hasDecimals ? 1 : 0
-        product.percentage = !params.percentage?.equals('') ? params.percentage : null
+        product.hasDecimals = params.product.hasDecimals ? 1 : 0
+        product.percentage = !params.product.percentage?.equals('') ? params.product.percentage : null
 
         // default price model
         product.defaultPrice = PlanHelper.bindPriceModel(params)

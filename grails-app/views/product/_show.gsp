@@ -31,7 +31,14 @@
                 </tr>
                 <tr>
                     <td><g:message code="product.detail.percentage"/></td>
-                    <td class="value">${selectedProduct.percentage ?: '-'}</td>
+                    <td class="value">
+                        <g:if test="${selectedProduct.percentage}">
+                            <g:formatNumber number="${selectedProduct.percentage}" formatName="percentage.format"/>
+                        </g:if>
+                        <g:else>
+                            -
+                        </g:else>
+                    </td>
                 </tr>
             </tbody>
         </table>

@@ -385,11 +385,14 @@ class PaymentController {
     }
 
     def bindExpiryDate(CreditCardDTO creditCard, GrailsParameterMap params) {
-        if (params.expiryMonth && params.expiryYear) {
+        Integer expiryMonth = params.int('expiryMonth')
+        Integer expiryYear = params.int('expiryYear')
+
+        if (expiryMonth && expiryYear)  {
             Calendar calendar = Calendar.getInstance()
             calendar.clear()
-            calendar.set(Calendar.MONTH, params.int('expiryMonth'))
-            calendar.set(Calendar.YEAR, params.int('expiryYear'))
+            calendar.set(Calendar.MONTH, expiryMonth)
+            calendar.set(Calendar.YEAR, expiryYear)
 
             creditCard.expiry = calendar.getTime()
         }

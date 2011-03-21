@@ -30,13 +30,15 @@
 <body>
 <div class="form-edit">
 
+    <g:set var="isNew" value="${!user || !user?.userId || user?.userId == 0}"/>
+
     <div class="heading">
         <strong>
-            <g:if test="${user}">
-                <g:message code="customer.edit.title"/>
+            <g:if test="${isNew}">
+                <g:message code="customer.create.title"/>
             </g:if>
             <g:else>
-                <g:message code="customer.create.title"/>
+                <g:message code="customer.edit.title"/>
             </g:else>
         </strong>
     </div>
@@ -51,7 +53,7 @@
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="prompt.customer.number"/></content>
 
-                            <g:if test="${user && user.userId != 0}">
+                            <g:if test="${!isNew}">
                                 <span>
                                     <g:link controller="customerInspector" action="inspect" id="${user.userId}" title="${message(code: 'customer.inspect.link')}">${user.userId}</g:link>
                                 </span>
@@ -69,7 +71,7 @@
                             <g:textField class="field" name="user.userName" value="${user?.userName}"/>
                         </g:applyLayout>
 
-                        <g:if test="${user?.password}">
+                        <g:if test="${!isNew}">
                              <g:applyLayout name="form/input">
                                 <content tag="label"><g:message code="prompt.current.password"/></content>
                                 <content tag="label.for">oldPassword</content>
@@ -257,7 +259,7 @@
                             <div class="select4">
                                 <g:select from="${company.orderPeriods.collect{ it.periodUnit }}"
                                         optionKey="id"
-                                        optionValue="description"
+                                        optionValue="${{it.getDescription(session['language_id'])}}"
                                         name="user.dueDateUnitId"
                                         class="customer-field"
                                         value="${user?.dueDateUnitId}"/>
@@ -283,23 +285,23 @@
                         <div class="form-columns">
                             <div class="column">
                                 <g:applyLayout name="form/input">
-                                    <content tag="label"><g:message code="prompt.credit.card"/></content>
+                                    <content tag="label"><g:message code="prompt.name.on.card"/></content>
+                                    <content tag="label.for">creditCard.name</content>
+                                    <g:textField class="field" name="creditCard.name" value="${creditCard?.name}" />
+                                </g:applyLayout>
+
+                                <g:applyLayout name="form/input">
+                                    <content tag="label"><g:message code="prompt.credit.card.number"/></content>
                                     <content tag="label.for">creditCard.number</content>
 
                                     %{-- obscure credit card by default, or if the preference is explicitly set --}%
-                                    <g:if test="${creditCard && preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
+                                    <g:if test="${!isNew && creditCard && preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
                                         <g:set var="creditCardNumber" value="${creditCard.number.replaceAll('^\\d{12}','************')}"/>
                                         <g:textField class="field" name="creditCard.number" value="${creditCardNumber}" />
                                     </g:if>
                                     <g:else>
                                         <g:textField class="field" name="creditCard.number" value="${creditCard?.number}" />
                                     </g:else>
-                                </g:applyLayout>
-
-                                <g:applyLayout name="form/input">
-                                    <content tag="label"><g:message code="prompt.name.on.card"/></content>
-                                    <content tag="label.for">creditCard.name</content>
-                                    <g:textField class="field" name="creditCard.name" value="${creditCard?.name}" />
                                 </g:applyLayout>
 
                                 <g:applyLayout name="form/text">

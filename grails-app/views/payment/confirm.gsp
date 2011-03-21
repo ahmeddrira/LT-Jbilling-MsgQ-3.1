@@ -167,7 +167,15 @@
                             <div class="form-columns">
                                 <div class="column">
                                     <g:applyLayout name="form/text">
-                                        <content tag="label"><g:message code="prompt.credit.card"/></content>
+                                        <content tag="label"><g:message code="prompt.name.on.card"/></content>
+                                        <content tag="label.for">creditCard.name</content>
+                                        <span>${creditCard?.name}</span>
+                                        <g:hiddenField name="creditCard.name" value="${creditCard?.name}" />
+                                    </g:applyLayout>
+
+
+                                    <g:applyLayout name="form/text">
+                                        <content tag="label"><g:message code="prompt.credit.card.number"/></content>
                                         <content tag="label.for">creditCard.number</content>
 
                                         %{-- obscure credit card by default, or if the preference is explicitly set --}%
@@ -179,13 +187,6 @@
                                             <span>${creditCard?.number}</span>
                                         </g:else>
                                         <g:hiddenField name="creditCard.number" value="${creditCard?.number}" />
-                                    </g:applyLayout>
-
-                                    <g:applyLayout name="form/text">
-                                        <content tag="label"><g:message code="prompt.name.on.card"/></content>
-                                        <content tag="label.for">creditCard.name</content>
-                                        <span>${creditCard?.name}</span>
-                                        <g:hiddenField name="creditCard.name" value="${creditCard?.name}" />
                                     </g:applyLayout>
 
                                     <g:applyLayout name="form/text">

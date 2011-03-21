@@ -114,7 +114,7 @@
                             <content tag="label"><g:message code="prompt.user.currency"/></content>
                             <content tag="label.for">user.currencyId</content>
                             <g:select name="user.currencyId" from="${currencies}"
-                                    optionKey="id" optionValue="description" value="${user?.currencyId}" />
+                                    optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}" value="${user?.currencyId}" />
                         </g:applyLayout>
 
                         <g:applyLayout name="form/input">
@@ -226,13 +226,13 @@
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.credit.limit"/></content>
                             <content tag="label.for">user.creditLimit</content>
-                            <g:textField class="field customer-field" name="user.creditLimit" value="${formatNumber(number: user?.getCreditLimitAsDecimal() ?: 0, formatName: 'money.format')}"/>
+                            <g:textField class="field customer-field" name="user.creditLimit" value="${formatNumber(number: user?.creditLimitAsDecimal ?: 0, formatName: 'money.format')}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.auto.recharge"/></content>
                             <content tag="label.for">user.autoRecharge</content>
-                            <g:textField class="field customer-field" name="user.autoRecharge" value="${formatNumber(number: user?.getAutoRechargeAsDecimal() ?: 0, formatName: 'money.format')}"/>
+                            <g:textField class="field customer-field" name="user.autoRecharge" value="${formatNumber(number: user?.autoRechargeAsDecimal ?: 0, formatName: 'money.format')}"/>
                         </g:applyLayout>
                     </div>
 

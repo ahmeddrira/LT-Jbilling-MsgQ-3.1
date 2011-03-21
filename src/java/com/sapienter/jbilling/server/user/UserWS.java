@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -92,7 +93,9 @@ public class UserWS implements WSSecured, Serializable {
     private String owingBalance = null;
     private Integer balanceType = null;
     private String dynamicBalance = null;
+    @Digits(integer = 22, fraction = 10, message="validation.error.not.a.number")
     private String autoRecharge = null;
+    @Digits(integer = 22, fraction = 10, message="validation.error.not.a.number")
     private String creditLimit = null;
 
     private String notes;

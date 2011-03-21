@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.util.Constants; com.sapienter.jbilling.server.user.db.CompanyDTO" %>
+<%@ page import="com.sapienter.jbilling.server.util.Constants" %>
 
 <%--
   Order details form. Allows editing of primary order attributes.
@@ -57,6 +57,22 @@
                 <content tag="label"><g:message code="order.label.cycle.start"/></content>
                 <content tag="label.for">cycleStarts</content>
                 <g:textField class="field" name="cycleStarts" value="${formatDate(date: order?.cycleStarts, formatName: 'datepicker.format')}"/>
+            </g:applyLayout>
+
+            <g:applyLayout name="form/text">
+                <content tag="label"><g:message code="prompt.due.date.override"/></content>
+                <content tag="label.for">dueDateValue</content>
+
+                <div class="inp-bg inp4">
+                    <g:textField class="field" name="dueDateValue" value="${order?.dueDateValue}"/>
+                </div>
+                <div class="select4">
+                    <g:select from="${periodUnits}"
+                              optionKey="id"
+                              optionValue="${{it.getDescription(session['language_id'])}}"
+                              name="dueDateUnitId"
+                              value="${order?.dueDateUnitId ?: Constants.PERIOD_UNIT_DAY}"/>
+                </div>
             </g:applyLayout>
 
             <g:applyLayout name="form/checkbox">

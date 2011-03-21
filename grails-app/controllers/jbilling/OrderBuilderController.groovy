@@ -36,6 +36,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import com.sapienter.jbilling.server.order.db.OrderStatusDTO
 import java.math.RoundingMode
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
 
 /**
  * OrderController
@@ -108,6 +109,7 @@ class OrderBuilderController {
                 def orderStatuses = OrderStatusDTO.list()
                 def orderPeriods = company.orderPeriods.collect { new OrderPeriodDTO(it.id) } << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE)
                 orderPeriods.sort { it.id }
+                def periodUnits = PeriodUnitDTO.list()
 
                 def orderBillingTypes = [
                         new OrderBillingTypeDTO(Constants.ORDER_BILLING_PRE_PAID),
@@ -119,6 +121,7 @@ class OrderBuilderController {
                 flow.itemTypes = itemTypes
                 flow.orderStatuses = orderStatuses
                 flow.orderPeriods = orderPeriods
+                flow.periodUnits = periodUnits
                 flow.orderBillingTypes = orderBillingTypes
                 flow.user = user
                 flow.contact = contact

@@ -51,18 +51,25 @@ beans = {
     /*
         Spring security
      */
+    // populates session attributes and locale from the authenticated user
+    securitySession(com.sapienter.jbilling.client.authentication.util.SecuritySession) {
+        localeResolver = ref('localeResolver')
+    }
+
     // normal username / password authentication
     authenticationProcessingFilter(com.sapienter.jbilling.client.authentication.CompanyUserAuthenticationFilter) {
         authenticationManager = ref("authenticationManager")        
         authenticationSuccessHandler = ref('authenticationSuccessHandler')
         authenticationFailureHandler = ref('authenticationFailureHandler')
         rememberMeServices = ref('rememberMeServices')
+        securitySession = ref('securitySession')
     }
 
     // remember me cookie authentication
     rememberMeAuthenticationFilter(com.sapienter.jbilling.client.authentication.CompanyUserRememberMeFilter) {
         authenticationManager = ref('authenticationManager')
         rememberMeServices = ref('rememberMeServices')
+        securitySession = ref('securitySession')
     }
 
     /*

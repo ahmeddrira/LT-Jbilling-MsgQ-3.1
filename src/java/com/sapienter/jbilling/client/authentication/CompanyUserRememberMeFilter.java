@@ -37,19 +37,35 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class CompanyUserRememberMeFilter extends RememberMeAuthenticationFilter {
 
+    private SecuritySession securitySession;
+
+    public SecuritySession getSecuritySession() {
+        return securitySession;
+    }
+
+    public void setSecuritySession(SecuritySession securitySession) {
+        this.securitySession = securitySession;
+    }
+
     @Override
     protected void onSuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                                        Authentication result) {
+                                              Authentication result) {
 
-        SecuritySession.setSessionAttributes(request.getSession(), (CompanyUserDetails) result.getPrincipal());
+        if (securitySession != null) {
+            securitySession.setAttributes(request, response, (CompanyUserDetails) result.getPrincipal());
+        }
+
         super.onSuccessfulAuthentication(request, response, result);
     }
 
     @Override
     protected void onUnsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                                          AuthenticationException failed) {
-        
-        SecuritySession.clearSessionAttributes(request.getSession());
+                                                AuthenticationException failed) {
+
+        if (securitySession != null) {
+            securitySession.clearAttributes(request, response);
+        }
+
         super.onUnsuccessfulAuthentication(request, response, failed);
     }
 }

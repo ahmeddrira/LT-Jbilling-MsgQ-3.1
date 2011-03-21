@@ -21,7 +21,14 @@
 package com.sapienter.jbilling.client.authentication.util;
 
 import com.sapienter.jbilling.client.authentication.CompanyUserDetails;
+import grails.plugins.springsecurity.Secured;
+import org.apache.log4j.Logger;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -32,24 +39,51 @@ import javax.servlet.http.HttpSession;
  */
 public class SecuritySession {
 
+    private static final Logger LOG = Logger.getLogger(SecuritySession.class);
+
     public static final String USER_ID = "user_id";
     public static final String USER_LANGUAGE_ID = "language_id";
     public static final String USER_CURRENCY_ID = "currency_id";
     public static final String USER_COMPANY_ID = "company_id";
     public static final String USER_LOCALE = "locale";
 
+    private LocaleResolver localeResolver;
+
+    public LocaleResolver getLocaleResolver() {
+        return localeResolver;
+    }
+
+    public void setLocaleResolver(LocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
+    }
+
+    public SecuritySession() {
+    }
+
     /**
      * Sets common attributes of the logged in user as session attributes.
-     * 
-     * @param session session
+     *
+     * @param request http servlet request
+     * @param response http servlet response
      * @param principal logged in user
      */
-    public static void setSessionAttributes(HttpSession session, CompanyUserDetails principal) {
+    public void setAttributes(HttpServletRequest request, HttpServletResponse response, CompanyUserDetails principal) {
+        HttpSession session = request.getSession();
+
         session.setAttribute(USER_ID, principal.getUserId());
         session.setAttribute(USER_LANGUAGE_ID, principal.getLanguageId());
         session.setAttribute(USER_CURRENCY_ID, principal.getCurrencyId());
         session.setAttribute(USER_COMPANY_ID, principal.getCompanyId());
         session.setAttribute(USER_LOCALE, principal.getLocale());
+
+        // set locale for spring/grails
+        if (localeResolver != null) {
+            LOG.debug("Setting locale for Spring contexts: " + principal.getLocale());
+            localeResolver.setLocale(request, response, principal.getLocale());
+
+        } else {
+            LOG.warn("Locale resolver not set or not available, cannot set user locale for Spring contexts!");
+        }
     }
 
     /**
@@ -57,9 +91,12 @@ public class SecuritySession {
      * done whenever an un-successful login attempt is made to ensure that no session attributes
      * leak over when switching users or performing complex authentication steps.
      *
-     * @param session session to clear
+     * @param request http servlet request
+     * @param response http servlet response
      */
-    public static void clearSessionAttributes(HttpSession session) {
+    public void clearAttributes(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession();
+
         session.removeAttribute(USER_ID);
         session.removeAttribute(USER_LANGUAGE_ID);
         session.removeAttribute(USER_CURRENCY_ID);

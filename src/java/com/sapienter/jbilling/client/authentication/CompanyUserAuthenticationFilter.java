@@ -44,7 +44,7 @@ import java.io.IOException;
  *      usernameParameter = "j_username"
  *      clientIdParameter = "j_client_id"
  *
- * 
+ *
  *
  * @author Brian Cowdery
  * @since 04-10-2010
@@ -56,11 +56,28 @@ public class CompanyUserAuthenticationFilter extends UsernamePasswordAuthenticat
     public static final String FORM_CLIENT_ID_KEY = "j_client_id";
 
     private String clientIdParameter;
+    private SecuritySession securitySession;
+
+    public final String getClientIdParameter() {
+        return clientIdParameter == null ? FORM_CLIENT_ID_KEY : clientIdParameter;
+    }
+
+    public void setClientIdParameter(String clientIdParameter) {
+        this.clientIdParameter = clientIdParameter;
+    }
+
+    public SecuritySession getSecuritySession() {
+        return securitySession;
+    }
+
+    public void setSecuritySession(SecuritySession securitySession) {
+        this.securitySession = securitySession;
+    }
 
     /**
      * Returns the form submitted user name as colon delimited string containing
      * the user name and client id of the user to authenticate, e.g., "bob:1"
-     * 
+     *
      * @param request HTTP servlet request
      * @return username string
      */
@@ -72,19 +89,15 @@ public class CompanyUserAuthenticationFilter extends UsernamePasswordAuthenticat
         return UsernameHelper.buildUsernameToken(username, companyId);
     }
 
-    public final String getClientIdParameter() {
-        return clientIdParameter == null ? FORM_CLIENT_ID_KEY : clientIdParameter;
-    }
-
-    public void setClientIdParameter(String clientIdParameter) {
-        this.clientIdParameter = clientIdParameter;
-    }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                             Authentication result) throws IOException, ServletException {
 
-        SecuritySession.setSessionAttributes(request.getSession(), (CompanyUserDetails) result.getPrincipal());
+        if (securitySession != null) {
+            securitySession.setAttributes(request, response, (CompanyUserDetails) result.getPrincipal());
+        }
+
         super.successfulAuthentication(request, response, result);
     }
 
@@ -94,7 +107,10 @@ public class CompanyUserAuthenticationFilter extends UsernamePasswordAuthenticat
 
         LOG.debug("User " + failed.getAuthentication().getPrincipal() + " authentication failed!");
 
-        SecuritySession.clearSessionAttributes(request.getSession());
+        if (securitySession != null) {
+            securitySession.clearAttributes(request, response);
+        }
+
         super.unsuccessfulAuthentication(request, response, failed);
     }
 }

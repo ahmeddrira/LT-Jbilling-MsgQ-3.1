@@ -27,6 +27,7 @@ import com.sapienter.jbilling.server.item.event.PlanUpdatedEvent;
 import com.sapienter.jbilling.server.item.event.NewPlanEvent;
 import com.sapienter.jbilling.server.item.tasks.planChanges.FilePlanChangesCommunication;
 import com.sapienter.jbilling.server.item.tasks.planChanges.IPlanChangesCommunication;
+import com.sapienter.jbilling.server.item.tasks.planChanges.SugarCrmPlanChangesCommunication;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.system.event.Event;
@@ -50,9 +51,16 @@ public class PlanChangesExternalTask extends PluggableTask
         return events;
     }
 
+    //initializer for pluggable params
+    {
+        SugarCrmPlanChangesCommunication.addParameters(descriptions);
+    }
+
     public void process(Event event) throws PluggableTaskException {
 
-        IPlanChangesCommunication task = new FilePlanChangesCommunication();
+        // IPlanChangesCommunication task = new FilePlanChangesCommunication();
+        IPlanChangesCommunication task = new SugarCrmPlanChangesCommunication(
+                parameters);
 
         if (event instanceof NewPlanEvent) {
             task.process((NewPlanEvent) event);

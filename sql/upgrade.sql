@@ -834,7 +834,7 @@ alter table item add column gl_code character varying (50);
 -- drop item manual pricing flag
 alter table item drop column price_manual;
 
-insert into pluggable_task_type values (86, 17, 'com.sapienter.jbilling.server.item.tasks.ItemChangesExternalTask', 0);
+insert into pluggable_task_type values (86, 17, 'com.sapienter.jbilling.server.item.tasks.PlanChangesExternalTask', 0);
 
 -- drop legacy reporting tables
 drop table report_field;

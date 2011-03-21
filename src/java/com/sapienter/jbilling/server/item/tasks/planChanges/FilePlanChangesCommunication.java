@@ -18,44 +18,46 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sapienter.jbilling.server.item.tasks.itemChanges;
+package com.sapienter.jbilling.server.item.tasks.planChanges;
 
 import java.io.File;
 import java.io.FileWriter;
 
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
-import com.sapienter.jbilling.server.item.event.AbstractItemEvent;
-import com.sapienter.jbilling.server.item.event.ItemDeletedEvent;
-import com.sapienter.jbilling.server.item.event.ItemUpdatedEvent;
-import com.sapienter.jbilling.server.item.event.NewItemEvent;
+import com.sapienter.jbilling.server.item.db.PlanDTO;
+import com.sapienter.jbilling.server.item.event.AbstractPlanEvent;
+import com.sapienter.jbilling.server.item.event.NewPlanEvent;
+import com.sapienter.jbilling.server.item.event.PlanDeletedEvent;
+import com.sapienter.jbilling.server.item.event.PlanUpdatedEvent;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
 /**
- * Test implementation of IItemChangesCommunication that simply writes
- * the item changes to jbilling/resources/item_chages.txt
+ * Test implementation of IPlanChangesCommunication that simply writes
+ * the plan changes to jbilling/resources/plan_changes.txt
  */
-public class FileItemChangesCommunication implements IItemChangesCommunication {
+public class FilePlanChangesCommunication implements IPlanChangesCommunication {
 
-    private static final String FILENAME = "item_changes.txt";
+    private static final String FILENAME = "plan_changes.txt";
 
-    public void process(NewItemEvent event) throws PluggableTaskException {
+    public void process(NewPlanEvent event) throws PluggableTaskException {
         writeToFile(event, "insert");
     }
 
-    public void process(ItemUpdatedEvent event) throws PluggableTaskException {
+    public void process(PlanUpdatedEvent event) throws PluggableTaskException {
         writeToFile(event, "update");
     }
 
-    public void process(ItemDeletedEvent event) throws PluggableTaskException {
+    public void process(PlanDeletedEvent event) throws PluggableTaskException {
         writeToFile(event, "delete");
     }
 
-    private void writeToFile(AbstractItemEvent event, String action) 
+    private void writeToFile(AbstractPlanEvent event, String action) 
             throws PluggableTaskException {
 
-        ItemDTO item = event.getItem();
+        PlanDTO plan = event.getPlan();
+        ItemDTO item = plan.getItem();
 
         String output = action + " itemId: " + item.getId() + 
                 ", description: " + item.getDescription(

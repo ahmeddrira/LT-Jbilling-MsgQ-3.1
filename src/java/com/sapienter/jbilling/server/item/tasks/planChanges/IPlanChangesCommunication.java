@@ -18,16 +18,16 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sapienter.jbilling.server.item.tasks.itemChanges;
+package com.sapienter.jbilling.server.item.tasks.planChanges;
 
-import com.sapienter.jbilling.server.item.event.ItemDeletedEvent;
-import com.sapienter.jbilling.server.item.event.ItemUpdatedEvent;
-import com.sapienter.jbilling.server.item.event.NewItemEvent;
+import com.sapienter.jbilling.server.item.event.NewPlanEvent;
+import com.sapienter.jbilling.server.item.event.PlanDeletedEvent;
+import com.sapienter.jbilling.server.item.event.PlanUpdatedEvent;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
-public interface IItemChangesCommunication {
-    public void process(NewItemEvent event) throws PluggableTaskException;
-    public void process(ItemUpdatedEvent event) throws PluggableTaskException;
-    public void process(ItemDeletedEvent event) throws PluggableTaskException;
+public interface IPlanChangesCommunication {
+    public void process(NewPlanEvent event) throws PluggableTaskException;
+    public void process(PlanUpdatedEvent event) throws PluggableTaskException;
+    public void process(PlanDeletedEvent event) throws PluggableTaskException;
 }

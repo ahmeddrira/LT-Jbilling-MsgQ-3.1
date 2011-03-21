@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-SET client_encoding = 'UTF8';
+SET client_encoding = 'SQL_ASCII';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
@@ -14829,8 +14829,8 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 80	14	com.sapienter.jbilling.server.pricing.tasks.TieredPriceModelPricingTask	0
 84	17	com.sapienter.jbilling.server.payment.tasks.SaveACHExternallyTask	1
 85	20	com.sapienter.jbilling.server.process.task.BillableUserOrdersBillingProcessFilterTask	0
-86	17	com.sapienter.jbilling.server.item.tasks.ItemChangesExternalTask	0
 87	17	com.sapienter.jbilling.server.order.task.PooledTarrifPlanTask	0
+86	17	com.sapienter.jbilling.server.item.tasks.PlanChangesExternalTask	0
 \.
 
 

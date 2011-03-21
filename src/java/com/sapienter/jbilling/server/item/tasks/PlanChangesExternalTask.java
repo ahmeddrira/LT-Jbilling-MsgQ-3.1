@@ -22,29 +22,29 @@ package com.sapienter.jbilling.server.item.tasks;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.item.event.ItemDeletedEvent;
-import com.sapienter.jbilling.server.item.event.ItemUpdatedEvent;
-import com.sapienter.jbilling.server.item.event.NewItemEvent;
-import com.sapienter.jbilling.server.item.tasks.itemChanges.FileItemChangesCommunication;
-import com.sapienter.jbilling.server.item.tasks.itemChanges.IItemChangesCommunication;
+import com.sapienter.jbilling.server.item.event.PlanDeletedEvent;
+import com.sapienter.jbilling.server.item.event.PlanUpdatedEvent;
+import com.sapienter.jbilling.server.item.event.NewPlanEvent;
+import com.sapienter.jbilling.server.item.tasks.planChanges.FilePlanChangesCommunication;
+import com.sapienter.jbilling.server.item.tasks.planChanges.IPlanChangesCommunication;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.system.event.Event;
 import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
 
 /**
- * Responds to changes to items. Used to communicate the changes to 
+ * Responds to changes to plans. Used to communicate the changes to 
  * external systems, such as SugarCRM.
  */
-public class ItemChangesExternalTask extends PluggableTask 
+public class PlanChangesExternalTask extends PluggableTask 
         implements IInternalEventsTask {
 
     private static final Logger LOG = 
-            Logger.getLogger(ItemChangesExternalTask.class);
+            Logger.getLogger(PlanChangesExternalTask.class);
 
     private static final Class<Event> events[] = new Class[] { 
-            NewItemEvent.class, ItemUpdatedEvent.class, 
-            ItemDeletedEvent.class };
+            NewPlanEvent.class, PlanUpdatedEvent.class, 
+            PlanDeletedEvent.class };
 
     public Class<Event>[] getSubscribedEvents() {
         return events;
@@ -52,14 +52,14 @@ public class ItemChangesExternalTask extends PluggableTask
 
     public void process(Event event) throws PluggableTaskException {
 
-        IItemChangesCommunication task = new FileItemChangesCommunication();
+        IPlanChangesCommunication task = new FilePlanChangesCommunication();
 
-        if (event instanceof NewItemEvent) {
-            task.process((NewItemEvent) event);
-        } else if (event instanceof ItemUpdatedEvent) {
-            task.process((ItemUpdatedEvent) event);
-        } else if (event instanceof ItemDeletedEvent) {
-            task.process((ItemDeletedEvent) event);
+        if (event instanceof NewPlanEvent) {
+            task.process((NewPlanEvent) event);
+        } else if (event instanceof PlanUpdatedEvent) {
+            task.process((PlanUpdatedEvent) event);
+        } else if (event instanceof PlanDeletedEvent) {
+            task.process((PlanDeletedEvent) event);
         } else {
             throw new PluggableTaskException("Unknown event: " + 
                     event.getClass());

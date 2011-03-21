@@ -439,7 +439,11 @@ public class UserWS implements WSSecured, Serializable {
     }
 
     public BigDecimal getCreditLimitAsDecimal() {
-        return creditLimit == null ? null : new BigDecimal(creditLimit);
+         BigDecimal retValue = null;
+         try {
+             retValue = (creditLimit == null) ? null : new BigDecimal(creditLimit);
+         } catch (NumberFormatException e) { }
+         return retValue;
     }
 
     public void setCreditLimit(String creditLimit) {

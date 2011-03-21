@@ -24,6 +24,9 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
+import com.sapienter.jbilling.server.item.event.ItemDeletedEvent;
+import com.sapienter.jbilling.server.item.event.ItemUpdatedEvent;
+import com.sapienter.jbilling.server.item.event.NewItemEvent;
 import com.sapienter.jbilling.server.item.tasks.IPricing;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
@@ -33,6 +36,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
+import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
@@ -124,6 +128,9 @@ public class ItemBL {
         item.setDescription(dto.getDescription(), languageId);
         updateTypes(dto);
 
+        // trigger internal event
+        EventManager.process(new NewItemEvent(item));
+
         return item.getId();
     }
 
@@ -147,6 +154,9 @@ public class ItemBL {
         }
 
         itemDas.save(item);
+
+        // trigger internal event
+        EventManager.process(new ItemUpdatedEvent(item));
     }
 
     /**
@@ -216,12 +226,16 @@ public class ItemBL {
     
     public void delete(Integer executorId) {
         item.setDeleted(new Integer(1));
-        itemDas.flush();
-        itemDas.clear();
 
         eLogger.audit(executorId, null, Constants.TABLE_ITEM, item.getId(),
                 EventLogger.MODULE_ITEM_MAINTENANCE,
                 EventLogger.ROW_DELETED, null, null, null);
+
+        // trigger internal event
+        EventManager.process(new ItemDeletedEvent(item));
+
+        itemDas.flush();
+        itemDas.clear();
     }
 
     public boolean validateDecimals( Integer hasDecimals ){

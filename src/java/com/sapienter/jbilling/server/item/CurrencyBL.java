@@ -118,8 +118,12 @@ public class CurrencyBL {
         if (currencyId.equals(1)) {
             return amount; // this is already in the pivot
         }
+        if ( amount.compareTo(BigDecimal.ZERO) == 0) {
+        	return BigDecimal.ZERO;
+        }
         
         CurrencyExchangeDTO exchange = findExchange(entityId, currencyId);
+        
         // make the conversion itself
         return amount.multiply(exchange.getRate());
     }

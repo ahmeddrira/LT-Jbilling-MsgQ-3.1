@@ -841,6 +841,8 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                     invoice.getUserId(), invoice.getCurrency().getId(), false));
             parameters.put("balance", Util.formatMoney(invoice.getBalance(),
                     invoice.getUserId(), invoice.getCurrency().getId(), false));
+            parameters.put("carriedBalance", Util.formatMoney(invoice.getCarriedBalance(),
+                    invoice.getUserId(), invoice.getCurrency().getId(), false));
 
             LOG.debug("Parameter tax = " + parameters.get("tax")
                     + " totalWithTax = " + parameters.get("totalWithTax")

@@ -65,8 +65,9 @@ public class TestNotificationTask extends PluggableTask implements NotificationT
                 from = Util.getSysProp("email_from");
             }
             
+            String email = emails == null ? "No email" : emails.size() == 0 ? "No email" : emails.get(0).getEmail();
             writer.write("Date: " + Calendar.getInstance().getTime() + "\n");
-            writer.write("To: " + emails.get(0).getEmail() + "\n");
+            writer.write("To: " + email + "\n");
             writer.write("From: " + from + "\n");
             writer.write("Subject: " + sections.getContent()[0].getContent() + "\n");
             writer.write("Body: " + sections.getContent()[1].getContent() + "\n");

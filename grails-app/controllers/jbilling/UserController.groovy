@@ -64,6 +64,7 @@ class UserController {
 				}
                 eq('company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
+				ne('id',1) /*filter out the admin from customer list*/
             }
             order('id', 'desc')
         }
@@ -343,12 +344,14 @@ class UserController {
     }
 
     def bindExpiryDate(CreditCardDTO creditCard, GrailsParameterMap params) {
-        Calendar calendar = Calendar.getInstance()
-        calendar.clear()
-        calendar.set(Calendar.MONTH, params.int('expiryMonth'))
-        calendar.set(Calendar.YEAR, params.int('expiryYear'))
+        if (params.int('expiryMonth') != null && params.int('expiryYear') != null)  {
+            Calendar calendar = Calendar.getInstance()
+            calendar.clear()
+            calendar.set(Calendar.MONTH, params.int('expiryMonth'))
+            calendar.set(Calendar.YEAR, params.int('expiryYear'))
 
-        creditCard.expiry = calendar.getTime()
+            creditCard.expiry = calendar.getTime()
+        }
     }
 
     def getCurrencies() {

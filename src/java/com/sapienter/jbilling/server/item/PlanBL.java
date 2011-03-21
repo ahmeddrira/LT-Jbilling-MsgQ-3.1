@@ -25,6 +25,9 @@ import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.PlanDAS;
 import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
+import com.sapienter.jbilling.server.item.event.NewPlanEvent;
+import com.sapienter.jbilling.server.item.event.PlanDeletedEvent;
+import com.sapienter.jbilling.server.item.event.PlanUpdatedEvent;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
@@ -32,6 +35,7 @@ import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
+import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.CustomerPriceDTO;
@@ -159,6 +163,10 @@ public class PlanBL {
             validateAttributes(plan);
 
             this.plan = planDas.save(plan);
+
+            // trigger internal event
+            EventManager.process(new NewPlanEvent(plan));
+
             return this.plan.getId();
         }
 
@@ -179,6 +187,9 @@ public class PlanBL {
             this.plan = planDas.save(plan);
             refreshCustomerPrices();
 
+            // trigger internal event
+            EventManager.process(new PlanUpdatedEvent(plan));
+
         } else {
             LOG.error("Cannot update, PlanDTO not found or not set!");
         }
@@ -191,6 +202,9 @@ public class PlanBL {
             plan.addPlanItem(planItem);
             this.plan = planDas.save(plan);
             refreshCustomerPrices();
+
+            // trigger internal event
+            EventManager.process(new PlanUpdatedEvent(plan));
             
         } else {
             LOG.error("Cannot add price, PlanDTO not found or not set!");
@@ -199,6 +213,10 @@ public class PlanBL {
 
     public void delete() {
         if (plan != null) {
+
+            // trigger internal event
+            EventManager.process(new PlanDeletedEvent(plan));
+
             for (CustomerDTO customer : getCustomersByPlan(plan.getId())) {
                 CustomerPriceBL bl = new CustomerPriceBL(customer);
                 bl.removePrices(plan.getId());

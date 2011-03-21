@@ -28,6 +28,7 @@ import com.sapienter.jbilling.server.pricing.strategy.PercentageStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPercentageStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPricingStrategy;
+import com.sapienter.jbilling.server.pricing.strategy.TieredPricingStrategy;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -63,7 +64,9 @@ public enum PriceModelStrategy {
     PERCENTAGE              (new PercentageStrategy()),
 
     /** MIDDLE or END of chain, time-of-day strategy that applies a percentage to a previously calculated rate */
-    TIME_OF_DAY_PERCENTAGE  (new TimeOfDayPercentageStrategy());
+    TIME_OF_DAY_PERCENTAGE  (new TimeOfDayPercentageStrategy()),
+    
+    TIERED                  (new TieredPricingStrategy());
 
 
     private final PricingStrategy strategy;

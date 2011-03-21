@@ -64,7 +64,6 @@ class UserController {
 				}
                 eq('company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
-				ne('id',1) /*filter out the admin from customer list*/
             }
             order('id', 'desc')
         }

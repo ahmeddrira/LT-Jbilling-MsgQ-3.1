@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-SET client_encoding = 'UTF8';
+SET client_encoding = 'SQL_ASCII';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
@@ -3335,13 +3335,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-779	1	planBuilder	edit	update	200	0
-780	1	plan	list	\N	200	0
-781	1	planBuilder	edit	update	200	0
 782	1	plan	list	\N	200	0
 783	1	planBuilder	edit	create	\N	0
 784	1	plan	list	\N	500	0
 785	1	user	list	\N	\N	0
+786	1	config	index	\N	\N	0
+787	1	plugin	listCategories	\N	\N	0
+788	1	plugin	plugins	\N	17	0
 \.
 
 
@@ -10242,6 +10242,7 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 499000	1	1	14	3500	2011-03-17 16:43:46.93	2	3	9	\N	\N	\N	0	\N
 499001	1	1	14	3500	2011-03-17 16:47:10.127	2	3	9	\N	\N	\N	0	\N
 499002	1	1	14	3500	2011-03-17 16:58:24.728	2	3	9	\N	\N	\N	0	\N
+500000	1	1	25	6080	2011-03-21 17:19:37.675	2	11	25	\N	\N	\N	0	\N
 \.
 
 
@@ -11663,8 +11664,6 @@ invoice	88
 invoice	88
 invoice_line	89
 invoice_line	89
-pluggable_task	608
-pluggable_task_parameter	8316
 purchase_order	1088
 purchase_order	1088
 order_process	88
@@ -11683,7 +11682,6 @@ mediation_record	2
 mediation_process	6
 mediation_process	6
 recent_item	186
-event_log	500
 base_user	1099
 base_user	1099
 plan	6
@@ -11692,11 +11690,14 @@ customer	1089
 customer	1089
 contact_map	7916
 contact_map	7916
-event_log	500
 price_model	31
 item	40
 item	40
-breadcrumb	786
+breadcrumb	789
+pluggable_task	609
+pluggable_task_parameter	8317
+event_log	501
+event_log	501
 \.
 
 
@@ -14686,6 +14687,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 20	1	21	1	2	A plug-in for testing only, it does not send any requests to any real payment gateway
 6060	1	28	1	1	
 6070	1	87	1	2	Pooled Tarrif Plan Task \r\nAdd 3404\r\nReceive 3801\r\nUsage 3405\r\nMultiplier 5
+6080	1	86	2	1	
 \.
 
 
@@ -14741,6 +14743,10 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 831502	6070	pool_receive_product_id	\N	3801	\N	0
 831501	6070	pool_user_product_id	\N	3405	\N	1
 831503	6070	pool_add_product_id	\N	3404	\N	1
+831600	6080	password	\N	sugartag	\N	0
+831601	6080	sugarinstance	\N	sugarcrm	\N	0
+831602	6080	server	\N	10.26.2.129	\N	0
+831603	6080	user_name	\N	admin	\N	0
 \.
 
 
@@ -14829,8 +14835,8 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 80	14	com.sapienter.jbilling.server.pricing.tasks.TieredPriceModelPricingTask	0
 84	17	com.sapienter.jbilling.server.payment.tasks.SaveACHExternallyTask	1
 85	20	com.sapienter.jbilling.server.process.task.BillableUserOrdersBillingProcessFilterTask	0
-86	17	com.sapienter.jbilling.server.item.tasks.ItemChangesExternalTask	0
 87	17	com.sapienter.jbilling.server.order.task.PooledTarrifPlanTask	0
+86	17	com.sapienter.jbilling.server.item.tasks.PlanChangesExternalTask	0
 \.
 
 

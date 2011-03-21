@@ -34,6 +34,8 @@ import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.MapKey;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -53,9 +55,10 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Brian Cowdery
@@ -78,7 +81,7 @@ public class PriceModelDTO implements Serializable {
 
     private Integer id;
     private PriceModelStrategy type;
-    private Map<String, String> attributes = new HashMap<String, String>();
+    private SortedMap<String, String> attributes = new TreeMap<String, String>();
     private BigDecimal rate;
     private CurrencyDTO currency;
 
@@ -91,7 +94,7 @@ public class PriceModelDTO implements Serializable {
     public PriceModelDTO(PriceModelWS ws, CurrencyDTO currency) {
         setId(ws.getId());
         setType(PriceModelStrategy.valueOf(ws.getType()));
-        setAttributes(new HashMap<String, String>(ws.getAttributes()));
+        setAttributes(new TreeMap<String, String>(ws.getAttributes()));
         setRate(ws.getRateAsDecimal());
         setCurrency(currency);
     }
@@ -126,12 +129,13 @@ public class PriceModelDTO implements Serializable {
     @JoinTable(name = "price_model_attribute", joinColumns = @JoinColumn(name = "price_model_id"))
     @MapKey(columns = @Column(name = "attribute_name", nullable = true, length = 255))
     @Column(name = "attribute_value", nullable = true, length = 255)
+    @Sort(type = SortType.NATURAL)
     @Fetch(FetchMode.SELECT)
-    public Map<String, String> getAttributes() {
+    public SortedMap<String, String> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(Map<String, String> attributes) {
+    public void setAttributes(SortedMap<String, String> attributes) {
         this.attributes = attributes;
         setAttributeWildcards();
     }

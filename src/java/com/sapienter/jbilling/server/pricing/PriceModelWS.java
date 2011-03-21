@@ -24,8 +24,8 @@ import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Brian Cowdery
@@ -43,7 +43,7 @@ public class PriceModelWS implements Serializable {
     
     private Integer id;
     private String type;
-    private Map<String, String> attributes = new HashMap<String, String>();
+    private SortedMap<String, String> attributes = new TreeMap<String, String>();
     private String rate;
     private Integer currencyId;
     private PriceModelWS next;
@@ -63,7 +63,7 @@ public class PriceModelWS implements Serializable {
 
     public PriceModelWS(PriceModelDTO model) {
         this.id = model.getId();
-        this.attributes = new HashMap<String,String>(model.getAttributes());
+        this.attributes = new TreeMap<String,String>(model.getAttributes());
 
         setRate(model.getRate());
 
@@ -88,11 +88,11 @@ public class PriceModelWS implements Serializable {
         this.type = type;
     }
 
-    public Map<String, String> getAttributes() {
+    public SortedMap<String, String> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(Map<String, String> attributes) {
+    public void setAttributes(SortedMap<String, String> attributes) {
         this.attributes = attributes;
     }
 

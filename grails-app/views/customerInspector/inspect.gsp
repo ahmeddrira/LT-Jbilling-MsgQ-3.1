@@ -455,7 +455,7 @@
                                             ${order.periodStr}
                                         </td>
                                         <td class="innerContent">
-                                            <g:formatNumber number="${orderLine.quantity}"/>
+                                            <g:formatNumber number="${orderLine.getQuantityAsDecimal()}" formatName="decimal.format"/>
                                         </td>
                                         <td class="innerContent">
                                             <g:formatNumber number="${orderLine.getPriceAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>

@@ -70,9 +70,8 @@ class OrderController {
 		
 		breadcrumbService.addBreadcrumb(controllerName, 'showListAndOrder', null, _orderId)
 		recentItemService.addRecentItem(_orderId, RecentItemType.ORDER)
-		
-		log.debug "Invoices Generated: ${order.getGeneratedInvoices().size()}"
-		render template:'order', model: [order: order, user:user]
+
+		render template:'order', model: [order: order, user: user, currencies: currencies]
 	}
 	
 	def showListAndOrder = {
@@ -86,7 +85,7 @@ class OrderController {
 		recentItemService.addRecentItem(_orderId, RecentItemType.ORDER)
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, _orderId)
 		
-		render view: 'showListAndOrder', model:[orders:orders, order:order, user:user, filters:filters]
+		render view: 'showListAndOrder', model:[orders:orders, order: order, user: user, filters: filters, currencies: currencies ]
 	}
 	
 	def getFilteredOrders(filters, GrailsParameterMap params) {

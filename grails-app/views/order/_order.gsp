@@ -4,6 +4,8 @@
 
 <div class="column-hold">
 
+    <g:set var="currency" value="${currencies.find{ it.id == order.currencyId}}"/>
+
     <div class="heading">
         <strong><g:message code="order.label.details"/>&nbsp;<em>${order?.id}</em></strong>
     </div>
@@ -38,37 +40,47 @@
         <table class="dataTable">
             <tr><td><g:message code="order.label.create.date"/>:</td>
                 <td class="value">
-                    <g:formatDate format="MMM-dd-yyyy" date="${order?.createDate}"/>
+                    <g:formatDate date="${order?.createDate}"/>
                 </td>
             </tr>
             <tr><td><g:message code="order.label.active.since"/>:</td>
                 <td class="value">
-                    <g:formatDate format="MMM-dd-yyyy" date="${order?.activeSince}"/>
+                    <g:formatDate date="${order?.activeSince}"/>
                 </td>
             </tr>
             <tr><td><g:message code="order.label.active.until"/>:</td>
                 <td class="value">
-                    <g:formatDate format="MMM-dd-yyyy" date="${order?.activeUntil}"/>
+                    <g:formatDate date="${order?.activeUntil}"/>
+                </td>
+            </tr>
+            <tr><td><g:message code="order.label.cycle.start"/>:</td>
+                <td class="value">
+                    <g:formatDate date="${order?.cycleStarts}"/>
                 </td>
             </tr>
             <tr><td><g:message code="order.label.next.invoice"/>:</td>
                 <td class="value">
                     <g:if test="${order?.nextBillableDay}">
-                        <g:formatDate format="MMM-dd-yyyy" date="${order?.nextBillableDay}"/>
+                        <g:formatDate date="${order?.nextBillableDay}"/>
                     </g:if>
                     <g:else>
-                        <g:formatDate format="MMM-dd-yyyy" date="${order?.createDate}"/>
+                        <g:formatDate date="${order?.cycleStarts ?: order?.activeSince ?: order?.createDate}"/>
                     </g:else>
                 </td>
             </tr>
-            <tr><td><g:message code="order.label.period"/>:</td><td class="value">${order.periodStr}</td></tr>
-            <tr><td><g:message code="order.label.total"/>:</td>
-                    <td class="value">${Util.formatMoney(order.total as BigDecimal,
-                        session["user_id"],
-                        order.currencyId, 
-                        false)?.substring(2)}</td></tr>
-            <tr><td><g:message code="order.label.status"/>:</td>
-                <td class="value">${order?.statusStr}</td></tr>
+            <tr>
+                <td><g:message code="order.label.period"/>:</td><td class="value">${order.periodStr}</td>
+            </tr>
+            <tr>
+                <td><g:message code="order.label.total"/>:</td>
+                <td class="value">
+                    <g:formatNumber number="${order.totalAsDecimal}" type="currency" currencySymbol="${currency.symbol}"/>
+                </td>
+            </tr>
+            <tr>
+                <td><g:message code="order.label.status"/>:</td>
+                <td class="value">${order?.statusStr}</td>
+            </tr>
         </table>
     </div>
     
@@ -130,16 +142,18 @@
                                    </g:remoteLink>
                                 </g:else>
                             </td>
-                            <td class="innerContent">${line.description}</td>
-                            <td class="innerContent">${new BigDecimal(line.quantity?: "0.0").intValue()}</td>
-                            <td class="innerContent">${Util.formatMoney( new BigDecimal(line?.price?:"0.0"),
-                                session["user_id"],
-                                order.currencyId, 
-                                false)?.substring(2)}</td>
-                            <td class="innerContent">${Util.formatMoney( new BigDecimal(line?.amount?:"0.0"),
-                                session["user_id"],
-                                order.currencyId, 
-                                false)?.substring(2)}</td>
+                            <td class="innerContent">
+                                ${line.description}
+                            </td>
+                            <td class="innerContent">
+                                <g:formatNumber number="${line.quantityAsDecimal ?: BigDecimal.ZERO}" formatName="decimal.format"/>
+                            </td>
+                            <td class="innerContent">
+                                <g:formatNumber number="${line.priceAsDecimal ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency.symbol}"/>
+                            </td>
+                            <td class="innerContent">
+                                <g:formatNumber number="${line.amountAsDecimal ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency.symbol}"/>
+                            </td>
                          </tr>
                      </g:each>
                  </tbody>
@@ -167,6 +181,8 @@
                 </thead>
                 <tbody>
                      <g:each var="invoice" in="${order.generatedInvoices}" status="idx">
+                         <g:set var="currency" value="${currencies.find{ it.id == invoice.currencyId}}"/>
+
                          <tr>
                             <td class="innerContent">
                                 <g:remoteLink controller="invoice" action="show" id="${invoice.id}" before="register(this);" onSuccess="render(data, next);">
@@ -176,8 +192,9 @@
                             <td class="innerContent">
                                 <g:formatDate format="dd-MMM-yyyy HH:mm:ss a" date="${invoice?.createDateTime}"/>
                             </td>
-                            <td class="innerContent">${Util.formatMoney(new BigDecimal(invoice.total ?: "0.0"),
-                                session["user_id"],invoice?.currencyId, false)}</td>
+                            <td class="innerContent">
+                                <g:formatNumber number="${invoice.totalAsDecimal}" type="currency" currencySymbol="${currency.symbol}"/>
+                            </td>
                          </tr>
                      </g:each>
                 </tbody>

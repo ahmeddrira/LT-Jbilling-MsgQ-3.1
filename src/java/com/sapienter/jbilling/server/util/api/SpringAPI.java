@@ -475,6 +475,10 @@ public class SpringAPI implements JbillingAPI {
         return session.getMediationEventsForOrder(orderId);
     }
 
+    public List<MediationRecordLineWS> getMediationEventsForInvoice(Integer invoiceId) {
+        return session.getMediationEventsForInvoice(invoiceId);
+    }
+
     public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
         return session.getMediationRecordsByMediationProcess(mediationProcessId);
     }

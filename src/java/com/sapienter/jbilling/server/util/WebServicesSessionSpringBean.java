@@ -47,6 +47,7 @@ import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDAS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
@@ -2516,6 +2517,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
         List<MediationRecordLineDTO> events = mediationBean.getEventsForOrder(orderId);
 
+        return MediationRecordBL.getWS(events);
+    }
+
+    public List<MediationRecordLineWS> getMediationEventsForInvoice(Integer invoiceId) {
+        List<MediationRecordLineDTO> events = new MediationRecordLineDAS().findByInvoice(invoiceId);
         return MediationRecordBL.getWS(events);
     }
 

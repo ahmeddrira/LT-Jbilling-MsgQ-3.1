@@ -13,6 +13,7 @@
 
 <g:javascript library="jquery" plugin="jquery"/>
 <jqui:resources themeCss="${resource(dir:'jquery-ui/themes/jbilling/jquery-ui-1.8.7.custom.css')}" />
+<g:javascript src="jquery-ui/i18n/jquery.ui.datepicker-${session.locale.language}.js"/>
 
 <link media="all" rel="stylesheet" href="${resource(dir:'css', file:'all.css')}" type="text/css" />
 <!--[if lt IE 8]><link rel="stylesheet" href="${resource(dir:'css', file:'lt7.css')}" type="text/css" media="screen"/><![endif]-->

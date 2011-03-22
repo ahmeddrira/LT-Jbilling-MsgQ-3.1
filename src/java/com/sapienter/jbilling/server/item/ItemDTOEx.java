@@ -128,6 +128,10 @@ public class ItemDTOEx implements WSSecured, Serializable {
         return percentage != null ? new BigDecimal(percentage) : null;
     }
 
+    public void setPercentageAsDecimal(BigDecimal percentage) {
+        setPercentage(percentage);
+    }
+
     public void setPercentage(String percentage) {
         this.percentage = percentage;
     }

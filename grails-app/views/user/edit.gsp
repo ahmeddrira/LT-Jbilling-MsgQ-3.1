@@ -113,8 +113,11 @@
                         <g:applyLayout name="form/select">
                             <content tag="label"><g:message code="prompt.user.currency"/></content>
                             <content tag="label.for">user.currencyId</content>
-                            <g:select name="user.currencyId" from="${currencies}"
-                                    optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}" value="${user?.currencyId}" />
+                            <g:select name="user.currencyId"
+                                      from="${currencies}"
+                                      optionKey="id"
+                                      optionValue="${{it.getDescription(session['language_id'])}}"
+                                      value="${user?.currencyId}" />
                         </g:applyLayout>
 
                         <g:applyLayout name="form/input">

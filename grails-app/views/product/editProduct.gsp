@@ -41,8 +41,8 @@
 
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="product.percentage"/></content>
-                            <content tag="label.for">product.percentage</content>
-                            <g:textField class="field" name="product.percentage" value="${formatNumber(number: product?.percentage, formatName: 'decimal.format')}" size="5"/>
+                            <content tag="label.for">product.percentageAsDecimal</content>
+                            <g:textField class="field" name="product.percentageAsDecimal" value="${formatNumber(number: product?.percentage, formatName: 'decimal.format')}" size="5"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/checkbox">
@@ -72,7 +72,8 @@
                             <g:set var="types" value="${product?.types?.collect{ it as Integer }}"/>
                             <g:select name="product.types" multiple="true"
                                       from="${categories}"
-                                      optionKey="id" optionValue="description"
+                                      optionKey="id"
+                                      optionValue="${{it.getDescription(session['language_id'])}}"
                                       value="${types ?: categoryId}"/>
                         </g:applyLayout>
                     </div>

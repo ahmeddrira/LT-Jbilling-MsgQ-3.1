@@ -34,7 +34,7 @@
 
                     <g:applyLayout name="form/text">
                         <content tag="label">Last Login</content>
-                        <span><g:formatDate date="${user.lastLogin}"/></span>
+                        <span><g:formatDate date="${user.lastLogin}" formatName="date.pretty.format"/></span>
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
@@ -118,7 +118,7 @@
 
                         <g:if test="${cycle}">
                             <g:set var="nextInvoiceDate" value="${cycle?.getNextBillableDay() ?: cycle?.getActiveSince() ?: cycle?.getCreateDate()}"/>
-                            <span><g:formatDate date="${nextInvoiceDate}"/></span>
+                            <span><g:formatDate date="${nextInvoiceDate}" formatName="date.pretty.format"/></span>
                         </g:if>
                         <g:else>
                             <g:message code="prompt.no.active.orders"/>
@@ -312,7 +312,7 @@
                                         <td class="value"><g:link controller="invoice" action="list" id="${invoice.id}">${invoice.id}</g:link></td>
 
                                         <td><g:message code="invoice.label.date"/></td>
-                                        <td class="value"><g:formatDate date="${invoice.createDatetime}"/></td>
+                                        <td class="value"><g:formatDate date="${invoice.createDatetime}" formatName="date.pretty.format"/></td>
 
                                         <td><g:message code="invoice.amount.date"/></td>
                                         <td class="value"><g:formatNumber number="${invoice.total}" type="currency" currencySymbol="${invoice.currency.symbol}"/></td>
@@ -340,7 +340,7 @@
                                         </td>
 
                                         <td><g:message code="invoice.label.duedate"/></td>
-                                        <td class="value"><g:formatDate date="${invoice.dueDate}"/></td>
+                                        <td class="value"><g:formatDate date="${invoice.dueDate}" formatName="date.pretty.format"/></td>
 
                                         <td><g:message code="invoice.label.balance"/></td>
                                         <td class="value"><g:formatNumber number="${invoice.balance}" type="currency" currencySymbol="${invoice.currency.symbol}"/></td>
@@ -359,7 +359,7 @@
                                         <td class="value">${invoice.paymentAttempts}</td>
 
                                         <td><g:message code="invoice.label.gen.date"/></td>
-                                        <td class="value"><g:formatDate date="${invoice.createTimestamp}"/></td>
+                                        <td class="value"><g:formatDate date="${invoice.createTimestamp}" formatName="date.pretty.format"/></td>
 
                                         <td><g:message code="invoice.label.carried.bal"/></td>
                                         <td class="value"><g:formatNumber number="${invoice.carriedBalance}" type="currency" currencySymbol="${invoice.currency.symbol}"/></td>

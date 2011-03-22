@@ -60,7 +60,7 @@
             <tbody>
                 <tr>
                     <td><g:message code="payment.date"/></td>
-                    <td class="value"><g:formatDate date="${selected.paymentDate ?: selected.createDatetime}" formatName="date.format"/></td>
+                    <td class="value"><g:formatDate date="${selected.paymentDate ?: selected.createDatetime}" formatName="date.pretty.format"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="payment.amount"/></td>
@@ -329,7 +329,7 @@
                     </tr>
                     <tr>
                         <td><g:message code="payment.cheque.date"/></td>
-                        <td class="value"><g:formatDate date="${cheque.date}" formatName="date.format"/></td>
+                        <td class="value"><g:formatDate date="${cheque.date}" formatName="date.pretty.format"/></td>
                     </tr>
                 </tbody>
             </table>

@@ -9,7 +9,7 @@
     <tbody>
     <tr>
         <td><g:message code="payment.date"/></td>
-        <td class="value"><g:formatDate date="${payment?.paymentDate ?: payment?.createDatetime}"/></td>
+        <td class="value"><g:formatDate date="${payment?.paymentDate ?: payment?.createDatetime}" formatName="date.pretty.format"/></td>
 
         <td><g:message code="payment.id"/></td>
         <td class="value"><g:link controller="payment" action="list" id="${payment?.id}">${payment?.id}</g:link></td>

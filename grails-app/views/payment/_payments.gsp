@@ -31,7 +31,7 @@
                     </td>
                     <td class="medium">
                         <g:remoteLink class="cell" action="show" id="${payment.id}" before="register(this);" onSuccess="render(data, next);">
-                            <span><g:formatDate date="${payment.paymentDate}" formatName="date.format"/></span>
+                            <span><g:formatDate date="${payment.paymentDate}" formatName="date.pretty.format"/></span>
                         </g:remoteLink>
                     </td>
                     <td class="tiny">

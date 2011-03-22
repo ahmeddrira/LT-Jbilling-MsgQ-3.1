@@ -21,7 +21,7 @@
                         onclick="javascript: document.location.href='/jbilling/billing/show/${dto.id}'">
 						<td class="small">${dto.id}</td>
 						<td class="medium">
-							${new java.text.SimpleDateFormat("dd-MMM-yyyy").format(dto.billingDate)}
+                            <g:formatDate date="${dto.billingDate}" formatNumber="date.pretty.format"/>
 						</td>
 						<g:if test="${dataHashMap[dto.id] != null}">
                             <td class="small">${dataHashMap[dto.id][0]}</td>

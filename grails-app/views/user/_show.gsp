@@ -54,7 +54,7 @@
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.user.created.date"/></td>
-                    <td class="value"><g:formatDate date="${selected.createDatetime}"/></td>
+                    <td class="value"><g:formatDate date="${selected.createDatetime}" formatName="date.pretty.format"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.user.email"/></td>
@@ -126,7 +126,12 @@
                     <td><g:message code="customer.detail.payment.invoiced.date"/></td>
                     <td class="value">
                         <g:remoteLink controller="invoice" action="show" id="${invoice?.id}" before="register(this);" onSuccess="render(data, next);">
-                            <g:formatDate date="${invoice?.createDatetime}"/>
+
+
+                            <g:formatDate date="${invoice?.createDatetime}" formatName="date.pretty.format"/>
+
+
+
                         </g:remoteLink>
                     </td>
                 </tr>
@@ -134,14 +139,14 @@
                     <td><g:message code="customer.detail.payment.paid.date"/></td>
                     <td class="value">
                         <g:remoteLink controller="payment" action="show" id="${payment?.id}" before="register(this);" onSuccess="render(data, next);">
-                            <g:formatDate date="${payment?.paymentDate ?: payment?.createDatetime}"/>
+                            <g:formatDate date="${payment?.paymentDate ?: payment?.createDatetime}" formatName="date.pretty.format"/>
                         </g:remoteLink>
 
                     </td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.due.date"/></td>
-                    <td class="value"><g:formatDate date="${invoice?.dueDate}"/></td>
+                    <td class="value"><g:formatDate date="${invoice?.dueDate}" formatName="date.pretty.format"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.invoiced.amount"/></td>

@@ -98,7 +98,7 @@
                         <g:set var="currency" value="${currencies.find { it.id == payment?.currencyId }}"/>
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="prompt.user.currency"/></content>
-                            <span>${currency?.getDescription() ?: payment.currencyId}</span>
+                            <span>${currency?.getDescription(session['language_id']) ?: payment.currencyId}</span>
                             <g:hiddenField name="payment.currencyId" value="${payment?.currencyId}"/>
                         </g:applyLayout>
 
@@ -106,7 +106,7 @@
                             <content tag="label"><g:message code="payment.amount"/></content>
                             <content tag="label.for">payment.amount</content>
                             <span><g:formatNumber number="${payment.amount}" formatName="money.format"/></span>
-                            <g:hiddenField class="field" name="payment.amount" value="${payment?.amount}"/>
+                            <g:hiddenField class="field" name="payment.amountAsDecimal" value="${formatNumber(number: payment?.amount)}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/text">

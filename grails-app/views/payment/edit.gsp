@@ -139,7 +139,7 @@
 
                             <g:applyLayout name="form/text">
                                 <content tag="label"><g:message code="prompt.user.currency"/></content>
-                                <span>${currency?.getDescription() ?: payment.currencyId}</span>
+                                <span>${currency?.getDescription(session['language_id']) ?: payment.currencyId}</span>
                                 <g:hiddenField name="payment.currencyId" value="${payment?.currencyId}"/>
                             </g:applyLayout>
                         </g:if>
@@ -147,16 +147,18 @@
                             <g:applyLayout name="form/select">
                                 <content tag="label"><g:message code="prompt.user.currency"/></content>
                                 <content tag="label.for">payment.currencyId</content>
-                                <g:select name="payment.currencyId" from="${currencies}"
-                                          optionKey="id" optionValue="description"/>
+                                <g:select name="payment.currencyId"
+                                          from="${currencies}"
+                                          optionKey="id"
+                                          optionValue="${{it.getDescription(session['language_id'])}}"/>
                             </g:applyLayout>
                         </g:else>
 
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="payment.amount"/></content>
-                            <content tag="label.for">payment.amount</content>
+                            <content tag="label.for">payment.amountAsDecimal</content>
                             <g:set var="paymentAmount" value="${payment?.amount ?: invoices?.find{ it.id == invoiceId }?.balance }"/>
-                            <g:textField class="field" name="payment.amount" value="${formatNumber(number: paymentAmount, formatName: 'money.format')}"/>
+                            <g:textField class="field" name="payment.amountAsDecimal" value="${formatNumber(number: paymentAmount, formatName: 'money.format')}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/date">

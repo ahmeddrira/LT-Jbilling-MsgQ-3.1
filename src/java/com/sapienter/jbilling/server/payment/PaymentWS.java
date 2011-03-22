@@ -169,6 +169,10 @@ public class PaymentWS implements WSSecured, Serializable {
         return amount != null ? new BigDecimal(amount) : null;
     }
 
+    public void setAmountAsDecimal(BigDecimal amount) {
+        setAmount(amount);
+    }
+
     public void setAmount(String amount) {
         this.amount = amount;
     }
@@ -239,6 +243,10 @@ public class PaymentWS implements WSSecured, Serializable {
 
     public BigDecimal getBalanceAsDecimal() {
         return balance != null ? new BigDecimal(balance) : null;
+    }
+
+    public void setBalanceAsDecimal(BigDecimal balance) {
+        setBalance(balance);
     }
 
     public void setBalance(String balance) {

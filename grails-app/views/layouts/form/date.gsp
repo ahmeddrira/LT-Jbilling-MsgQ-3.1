@@ -15,11 +15,15 @@
 
     <script type="text/javascript">
         $(function() {
-            $("${jquerySelector}").datepicker($.datepicker.regional['${session.locale.language}']);
-            $("${jquerySelector}").datepicker("option", "dateFormat", "${message(code: 'datepicker.jquery.ui.format')}");
-            $("${jquerySelector}").datepicker("option", "showOn", "both");
-            $("${jquerySelector}").datepicker("option", "buttonImage", "${resource(dir:'images', file:'icon04.gif')}");
-            $("${jquerySelector}").datepicker("option", "buttonImageOnly", true);
+            var options = $.datepicker.regional['${session.locale.language}'];
+            if (options == null) options = $.datepicker.regional[''];
+
+            options.dateFormat = "${message(code: 'datepicker.jquery.ui.format')}";
+            options.showOn = "both";
+            options.buttonImage = "${resource(dir:'images', file:'icon04.gif')}";
+            options.buttonImageOnly = true;
+
+            $("${jquerySelector}").datepicker(options);
         });
     </script>
 </div>

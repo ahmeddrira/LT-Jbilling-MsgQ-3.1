@@ -89,6 +89,10 @@ public class PlanItemWS implements Serializable {
         return bundledQuantity != null ? new BigDecimal(bundledQuantity) : null;
     }
 
+    public void setBundledQuantityAsDecimal(BigDecimal bundledQuantity) {
+        setBundledQuantity(bundledQuantity);
+    }
+
     public void setBundledQuantity(String bundledQuantity) {
         this.bundledQuantity = bundledQuantity;
     }

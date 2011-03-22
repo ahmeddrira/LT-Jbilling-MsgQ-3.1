@@ -56,8 +56,8 @@
                 </h2>
 
                 <h3 class="right capitalize">
-                    <g:set var="activeSince" value="${formatDate(date: order.activeSince ?: order.createDate)}"/>
-                    <g:set var="activeUntil" value="${formatDate(date: order.activeUntil)}"/>
+                    <g:set var="activeSince" value="${formatDate(date: order.activeSince ?: order.createDate, formatName: 'date.pretty.format')}"/>
+                    <g:set var="activeUntil" value="${formatDate(date: order.activeUntil, formatName: 'date.pretty.format')}"/>
 
                     <g:if test="${order.activeUntil}">
                         <g:message code="order.review.active.date.range" args="[activeSince, activeUntil]"/>

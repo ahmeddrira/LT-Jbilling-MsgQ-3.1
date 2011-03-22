@@ -64,8 +64,8 @@
 
             <g:applyLayout name="form/input">
                 <content tag="label"><g:message code="plan.model.rate"/></content>
-                <content tag="label.for">price.rate</content>
-                <g:textField class="field" name="price.rate" value="${formatNumber(number: product?.defaultPrice?.rate, formatName: 'money.format')}"/>
+                <content tag="label.for">price.rateAsDecimal</content>
+                <g:textField class="field" name="price.rateAsDecimal" value="${formatNumber(number: product?.defaultPrice?.rate, formatName: 'money.format')}"/>
             </g:applyLayout>
         </div>
 

@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * Simple utilities for parsing price model attributes.
@@ -46,7 +47,7 @@ public class AttributeUtils {
      * @param strategy strategy to validate against
      * @throws SessionInternalError if attributes are missing or of an incorrect type
      */
-    public static void validateAttributes(Map<String, String> attributes, PricingStrategy strategy)
+    public static void validateAttributes(SortedMap<String, String> attributes, PricingStrategy strategy)
             throws SessionInternalError {
 
         String strategyName = strategy.getClass().getSimpleName();

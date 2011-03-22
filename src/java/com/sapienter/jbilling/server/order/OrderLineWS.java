@@ -120,6 +120,10 @@ public class OrderLineWS implements Serializable {
         return amount == null ? null : new BigDecimal(amount);
     }
 
+    public void setAmountAsDecimal(BigDecimal amount) {
+        setAmount(amount);
+    }
+
     public void setAmount(String amount) {
         this.amount = amount;
     }
@@ -192,6 +196,10 @@ public class OrderLineWS implements Serializable {
         return price == null ? null : new BigDecimal(price);
     }
 
+    public void setPriceAsDecimal(BigDecimal price) {
+        setPrice(price);
+    }
+
     public void setPrice(String price) {
         this.price = price;
     }
@@ -210,6 +218,10 @@ public class OrderLineWS implements Serializable {
 
     public BigDecimal getQuantityAsDecimal() {
         return quantity == null ? null : new BigDecimal(quantity);
+    }
+
+    public void setQuantityAsDecimal(BigDecimal quantity) {
+        setQuantity(quantity);
     }
 
     public void setQuantity(String quantity) {

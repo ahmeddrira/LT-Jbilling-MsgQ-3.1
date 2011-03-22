@@ -41,8 +41,8 @@
             <div class="form-columns">
                 <g:applyLayout name="form/input">
                     <content tag="label"><g:message code="order.label.quantity"/></content>
-                    <content tag="label.for">line-${index}.quantity</content>
-                    <g:textField name="line-${index}.quantity" class="field" value="${formatNumber(number: line.getQuantityAsDecimal() ?: BigDecimal.ONE, formatName: quantityNumberFormat)}"/>
+                    <content tag="label.for">line-${index}.quantityAsDecimal</content>
+                    <g:textField name="line-${index}.quantityAsDecimal" class="field" value="${formatNumber(number: line.getQuantityAsDecimal() ?: BigDecimal.ONE, formatName: quantityNumberFormat)}"/>
                 </g:applyLayout>
 
                 <g:hiddenField name="index" value="${index}"/>

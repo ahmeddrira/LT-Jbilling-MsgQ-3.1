@@ -108,6 +108,10 @@ public class PriceModelWS implements Serializable {
         return rate != null ? new BigDecimal(rate) : null;
     }
 
+    public void setRateAsDecimal(BigDecimal rate) {
+        setRate(rate);
+    }
+
     public void setRate(String rate) {
         this.rate = rate;
     }

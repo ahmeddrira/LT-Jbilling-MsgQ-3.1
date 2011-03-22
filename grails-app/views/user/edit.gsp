@@ -225,14 +225,14 @@
 
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.credit.limit"/></content>
-                            <content tag="label.for">user.creditLimit</content>
-                            <g:textField class="field customer-field" name="user.creditLimit" value="${formatNumber(number: user?.creditLimitAsDecimal ?: 0, formatName: 'money.format')}"/>
+                            <content tag="label.for">user.creditLimitAsDecimal</content>
+                            <g:textField class="field customer-field" name="user.creditLimitAsDecimal" value="${formatNumber(number: user?.creditLimitAsDecimal ?: 0, formatName: 'money.format')}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.auto.recharge"/></content>
-                            <content tag="label.for">user.autoRecharge</content>
-                            <g:textField class="field customer-field" name="user.autoRecharge" value="${formatNumber(number: user?.autoRechargeAsDecimal ?: 0, formatName: 'money.format')}"/>
+                            <content tag="label.for">user.autoRechargeAsDecimal</content>
+                            <g:textField class="field customer-field" name="user.autoRechargeAsDecimal" value="${formatNumber(number: user?.autoRechargeAsDecimal ?: 0, formatName: 'money.format')}"/>
                         </g:applyLayout>
                     </div>
 

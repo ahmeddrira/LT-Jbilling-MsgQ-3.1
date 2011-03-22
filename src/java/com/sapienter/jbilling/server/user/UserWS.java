@@ -442,11 +442,11 @@ public class UserWS implements WSSecured, Serializable {
     }
 
     public BigDecimal getCreditLimitAsDecimal() {
-         BigDecimal retValue = null;
-         try {
-             retValue = (creditLimit == null) ? null : new BigDecimal(creditLimit);
-         } catch (NumberFormatException e) { }
-         return retValue;
+         return creditLimit == null ? null : new BigDecimal(creditLimit);
+    }
+
+    public void setCreditLimitAsDecimal(BigDecimal creditLimit) {
+        setCreditLimit(creditLimit);
     }
 
     public void setCreditLimit(String creditLimit) {
@@ -479,6 +479,10 @@ public class UserWS implements WSSecured, Serializable {
 
     public BigDecimal getAutoRechargeAsDecimal() {
         return autoRecharge != null ? new BigDecimal(autoRecharge) : null;
+    }
+
+    public void setAutoRechargeAsDecimal(BigDecimal autoRecharge) {
+        setAutoRecharge(autoRecharge);
     }
 
     public void setAutoRecharge(String autoRecharge) {

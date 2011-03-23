@@ -38,7 +38,6 @@ public abstract class AbstractPricingStrategy implements PricingStrategy {
 
     private List<AttributeDefinition> attributeDefinitions = Collections.emptyList();
     private List<ChainPosition> chainPositions = Collections.emptyList();
-    private BigDecimal rate = null;
     private boolean requiresUsage = false;
 
 

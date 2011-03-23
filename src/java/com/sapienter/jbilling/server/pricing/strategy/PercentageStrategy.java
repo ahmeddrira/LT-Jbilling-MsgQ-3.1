@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.pricing.strategy;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
@@ -59,14 +60,15 @@ public class PercentageStrategy extends AbstractPricingStrategy {
      * The "percentage" attribute is handled as a decimal percentage by this strategy. A percentage
      * of "0.80" would be applied as 80%, "1.25" as %125 and so on.
      *
+     * @param pricingOrder target order for this pricing request (not used by this strategy)
      * @param result pricing result to apply pricing to
      * @param fields pricing fields
      * @param planPrice the plan price to apply
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
      */
-    public void applyTo(PricingResult result, List<PricingField> fields, PriceModelDTO planPrice,
-                        BigDecimal quantity, Usage usage) {
+    public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
+                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
 
         if (result.getPrice() != null) {
             BigDecimal percentage = AttributeUtils.getDecimal(planPrice.getAttributes(), "percentage");

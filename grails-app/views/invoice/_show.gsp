@@ -164,6 +164,10 @@
 	        	<span><g:message code="button.delete.invoice"/></span>
 	        </a>
 	    </g:if>
+
+        <g:link class="submit show" controller="mediation" action="invoice" id="${invoice.id}">
+            <span><g:message code="button.view.events" /></span>
+        </g:link>
 	</div>
 </div>
 

@@ -40,31 +40,31 @@
         <table class="dataTable">
             <tr><td><g:message code="order.label.create.date"/>:</td>
                 <td class="value">
-                    <g:formatDate date="${order?.createDate}"/>
+                    <g:formatDate date="${order?.createDate}" formatName="date.pretty.format"/>
                 </td>
             </tr>
             <tr><td><g:message code="order.label.active.since"/>:</td>
                 <td class="value">
-                    <g:formatDate date="${order?.activeSince}"/>
+                    <g:formatDate date="${order?.activeSince}" formatName="date.pretty.format"/>
                 </td>
             </tr>
             <tr><td><g:message code="order.label.active.until"/>:</td>
                 <td class="value">
-                    <g:formatDate date="${order?.activeUntil}"/>
+                    <g:formatDate date="${order?.activeUntil}" formatName="date.pretty.format"/>
                 </td>
             </tr>
             <tr><td><g:message code="order.label.cycle.start"/>:</td>
                 <td class="value">
-                    <g:formatDate date="${order?.cycleStarts}"/>
+                    <g:formatDate date="${order?.cycleStarts}" formatName="date.pretty.format"/>
                 </td>
             </tr>
             <tr><td><g:message code="order.label.next.invoice"/>:</td>
                 <td class="value">
                     <g:if test="${order?.nextBillableDay}">
-                        <g:formatDate date="${order?.nextBillableDay}"/>
+                        <g:formatDate date="${order?.nextBillableDay}"  formatName="date.pretty.format"/>
                     </g:if>
                     <g:else>
-                        <g:formatDate date="${order?.cycleStarts ?: order?.activeSince ?: order?.createDate}"/>
+                        <g:formatDate date="${order?.cycleStarts ?: order?.activeSince ?: order?.createDate}"  formatName="date.pretty.format"/>
                     </g:else>
                 </td>
             </tr>
@@ -214,10 +214,15 @@
             </g:if>
             <a href="${createLink (controller: 'orderBuilder', action: 'edit', params: [id: order?.id])}" class="submit edit">
                 <span><g:message code="order.button.edit"/>
-            </span></a></div><div class="row">
+            </span></a>
+        </div>
+        <div class="row">
             <a onclick="showConfirm('deleteOrder-' + ${order?.id});" class="submit delete">
                 <span><g:message code="order.button.delete"/></span>
             </a>
+            <g:link class="submit show" controller="mediation" action="order" id="${order.id}">
+                <span><g:message code="button.view.events" /></span>
+            </g:link>
 	   </div>
     </div>
 </div>

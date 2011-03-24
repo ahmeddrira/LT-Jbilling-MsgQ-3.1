@@ -44,27 +44,27 @@ public class OrderLineBL {
 
     private static final Logger LOG = Logger.getLogger(OrderLineBL.class);
 
-    public static List<OrderLineDTO> diffOrderLines(List<OrderLineDTO> lines1,
-            List<OrderLineDTO> lines2) {
+    public static List<OrderLineDTO> diffOrderLines(List<OrderLineDTO> lines1, List<OrderLineDTO> lines2) {
+
         List<OrderLineDTO> diffLines = new ArrayList<OrderLineDTO>();
 
         Collections.sort(lines1, new Comparator<OrderLineDTO>() {
-
             public int compare(OrderLineDTO a, OrderLineDTO b) {
-                return new Integer(a.getId()).compareTo(new Integer(b.getId()));
+                return new Integer(a.getId()).compareTo(b.getId());
             }
         });
 
         for (OrderLineDTO line : lines2) {
-
             int index = Collections.binarySearch(lines1, line, new Comparator<OrderLineDTO>() {
                 public int compare(OrderLineDTO a, OrderLineDTO b) {
-                    return new Integer(a.getId()).compareTo(new Integer(b.getId()));
+                    return new Integer(a.getId()).compareTo(b.getId());
                 }
             });
             
             if (index >= 0) {
+                // existing line
                 OrderLineDTO diffLine = new OrderLineDTO(lines1.get(index));
+
                 // will fail if amounts or quantities are null...
                 diffLine.setAmount(line.getAmount().subtract(diffLine.getAmount()));
                 diffLine.setQuantity(line.getQuantity().subtract(diffLine.getQuantity()));
@@ -75,10 +75,7 @@ public class OrderLineBL {
                 }
             } else {
                 // new line
-                //diffLines.add(new OrderLineDTO(line)); This would produce an
-                // exception, because the mediation record line links to this order line
-                // but it is not persisted (it is a copy). Instead, use the persisted line
-                diffLines.add(line);
+                diffLines.add(new OrderLineDTO(line));
             }
         }
 
@@ -233,9 +230,12 @@ public class OrderLineBL {
         }
         populateWithSimplePrice(language, userId, entityId, currencyId, itemID, myLine, CommonConstants.BIGDECIMAL_SCALE);
         myLine.setDefaults();
+
         if (line == null) { // not yet there
-            newOrder.getLines().add(myLine);
-            myLine.setPurchaseOrder(newOrder);
+            OrderLineDTO newLine = new OrderLineDTO(myLine);
+            newOrder.getLines().add(newLine);
+            newLine.setPurchaseOrder(newOrder);
+
             // save the order (with the new line). Otherwise
             // the diff line will have a '0' for the order id and the
             // saving of the mediation record lines gets really complicated

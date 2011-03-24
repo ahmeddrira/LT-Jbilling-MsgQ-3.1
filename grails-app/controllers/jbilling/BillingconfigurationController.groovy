@@ -44,7 +44,7 @@ class BillingconfigurationController {
 		configuration.setOnlyRecurring params.onlyRecurring ? 1 : 0
 		configuration.setAutoPayment params.autoPayment ? 1 : 0
 		configuration.setAutoPaymentApplication params.autoPaymentApplication ? 1 : 0
-		configuration.setNextRunDate (new SimpleDateFormat("dd-MMM-yyyy").parse(params.nextRunDate) )
+		//configuration.setNextRunDate (new SimpleDateFormat("dd-MMM-yyyy").parse(params.nextRunDate) )
 		configuration.setEntityId webServicesSession.getCallerCompanyId()
 		
 		log.info "Generate Report ${params.generateReport}"

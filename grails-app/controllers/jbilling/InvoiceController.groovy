@@ -15,6 +15,7 @@ import com.sapienter.jbilling.server.util.csv.Exporter
 import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.client.util.DownloadHelper
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.item.CurrencyBL;
 
 /**
 * BillingController
@@ -120,7 +121,7 @@ class InvoiceController {
 		recentItemService.addRecentItem(invId, RecentItemType.INVOICE)
 		breadcrumbService.addBreadcrumb(controllerName, 'list', null, invId)
 		
-		render view: 'showListAndInvoice', model:[invoices:invoices, totalRevenue:totalRevenue, user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
+		render view: 'showListAndInvoice', model:[invoices:invoices, totalRevenue:totalRevenue, user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments, currencies: currencies]
 		}catch (Exception e) {
 			log.error e.getMessage()
 			flash.error = 'error.invoice.details'
@@ -213,14 +214,14 @@ class InvoiceController {
 			}
 		}		
 		
-		render template: params.template ?: 'show', model:[totalRevenue:totalRevenue, user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments]
+		render template: params.template ?: 'show', model:[totalRevenue:totalRevenue, user:user, invoice:invoice, delegatedInvoices:delegatedInvoices, payments:payments, currencies: currencies]
 	}
 	
 	def snapshot = {
 		if (params["id"] && params["id"].matches("^[0-9]+")) {
 			int invId= Integer.parseInt(params["id"])
 			InvoiceWS invoice= webServicesSession.getInvoiceWS(invId)
-			render template: 'snapshot', model: [invoice:invoice]
+			render template: 'snapshot', model: [invoice:invoice, currencies: currencies]
 		}
 	}
 	
@@ -289,6 +290,11 @@ class InvoiceController {
 			flash.error = "error.invoice.unlink.payment"
 		}
 		redirect(action: 'showListAndInvoice', params:[id:invId])
+	}
+	
+	def getCurrencies() {
+		def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
+		return currencies.findAll{ it.inUse }
 	}
 	
 }

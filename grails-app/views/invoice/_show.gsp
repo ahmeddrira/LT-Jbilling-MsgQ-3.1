@@ -1,6 +1,8 @@
-<%@ page import="com.sapienter.jbilling.server.util.Util" %>
+
 <%@ page import="com.sapienter.jbilling.server.payment.db.PaymentResultDTO" %>
 <%@ page import="com.sapienter.jbilling.server.payment.db.PaymentMethodDTO" %>
+
+<g:set var="currency" value="${currencies.find{ it.id == invoice?.currencyId}}"/>
 
 <div class="column-hold">
 
@@ -35,16 +37,25 @@
 			<tr><td><g:message code="invoice.label.id"/>:</td><td class="value">${invoice.id}</td></tr>
 			<tr><td><g:message code="invoice.label.number"/>:</td><td class="value">${invoice.number}</td></tr>
 			<tr><td><g:message code="invoice.label.status"/>:</td><td class="value">${invoice.statusDescr}</td></tr>
-			<tr><td><g:message code="invoice.label.date"/>:</td><td class="value">${Util.formatDate(invoice.createDateTime, session["user_id"])}</td></tr>
-			<tr><td><g:message code="invoice.label.duedate"/>:</td><td class="value">${Util.formatDate(invoice.dueDate, session["user_id"])}</td></tr>
-			<tr><td><g:message code="invoice.label.gen.date"/>:</td><td class="value">${Util.formatDate(invoice.createTimeStamp, session["user_id"])}</td></tr>
-			<tr><td><g:message code="invoice.label.amount"/>:</td><td class="value">${Util.formatMoney(new BigDecimal(invoice.total?: "0.0"),
-				session["user_id"],invoice?.currencyId, false)}</td></tr>
-			<tr><td><g:message code="invoice.label.balance"/>:</td><td class="value">${Util.formatMoney(new BigDecimal(invoice.balance ?: "0.0"),
-				session["user_id"],invoice?.currencyId, false)}</td></tr>
-			<tr><td><g:message code="invoice.label.carried.bal"/>:</td><td class="value">${Util.formatMoney(new BigDecimal(invoice.balance ?: "0.0"),
-				session["user_id"],invoice?.currencyId, false)}</td></tr>
-	
+			<tr><td><g:message code="invoice.label.date"/>:</td><td class="value">
+                <g:formatDate date="${invoice?.createDateTime}" formatName="date.pretty.format"/>
+                </td></tr>
+			<tr><td><g:message code="invoice.label.duedate"/>:</td><td class="value">
+                <g:formatDate date="${invoice?.dueDate}" formatName="date.pretty.format"/>
+                </td></tr>
+			<tr><td><g:message code="invoice.label.gen.date"/>:</td><td class="value">
+                <g:formatDate date="${invoice?.createTimeStamp}" formatName="date.pretty.format"/>
+            </td></tr>
+			<tr><td><g:message code="invoice.label.amount"/>:</td><td class="value">
+                <g:formatNumber number="${new BigDecimal(invoice.total?: 0)}" type="currency" currencySymbol="${currency?.symbol}"/>
+            </td></tr>
+			<tr><td><g:message code="invoice.label.balance"/>:</td><td class="value">
+                <g:formatNumber number="${new BigDecimal(invoice.balance ?: 0)}" type="currency" currencySymbol="${currency?.symbol}"/>
+            </td></tr>
+			<tr><td><g:message code="invoice.label.carried.bal"/>:</td><td class="value">
+                <g:formatNumber number="new BigDecimal(invoice.balance ?: 0)}" 
+				    type="currency" currencySymbol="${currency?.symbol}"/>
+            </td></tr>
 			<tr><td><g:message code="invoice.label.payment.attempts"/>:</td><td class="value">${invoice.paymentAttempts}</td></tr>
 			<tr><td><g:message code="invoice.label.orders"/>:</td><td class="value">
                 <g:each var="order" in="${invoice.orders}">
@@ -77,10 +88,14 @@
 			         <tr>
 			            <td style="text-align: left;" class="innerContent">${line.description}</td>
 			            <td class="innerContent">${(int)line.quantity}</td>
-			            <td class="innerContent">${Util.formatMoney(new BigDecimal(line.price?:"0.0"),
-								session["user_id"],invoice?.currencyId, false)}</td>
-			            <td class="innerContent">${Util.formatMoney(new BigDecimal(line.amount?: "0.0"),
-								session["user_id"],invoice?.currencyId, false)}</td>
+			            <td class="innerContent">
+                            <g:formatNumber number="${new BigDecimal(line.price ?: 0)}" 
+                                type="currency" currencySymbol="${currency?.symbol}"/>
+                        </td>
+			            <td class="innerContent">
+                            <g:formatNumber number="${new BigDecimal(line.amount ?: 0)}" 
+                                type="currency" currencySymbol="${currency?.symbol}"/>
+                        </td>
 			         </tr>
 		         </g:each>
 	         </tbody>
@@ -128,10 +143,14 @@
                                     before="register(this);" onSuccess="render(data, next);">${payment.id}
                                 </g:remoteLink>
                             </td>
-				         	<td class="innerContent">${Util.formatDate(payment.paymentDate, session["user_id"])}</td>
+				         	<td class="innerContent">
+                                <g:formatDate date="${payment.paymentDate}" formatName="date.pretty.format"/>
+                            </td>
 							<td class="innerContent">${payment.isRefund?"R":"P"}</td>
-							<td class="innerContent">${Util.formatMoney(new BigDecimal(payment.amount?:"0.0"),
-								session["user_id"],invoice?.currencyId, false)}</td>
+							<td class="innerContent">
+                                <g:formatNumber number="${new BigDecimal(payment.amount ?: 0)}" 
+                                    type="currency" currencySymbol="${currency?.symbol}"/>
+                            </td>
 							<td class="innerContent">${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(session['language_id'])}</td>
 							<td class="innerContent">${new PaymentResultDTO(payment?.resultId).getDescription(session['language_id'])}</td>
 							<td class="innerContent">

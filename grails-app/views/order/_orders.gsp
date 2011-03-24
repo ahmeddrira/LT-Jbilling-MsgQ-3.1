@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.util.Util; com.sapienter.jbilling.server.user.contact.db.ContactDTO"%>
+<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO"%>
 
 <%-- 
     Orders list template. 
@@ -46,7 +46,7 @@
                             <g:remoteLink breadcrumb="id" class="cell" action="show" id="${ordr.id}" params="['template': 'show']"
                                 before="register(this);" onSuccess="render(data, next);">
                                 <strong>
-                                    ${Util.formatDate(ordr?.createDate, session["user_id"])}
+                                    <g:formatDate date="${ordr?.createDate}" formatName="date.pretty.format"/>
                                 </strong>
                             </g:remoteLink>
                         </td>
@@ -54,10 +54,9 @@
                             <g:remoteLink breadcrumb="id" class="cell" action="show" id="${ordr.id}" params="['template': 'show']"
                                     before="register(this);" onSuccess="render(data, next);">
                                 <strong>
-                                    ${Util.formatMoney(ordr.total,
-                                        session["user_id"],
-                                        ordr.currency.id, 
-                                        false)?.substring(2)}
+                                    <g:formatNumber 
+                                        number="${ordr?.total}" type="currency" 
+                                        currencySymbol="${ordr?.currency?.symbol}"/>
                                 </strong>
                             </g:remoteLink>
                         </td>

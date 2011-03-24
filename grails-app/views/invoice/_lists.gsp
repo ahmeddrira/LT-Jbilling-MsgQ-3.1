@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.util.Util"%>
+
 
 <%-- 
 	Invoice list template. 
@@ -23,12 +23,15 @@
 	        
 	        <tbody>
 			<g:each var="inv" in="${invoices}">
-				<tr id="invoice-${inv.id}"  class="${invoice?.id == inv.id ? 'active' : ''}">
+            
+                <g:set var="currency" value="${currencies.find{ it.id == inv?.currencyId}}"/>
+                
+				<tr id="invoice-${inv.id}" class="${invoice?.id == inv.id ? 'active' : ''}">
 	            	<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 			     			before="register(this);" onSuccess="render(data, next);">
 							<strong>
-								${Util.formatDate(inv?.getCreateDatetime(), session["user_id"]) }
+                                <g:formatDate date="inv?.getCreateDatetime()" dateFormat="date.pretty.format"/>
 							</strong>
 						</g:remoteLink>
 					</td>
@@ -36,7 +39,7 @@
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 			     			before="register(this);" onSuccess="render(data, next);">
 							<strong>
-								${Util.formatDate(inv?.dueDate, session["user_id"]) }
+                                <g:formatDate date="inv?.dueDate" dateFormat="date.pretty.format"/>
 							</strong>
 						</g:remoteLink>
 					</td>
@@ -62,10 +65,8 @@
 							<strong>
 								<g:if test="${null == inv.total }">&nbsp;</g:if>
 								<g:else>
-								${Util.formatMoney(new BigDecimal(inv.total),
-									session["user_id"],
-									inv.currencyId, 
-									false)}
+                                    <g:formatNumber number="${new BigDecimal(inv.total?: 0)}" 
+                                        type="currency" currencySymbol="${currency?.symbol}"/>
 								</g:else>
 							</strong>
 						</g:remoteLink>
@@ -76,10 +77,8 @@
 							<strong>
 								<g:if test="${null == inv.balance }">&nbsp;</g:if>
 								<g:else>
-								${Util.formatMoney(new BigDecimal( inv.balance ),
-									session["user_id"],
-									inv.currencyId, 
-									false)}
+                                    <g:formatNumber number="${new BigDecimal(inv.balance ?: 0)}" 
+                                        type="currency" currencySymbol="${currency?.symbol}"/>
 								</g:else>
 							</strong>
 						</g:remoteLink>

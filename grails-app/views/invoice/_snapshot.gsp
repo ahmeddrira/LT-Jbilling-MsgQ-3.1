@@ -1,4 +1,5 @@
-<%@ page import="com.sapienter.jbilling.server.util.Util" %>
+
+<g:set var="currency" value="${currencies.find{ it.id == invoice?.currencyId}}"/>
 
 <div id="invoice-details">
     <!--  Invoice Details snapshot -->
@@ -7,18 +8,41 @@
             <div class="row"><label><g:message code="invoice.label.id"/>:</label><span>${invoice.id}</span></div>
             <div class="row"><label><g:message code="invoice.label.number"/>:</label><span>${invoice.number}</span></div>
             <div class="row"><label><g:message code="invoice.label.status"/>:</label><span>${invoice.statusDescr}</span></div>
-            <div class="row"><label><g:message code="invoice.label.date"/>:</label><span>${Util.formatDate(invoice.createDateTime, session["user_id"])}</span></div>
-            <div class="row"><label><g:message code="invoice.label.duedate"/>:</label><span>${Util.formatDate(invoice.dueDate, session["user_id"])}</span></div>
+            <div class="row"><label><g:message code="invoice.label.date"/>:</label>
+                <span>
+                    <g:formatDate date="${invoice?.createDateTime}" formatName="date.pretty.format"/>
+                </span>
+            </div>
+            <div class="row"><label><g:message code="invoice.label.duedate"/>:</label>
+                <span>
+                    <g:formatDate date="${invoice?.dueDate}" formatName="date.pretty.format"/>
+                </span>
+            </div>
         </div>
     
         <div class="column">
-            <div class="row"><label><g:message code="invoice.label.gen.date"/>:</label><span>${Util.formatDate(invoice.createTimeStamp, session["user_id"])}</span></div>
-            <div class="row"><label><g:message code="invoice.label.amount"/>:</label><span>${Util.formatMoney(new BigDecimal(invoice.total?: "0.0"),
-                session["user_id"],invoice?.currencyId, false)}</span></div>
-            <div class="row"><label><g:message code="invoice.label.balance"/>:</label><span>${Util.formatMoney(new BigDecimal(invoice.balance ?: "0.0"),
-                session["user_id"],invoice?.currencyId, false)}</span></div>
-            <div class="row"><label><g:message code="invoice.label.carried.bal"/>:</label><span>${Util.formatMoney(new BigDecimal(invoice.balance ?: "0.0"),
-                session["user_id"],invoice?.currencyId, false)}</span></div>
+            <div class="row"><label><g:message code="invoice.label.gen.date"/>:</label>
+                <span>
+                    <g:formatDate date="${invoice?.createTimeStamp}" formatName="date.pretty.format"/>
+                </span>
+            </div>
+            <div class="row"><label><g:message code="invoice.label.amount"/>:</label>
+                <span>
+                    <g:formatNumber number="${new BigDecimal(invoice.total?: "0.0")}" 
+                        type="currency" currencySymbol="${currency?.symbol}"/>
+            </div>
+            <div class="row"><label><g:message code="invoice.label.balance"/>:</label>
+                <span>
+                    <g:formatNumber number="${new BigDecimal(invoice.balance ?: "0.0")}" 
+                        type="currency" currencySymbol="${currency?.symbol}"/>
+                </span>
+            </div>
+            <div class="row"><label><g:message code="invoice.label.carried.bal"/>:</label>
+                <span>
+                    <g:formatNumber number="${new BigDecimal(invoice.balance ?: "0.0")}" 
+                        type="currency" currencySymbol="${currency?.symbol}"/>
+                </span>
+            </div>
             
             <div class="row"><label><g:message code="invoice.label.payment.attempts"/>:</label><span>${invoice.paymentAttempts}</span></div>
             <div class="row"><label><g:message code="invoice.label.orders"/>:</label><span>

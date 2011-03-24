@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.util.Util" %>
+<%@ page import="com.sapienter.jbilling.server.util.db.CurrencyDTO"%>
 <%@ page import="com.sapienter.jbilling.server.process.db.BillingProcessDTO"%>
 	
 <div class="table-box">
@@ -26,8 +26,8 @@
 						<g:if test="${dataHashMap[dto.id] != null}">
                             <td class="small">${dataHashMap[dto.id][0]}</td>
                             <td class="medium">
-                                ${Util.formatMoney(new BigDecimal(dataHashMap[dto.id][1]?:"0.0"),
-                                    session["user_id"],dataHashMap[dto.id][2].id, false)?.substring(2)}
+                                <g:formatNumber number="${new BigDecimal(dataHashMap[dto.id][1] ?: 0)}" 
+                                    type="currency" currencySymbol="${new CurrencyDTO(dataHashMap[dto.id][2].id as Integer)?.symbol}"/>
                             </td>
                             <td class="small">${dataHashMap[dto.id][2].code}</td>
                         </g:if>

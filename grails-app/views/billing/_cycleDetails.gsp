@@ -1,5 +1,5 @@
 <%@page import="com.sapienter.jbilling.server.process.BillingProcessBL"%>
-<%@page import="com.sapienter.jbilling.common.CommonConstants;com.sapienter.jbilling.server.util.Util"%>
+<%@page import="com.sapienter.jbilling.common.CommonConstants;com.sapienter.jbilling.server.util.db.CurrencyDTO"%>
 <%@page import="com.sapienter.jbilling.server.process.db.ProcessRunUserDAS"%>
 
 <g:set var="dtFmt" value="${new java.text.SimpleDateFormat('dd-MMM-yyyy')}"/>
@@ -119,11 +119,15 @@
                         <g:set var="ttlSuccessAmt" value="${(ttlSuccessAmt as BigDecimal).add( (pymArr as Object[])[1] as BigDecimal )}"/>
                         <g:set var="allTTLPaid" value="${(allTTLPaid as BigDecimal).add(ttlSuccessAmt as BigDecimal)}"/>
                         
-                        <em>${Util.formatMoney( ((pymArr as Object[])[1] as BigDecimal) ?: ("0.0" as BigDecimal),
-                                session["user_id"], cur[2]?.getId() as Integer, false)?.substring(2)}</em>
+                        <em>
+                        <g:formatNumber number="${((pymArr as Object[])[1] as BigDecimal) ?: ("0.0" as BigDecimal)}" 
+                            type="currency" currencySymbol="${new CurrencyDTO(cur[2]?.getId() as Integer)?.symbol}"/>
+                        </em>
                     </g:each>
-                    <em><b>${Util.formatMoney( ttlSuccessAmt ?: ("0.0" as BigDecimal),
-                        session["user_id"], 1, false)?.substring(2)}</b></em>
+                    <em><b>
+                        <g:formatNumber number="${ttlSuccessAmt ?: ("0.0" as BigDecimal)}" 
+                            type="currency" currencySymbol="${new CurrencyDTO(new Integer(1))?.symbol}"/>
+                   </b></em>
                 </td>
                 <td>
                     <g:each var="pymArr" in="${mapOfPaymentListByCurrency?.get(cur[2]?.getId() as Integer)}">
@@ -173,16 +177,18 @@
             <td></td>
             <td></td>
             <td><strong><!-- Total Invoiced -->
-                    ${Util.formatMoney( (allTTLPaid as BigDecimal).add(allTTLFailed as BigDecimal) ?: ("0.0" as BigDecimal),
-                        session["user_id"], 1, false)?.substring(2)}
+                    <g:formatNumber number="${(allTTLPaid as BigDecimal).add(allTTLFailed as BigDecimal) ?: ("0.0" as BigDecimal)}" 
+                        type="currency" currencySymbol="${new CurrencyDTO(new Integer(1))?.symbol}"/>
             </strong></td>
             <td class="col01"><em>
-                    ${Util.formatMoney( allTTLPaid ?: ("0.0" as BigDecimal),
-                        session["user_id"], 1, false)?.substring(2)}
+                    <g:formatNumber number="${allTTLPaid ?: ("0.0" as BigDecimal)}" 
+                        type="currency" currencySymbol="${new CurrencyDTO(new Integer(1))?.symbol}"/>
             </em></td>
             <td></td>
-            <td><strong>${Util.formatMoney( allTTLFailed ?: ("0.0" as BigDecimal),
-                        session["user_id"], 1, false)?.substring(2)}</strong></td>
+            <td><strong>
+                    <g:formatNumber number="${allTTLFailed ?: ("0.0" as BigDecimal)}" 
+                        type="currency" currencySymbol="${new CurrencyDTO(new Integer(1))?.symbol}"/>
+            </strong></td>
             <td></td>
         </tr>
     </tbody>

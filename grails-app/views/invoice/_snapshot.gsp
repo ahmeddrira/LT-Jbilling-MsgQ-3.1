@@ -28,18 +28,18 @@
             </div>
             <div class="row"><label><g:message code="invoice.label.amount"/>:</label>
                 <span>
-                    <g:formatNumber number="${new BigDecimal(invoice.total?: "0.0")}" 
+                    <g:formatNumber number="${new BigDecimal(invoice.total?: 0)}" 
                         type="currency" currencySymbol="${currency?.symbol}"/>
             </div>
             <div class="row"><label><g:message code="invoice.label.balance"/>:</label>
                 <span>
-                    <g:formatNumber number="${new BigDecimal(invoice.balance ?: "0.0")}" 
+                    <g:formatNumber number="${new BigDecimal(invoice.balance ?: 0)}" 
                         type="currency" currencySymbol="${currency?.symbol}"/>
                 </span>
             </div>
             <div class="row"><label><g:message code="invoice.label.carried.bal"/>:</label>
                 <span>
-                    <g:formatNumber number="${new BigDecimal(invoice.balance ?: "0.0")}" 
+                    <g:formatNumber number="${new BigDecimal(invoice.carriedBalance ?: 0)}" 
                         type="currency" currencySymbol="${currency?.symbol}"/>
                 </span>
             </div>

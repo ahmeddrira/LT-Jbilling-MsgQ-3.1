@@ -50,10 +50,10 @@
                 <g:formatNumber number="${new BigDecimal(invoice.total?: 0)}" type="currency" currencySymbol="${currency?.symbol}"/>
             </td></tr>
 			<tr><td><g:message code="invoice.label.balance"/>:</td><td class="value">
-                <g:formatNumber number="${new BigDecimal(invoice.balance ?: 0)}" type="currency" currencySymbol="${currency?.symbol}"/>
+                <g:formatNumber number="${new BigDecimal( (invoice.balance?:0) )}" type="currency" currencySymbol="${currency?.symbol}"/>
             </td></tr>
 			<tr><td><g:message code="invoice.label.carried.bal"/>:</td><td class="value">
-                <g:formatNumber number="new BigDecimal(invoice.balance ?: 0)}" 
+                <g:formatNumber number="${new BigDecimal(invoice.balance ?: 0)}" 
 				    type="currency" currencySymbol="${currency?.symbol}"/>
             </td></tr>
 			<tr><td><g:message code="invoice.label.payment.attempts"/>:</td><td class="value">${invoice.paymentAttempts}</td></tr>

@@ -31,7 +31,7 @@
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 			     			before="register(this);" onSuccess="render(data, next);">
 							<strong>
-                                <g:formatDate date="inv?.getCreateDatetime()" dateFormat="date.pretty.format"/>
+                                <g:formatDate date="${inv?.getCreateDatetime()}" dateFormat="date.pretty.format"/>
 							</strong>
 						</g:remoteLink>
 					</td>
@@ -39,7 +39,7 @@
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
 			     			before="register(this);" onSuccess="render(data, next);">
 							<strong>
-                                <g:formatDate date="inv?.dueDate" dateFormat="date.pretty.format"/>
+                                <g:formatDate date="${inv?.dueDate}" dateFormat="date.pretty.format"/>
 							</strong>
 						</g:remoteLink>
 					</td>
@@ -65,7 +65,7 @@
 							<strong>
 								<g:if test="${null == inv.total }">&nbsp;</g:if>
 								<g:else>
-                                    <g:formatNumber number="${new BigDecimal(inv.total?: 0)}" 
+                                    <g:formatNumber number="${new BigDecimal((inv.total?: 0))}" 
                                         type="currency" currencySymbol="${currency?.symbol}"/>
 								</g:else>
 							</strong>
@@ -77,7 +77,7 @@
 							<strong>
 								<g:if test="${null == inv.balance }">&nbsp;</g:if>
 								<g:else>
-                                    <g:formatNumber number="${new BigDecimal(inv.balance ?: 0)}" 
+                                    <g:formatNumber number="${new BigDecimal((inv.balance?: 0))}" 
                                         type="currency" currencySymbol="${currency?.symbol}"/>
 								</g:else>
 							</strong>

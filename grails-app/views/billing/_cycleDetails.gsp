@@ -120,12 +120,12 @@
                         <g:set var="allTTLPaid" value="${(allTTLPaid as BigDecimal).add(ttlSuccessAmt as BigDecimal)}"/>
                         
                         <em>
-                        <g:formatNumber number="${((pymArr as Object[])[1] as BigDecimal) ?: ("0.0" as BigDecimal)}" 
+                        <g:formatNumber number="${((pymArr as Object[])[1]?: 0) as BigDecimal}" 
                             type="currency" currencySymbol="${new CurrencyDTO(cur[2]?.getId() as Integer)?.symbol}"/>
                         </em>
                     </g:each>
                     <em><b>
-                        <g:formatNumber number="${ttlSuccessAmt ?: ("0.0" as BigDecimal)}" 
+                        <g:formatNumber number="${(ttlSuccessAmt ?: 0) as BigDecimal}" 
                             type="currency" currencySymbol="${new CurrencyDTO(new Integer(1))?.symbol}"/>
                    </b></em>
                 </td>
@@ -147,7 +147,8 @@
             <g:set var="allTTLFailed" value="${(allTTLFailed as BigDecimal).add(ttlFailedAmt as BigDecimal)}"/>
         </g:each>
         
-    <%--
+    <%-- 
+        <!--
         <tr class="bg">
             <td class="col02"></td>
             <td></td>
@@ -155,18 +156,19 @@
             <td></td>
             <td></td>
             <td><strong><!-- Total Invoiced -->
-                    ${Util.formatMoney( ttlInvcd ?: ("0.0" as BigDecimal),
+                    ${Util.formatMoney( (ttlInvcd ?: 0) as BigDecimal,
                         session["user_id"], 1, false)?.substring(2)}
 	        </strong></td>
             <td class="col01"><em>
-                    ${Util.formatMoney( ttlSuccessAmt ?: ("0.0" as BigDecimal),
+                    ${Util.formatMoney( (ttlSuccessAmt ?:0) as BigDecimal,
                         session["user_id"], 1, false)?.substring(2)}
             </em></td>
             <td></td>
-            <td><strong>${Util.formatMoney( ttlFailedAmt ?: ("0.0" as BigDecimal),
+            <td><strong>${Util.formatMoney( (ttlFailedAmt ?:0) as BigDecimal,
                         session["user_id"], 1, false)?.substring(2)}</strong></td>
             <td></td>
         </tr>
+        -->
      --%>
     </g:each>
         <tr class="bg">
@@ -177,16 +179,16 @@
             <td></td>
             <td></td>
             <td><strong><!-- Total Invoiced -->
-                    <g:formatNumber number="${(allTTLPaid as BigDecimal).add(allTTLFailed as BigDecimal) ?: ("0.0" as BigDecimal)}" 
+                    <g:formatNumber number="${((allTTLPaid as BigDecimal).add(allTTLFailed as BigDecimal)?: 0) as BigDecimal}" 
                         type="currency" currencySymbol="${new CurrencyDTO(new Integer(1))?.symbol}"/>
             </strong></td>
             <td class="col01"><em>
-                    <g:formatNumber number="${allTTLPaid ?: ("0.0" as BigDecimal)}" 
+                    <g:formatNumber number="${ (allTTLPaid?:0) as BigDecimal}" 
                         type="currency" currencySymbol="${new CurrencyDTO(new Integer(1))?.symbol}"/>
             </em></td>
             <td></td>
             <td><strong>
-                    <g:formatNumber number="${allTTLFailed ?: ("0.0" as BigDecimal)}" 
+                    <g:formatNumber number="${(allTTLFailed?:0) as BigDecimal}" 
                         type="currency" currencySymbol="${new CurrencyDTO(new Integer(1))?.symbol}"/>
             </strong></td>
             <td></td>

@@ -496,6 +496,10 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getMediationEventsForOrder(orderId)
     }
 
+    public List<MediationRecordLineWS> getMediationEventsForInvoice(Integer invoiceId) {
+        return webServicesSession.getMediationEventsForInvoice(invoiceId);
+    }
+
     public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
         return webServicesSession.getMediationRecordsByMediationProcess(mediationProcessId)
     }

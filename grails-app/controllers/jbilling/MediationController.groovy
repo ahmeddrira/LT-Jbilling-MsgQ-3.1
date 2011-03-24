@@ -4,7 +4,10 @@ import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.mediation.db.MediationProcess
 import com.sapienter.jbilling.server.mediation.MediationRecordWS
 import com.sapienter.jbilling.server.util.Constants
-
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO
+import com.sapienter.jbilling.server.order.db.OrderDTO
 
 /**
 * MediationController
@@ -81,8 +84,10 @@ class MediationController {
 				map.put(ws.getRecordStatusId(), new Integer(1))
 			}
 		}
+
 		recentItemService.addRecentItem(processId, RecentItemType.MEDIATIONPROCESS)
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, processId)
+
 		if (params.template) {
 			render template: params.template, model: [map:map, processId: processId]
 		} else {
@@ -93,5 +98,45 @@ class MediationController {
 			render view: 'showListAndView', model: [map:map, processId: processId, processes:processes, filters:filters ]
 		}
 	}
+
+    def invoice = {
+        def invoice = InvoiceDTO.get(params.int('id'))
+
+        def records = MediationRecordDTO.createCriteria().listDistinct {
+            lines {
+                orderLine {
+                    purchaseOrder {
+                        orderProcesses {
+                            eq("invoice.id", invoice.id)
+                        }
+                    }
+                }
+            }
+
+            recordStatus {
+                eq("id", Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE)
+            }
+        }
+
+        render view: 'events', model: [ invoice: invoice, records: records ]
+    }
+
+    def order = {
+        def order = OrderDTO.get(params.int('id'))
+
+        def records = MediationRecordDTO.createCriteria().listDistinct {
+            lines {
+                orderLine {
+                    eq("purchaseOrder.id", order.id)
+                }
+            }
+
+            recordStatus {
+                eq("id", Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE)
+            }
+        }
+
+        render view: 'events', model: [ order: order, records: records ]
+    }
 	
 }

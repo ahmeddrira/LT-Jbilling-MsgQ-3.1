@@ -228,6 +228,7 @@ public interface JbillingAPI {
 
     public List<MediationProcessWS> getAllMediationProcesses();
     public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId);
+    public List<MediationRecordLineWS> getMediationEventsForInvoice(Integer invoiceId);
     public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId);
     public List<RecordCountWS> getNumberOfMediationRecordsByStatuses();
 

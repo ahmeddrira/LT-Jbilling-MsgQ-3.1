@@ -1,6 +1,7 @@
 package PlanPricingRule
 
 # imports
+import com.sapienter.jbilling.server.mediation.task.MediationResult;
 import com.sapienter.jbilling.server.item.tasks.PricingResult
 import com.sapienter.jbilling.server.item.PricingField
 import com.sapienter.jbilling.server.item.db.PlanItemDTO
@@ -43,6 +44,8 @@ dialect 'java'
 when
     # pricing a mediated national call item
     $result : PricingResult( itemId == 108, price == null )
+    $mediation : MediationResult( id == $result.pricingFieldsResultId )
+
     PricingField( name == "lata", $lata : strValue != null, resultId == $result.id )
     PricingField( name == "rateCenter", $rateCenter : strValue != null, resultId == $result.id )
     PricingField( name == "stateProvince", $stateProvince : strValue != null, resultId == $result.id )
@@ -59,7 +62,7 @@ then
             usage = getCurrentUsage($result.getUserId(), $result.getItemId());
         }
 
-        model.applyTo($result, null, $result.getQuantity(), usage);
+        model.applyTo($mediation.getCurrentOrder(), $result, null, $result.getQuantity(), usage);
         LOG.debug("Applying price model: " + model);
     }
 end

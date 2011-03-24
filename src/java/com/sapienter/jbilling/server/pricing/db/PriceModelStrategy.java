@@ -25,11 +25,13 @@ import com.sapienter.jbilling.server.pricing.strategy.FlatPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.GraduatedPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.MeteredPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PercentageStrategy;
+import com.sapienter.jbilling.server.pricing.strategy.PooledPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPercentageStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TieredPricingStrategy;
 
+import javax.sql.PooledConnection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -66,7 +68,9 @@ public enum PriceModelStrategy {
     /** MIDDLE or END of chain, time-of-day strategy that applies a percentage to a previously calculated rate */
     TIME_OF_DAY_PERCENTAGE  (new TimeOfDayPercentageStrategy()),
     
-    TIERED                  (new TieredPricingStrategy());
+    TIERED                  (new TieredPricingStrategy()),
+
+    POOLED                  (new PooledPricingStrategy());
 
 
     private final PricingStrategy strategy;

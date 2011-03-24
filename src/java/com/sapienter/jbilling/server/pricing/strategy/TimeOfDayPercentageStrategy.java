@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.pricing.strategy;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import org.apache.log4j.Logger;
@@ -61,6 +62,7 @@ public class TimeOfDayPercentageStrategy extends TimeOfDayPricingStrategy {
      *
      * @see TimeOfDayPricingStrategy
      *
+     * @param pricingOrder target order for this pricing request (not used by this strategy)
      * @param result pricing result to apply pricing to
      * @param fields pricing fields
      * @param planPrice the plan price to apply
@@ -68,8 +70,8 @@ public class TimeOfDayPercentageStrategy extends TimeOfDayPricingStrategy {
      * @param usage total item usage for this billing period
      */
     @Override
-    public void applyTo(PricingResult result, List<PricingField> fields, PriceModelDTO planPrice,
-                        BigDecimal quantity, Usage usage) {
+    public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
+                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
 
         if (result.getPrice() != null) {
             // parse time ranges and prices

@@ -24,6 +24,7 @@ import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
 import com.sapienter.jbilling.server.user.UserBL;
@@ -205,16 +206,17 @@ public class PriceModelDTO implements Serializable {
      *
      * @see com.sapienter.jbilling.server.pricing.strategy.PricingStrategy
      *
+     * @param pricingOrder target order for this pricing request (may be null)
      * @param result pricing result to apply pricing to
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
      */
     @Transient
-    public void applyTo(PricingResult result, List<PricingField> fields, BigDecimal quantity, Usage usage) {
+    public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields, BigDecimal quantity, Usage usage) {
         // each model in the chain
         for (PriceModelDTO next = this; next != null; next = next.getNext()) {
             // apply pricing
-            next.getType().getStrategy().applyTo(result, fields, next, quantity, usage);
+            next.getType().getStrategy().applyTo(pricingOrder, result, fields, next, quantity, usage);
 
             // convert currency if necessary
             if (result.getUserId() != null

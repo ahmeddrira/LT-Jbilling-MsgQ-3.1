@@ -269,7 +269,7 @@ public class ItemBL {
             // calculate default price from strategy
             PricingResult result = new PricingResult(item.getId(), userId, currencyId);
             List<PricingField> fields = Collections.emptyList();
-            item.getDefaultPrice().applyTo(result, fields, BigDecimal.ONE, usage);
+            item.getDefaultPrice().applyTo(null, result, fields, BigDecimal.ONE, usage);
             return result.getPrice();
         }
         return BigDecimal.ZERO;

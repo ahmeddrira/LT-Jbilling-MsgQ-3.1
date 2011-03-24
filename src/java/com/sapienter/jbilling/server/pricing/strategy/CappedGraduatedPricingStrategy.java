@@ -24,6 +24,7 @@ import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
@@ -62,6 +63,7 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
      *
      * @see GraduatedPricingStrategy
      *
+     * @param pricingOrder target order for this pricing request (not used by this strategy)
      * @param result pricing result to apply pricing to
      * @param fields pricing fields (not used by this strategy)
      * @param planPrice the plan price to apply
@@ -69,8 +71,8 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
      * @param usage total item usage for this billing period
      */
     @Override
-    public void applyTo(PricingResult result, List<PricingField> fields, PriceModelDTO planPrice,
-                        BigDecimal quantity, Usage usage) {
+    public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
+                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
 
         if (usage == null || usage.getAmount() == null)
             throw new IllegalArgumentException("Usage amount cannot be null for CappedGraduatedPricingStrategy.");
@@ -78,7 +80,7 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
         BigDecimal maximum = AttributeUtils.getDecimal(planPrice.getAttributes(), "max");
         if (usage.getAmount().compareTo(maximum) <= 0) {
             // usage cap not yet reached, price normally
-            super.applyTo(result, fields, planPrice, quantity, usage);
+            super.applyTo(pricingOrder, result, fields, planPrice, quantity, usage);
         } else {
             // cap reached, price at zero
             result.setPrice(BigDecimal.ZERO);

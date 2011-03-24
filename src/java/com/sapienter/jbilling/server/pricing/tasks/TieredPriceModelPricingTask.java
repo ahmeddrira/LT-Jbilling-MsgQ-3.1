@@ -20,7 +20,6 @@
 
 package com.sapienter.jbilling.server.pricing.tasks;
 
-import com.sapienter.jbilling.server.customer.CustomerBL;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
@@ -134,7 +133,7 @@ public class TieredPriceModelPricingTask extends PriceModelPricingTask {
                 }
 
                 PricingResult result = new PricingResult(itemId, quantity, userId, currencyId);
-                model.applyTo(result, fields, result.getQuantity(), usage);
+                model.applyTo(pricingOrder, result, fields, result.getQuantity(), usage);
                 return result.getPrice();
             }
         }

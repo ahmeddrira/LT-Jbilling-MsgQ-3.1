@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.pricing.strategy;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
@@ -51,14 +52,15 @@ public class FlatPricingStrategy extends AbstractPricingStrategy {
      * Sets the price to zero. The price for all usage is included in the cost of the
      * monthly plan subscription, so the customer is not charged per unit.
      *
+     * @param pricingOrder target order for this pricing request (not used by this strategy)
      * @param result pricing result to apply pricing to
      * @param fields pricing fields (not used by this strategy)
      * @param planPrice the plan price to apply (not used by this strategy)
      * @param quantity quantity of item being priced (not used by this strategy)
      * @param usage total item usage for this billing period
      */
-    public void applyTo(PricingResult result, List<PricingField> fields, PriceModelDTO planPrice,
-                        BigDecimal quantity, Usage usage) {
+    public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
+                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
 
         result.setPrice(BigDecimal.ZERO);
     }

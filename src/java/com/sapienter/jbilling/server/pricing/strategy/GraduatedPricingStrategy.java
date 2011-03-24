@@ -24,6 +24,7 @@ import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
@@ -71,20 +72,21 @@ public class GraduatedPricingStrategy extends AbstractPricingStrategy {
      *      price = percent * rate
      * </code>
      *
+     * @param pricingOrder target order for this pricing request (not used by this strategy)
      * @param result pricing result to apply pricing to
      * @param fields pricing fields (not used by this strategy)
      * @param planPrice the plan price to apply
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
      */
-    public void applyTo(PricingResult result, List<PricingField> fields, PriceModelDTO planPrice,
-                        BigDecimal quantity, Usage usage) {
+    public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
+                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
 
         if (usage == null || usage.getQuantity() == null)
             throw new IllegalArgumentException("Usage quantity cannot be null for GraduatedPricingStrategy.");
 
         BigDecimal total = quantity.add(usage.getQuantity());
-        BigDecimal included = AttributeUtils.getDecimal(planPrice.getAttributes(), "included");
+        BigDecimal included = getIncludedQuantity(pricingOrder, planPrice);
 
         if (usage.getQuantity().compareTo(included) >= 0) {
             // included usage exceeded by current usage
@@ -101,5 +103,9 @@ public class GraduatedPricingStrategy extends AbstractPricingStrategy {
             // call within included usage
             result.setPrice(BigDecimal.ZERO);
         }        
+    }
+
+    public BigDecimal getIncludedQuantity(OrderDTO pricingOrder, PriceModelDTO planPrice) {
+        return AttributeUtils.getDecimal(planPrice.getAttributes(), "included");
     }
 }

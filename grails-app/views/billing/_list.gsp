@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.util.db.CurrencyDTO"%>
+<%@page import="com.sapienter.jbilling.server.util.db.CurrencyDTO" %>
 <%@ page import="com.sapienter.jbilling.server.process.db.BillingProcessDTO"%>
 	
 <div class="table-box">
@@ -21,13 +21,13 @@
                         onclick="javascript: document.location.href='/jbilling/billing/show/${dto.id}'">
 						<td class="small">${dto.id}</td>
 						<td class="medium">
-                            <g:formatDate date="${dto.billingDate}" formatNumber="date.pretty.format"/>
+                            <g:formatDate date="${dto.billingDate}" formatName="date.pretty.format"/>
 						</td>
 						<g:if test="${dataHashMap[dto.id] != null}">
                             <td class="small">${dataHashMap[dto.id][0]}</td>
                             <td class="medium">
-                                <g:formatNumber number="${new BigDecimal(dataHashMap[dto.id][1] ?: 0)}" 
-                                    type="currency" currencySymbol="${new CurrencyDTO(dataHashMap[dto.id][2].id as Integer)?.symbol}"/>
+                                <g:formatNumber number="${(dataHashMap[dto.id][1]?: 0) as BigDecimal}"
+                                    type="currency" currencySymbol="${dataHashMap[dto.id][2]?.symbol}"/>
                             </td>
                             <td class="small">${dataHashMap[dto.id][2].code}</td>
                         </g:if>

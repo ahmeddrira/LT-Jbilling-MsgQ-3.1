@@ -43,7 +43,8 @@ public class OrderPeriodAnticipateTask extends BasicOrderPeriodTask {
     public Date calculateEnd(OrderDTO order, Date processDate,
             int maxPeriods, Date periodStarts) 
             throws TaskException {
-        viewLimit = getViewLimit(order.getBaseUserByUserId().getCompany().getId(), processDate);
+
+        viewLimit = getViewLimit(order.getOrderPeriod(), processDate);
 
         if (order.getAnticipatePeriods() != null &&
                 order.getAnticipatePeriods().intValue() > 0) {

@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -102,8 +103,7 @@ public class BasicOrderPeriodTask
      * @return
      * @throws SessionInternalError
      */
-    public Date calculateEnd(OrderDTO order, 
-            Date processDate, int maxPeriods, Date startOfBillingPeriod) throws TaskException {
+    public Date calculateEnd(OrderDTO order, Date processDate, int maxPeriods, Date startOfBillingPeriod) throws TaskException {
 
         if (order.getOrderPeriod().getId() ==  Constants.ORDER_PERIOD_ONCE) {
             periods.add(new PeriodOfTime(null, null, 0, 1));
@@ -112,13 +112,13 @@ public class BasicOrderPeriodTask
 
         Date endOfPeriod = null;
         final Date firstBillableDate = calculateStart(order);
+
         GregorianCalendar cal = new GregorianCalendar();
         try {
             // calculate the how far we can see in the future
             // get the period of time from the process configuration
             if (viewLimit == null) {
-                viewLimit = getViewLimit(order.getUser().getEntity().getId(),
-                        processDate);
+                viewLimit = getViewLimit(order.getOrderPeriod(), processDate);
             }
             
             cal.setTime(startOfBillingPeriod);
@@ -137,33 +137,29 @@ public class BasicOrderPeriodTask
                 // this will move on time from the start of the billing period
                 // to the closest multiple period that doesn't go beyond the 
                 // visibility date
-                
+
                 while (cal.getTime().compareTo(viewLimit) < 0
-                        && (order.getActiveUntil() == null || cal.getTime()
-                                .compareTo(order.getActiveUntil()) < 0)
+                        && (order.getActiveUntil() == null || cal.getTime().compareTo(order.getActiveUntil()) < 0)
                         && periods.size() < maxPeriods) {
+
                     Date cycleStarts = cal.getTime();
-                    cal.add(MapPeriodToCalendar.map(order.getOrderPeriod()
-                            .getUnitId()), order.getOrderPeriod().getValue()
-                            .intValue());
+                    cal.add(MapPeriodToCalendar.map(order.getOrderPeriod().getUnitId()), order.getOrderPeriod().getValue());
                     Date cycleEnds = cal.getTime();
-                    if (cal.getTime().after(firstBillableDate)
-                            && (!cal.getTime().after(viewLimit) ||
-                                (order.getActiveUntil() != null && !order.getActiveUntil().after(viewLimit)))) {
+
+                    if (cycleEnds.after(firstBillableDate)
+                            && (cycleEnds.before(viewLimit) || (order.getActiveUntil() != null && order.getActiveUntil().before(viewLimit)))) {
                         // calculate the days for this cycle
                         PeriodOfTime cycle = new PeriodOfTime(cycleStarts, cycleEnds, 0, 0);
+
                         // not crete this period
-                        PeriodOfTime pt = new PeriodOfTime(
-                                (periods.size() == 0) ? firstBillableDate
-                                        : endOfPeriod, cal.getTime(), cycle
-                                        .getDaysInPeriod(), periods.size() + 1);
+                        PeriodOfTime pt = new PeriodOfTime((periods.size() == 0) ? firstBillableDate : endOfPeriod, cal.getTime(), cycle.getDaysInPeriod(), periods.size() + 1);
                         periods.add(pt);
+
                         endOfPeriod = cal.getTime();
                         LOG.debug("added period " + pt);
                     }
-                    LOG.debug("post paid, now testing:" + cal.getTime()
-                            + "(eop) = " + endOfPeriod + " compare "
-                            + cal.getTime().compareTo(viewLimit));
+
+                    LOG.debug("post paid, now testing:" + cal.getTime() + "(eop) = " + endOfPeriod + " compare " + cal.getTime().compareTo(viewLimit));
                 }
             } else if (order.getBillingTypeId().compareTo(
                     Constants.ORDER_BILLING_PRE_PAID) == 0) {
@@ -207,14 +203,14 @@ public class BasicOrderPeriodTask
         } catch (Exception e) {
             throw new TaskException(e);
         }
-        
+
+        LOG.debug("Calculated end of period as: " + endOfPeriod);
         endOfPeriod = verifyEndOfMonthDay(order, endOfPeriod);
         
         if (endOfPeriod == null) {
-            throw new TaskException("Error calculating for order " +
-                    order.getId());
-        } else if (order.getActiveUntil() != null &&
-                endOfPeriod.after(order.getActiveUntil())) {
+            throw new TaskException("Error calculating for order " + order.getId());
+
+        } else if (order.getActiveUntil() != null && endOfPeriod.after(order.getActiveUntil())) {
             // make sure this date is not beyond the expiration date
             endOfPeriod = order.getActiveUntil();
         } 
@@ -245,22 +241,19 @@ public class BasicOrderPeriodTask
         return endOfPeriod;
     }
 
-    protected Date getViewLimit(Integer entityId, Date processDate) {
-        try {
-            ConfigurationBL config = new ConfigurationBL(entityId);
-            Integer periodUnitId = config.getEntity().getPeriodUnit().getId();
-            Integer periodValue = config.getEntity().getPeriodValue();
-            Calendar cal = Calendar.getInstance();
-   
-            cal.setTime(processDate);
-            cal.add(MapPeriodToCalendar.map(periodUnitId),
-                    periodValue.intValue());
-            return cal.getTime();
-        } catch (Exception e) {
-            throw new SessionInternalError("Calculating view limit", BasicOrderPeriodTask.class, e);
-        }
+    protected Date getViewLimit(OrderPeriodDTO orderPeriod, Date processDate) {
+        Integer periodUnitId = orderPeriod.getPeriodUnit().getId();
+        Integer periodValue = orderPeriod.getValue();
 
+        LOG.debug("Calculating view limit, " + periodValue + " " + orderPeriod.getPeriodUnit().getDescription() + "(s) from " + processDate);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(processDate);
+        cal.add(MapPeriodToCalendar.map(periodUnitId), periodValue);
+
+        return cal.getTime();
     }
+
     /*
      * 
     // Last day of the month validation

@@ -7,7 +7,7 @@
         <content tag="label">Checkbox Label</content>
         <content tag="label.for">element_name</content>
         
-        <g:checkbox name="element_name" class="cb check" ... />
+        <g:checkBox name="element_name" class="cb check" ... />
     </g:applyLayout>
 
 

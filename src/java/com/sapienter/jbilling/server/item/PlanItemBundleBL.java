@@ -21,9 +21,18 @@
 package com.sapienter.jbilling.server.item;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.customer.CustomerBL;
+import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemBundleDTO;
+import com.sapienter.jbilling.server.item.db.PlanItemDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * PlanItemBundleBL
@@ -63,5 +72,19 @@ public class PlanItemBundleBL {
      */
     public static PlanItemBundleWS getWS(PlanItemBundleDTO dto) {
         return dto != null ? new PlanItemBundleWS(dto) : null;
+    }
+
+    public static UserDTO getTargetUser(PlanItemBundleDTO.Customer target, CustomerDTO customer) {
+        if (target != null && customer != null) {
+            switch (target) {
+                case SELF:
+                    return customer.getBaseUser();
+
+                case BILLABLE:
+                    CustomerDTO parent = new CustomerBL(customer).getInvoicableParent();
+                    return parent != null ? parent.getBaseUser() : null;
+            }
+        }
+        return null;
     }
 }

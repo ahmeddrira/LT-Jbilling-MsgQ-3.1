@@ -35,6 +35,30 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
 public class OrderDAS extends AbstractDAS<OrderDTO> {
+
+    /**
+     * Returns the newest active order for the given user id and period.
+     *
+     * @param userId user id
+     * @param period period
+     * @return newest active order for user and period.
+     */
+    @SuppressWarnings("unchecked")
+    public OrderDTO findByUserAndPeriod(Integer userId, OrderPeriodDTO period) {
+        Criteria criteria = getSession().createCriteria(OrderDTO.class)
+                .createAlias("orderStatus", "s")
+                .add(Restrictions.eq("s.id", Constants.ORDER_STATUS_ACTIVE))
+                .add(Restrictions.eq("deleted", 0))
+                .createAlias("baseUserByUserId", "u")
+                .add(Restrictions.eq("u.id", userId))
+                .add(Restrictions.eq("orderPeriod", period))
+                .addOrder(Order.asc("id"))
+                .setMaxResults(1);
+
+        List<OrderDTO> results = criteria.list();
+        return !results.isEmpty() ? results.get(0) : null;
+    }
+
     public OrderProcessDTO findProcessByEndDate(Integer id, Date myDate) {
         return (OrderProcessDTO) getSession().createFilter(find(id).getOrderProcesses(), 
                 "where this.periodEnd = :endDate").setDate("endDate", 

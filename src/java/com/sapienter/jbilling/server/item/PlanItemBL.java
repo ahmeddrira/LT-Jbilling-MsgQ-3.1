@@ -94,6 +94,14 @@ public class PlanItemBL {
         return planItems;
     }
 
+    /**
+     * Collects the individual plan items from all order lines that contain a plan. Used to
+     * condense a list of "subscription order lines" down to the individual prices and bundled
+     * items to be applied.
+     *
+     * @param lines order lines containing plan subscriptions
+     * @return list of plan items from all plans in the order lines
+     */
     public static List<PlanItemDTO> collectPlanItems(List<OrderLineDTO> lines) {
         List<PlanItemDTO> planItems = new ArrayList<PlanItemDTO>();
 

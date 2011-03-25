@@ -58,6 +58,7 @@
         <mapping class="com.sapienter.jbilling.server.item.db.ItemTypeDTO" />
         <mapping class="com.sapienter.jbilling.server.item.db.PlanDTO" />
         <mapping class="com.sapienter.jbilling.server.item.db.PlanItemDTO" />
+        <mapping class="com.sapienter.jbilling.server.item.db.PlanItemBundleDTO" />
         <mapping package="com.sapienter.jbilling.server.pricing.db" />
         <mapping class="com.sapienter.jbilling.server.pricing.db.PriceModelDTO" />
         <mapping package="com.sapienter.jbilling.server.payment.blacklist.db" />

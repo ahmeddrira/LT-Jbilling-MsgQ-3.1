@@ -1159,9 +1159,15 @@ ul#review-lines {
     width: 120px;
     float: right;
 }
-#review-lines span.sub-total, #review-lines span.rate, #review-lines span.included-qty {
+#review-lines span.sub-total, #review-lines span.rate {
     display: block;
     width: 100px;
+    float: right;
+    text-align: right;
+}
+#review-lines span.included-qty {
+    display: block;
+    width: 250px;
     float: right;
     text-align: right;
 }

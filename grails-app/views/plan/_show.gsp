@@ -75,21 +75,29 @@
                     </td>
                 </tr>
 
-
-                <g:if test="${planItem.period}">
-                    <tr>
-                        <td><g:message code="order.label.period"/></td>
-                        <td class="value">${planItem.period.getDescription(session['language_id'])}</td>
-                    </tr>
-                </g:if>
-
                 <tr>
                     <td><g:message code="plan.item.precedence"/></td>
                     <td class="value">${planItem.precedence}</td>
-
-                    <td><g:message code="plan.item.bundled.quantity"/></td>
-                    <td class="value"><g:formatNumber number="${planItem.bundledQuantity}"/></td>
                 </tr>
+
+                <g:if test="${planItem.bundle && planItem.bundle.quantity?.compareTo(BigDecimal.ZERO) > 0}">
+                    <tr>
+                        <td><g:message code="plan.item.bundled.quantity"/></td>
+                        <td class="value"><g:formatNumber number="${planItem.bundle.quantity}"/></td>
+
+                        <td><g:message code="plan.bundle.label.add.if.exists"/></td>
+                        <td class="value"><g:message code="plan.bundle.add.if.exists.${planItem.bundle.addIfExists}"/></td>
+                    </tr>
+
+                    <tr>
+                        <td><g:message code="plan.bundle.period"/></td>
+                        <td class="value">${planItem.bundle.period.getDescription(session['language_id'])}</td>
+
+                        <td><g:message code="plan.bundle.target.customer"/></td>
+                        <td class="value"><g:message code="bundle.target.customer.${planItem.bundle.targetCustomer}"/></td>
+                    </tr>
+
+                </g:if>
 
                 <!-- price model -->
                 <tr><td colspan="4">&nbsp;</td></tr>

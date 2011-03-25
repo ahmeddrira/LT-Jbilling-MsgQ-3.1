@@ -26,9 +26,10 @@ import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.item.PlanBL;
 import com.sapienter.jbilling.server.item.PlanItemBL;
+import com.sapienter.jbilling.server.item.PlanItemBundleBL;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
-import com.sapienter.jbilling.server.item.db.PlanDTO;
+import com.sapienter.jbilling.server.item.db.PlanItemBundleDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
@@ -65,7 +66,6 @@ import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDAS;
 import com.sapienter.jbilling.server.provisioning.event.SubscriptionActiveEvent;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.ContactBL;
-import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
@@ -732,71 +732,94 @@ public class OrderBL extends ResultList
      * @param baseUser user to use when adding lines
      */
     private void addBundledItems(OrderDTO order, List<OrderLineDTO> lines, UserDTO baseUser) {
-        LOG.debug("Processing " + lines.size() + " order line(s), creating new orders for bundled items.");
+        LOG.debug("Processing " + lines.size() + " order line(s), updating/creating orders for bundled items.");
 
-        Map<Integer, OrderDTO> orders = new HashMap<Integer, OrderDTO>();
+        // map of orders keyed by user & period
+        Map<String, OrderDTO> orders = new HashMap<String, OrderDTO>();
 
-        // add the original order so that included items with the same period
-        // get added to the existing recurring order
-        orders.put(order.getOrderPeriod().getId(), order);
+        String currentOrderKey = baseUser.getId() + "_" + order.getPeriodId();
+        orders.put(currentOrderKey, order);
 
+        // go through all bundled items and build/update orders as necessary
         for (PlanItemDTO planItem : PlanItemBL.collectPlanItems(lines)) {
-            if (planItem.getPeriod() != null && planItem.getBundledQuantity() != null) {
+            if (planItem.getBundle() != null && planItem.getBundle().getQuantity().compareTo(BigDecimal.ZERO) > 0) {
+                PlanItemBundleDTO bundle = planItem.getBundle();
+                UserDTO user = PlanItemBundleBL.getTargetUser(bundle.getTargetCustomer(), baseUser.getCustomer());
 
-                // create a new order for the period of the plan item
-                Integer periodId = planItem.getPeriod().getId();
-                if (!orders.containsKey(periodId)) {
-                    LOG.debug("Creating a new order for period " + periodId);
-                    orders.put(periodId, createBundleOrder(order, planItem.getPeriod()));
+                String mapKey = user.getId() + "_" + bundle.getPeriod().getId();
+
+                // fetch the bundled order, or create a new one as necessary
+                if (!orders.containsKey(mapKey)) {
+                    LOG.debug("Getting bundle order for user " + user.getId() + " and period " + bundle.getPeriod().getId());
+                    orders.put(mapKey, getBundleOrder(user, bundle.getPeriod(), order));
                 }
 
-                // add an order line
-                LOG.debug("Adding " + planItem.getBundledQuantity() + " units of item " + planItem.getItem().getId()
-                          + " to order for period " + periodId);
+                /*
+                    ALWAYS add the item if bundle addIfExists is true
+                    if addIfExists is false, check to see if the line already exists before adding
+                 */
+                OrderDTO bundledOrder = orders.get(mapKey);
+                if (bundle.addIfExists()
+                        || (!bundle.addIfExists() && bundledOrder.getLine(planItem.getItem().getId()) == null)) {
 
-                OrderDTO bundledOrder = orders.get(planItem.getPeriod().getId());
-                addItem(bundledOrder,
-                        planItem.getItem().getId(),
-                        planItem.getBundledQuantity(),
-                        baseUser.getLanguage().getId(),
-                        baseUser.getId(),
-                        baseUser.getEntity().getId(),
-                        baseUser.getCurrency().getId(),
-                        null);
+                    LOG.debug("Adding " + bundle.getQuantity() + " units of item " + planItem.getItem().getId()
+                              + " to order for user " + user.getId() + " and period " + bundle.getPeriod().getId());
+
+                    addItem(bundledOrder,
+                            planItem.getItem().getId(),
+                            bundle.getQuantity(),
+                            user.getLanguage().getId(),
+                            user.getId(),
+                            user.getEntity().getId(),
+                            user.getCurrency().getId(),
+                            null);
+                }
             }
         }
 
         // remove the original order, it will be persisted when the transaction ends
-        orders.remove(order.getOrderPeriod().getId());
+        orders.remove(currentOrderKey);
 
-        // create all bundled orders
+        // save new all bundled orders
         for (OrderDTO bundledOrder : orders.values()) {
-            new OrderBL().create(baseUser.getEntity().getId(), baseUser.getId(), bundledOrder);
+            if (bundledOrder.getId() == null) {
+                new OrderBL().create(baseUser.getEntity().getId(), baseUser.getId(), bundledOrder);
+            }
         }
     }
 
     /**
-     * Creates a new order using the given order as a template. The new order inherits everything
+     * Attempts to find an active order for the given period and userId. If no order found, then a
+     * new order will be created using the given order as a template. The new order inherits everything
      * from the original order except the actual order lines.
      *
-     * @param template order to inherit details from
+     * @param user target user for the bundled items to be added to
      * @param period period of new order
+     * @param template order to inherit details from
      * @return new order
      */
-    private OrderDTO createBundleOrder(OrderDTO template, OrderPeriodDTO period) {
-        OrderDTO order = new OrderDTO();
-        order.setBaseUserByUserId(template.getBaseUserByUserId());
-        order.setOrderStatus(template.getOrderStatus());
-        order.setOrderBillingType(template.getOrderBillingType());
-        order.setOrderPeriod(period);
-        order.setCurrency(template.getCurrency());
-        order.setActiveSince(template.getActiveSince());
-        order.setActiveUntil(template.getActiveUntil());
-        order.setCycleStarts(template.getCycleStarts());
-        order.setNotesInInvoice(template.getNotesInInvoice());
+    private OrderDTO getBundleOrder(UserDTO user, OrderPeriodDTO period, OrderDTO template) {
+        // try and find an existing order for this period
+        OrderDTO order = new OrderDAS().findByUserAndPeriod(user.getId(), period);
 
-        // todo: append order notes with plan details
-        order.setNotes(template.getNotes());
+        // no existing order found,
+        // create a new order using the given order as a template
+        if (order == null) {
+            LOG.debug("No existing order for user " + user.getId() + " and period " + period.getId() + ", creating new bundle order");
+            order = new OrderDTO();
+            order.setBaseUserByUserId(user);
+            order.setOrderStatus(template.getOrderStatus());
+            order.setOrderBillingType(template.getOrderBillingType());
+            order.setOrderPeriod(period);
+            order.setCurrency(template.getCurrency());
+            order.setActiveSince(template.getActiveSince());
+            order.setActiveUntil(template.getActiveUntil());
+            order.setCycleStarts(template.getCycleStarts());
+            order.setNotesInInvoice(template.getNotesInInvoice());
+
+            // todo: append order notes with plan details
+            order.setNotes(template.getNotes());
+        }
 
         return order;
     }

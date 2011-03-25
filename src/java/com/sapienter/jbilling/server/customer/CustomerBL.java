@@ -36,14 +36,18 @@ import com.sapienter.jbilling.server.util.Constants;
 public final class CustomerBL extends ResultList implements CustomerSQL {
     
     private CustomerDTO customer = null;
-    //private final Logger LOG = Logger.getLogger(CustomerBL.class);
     
-    public CustomerBL() {};
+    public CustomerBL() {
+    }
     
     public CustomerBL(Integer id) {
         customer = new CustomerDAS().find(id);
     }
-    
+
+    public CustomerBL(CustomerDTO customer) {
+        this.customer = customer;
+    }
+
     public CustomerDTO getEntity() {
         return customer;
     }

@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.item.db.ItemDTO; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.item.db.PlanItemBundleDTO; com.sapienter.jbilling.server.item.db.ItemDTO; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 
 <%--
@@ -41,19 +41,36 @@
                     <g:textField class="field" name="price.precedence" value="${planItem.precedence}"/>
                 </g:applyLayout>
 
+                <br/>
+
                 <g:applyLayout name="form/input">
                     <content tag="label"><g:message code="plan.item.bundled.quantity"/></content>
-                    <content tag="label.for">price.bundledQuantityAsDecimal</content>
-                    <g:textField class="field" name="price.bundledQuantityAsDecimal" value="${formatNumber(number: planItem.getBundledQuantityAsDecimal() ?: BigDecimal.ZERO)}"/>
+                    <content tag="label.for">bundle.quantityAsDecimal</content>
+                    <g:textField class="field" name="bundle.quantityAsDecimal" value="${formatNumber(number: planItem.bundle?.quantityAsDecimal ?: BigDecimal.ZERO)}"/>
                 </g:applyLayout>
 
                 <g:applyLayout name="form/select">
-                    <content tag="label"><g:message code="order.label.period"/></content>
-                    <content tag="label.for">price.periodId</content>
+                    <content tag="label"><g:message code="plan.bundle.period"/></content>
+                    <content tag="label.for">bundle.periodId</content>
                     <g:select from="${orderPeriods}"
                               optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
-                              name="price.periodId"
-                              value="${planItem?.periodId}"/>
+                              name="bundle.periodId"
+                              value="${planItem?.bundle?.periodId}"/>
+                </g:applyLayout>
+
+                <g:applyLayout name="form/select">
+                    <content tag="label"><g:message code="plan.bundle.target.customer"/></content>
+                    <content tag="label.for">bundle.targetCustomer</content>
+                    <g:select from="${PlanItemBundleDTO.Customer.values()}"
+                              name="bundle.targetCustomer"
+                                valueMessagePrefix="bundle.target.customer"
+                              value="${planItem.bundle?.targetCustomer}"/>
+                </g:applyLayout>
+
+                <g:applyLayout name="form/checkbox">
+                    <content tag="label"><g:message code="plan.bundle.add.if.exists"/></content>
+                    <content tag="label.for">bundle.addIfExists</content>
+                    <g:checkBox name="bundle.addIfExists" class="cb check" checked="${planItem.bundle?.addIfExists}"/>
                 </g:applyLayout>
 
                 <br/>

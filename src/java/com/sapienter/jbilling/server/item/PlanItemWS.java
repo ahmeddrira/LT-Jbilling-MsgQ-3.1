@@ -17,28 +17,26 @@ public class PlanItemWS implements Serializable {
 
     private Integer id;
     private Integer itemId; // affected item
-    private Integer periodId; // item period
     private PriceModelWS model;
-    private String bundledQuantity;
+    private PlanItemBundleWS bundle;
     private Integer precedence = DEFAULT_PRECEDENCE;
 
     public PlanItemWS() {
     }
 
-    public PlanItemWS(Integer itemId, PriceModelWS model) {
+    public PlanItemWS(Integer itemId, PriceModelWS model, PlanItemBundleWS bundle) {
         this.itemId = itemId;
         this.model = model;
+        this.bundle = bundle;
     }
 
     public PlanItemWS(PlanItemDTO dto) {
         this.id = dto.getId();
         this.precedence = dto.getPrecedence();
 
-        setBundledQuantity(dto.getBundledQuantity());
-
         if (dto.getModel() != null) this.model = new PriceModelWS(dto.getModel());
+        if (dto.getBundle() != null) this.bundle = new PlanItemBundleWS(dto.getBundle());
         if (dto.getItem() != null) this.itemId = dto.getItem().getId();
-        if (dto.getPeriod() != null) this.periodId = dto.getPeriod().getId();
     }
 
     public Integer getId() {
@@ -65,14 +63,6 @@ public class PlanItemWS implements Serializable {
         setItemId(affectedItemId);
     }
 
-    public Integer getPeriodId() {
-        return periodId;
-    }
-
-    public void setPeriodId(Integer periodId) {
-        this.periodId = periodId;
-    }
-
     public PriceModelWS getModel() {
         return model;
     }
@@ -81,24 +71,12 @@ public class PlanItemWS implements Serializable {
         this.model = model;
     }
 
-    public String getBundledQuantity() {
-        return bundledQuantity;
+    public PlanItemBundleWS getBundle() {
+        return bundle;
     }
 
-    public BigDecimal getBundledQuantityAsDecimal() {
-        return bundledQuantity != null ? new BigDecimal(bundledQuantity) : null;
-    }
-
-    public void setBundledQuantityAsDecimal(BigDecimal bundledQuantity) {
-        setBundledQuantity(bundledQuantity);
-    }
-
-    public void setBundledQuantity(String bundledQuantity) {
-        this.bundledQuantity = bundledQuantity;
-    }
-
-    public void setBundledQuantity(BigDecimal bundledQuantity) {
-        this.bundledQuantity = (bundledQuantity != null ? bundledQuantity.toString() : null);
+    public void setBundle(PlanItemBundleWS bundle) {
+        this.bundle = bundle;
     }
 
     public Integer getPrecedence() {
@@ -114,9 +92,8 @@ public class PlanItemWS implements Serializable {
         return "PlanItemWS{"
                + "id=" + id
                + ", itemId=" + itemId
-               + ", periodId=" + periodId
                + ", model=" + model
-               + ", bundledQuantity=" + bundledQuantity
+               + ", bundle=" + bundle
                + ", precedence=" + precedence
                + '}';
     }

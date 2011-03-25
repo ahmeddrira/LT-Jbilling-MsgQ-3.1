@@ -38,6 +38,8 @@ import com.sapienter.jbilling.server.pricing.db.PriceModelDTO
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO
 import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.client.pricing.util.PlanHelper
+import com.sapienter.jbilling.server.item.PlanItemBundleWS
+import com.sapienter.jbilling.server.item.db.PlanItemBundleDTO
 
 /**
  * Plan builder controller
@@ -171,8 +173,11 @@ class PlanBuilderController {
                 def priceModel = new PriceModelWS(product.defaultPrice)
                 priceModel.id = null
 
+                // empty bundle
+                def bundle = new PlanItemBundleWS()
+
                 // add price to the plan
-                conversation.plan.planItems << new PlanItemWS(productId, priceModel)
+                conversation.plan.planItems << new PlanItemWS(productId, priceModel, bundle)
 
                 params.newLineIndex = conversation.plan.planItems.size() - 1
                 params.template = 'review'
@@ -188,7 +193,11 @@ class PlanBuilderController {
                 def index = params.int('index')
                 def planItem = conversation.plan.planItems[index]
 
+                if (!planItem.bundle) planItem.bundle = new PlanItemBundleWS()
+
+
                 bindData(planItem, params, 'price')
+                bindData(planItem.bundle, params, 'bundle')
                 planItem.model = PlanHelper.bindPriceModel(params)
 
                 try {

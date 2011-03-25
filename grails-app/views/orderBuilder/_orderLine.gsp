@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.item.db.ItemDTO" %>
+<%@ page import="org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.item.db.PlanItemBundleDTO; com.sapienter.jbilling.server.item.db.ItemDTO" %>
 
 <%--
   Renders an OrderLineWS as an editable row for the order builder preview pane.
@@ -60,15 +60,18 @@
     <g:if test="${product.plans}">
         <g:each var="plan" in="${product.plans}">
             <g:each var="planItem" in="${plan.planItems}">
-                <g:if test="${planItem.bundledQuantity}">
+                <g:if test="${planItem.bundle?.quantity}">
                     <li class="bundled">
                         <span class="description">
                             ${planItem.item.description}
                         </span>
                         <span class="included-qty">
-                            + <g:formatNumber number="${planItem.bundledQuantity}"/>
-                            <g:if test="${planItem.period}">
-                                ${planItem.period.getDescription(session['language_id']).toLowerCase()}
+                            + <g:formatNumber number="${planItem.bundle?.quantity}"/>
+                            <g:if test="${planItem.bundle?.period}">
+                                ${WordUtils.capitalize(planItem.bundle?.period.getDescription(session['language_id']).toLowerCase())}
+                            </g:if>
+                            <g:if test="${planItem.bundle?.targetCustomer != PlanItemBundleDTO.Customer.SELF}">
+                                <g:message code="bundle.for.target.customer.${planItem.bundle?.targetCustomer}"/>
                             </g:if>
                         </span>
                     </li>

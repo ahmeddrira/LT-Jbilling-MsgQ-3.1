@@ -20,7 +20,9 @@
 
 package com.sapienter.jbilling.server.item;
 
+
 import com.sapienter.jbilling.server.item.db.PlanItemBundleDTO;
+import com.sapienter.jbilling.server.util.Constants;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
@@ -35,14 +37,13 @@ import java.math.BigDecimal;
  */
 public class PlanItemBundleWS implements Serializable {
 
+    public static final String TARGET_SELF = "SELF";
+    public static final String TARGET_BILLABLE = "BILLABLE";
+
     private Integer id;
-    @NotNull(message = "validation.error.notnull")
-    @Digits(integer = 22, fraction = 10, message="validation.error.not.a.number")
-    private String quantity;
-    @NotNull(message = "validation.error.notnull")
-    private Integer periodId;
-    @NotNull(message = "validation.error.notnull")
-    private String targetCustomer;
+    private String quantity = "0";
+    private Integer periodId = Constants.ORDER_PERIOD_ONCE;
+    private String targetCustomer = TARGET_SELF;
     private boolean addIfExists = true;
 
     public PlanItemBundleWS() {

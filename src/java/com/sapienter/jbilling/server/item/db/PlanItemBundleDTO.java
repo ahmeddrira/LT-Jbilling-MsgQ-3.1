@@ -150,12 +150,16 @@ public class PlanItemBundleDTO implements Serializable {
      * @return true to always add item, false to add only if item does not already exist.
      */
     @Column(name = "add_if_exists", nullable = false)
-    public boolean addIfExists() {
+    public boolean getAddIfExists() {
         return addIfExists;
     }
 
     public void setAddIfExists(boolean addIfExists) {
         this.addIfExists = addIfExists;
+    }
+
+    public boolean addIfExists() {
+        return addIfExists;
     }
 
     @Override

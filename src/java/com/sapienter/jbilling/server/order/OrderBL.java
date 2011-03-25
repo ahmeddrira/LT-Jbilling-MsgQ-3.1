@@ -742,7 +742,7 @@ public class OrderBL extends ResultList
 
         // go through all bundled items and build/update orders as necessary
         for (PlanItemDTO planItem : PlanItemBL.collectPlanItems(lines)) {
-            if (planItem.getBundle() != null) {
+            if (planItem.getBundle() != null && planItem.getBundle().getQuantity().compareTo(BigDecimal.ZERO) > 0) {
                 PlanItemBundleDTO bundle = planItem.getBundle();
                 UserDTO user = PlanItemBundleBL.getTargetUser(bundle.getTargetCustomer(), baseUser.getCustomer());
 

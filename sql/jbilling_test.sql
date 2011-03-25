@@ -42,9 +42,10 @@ ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_fk_1;
 ALTER TABLE ONLY public.plan DROP CONSTRAINT plan_period_id_fk;
 ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_price_model_id_fk;
 ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_plan_id_fk;
-ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_period_id_fk;
 ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_item_id_fk;
 ALTER TABLE ONLY public.plan DROP CONSTRAINT plan_item_id_fk;
+ALTER TABLE ONLY public.plan_item_bundle DROP CONSTRAINT plan_item_bundle_period_fk;
+ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_bundle_id_fk;
 ALTER TABLE ONLY public.permission_user DROP CONSTRAINT permission_user_fk_2;
 ALTER TABLE ONLY public.permission_user DROP CONSTRAINT permission_user_fk_1;
 ALTER TABLE ONLY public.permission_role_map DROP CONSTRAINT permission_role_map_fk_2;
@@ -228,6 +229,7 @@ ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_pkey;
 ALTER TABLE ONLY public.pluggable_task_parameter DROP CONSTRAINT pluggable_task_parameter_pkey;
 ALTER TABLE ONLY public.plan DROP CONSTRAINT plan_pkey;
 ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_pkey;
+ALTER TABLE ONLY public.plan_item_bundle DROP CONSTRAINT plan_item_bundle_pkey;
 ALTER TABLE ONLY public.permission_user DROP CONSTRAINT permission_user_pkey;
 ALTER TABLE ONLY public.permission_type DROP CONSTRAINT permission_type_pkey;
 ALTER TABLE ONLY public.permission DROP CONSTRAINT permission_pkey;
@@ -323,6 +325,7 @@ DROP TABLE public.pluggable_task_type_category;
 DROP TABLE public.pluggable_task_type;
 DROP TABLE public.pluggable_task_parameter;
 DROP TABLE public.pluggable_task;
+DROP TABLE public.plan_item_bundle;
 DROP TABLE public.plan_item;
 DROP TABLE public.plan;
 DROP TABLE public.permission_user;
@@ -1816,12 +1819,26 @@ CREATE TABLE plan_item (
     item_id integer NOT NULL,
     price_model_id integer NOT NULL,
     precedence integer NOT NULL,
-    bundled_quantity numeric(22,10),
-    period_id integer
+    plan_item_bundle_id integer
 );
 
 
 ALTER TABLE public.plan_item OWNER TO jbilling;
+
+--
+-- Name: plan_item_bundle; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE plan_item_bundle (
+    id integer NOT NULL,
+    quantity numeric(22,10) NOT NULL,
+    period_id integer NOT NULL,
+    target_customer character varying(20) NOT NULL,
+    add_if_exists boolean NOT NULL
+);
+
+
+ALTER TABLE public.plan_item_bundle OWNER TO jbilling;
 
 --
 -- Name: pluggable_task; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -11954,6 +11971,7 @@ shortcut	1
 report	1
 report_type	1
 report_parameter	1
+plan_item_bundle	1
 \.
 
 
@@ -12056,6 +12074,7 @@ COPY jbilling_table (id, name) FROM stdin;
 100	report
 101	report_type
 102	report_parameter
+103	plan_item_bundle
 \.
 
 
@@ -14535,6 +14554,7 @@ COPY order_period (id, entity_id, value, unit_id, optlock) FROM stdin;
 1	\N	\N	\N	1
 2	1	1	1	1
 3	2	1	1	1
+4	1	3	1	1
 \.
 
 
@@ -15229,8 +15249,16 @@ COPY plan (id, item_id, description, period_id) FROM stdin;
 -- Data for Name: plan_item; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY plan_item (id, plan_id, item_id, price_model_id, precedence, bundled_quantity, period_id) FROM stdin;
-1	1	2602	2004	-1	\N	\N
+COPY plan_item (id, plan_id, item_id, price_model_id, precedence, plan_item_bundle_id) FROM stdin;
+1	1	2602	2004	-1	\N
+\.
+
+
+--
+-- Data for Name: plan_item_bundle; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY plan_item_bundle (id, quantity, period_id, target_customer, add_if_exists) FROM stdin;
 \.
 
 
@@ -19419,6 +19447,14 @@ ALTER TABLE ONLY permission_user
 
 
 --
+-- Name: plan_item_bundle_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY plan_item_bundle
+    ADD CONSTRAINT plan_item_bundle_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: plan_item_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -20821,6 +20857,22 @@ ALTER TABLE ONLY permission_user
 
 
 --
+-- Name: plan_item_bundle_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY plan_item
+    ADD CONSTRAINT plan_item_bundle_id_fk FOREIGN KEY (plan_item_bundle_id) REFERENCES plan_item_bundle(id);
+
+
+--
+-- Name: plan_item_bundle_period_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY plan_item_bundle
+    ADD CONSTRAINT plan_item_bundle_period_fk FOREIGN KEY (period_id) REFERENCES order_period(id);
+
+
+--
 -- Name: plan_item_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
 --
 
@@ -20834,14 +20886,6 @@ ALTER TABLE ONLY plan
 
 ALTER TABLE ONLY plan_item
     ADD CONSTRAINT plan_item_item_id_fk FOREIGN KEY (item_id) REFERENCES item(id);
-
-
---
--- Name: plan_item_period_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY plan_item
-    ADD CONSTRAINT plan_item_period_id_fk FOREIGN KEY (period_id) REFERENCES order_period(id);
 
 
 --

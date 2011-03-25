@@ -930,9 +930,8 @@ insert into jbilling_seqs (name, next_id) values ('plan_item_bundle', 1);
 alter table plan_item add column plan_item_bundle_id int;
 
 insert into plan_item_bundle (id, quantity, period_id, target_customer, add_if_exists) (select id, bundled_quantity, period_id, 'SELF', true from plan_item where bundled_quantity is not null and period_id is not null);
-update plan_item set plan_item_bundle_id = id;
+update plan_item set plan_item_bundle_id = id where bundled_quantity is not null and period_id is not null;
 
-alter table drop constraint plan_item_period_id_FK;
 alter table plan_item drop column period_id;
 alter table plan_item drop column bundled_quantity;
 

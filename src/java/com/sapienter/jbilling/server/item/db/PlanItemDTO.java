@@ -21,7 +21,6 @@
 package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.item.PlanItemWS;
-import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import javax.persistence.CascadeType;
@@ -38,7 +37,6 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 /**
  * @author Brian Cowdery
@@ -63,19 +61,17 @@ public class PlanItemDTO implements Serializable {
     private PlanDTO plan;
     private ItemDTO item; // affected item
     private PriceModelDTO model;
-    private BigDecimal bundledQuantity;
-    private OrderPeriodDTO period; // period for bundled quantity
+    private PlanItemBundleDTO bundle;
     private Integer precedence = DEFAULT_PRECEDENCE;
 
     public PlanItemDTO() {
     }
 
-    public PlanItemDTO(PlanItemWS ws, ItemDTO item, OrderPeriodDTO period, PriceModelDTO model) {
+    public PlanItemDTO(PlanItemWS ws, ItemDTO item, PriceModelDTO model, PlanItemBundleDTO bundle) {
         this.id = ws.getId();
         this.item = item;
-        this.period = period;
         this.model = model;
-        this.bundledQuantity = ws.getBundledQuantityAsDecimal();
+        this.bundle = bundle;
         this.precedence = ws.getPrecedence();                
     }
 
@@ -135,32 +131,15 @@ public class PlanItemDTO implements Serializable {
         this.model = model;
     }
 
-    @Column(name = "bundled_quantity", nullable = true, precision = 10, scale = 22)
-    public BigDecimal getBundledQuantity() {
-        return bundledQuantity;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "plan_item_bundle_id", nullable = true)
+    public PlanItemBundleDTO getBundle() {
+        return bundle;
     }
 
-    public void setBundledQuantity(BigDecimal bundledQuantity) {
-        this.bundledQuantity = bundledQuantity;
+    public void setBundle(PlanItemBundleDTO bundle) {
+        this.bundle = bundle;
     }
-
-    /**
-     * The period to use for the order containing the bundled quantity. If the period is different than
-     * the order used to subscribe the customer to the plan, then a new order will be created to contain
-     * the bundled items.
-     *
-     * @return order period for the bundled quantity
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "period_id", nullable = true)
-    public OrderPeriodDTO getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(OrderPeriodDTO period) {
-        this.period = period;
-    }
-
 
     @Column(name = "precedence", nullable = false, length = 2)
     public Integer getPrecedence() {
@@ -178,10 +157,8 @@ public class PlanItemDTO implements Serializable {
 
         PlanItemDTO that = (PlanItemDTO) o;
 
-        if (bundledQuantity != null ? !bundledQuantity.equals(that.bundledQuantity) : that.bundledQuantity != null) return false;
         if (!item.equals(that.item)) return false;
         if (!model.equals(that.model)) return false;
-        if (period != null ? !period.equals(that.period) : that.period != null) return false;
         if (plan != null ? !plan.equals(that.plan) : that.plan != null) return false;
         if (!precedence.equals(that.precedence)) return false;
 
@@ -193,8 +170,6 @@ public class PlanItemDTO implements Serializable {
         int result = plan != null ? plan.hashCode() : 0;
         result = 31 * result + item.hashCode();
         result = 31 * result + model.hashCode();
-        result = 31 * result + (bundledQuantity != null ? bundledQuantity.hashCode() : 0);
-        result = 31 * result + (period != null ? period.hashCode() : 0);
         result = 31 * result + precedence.hashCode();
         return result;
     }
@@ -206,8 +181,6 @@ public class PlanItemDTO implements Serializable {
                + ", planId=" + (plan != null ? plan.getId() : null)
                + ", itemId=" + (item != null ? item.getId() : null)
                + ", model=" + model
-               + ", bundledQuantity=" + bundledQuantity
-               + ", periodId=" + (period != null ? period.getId() : null)
                + ", precedence=" + precedence
                + '}';
     }

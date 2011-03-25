@@ -3,15 +3,12 @@ package com.sapienter.jbilling.server.item;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.PlanDTO;
+import com.sapienter.jbilling.server.item.db.PlanItemBundleDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
-import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
-import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,26 +34,21 @@ public class PlanItemBL {
     public static PlanItemDTO getDTO(PlanItemWS ws) {
         if (ws != null) {
             if (ws.getItemId() == null)
-                throw new SessionInternalError("PlanItemDTO must have an affected item.");
+                throw new SessionInternalError("PlanItemWS must have an affected item.");
 
             if (ws.getModel() == null)
-                throw new SessionInternalError("PlanItemDTO must have a price model.");
-
-            if (ws.getBundledQuantity() != null
-                && ws.getBundledQuantityAsDecimal().compareTo(BigDecimal.ZERO) > 0
-                && ws.getPeriodId() == null)
-                throw new SessionInternalError("PlanItemDTO cannot have a bundled quantity without a period.");
+                throw new SessionInternalError("PlanItemWS must have a price model.");
 
             // affected item
             ItemDTO item = new ItemBL(ws.getItemId()).getEntity();
 
-            // plan item period (for bundled quantity)
-            OrderPeriodDTO period = ws.getPeriodId() != null ? new OrderPeriodDAS().find(ws.getPeriodId()) : null;
-
             // price model
             PriceModelDTO model = PriceModelBL.getDTO(ws.getModel());
 
-            return new PlanItemDTO(ws, item, period, model);
+            // bundled items
+            PlanItemBundleDTO bundle = PlanItemBundleBL.getDTO(ws.getBundle());
+
+            return new PlanItemDTO(ws, item, model, bundle);
         }
         return null;
     }

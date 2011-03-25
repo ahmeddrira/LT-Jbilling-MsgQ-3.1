@@ -910,3 +910,32 @@ insert into report_parameter (id, report_id, dtype, name) values (3, 1, 'integer
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 1, 'description', 1, 'Total amount invoiced grouped by period.');
 
 insert into entity_report_map (report_id, entity_id) values (1, 1);
+
+-- plan item bundling tables
+drop table if exists plan_item_bundle;
+create table plan_item_bundle (
+    id int NOT NULL,
+    quantity numeric(22, 10) NOT NULL,
+    period_id int NOT NULL,
+    target_customer varchar(20) NOT NULL,
+    add_if_exists boolean NOT NULL,
+    PRIMARY KEY (id)
+);
+alter table plan_item_bundle add constraint plan_item_bundle_period_FK foreign key (period_id) references order_period (id);
+
+insert into jbilling_table (id, name) values (103, 'plan_item_bundle');
+insert into jbilling_seqs (name, next_id) values ('plan_item_bundle', 1);
+
+-- migrate item bundles to new format
+alter table plan_item add column plan_item_bundle_id int;
+
+insert into plan_item_bundle (id, quantity, period_id, target_customer, add_if_exists) (select id, bundled_quantity, period_id, 'SELF', true from plan_item where bundled_quantity is not null and period_id is not null);
+update plan_item set plan_item_bundle_id = id;
+
+alter table drop constraint plan_item_period_id_FK;
+alter table plan_item drop column period_id;
+alter table plan_item drop column bundled_quantity;
+
+alter table plan_item add constraint plan_item_bundle_id_FK foreign key (plan_item_bundle_id) references plan_item_bundle (id);
+
+update jbilling_seqs set next_id = (select round(max(id)/100)+1 from plan_item_bundle) where name = 'plan_item_bundle';

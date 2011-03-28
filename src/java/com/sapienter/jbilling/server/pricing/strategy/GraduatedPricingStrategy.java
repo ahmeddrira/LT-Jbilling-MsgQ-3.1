@@ -29,6 +29,7 @@ import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
+import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -44,6 +45,8 @@ import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.
  * @since 05-08-2010
  */
 public class GraduatedPricingStrategy extends AbstractPricingStrategy {
+
+    private static final Logger LOG = Logger.getLogger(GraduatedPricingStrategy.class);
 
     public GraduatedPricingStrategy() {
         setAttributeDefinitions(
@@ -88,20 +91,30 @@ public class GraduatedPricingStrategy extends AbstractPricingStrategy {
         BigDecimal total = quantity.add(usage.getQuantity());
         BigDecimal included = getIncludedQuantity(pricingOrder, planPrice, usage);
 
+        LOG.debug("Graduated pricing for " + included + " units included, " + total + " purchased ...");
+
+
         if (usage.getQuantity().compareTo(included) >= 0) {
             // included usage exceeded by current usage
             result.setPrice(planPrice.getRate());
 
+            LOG.debug("Included quantity exceeded by existing usage, applying plan rate of " + result.getPrice());
+
         } else if (total.compareTo(included) > 0) {
             // current usage + purchased quantity exceeds included
             // determine the percentage rate for minutes used OVER the included.
+
             BigDecimal rated = total.subtract(included);
             BigDecimal percent = rated.divide(quantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
             result.setPrice(percent.multiply(planPrice.getRate()));
 
+            LOG.debug("Purchased quantity + existing usage exceeds included quantity, applying a partial rate of " + result.getPrice());
+
         } else {
-            // call within included usage
+            // purchase within included usage
             result.setPrice(BigDecimal.ZERO);
+
+            LOG.debug("Purchase within included usage, applying a zero (0.00) rate.");
         }        
     }
 

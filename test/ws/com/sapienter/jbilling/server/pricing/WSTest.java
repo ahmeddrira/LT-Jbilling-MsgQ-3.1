@@ -45,7 +45,7 @@ import java.util.HashMap;
  * @author Brian Cowdery
  * @since 06-08-2010
  */
-public class WSTest extends TestCase {
+public class WSTest extends PricingTestCase {
 
     private static final Integer MONTHLY_PERIOD = 2;
 
@@ -59,13 +59,6 @@ public class WSTest extends TestCase {
     private static final Integer PLAN_AFFECTED_ITEM_ID = 2602;      // lemonade
 
     private static final Integer NON_PLAN_ITEM_ID = 2800;           // long distance call
-
-
-    // plug-in configuration
-    private static final Integer PRICING_PLUGIN_ID = 410;
-
-    private static final Integer RULES_PRICING_PLUGIN_TYPE_ID = 61; // RulesPricingTask2
-    private static final Integer MODEL_PRICING_PLUGIN_TYPE_ID = 79; // PriceModelPricingTask
 
 
     public WSTest() {
@@ -789,39 +782,5 @@ public class WSTest extends TestCase {
         } catch (SecurityException e) {
             assertTrue("Could not get price for user belonging to entity 2", true);
         }
-    }
-
-
-    /*
-        Enable/disable the PricingModelPricingTask plug-in.
-     */
-
-    public void enablePricingPlugin(JbillingAPI api) {
-        PluggableTaskWS plugin = api.getPluginWS(PRICING_PLUGIN_ID);
-        plugin.setTypeId(MODEL_PRICING_PLUGIN_TYPE_ID);
-
-        api.updatePlugin(plugin);
-    }
-
-    public void disablePricingPlugin(JbillingAPI api) {
-        PluggableTaskWS plugin = api.getPluginWS(PRICING_PLUGIN_ID);
-        plugin.setTypeId(RULES_PRICING_PLUGIN_TYPE_ID);
-
-        api.updatePlugin(plugin);
-    }
-
-
-    /*
-        Convenience assertions for BigDecimal comparisons. 
-     */
-
-    public static void assertEquals(BigDecimal expected, BigDecimal actual) {
-        assertEquals(null, expected, actual);
-    }
-
-    public static void assertEquals(String message, BigDecimal expected, BigDecimal actual) {
-        assertEquals(message,
-                     (Object) (expected == null ? null : expected.setScale(2, RoundingMode.HALF_UP)),
-                     (Object) (actual == null ? null : actual.setScale(2, RoundingMode.HALF_UP)));
     }
 }

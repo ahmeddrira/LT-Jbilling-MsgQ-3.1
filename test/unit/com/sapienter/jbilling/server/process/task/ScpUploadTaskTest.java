@@ -41,12 +41,12 @@ public class ScpUploadTaskTest extends TestCase {
 
         // all jasper report designs are in a sub directory of the root
         // jbilling/resources/ path, and won't be found unless we scan recursively.
-        List<File> nonRecursive = task.collectFiles(path, ".*\\.jasper", false);
+        List<File> nonRecursive = task.collectFiles(path, ".*designs.*\\.jasper", false);
         assertEquals(0, nonRecursive.size());
 
         // jasper report designs from jbilling/resources/designs/
         // found because we're scanning recursively.
-        List<File> files = task.collectFiles(path, ".*\\.jasper", true);
+        List<File> files = task.collectFiles(path, ".*designs.*\\.jasper", true);
         Collections.sort(files);
 
         assertEquals(4, files.size());
@@ -61,7 +61,7 @@ public class ScpUploadTaskTest extends TestCase {
 
         // look for multiple files recursively matching *.jasper and *.jpg
         // should find files in jbilling/resources/design/ and jbilling/resources/logos/
-        List<File> files = task.collectFiles(path, "(.*\\.jasper|.*\\.gif)", true);
+        List<File> files = task.collectFiles(path, "(.*designs.*\\.jasper|.*\\.gif)", true);
         Collections.sort(files);
 
         assertEquals(5, files.size());

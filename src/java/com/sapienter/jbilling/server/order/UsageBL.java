@@ -317,7 +317,7 @@ public class UsageBL {
             usage = usageDas.findUsageByItem(workingOrderId, itemId, userId, startDate, endDate);
         } else {
             LOG.warn("User has no main subscription order billing period, item " + itemId + " usage set to 0");
-            usage = new Usage(itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+            usage = new Usage(userId, itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
         }
 
         addWorkingOrder(usage);
@@ -343,7 +343,7 @@ public class UsageBL {
             usage = usageDas.findSubAccountUsageByItem(workingOrderId, itemId, userId, startDate, endDate);
         } else {
             LOG.warn("User has no main subscription order billing period, item " + itemId + " usage set to 0");
-            usage = new Usage(itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+            usage = new Usage(userId, itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
         }
 
         addWorkingOrder(usage);
@@ -368,7 +368,7 @@ public class UsageBL {
             usage = usageDas.findUsageByItemType(workingOrderId, itemTypeId, userId, startDate, endDate);
         } else {
             LOG.warn("User has no main subscription order billing period, item type " + itemTypeId + " usage set to 0");
-            usage = new Usage(null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+            usage = new Usage(userId, null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
         }
 
         addWorkingOrder(usage);
@@ -394,7 +394,7 @@ public class UsageBL {
             usage = usageDas.findSubAccountUsageByItemType(workingOrderId, itemTypeId, userId, startDate, endDate);
         } else {
             LOG.warn("User has no main subscription order billing period, item type " + itemTypeId + " usage set to 0");
-            usage = new Usage(null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+            usage = new Usage(userId, null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
         }
 
         addWorkingOrder(usage);

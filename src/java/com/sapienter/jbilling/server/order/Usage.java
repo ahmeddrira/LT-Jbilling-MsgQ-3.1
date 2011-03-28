@@ -37,6 +37,7 @@ import java.util.List;
 public class Usage {
     private static Logger LOG = Logger.getLogger(Usage.class);
 
+    private Integer userId;
     private Integer itemId;
     private Integer itemTypeId;
     private BigDecimal quantity;
@@ -48,7 +49,8 @@ public class Usage {
     public Usage() {
     }
 
-    public Usage(Integer itemId, Integer itemTypeId, BigDecimal quantity, BigDecimal amount, Date startDate, Date endDate) {
+    public Usage(Integer userId, Integer itemId, Integer itemTypeId, BigDecimal quantity, BigDecimal amount, Date startDate, Date endDate) {
+        this.userId = userId;
         this.itemId = itemId;
         this.itemTypeId = itemTypeId;
         this.quantity = quantity;
@@ -57,7 +59,8 @@ public class Usage {
         this.endDate = endDate;
     }
 
-    public Usage(List<OrderLineDTO> lines, Integer itemId, Integer itemTypeId, Date startDate, Date endDate) {
+    public Usage(List<OrderLineDTO> lines, Integer userId, Integer itemId, Integer itemTypeId, Date startDate, Date endDate) {
+        this.userId = userId;
         this.itemId = itemId;
         this.itemTypeId = itemTypeId;
         this.startDate = startDate;
@@ -73,6 +76,14 @@ public class Usage {
             quantity = quantity.add(line.getQuantity());
             amount = amount.add(line.getAmount());
         }
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Integer getItemId() {

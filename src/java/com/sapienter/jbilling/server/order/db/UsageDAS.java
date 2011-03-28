@@ -75,6 +75,7 @@ public class UsageDAS extends HibernateDaoSupport {
             query.setParameter("excluded_order_id", excludedOrderId);
 
         Usage usage = (Usage) query.uniqueResult();
+        usage.setUserId(userId);
         usage.setItemId(itemId);
         usage.setStartDate(startDate);
         usage.setEndDate(endDate);
@@ -126,6 +127,7 @@ public class UsageDAS extends HibernateDaoSupport {
             query.setParameter("excluded_order_id", excludedOrderId);
 
         Usage usage = (Usage) query.uniqueResult();
+        usage.setUserId(userId);
         usage.setItemId(itemId);
         usage.setStartDate(startDate);
         usage.setEndDate(endDate);
@@ -170,6 +172,7 @@ public class UsageDAS extends HibernateDaoSupport {
             query.setParameter("excluded_order_id", excludedOrderId);
 
         Usage usage = (Usage) query.uniqueResult();
+        usage.setUserId(userId);
         usage.setItemTypeId(itemTypeId);
         usage.setStartDate(startDate);
         usage.setEndDate(endDate);
@@ -223,6 +226,7 @@ public class UsageDAS extends HibernateDaoSupport {
             query.setParameter("excluded_order_id", excludedOrderId);
 
         Usage usage = (Usage) query.uniqueResult();
+        usage.setUserId(userId);
         usage.setItemTypeId(itemTypeId);
         usage.setStartDate(startDate);
         usage.setEndDate(endDate);

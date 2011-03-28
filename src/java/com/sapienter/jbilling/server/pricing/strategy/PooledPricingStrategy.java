@@ -28,6 +28,7 @@ import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 import com.sapienter.jbilling.server.pricing.util.ItemPoolUtils;
+import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 
@@ -45,10 +46,12 @@ import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.
  */
 public class PooledPricingStrategy extends GraduatedPricingStrategy {
 
+    private static final Logger LOG = Logger.getLogger(PooledPricingStrategy.class);
+
     public PooledPricingStrategy() {
         setAttributeDefinitions(
-                new AttributeDefinition("pool_item_id", INTEGER, false),
-                new AttributeDefinition("multiplier", DECIMAL, false)
+                new AttributeDefinition("pool_item_id", INTEGER, true),
+                new AttributeDefinition("multiplier", DECIMAL, true)
         );
 
         setChainPositions(
@@ -70,10 +73,16 @@ public class PooledPricingStrategy extends GraduatedPricingStrategy {
      * @return included quantity
      */
     @Override
-    public BigDecimal getIncludedQuantity(OrderDTO pricingOrder,PriceModelDTO planPrice) {
-        Integer poolItemId = AttributeUtils.getInteger(planPrice.getAttributes(), "pool_item_id");
-        BigDecimal multiplier = AttributeUtils.getDecimal(planPrice.getAttributes(), "multiplier");
+    public BigDecimal getIncludedQuantity(OrderDTO pricingOrder, PriceModelDTO planPrice, Usage usage) {
+        if (usage != null && usage.getUserId() != null) {
+            Integer poolItemId = AttributeUtils.getInteger(planPrice.getAttributes(), "pool_item_id");
+            BigDecimal multiplier = AttributeUtils.getDecimal(planPrice.getAttributes(), "multiplier");
 
-        return ItemPoolUtils.getPoolSize(pricingOrder.getUserId(), poolItemId, multiplier);
+            LOG.debug("Calculating pool size for user " + usage.getUserId() + " and pool item " + poolItemId);
+            return ItemPoolUtils.getPoolSize(usage.getUserId(), poolItemId, multiplier);
+        }
+
+        LOG.debug("Cannot calculate pool size without current usage, setting pool size to zero.");
+        return BigDecimal.ZERO;
     }
 }

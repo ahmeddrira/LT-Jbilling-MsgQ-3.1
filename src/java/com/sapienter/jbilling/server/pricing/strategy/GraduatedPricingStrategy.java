@@ -86,7 +86,7 @@ public class GraduatedPricingStrategy extends AbstractPricingStrategy {
             throw new IllegalArgumentException("Usage quantity cannot be null for GraduatedPricingStrategy.");
 
         BigDecimal total = quantity.add(usage.getQuantity());
-        BigDecimal included = getIncludedQuantity(pricingOrder, planPrice);
+        BigDecimal included = getIncludedQuantity(pricingOrder, planPrice, usage);
 
         if (usage.getQuantity().compareTo(included) >= 0) {
             // included usage exceeded by current usage
@@ -105,7 +105,7 @@ public class GraduatedPricingStrategy extends AbstractPricingStrategy {
         }        
     }
 
-    public BigDecimal getIncludedQuantity(OrderDTO pricingOrder, PriceModelDTO planPrice) {
+    public BigDecimal getIncludedQuantity(OrderDTO pricingOrder, PriceModelDTO planPrice, Usage usage) {
         return AttributeUtils.getDecimal(planPrice.getAttributes(), "included");
     }
 }

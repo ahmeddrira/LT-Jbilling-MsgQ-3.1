@@ -66,6 +66,8 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
                                BigDecimal defaultPrice,
                                OrderDTO pricingOrder) throws TaskException {
 
+        LOG.debug("Calling PriceModelPricingTask with pricing order: " + pricingOrder);
+
         LOG.debug("Pricing item " + itemId + ", quantity " + quantity + " - for user " + userId);
 
         if (userId != null) {

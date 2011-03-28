@@ -67,7 +67,7 @@ public class TimeOfDayPricingStrategyTest extends TestCase {
         // simply check to make sure that no exception occurs if the time isn't part of the pricing fields
 
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(result, null, model, null, null);
+        strategy.applyTo(null, result, null, model, null, null);
     }
 
     /**
@@ -82,14 +82,14 @@ public class TimeOfDayPricingStrategyTest extends TestCase {
         // test price at 1:00 (first time range)
         List<PricingField> fields = Arrays.asList(new PricingField("event_date", getTime(1, 0)));
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(result, fields, model, null, null);
+        strategy.applyTo(null, result, fields, model, null, null);
 
         assertEquals(new BigDecimal("10.00"), result.getPrice());
 
         // test price at 12:00 (second time range)
         List<PricingField> fields2 = Arrays.asList(new PricingField("event_date", getTime(13, 0)));
         PricingResult result2 = new PricingResult(1, 2, 3);
-        strategy.applyTo(result2, fields2, model, null, null);
+        strategy.applyTo(null, result2, fields2, model, null, null);
 
         assertEquals(new BigDecimal("20.00"), result2.getPrice());
     }
@@ -108,31 +108,31 @@ public class TimeOfDayPricingStrategyTest extends TestCase {
 
         // test price at exactly 00:00 (equal to boundary)
         List<PricingField> fields = Arrays.asList(new PricingField("event_date", getTime(0, 0)));
-        strategy.applyTo(result, fields, model, null, null);
+        strategy.applyTo(null, result, fields, model, null, null);
 
         assertEquals(new BigDecimal("10.00"), result.getPrice());
 
         // greater than lower boundary
         fields = Arrays.asList(new PricingField("event_date", getTime(0, 1)));
-        strategy.applyTo(result, fields, model, null, null);
+        strategy.applyTo(null, result, fields, model, null, null);
 
         assertEquals(new BigDecimal("10.00"), result.getPrice());
 
         // 1 second before next time range (12:00)
         fields = Arrays.asList(new PricingField("event_date", getTime(11, 59)));
-        strategy.applyTo(result, fields, model, null, null);
+        strategy.applyTo(null, result, fields, model, null, null);
 
         assertEquals(new BigDecimal("10.00"), result.getPrice());
 
         // equal to lower boundary of 12:00 range
         fields = Arrays.asList(new PricingField("event_date", getTime(12, 0)));
-        strategy.applyTo(result, fields, model, null, null);
+        strategy.applyTo(null, result, fields, model, null, null);
 
         assertEquals(new BigDecimal("20.00"), result.getPrice());
 
         // greater than lower boundary of 12:00 range
         fields = Arrays.asList(new PricingField("event_date", getTime(12, 1)));
-        strategy.applyTo(result, fields, model, null, null);
+        strategy.applyTo(null, result, fields, model, null, null);
 
         assertEquals(new BigDecimal("20.00"), result.getPrice());
     }

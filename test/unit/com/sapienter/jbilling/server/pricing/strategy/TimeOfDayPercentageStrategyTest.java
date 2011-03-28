@@ -67,7 +67,7 @@ public class TimeOfDayPercentageStrategyTest extends BigDecimalTestCase {
         // simply check to make sure that no exception occurs if the time isn't part of the pricing fields
 
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(result, null, model, null, null);
+        strategy.applyTo(null, result, null, model, null, null);
     }
 
     /**
@@ -84,7 +84,7 @@ public class TimeOfDayPercentageStrategyTest extends BigDecimalTestCase {
         PricingResult result = new PricingResult(1, 2, 3);
         result.setPrice(new BigDecimal("10.00"));
 
-        strategy.applyTo(result, fields, model, null, null);
+        strategy.applyTo(null, result, fields, model, null, null);
         assertEquals(new BigDecimal("8.00"), result.getPrice());
 
         // test price at 12:00 (second time range)
@@ -92,7 +92,7 @@ public class TimeOfDayPercentageStrategyTest extends BigDecimalTestCase {
         PricingResult result2 = new PricingResult(1, 2, 3);
         result2.setPrice(new BigDecimal("10.00"));
 
-        strategy.applyTo(result2, fields2, model, null, null);
+        strategy.applyTo(null, result2, fields2, model, null, null);
 
         assertEquals(new BigDecimal("9.00"), result2.getPrice());
     }

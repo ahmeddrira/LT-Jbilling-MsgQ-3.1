@@ -70,6 +70,7 @@ public enum PriceModelStrategy {
     
     TIERED                  (new TieredPricingStrategy()),
 
+    /** Graduated pricing strategy that counts a users subscription to an item as the "pooled" included quantity */
     POOLED                  (new PooledPricingStrategy());
 
 

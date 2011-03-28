@@ -28,6 +28,8 @@ import com.sapienter.jbilling.server.pricing.strategy.FlatPricingStrategy;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Brian Cowdery
@@ -57,7 +59,7 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
     }
 
     public void testSetAttributesWildcards() {
-        Map<String, String> attributes = new HashMap<String, String>();
+        SortedMap<String, String> attributes = new TreeMap<String, String>();
         attributes.put("null_attr", null);
         attributes.put("attr", "some value");
 
@@ -90,7 +92,7 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         planPrice.setRate(new BigDecimal("0.7"));
 
         PricingResult result = new PricingResult(1, 2, 3);
-        planPrice.applyTo(result, null, null, null);
+        planPrice.applyTo(null, result, null, null, null);
         assertEquals(planPrice.getRate(), result.getPrice());
     }
 
@@ -106,18 +108,18 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         planPrice.setNext(next);
 
         PricingResult result = new PricingResult(1, 2, 3);
-        planPrice.applyTo(result, null, null, null);
+        planPrice.applyTo(null, result, null, null, null);
         assertEquals(new BigDecimal("7.00"), result.getPrice());
     }
 
     public void testFromWS() {
-        Map<String, String> attributes = new HashMap<String, String>();
+        SortedMap<String, String> attributes = new TreeMap<String, String>();
         attributes.put("null_attr", null);
         attributes.put("attr", "some value");
 
         PriceModelWS ws = new PriceModelWS();
         ws.setId(1);
-        ws.setType(PriceModelWS.PLAN_TYPE_METERED);
+        ws.setType("METERED");
         ws.setAttributes(attributes);
         ws.setRate(new BigDecimal("0.7"));
 

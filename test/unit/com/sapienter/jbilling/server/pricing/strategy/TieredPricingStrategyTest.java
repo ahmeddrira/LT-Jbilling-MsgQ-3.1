@@ -64,7 +64,7 @@ public class TieredPricingStrategyTest extends BigDecimalTestCase {
         //planPrice.setRate(rate);
 
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(result, null, planPrice, new BigDecimal(10), getUsage(new BigDecimal(1000))); // 10 purchased, 1000 usage
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(10), getUsage(new BigDecimal(1000))); // 10 purchased, 1000 usage
 
         assertEquals(BigDecimal.ZERO, result.getPrice());
     }
@@ -80,7 +80,7 @@ public class TieredPricingStrategyTest extends BigDecimalTestCase {
         planPrice.addAttribute("1500", "1");
 
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(result, null, planPrice, new BigDecimal(500), getUsage(BigDecimal.ZERO)); // 500 purchased, 0 usage
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(500), getUsage(BigDecimal.ZERO)); // 500 purchased, 0 usage
         assertEquals(new BigDecimal("3"), result.getPrice());
     }
 
@@ -96,13 +96,13 @@ public class TieredPricingStrategyTest extends BigDecimalTestCase {
         planPrice.addAttribute("5000", "0.5");
 
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(result, null, planPrice, new BigDecimal(1000), getUsage(new BigDecimal(2200))); 
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(1000), getUsage(new BigDecimal(2200)));
 
-        assertEquals(new BigDecimal("1.59375"), result.getPrice());
+        assertEquals(new BigDecimal("1.59"), result.getPrice());
 
         PricingResult result2 = new PricingResult(1, 2, 3);
-        strategy.applyTo(result2, null, planPrice, new BigDecimal(100), getUsage(new BigDecimal(5000)));
+        strategy.applyTo(null, result2, null, planPrice, new BigDecimal(100), getUsage(new BigDecimal(5000)));
 
-        assertEquals(new BigDecimal("1.1765"), result2.getPrice());
+        assertEquals(new BigDecimal("1.19"), result2.getPrice());
     }
 }

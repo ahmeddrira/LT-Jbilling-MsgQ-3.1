@@ -41,11 +41,12 @@ public class PriceModelStrategyTest extends TestCase {
         assertTrue(PriceModelStrategy.FLAT.getStrategy() instanceof FlatPricingStrategy);
         assertTrue(PriceModelStrategy.METERED.getStrategy() instanceof MeteredPricingStrategy);
         assertTrue(PriceModelStrategy.GRADUATED.getStrategy() instanceof GraduatedPricingStrategy);
-    }
+        assertTrue(PriceModelStrategy.CAPPED_GRADUATED.getStrategy() instanceof CappedGraduatedPricingStrategy);
+        assertTrue(PriceModelStrategy.TIME_OF_DAY.getStrategy() instanceof TimeOfDayPricingStrategy);
+        assertTrue(PriceModelStrategy.PERCENTAGE.getStrategy() instanceof PercentageStrategy);
+        assertTrue(PriceModelStrategy.TIME_OF_DAY_PERCENTAGE.getStrategy() instanceof TimeOfDayPercentageStrategy);
+        assertTrue(PriceModelStrategy.TIERED.getStrategy() instanceof TieredPricingStrategy);
+        assertTrue(PriceModelStrategy.POOLED.getStrategy() instanceof PooledPricingStrategy);
 
-    public void testPlanPricingStrategyFromWS() {
-        assertEquals(PriceModelStrategy.valueOf(PriceModelWS.PLAN_TYPE_FLAT), PriceModelStrategy.FLAT);
-        assertEquals(PriceModelStrategy.valueOf(PriceModelWS.PLAN_TYPE_METERED), PriceModelStrategy.METERED);
-        assertEquals(PriceModelStrategy.valueOf(PriceModelWS.PLAN_TYPE_GRADUATED), PriceModelStrategy.GRADUATED);
-    }     
+    }
 }

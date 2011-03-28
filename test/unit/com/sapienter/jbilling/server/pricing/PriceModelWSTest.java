@@ -28,6 +28,8 @@ import junit.framework.TestCase;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Brian Cowdery
@@ -43,7 +45,7 @@ public class PriceModelWSTest extends TestCase {
     }
 
     public void testFromDTO() {
-        Map<String, String> attributes = new HashMap<String, String>();
+        SortedMap<String, String> attributes = new TreeMap<String, String>();
         attributes.put("null_attr", null);
         attributes.put("attr", "some value");
 
@@ -58,7 +60,7 @@ public class PriceModelWSTest extends TestCase {
         PriceModelWS ws = new PriceModelWS(dto);
 
         assertEquals(dto.getId(), ws.getId());
-        assertEquals(PriceModelWS.PLAN_TYPE_METERED, ws.getType());
+        assertEquals("METERED", ws.getType());
         assertEquals(dto.getRate(), ws.getRateAsDecimal());
         assertEquals(dto.getCurrency().getId(), ws.getCurrencyId().intValue());
 

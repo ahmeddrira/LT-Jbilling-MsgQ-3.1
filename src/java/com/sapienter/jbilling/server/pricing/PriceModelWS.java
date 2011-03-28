@@ -33,11 +33,6 @@ import java.util.TreeMap;
  */
 public class PriceModelWS implements Serializable {
 
-    // convenience type strings mapped from PriceModelStrategy
-    public static final String PLAN_TYPE_FLAT = "FLAT";
-    public static final String PLAN_TYPE_METERED = "METERED";
-    public static final String PLAN_TYPE_GRADUATED = "GRADUATED";
-
     // convenience constants for WS, copied from PriceModelDTO
     public static final String ATTRIBUTE_WILDCARD = "*";
     

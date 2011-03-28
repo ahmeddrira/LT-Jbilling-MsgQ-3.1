@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.pricing;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.item.PlanItemBundleWS;
 import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
@@ -588,8 +589,14 @@ public class WSTest extends TestCase {
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
         callPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
-        callPrice.setBundledQuantity(new BigDecimal("10"));
-        callPrice.setPeriodId(Constants.ORDER_PERIOD_ONCE);
+
+        PlanItemBundleWS bundle = new PlanItemBundleWS();
+        bundle.setPeriodId(Constants.ORDER_PERIOD_ONCE);
+        bundle.setTargetCustomer(PlanItemBundleWS.TARGET_SELF);
+        bundle.setQuantity(new BigDecimal("10"));
+
+        callPrice.setBundle(bundle);
+
 
         PlanWS plan = new PlanWS();
         plan.setItemId(LONG_DISTANCE_PLAN_ITEM);

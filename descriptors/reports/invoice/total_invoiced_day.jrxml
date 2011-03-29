@@ -85,7 +85,12 @@
 					</categorySeries>
 				</categoryDataset>
 				<barPlot>
-					<plot/>
+					<plot>
+						<seriesColor seriesOrder="0" color="#2375A3"/>
+						<seriesColor seriesOrder="1" color="#CFE7FC"/>
+						<seriesColor seriesOrder="2" color="#3977BD"/>
+						<seriesColor seriesOrder="3" color="#1B437D"/>
+					</plot>
 					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
 					<categoryAxisFormat>
 						<axisFormat>

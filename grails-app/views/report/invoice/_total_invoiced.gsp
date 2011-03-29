@@ -1,4 +1,4 @@
-<%@ page import="org.joda.time.DateMidnight; groovy.time.Duration" %>
+<%@ page import="org.joda.time.DateMidnight" %>
 
 <%--
   Parameters for the Total Invoiced Amount report.

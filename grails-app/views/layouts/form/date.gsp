@@ -14,17 +14,21 @@
     </div>
 
     <script type="text/javascript">
-        $(function() {
-            var options = $.datepicker.regional['${session.locale.language}'];
-            if (options == null) options = $.datepicker.regional[''];
+        // wait to initialize the date picker if it's not visible
+        setTimeout(
+                function() {
+                    var options = $.datepicker.regional['${session.locale.language}'];
+                    if (options == null) options = $.datepicker.regional[''];
 
-            options.dateFormat = "${message(code: 'datepicker.jquery.ui.format')}";
-            options.showOn = "both";
-            options.buttonImage = "${resource(dir:'images', file:'icon04.gif')}";
-            options.buttonImageOnly = true;
+                    options.dateFormat = "${message(code: 'datepicker.jquery.ui.format')}";
+                    options.showOn = "both";
+                    options.buttonImage = "${resource(dir:'images', file:'icon04.gif')}";
+                    options.buttonImageOnly = true;
 
-            $("${jquerySelector}").datepicker(options);
-        });
+                    $("${jquerySelector}").datepicker(options);
+                },
+                $('${jquerySelector}').is(":visible") ? 0 : 500
+        );
     </script>
 </div>
 

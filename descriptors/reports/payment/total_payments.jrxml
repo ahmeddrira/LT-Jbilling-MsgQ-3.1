@@ -137,7 +137,7 @@
 				<textElement>
 					<font size="10" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Total Invoiced Amount]]></text>
+				<text><![CDATA[Total Payments]]></text>
 			</staticText>
 		</band>
 	</pageHeader>

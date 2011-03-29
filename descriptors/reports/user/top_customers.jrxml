@@ -3,12 +3,38 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<subDataset name="chart_dataset">
+		<parameter name="entityId" class="java.lang.Integer"/>
+		<parameter name="startDate" class="java.util.Date"/>
+		<parameter name="endDate" class="java.util.Date"/>
+		<queryString>
+			<![CDATA[select
+                u.user_name,
+                p.amount,
+                p.payment_date
+            from
+                base_user u
+                 inner join user_role_map r on r.user_id = u.id
+                 inner join contact_map cm on cm.foreign_id = u.id and table_id = 10
+                 inner join contact c on c.id = cm.contact_id
+                 inner join payment p on p.user_id = u.id
+            where
+                u.entity_id = $P{entityId}
+                and u.deleted = 0
+                and r.role_id = 5 -- is a customer
+                and p.deleted = 0
+                and p.is_preauth = 0	 -- ignore pre-authorizations
+                and p.result_id in (1, 4) -- successful or entered
+                and p.payment_date >= $P{startDate}
+                and p.payment_date <= $P{endDate}]]>
+		</queryString>
+		<field name="user_name" class="java.lang.String"/>
+		<field name="amount" class="java.math.BigDecimal"/>
+		<field name="payment_date" class="java.sql.Date"/>
+	</subDataset>
 	<parameter name="start_date" class="java.util.Date"/>
 	<parameter name="end_date" class="java.util.Date"/>
 	<parameter name="entity_id" class="java.lang.Integer"/>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String">
-		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
-	</parameter>
 	<queryString>
 		<![CDATA[select
             u.id,
@@ -46,7 +72,7 @@
 		<initialValueExpression><![CDATA[new BigDecimal("0.00")]]></initialValueExpression>
 	</variable>
 	<title>
-		<band height="100">
+		<band height="300">
 			<staticText>
 				<reportElement x="0" y="1" width="190" height="20"/>
 				<textElement>
@@ -79,6 +105,70 @@
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[End Date:]]></text>
+			</staticText>
+			<lineChart>
+				<chart evaluationTime="Report">
+					<reportElement x="0" y="80" width="555" height="200"/>
+					<chartTitle/>
+					<chartSubtitle>
+						<font size="8"/>
+					</chartSubtitle>
+					<chartLegend textColor="#000000" position="Bottom">
+						<font size="8"/>
+					</chartLegend>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="chart_dataset">
+							<datasetParameter name="entityId">
+								<datasetParameterExpression><![CDATA[$P{entity_id}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="startDate">
+								<datasetParameterExpression><![CDATA[$P{start_date}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="endDate">
+								<datasetParameterExpression><![CDATA[$P{end_date}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{user_name}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{payment_date}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{amount}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<linePlot isShowShapes="true">
+					<plot>
+						<seriesColor seriesOrder="0" color="#2375A3"/>
+						<seriesColor seriesOrder="1" color="#E18433"/>
+						<seriesColor seriesOrder="2" color="#CFE7FC"/>
+						<seriesColor seriesOrder="3" color="#AF2170"/>
+						<seriesColor seriesOrder="4" color="#3977BD"/>
+						<seriesColor seriesOrder="5" color="#E708AB"/>
+						<seriesColor seriesOrder="6" color="#1B437D"/>
+						<seriesColor seriesOrder="7" color="#70F5EE"/>
+					</plot>
+					<categoryAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+				</linePlot>
+			</lineChart>
+			<staticText>
+				<reportElement x="0" y="60" width="190" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Customer Revenue Trend]]></text>
 			</staticText>
 		</band>
 	</title>

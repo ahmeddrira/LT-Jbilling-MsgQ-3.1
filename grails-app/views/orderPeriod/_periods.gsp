@@ -21,6 +21,7 @@
                                 <th class="medium"><g:message code="orderPeriod.value"/></th>
                                 <th class="medium"><g:message code="orderPeriod.unit"/></th>
                                 <th class="large"><g:message code="orderPeriod.description"/></th>
+                                <th></th>
                              </tr>
                          </thead>
                          <tbody>
@@ -33,15 +34,33 @@
                                     </td>
                                     <td class="medium">
                                         <g:select style="float: right; width: 100px;" class="field" 
-                                            name="obj[${iter}].periodUnit" from="${PeriodUnitDTO.list()}" 
+                                            name="obj[${iter}].periodUnitId" from="${PeriodUnitDTO.list()}" 
                                             optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
                                             value="${period?.periodUnit?.id}"/>
-                                        <g:hiddenField name="obj[${iter}].versionNum" value="${period.versionNum}"/>
+                                        <g:hiddenField name="obj[${iter}].entityId" value="${period.company?.id}"/>
                                         <g:hiddenField name="obj[${iter}].id" value="${period.id}"/>
                                     </td>
                                     <td class="large">
                                         <g:textField class="field" style="float: right;" 
                                             name="obj[${iter}].description" value="${period.getDescriptionDTO(session['language_id'])?.content}"/>
+                                    </td>
+                                    <td>
+                                        <a onclick="showConfirm('remove-${period.id}');" class="delete" style="
+                                            width:9px;
+                                            height:9px;
+                                            text-indent:-9999px;
+                                            overflow:hidden;
+                                            background:url(../images/icon03.gif) no-repeat;
+                                            float:right;
+                                            margin:11px 8px 0 0;
+                                            padding:0;"/>
+                                        <g:render template="/confirm" model="['message': 'config.period.delete.confirm',
+                                                  'controller': 'orderPeriod',
+                                                  'action': 'remove',
+                                                  'id': period.id,
+                                                  'ajax': false,
+                                                  'onYes': 'closePanel(\'#column2\')'
+                                                 ]"/>
                                     </td>
                                 </tr>
                             </g:each>
@@ -53,16 +72,15 @@
                                 </td>
                                 <td class="medium">
                                     <g:select style="float: right; width: 100px;" class="field" 
-                                        name="periodUnit" from="${PeriodUnitDTO.list()}" 
+                                        name="periodUnitId" from="${PeriodUnitDTO.list()}" 
                                         optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
                                         value=""/>
-                                    <g:hiddenField name="versionNum" value="0"/>
-                                    <g:hiddenField name="id" value=""/>
                                 </td>
                                 <td class="large">
                                     <g:textField class="field" style="float: right;" 
                                         name="description" value=""/>
                                 </td>
+                                <td></td>
                             </tr>
                          </tbody>
                     </table>

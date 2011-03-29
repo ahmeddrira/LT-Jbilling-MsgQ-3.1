@@ -20,6 +20,8 @@
 
 package jbilling
 
+import java.util.List;
+
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.util.db.LanguageDTO
@@ -27,6 +29,7 @@ import com.sapienter.jbilling.server.util.db.InternationalDescription
 import com.sapienter.jbilling.server.util.InternationalDescriptionWS
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO
+import com.sapienter.jbilling.server.order.OrderPeriodWS
 
 /**
  * OrderPeriodController 
@@ -40,8 +43,9 @@ import com.sapienter.jbilling.server.order.db.OrderPeriodDTO
 class OrderPeriodController {
 
 	static pagination = [ max: 10, offset: 0 ]
-	
 	def breadcrumbService
+	def webServicesSession
+	def viewUtils
 	
     def index = {
         redirect action: list, params: params
@@ -56,15 +60,77 @@ class OrderPeriodController {
 			offset: params.offset
 		) {
 			eq('company', new CompanyDTO(session['company_id']))
+			order("id", "desc")
 		}
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 		
-		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
-		[periods: periods]
+		if (params.template) {
+			flash.message=flash.message
+			render template: params.template, model:[periods: periods]
+		} else {
+			render view: 'list', model:[periods: periods]
+		}
 	}
 	
 	def save = {
 		def cnt = params.recCnt.toInteger()
 		log.debug "Records Count: ${cnt}"
+		
+		List <OrderPeriodWS> array= new ArrayList<OrderPeriodWS>(cnt+1)
+		for (int i=0; i < cnt; i++) {
+			OrderPeriodWS ws= new OrderPeriodWS()
+			bindData(ws, params["obj["+i+"]"])
+			log.debug "Description ${i}: ${params['obj[' + i + '].description']}"
+			InternationalDescriptionWS descr=
+				new InternationalDescriptionWS(session['language_id'] as Integer, params['obj[' + i + '].description'] as String)
+			ws.descriptions.add descr
+			array.add ws
+		}
+		
+		log.debug "New Value: ${params.value} & Description: ${params.description}"
+		if (params.value && params.description) {
+			OrderPeriodWS ws= new OrderPeriodWS()
+			bindData(ws, params);
+			ws.setEntityId(session['company_id'].toInteger())
+			InternationalDescriptionWS descr=
+			new InternationalDescriptionWS(session['language_id'] as Integer, params.description as String)
+			log.debug descr
+			ws.descriptions.add descr
+			array.add ws
+			log.debug ws
+		}
+		
+		try {
+			boolean retVal= webServicesSession.updateOrderPeriods(array.toArray(new OrderPeriodWS[array.size()]));
+			flash.message= 'config.periods.updated'
+		} catch (SessionInternalError e){
+			viewUtils.resolveException(flash, session.locale, e);
+		} catch (Exception e) {
+			log.error e.getMessage()
+			flash.error = 'config.periods.saving.error'
+		}
+		redirect (action: 'list')
+		
+	}
+	
+	def remove = {
+		log.debug "ID: ${params.id}"
+		if (params.id) {
+			try {
+				boolean retVal= webServicesSession.deleteOrderPeriod(params.id?.toInteger());
+				if (retVal) { 
+					flash.message= 'config.periods.delete.success'
+				} else {
+					flash.info = 'config.periods.delete.failure'
+				}
+			} catch (SessionInternalError e){
+				viewUtils.resolveException(flash, session.locale, e);
+			} catch (Exception e) {
+				log.error e.getMessage()
+				flash.error = 'config.periods.delete.error'
+			}
+		}
+		redirect (action: 'list')
 	}
 	
 }

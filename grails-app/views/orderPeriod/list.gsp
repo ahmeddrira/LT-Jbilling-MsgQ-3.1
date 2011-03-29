@@ -5,7 +5,7 @@
 <body>
 
 <!-- selected configuration menu item -->
-<content tag="menu.item">orderPeriod</content>
+<content tag="menu.item">periods</content>
 
 <content tag="column1">
     <g:render template="periods" />

@@ -180,6 +180,9 @@ import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
+import com.sapienter.jbilling.server.order.OrderPeriodWS;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -1445,7 +1448,43 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 		return orderArr;
 	}
 
+    public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods) throws SessionInternalError {
+        IOrderSessionBean orderSession = Context.getBean(Context.Name.ORDER_SESSION);
 
+		List<OrderPeriodDTO> periodDtos= new ArrayList<OrderPeriodDTO>(orderPeriods.length);
+		OrderPeriodDAS das= new OrderPeriodDAS();
+		for (OrderPeriodWS ws: orderPeriods) {
+			OrderPeriodDTO periodDto= null;
+			if ( null != ws.getId()) {
+				periodDto= das.find(ws.getId());
+			} 
+			if ( null == periodDto ) {
+				periodDto= new OrderPeriodDTO();
+				periodDto.setCompany(new CompanyDAS().find(getCallerCompanyId()));
+			}
+			periodDto.setValue(ws.getValue());
+			if (null != ws.getPeriodUnitId()) {
+				periodDto.setUnitId(ws.getPeriodUnitId().intValue());
+			}
+			if (periodDto.getId() <= 0 ) {
+				periodDto= das.save(periodDto);
+			}
+			//dto.setCompany(new CompanyDAS().find(ws.getEntityId()));
+			if (ws.getDescriptions() != null && ws.getDescriptions().size() > 0 ) {
+				periodDto.setDescription(((InternationalDescriptionWS)ws.getDescriptions().get(0)).getContent(), ((InternationalDescriptionWS)ws.getDescriptions().get(0)).getLanguageId());
+			}
+ 			periodDtos.add(periodDto);
+			LOG.debug("Converted to DTO: " + periodDto);
+		}
+        orderSession.setPeriods(getCallerLanguageId(), periodDtos.toArray(new OrderPeriodDTO[periodDtos.size()]));
+        return true;
+    }
+
+    public boolean deleteOrderPeriod(Integer periodId) throws SessionInternalError {
+    	IOrderSessionBean orderSession = Context.getBean(Context.Name.ORDER_SESSION);
+    	return orderSession.deletePeriod(periodId);
+    }
+    
     /*
      * PAYMENT
      */

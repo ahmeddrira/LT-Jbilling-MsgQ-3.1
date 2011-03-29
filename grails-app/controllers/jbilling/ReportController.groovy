@@ -63,16 +63,15 @@ class ReportController {
                 max:    params.max,
                 offset: params.offset
         ) {
-            and {
-                if (typeId) {
-                    type {
-                        eq('id', typeId)
-                    }
-                }
-                entities {
-                    eq('id', session['company_id'])
-                }
+
+            if (typeId) {
+                eq('type.id', typeId)
             }
+
+            entities {
+                eq('id', session['company_id'])
+            }
+
             order('id', 'desc')
         }
     }

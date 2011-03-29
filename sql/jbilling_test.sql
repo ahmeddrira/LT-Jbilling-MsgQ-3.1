@@ -9896,6 +9896,11 @@ COPY entity_payment_method_map (entity_id, payment_method_id) FROM stdin;
 
 COPY entity_report_map (report_id, entity_id) FROM stdin;
 1	1
+4	1
+2	1
+3	1
+5	1
+6	1
 \.
 
 
@@ -11649,6 +11654,14 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 47	19	description	1	Last API call to get the the user subscription status transitions
 101	1	description	1	Invoice Reports
 100	1	description	1	Total amount invoiced grouped by period.
+100	4	description	1	Total payment amount received grouped by period.
+101	2	description	1	Order Reports
+101	3	description	1	Payment Reports
+101	4	description	1	User Reports
+100	2	description	1	Outstanding balances of aged customers.
+100	3	description	1	Number of users subscribed to a specific product.
+100	5	description	1	Number of customers created within a period.
+100	6	description	1	Total revenue (sum of received payments) per customer.
 \.
 
 
@@ -16770,6 +16783,11 @@ COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
 
 COPY report (id, type_id, name, file_name, optlock) FROM stdin;
 1	1	total_invoiced	total_invoiced.jasper	0
+4	3	total_payments	total_payments.jasper	0
+2	1	ageing_balances	ageing_balances.jasper	0
+3	2	product_subscribers	product_subscribers.jasper	0
+5	4	user_signups	user_signups.jasper	0
+6	4	top_customers	top_customers.jasper	0
 \.
 
 
@@ -16781,6 +16799,15 @@ COPY report_parameter (id, report_id, dtype, name) FROM stdin;
 1	1	date	start_date
 2	1	date	end_date
 3	1	integer	period
+5	4	date	start_date
+6	4	date	end_date
+7	4	integer	period
+4	3	integer	item_id
+8	5	date	start_date
+9	5	date	end_date
+10	5	integer	period
+11	6	date	start_date
+12	6	date	end_date
 \.
 
 
@@ -16790,6 +16817,9 @@ COPY report_parameter (id, report_id, dtype, name) FROM stdin;
 
 COPY report_type (id, name, optlock) FROM stdin;
 1	invoice	0
+2	order	0
+3	payment	0
+4	user	0
 \.
 
 

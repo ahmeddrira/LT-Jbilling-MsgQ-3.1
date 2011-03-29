@@ -901,15 +901,54 @@ insert into jbilling_seqs (name, next_id) values ('report_parameter', 1);
 insert into report_type (id, name, optlock) values (1, 'invoice', 0);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (101, 1, 'description', 1, 'Invoice Reports');
 
--- new report
+insert into report_type (id, name, optlock) values (2, 'order', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (101, 2, 'description', 1, 'Order Reports');
+
+insert into report_type (id, name, optlock) values (3, 'payment', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (101, 3, 'description', 1, 'Payment Reports');
+
+insert into report_type (id, name, optlock) values (4, 'user', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (101, 4, 'description', 1, 'User Reports');
+
+-- invoice reports
 insert into report (id, type_id, name, file_name, optlock) values (1, 1, 'total_invoiced', 'total_invoiced.jasper', 0);
 insert into report_parameter (id, report_id, dtype, name) values (1, 1, 'date', 'start_date');
 insert into report_parameter (id, report_id, dtype, name) values (2, 1, 'date', 'end_date');
 insert into report_parameter (id, report_id, dtype, name) values (3, 1, 'integer', 'period');
-
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 1, 'description', 1, 'Total amount invoiced grouped by period.');
-
 insert into entity_report_map (report_id, entity_id) values (1, 1);
+
+insert into report (id, type_id, name, file_name, optlock) values (2, 1, 'ageing_balances', 'ageing_balances.jasper', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 2, 'description', 1, 'Outstanding balances of aged customers.');
+insert into entity_report_map (report_id, entity_id) values (2, 1);
+
+-- order reports
+insert into report (id, type_id, name, file_name, optlock) values (3, 2, 'product_subscribers', 'product_subscribers.jasper', 0);
+insert into report_parameter (id, report_id, dtype, name) values (4, 3, 'integer', 'item_id');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 3, 'description', 1, 'Number of users subscribed to a specific product.');
+insert into entity_report_map (report_id, entity_id) values (3, 1);
+
+-- payment reports
+insert into report (id, type_id, name, file_name, optlock) values (4, 3, 'total_payments', 'total_payments.jasper', 0);
+insert into report_parameter (id, report_id, dtype, name) values (5, 4, 'date', 'start_date');
+insert into report_parameter (id, report_id, dtype, name) values (6, 4, 'date', 'end_date');
+insert into report_parameter (id, report_id, dtype, name) values (7, 4, 'integer', 'period');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 4, 'description', 1, 'Total payment amount received grouped by period.');
+insert into entity_report_map (report_id, entity_id) values (4, 1);
+
+-- user reports
+insert into report (id, type_id, name, file_name, optlock) values (5, 4, 'user_signups', 'user_signups.jasper', 0);
+insert into report_parameter (id, report_id, dtype, name) values (8, 5, 'date', 'start_date');
+insert into report_parameter (id, report_id, dtype, name) values (9, 5, 'date', 'end_date');
+insert into report_parameter (id, report_id, dtype, name) values (10, 5, 'integer', 'period');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 5, 'description', 1, 'Number of customers created within a period.');
+insert into entity_report_map (report_id, entity_id) values (5, 1);
+
+insert into report (id, type_id, name, file_name, optlock) values (6, 4, 'top_customers', 'top_customers.jasper', 0);
+insert into report_parameter (id, report_id, dtype, name) values (11, 6, 'date', 'start_date');
+insert into report_parameter (id, report_id, dtype, name) values (12, 6, 'date', 'end_date');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 6, 'description', 1, 'Total revenue (sum of received payments) per customer.');
+insert into entity_report_map (report_id, entity_id) values (6, 1);
 
 -- plan item bundling tables
 drop table if exists plan_item_bundle;

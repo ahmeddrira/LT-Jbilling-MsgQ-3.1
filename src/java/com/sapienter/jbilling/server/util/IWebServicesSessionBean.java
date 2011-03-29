@@ -58,6 +58,8 @@ import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 
+import com.sapienter.jbilling.server.order.OrderPeriodWS;
+
 /**
  * Web service bean interface. 
  * {@see com.sapienter.jbilling.server.util.WebServicesSessionSpringBean} for documentation.
@@ -172,6 +174,9 @@ public interface IWebServicesSessionBean {
     public OrderWS rateOrder(OrderWS order) throws SessionInternalError;
     public OrderWS[] rateOrders(OrderWS orders[]) throws SessionInternalError;
 
+    public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods) throws SessionInternalError;
+    public boolean deleteOrderPeriod(Integer periodId) throws SessionInternalError;
+    
     public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order) throws SessionInternalError;
 
 

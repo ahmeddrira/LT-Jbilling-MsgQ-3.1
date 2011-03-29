@@ -34,6 +34,7 @@ import com.sapienter.jbilling.server.item.PlanWS
 import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
+import com.sapienter.jbilling.server.order.OrderPeriodWS;
 
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
@@ -270,6 +271,14 @@ class ApiService implements IWebServicesSessionBean {
 		return webServicesSession.getUserSubscriptions(userId);
 	}
 
+	public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods) {
+		return webServicesSession.updateOrderPeriods(orderPeriods);
+	}
+	
+	public boolean deleteOrderPeriod(Integer periodId) {
+		return webServicesSession.deleteOrderPeriod(periodId);
+	}
+	
     public Integer createPayment(PaymentWS payment) {
         return webServicesSession.createPayment(payment);
     }

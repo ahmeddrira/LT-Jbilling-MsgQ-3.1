@@ -57,7 +57,7 @@
 		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
 		<initialValueExpression><![CDATA[new BigDecimal("0.00")]]></initialValueExpression>
 	</variable>
-	<pageHeader>
+	<title>
 		<band height="200">
 			<barChart>
 				<chart isShowLegend="false" theme="default">
@@ -110,7 +110,7 @@
 				</barPlot>
 			</barChart>
 		</band>
-	</pageHeader>
+	</title>
 	<columnHeader>
 		<band height="21">
 			<staticText>

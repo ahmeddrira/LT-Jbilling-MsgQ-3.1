@@ -55,7 +55,7 @@
 		<variableExpression><![CDATA[$F{count}]]></variableExpression>
 		<initialValueExpression><![CDATA[Long.valueOf("0")]]></initialValueExpression>
 	</variable>
-	<pageHeader>
+	<title>
 		<band height="200">
 			<barChart>
 				<chart isShowLegend="false">
@@ -109,7 +109,7 @@
 				</barPlot>
 			</barChart>
 		</band>
-	</pageHeader>
+	</title>
 	<columnHeader>
 		<band height="21">
 			<staticText>

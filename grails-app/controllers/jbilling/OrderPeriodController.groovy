@@ -55,13 +55,8 @@ class OrderPeriodController {
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset
 		
-		def periods= OrderPeriodDTO.createCriteria().list(
-			max:    params.max,
-			offset: params.offset
-		) {
-			eq('company', new CompanyDTO(session['company_id']))
-			order("id", "desc")
-		}
+		def periods= getPeriodsForEntity()
+		
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 		
 		if (params.template) {
@@ -72,19 +67,33 @@ class OrderPeriodController {
 		}
 	}
 	
+	def getPeriodsForEntity () {
+		return OrderPeriodDTO.createCriteria().list(
+			max:    params.max,
+			offset: params.offset
+		) {
+			eq('company', new CompanyDTO(session['company_id']))
+			order("id", "desc")
+		}
+	}
+	
 	def save = {
-		def cnt = params.recCnt.toInteger()
+		int cnt = params.recCnt as int
 		log.debug "Records Count: ${cnt}"
 		
-		List <OrderPeriodWS> array= new ArrayList<OrderPeriodWS>(cnt+1)
-		for (int i=0; i < cnt; i++) {
-			OrderPeriodWS ws= new OrderPeriodWS()
-			bindData(ws, params["obj["+i+"]"])
-			log.debug "Description ${i}: ${params['obj[' + i + '].description']}"
+		def periods= getPeriodsForEntity()
+		
+		List <OrderPeriodWS> wsList= new ArrayList<OrderPeriodWS>(cnt+1)
+		for (OrderPeriodDTO periodDto: periods) {
+			OrderPeriodWS ws= new OrderPeriodWS(periodDto)
+			bindData(ws, params["obj[${ws.id}]"])
+			log.debug ws
 			InternationalDescriptionWS descr=
-				new InternationalDescriptionWS(session['language_id'] as Integer, params['obj[' + i + '].description'] as String)
+			new InternationalDescriptionWS(session['language_id'] as Integer, params["obj[${ws.id}]"].description)
+			log.debug descr
 			ws.descriptions.add descr
-			array.add ws
+			log.debug ws
+			wsList.add(ws)
 		}
 		
 		log.debug "New Value: ${params.value} & Description: ${params.description}"
@@ -96,12 +105,12 @@ class OrderPeriodController {
 			new InternationalDescriptionWS(session['language_id'] as Integer, params.description as String)
 			log.debug descr
 			ws.descriptions.add descr
-			array.add ws
+			wsList.add ws
 			log.debug ws
 		}
 		
 		try {
-			boolean retVal= webServicesSession.updateOrderPeriods(array.toArray(new OrderPeriodWS[array.size()]));
+			boolean retVal= webServicesSession.updateOrderPeriods(wsList.toArray(new OrderPeriodWS[wsList.size()]));
 			flash.message= 'config.periods.updated'
 		} catch (SessionInternalError e){
 			viewUtils.resolveException(flash, session.locale, e);
@@ -130,7 +139,7 @@ class OrderPeriodController {
 				flash.error = 'config.periods.delete.error'
 			}
 		}
-		redirect (action: 'list')
+		redirect (action: 'list', params: [template: 'periods'])
 	}
 	
 }

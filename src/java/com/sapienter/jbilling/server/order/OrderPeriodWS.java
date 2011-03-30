@@ -30,6 +30,7 @@ import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.util.InternationalDescriptionWS;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
 /**
  * OrderPeriodWS
@@ -48,6 +49,7 @@ public class OrderPeriodWS implements Serializable {
     @Min(value = 1, message = "validation.error.min,1")
     @Digits(integer=3, fraction=0, message="validation.error.not.a.number")
     private Integer value;
+    private Integer versionNum;
     
     private List<InternationalDescriptionWS> descriptions = new ArrayList<InternationalDescriptionWS>();
 
@@ -61,6 +63,13 @@ public class OrderPeriodWS implements Serializable {
        this.value = value;
     }
 
+    public OrderPeriodWS(OrderPeriodDTO dto) {
+    	this.id= dto.getId();
+    	this.entityId= dto.getCompany().getId();
+    	this.value=dto.getValue();
+    	this.periodUnitId= dto.getPeriodUnit().getId();
+    }
+    
 	public Integer getId() {
 		return id;
 	}
@@ -108,25 +117,20 @@ public class OrderPeriodWS implements Serializable {
         return null;
     }
 
-//	public OrderPeriodDTO getDTO(OrderPeriodDTO retValue) {
-//		//set all values
-//		retValue.setValue(this.getValue());
-//		//retValue.setCompany(new CompanyDAS().find(this.getEntityId()));
-//		if (null != this.getPeriodUnitId()) {
-//			retValue.setUnitId(this.getPeriodUnitId().intValue());
-//		}
-//		if (this.descriptions != null && this.descriptions.size() > 0 ) {
-//			retValue.setDescription(((InternationalDescriptionWS)this.descriptions.get(0)).getContent(), ((InternationalDescriptionWS)this.descriptions.get(0)).getLanguageId());
-//		}
-//		return retValue;
-//	}
-
 	public String toString() {
 		return "OrderPeriodWS [id=" + id + ", entityId=" + entityId
 				+ ", periodUnitId=" + periodUnitId + ", value=" + value
 				+ ", descriptions=" + descriptions + "]";
 	}
-	
+
+	public Integer getVersionNum() {
+        return versionNum;
+    }
+
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
+    }
+    
 }
 
 

@@ -69,6 +69,8 @@
     <g:set var="allTTLFailed" value="${new BigDecimal(0)}"/>
     <g:set var="allTTLPaid" value="${new BigDecimal(0)}"/>
     <g:set var="processRunUserDAS" value="${new ProcessRunUserDAS()}"/>
+    <g:set var="currencyNow" value="${null}"/>
+    <g:set var="diffCurrncy" value="${false}"/>
     
     <g:each var="run" in="${process.processRuns}">
         <g:set var="dtFmt" value="${new java.text.SimpleDateFormat('dd MMM yyyy')}"/>
@@ -115,18 +117,20 @@
                 <td></td>
                 <td class="col01">
                     <g:each var="pymArr" in="${mapOfPaymentListByCurrency?.get( cur[2]?.getId() as Integer )}">
+                        <g:set var="diffCurrncy" value="${(null == currencyNow? false: (currencyNow.getId() == cur[2]?.getId() as Integer) )}"/>
+                        <g:set var="currencyNow" value="${new CurrencyDTO(cur[2]?.getId() as Integer)}"/>
                         <!-- Compute Total Paid (Sum of all successful payments for all currencies) -->
                         <g:set var="ttlSuccessAmt" value="${(ttlSuccessAmt as BigDecimal).add( (pymArr as Object[])[1] as BigDecimal )}"/>
                         <g:set var="allTTLPaid" value="${(allTTLPaid as BigDecimal).add(ttlSuccessAmt as BigDecimal)}"/>
                         
                         <em>
                         <g:formatNumber number="${((pymArr as Object[])[1]?: 0) as BigDecimal}" 
-                            type="currency" currencySymbol="${new CurrencyDTO(cur[2]?.getId() as Integer)?.symbol}"/>
+                            type="currency" currencySymbol="${currencyNow?.symbol}"/>
                         </em>
                     </g:each>
                     <em><b>
                         <g:formatNumber number="${(ttlSuccessAmt ?: 0) as BigDecimal}" 
-                            type="currency" currencySymbol="${new CurrencyDTO(new Integer(1))?.symbol}"/>
+                            type="currency" currencySymbol="${currencyNow?.symbol}"/>
                    </b></em>
                 </td>
                 <td>
@@ -146,53 +150,36 @@
             <g:set var="ttlFailedAmt" value="${(ttlFailedAmt as BigDecimal).add(failedAmt as BigDecimal)}"/>
             <g:set var="allTTLFailed" value="${(allTTLFailed as BigDecimal).add(ttlFailedAmt as BigDecimal)}"/>
         </g:each>
-        
-    <%-- 
-        <!--
-        <tr class="bg">
-            <td class="col02"></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><strong><!-- Total Invoiced -->
-                    ${Util.formatMoney( (ttlInvcd ?: 0) as BigDecimal,
-                        session["user_id"], 1, false)?.substring(2)}
-	        </strong></td>
-            <td class="col01"><em>
-                    ${Util.formatMoney( (ttlSuccessAmt ?:0) as BigDecimal,
-                        session["user_id"], 1, false)?.substring(2)}
-            </em></td>
-            <td></td>
-            <td><strong>${Util.formatMoney( (ttlFailedAmt ?:0) as BigDecimal,
-                        session["user_id"], 1, false)?.substring(2)}</strong></td>
-            <td></td>
-        </tr>
-        -->
-     --%>
+    
     </g:each>
-        <tr class="bg">
-            <td class="col02"></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+    <tr class="bg">
+        <td class="col02"></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <!-- If there are different currencies, do not show the Total Summary Row -->
+        <g:if test="${diffCurrncy}">
+            <td></td><td></td><td></td><td></td>
+        </g:if>
+        <g:else>
             <td><strong><!-- Total Invoiced -->
                     <g:formatNumber number="${((allTTLPaid as BigDecimal).add(allTTLFailed as BigDecimal)?: 0) as BigDecimal}" 
-                        type="currency" currencySymbol="${new CurrencyDTO(new Integer(1))?.symbol}"/>
+                        type="currency" currencySymbol="${currencyNow?.symbol}"/>
             </strong></td>
             <td class="col01"><em>
                     <g:formatNumber number="${ (allTTLPaid?:0) as BigDecimal}" 
-                        type="currency" currencySymbol="${new CurrencyDTO(new Integer(1))?.symbol}"/>
+                        type="currency" currencySymbol="${currencyNow?.symbol}"/>
             </em></td>
             <td></td>
             <td><strong>
                     <g:formatNumber number="${(allTTLFailed?:0) as BigDecimal}" 
-                        type="currency" currencySymbol="${new CurrencyDTO(new Integer(1))?.symbol}"/>
+                        type="currency" currencySymbol="${currencyNow?.symbol}"/>
             </strong></td>
-            <td></td>
-        </tr>
+        </g:else>
+        <td></td>
+    </tr>
     </tbody>
 </table>
 </div>

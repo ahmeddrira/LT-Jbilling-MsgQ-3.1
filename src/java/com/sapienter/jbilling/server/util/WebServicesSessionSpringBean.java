@@ -1449,34 +1449,35 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 	}
 
     public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods) throws SessionInternalError {
-        IOrderSessionBean orderSession = Context.getBean(Context.Name.ORDER_SESSION);
+        //IOrderSessionBean orderSession = Context.getBean(Context.Name.ORDER_SESSION);
 
 		List<OrderPeriodDTO> periodDtos= new ArrayList<OrderPeriodDTO>(orderPeriods.length);
-		OrderPeriodDAS das= new OrderPeriodDAS();
-		for (OrderPeriodWS ws: orderPeriods) {
-			OrderPeriodDTO periodDto= null;
-			if ( null != ws.getId()) {
-				periodDto= das.find(ws.getId());
+		OrderPeriodDAS periodDas= new OrderPeriodDAS();
+		OrderPeriodDTO periodDto= null;
+		for (OrderPeriodWS periodWS: orderPeriods) {
+			if ( null != periodWS.getId()) {
+				periodDto= periodDas.find(periodWS.getId());
 			} 
 			if ( null == periodDto ) {
 				periodDto= new OrderPeriodDTO();
 				periodDto.setCompany(new CompanyDAS().find(getCallerCompanyId()));
+				//periodDto.setVersionNum(new Integer(0));
 			}
-			periodDto.setValue(ws.getValue());
-			if (null != ws.getPeriodUnitId()) {
-				periodDto.setUnitId(ws.getPeriodUnitId().intValue());
+			periodDto.setValue(periodWS.getValue());
+			if (null != periodWS.getPeriodUnitId()) {
+				periodDto.setUnitId(periodWS.getPeriodUnitId().intValue());
 			}
-			if (periodDto.getId() <= 0 ) {
-				periodDto= das.save(periodDto);
+			periodDto= periodDas.save(periodDto);
+			if (periodWS.getDescriptions() != null && periodWS.getDescriptions().size() > 0 ) {
+				periodDto.setDescription(((InternationalDescriptionWS)periodWS.getDescriptions().get(0)).getContent(), ((InternationalDescriptionWS)periodWS.getDescriptions().get(0)).getLanguageId());
 			}
-			//dto.setCompany(new CompanyDAS().find(ws.getEntityId()));
-			if (ws.getDescriptions() != null && ws.getDescriptions().size() > 0 ) {
-				periodDto.setDescription(((InternationalDescriptionWS)ws.getDescriptions().get(0)).getContent(), ((InternationalDescriptionWS)ws.getDescriptions().get(0)).getLanguageId());
-			}
- 			periodDtos.add(periodDto);
 			LOG.debug("Converted to DTO: " + periodDto);
+			periodDas.flush();
+			periodDas.clear();
+ 			//periodDtos.add(periodDto);
+			periodDto= null;
 		}
-        orderSession.setPeriods(getCallerLanguageId(), periodDtos.toArray(new OrderPeriodDTO[periodDtos.size()]));
+        //orderSession.setPeriods(getCallerLanguageId(), periodDtos.toArray(new OrderPeriodDTO[periodDtos.size()]));
         return true;
     }
 

@@ -20,8 +20,8 @@
                 and r.role_id = 5 -- is a customer
                 and u.create_datetime >= $P{startDate}
                 and u.create_datetime <= $P{endDate}
-            group by u.create_datetime
-            order by u.create_datetime]]>
+            group by create_date
+            order by create_date]]>
 		</queryString>
 		<field name="count" class="java.lang.Long"/>
 		<field name="create_date" class="java.sql.Date"/>
@@ -42,8 +42,8 @@
             and r.role_id = 5 -- is a customer
             and u.create_datetime >= $P{startDate}
             and u.create_datetime <= $P{endDate}
-        group by u.create_datetime
-        order by u.create_datetime]]>
+        group by create_date
+        order by create_date]]>
 	</queryString>
 	<field name="count" class="java.lang.Long"/>
 	<field name="create_date" class="java.sql.Date"/>
@@ -108,7 +108,7 @@
 	<columnHeader>
 		<band height="21">
 			<staticText>
-				<reportElement x="407" y="1" width="120" height="20"/>
+				<reportElement x="407" y="0" width="120" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>

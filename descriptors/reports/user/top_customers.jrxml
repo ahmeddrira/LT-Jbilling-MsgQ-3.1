@@ -168,7 +168,7 @@
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Customer Revenue Trend]]></text>
+				<text><![CDATA[Revenue Trend]]></text>
 			</staticText>
 		</band>
 	</title>

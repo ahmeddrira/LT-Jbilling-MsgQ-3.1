@@ -960,6 +960,10 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 insert into report_parameter (id, report_id, dtype, name) values (13, 8, 'date', 'date');
 insert into entity_report_map (report_id, entity_id) values (8, 1);
 
+insert into report (id, type_id, name, file_name, optlock) values (9, 1, 'gl_summary', 'gl_summary.jasper', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 9, 'description', 1, 'General ledger summary of all invoiced charges for the given day, grouped by item type.');
+insert into report_parameter (id, report_id, dtype, name) values (14, 9, 'date', 'date');
+insert into entity_report_map (report_id, entity_id) values (9, 1);
 
 -- plan item bundling tables
 drop table if exists plan_item_bundle;

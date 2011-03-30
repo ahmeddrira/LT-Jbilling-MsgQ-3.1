@@ -918,8 +918,8 @@ insert into report_parameter (id, report_id, dtype, name) values (3, 1, 'integer
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 1, 'description', 1, 'Total amount invoiced grouped by period.');
 insert into entity_report_map (report_id, entity_id) values (1, 1);
 
-insert into report (id, type_id, name, file_name, optlock) values (2, 1, 'ageing_balances', 'ageing_balances.jasper', 0);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 2, 'description', 1, 'Outstanding balances of aged customers.');
+insert into report (id, type_id, name, file_name, optlock) values (2, 1, 'ageing_balance', 'ageing_balance.jasper', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 2, 'description', 1, 'Detailed balance ageing report. Shows the age of outstanding customer balances.');
 insert into entity_report_map (report_id, entity_id) values (2, 1);
 
 -- order reports
@@ -949,6 +949,21 @@ insert into report_parameter (id, report_id, dtype, name) values (11, 6, 'date',
 insert into report_parameter (id, report_id, dtype, name) values (12, 6, 'date', 'end_date');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 6, 'description', 1, 'Total revenue (sum of received payments) per customer.');
 insert into entity_report_map (report_id, entity_id) values (6, 1);
+
+-- finance reports
+insert into report (id, type_id, name, file_name, optlock) values (7, 1, 'accounts_receivable', 'accounts_receivable.jasper', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 7, 'description', 1, 'Simple accounts receivable report showing current account balances.');
+insert into entity_report_map (report_id, entity_id) values (7, 1);
+
+insert into report (id, type_id, name, file_name, optlock) values (8, 1, 'gl_detail', 'gl_detail.jasper', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 8, 'description', 1, 'General ledger details of all invoiced charges for the given day.');
+insert into report_parameter (id, report_id, dtype, name) values (13, 8, 'date', 'date');
+insert into entity_report_map (report_id, entity_id) values (8, 1);
+
+insert into report (id, type_id, name, file_name, optlock) values (9, 1, 'gl_summary', 'gl_summary.jasper', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 9, 'description', 1, 'General ledger summary of all invoiced charges for the given day, grouped by item type.');
+insert into report_parameter (id, report_id, dtype, name) values (14, 9, 'date', 'date');
+insert into entity_report_map (report_id, entity_id) values (9, 1);
 
 -- plan item bundling tables
 drop table if exists plan_item_bundle;

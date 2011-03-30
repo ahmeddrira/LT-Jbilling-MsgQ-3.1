@@ -9901,6 +9901,9 @@ COPY entity_report_map (report_id, entity_id) FROM stdin;
 3	1
 5	1
 6	1
+7	1
+8	1
+9	1
 \.
 
 
@@ -11658,10 +11661,13 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 101	2	description	1	Order Reports
 101	3	description	1	Payment Reports
 101	4	description	1	User Reports
-100	2	description	1	Outstanding balances of aged customers.
 100	3	description	1	Number of users subscribed to a specific product.
 100	5	description	1	Number of customers created within a period.
 100	6	description	1	Total revenue (sum of received payments) per customer.
+100	2	description	1	Detailed balance ageing report. Shows the age of outstanding customer balances.
+100	7	description	1	Simple accounts receivable report showing current account balances.
+100	8	description	1	General ledger details of all invoiced charges for the given day.
+100	9	description	1	General ledger summary of all invoiced charges for the given day, grouped by item type.
 \.
 
 
@@ -16784,10 +16790,13 @@ COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
 COPY report (id, type_id, name, file_name, optlock) FROM stdin;
 1	1	total_invoiced	total_invoiced.jasper	0
 4	3	total_payments	total_payments.jasper	0
-2	1	ageing_balances	ageing_balances.jasper	0
 3	2	product_subscribers	product_subscribers.jasper	0
 5	4	user_signups	user_signups.jasper	0
 6	4	top_customers	top_customers.jasper	0
+2	1	ageing_balance	ageing_balance.jasper	0
+7	1	accounts_receivable	accounts_receivable.jasper	0
+8	1	gl_detail	gl_detail.jasper	0
+9	1	gl_summary	gl_summary.jasper	0
 \.
 
 
@@ -16808,6 +16817,8 @@ COPY report_parameter (id, report_id, dtype, name) FROM stdin;
 10	5	integer	period
 11	6	date	start_date
 12	6	date	end_date
+13	8	date	date
+14	9	date	date
 \.
 
 

@@ -623,6 +623,30 @@
         </ftp>
     </target>
 
+    <target name="package-war"
+            depends="war, clean, copy-resources, compile-designs, compile-reports, compile-rules"
+            description="Packages a war file with the necessary config files and resources for release.">
+
+        <tstamp/>
+
+        <delete dir="${basedir}/target" includes="jbilling-*.zip"/>
+
+        <zip filesonly="false" update="false" destfile="${basedir}/target/jbilling-${DSTAMP}-${TSTAMP}.zip">
+            <zipfileset dir="${build.resources.dir}" prefix="resources"/>
+            <zipfileset dir="${source.dir}/java" includes="jbilling.properties"/>
+            <zipfileset dir="${source.grails.conf}" includes="Config.groovy" fullpath="jbilling-Config.groovy"/>
+            <zipfileset dir="${source.grails.conf}" includes="DataSource.groovy" fullpath="jbilling-DataSource.groovy"/>
+            <zipfileset dir="${basedir}/target" includes="jbilling.war"/>
+        </zip>
+    </target>
+
+    <target name="war" description="Build the jbilling.war file.">
+        <!-- ant GrailsTask only works with ant 1.7, use exec to build the war file -->
+        <exec executable="grails" failonerror="true">
+            <arg line="war"/>
+        </exec>
+    </target>
+
 
     <!--
         Utility targets

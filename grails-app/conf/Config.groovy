@@ -1,24 +1,19 @@
 import org.apache.log4j.*
 
-// locations to search for config files that get merged into the main config
-// config files can either be Java properties files or ConfigSlurper scripts
+/*
+    Load configuration files from the set "JBILLING_HOME" path (provided as either
+    an environment variable or a command line system property). External configuration
+    files will override default settings.
+ */
 
-// grails.config.locations = [ "classpath:${appName}-config.properties",
-//                             "classpath:${appName}-config.groovy",
-//                             "file:${userHome}/.grails/${appName}-config.properties",
-//                             "file:${userHome}/.grails/${appName}-config.groovy"]
-
-// if(System.properties["${appName}.config.location"]) {
-//    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
-// }
-
-def home = System.getenv("JBILLING_HOME") ?: System.getProperty("JBILLING_HOME")
-if (home) {
+def appHome = System.getProperty("JBILLING_HOME") ?: System.getenv("JBILLING_HOME")
+if (appHome) {
     grails.config.locations = [
-            "file:${home}/${appName}.properties",
-            "file:${home}/${appName}-Config.groovy",
-            "file:${home}/${appName}-DataSource.groovy",
+            "file:${appHome}/${appName}-Config.groovy",
+            "file:${appHome}/${appName}-DataSource.groovy",
     ]
+
+    println "Configuration files loaded from ${appHome}"
 }
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination

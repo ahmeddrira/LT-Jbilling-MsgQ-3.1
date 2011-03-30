@@ -228,27 +228,25 @@ public class Util {
         try {
             return SystemProperties.getSystemProperties().get(key);
         } catch (Exception e) {
-            LOG.error("Can't ready sys property " +
-                    key, e);
+            LOG.error("Cannot read property '" + key + "' from " + SystemProperties.getPropertiesFile().getPath(), e);
             return null;
         }
     }
 
     /**
-     * Gets a boolean system property. It returns true by default, and on 
-     * any error.
-     * @param key
-     * @return
+     * Gets a boolean system property. It returns true by default, and on any error.
+     *
+     * @param key boolean system property
+     * @return boolean property value
      */
     public static boolean getSysPropBooleanTrue(String key) {
-        boolean retValue = true;
         try {
-            retValue = Boolean.parseBoolean(SystemProperties.getSystemProperties().get(key, "true"));
+            return Boolean.parseBoolean(SystemProperties.getSystemProperties().get(key, "true"));
         } catch (Exception e) {
-            LOG.warn("Exception getting system property " + key);
+            LOG.error("Cannot read property '" + key + "' from " + SystemProperties.getPropertiesFile().getPath());
         }
-        
-        return retValue;
+
+        return true; // default if not found
     }
 
 }

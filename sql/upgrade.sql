@@ -950,6 +950,12 @@ insert into report_parameter (id, report_id, dtype, name) values (12, 6, 'date',
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 6, 'description', 1, 'Total revenue (sum of received payments) per customer.');
 insert into entity_report_map (report_id, entity_id) values (6, 1);
 
+-- finance reports
+insert into report (id, type_id, name, file_name, optlock) values (7, 1, 'accounts_receivable', 'accounts_receivable.jasper', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 7, 'description', 1, 'Simple accounts receivable report showing current account balances.');
+insert into entity_report_map (report_id, entity_id) values (7, 1);
+
+
 -- plan item bundling tables
 drop table if exists plan_item_bundle;
 create table plan_item_bundle (

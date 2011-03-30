@@ -11658,10 +11658,10 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 101	2	description	1	Order Reports
 101	3	description	1	Payment Reports
 101	4	description	1	User Reports
-100	2	description	1	Outstanding balances of aged customers.
 100	3	description	1	Number of users subscribed to a specific product.
 100	5	description	1	Number of customers created within a period.
 100	6	description	1	Total revenue (sum of received payments) per customer.
+100	2	description	1	Detailed balance ageing report. Shows the age of outstanding customer balances.
 \.
 
 
@@ -16784,10 +16784,10 @@ COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
 COPY report (id, type_id, name, file_name, optlock) FROM stdin;
 1	1	total_invoiced	total_invoiced.jasper	0
 4	3	total_payments	total_payments.jasper	0
-2	1	ageing_balances	ageing_balances.jasper	0
 3	2	product_subscribers	product_subscribers.jasper	0
 5	4	user_signups	user_signups.jasper	0
 6	4	top_customers	top_customers.jasper	0
+2	1	ageing_balance	ageing_balance.jasper	0
 \.
 
 

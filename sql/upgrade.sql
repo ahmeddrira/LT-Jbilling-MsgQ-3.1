@@ -955,6 +955,11 @@ insert into report (id, type_id, name, file_name, optlock) values (7, 1, 'accoun
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 7, 'description', 1, 'Simple accounts receivable report showing current account balances.');
 insert into entity_report_map (report_id, entity_id) values (7, 1);
 
+insert into report (id, type_id, name, file_name, optlock) values (8, 1, 'gl_detail', 'gl_detail.jasper', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 8, 'description', 1, 'General ledger details of all invoiced charges for the given day.');
+insert into report_parameter (id, report_id, dtype, name) values (13, 8, 'date', 'date');
+insert into entity_report_map (report_id, entity_id) values (8, 1);
+
 
 -- plan item bundling tables
 drop table if exists plan_item_bundle;

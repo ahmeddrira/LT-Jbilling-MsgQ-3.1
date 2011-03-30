@@ -38,7 +38,7 @@
                 <g:select from="${orderStatuses}"
                           optionKey="statusValue" optionValue="${{it.getDescription(session['language_id'])}}"
                           name="statusId"
-                          value="${order?.statusId}"/>
+                          value="${order?.statusId}" disabled="${(!order.id || order.id == 0)}"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/date">

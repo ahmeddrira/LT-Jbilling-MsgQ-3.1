@@ -106,7 +106,7 @@ class OrderBuilderController {
                 // available order periods, statuses and order types
                 def company = CompanyDTO.get(session['company_id'])
                 def itemTypes = productService.getItemTypes()
-                def orderStatuses = OrderStatusDTO.list()
+                def orderStatuses = OrderStatusDTO.list().findAll { it.id != Constants.ORDER_STATUS_SUSPENDED_AGEING }
                 def orderPeriods = company.orderPeriods.collect { new OrderPeriodDTO(it.id) } << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE)
                 orderPeriods.sort { it.id }
                 def periodUnits = PeriodUnitDTO.list()

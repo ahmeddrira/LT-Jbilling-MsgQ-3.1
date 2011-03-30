@@ -27,22 +27,23 @@
                          <tbody>
                             <g:each status="iter" var="period" in="${periods}">
                                 <tr>
-                                    <td class="small" style="text-align: center;">${period.id}</td>
+                                    <td class="small" style="text-align: center;">${period.id}
+                                        <g:hiddenField name="obj[${period.id}].entityId" value="${period.company?.id}"/>
+                                        <g:hiddenField name="obj[${period.id}].id" value="${period.id}"/>
+                                    </td>
                                     <td class="medium">
                                         <g:textField class="field numericOnly" style="float: right;width: 50px" 
-                                            name="obj[${iter}].value" value="${period.value}"/>
+                                            name="obj[${period.id}].value" value="${period.value}"/>
                                     </td>
                                     <td class="medium">
                                         <g:select style="float: right; width: 100px;" class="field" 
-                                            name="obj[${iter}].periodUnitId" from="${PeriodUnitDTO.list()}" 
+                                            name="obj[${period.id}].periodUnitId" from="${PeriodUnitDTO.list()}" 
                                             optionKey="id" optionValue="${{it.getDescription(session['language_id'])}}"
                                             value="${period?.periodUnit?.id}"/>
-                                        <g:hiddenField name="obj[${iter}].entityId" value="${period.company?.id}"/>
-                                        <g:hiddenField name="obj[${iter}].id" value="${period.id}"/>
                                     </td>
                                     <td class="large">
                                         <g:textField class="field" style="float: right;" 
-                                            name="obj[${iter}].description" value="${period.getDescriptionDTO(session['language_id'])?.content}"/>
+                                            name="obj[${period.id}].description" value="${period.getDescriptionDTO(session['language_id'].toInteger())?.content}"/>
                                     </td>
                                     <td>
                                         <a onclick="showConfirm('remove-${period.id}');" class="delete" style="
@@ -58,7 +59,8 @@
                                                   'controller': 'orderPeriod',
                                                   'action': 'remove',
                                                   'id': period.id,
-                                                  'ajax': false,
+                                                  'ajax': true,
+                                                  'update': 'column1',
                                                   'onYes': 'closePanel(\'#column2\')'
                                                  ]"/>
                                     </td>

@@ -181,6 +181,7 @@ public class PlanItemDTO implements Serializable {
                + ", planId=" + (plan != null ? plan.getId() : null)
                + ", itemId=" + (item != null ? item.getId() : null)
                + ", model=" + model
+               + ", bundle=" + bundle
                + ", precedence=" + precedence
                + '}';
     }

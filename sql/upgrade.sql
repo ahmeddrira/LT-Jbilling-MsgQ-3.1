@@ -991,4 +991,4 @@ alter table plan_item drop column bundled_quantity;
 
 alter table plan_item add constraint plan_item_bundle_id_FK foreign key (plan_item_bundle_id) references plan_item_bundle (id);
 
-update jbilling_seqs set next_id = (select round(max(id)/100)+1 from plan_item_bundle) where name = 'plan_item_bundle';
+update jbilling_seqs set next_id = coalesce((select round(max(id)/100)+1 from plan_item_bundle), 1) where name = 'plan_item_bundle';

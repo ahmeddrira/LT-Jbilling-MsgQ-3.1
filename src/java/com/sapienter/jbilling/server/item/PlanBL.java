@@ -156,7 +156,6 @@ public class PlanBL {
     }
 
     // todo: add event logging for plans
-    // todo: add useful internal events for customer subscription/unsubscription, and refresh prices
 
     public Integer create(PlanDTO plan) {
         if (plan != null) {
@@ -213,16 +212,15 @@ public class PlanBL {
 
     public void delete() {
         if (plan != null) {
-
-            // trigger internal event
-            EventManager.process(new PlanDeletedEvent(plan));
-
             for (CustomerDTO customer : getCustomersByPlan(plan.getId())) {
                 CustomerPriceBL bl = new CustomerPriceBL(customer);
                 bl.removePrices(plan.getId());
             }
 
             planDas.delete(plan);
+
+            // trigger internal event
+            EventManager.process(new PlanDeletedEvent(plan));
         } else {
             LOG.error("Cannot delete, PlanDTO not found or not set!");
         }

@@ -3,6 +3,10 @@
     <property file="build.properties"/>
     <property environment="env"/>
 
+    <condition property="grails.home" value="${env.GRAILS_HOME}">
+        <isset property="env.GRAILS_HOME"/>
+    </condition>
+
     <path id="compile.classpath">
         <!-- jbilling libraries -->
         <fileset dir="${source.lib.dir}">
@@ -643,7 +647,8 @@
 
     <target name="war" description="Build the jbilling.war file.">
         <!-- ant GrailsTask only works with ant 1.7, use exec to build the war file -->
-        <exec executable="grails" failonerror="true">
+        <echo message="GRAILS_HOME = ${grails.home}"/>
+        <exec executable="${grails.home}/bin/grails" failonerror="true">
             <arg line="war"/>
         </exec>
     </target>

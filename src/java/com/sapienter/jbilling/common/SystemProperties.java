@@ -105,7 +105,7 @@ public class SystemProperties {
 
         } else {
             // properties file from classpath
-            URL url = SystemProperties.class.getResource(PROPERTIES_FILE);
+            URL url = SystemProperties.class.getResource("/" + PROPERTIES_FILE);
             return new File(url.getFile());
         }
     }

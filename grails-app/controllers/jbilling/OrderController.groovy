@@ -22,6 +22,10 @@ import com.sapienter.jbilling.server.util.csv.Exporter
 import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.user.db.CompanyDTO
+import org.hibernate.FetchMode
+import org.hibernate.criterion.Restrictions
+import org.hibernate.criterion.Criterion
+import org.hibernate.Criteria
 
 /**
  * 
@@ -96,6 +100,7 @@ class OrderController {
 			max:    params.max,
 			offset: params.offset
 		) {
+			createAlias('baseUserByUserId', 'u', Criteria.LEFT_JOIN)
 			and {
 				filters.each { filter ->
 					if (filter.value) {
@@ -104,10 +109,10 @@ class OrderController {
 						if (filter.constraintType == FilterConstraint.STATUS) {
 							if (filter.getField().equals('orderStatus')) {
 								def statuses= new OrderStatusDAS().findAll()
-								eq("orderStatus", statuses.find{ it.id == filter.integerValue })
+								eq("orderStatus", statuses.find{ it.id?.equals(filter.integerValue) })
 							} else if (filter.getField().equals('orderPeriod')) {
-								def statuses= new OrderPeriodDAS().findAll()
-								eq("orderPeriod", statuses.find{ it.id == filter.integerValue })
+								def periods= new OrderPeriodDAS().findAll()
+								eq("orderPeriod", periods.find{ it.id?.equals(filter.integerValue) })
 							}
 						} else {
 							addToCriteria(filter.getRestrictions());
@@ -115,10 +120,8 @@ class OrderController {
 					}
 				}
 
-                baseUserByUserId {
-                    eq('company', new CompanyDTO(session['company_id']))
-                }
-				eq('deleted', 0)
+                eq('u.company', new CompanyDTO(session['company_id']))
+                eq('deleted', 0)
 			}
 			order("id", "desc")
 		}

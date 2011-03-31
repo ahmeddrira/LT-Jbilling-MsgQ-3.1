@@ -54,6 +54,12 @@ class FilterService implements Serializable {
         def session = getSession()
         def key = getSessionKey(type)
 
+        // clear filter values when switching filter types
+        def currentType = session[SESSION_CURRENT_FILTER_TYPE]
+        if (currentType && type != currentType) {
+            getCurrentFilters()?.each { it.clear() }
+        }
+
         /*
             Fetch filters for the given filter type. If the filters are already
             in the session, use the existing filters instead of fetching new ones.
@@ -108,7 +114,7 @@ class FilterService implements Serializable {
      */
     def Object getCurrentFilters() {
         def type = (FilterType) session[SESSION_CURRENT_FILTER_TYPE]
-        return getFilters(type, null)
+        return type ? getFilters(type, null) : null
     }
 
     /**

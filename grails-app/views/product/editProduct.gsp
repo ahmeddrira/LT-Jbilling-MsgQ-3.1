@@ -73,7 +73,7 @@
                             <g:select name="product.types" multiple="true"
                                       from="${categories}"
                                       optionKey="id"
-                                      optionValue="${{it.getDescription(session['language_id'])}}"
+                                      optionValue="description"
                                       value="${types ?: categoryId}"/>
                         </g:applyLayout>
                     </div>

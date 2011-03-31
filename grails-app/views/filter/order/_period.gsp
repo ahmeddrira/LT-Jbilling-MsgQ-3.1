@@ -1,4 +1,6 @@
-<%@ page import="com.sapienter.jbilling.server.order.db.OrderPeriodDAS" %>
+<%@ page import="com.sapienter.jbilling.server.order.db.OrderPeriodDTO" %>
+<%@ page import="com.sapienter.jbilling.server.user.db.CompanyDTO" %>
+<%@ page import="com.sapienter.jbilling.server.util.Constants" %>
 
 <%--
   _status
@@ -15,9 +17,10 @@
         <fieldset>
             <div class="input-row">
                 <div class="select-bg">
+                    <g:set var="company" value="${CompanyDTO.get(session['company_id'])}"/>
                     <g:select name="filters.${filter.name}.integerValue"
                             value="${filter.integerValue}"
-                            from="${new OrderPeriodDAS().findAll()}"
+                            from="${(company.orderPeriods << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE)).sort{it.id}}" 
                             optionKey="id" optionValue="description"
                             noSelection="['': message(code: 'filters.status.empty')]" />
 

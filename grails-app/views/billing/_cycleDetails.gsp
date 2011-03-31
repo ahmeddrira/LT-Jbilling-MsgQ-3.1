@@ -117,7 +117,7 @@
                 <td></td>
                 <td class="col01">
                     <g:each var="pymArr" in="${mapOfPaymentListByCurrency?.get( cur[2]?.getId() as Integer )}">
-                        <g:set var="diffCurrncy" value="${(null == currencyNow? false: (currencyNow.getId() == cur[2]?.getId() as Integer) )}"/>
+                        <g:set var="diffCurrncy" value="${(null == currencyNow? diffCurrncy: ( diffCurrncy || !(currencyNow.getId().equals(cur[2]?.getId() as Integer))) )}"/>
                         <g:set var="currencyNow" value="${new CurrencyDTO(cur[2]?.getId() as Integer)}"/>
                         <!-- Compute Total Paid (Sum of all successful payments for all currencies) -->
                         <g:set var="ttlSuccessAmt" value="${(ttlSuccessAmt as BigDecimal).add( (pymArr as Object[])[1] as BigDecimal )}"/>

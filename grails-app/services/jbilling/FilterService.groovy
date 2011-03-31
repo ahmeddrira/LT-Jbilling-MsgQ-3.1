@@ -35,7 +35,7 @@ import com.sapienter.jbilling.client.filters.FilterFactory
  */
 class FilterService implements Serializable {
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy")
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy")
 
     private static final String SESSION_CURRENT_FILTER_TYPE = "current_filter_type";
 
@@ -54,10 +54,15 @@ class FilterService implements Serializable {
         def session = getSession()
         def key = getSessionKey(type)
 
-        // clear filter values when switching filter types
+        // clear generic filter values when switching filter types
+        // page specific filter types (eg, INVOICE, PRODUCT, CUSTOMER) will be left
         def currentType = session[SESSION_CURRENT_FILTER_TYPE]
         if (currentType && type != currentType) {
-            getCurrentFilters()?.each { it.clear() }
+            getCurrentFilters()?.each {
+                if (it.type == FilterType.ALL) {
+                    it.clear()
+                }
+            }
         }
 
         /*

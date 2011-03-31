@@ -1,5 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.util.Util" %>
-	
+
 <div class="table-box">
 	<div class="table-scroll">
     	<table id="processes" cellspacing="0" cellpadding="0">
@@ -29,14 +28,17 @@
 						<td class="medium">
 							<g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']"
                                 before="register(this);" onSuccess="render(data, next);">
-                                <strong>${new java.text.SimpleDateFormat("dd-MMM-yyyy hh:mm:ss").format(proc.startDatetime)}
+                                <strong>
+                                    <g:formatDate date="${proc.startDatetime}" formatName="date.timeSecs.format"/>
                                 </strong></g:remoteLink>
 						</td>
                         <td class="medium">
                             <g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']"
                                 before="register(this);" onSuccess="render(data, next);">
-                                <strong>${new java.text.SimpleDateFormat("dd-MMM-yyyy hh:mm:ss").format(proc.endDatetime)}
-                                </strong></g:remoteLink>
+                                <strong>
+                                <g:formatDate date="${proc.endDatetime}" formatName="date.timeSecs.format"/>
+                                </strong>
+                            </g:remoteLink>
                         </td>
 						<td class="large">
                             <g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']"

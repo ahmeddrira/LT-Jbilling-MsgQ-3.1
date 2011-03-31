@@ -1,10 +1,3 @@
-package jbilling
-
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import javax.servlet.http.HttpSession
-import org.springframework.web.context.request.RequestContextHolder
-import java.text.SimpleDateFormat
-import com.sapienter.jbilling.client.filters.FilterFactory
 /*
  jBilling - The Enterprise Open Source Billing System
  Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -25,13 +18,21 @@ import com.sapienter.jbilling.client.filters.FilterFactory
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package jbilling
+
+import java.text.SimpleDateFormat
+import javax.servlet.http.HttpSession
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.web.context.request.RequestContextHolder
+import java.io.Serializable
+
 /**
  * FilterService
 
  * @author Brian Cowdery
  * @since  30-11-2010
  */
-class FilterService {
+class FilterService implements Serializable {
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy")
 

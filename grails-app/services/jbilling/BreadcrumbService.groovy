@@ -23,6 +23,7 @@ package jbilling
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.web.context.request.RequestContextHolder
 import javax.servlet.http.HttpSession
+import java.io.Serializable
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,7 +32,7 @@ import javax.servlet.http.HttpSession
  * Time: 10:17:10 AM
  * To change this template use File | Settings | File Templates.
  */
-class BreadcrumbService implements InitializingBean {
+class BreadcrumbService implements InitializingBean, Serializable {
 
     public static final String SESSION_BREADCRUMBS = "breadcrumbs"
     public static final Integer MAX_ITEMS = 7

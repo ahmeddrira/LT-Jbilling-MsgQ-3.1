@@ -23,6 +23,7 @@ package jbilling
 import javax.servlet.http.HttpSession
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.beans.factory.InitializingBean
+import java.io.Serializable
 
 /**
  * RecentItemService
@@ -30,7 +31,7 @@ import org.springframework.beans.factory.InitializingBean
  * @author Brian Cowdery
  * @since  07-12-2010
  */
-class RecentItemService implements InitializingBean {
+class RecentItemService implements InitializingBean, Serializable {
 
     public static final String SESSION_RECENT_ITEMS = "recent_items"
     public static final Integer MAX_ITEMS = 5

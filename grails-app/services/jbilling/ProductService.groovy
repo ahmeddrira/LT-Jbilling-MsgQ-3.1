@@ -27,8 +27,9 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO
 import com.sapienter.jbilling.server.item.ItemTypeBL
+import java.io.Serializable
 
-class ProductService {
+class ProductService implements Serializable {
 
     static transactional = true
 

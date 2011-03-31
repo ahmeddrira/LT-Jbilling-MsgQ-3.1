@@ -21,7 +21,10 @@
 
 package com.sapienter.jbilling.common;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -31,45 +34,92 @@ import org.apache.log4j.Logger;
  * the jbilling.properties file
  */
 public class SystemProperties {
-    private static SystemProperties ref;
-    private Properties prop = null;
     private static final Logger LOG = Logger.getLogger(SystemProperties.class);
 
+    private static final String JBILLING_HOME = "JBILLING_HOME";
+    private static final String PROPERTIES_FILE = "jbilling.properties";
 
+    private static SystemProperties INSTANCE;
+
+    private Properties prop = null;
+
+    /*
+        private singleton constructor
+     */
     private SystemProperties() throws IOException {
+        File properties = getPropertiesFile();
+        FileInputStream stream = new FileInputStream(properties);
+
         prop = new Properties();
-        prop.load(SystemProperties.class.getResourceAsStream("/jbilling.properties"));
-        LOG.debug("System properties loaded");
+        prop.load(stream);
+
+        stream.close();
+
+        LOG.debug("System properties loaded from: " + properties.getPath());
+        System.out.println("System properties loaded from: " + properties.getPath());
     }
 
-    public static SystemProperties getSystemProperties() 
-            throws IOException{
-        if (ref == null) {
-            // it's ok, we can call this constructor
-            ref = new SystemProperties();       
+    /**
+     * Returns a singleton instance of SystemProperties
+     *
+     * @return instance
+     * @throws IOException if properties could not be loaded
+     */
+    public static SystemProperties getSystemProperties()  throws IOException{
+        if (INSTANCE == null)
+            INSTANCE = new SystemProperties();
+        return INSTANCE;
+    }
+
+    /**
+     * Returns the jBilling home path where resources and configuration files
+     * can be found.
+     *
+     * The environment variable JBILLING_HOME and system property JBILLING_HOME are examined
+     * for this value, with precedence given to system properties set via command line arguments.
+     *
+     * If no jBilling home path is set, properties will be loaded from the classpath.
+     *
+     * @return jbilling home path
+     */
+    public static String getJBillingHome() {
+        String jbillingHome = System.getProperty(JBILLING_HOME);
+
+        if (jbillingHome == null) {
+            jbillingHome = System.getenv(JBILLING_HOME);
         }
-        return ref;
+
+        return jbillingHome;
+    }
+
+    /**
+     * Returns the path to the jbilling.properties file.
+     *
+     * @return properties file
+     */
+    public static File getPropertiesFile() {
+        String jbillingHome = getJBillingHome();
+        if (jbillingHome != null) {
+            // properties file from filesystem
+            return new File(jbillingHome + File.separator + PROPERTIES_FILE);
+
+        } else {
+            // properties file from classpath
+            URL url = SystemProperties.class.getResource(PROPERTIES_FILE);
+            return new File(url.getFile());
+        }
     }
 
     public String get(String key) throws Exception {
-        String retValue = prop.getProperty(key);
-        // all the system properties have to be there
-        if (retValue == null) {
-            throw new Exception("Missing system property: " + key);
-        }
-        //log.debug("Sys prop " + key + " = " + retValue);
+        String value = prop.getProperty(key);
 
-        return retValue;
+        if (value == null)
+            throw new Exception("Missing system property: " + key);
+
+        return value;
     }
     
     public String get(String key, String defaultValue) {
         return prop.getProperty(key, defaultValue);
-    }
-    
-
-    public Object clone()
-        throws CloneNotSupportedException {
-        throw new CloneNotSupportedException(); 
-        // a singleton should never be cloned
     }
 }

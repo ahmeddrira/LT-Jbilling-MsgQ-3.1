@@ -25,6 +25,7 @@ import javax.servlet.http.HttpSession
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.context.request.RequestContextHolder
 import java.io.Serializable
+import com.sapienter.jbilling.client.filters.FilterFactory
 
 /**
  * FilterService

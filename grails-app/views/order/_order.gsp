@@ -81,6 +81,10 @@
                 <td><g:message code="order.label.status"/>:</td>
                 <td class="value">${order?.statusStr}</td>
             </tr>
+            <tr>
+                <td><g:message code="order.label.billing.type"/>:</td>
+                <td class="value">${order?.billingTypeStr}</td>
+            </tr>
         </table>
     </div>
     

@@ -17,7 +17,7 @@ $(function() {
 });
 </script>
 
-<div class="form-edit" style="width:650px">
+<div class="form-edit" style="width:100%">
 
     <div class="heading">
         <strong><g:message code="mediation.config.title"/></strong>
@@ -27,7 +27,7 @@ $(function() {
         <g:form name="save-customcontactfields-form" action="save">
             <g:hiddenField name="recCnt" value="${types?.size()}"/>
             <fieldset>
-                <div class="form-columns" style="width:650px">
+                <div class="form-columns" style="width:100%">
                     <div class="one_column" style="width: 100%;padding-right: 0px;">
                     <table class="innerTable" id="custom_fields" style="width: 100%;">
                         <thead class="innerHeader">
@@ -54,14 +54,13 @@ $(function() {
                                     <td class="large">
                                         <g:select name="obj[${type.id}].pluggableTaskId" from="${readers}"
                                               optionKey="id" optionValue="${{'(Id:' + it.id + ') ' + it.type?.getDescription(session.language_id)}}"
-                                              value="${type?.pluggableTaskId}" style="float: center;width: 350px"/>
+                                              value="${type?.pluggableTaskId}" style="float: center;width: 100%"/>
                                     </td>
                                     <td>
                                         <a onclick="showConfirm('delete-${type.id}');" class="delete" style="
                                             width:9px;
                                             height:9px;
                                             text-indent:-9999px;
-                                            overflow:hidden;
                                             background:url(../images/icon03.gif) no-repeat;
                                             float:right;
                                             margin:11px 8px 0 0;
@@ -86,7 +85,9 @@ $(function() {
                                     value=""/></td>
                                 <td class="large">
                                     <g:select name="pluggableTaskId" from="${readers}"
-                                         optionKey="id" optionValue="${{'(Id:' + it.id + ') ' + it.type?.getDescription(session.language_id)}}" value="" style="float: center;width: 350px"/>
+                                         optionKey="id" 
+                                         optionValue="${{'(Id:' + it.id + ') ' + it.type?.getDescription(session.language_id)}}" 
+                                         value="" style="float: center;width: 100%"/>
                                 </td>
                                 <td></td>
                             </tr>

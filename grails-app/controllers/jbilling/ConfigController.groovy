@@ -24,7 +24,11 @@ import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.client.util.Constants;
- 
+import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO
+import com.sapienter.jbilling.server.user.contact.db.ContactMapDTO
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO
+
 /**
  * ConfigurationController 
  *
@@ -85,5 +89,35 @@ class ConfigController {
 		
 	def mediation = {
 		redirect controller: 'mediationConfig', action: 'list'
+	}
+	
+	def company = {
+		CompanyDTO company= CompanyDTO.get(session['company_id'])
+		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
+		log.debug company
+		[company:company]
+	}
+	
+	def saveCompany= {
+		log.debug params.description
+		try {
+			CompanyDTO company= CompanyDTO.get(session['company_id'])
+			//ContactType.get(1) or Contact Type 1 is always Company Contact
+			ContactDTO contact= 
+			ContactMapDTO.findByForeignIdAndContactType(company.id, ContactTypeDTO.get(1))?.contact
+			bindData(company, params, ['id'])
+			bindData(contact, params, ['id'])
+			log.debug "Company: ${company.language?.id} & ${params.language?.id} & company.description"
+			contact.save()
+			company.save()
+			flash.message = 'config.company.save.success'
+		} catch (SessionInternalError e){
+			//log.info e.getMessage()
+			viewUtils.resolveException(flash, session.locale, e);
+		} catch (Exception e) {
+			//log.debug e.printStackTrace()
+			flash.error = 'config.company.save.error'
+		}
+		redirect action: company
 	}
 }

@@ -1,29 +1,78 @@
+<%@ page import="com.sapienter.jbilling.server.util.Constants; org.apache.commons.lang.StringUtils; org.apache.commons.lang.WordUtils" contentType="text/html;charset=UTF-8" %>
+
 <%--
-  All configuration preferences.
+  Shows a list of all preferences
 
   @author Brian Cowdery
-  @since  03-Jan-2011
+  @since  01-Apr-2011
 --%>
 
-<!-- selected configuration menu item -->
-<content tag="menu.item">all</content>
+<div class="table-box">
+    <table id="users" cellspacing="0" cellpadding="0">
+        <thead>
+            <tr>
+                <th>Preference</th>
+                <th class="medium2">Value</th>
+            </tr>
+        </thead>
 
-<!-- configuration panel -->
-<div class="heading">
-    <strong><g:message code="configuration.title.all"/></strong>
+        <tbody>
+            <g:each var="type" in="${preferenceTypes}">
+                <tr id="type-${type.id}" class="${selected?.id == type.id ? 'active' : ''}">
+                    <td>
+                        <g:remoteLink class="cell double" action="show" id="${type.id}" before="register(this);" onSuccess="render(data, next);">
+                            <strong>${StringUtils.abbreviate(type.getDescription(session['language_id']), 50)}</strong>
+                            <em>Id: ${type.id}</em>
+                        </g:remoteLink>
+                    </td>
+
+                    <td class="medium2">
+                        <g:remoteLink class="cell" action="show" id="${type.id}" before="register(this);" onSuccess="render(data, next);">
+
+                            <g:if test="${type.preferences}">
+                                %{
+                                    def preference = type.preferences.find{
+                                                        it.jbillingTable.name == Constants.TABLE_ENTITY && it.foreignId == session['company_id']
+                                                    } ?: type.preferences.asList().first()
+                                }%
+
+                                <g:if test="${preference.strValue}">
+                                    ${preference.strValue}
+                                </g:if>
+
+                                <g:if test="${preference.intValue}">
+                                    ${preference.intValue}
+                                </g:if>
+
+                                <g:if test="${preference.floatValue}">
+                                    <g:formatNumber number="${preference.floatValue}" formatName="decimal.format"/>
+                                </g:if>
+                            </g:if>
+                            <g:else>
+                                <g:if test="${type.strDefValue}">
+                                    ${type.strDefValue}
+                                </g:if>
+
+                                <g:if test="${type.intDefValue}">
+                                    ${type.intDefValue}
+                                </g:if>
+
+                                <g:if test="${type.floatDefValue}">
+                                    <g:formatNumber number="${type.floatDefValue}" formatName="decimal.format"/>
+                                </g:if>
+                            </g:else>
+
+                        </g:remoteLink>
+                    </td>
+                </tr>
+            </g:each>
+
+        </tbody>
+    </table>
 </div>
-<div class="box">
-    <div class="form-columns">
-        <div class="row">
 
-            <p>List of all preferences.</p>
-
-        </div>
-    </div>
-</div>
-<div class="btn-box buttons">
-    <ul>
-        <li><a class="submit save"><span><g:message code="button.save"/></span></a></li>
-        <li><a class="submit cancel" onclick="closePanel(this);"><span><g:message code="button.cancel"/></span></a></li>
-    </ul>
+<div class="btn-box">
+    <g:remoteLink action='edit' class="submit add" before="register(this);" onSuccess="render(data, next);">
+        <span><g:message code="button.create"/></span>
+    </g:remoteLink>
 </div>

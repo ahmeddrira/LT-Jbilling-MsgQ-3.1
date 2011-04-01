@@ -11668,6 +11668,29 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 100	7	description	1	Simple accounts receivable report showing current account balances.
 100	8	description	1	General ledger details of all invoiced charges for the given day.
 100	9	description	1	General ledger summary of all invoiced charges for the given day, grouped by item type.
+50	25	description	1	Use overdue penalties (interest).
+50	26	description	1	Page size.
+50	27	description	1	Use order anticipation.
+50	28	description	1	Paypal account.
+50	29	description	1	Paypal button URL.
+50	30	description	1	URL for HTTP ageing callback.
+50	31	description	1	Use continuous invoice dates.
+50	32	description	1	Attach PDF invoice to email notification.
+50	33	description	1	Force one order per invoice.
+50	34	description	1	<em>Removed</em>
+50	35	description	1	Add order Id to invoice lines.
+50	36	description	1	Allow customers to edit own contact information.
+50	37	description	1	Hide (mask) credit card numbers.
+50	38	description	1	Link ageing to customer subscriber status.
+50	39	description	1	Lock-out user after failed login attempts.
+50	40	description	1	Expire user passwords after days.
+50	41	description	1	Use main-subscription orders.
+50	42	description	1	Use pro-rating.
+50	43	description	1	Use payment blacklist.
+50	44	description	1	Allow negative payments.
+50	45	description	1	Delay negative invoice payments.
+50	46	description	1	Allow invoice without orders.
+50	47	description	1	Last read mediation record id.
 \.
 
 

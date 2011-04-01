@@ -23,7 +23,9 @@ package jbilling
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.client.util.Constants
+import com.sapienter.jbilling.server.util.db.PreferenceDTO
+import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
  
 /**
  * ConfigurationController 
@@ -40,8 +42,20 @@ class ConfigController {
 	def userSession
 	
     def index = {
+        def preferenceTypes = PreferenceTypeDTO.list()
+
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
+
+        [ preferenceTypes : preferenceTypes ]
     }
+
+    def show = {
+        def selected = PreferenceTypeDTO.get(params.int('id'))
+
+        render template: 'show', model: [ selected : selected ]
+    }
+
+
 	
 	def aging = {
 		log.debug "config.aging ${session['language_id']}"

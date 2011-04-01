@@ -54,15 +54,10 @@ class FilterService implements Serializable {
         def session = getSession()
         def key = getSessionKey(type)
 
-        // clear generic filter values when switching filter types
-        // page specific filter types (eg, INVOICE, PRODUCT, CUSTOMER) will be left
+        // clear filter values when switching filter types
         def currentType = session[SESSION_CURRENT_FILTER_TYPE]
         if (currentType && type != currentType) {
-            getCurrentFilters()?.each {
-                if (it.type == FilterType.ALL) {
-                    it.clear()
-                }
-            }
+            getCurrentFilters()?.each { it.clear() }
         }
 
         /*

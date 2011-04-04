@@ -50,7 +50,6 @@
                                             width:9px;
                                             height:9px;
                                             text-indent:-9999px;
-                                            overflow:hidden;
                                             background:url(../images/icon03.gif) no-repeat;
                                             float:right;
                                             margin:11px 8px 0 0;

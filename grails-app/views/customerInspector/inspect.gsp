@@ -29,7 +29,7 @@
                 <div class="column">
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.user.username"/></content>
-                        <span><g:link controller="user" action="list" id="${user.id}">${user.userName}</g:link></span>
+                        <span><g:link controller="customer" action="list" id="${user.id}">${user.userName}</g:link></span>
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
@@ -89,7 +89,7 @@
                 <div class="column">
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.user.user.id"/></content>
-                        <span><g:link controller="user" action="list" id="${user.id}">${user.id}</g:link></span>
+                        <span><g:link controller="customer" action="list" id="${user.id}">${user.id}</g:link></span>
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
@@ -251,7 +251,7 @@
                     <g:link controller="order" action="user" id="${user.id}" class="submit order"><span><g:message code="customer.view.orders.button"/></span></g:link>
                 </div>
                 <div class="btn-row">
-                    <g:link controller="user" action="edit" id="${user.id}" class="submit edit"><span><g:message code="customer.edit.customer.button"/></span></g:link>
+                    <g:link controller="customer" action="edit" id="${user.id}" class="submit edit"><span><g:message code="customer.edit.customer.button"/></span></g:link>
                     <g:link controller="payment" action="edit" params="[userId: user.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
                     <g:link controller="orderBuilder" action="edit" params="[userId: user.id]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>
                 </div>

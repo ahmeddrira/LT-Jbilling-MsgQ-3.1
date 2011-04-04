@@ -25,7 +25,7 @@
                 <em>${user?.contact?.organizationName}</em>
             </td></tr>
             <tr><td><g:message code="invoice.label.user.id"/>:</td><td class="value">
-                <g:remoteLink controller="user" action="show" id="${user?.id}" before="register(this);" onSuccess="render(data, next);">
+                <g:remoteLink controller="customer" action="show" id="${user?.id}" before="register(this);" onSuccess="render(data, next);">
                     ${user?.id}
                 </g:remoteLink>
             </td></tr>

@@ -42,7 +42,7 @@ class HomeController {
             redirect(controller: breadcrumb.controller, action: breadcrumb.action, id: breadcrumb.objectId)
         } else {
             // show default page
-            redirect(controller: "user")
+            redirect(controller: "customer")
         }
     }
 }

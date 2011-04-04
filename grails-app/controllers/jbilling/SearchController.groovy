@@ -50,7 +50,7 @@ class SearchController {
         switch (type) {
             case SearchType.CUSTOMERS:
                 filterService.setFilter(FilterType.CUSTOMER, filter)
-                redirect(controller: 'user', action: 'list', id: cmd.id)
+                redirect(controller: 'customer', action: 'list', id: cmd.id)
                 break
 
             case SearchType.ORDERS:

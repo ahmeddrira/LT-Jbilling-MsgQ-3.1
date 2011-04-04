@@ -59,7 +59,7 @@
         <%-- select the current menu item based on the controller name --%>
         <ul>
             <li class="${controllerName == 'user' ? 'active' : ''}">
-                <g:link controller="user"><span><g:message code="menu.link.customers"/></span><em></em></g:link>
+                <g:link controller="customer"><span><g:message code="menu.link.customers"/></span><em></em></g:link>
             </li>
             <li class="${controllerName == 'invoice' ? 'active' : ''}">
                 <g:link controller="invoice"><span><g:message code="menu.link.invoices"/></span><em></em></g:link>

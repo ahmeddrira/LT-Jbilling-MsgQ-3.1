@@ -38,7 +38,7 @@
                     <td><g:message code="log.foreign_id"/></td>
                     <td class="value">
                         <g:if test="${selected.jbillingTable.name == 'base_user'}">
-                            <g:remoteLink controller="user" action="show" id="${selected.foreignId}" before="register(this);" onSuccess="render(data, next);">
+                            <g:remoteLink controller="customer" action="show" id="${selected.foreignId}" before="register(this);" onSuccess="render(data, next);">
                                  ${selected.foreignId}
                             </g:remoteLink>
                         </g:if>
@@ -91,10 +91,10 @@
                     <td><g:message code="log.affected_user"/></td>
                     <td class="value">
                         <g:if test="${selected.affectedUser != null}">
-                            <g:remoteLink controller="user" action="show" id="${selected.affectedUser.id}" before="register(this);" onSuccess="render(data, next);">
+                            <g:remoteLink controller="customer" action="show" id="${selected.affectedUser.id}" before="register(this);" onSuccess="render(data, next);">
                                     ${selected.affectedUser.id}
                             </g:remoteLink>
-                            <g:remoteLink controller="user" action="show" id="${selected.affectedUser.id}" before="register(this);" onSuccess="render(data, next);">
+                            <g:remoteLink controller="customer" action="show" id="${selected.affectedUser.id}" before="register(this);" onSuccess="render(data, next);">
                                     ${selected.affectedUser.userName}
                             </g:remoteLink>
                         </g:if>

@@ -46,7 +46,7 @@
                     <div class="column">
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="payment.user.id"/></content>
-                            <span><g:link controller="user" action="list" id="${user.userId}">${user.userId}</g:link></span>
+                            <span><g:link controller="customer" action="list" id="${user.userId}">${user.userId}</g:link></span>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/text">

@@ -43,7 +43,7 @@
                 <tr>
                     <td><g:message code="payment.user.id"/></td>
                     <td class="value">
-                        <g:remoteLink controller="user" action="show" id="${selected?.baseUser?.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink controller="customer" action="show" id="${selected?.baseUser?.id}" before="register(this);" onSuccess="render(data, next);">
                             ${selected.baseUser.id}
                         </g:remoteLink>
                     </td>

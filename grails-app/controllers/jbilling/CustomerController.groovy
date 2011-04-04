@@ -25,7 +25,7 @@ import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.i18n.SessionLocaleResolver
 
 @Secured(['isAuthenticated()'])
-class UserController {
+class CustomerController {
 
     static pagination = [ max: 10, offset: 0 ]
 

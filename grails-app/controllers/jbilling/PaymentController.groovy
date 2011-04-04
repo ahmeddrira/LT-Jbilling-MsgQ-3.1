@@ -23,9 +23,7 @@ package jbilling
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.payment.db.PaymentDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
-import org.hibernate.FetchMode
-import org.hibernate.criterion.Restrictions
-import org.hibernate.criterion.Criterion
+
 import org.hibernate.Criteria
 import com.sapienter.jbilling.server.payment.PaymentWS
 import com.sapienter.jbilling.server.entity.CreditCardDTO
@@ -34,8 +32,7 @@ import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.invoice.InvoiceWS
-import com.sapienter.jbilling.server.util.db.CurrencyDTO
-import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO
+
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.common.Util
 import com.sapienter.jbilling.common.Constants
@@ -233,7 +230,7 @@ class PaymentController {
      */
     def create = {
         flash.info = 'payment.select.customer'
-        redirect controller: 'user', action: 'list'
+        redirect controller: 'customer', action: 'list'
     }
 
     /**

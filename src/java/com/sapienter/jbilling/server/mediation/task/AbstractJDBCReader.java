@@ -260,9 +260,7 @@ public abstract class AbstractJDBCReader extends AbstractReader {
         PreferenceBL preferenceBL = new PreferenceBL();
         preferenceBL.createUpdateForEntity(getEntityId(),
                                            Constants.PREFERENCE_MEDIATION_JDBC_READER_LAST_ID,
-                                           getLastId(),
-                                           null,
-                                           null);
+                                           getLastId());
     }
 
     /**

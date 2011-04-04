@@ -687,7 +687,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             }
 
             if (result == null  || result.trim().length() == 0) {
-                result = preference.getDefaultAsString(preferenceId);
+                result = preference.getDefaultValue(preferenceId);
                 LOG.debug("Using default");
             }
 
@@ -760,8 +760,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
                     retValue.put(ids[f], preference.getValueAsString());
                 } catch (EmptyResultDataAccessException e1) {
                     // use a default
-                    retValue.put(ids[f],
-                                 preference.getDefaultAsString(ids[f]));
+                    retValue.put(ids[f], preference.getDefaultValue(ids[f]));
                 }
             }
             return retValue;
@@ -785,20 +784,20 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
                 Object value = params.get(preferenceId);
                 if (value != null) {
                     if (value instanceof Integer) {
-                        preference.createUpdateForEntity(entityId, preferenceId,
-                                                         (Integer) value, null, null);
+                        preference.createUpdateForEntity(entityId, preferenceId, (Integer) value);
 
                     } else if (value instanceof String) {
-                        preference.createUpdateForEntity(entityId, preferenceId, null, (String) value, null);
+                        preference.createUpdateForEntity(entityId, preferenceId, (String) value);
+
                     } else if (value instanceof Float) {
-                        preference.createUpdateForEntity(entityId, preferenceId, null, null, new BigDecimal(value.toString()));
+                        preference.createUpdateForEntity(entityId, preferenceId, new BigDecimal(value.toString()));
+
                     } else if (value instanceof BigDecimal) {
-                        preference.createUpdateForEntity(entityId, preferenceId, null, null, (BigDecimal) value);
+                        preference.createUpdateForEntity(entityId, preferenceId, (BigDecimal) value);
                     }
 
                 } else {
-                    preference.createUpdateForEntity(entityId, preferenceId, null,
-                                                     null, null);
+                    preference.createUpdateForEntity(entityId, preferenceId, (String) null);
                 }
             }
         } catch (Exception e) {
@@ -806,34 +805,19 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         }
     }
 
-    public void updatePreference(Integer userId, Integer typeId, Integer intValue, String strValue, BigDecimal decimalValue)
-            throws SessionInternalError {
-        try {
-            LOG.debug("updating preference " + typeId + " for user " + userId);
-            PreferenceBL preference = new PreferenceBL();
-            preference.createUpdateForUser(userId, typeId, intValue, strValue, decimalValue);
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
-
-    }
-
     /**
      * This now only working with String parameters
      *
      * @param entityId entity id
      * @param preferenceId preference Id
-     * @param paramStr String parameter value (optional)
-     * @param paramInt Integer parameter value (optional)
-     * @param paramDecimal BigDecimal parameter value (option)
+     * @param value String parameter value (optional)
      * @throws SessionInternalError
      */
-    public void setEntityParameter(Integer entityId, Integer preferenceId, String paramStr, Integer paramInt,
-                                   BigDecimal paramDecimal) throws SessionInternalError {
+    public void setEntityParameter(Integer entityId, Integer preferenceId, String value) throws SessionInternalError {
         try {
             LOG.debug("updating preference " + preferenceId + " for entity " + entityId);
             PreferenceBL preference = new PreferenceBL();
-            preference.createUpdateForEntity(entityId, preferenceId, paramInt, paramStr, paramDecimal);
+            preference.createUpdateForEntity(entityId, preferenceId, value);
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }

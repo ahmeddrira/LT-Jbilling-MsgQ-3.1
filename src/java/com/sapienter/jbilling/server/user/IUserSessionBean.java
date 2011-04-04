@@ -226,21 +226,15 @@ public interface IUserSessionBean {
     public void setEntityParameters(Integer entityId, HashMap params) 
             throws SessionInternalError;
 
-    public void updatePreference(Integer userId, Integer typeId, 
-            Integer intValue, String strValue, BigDecimal decimalValue);
-
     /**
      * This now only working with String parameters
      * 
      * @param entityId entity id
      * @param preferenceId preference Id
-     * @param paramStr String parameter value (optional)
-     * @param paramInt Integer parameter value (optional)
-     * @param paramDecimal BigDecimal parameter value (option)
+     * @param value String parameter value (optional)
      * @throws SessionInternalError
      */
-    public void setEntityParameter(Integer entityId, Integer preferenceId,
-            String paramStr, Integer paramInt, BigDecimal paramDecimal)
+    public void setEntityParameter(Integer entityId, Integer preferenceId, String value)
             throws SessionInternalError;
 
     /**

@@ -31,9 +31,7 @@ public class PreferenceTypeWS implements Serializable {
 
     private int id;
     private String description;
-    private Integer intDefValue;
-    private String strDefValue;
-    private BigDecimal floatDefValue;
+    private String defaultValue;
 
     public PreferenceTypeWS() {
     }
@@ -41,9 +39,7 @@ public class PreferenceTypeWS implements Serializable {
     public PreferenceTypeWS(PreferenceTypeDTO dto) {
         this.id = dto.getId();
         this.description = dto.getDescription();
-        this.intDefValue = dto.getIntDefValue();
-        this.strDefValue = dto.getStrDefValue();
-        this.floatDefValue = dto.getFloatDefValue();
+        this.defaultValue = dto.getDefaultValue();
     }
 
     public int getId() {
@@ -62,28 +58,12 @@ public class PreferenceTypeWS implements Serializable {
         this.description = description;
     }
 
-    public Integer getIntDefValue() {
-        return this.intDefValue;
+    public String getDefaultValue() {
+        return defaultValue;
     }
 
-    public void setIntDefValue(Integer intDefValue) {
-        this.intDefValue = intDefValue;
-    }
-
-    public String getStrDefValue() {
-        return this.strDefValue;
-    }
-
-    public void setStrDefValue(String strDefValue) {
-        this.strDefValue = strDefValue;
-    }
-
-    public BigDecimal getFloatDefValue() {
-        return this.floatDefValue;
-    }
-
-    public void setFloatDefValue(BigDecimal floatDefValue) {
-        this.floatDefValue = floatDefValue;
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     @Override
@@ -91,9 +71,7 @@ public class PreferenceTypeWS implements Serializable {
         return "PreferenceTypeWS{"
                + "id=" + id
                + ", description='" + description + '\''
-               + ", intDefValue=" + intDefValue
-               + ", strDefValue='" + strDefValue + '\''
-               + ", floatDefValue=" + floatDefValue
+               + ", defaultValue='" + defaultValue + '\''
                + '}';
     }
 }

@@ -134,13 +134,6 @@ public class GenericListAction extends Action {
                     }
                     
                     if (errors.isEmpty()) {
-                        IUserSessionBean remoteUser = (IUserSessionBean) 
-                                Context.getBean(Context.Name.USER_SESSION);
-                        
-                        remoteUser.updatePreference((Integer)session.getAttribute(
-                                Constants.SESSION_LOGGED_USER_ID), 
-                                Constants.PREFERENCE_PAGE_SIZE,
-                                size, null, null);
                         list.setPageSize(size);
                         reset(list);
                     } else {

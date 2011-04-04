@@ -342,14 +342,7 @@ public class ListSessionBean implements IListSessionBean {
                 retValue.setCount(null);
             }
 
-            // get the page size from the user's preferences
-            PreferenceBL pref = new PreferenceBL();
-            try {
-                pref.setForUser(userId, Constants.PREFERENCE_PAGE_SIZE);
-            } catch (EmptyResultDataAccessException e) {
-                // use the defaults
-            }
-            retValue.setPageSize(new Integer(pref.getInt()));
+
             // the title key
             retValue.setTitleKey(bl.getEntity().getTitleKey());
         } catch (Exception e) {

@@ -30,6 +30,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -55,9 +56,7 @@ public class PreferenceDTO implements java.io.Serializable {
     private JbillingTable jbillingTable;
     private PreferenceTypeDTO preferenceType;
     private int foreignId;
-    private Integer intValue;
-    private String strValue;
-    private BigDecimal floatValue;
+    private String value;
 
     public PreferenceDTO() {
     }
@@ -68,15 +67,12 @@ public class PreferenceDTO implements java.io.Serializable {
         this.foreignId = foreignId;
     }
 
-    public PreferenceDTO(int id, JbillingTable jbillingTable, PreferenceTypeDTO preferenceType, int foreignId,
-                         Integer intValue, String strValue, BigDecimal floatValue) {
+    public PreferenceDTO(int id, JbillingTable jbillingTable, PreferenceTypeDTO preferenceType, int foreignId, String value) {
         this.id = id;
         this.jbillingTable = jbillingTable;
         this.preferenceType = preferenceType;
         this.foreignId = foreignId;
-        this.intValue = intValue;
-        this.strValue = strValue;
-        this.floatValue = floatValue;
+        this.value = value;
     }
 
     @Id
@@ -119,31 +115,31 @@ public class PreferenceDTO implements java.io.Serializable {
         this.foreignId = foreignId;
     }
 
-    @Column(name="int_value")
+    @Column(name="value", length=200)
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = (value != null ? value.toString() : null);
+    }
+
+    public void setValue(BigDecimal value) {
+        this.value = (value != null ? value.toString() : null);
+    }
+
+    @Transient
     public Integer getIntValue() {
-        return this.intValue;
+        return value != null ? Integer.valueOf(value) : null;
     }
 
-    public void setIntValue(Integer intValue) {
-        this.intValue = intValue;
-    }
-
-    @Column(name="str_value", length=200)
-    public String getStrValue() {
-        return this.strValue;
-    }
-
-    public void setStrValue(String strValue) {
-        this.strValue = strValue;
-    }
-
-    @Column(name="float_value", precision=17, scale=17)
+    @Transient
     public BigDecimal getFloatValue() {
-        return this.floatValue;
-    }
-
-    public void setFloatValue(BigDecimal floatValue) {
-        this.floatValue = floatValue;
+        return value != null ? new BigDecimal(value) : null;
     }
 }
 

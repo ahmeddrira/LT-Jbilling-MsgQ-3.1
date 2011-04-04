@@ -164,18 +164,13 @@ public class AgeingMaintainAction extends Action {
                         processSession.setAgeingSteps(entityId, languageId, 
                                 myForm.getLines());
                         // update the grace period in another call
-                        userSession.setEntityParameter(entityId, 
-                                Constants.PREFERENCE_GRACE_PERIOD, null,
-                                Integer.valueOf(myForm.getGracePeriod()),
-                                null);
+                        userSession.setEntityParameter(entityId, Constants.PREFERENCE_GRACE_PERIOD, myForm.getGracePeriod());
 
                         if (myForm.getUrlCallback() == null || 
                                 myForm.getUrlCallback().trim().length() == 0) {
                             myForm.setUrlCallback(null);
                         }
-                        userSession.setEntityParameter(entityId, 
-                                Constants.PREFERENCE_URL_CALLBACK, 
-                                myForm.getUrlCallback(), null, null);
+                        userSession.setEntityParameter(entityId, Constants.PREFERENCE_URL_CALLBACK, myForm.getUrlCallback());
 
                         messages.add(ActionMessages.GLOBAL_MESSAGE, 
                                 new ActionMessage("system.ageing.updated"));

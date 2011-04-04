@@ -34,10 +34,7 @@ public class PreferenceWS implements Serializable {
     private PreferenceTypeWS preferenceType;
     private Integer tableId;
     private Integer foreignId;
-    @Min(value = 0, message="validation.error.min,0")
-    private Integer intValue;
-    private String strValue;
-    private BigDecimal floatValue;
+    private String value;
 
     public PreferenceWS() {
     }
@@ -47,9 +44,7 @@ public class PreferenceWS implements Serializable {
         this.preferenceType = dto.getPreferenceType() != null ? new PreferenceTypeWS(dto.getPreferenceType()) : null;
         this.tableId = dto.getJbillingTable() != null ? dto.getJbillingTable().getId() : null;
         this.foreignId = dto.getForeignId();
-        this.intValue = dto.getIntValue();
-        this.strValue = dto.getStrValue();
-        this.floatValue = dto.getFloatValue();
+        this.value = dto.getValue();
     }
 
     public Integer getId() {
@@ -84,28 +79,12 @@ public class PreferenceWS implements Serializable {
         this.foreignId = foreignId;
     }
 
-    public Integer getIntValue() {
-        return this.intValue;
+    public String getValue() {
+        return value;
     }
 
-    public void setIntValue(Integer intValue) {
-        this.intValue = intValue;
-    }
-
-    public String getStrValue() {
-        return this.strValue;
-    }
-
-    public void setStrValue(String strValue) {
-        this.strValue = strValue;
-    }
-
-    public BigDecimal getFloatValue() {
-        return this.floatValue;
-    }
-
-    public void setFloatValue(BigDecimal floatValue) {
-        this.floatValue = floatValue;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override
@@ -115,9 +94,7 @@ public class PreferenceWS implements Serializable {
                + ", preferenceType=" + preferenceType
                + ", tableId=" + tableId
                + ", foreignId=" + foreignId
-               + ", intValue=" + intValue
-               + ", strValue='" + strValue + '\''
-               + ", floatValue=" + floatValue
+               + ", value='" + value + '\''
                + '}';
     }
 }

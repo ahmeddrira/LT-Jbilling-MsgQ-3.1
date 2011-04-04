@@ -145,9 +145,8 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                 // update the lastest date only if this is not a review
                 if (newInvoice.getIsReview() == null || newInvoice.getIsReview().intValue() == 0) {
                     pref.createUpdateForEntity(entityId,
-                            Constants.PREFERENCE_CONTINUOUS_DATE, null,
-                            com.sapienter.jbilling.common.Util.parseDate(newInvoice.getBillingDate()),
-                            null);
+                                               Constants.PREFERENCE_CONTINUOUS_DATE,
+                                               com.sapienter.jbilling.common.Util.parseDate(newInvoice.getBillingDate()));
                 }
             }
         } catch (EmptyResultDataAccessException e) {
@@ -229,9 +228,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
             numberStr = prefix + number;
             // update for the next time
             number++;
-            pref.createUpdateForEntity(entityId,
-                    Constants.PREFERENCE_INVOICE_NUMBER, new Integer(number),
-                    null, null);
+            pref.createUpdateForEntity(entityId, Constants.PREFERENCE_INVOICE_NUMBER, number);
         } else { // for upload of legacy invoices
             numberStr = newInvoice.getPublicNumber();
         }

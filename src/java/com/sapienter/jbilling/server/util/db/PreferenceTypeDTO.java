@@ -44,9 +44,7 @@ import com.sapienter.jbilling.server.util.Constants;
 public class PreferenceTypeDTO extends AbstractDescription implements java.io.Serializable {
 
     private int id;
-    private Integer intDefValue;
-    private String strDefValue;
-    private BigDecimal floatDefValue;
+    private String defaultValue;
     private Set<PreferenceDTO> preferences = new HashSet<PreferenceDTO>(0);
 
     public PreferenceTypeDTO() {
@@ -56,12 +54,9 @@ public class PreferenceTypeDTO extends AbstractDescription implements java.io.Se
         this.id = id;
     }
 
-    public PreferenceTypeDTO(int id, Integer intDefValue, String strDefValue, BigDecimal floatDefValue,
-                             Set<PreferenceDTO> preferences) {
+    public PreferenceTypeDTO(int id, String defaultValue, Set<PreferenceDTO> preferences) {
         this.id = id;
-        this.intDefValue = intDefValue;
-        this.strDefValue = strDefValue;
-        this.floatDefValue = floatDefValue;
+        this.defaultValue = defaultValue;
         this.preferences = preferences;
     }
 
@@ -75,33 +70,15 @@ public class PreferenceTypeDTO extends AbstractDescription implements java.io.Se
         this.id = id;
     }
 
-    @Column(name="int_def_value")
-    public Integer getIntDefValue() {
-        return this.intDefValue;
+    @Column(name="def_value", length=200)
+    public String getDefaultValue() {
+        return defaultValue;
     }
 
-    public void setIntDefValue(Integer intDefValue) {
-        this.intDefValue = intDefValue;
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
-    @Column(name="str_def_value", length=200)
-    public String getStrDefValue() {
-        return this.strDefValue;
-    }
-
-    public void setStrDefValue(String strDefValue) {
-        this.strDefValue = strDefValue;
-    }
-
-    @Column(name="float_def_value", precision=17, scale=17)
-    public BigDecimal getFloatDefValue() {
-        return this.floatDefValue;
-    }
-
-    public void setFloatDefValue(BigDecimal floatDefValue) {
-        this.floatDefValue = floatDefValue;
-    }
-    
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="preferenceType")
     public Set<PreferenceDTO> getPreferences() {
         return this.preferences;

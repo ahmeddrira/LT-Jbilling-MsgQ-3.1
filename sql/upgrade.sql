@@ -993,12 +993,50 @@ alter table plan_item add constraint plan_item_bundle_id_FK foreign key (plan_it
 
 update jbilling_seqs set next_id = coalesce((select round(max(id)/100)+1 from plan_item_bundle), 1) where name = 'plan_item_bundle';
 
+
+-- preference value consolidation
+update preference set str_value = int_value where int_value is not null;
+update preference set str_value = float_value where float_value is not null;
+
+alter table preference drop column int_value;
+alter table preference drop column float_value;
+
+alter table preference rename column str_value to value; -- postgresql
+-- alter table preference change str_value value varchar(200); -- mysql
+
+update preference_type set str_def_value = int_def_value where int_def_value is not null;
+update preference_type set str_def_value = float_def_value where float_def_value is not null;
+
+alter table preference_type drop column int_def_value;
+alter table preference_type drop column float_def_value;
+
+alter table preference_type rename column str_def_value to def_value; -- postgresql
+-- alter table preference_type change str_def_value def_value varchar(200); -- mysql
+
+
+-- remove obsolete preferences
+delete from preference where type_id = 1;
+delete from preference where type_id = 2;
+delete from preference where type_id = 3;
+delete from preference where type_id = 26;
+delete from preference where type_id = 34;
+
+delete from international_description where table_id = 50 and foreign_id = 1;
+delete from international_description where table_id = 50 and foreign_id = 2;
+delete from international_description where table_id = 50 and foreign_id = 3;
+delete from international_description where table_id = 50 and foreign_id = 26;
+delete from international_description where table_id = 50 and foreign_id = 34;
+
+delete from preference_type where id = 1;
+delete from preference_type where id = 2;
+delete from preference_type where id = 3;
+delete from preference_type where id = 26;
+delete from preference_type where id = 34;
+
+
 -- missing preference descriptions
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
 values (50, 25, 'description', 1, 'Use overdue penalties (interest).');
-
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
-values (50, 26, 'description', 1, 'Page size.');
 
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
 values (50, 27, 'description', 1, 'Use order anticipation.');
@@ -1020,9 +1058,6 @@ values (50, 32, 'description', 1, 'Attach PDF invoice to email notification.');
 
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
 values (50, 33, 'description', 1, 'Force one order per invoice.');
-
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
-values (50, 34, 'description', 1, '<em>Removed</em>');
 
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
 values (50, 35, 'description', 1, 'Add order Id to invoice lines.');
@@ -1062,6 +1097,12 @@ values (50, 46, 'description', 1, 'Allow invoice without orders.');
 
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
 values (50, 47, 'description', 1, 'Last read mediation record id.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 48, 'description', 1, 'Use provisioning.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 49, 'description', 1, 'Automatic customer recharge threshold.');
 
 
 -- preference instructions

@@ -105,8 +105,7 @@ public class PaperInvoiceBatchBL {
             PreferenceBL preference = new PreferenceBL();
             preference.set(process.getEntity().getEntity().getId(), 
                     Constants.PREFERENCE_PAPER_SELF_DELIVERY);
-            batch = batchHome.create(new Integer(0), 
-                    preference.getEntity().getIntValue());
+            batch = batchHome.create(new Integer(0), preference.getEntity().getIntValue());
             process.getEntity().setPaperInvoiceBatch(batch);
         }
         return batch;

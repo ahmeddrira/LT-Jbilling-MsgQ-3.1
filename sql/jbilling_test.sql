@@ -1908,9 +1908,7 @@ CREATE TABLE preference (
     type_id integer,
     table_id integer NOT NULL,
     foreign_id integer NOT NULL,
-    int_value integer,
-    str_value character varying(200),
-    float_value numeric(22,10)
+    value character varying(200)
 );
 
 
@@ -1922,9 +1920,7 @@ ALTER TABLE public.preference OWNER TO jbilling;
 
 CREATE TABLE preference_type (
     id integer NOT NULL,
-    int_def_value integer,
-    str_def_value character varying(200),
-    float_def_value numeric(22,10)
+    def_value character varying(200)
 );
 
 
@@ -10791,9 +10787,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 47	14	description	1	A user had to be aged, but there are no more steps configured.
 47	15	description	1	A partner has a payout ready, but no payment instrument.
 47	16	description	1	A purchase order as been manually applied to an invoice.
-50	1	description	1	Process payment with billing process
-50	2	description	1	URL of CSS file
-50	3	description	1	URL of logo graphic
 50	4	description	1	Grace period
 50	5	description	1	Partner percentage rate
 50	6	description	1	Partner referral fee
@@ -11669,7 +11662,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 100	8	description	1	General ledger details of all invoiced charges for the given day.
 100	9	description	1	General ledger summary of all invoiced charges for the given day, grouped by item type.
 50	25	description	1	Use overdue penalties (interest).
-50	26	description	1	Page size.
 50	27	description	1	Use order anticipation.
 50	28	description	1	Paypal account.
 50	29	description	1	Paypal button URL.
@@ -11677,7 +11669,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 50	31	description	1	Use continuous invoice dates.
 50	32	description	1	Attach PDF invoice to email notification.
 50	33	description	1	Force one order per invoice.
-50	34	description	1	<em>Removed</em>
 50	35	description	1	Add order Id to invoice lines.
 50	36	description	1	Allow customers to edit own contact information.
 50	37	description	1	Hide (mask) credit card numbers.
@@ -15573,45 +15564,38 @@ COPY pluggable_task_type_category (id, interface_name) FROM stdin;
 -- Data for Name: preference; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_value) FROM stdin;
-1	1	5	1	0	\N	\N
-2	2	5	1	\N	/billing/css/jbilling.css	\N
-3	3	5	1	\N	/billing/graphics/jbilling.jpg	\N
-4	4	5	1	5	\N	\N
-5	5	5	1	\N	\N	10.0000000000
-6	6	5	1	\N	\N	0.0000000000
-7	7	5	1	0	\N	\N
-8	8	5	1	1	\N	\N
-9	9	5	1	1	\N	\N
-10	10	5	1	0	\N	\N
-11	11	5	1	1	\N	\N
-12	12	5	1	1	\N	\N
-13	13	5	1	1	\N	\N
-14	14	5	1	0	\N	\N
-25	1	5	2	0	\N	\N
-26	2	5	2	\N	/billing/css/jbilling.css	\N
-27	3	5	2	\N	/billing/graphics/jbilling.jpg	\N
-28	4	5	2	5	\N	\N
-29	5	5	2	\N	\N	10.0000000000
-30	6	5	2	\N	\N	0.0000000000
-31	7	5	2	0	\N	\N
-32	8	5	2	1	\N	\N
-33	9	5	2	1	\N	\N
-34	10	5	2	0	\N	\N
-35	11	5	2	12	\N	\N
-36	12	5	2	1	\N	\N
-37	13	5	2	1	\N	\N
-38	14	5	2	0	\N	\N
-39	39	5	1	3	\N	\N
-40	40	5	1	60	\N	\N
-41	19	5	2	2	\N	\N
-42	41	5	1	1	\N	\N
-43	28	5	1	\N	admin@prancingpony.me	\N
-44	26	10	1	200	\N	\N
-45	43	5	1	460	\N	\N
-46	44	5	1	1	\N	\N
-15	19	5	1	1023	\N	\N
-47	49	5	1	\N	\N	5.0000000000
+COPY preference (id, type_id, table_id, foreign_id, value) FROM stdin;
+43	28	5	1	admin@prancingpony.me
+4	4	5	1	5
+7	7	5	1	0
+8	8	5	1	1
+9	9	5	1	1
+10	10	5	1	0
+11	11	5	1	1
+12	12	5	1	1
+13	13	5	1	1
+14	14	5	1	0
+28	4	5	2	5
+31	7	5	2	0
+32	8	5	2	1
+33	9	5	2	1
+34	10	5	2	0
+35	11	5	2	12
+36	12	5	2	1
+37	13	5	2	1
+38	14	5	2	0
+39	39	5	1	3
+40	40	5	1	60
+41	19	5	2	2
+42	41	5	1	1
+45	43	5	1	460
+46	44	5	1	1
+15	19	5	1	1023
+5	5	5	1	10.0000000000
+6	6	5	1	0.0000000000
+29	5	5	2	10.0000000000
+30	6	5	2	0.0000000000
+47	49	5	1	5.0000000000
 \.
 
 
@@ -15619,56 +15603,51 @@ COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_
 -- Data for Name: preference_type; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY preference_type (id, int_def_value, str_def_value, float_def_value) FROM stdin;
-1	\N	\N	\N
-2	\N	/billing/css/jbilling.css	\N
-3	\N	/billing/graphics/jb-log-small.jpg	\N
-4	\N	\N	\N
-5	\N	\N	\N
-6	\N	\N	\N
-7	\N	\N	\N
-8	\N	\N	\N
-9	\N	\N	\N
-10	\N	\N	\N
-11	\N	\N	\N
-12	\N	\N	\N
-13	\N	\N	\N
-14	\N	\N	\N
-15	\N	\N	\N
-16	\N	\N	\N
-17	\N	\N	\N
-18	\N	\N	\N
-19	1	\N	\N
-20	1	\N	\N
-21	0	\N	\N
-22	\N	\N	\N
-23	\N	\N	\N
-24	0	\N	\N
-25	0	\N	\N
-26	20	\N	\N
-27	0	\N	\N
-28	\N	\N	\N
-29	\N	https://www.paypal.com/en_US/i/btn/x-click-but6.gif	\N
-30	\N	\N	\N
-31	\N	2000-01-01	\N
-32	0	\N	\N
-33	0	\N	\N
-34	\N	\N	0.0000000000
-35	0	\N	\N
-36	1	\N	\N
-37	0	\N	\N
-38	1	\N	\N
-39	0	\N	\N
-40	0	\N	\N
-41	0	\N	\N
-42	1	\N	\N
-43	0	\N	\N
-44	0	\N	\N
-45	0	\N	\N
-46	0	\N	\N
-47	0	\N	\N
-48	1	\N	\N
-49	\N	\N	\N
+COPY preference_type (id, def_value) FROM stdin;
+4	\N
+5	\N
+6	\N
+7	\N
+8	\N
+9	\N
+10	\N
+11	\N
+12	\N
+13	\N
+14	\N
+15	\N
+16	\N
+17	\N
+18	\N
+22	\N
+23	\N
+28	\N
+29	https://www.paypal.com/en_US/i/btn/x-click-but6.gif
+30	\N
+31	2000-01-01
+49	\N
+19	1
+20	1
+21	0
+24	0
+25	0
+27	0
+32	0
+33	0
+35	0
+36	1
+37	0
+38	1
+39	0
+40	0
+41	0
+42	1
+43	0
+44	0
+45	0
+46	0
+47	0
+48	1
 \.
 
 

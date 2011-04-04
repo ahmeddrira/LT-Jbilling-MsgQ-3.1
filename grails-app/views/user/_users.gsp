@@ -55,7 +55,7 @@
 </div>
 
 <div class="btn-box">
-    <g:remoteLink action='edit' class="submit add" before="register(this);" onSuccess="render(data, next);">
+    <g:link action="edit" class="submit add">
         <span><g:message code="button.create"/></span>
-    </g:remoteLink>
+    </g:link>
 </div>

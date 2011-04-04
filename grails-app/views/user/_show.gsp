@@ -23,7 +23,20 @@
         </strong>
     </div>
 
+    <!-- user notes -->
+    <div class="box">
+        <g:if test="${customer?.notes}">
+            <p>${customer.notes}</p>
+        </g:if>
+        <g:else>
+            <p><em><g:message code="customer.detail.note.empty.message"/></em></p>
+        </g:else>
+    </div>
+
     <!-- user details -->
+    <div class="heading">
+        <strong><g:message code="customer.detail.user.title"/></strong>
+    </div>
     <div class="box">
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>
@@ -52,13 +65,55 @@
                 <td><g:message code="user.last.login"/></td>
                 <td class="value"><g:formatDate date="${selected.lastLogin}" formatName="date.pretty.format"/></td>
             </tr>
-            <tr>
-                <td><g:message code="customer.detail.user.email"/></td>
-                <td class="value"><a href="mailto:${contact?.email}">${contact?.email}</a></td>
-            </tr>
             </tbody>
         </table>
     </div>
+
+    <!-- contact details -->
+    <div class="heading">
+        <strong><g:message code="customer.detail.contact.title"/></strong>
+    </div>
+    <g:if test="${contact}">
+    <div class="box">
+
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td><g:message code="customer.detail.user.email"/></td>
+                    <td class="value"><a href="mailto:${contact?.email}">${contact?.email}</a></td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.telephone"/></td>
+                    <td class="value">
+                        <g:if test="${contact.phoneCountryCode}">${contact.phoneCountryCode}.</g:if>
+                        <g:if test="${contact.phoneAreaCode}">${contact.phoneAreaCode}.</g:if>
+                        ${contact.phoneNumber}
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.address"/></td>
+                    <td class="value">${contact.address1} ${contact.address2}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.city"/></td>
+                    <td class="value">${contact.city}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.state"/></td>
+                    <td class="value">${contact.stateProvince}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.country"/></td>
+                    <td class="value">${contact.countryCode}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.contact.zip"/></td>
+                    <td class="value">${contact.postalCode}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </g:if>
 
     <div class="btn-box">
         <div class="row">

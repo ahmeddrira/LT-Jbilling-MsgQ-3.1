@@ -1106,25 +1106,134 @@ values (50, 49, 'description', 1, 'Automatic customer recharge threshold.');
 
 
 -- preference instructions
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 4, 'instruction', 1, 'Grace period in days before ageing a customer with an overdue invoice.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 5, 'instruction', 1, 'Partner default percentage commission rate. See the Partner section of the documentation.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 6, 'instruction', 1, 'Partner default flat fee to be paid as commission. See the Partner section of the documentation.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 7, 'instruction', 1, 'Set to ''1'' to enable one-time payment for partners. If set, partners will only get paid once per customer. See the Partner section of the documentation.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 8, 'instruction', 1, 'Partner default payout period unit. See the Partner section of the documentation.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 9, 'instruction', 1, 'Partner default payout period value. See the Partner section of the documentation.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 10, 'instruction', 1, 'Set to ''1'' to enable batch payment payouts using the billing process and the configured payment processor. See the Partner section of the documentation.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 11, 'instruction', 1, 'Partner default assigned clerk id. See the Partner section of the documentation.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 12, 'instruction', 1, 'Currency ID to use when paying partners. See the Partner section of the documentation.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 13, 'instruction', 1, 'Set to ''1'' to e-mail invoices as the billing company. ''0'' to deliver invoices as jBilling.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 14, 'instruction', 1, 'Set to ''1'' to show notes in invoices, ''0'' to disable.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 15, 'instruction', 1, 'Days before the orders ''active until'' date to send the 1st notification. Leave blank to disable.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 16, 'instruction', 1, 'Days before the orders ''active until'' date to send the 2nd notification. Leave blank to disable.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 17, 'instruction', 1, 'Days before the orders ''active until'' date to send the 3rd notification. Leave blank to disable.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 18, 'instruction', 1, 'Prefix value for generated invoice public numbers.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 19, 'instruction', 1, 'The current value for generated invoice public numbers. New invoices will be assigned a public number by incrementing this value.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 20, 'instruction', 1, 'Set to ''1'' to allow invoices to be deleted, ''0'' to disable.');
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 21, 'instruction', 1, 'Set to ''1'' to allow invoice reminder notifications, ''0'' to disable.');
 
+-- no instructions for 22 - Number of days between invoice generation and first reminder
+-- no instructions for 23 - Number of days between subsequent invoice reminders
 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 24, 'instruction', 1, 'Set to ''1'' to enable, ''0'' to disable.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 25, 'instruction', 1, 'Set to ''1'' to enable the billing process to calculate interest on overdue payments, ''0'' to disable. Calculation of interest is handled by the selected penalty plug-in.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 27, 'instruction', 1, 'Set to ''1'' to use the "OrderFilterAnticipateTask" to invoice a number of months in advance, ''0'' to disable. Plug-in must be configured separately.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 28, 'instruction', 1, 'PayPal account name.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 29, 'instruction', 1, 'A URL where the graphic of the PayPal button resides. The button is displayed to customers when they are making a payment. The default is usually the best option, except when another language is needed.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 30, 'instruction', 1, 'URL for the HTTP Callback to invoke when the ageing process changes a status of a user.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 31, 'instruction', 1, 'Default "2000-01-01". If this preference is used, the system will make sure that all your invoices have their dates in a incremental way. Any invoice with a greater ''ID'' will also have a greater (or equal) date. In other words, a new invoice can not have an earlier date than an existing (older) invoice. To use this preference, set it as a string with the date where to start.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 32, 'instruction', 1, 'Set to ''1'' to attach a PDF version of the invoice to all invoice notification e-mails. ''0'' to disable.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 33, 'instruction', 1, 'Set to ''1'' to show the "include in separate invoice" flag on an order. ''0'' to disable.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 35, 'instruction', 1, 'Set to ''1'' to include the ID of the order in the description text of the resulting invoice line. ''0'' to disable. This can help to easily track which exact orders is responsible for a line in an invoice, considering that many orders can be included in a single invoice.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 36, 'instruction', 1, 'Set to ''1'' to allow customers to edit their own contact information. ''0'' to disable.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 37, 'instruction', 1, 'Set to ''1'' to mask all credit card numbers. ''0'' to disable. When set, numbers are masked to all users, even administrators, and in all log files.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 38, 'instruction', 1, 'Set to ''1'' to change the subscription status of a user when the user ages. ''0'' to disable.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 39, 'instruction', 1, 'The number of retries to allow before locking the user account. A locked user account will have their password changed to the value of lockout_password in the jbilling.properties configuration file.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 40, 'instruction', 1, 'If greater than zero, it represents the number of days that a password is valid. After those days, the password is expired and the user is forced to change it.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 41, 'instruction', 1, 'Set to ''1'' to allow the usage of the ''main subscription'' flag for orders This flag is read only by the mediation process when determining where to place charges coming from external events.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 42, 'instruction', 1, 'Set to ''1'' to allow the use of pro-rating to invoice fractions of a period. Shows the ''cycle'' attribute of an order. Note that you need to configure the corresponding plug-ins for this feature to be fully functional.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 43, 'instruction', 1, 'If the payment blacklist feature is used, this is set to the id of the configuration of the PaymentFilterTask plug-in. See the Blacklist section of the documentation.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 44, 'instruction', 1, 'Set to ''1'' to allow negative payments. ''0'' to disable');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 45, 'instruction', 1, 'Set to ''1'' to delay payment of negative invoice amounts, causing the balance to be carried over to the next invoice. Invoices that have had negative balances from other invoices transferred to them are allowed to immediately make a negative payment (credit) if needed. ''0'' to disable. Preference 44 & 46 are usually also enabled.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 46, 'instruction', 1, 'Set to ''1'' to allow invoices with negative balances to generate a new invoice that isn''t composed of any orders so that their balances will always get carried over to a new invoice for the credit to take place. ''0'' to disable. Preference 44 & 45 are usually also enabled.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 47, 'instruction', 1, 'ID of the last record read by the mediation process. This is used to determine what records are "new" and need to be read.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 48, 'instruction', 1, 'Set to ''1'' to allow the use of provisioning. ''0'' to disable.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 49, 'instruction', 1, 'The threshold value for automatic payments. Pre-paid users with an automatic recharge value set will generate an automatic payment whenever the account balance falls below this threshold. Note that you need to configure the AutoRechargeTask plug-in for this feature to be fully functional.');
 
 
 

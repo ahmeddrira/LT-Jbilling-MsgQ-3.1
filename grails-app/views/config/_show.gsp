@@ -15,6 +15,10 @@
             ${selected.getDescription(session['language_id'])}
         </p>
 
+        <p>
+            <em>${selected.getInstructions(session['language_id'])}</em>
+        </p>
+
         <fieldset>
             <div class="form-columns">
 

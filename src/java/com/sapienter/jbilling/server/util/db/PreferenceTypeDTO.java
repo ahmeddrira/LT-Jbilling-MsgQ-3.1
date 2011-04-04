@@ -92,6 +92,16 @@ public class PreferenceTypeDTO extends AbstractDescription implements java.io.Se
     protected String getTable() {
         return Constants.TABLE_PREFERENCE_TYPE;
     }
+
+    @Transient
+    public String getInstructions() {
+        return getDescription(Constants.LANGUAGE_ENGLISH_ID, "instruction");
+    }
+
+    @Transient
+    public String getInstructions(Integer languageId) {
+        return getDescription(languageId, "instruction");
+    }
 }
 
 

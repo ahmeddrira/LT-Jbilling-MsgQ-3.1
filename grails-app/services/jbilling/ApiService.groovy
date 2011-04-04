@@ -1,7 +1,5 @@
 package jbilling
 
-import java.util.Date;
-
 import com.sapienter.jbilling.server.entity.AchDTO
 import com.sapienter.jbilling.server.entity.CreditCardDTO
 import com.sapienter.jbilling.server.invoice.InvoiceWS
@@ -549,18 +547,29 @@ class ApiService implements IWebServicesSessionBean {
     public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) {
         webServicesSession.updateLineProvisioningStatus(orderLineId, provisioningStatus)
     }
-    
+
+
+    /*
+        Preferences
+     */
+
+    public void updatePreferences(PreferenceWS[] prefList) {
+        webServicesSession.updatePreferences(prefList)
+    }
+
+    void updatePreference(PreferenceWS preference) {
+        webServicesSession.updatePreference(preference)
+    }
+
+
     /*
         Notification
     */
+
     public void createUpdateNofications(Integer messageId, MessageDTO dto) {
        webServicesSession.createUpdateNofications(messageId, dto)
     }
-    
-    public void saveNotificationPreferences(PreferenceWS[] prefList) {
-        webServicesSession.saveNotificationPreferences(prefList)
-    }
-	
+
 	public void saveCustomerNotes(Integer userId, String notes) {
 		webServicesSession.saveCustomerNotes(userId, notes)
 	}

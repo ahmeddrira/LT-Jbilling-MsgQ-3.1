@@ -14,7 +14,7 @@
 <content tag="column2">
     <g:if test="${selected}">
         <!-- show selected preference type -->
-        %{--<g:render template="show" model="['selected': selected]"/>--}%
+        <g:render template="show" model="[selected: selected]"/>
     </g:if>
 </content>
 

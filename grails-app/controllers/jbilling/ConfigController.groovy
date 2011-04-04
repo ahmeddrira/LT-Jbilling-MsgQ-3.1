@@ -23,9 +23,12 @@ package jbilling
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.client.util.Constants
+import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.util.db.PreferenceDTO
-import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
+import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO
+import com.sapienter.jbilling.server.util.PreferenceWS
+import com.sapienter.jbilling.server.util.PreferenceTypeWS
+import com.sapienter.jbilling.server.util.db.JbillingTableDAS;
  
 /**
  * ConfigurationController 
@@ -40,13 +43,30 @@ class ConfigController {
 	def webServicesSession
 	def viewUtils
 	def userSession
-	
+
+	def periods = {
+		redirect controller: 'orderPeriod', action: 'list'
+	}
+
+	def mediation = {
+		redirect controller: 'mediationConfig', action: 'list'
+	}
+
+
+    /*
+        Show/edit all preferences
+     */
+
     def index = {
         def preferenceTypes = PreferenceTypeDTO.list()
 
+        // show preference if given id
+        def preferenceId = params.int('id')
+        def selected = preferenceId ? preferenceTypes.find { it.id == preferenceId } : null
+
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 
-        [ preferenceTypes : preferenceTypes ]
+        [ preferenceTypes : preferenceTypes, selected : selected ]
     }
 
     def show = {
@@ -55,6 +75,31 @@ class ConfigController {
         render template: 'show', model: [ selected : selected ]
     }
 
+    def save = {
+        def type = new PreferenceTypeWS()
+        bindData(type, params, 'type')
+
+        def preference = new PreferenceWS()
+        bindData(preference, params, 'preference')
+        preference.preferenceType = type
+
+        try {
+            webServicesSession.updatePreference(preference)
+
+            flash.message = 'preference.updated'
+            flash.args = [ type.id ]
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e)
+        }
+
+        redirect action: index, id: type.id
+    }
+
+
+    /*
+        Ageing configuration
+     */
 
 	
 	def aging = {
@@ -91,13 +136,5 @@ class ConfigController {
 			flash.error = 'config.error.saving.ageing'
 		}
 		redirect (action: 'aging')
-	}
-
-	def periods = {
-		redirect controller: 'orderPeriod', action: 'list'
-	}
-		
-	def mediation = {
-		redirect controller: 'mediationConfig', action: 'list'
 	}
 }

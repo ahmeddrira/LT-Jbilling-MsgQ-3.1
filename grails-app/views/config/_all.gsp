@@ -11,8 +11,8 @@
     <table id="users" cellspacing="0" cellpadding="0">
         <thead>
             <tr>
-                <th>Preference</th>
-                <th class="medium2">Value</th>
+                <th><g:message code="preference.th.type"/></th>
+                <th class="medium2"><g:message code="preference.th.value"/></th>
             </tr>
         </thead>
 
@@ -36,30 +36,10 @@
                                                     } ?: type.preferences.asList().first()
                                 }%
 
-                                <g:if test="${preference.strValue}">
-                                    ${preference.strValue}
-                                </g:if>
-
-                                <g:if test="${preference.intValue}">
-                                    ${preference.intValue}
-                                </g:if>
-
-                                <g:if test="${preference.floatValue}">
-                                    <g:formatNumber number="${preference.floatValue}" formatName="decimal.format"/>
-                                </g:if>
+                                ${preference.value}
                             </g:if>
                             <g:else>
-                                <g:if test="${type.strDefValue}">
-                                    ${type.strDefValue}
-                                </g:if>
-
-                                <g:if test="${type.intDefValue}">
-                                    ${type.intDefValue}
-                                </g:if>
-
-                                <g:if test="${type.floatDefValue}">
-                                    <g:formatNumber number="${type.floatDefValue}" formatName="decimal.format"/>
-                                </g:if>
+                                ${type.defaultValue}
                             </g:else>
 
                         </g:remoteLink>

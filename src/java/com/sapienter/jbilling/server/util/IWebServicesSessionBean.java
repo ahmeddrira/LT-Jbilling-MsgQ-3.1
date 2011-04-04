@@ -289,12 +289,19 @@ public interface IWebServicesSessionBean {
 
 
     /*
+        Preferences
+     */
+
+    public void updatePreferences(PreferenceWS[] prefList);
+    public void updatePreference(PreferenceWS preference);
+
+
+    /*
         Notifications
     */
 
     public void createUpdateNofications(Integer messageId, MessageDTO dto);
 
-    public void saveNotificationPreferences(PreferenceWS[] prefList);
     public void saveCustomerNotes(Integer userId, String notes);
 
 

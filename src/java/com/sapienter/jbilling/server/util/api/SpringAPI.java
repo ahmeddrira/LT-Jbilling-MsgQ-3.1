@@ -49,6 +49,7 @@ import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
+import com.sapienter.jbilling.server.util.PreferenceWS;
 import com.sapienter.jbilling.server.util.RemoteContext;
 
 import java.util.Date;
@@ -533,8 +534,20 @@ public class SpringAPI implements JbillingAPI {
 
 
     /*
-        Plug-ins
+        Preferences
      */
+
+    public void updatePreferences(PreferenceWS[] prefList) {
+        session.updatePreferences(prefList);
+    }
+
+    public void updatePreference(PreferenceWS preference) {
+        session.updatePreference(preference);
+    }
+
+    /*
+       Plug-ins
+    */
 
     public PluggableTaskWS getPluginWS(Integer pluginId) {
         return session.getPluginWS(pluginId);

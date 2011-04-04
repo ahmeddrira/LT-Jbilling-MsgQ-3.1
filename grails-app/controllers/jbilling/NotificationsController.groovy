@@ -4,7 +4,7 @@ import com.sapienter.jbilling.server.notification.MessageDTO
 import com.sapienter.jbilling.server.notification.MessageSection
 import com.sapienter.jbilling.server.notification.db.NotificationMessageDTO
 import com.sapienter.jbilling.server.notification.db.NotificationMessageTypeDTO
-import com.sapienter.jbilling.server.user.UserBL
+
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.util.PreferenceTypeWS
@@ -14,8 +14,6 @@ import com.sapienter.jbilling.server.util.db.NotificationCategoryDTO
 import com.sapienter.jbilling.server.util.db.PreferenceDTO
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.client.ViewUtils
-import com.sapienter.jbilling.common.SessionInternalError
 
 
 @Secured(['isAuthenticated()'])
@@ -145,7 +143,7 @@ class NotificationsController {
 		PreferenceWS[] array= new PreferenceWS[prefDTOs.size()]
 		array= prefDTOs.toArray(array)
         try {
-			webServicesSession.saveNotificationPreferences(array)
+			webServicesSession.updatePreferences(array)
         } catch (SessionInternalError e) {
 			log.error "Error: " + e.getMessage()
 			flash.errorMessages= e.getErrorMessages()

@@ -2407,8 +2407,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 	
 	    // update the grace period in another call
 	    IUserSessionBean userSession = (IUserSessionBean) Context.getBean(Context.Name.USER_SESSION);
-	    userSession.setEntityParameter(getCallerCompanyId(), 
-	    Constants.PREFERENCE_GRACE_PERIOD, null, gracePeriod, null);
+	    userSession.setEntityParameter(getCallerCompanyId(),
+                                       Constants.PREFERENCE_GRACE_PERIOD,
+                                       (gracePeriod != null ? gracePeriod.toString() : null));
     }
     
     /*
@@ -2666,6 +2667,24 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
 
     /*
+        Preferences
+     */
+
+    public void updatePreferences(PreferenceWS[] prefList) {
+        PreferenceBL bl = new PreferenceBL();
+        for (PreferenceWS pref: prefList) {
+            bl.createUpdateForEntity(getCallerCompanyId(), pref.getPreferenceType().getId(), pref.getValue());
+        }
+    }
+
+    public void updatePreference(PreferenceWS preference) {
+        new PreferenceBL().createUpdateForEntity(getCallerCompanyId(),
+                                                 preference.getPreferenceType().getId(),
+                                                 preference.getValue());
+    }
+
+
+    /*
        Notifications
      */
 
@@ -2675,14 +2694,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         } else {
             new NotificationBL(messageId).createUpdate(getCallerCompanyId(), dto);
 }
-    }
-
-    public void saveNotificationPreferences(PreferenceWS[] prefList) {
-        PreferenceBL bl = new PreferenceBL();
-        for (PreferenceWS pref: prefList) {
-            bl.createUpdateForEntity(getCallerCompanyId(), pref.getPreferenceType().getId(),
-                                     pref.getIntValue(), pref.getStrValue(), pref.getFloatValue());
-        }
     }
 
     /*Secured via WSSecurityMethodMapper entry.*/

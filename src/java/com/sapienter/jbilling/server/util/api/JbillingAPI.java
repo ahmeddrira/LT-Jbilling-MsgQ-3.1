@@ -47,6 +47,7 @@ import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
+import com.sapienter.jbilling.server.util.PreferenceWS;
 
 import java.util.Date;
 import java.util.List;
@@ -254,6 +255,13 @@ public interface JbillingAPI {
      */
 
     public void generateRules(String rulesData);
+
+
+    /*
+        Preferences
+     */
+    public void updatePreferences(PreferenceWS[] prefList);
+    public void updatePreference(PreferenceWS preference);
 
 
     /*

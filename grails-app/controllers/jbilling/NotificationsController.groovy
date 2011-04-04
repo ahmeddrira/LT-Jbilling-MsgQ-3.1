@@ -162,46 +162,46 @@ class NotificationsController {
 
 	def List<PreferenceWS> bindDTOs(params)  {
         List<PreferenceWS> prefDTOs= new ArrayList<PreferenceWS>();
+
         def count = params.recCnt.toInteger()
-        for (int i=0; i < count; i++) {
+
+        for (int i = 0; i < count; i++) {
             log.debug  "loop=" + params.get("pref["+i+"].id")
             PreferenceWS dto = new PreferenceWS()
             dto.setPreferenceType(new PreferenceTypeWS())
-            //dto.setJbillingTable(new JbillingTable())
+
             dto.setForeignId(webServicesSession.getCallerCompanyId())
+
             bindData(dto, params["pref["+i+"]"])
-            
+
             switch (i) {
-                case 0: 
+                case 0:
                 case 1:
-                case 5: 
+                case 5:
                     if (params["pref["+i+"].value"]) {
-                        dto.setIntValue(1)
+                        dto.setValue("1")
                     } else {
-                        dto.setIntValue(0)
+                        dto.setValue("0")
                     }
-                    dto.setStrValue(null)
-                    dto.setFloatValue(null)
                     break;
-                default: 
+                default:
                     if (params["pref["+i+"].value"]) {
-						def val=params["pref["+i+"].value"]
-						try {
-							dto.setIntValue(val.toInteger())
-						} catch (NumberFormatException e) {
-							SessionInternalError exception = new SessionInternalError("Validation of Preference Value");
-							String [] errmsgs= new String[1]
-							errmsgs[0]="PreferenceWS,intValue,validation.error.nonnumeric.days.order.notification," + val;
-							exception.setErrorMessages(errmsgs);
-							throw exception;
-						}
+                        def val = params["pref["+i+"].value"]
+                        try {
+                            Integer value = val.toInteger()
+                            dto.setValue(value?.toString())
+                        } catch (NumberFormatException e) {
+                            SessionInternalError exception = new SessionInternalError("Validation of Preference Value");
+                            String [] errmsgs= new String[1]
+                            errmsgs[0]="PreferenceWS,intValue,validation.error.nonnumeric.days.order.notification," + val;
+                            exception.setErrorMessages(errmsgs);
+                            throw exception;
+                        }
                     } else {
-                        dto.setIntValue(0)
+                        dto.setValue("0")
                     }
-                    dto.setStrValue(null)
-                    dto.setFloatValue(null)
             }
-            log.debug  "dto.intValue=" + dto.getIntValue()
+            log.debug  "dto.intValue=" + dto.value
             prefDTOs.add(dto);
         }
         return prefDTOs;

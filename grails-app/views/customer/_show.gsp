@@ -261,7 +261,7 @@
 
     <g:render template="/confirm"
               model="['message': 'customer.delete.confirm',
-                      'controller': 'user',
+                      'controller': 'customer',
                       'action': 'delete',
                       'id': selected.id,
                       'ajax': true,

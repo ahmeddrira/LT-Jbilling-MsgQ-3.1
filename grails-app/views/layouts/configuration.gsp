@@ -103,7 +103,7 @@
                         </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'users' ? 'active' : ''}">
-                        <g:link controller="config" action="users">
+                        <g:link controller="user" action="list">
                             <g:message code="configuration.menu.users"/>
                         </g:link>
                     </li>

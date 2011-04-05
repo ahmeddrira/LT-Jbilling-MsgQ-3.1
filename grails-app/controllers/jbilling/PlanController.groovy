@@ -94,7 +94,19 @@ class PlanController {
      */
     def delete = {
         if (params.id) {
-            def plan = webServicesSession.getPlanWS(params.int('id'))
+            def plan
+
+            try {
+                plan = webServicesSession.getPlanWS(params.int('id'))
+            } catch (SessionInternalError e) {
+                log.error("Could not fetch WS object", e)
+
+                flash.error = 'plan.not.found'
+                flash.args = [ params.id ]
+
+                redirect action: 'list'
+                return
+            }
 
             webServicesSession.deletePlan(plan.id)
             webServicesSession.deleteItem(plan.itemId)

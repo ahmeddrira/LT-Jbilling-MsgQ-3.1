@@ -83,6 +83,17 @@ class OrderBuilderController {
         initialize {
             action {
                 def order = params.id ? webServicesSession.getOrder(params.int('id')) : new OrderWS()
+
+                if (!order) {
+                    log.error("Could not fetch WS object")
+
+                    session.error = 'order.not.found'
+                    session.args = [ params.id ]
+
+                    redirect controller: 'order', action: 'list'
+                    return
+                }
+
                 def user = UserDTO.get(order?.userId ?: params.int('userId'))
                 def contact = ContactDTO.findByUserId(order?.userId ?: user.id)
 

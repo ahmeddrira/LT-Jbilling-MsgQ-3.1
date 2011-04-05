@@ -223,6 +223,14 @@ class ProductController {
     def editCategory = {
         def category = params.id ? ItemTypeDTO.get(params.id) : null
 
+        if (params.id && !category) {
+            flash.error = 'product.category.not.found'
+            flash.args = [ params.id ]
+
+            redirect controller: 'product', action: 'list'
+            return
+        }
+
         breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
 
         [ category : category ]
@@ -272,7 +280,19 @@ class ProductController {
      * this screen will allow creation of a new item.
      */
     def editProduct = {
-        def product = params.id ? webServicesSession.getItem(params.int('id'), session['user_id'], null) : null
+        def product
+
+        try {
+            product = params.id ? webServicesSession.getItem(params.int('id'), session['user_id'], null) : null
+        } catch (SessionInternalError e) {
+            log.error("Could not fetch WS object", e)
+
+            flash.error = 'product.not.found'
+            flash.args = [ params.id ]
+
+            redirect controller: 'product', action: 'list'
+            return
+        }
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
 

@@ -37,7 +37,7 @@ class CustomerController {
     def filterService
     def recentItemService
     def breadcrumbService
-    
+
     def index = {
         redirect action: list, params: params
     }
@@ -63,9 +63,9 @@ class CustomerController {
                     }
                 }
 
-				roles {
-					eq('id', Constants.TYPE_CUSTOMER)
-				}
+                roles {
+                    eq('id', Constants.TYPE_CUSTOMER)
+                }
                 eq('company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
             }
@@ -190,9 +190,24 @@ class CustomerController {
      * will allow creation of a new user.
      */
     def edit = {
-        def user = params.id ? webServicesSession.getUserWS(params.int('id')) : null
-        def contacts = user ? webServicesSession.getUserContactsWS(user.userId) : null
-        def parent = params.parentId ? webServicesSession.getUserWS(params.int('parentId')) : null
+        def user
+        def contacts
+        def parent
+
+        try {
+            user = params.id ? webServicesSession.getUserWS(params.int('id')) : null
+            contacts = user ? webServicesSession.getUserContactsWS(user.userId) : null
+            parent = params.parentId ? webServicesSession.getUserWS(params.int('parentId')) : null
+        } catch (SessionInternalError e) {
+            log.error("Could not fetch WS object", e)
+
+            flash.error = 'customer.not.found'
+            flash.args = [ params.id ]
+
+            redirect controller: 'customer', action: 'list'
+            return
+        }
+
         def company = CompanyDTO.get(session['company_id'])
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))

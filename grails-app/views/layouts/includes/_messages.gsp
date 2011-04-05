@@ -20,6 +20,16 @@
         </div>
     </g:if>
 
+    <g:if test='${session.error}'>
+        <div class="msg-box error">
+            <img src="${resource(dir:'images', file:'icon14.gif')}" alt="${message(code:'error.icon.alt',default:'Error')}"/>
+            <strong><g:message code="flash.error.title"/></strong>
+            <p><g:message code="${session.error}" args="${session.args}"/></p>
+
+            <g:set var="error" value="" scope="session"/>
+        </div>
+    </g:if>
+
     <g:if test='${flash.message}'>
         <div class="msg-box successfully">
             <img src="${resource(dir:'images', file:'icon20.gif')}" alt="${message(code:'success.icon.alt',default:'Success')}"/>

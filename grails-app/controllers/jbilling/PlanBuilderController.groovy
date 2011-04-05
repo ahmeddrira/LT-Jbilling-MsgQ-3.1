@@ -80,8 +80,21 @@ class PlanBuilderController {
          */
         initialize {
             action {
-                def plan = params.id ? webServicesSession.getPlanWS(params.int('id')) : new PlanWS()
-                def product = plan?.itemId ? webServicesSession.getItem(plan.itemId, session['user_id'], null) : new ItemDTOEx()
+                def plan
+                def product
+
+                try {
+                    plan = params.id ? webServicesSession.getPlanWS(params.int('id')) : new PlanWS()
+                    product = plan?.itemId ? webServicesSession.getItem(plan.itemId, session['user_id'], null) : new ItemDTOEx()
+                } catch (SessionInternalError e) {
+                    log.error("Could not fetch WS object", e)
+
+                    session.error = 'plan.not.found'
+                    session.args = [ params.id ]
+
+                    redirect controller: 'plan', action: 'list'
+                    return
+                }
 
                 def company = CompanyDTO.get(session['company_id'])
                 def itemTypes = productService.getItemTypes()

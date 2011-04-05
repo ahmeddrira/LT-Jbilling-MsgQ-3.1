@@ -238,8 +238,23 @@ class PaymentController {
      * to create a new payment, as creation requires a wizard style flow where the user is selected first.
      */
     def edit = {
-        def payment = params.id ? webServicesSession.getPayment(params.int('id')) : new PaymentWS()
-        def user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
+        def payment
+        def user
+
+        try {
+            payment = params.id ? webServicesSession.getPayment(params.int('id')) : new PaymentWS()
+            user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
+        } catch (SessionInternalError e) {
+            log.error("Could not fetch WS object", e)
+
+            flash.error = 'payment.not.found'
+            flash.args = [ params.id ]
+
+            redirect controller: 'payment', action: 'list'
+            return
+        }
+
+
         def invoices = getUnpaidInvoices(user.userId)
         def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
 

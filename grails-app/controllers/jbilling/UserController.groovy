@@ -82,8 +82,22 @@ class UserController {
     }
 
     def edit = {
-        def user = params.id ? webServicesSession.getUserWS(params.int('id')) : new UserWS()
-        def contacts = user ? webServicesSession.getUserContactsWS(user.userId) : null
+        def user
+        def contacts
+
+        try {
+            user = params.id ? webServicesSession.getUserWS(params.int('id')) : new UserWS()
+            contacts = user ? webServicesSession.getUserContactsWS(user.userId) : null
+        } catch (SessionInternalError e) {
+            log.error("Could not fetch WS object", e)
+
+            flash.error = 'user.not.found'
+            flash.args = [ params.id ]
+
+            redirect controller: 'user', action: 'list'
+            return
+        }
+
         def company = CompanyDTO.get(session['company_id'])
 
         [ user: user, contacts: contacts, company: company ]

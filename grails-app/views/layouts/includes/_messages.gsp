@@ -9,6 +9,17 @@
 <%-- either 'flash.message', 'flash.info', 'flash.warn' or 'flash.error' --%>
 <%-- will also print all messages from 'flash.errorMessages' as an unordered list --%>
 <div id="messages">
+
+    <g:if test='${session.message}'>
+        <div class="msg-box successfully">
+            <img src="${resource(dir:'images', file:'icon20.gif')}" alt="${message(code:'success.icon.alt',default:'Success')}"/>
+            <strong><g:message code="flash.success.title"/></strong>
+            <p><g:message code="${session.message}" args="${session.args}"/></p>
+
+            <g:set var="message" value="" scope="session"/>
+        </div>
+    </g:if>
+
     <g:if test='${flash.message}'>
         <div class="msg-box successfully">
             <img src="${resource(dir:'images', file:'icon20.gif')}" alt="${message(code:'success.icon.alt',default:'Success')}"/>

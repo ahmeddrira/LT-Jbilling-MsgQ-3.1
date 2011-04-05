@@ -417,9 +417,17 @@ class OrderBuilderController {
                         log.debug("creating order ${order}")
                         order.id = webServicesSession.createOrder(order)
 
+                        // set success message in session, contents of the flash scope doesn't survive
+                        // the redirect to the order list when the web-flow finishes
+                        session.message = 'order.created'
+                        session.args = [ order.id, order.userId ]
+
                     } else {
                         log.debug("saving changes to order ${order.id}")
                         webServicesSession.updateOrder(order)
+
+                        session.message = 'order.updated'
+                        session.args = [ order.id, order.userId ]
                     }
 
                 } catch (SessionInternalError e) {

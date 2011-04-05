@@ -412,12 +412,20 @@ class PlanBuilderController {
                         log.debug("creating plan ${plan}")
                         plan.id = webServicesSession.createPlan(plan)
 
+                        // set success message in session, contents of the flash scope doesn't survive
+                        // the redirect to the order list when the web-flow finishes
+                        session.message = 'plan.created'
+                        session.args = [ plan.id ]
+
                     } else {
                         log.debug("saving changes to plan subscription item ${product.id}")
                         webServicesSession.updateItem(product)
 
                         log.debug("saving changes to plan ${plan.id}")
                         webServicesSession.updatePlan(plan)
+
+                        session.message = 'plan.updated'
+                        session.args = [ plan.id ]
                     }
 
                 } catch (SessionInternalError e) {

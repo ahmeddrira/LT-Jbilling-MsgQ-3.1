@@ -58,7 +58,7 @@
     <div id="navigation">
         <%-- select the current menu item based on the controller name --%>
         <ul>
-            <li class="${controllerName == 'user' ? 'active' : ''}">
+            <li class="${controllerName == 'customer' ? 'active' : ''}">
                 <g:link controller="customer"><span><g:message code="menu.link.customers"/></span><em></em></g:link>
             </li>
             <li class="${controllerName == 'invoice' ? 'active' : ''}">
@@ -85,9 +85,18 @@
             <li class="${controllerName == 'plan' ? 'active' : ''}">
                 <g:link controller="plan"><span><g:message code="menu.link.plans"/></span><em></em></g:link>
             </li>
-            <li class="${controllerName == 'config' || controllerName == 'plugin' || controllerName == 'notifications' || 
-                controllerName == 'billingconfiguration' || controllerName == 'contactFieldConfig' ? 'active' : '' ||
-                controllerName == 'mediationConfig' ? 'active' : ''}">
+
+            %{
+                def isConfiguration = controllerName == 'config' ||
+                                      controllerName == 'plugin' ||
+                                      controllerName == 'notifications' ||
+                                      controllerName == 'billingconfiguration' ||
+                                      controllerName == 'contactFieldConfig' ||
+                                      controllerName == 'mediationConfig' ||
+                                      controllerName == 'user'
+            }%
+
+            <li class="${isConfiguration ? 'active' : ''}">
                 <g:link controller="config"><span><g:message code="menu.link.configuration"/></span><em></em></g:link>
             </li>
         </ul>

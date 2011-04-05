@@ -23,6 +23,7 @@ import com.sapienter.jbilling.client.util.DownloadHelper
 import org.springframework.web.servlet.support.RequestContextUtils
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.i18n.SessionLocaleResolver
+import com.sapienter.jbilling.client.user.UserHelper
 
 @Secured(['isAuthenticated()'])
 class CustomerController {
@@ -204,104 +205,17 @@ class CustomerController {
      */
     def save = {
         def user = new UserWS()
-        user.setMainRoleId(Constants.TYPE_CUSTOMER)
-        bindData(user, params, 'user')
+        UserHelper.bindUser(user, params)
 
-        def company = CompanyDTO.get(session['company_id'])
-        def contactTypes = company.contactTypes
-        def primaryContactTypeId = params.int('primaryContactTypeId')
-
-        // bind primary user contact and custom contact fields
-        def contact = new ContactWS()
-        bindData(contact, params, "contact-${params.primaryContactTypeId}")
-        contact.type = primaryContactTypeId
-		contact.include = params.get("contact-${params.primaryContactTypeId}.include") ? 1 : 0
-
-        if (params.contactField) {
-            contact.fieldIDs = new Integer[params.contactField.size()]
-            contact.fieldValues = new Integer[params.contactField.size()]
-            params.contactField.eachWithIndex { id, value, i ->
-                contact.fieldIDs[i] = id.toInteger()
-                contact.fieldValues[i] = value
-            }
-        }
-
-        user.setContact(contact)
-
-        log.debug("Primary contact: ${contact}")
-
-
-        // bind secondary contact types
         def contacts = []
-        contactTypes.findAll{ it.id != primaryContactTypeId }.each{
-            // bind if contact object if parameters present
-            if (params["contact-${it.id}"].any { key, value -> value }) {
-                def otherContact = new ContactWS()
-                bindData(otherContact, params, "contact-${it.id}")
-                otherContact.type = it.id
-				//checkbox values are not bound automatically since it throws a data conversion error
-				otherContact.include= params.get('contact-' + it.id + '.include') ? 1 : 0
+        def company = CompanyDTO.get(session['company_id'])
+        UserHelper.bindContacts(user, contacts, company, params)
 
-                contacts << otherContact;
-            }
-        }
-
-        log.debug("Secondary contacts: ${contacts}")
-
-
-        // bind credit card object if parameters present
-        if (params.creditCard.any { key, value -> value }) {
-            def creditCard = new CreditCardDTO()
-            bindData(creditCard, params, 'creditCard')
-            bindExpiryDate(creditCard, params)
-
-            // update credit card only if not obscured
-            if (!creditCard.number.startsWith('*'))
-                user.setCreditCard(creditCard)
-        }
-
-        // bind ach object if parameters present
-        if (params.ach.any { key, value -> value }) {
-            def ach = new AchDTO()
-            bindData(ach, params, 'ach')
-            user.setAch(ach)
-
-            log.debug("ACH ${ach}")
-        }
-
-        log.debug("Customer ACH ${user.ach}")
-
-
-        // set automatic payment type
-        if (params.creditCardAutoPayment) user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_CC)
-        if (params.achAutoPayment) user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
-
-        // set password
         def oldUser = (user.userId && user.userId != 0) ? webServicesSession.getUserWS(user.userId) : null
-        if (oldUser) {
-            if (params.newPassword) {
-                // validate that the entered confirmation password matches the users existing password
-                if (!passwordEncoder.isPasswordValid(oldUser.password, params.oldPassword, null)) {
-                    flash.error = 'customer.current.password.doesnt.match.existing'
-                    render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
-                    return
-                }
-            }
-        } else {
-            if (!params.newPassword) {
-                flash.error = 'customer.create.without.password'
-                render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
-                return
-            }
-        }
+        UserHelper.bindPassword(user, oldUser, params, flash)
 
-        // verify passwords
-        if (params.newPassword == params.verifiedPassword) {
-            if (params.newPassword) user.setPassword(params.newPassword)
-
-        } else {
-            flash.error = 'customer.passwords.dont.match'
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
+        if (flash.error) {
+            render view: 'edit', model: [ user: user, contacts: contacts, company: company ]
             return
         }
 
@@ -343,20 +257,6 @@ class CustomerController {
         }
 
         chain action: 'list', params: [ id: user.userId ]
-    }
-
-    def bindExpiryDate(CreditCardDTO creditCard, GrailsParameterMap params) {
-        Integer expiryMonth = params.int('expiryMonth')
-        Integer expiryYear = params.int('expiryYear')
-
-        if (expiryMonth && expiryYear)  {
-            Calendar calendar = Calendar.getInstance()
-            calendar.clear()
-            calendar.set(Calendar.MONTH, expiryMonth)
-            calendar.set(Calendar.YEAR, expiryYear)
-
-            creditCard.expiry = calendar.getTime()
-        }
     }
 
     def getCurrencies() {

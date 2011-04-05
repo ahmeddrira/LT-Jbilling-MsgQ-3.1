@@ -31,6 +31,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.user.ContactWS
+import com.sapienter.jbilling.client.user.UserHelper
 
 @Secured(['isAuthenticated()'])
 class UserController {
@@ -67,7 +68,11 @@ class UserController {
         def users = getList(params)
         def selected = params.id ? UserDTO.get(params.int("id")) : null
 
-        [ users: users, selected: selected ]
+        if (params.applyFilter) {
+            render template: 'users', model: [ users: users, selected: selected ]
+        } else {
+            render view: 'list', model: [ users: users, selected: selected ]
+        }
     }
 
     def show = {
@@ -78,9 +83,10 @@ class UserController {
 
     def edit = {
         def user = params.id ? webServicesSession.getUserWS(params.int('id')) : new UserWS()
+        def contacts = user ? webServicesSession.getUserContactsWS(user.userId) : null
         def company = CompanyDTO.get(session['company_id'])
 
-        [ user: user, company: company ]
+        [ user: user, contacts: contacts, company: company ]
     }
 
 
@@ -89,75 +95,17 @@ class UserController {
      */
     def save = {
         def user = new UserWS()
-        bindData(user, params, 'user')
+        UserHelper.bindUser(user, params)
 
-        def company = CompanyDTO.get(session['company_id'])
-        def contactTypes = company.contactTypes
-        def primaryContactTypeId = params.int('primaryContactTypeId')
-
-        // bind primary user contact and custom contact fields
-        def contact = new ContactWS()
-        bindData(contact, params, "contact-${params.primaryContactTypeId}")
-        contact.type = primaryContactTypeId
-		contact.include = params.get("contact-${params.primaryContactTypeId}.include") ? 1 : 0
-
-        if (params.contactField) {
-            contact.fieldIDs = new Integer[params.contactField.size()]
-            contact.fieldValues = new Integer[params.contactField.size()]
-            params.contactField.eachWithIndex { id, value, i ->
-                contact.fieldIDs[i] = id.toInteger()
-                contact.fieldValues[i] = value
-            }
-        }
-
-        user.setContact(contact)
-
-        log.debug("Primary contact: ${contact}")
-
-
-        // bind secondary contact types
         def contacts = []
-        contactTypes.findAll{ it.id != primaryContactTypeId }.each{
-            // bind if contact object if parameters present
-            if (params["contact-${it.id}"].any { key, value -> value }) {
-                def otherContact = new ContactWS()
-                bindData(otherContact, params, "contact-${it.id}")
-                otherContact.type = it.id
-				//checkbox values are not bound automatically since it throws a data conversion error
-				otherContact.include= params.get('contact-' + it.id + '.include') ? 1 : 0
+        def company = CompanyDTO.get(session['company_id'])
+        UserHelper.bindContacts(user, contacts, company, params)
 
-                contacts << otherContact;
-            }
-        }
-
-        log.debug("Secondary contacts: ${contacts}")
-
-        // set password
         def oldUser = (user.userId && user.userId != 0) ? webServicesSession.getUserWS(user.userId) : null
-        if (oldUser) {
-            if (params.newPassword) {
-                // validate that the entered confirmation password matches the users existing password
-                if (!passwordEncoder.isPasswordValid(oldUser.password, params.oldPassword, null)) {
-                    flash.error = 'customer.current.password.doesnt.match.existing'
-                    render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
-                    return
-                }
-            }
-        } else {
-            if (!params.newPassword) {
-                flash.error = 'customer.create.without.password'
-                render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
-                return
-            }
-        }
+        UserHelper.bindPassword(user, oldUser, params, flash)
 
-        // verify passwords
-        if (params.newPassword == params.verifiedPassword) {
-            if (params.newPassword) user.setPassword(params.newPassword)
-
-        } else {
-            flash.error = 'customer.passwords.dont.match'
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
+        if (flash.error) {
+            render view: 'edit', model: [ user: user, contacts: contacts, company: company ]
             return
         }
 
@@ -168,7 +116,7 @@ class UserController {
 
                 user.userId = webServicesSession.createUser(user)
 
-                flash.message = 'customer.created'
+                flash.message = 'user.created'
                 flash.args = [ user.userId ]
 
             } else {
@@ -176,11 +124,7 @@ class UserController {
 
                 webServicesSession.updateUser(user)
 
-                if (user.ach) {
-                    webServicesSession.updateAch(user.userId, user.ach)
-                }
-
-                flash.message = 'customer.updated'
+                flash.message = 'user.updated'
                 flash.args = [ user.userId ]
             }
 
@@ -193,7 +137,6 @@ class UserController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            company = CompanyDTO.get(session['company_id'])
             render view: 'edit', model: [ user: user, contacts: contacts, company: company ]
             return
         }

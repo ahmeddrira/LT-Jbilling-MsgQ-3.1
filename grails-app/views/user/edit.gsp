@@ -81,7 +81,12 @@
                         <g:applyLayout name="form/select">
                             <content tag="label"><g:message code="prompt.user.role"/></content>
                             <content tag="label.for">user.mainRoleId</content>
-                            <g:selectRoles name="user.mainRoleId" languageId="${session['language_id']}" value="${user?.mainRoleId}"/>
+
+                            <g:select name="user.mainRoleId"
+                                      from="[new RoleDTO(Constants.TYPE_CLERK), new RoleDTO(Constants.TYPE_ROOT)]"
+                                      optionKey="id"
+                                      optionValue="${{ it.getTitle(session['language_id']) }}"
+                                      value="${user?.mainRoleId}"/>
                         </g:applyLayout>
                     </div>
 

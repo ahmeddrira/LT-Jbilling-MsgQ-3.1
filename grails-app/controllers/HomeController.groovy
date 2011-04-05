@@ -1,5 +1,6 @@
 import grails.plugins.springsecurity.Secured
 import jbilling.Breadcrumb
+import com.sapienter.jbilling.common.SessionInternalError
 /*
  jBilling - The Enterprise Open Source Billing System
  Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -44,5 +45,9 @@ class HomeController {
             // show default page
             redirect(controller: "customer")
         }
+    }
+
+    def exception = {
+        throw new SessionInternalError("Some exception...")
     }
 }

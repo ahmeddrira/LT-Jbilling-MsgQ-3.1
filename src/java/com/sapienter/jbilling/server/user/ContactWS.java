@@ -26,38 +26,45 @@
  */
 package com.sapienter.jbilling.server.user;
 
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
+import com.sapienter.jbilling.server.util.api.validation.EntitySignupValidationGroup;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
-
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.Email;
-
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 
 /** @author Emil */
 public class ContactWS implements Serializable {
 
     private Integer id;
+    @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
     private String organizationName;
+    @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
     private String address1;
     private String address2;
     private String city;
+    @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
     private String stateProvince;
+    @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
     private String postalCode;
+    @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
     private String countryCode;
+    @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
     private String lastName;
+    @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
     private String firstName;
     private String initial;
     private String title;
     private Integer phoneCountryCode;
     private Integer phoneAreaCode;
+    @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
     private String phoneNumber;
     private Integer faxCountryCode;
     private Integer faxAreaCode;
     private String faxNumber;
-    @NotNull(message = "validation.error.notnull")
+    @NotEmpty(message = "validation.error.notnull")
     @Email(message = "validation.error.email")
     private String email;
     private Date createDate;

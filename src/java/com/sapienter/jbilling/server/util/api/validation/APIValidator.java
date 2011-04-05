@@ -140,12 +140,20 @@ public class APIValidator implements MethodBeforeAdvice {
      * Validates the given object and throws a SessionInternalError with error messages if
      * any validation constraint has been violated.
      *
+     * If a group is specified then only the validations for the given group will be run.
+     *
      * @param object object to validate
+     * @params validationGroup group to run
      * @throws SessionInternalError if validation failed
      */
-    public void validateObject(Object object) throws SessionInternalError{
-        // run all common validations
-        Set<ConstraintViolation<Object>> constraintViolations = getValidator().validate(object);
+    public void validateObject(Object object, Class validationGroup) throws SessionInternalError{
+        // run validations
+        Set<ConstraintViolation<Object>> constraintViolations;
+        if (validationGroup != null) {
+            constraintViolations = getValidator().validate(object, validationGroup);
+        } else {
+            constraintViolations = getValidator().validate(object);
+        }
 
         // build error messages
         String objectName = getObjectName(object);
@@ -156,5 +164,10 @@ public class APIValidator implements MethodBeforeAdvice {
             throw new SessionInternalError("Validation object '" + objectName + "' failed.",
                                            errors.toArray(new String[errors.size()]));
         }
+    }
+
+
+    public void validateObject(Object object) throws SessionInternalError {
+        validateObject(object, null);
     }
 }

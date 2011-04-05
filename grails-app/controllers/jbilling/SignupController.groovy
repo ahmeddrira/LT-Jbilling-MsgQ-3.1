@@ -34,6 +34,10 @@ import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO
 import com.sapienter.jbilling.server.user.contact.db.ContactMapDTO
 import com.sapienter.jbilling.server.util.db.JbillingTable
 import com.sapienter.jbilling.client.EntityDefaults
+import javax.validation.constraints.NotNull
+import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.server.util.api.validation.EntitySignupValidationGroup
+import com.sapienter.jbilling.server.user.ContactWS
 
 /**
  * SignupController 
@@ -43,8 +47,10 @@ import com.sapienter.jbilling.client.EntityDefaults
  */
 class SignupController {
 
+    def webServicesValidationAdvice
     def messageSource
     def passwordEncoder
+    def viewUtils
 
     def index = {
     }
@@ -52,17 +58,28 @@ class SignupController {
     def save = {
         // validate admin user password
         if (!params['user.password']) {
-            flash.error = 'customer.create.without.password'
+            flash.error = 'password.required'
             render view: 'index'
             return
         }
 
         if (params['user.password'] != params.verifiedPassword) {
-            flash.error = 'customer.passwords.dont.match'
+            flash.error = 'passwords.dont.match'
             render view: 'index'
             return
         }
 
+        // validate required contact fields
+        try {
+            def required = new ContactWS()
+            bindData(required, params, 'contact')
+            webServicesValidationAdvice.validateObject(required, EntitySignupValidationGroup.class)
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e)
+            render view: 'index'
+            return
+        }
 
         /*
             Create the new entity, root user and basic contact information

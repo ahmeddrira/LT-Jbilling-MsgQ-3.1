@@ -2,6 +2,17 @@
 <html>
 <head>
     <meta name="layout" content="main" />
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#contactType').change(function() {
+                var selected = $('#contact-' + $(this).val());
+                $(selected).show();
+                $('div.contact').not(selected).hide();
+            }).change();
+        });
+    </script>
 </head>
 <body>
 <div class="form-edit">

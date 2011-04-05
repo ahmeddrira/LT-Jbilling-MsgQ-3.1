@@ -31,13 +31,13 @@
                     </td>
 
                     <td>
-                        <g:remoteLink class="cell double" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                             ${contact.firstName} ${contact.lastName}
                         </g:remoteLink>
                     </td>
 
                     <td>
-                        <g:remoteLink class="cell double" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:remoteLink class="cell" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                             ${contact.organizationName}
                         </g:remoteLink>
                     </td>

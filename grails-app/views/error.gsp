@@ -56,11 +56,13 @@
                     </tr>
                 </table>
 
-                <div class="code">
-                    <g:each var="cs" in="${exception.codeSnippet}">
-                        ${cs?.encodeAsHTML()}<br />
-                    </g:each>
-                </div>
+                <g:if test="${exception.codeSnippet}">
+                    <div class="code">
+                        <g:each var="cs" in="${exception.codeSnippet}">
+                            ${cs?.encodeAsHTML()}<br />
+                        </g:each>
+                    </div>
+                </g:if>
             </div>
 
             <!-- stack trace -->

@@ -120,10 +120,10 @@ class CustomerController {
      */
     def show = {
         UserDTO user = UserDTO.get(params.int('id'))
-        def revenue = webServicesSession.getTotalRevenueByUser(params.int('id'))
+        def revenue = webServicesSession.getTotalRevenueByUser(user.userId)
 
-        recentItemService.addRecentItem(params.int('id'), RecentItemType.CUSTOMER)
-        breadcrumbService.addBreadcrumb(controllerName, 'list', params.template ?: null, params.int('id'))
+        recentItemService.addRecentItem(user.userId, RecentItemType.CUSTOMER)
+        breadcrumbService.addBreadcrumb(controllerName, 'list', params.template ?: null, user.userId)
 
         render template: params.template ?: 'show', model: [ selected: user, revenue: revenue ]
     }

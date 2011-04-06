@@ -117,21 +117,32 @@
         <strong><g:message code="customer.detail.payment.title"/></strong>
     </div>
     <div class="box">
-        <g:set var="invoice" value="${selected.invoices ? selected.invoices.asList().first() : null}"/>
-        <g:set var="payment" value="${selected.payments ? selected.payments.asList().first() : null}"/>
+        <!-- show most recent order, invoice and payment -->
+        <g:set var="order" value="${selected.orders ? selected.orders.asList().sort{ it.createDate }.last() : null}"/>
+        <g:set var="invoice" value="${selected.invoices ? selected.invoices.asList().sort{ it.createDatetime }.last() : null}"/>
+        <g:set var="payment" value="${selected.payments ? selected.payments.asList().sort{ it.paymentDate ?: it.createDatetime }.last() : null}"/>
 
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>
+            <tr>
+                <td>Last Order Date</td>
+                <td class="value">
+                    <g:remoteLink controller="order" action="show" id="${order.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:formatDate date="${order.createDate}" formatName="date.pretty.format"/>
+                    </g:remoteLink>
+
+                    <g:if test="${order}"> - </g:if>
+
+                    <g:link controller="order" action="user" id="${selected.id}">
+                        <g:message code="customer.show.all.orders"/>
+                    </g:link>
+                </td>
+            </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.invoiced.date"/></td>
                     <td class="value">
                         <g:remoteLink controller="invoice" action="show" id="${invoice?.id}" before="register(this);" onSuccess="render(data, next);">
-
-
                             <g:formatDate date="${invoice?.createDatetime}" formatName="date.pretty.format"/>
-
-
-
                         </g:remoteLink>
                     </td>
                 </tr>

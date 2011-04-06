@@ -28,6 +28,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -137,37 +138,48 @@ public class APIValidator implements MethodBeforeAdvice {
 	}
 
     /**
-     * Validates the given object and throws a SessionInternalError with error messages if
-     * any validation constraint has been violated.
+     * Run validations for the given object.
      *
      * If a group is specified then only the validations for the given group will be run.
      *
      * @param object object to validate
-     * @params validationGroup group to run
+     * @param validationGroups groups to run
      * @throws SessionInternalError if validation failed
      */
-    public void validateObject(Object object, Class validationGroup) throws SessionInternalError{
-        // run validations
-        Set<ConstraintViolation<Object>> constraintViolations;
-        if (validationGroup != null) {
-            constraintViolations = getValidator().validate(object, validationGroup);
-        } else {
-            constraintViolations = getValidator().validate(object);
-        }
+    public void validateObject(Object object, Class... validationGroups) throws SessionInternalError{
+       validateObjects(Arrays.asList(object), validationGroups);
+    }
 
-        // build error messages
-        String objectName = getObjectName(object);
-        List<String> errors = getErrorMessages(constraintViolations, objectName);
+    /**
+     * Validate all objects in the given list and throw a SessionInternalError if any
+     * constraints have been violated.
+     *
+     * If a group is specified then only the validations for the given group will be run.
+     *
+     * @param objects objects to validate
+     * @param validationGroups groups to run
+     * @throws SessionInternalError if validation failed
+     */
+    public void validateObjects(List<Object> objects, Class... validationGroups) throws SessionInternalError {
+        List<String> errors = new ArrayList<String>();
+
+        for (Object object : objects) {
+            // run validations
+            Set<ConstraintViolation<Object>> constraintViolations;
+            if (validationGroups != null && validationGroups.length > 0) {
+                constraintViolations = getValidator().validate(object, validationGroups);
+            } else {
+                constraintViolations = getValidator().validate(object);
+            }
+
+            // build error messages
+            String objectName = getObjectName(object);
+            errors.addAll(getErrorMessages(constraintViolations, objectName));
+        }
 
         // throw exception if error messages returned
         if (!errors.isEmpty()) {
-            throw new SessionInternalError("Validation object '" + objectName + "' failed.",
-                                           errors.toArray(new String[errors.size()]));
+            throw new SessionInternalError("Validations failed.", errors.toArray(new String[errors.size()]));
         }
-    }
-
-
-    public void validateObject(Object object) throws SessionInternalError {
-        validateObject(object, null);
     }
 }

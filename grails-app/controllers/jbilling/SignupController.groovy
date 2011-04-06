@@ -38,6 +38,8 @@ import javax.validation.constraints.NotNull
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.util.api.validation.EntitySignupValidationGroup
 import com.sapienter.jbilling.server.user.ContactWS
+import com.sapienter.jbilling.server.user.UserWS
+import javax.validation.groups.Default
 
 /**
  * SignupController 
@@ -56,9 +58,18 @@ class SignupController {
     }
 
     def save = {
-        // validate admin user password
-        if (!params['user.password']) {
-            flash.error = 'password.required'
+        // validate required fields
+        try {
+            def contact = new ContactWS()
+            bindData(contact, params, 'contact')
+
+            def user = new UserWS()
+            bindData(user, params, 'user')
+
+            webServicesValidationAdvice.validateObjects([user, contact], Default.class, EntitySignupValidationGroup.class)
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session?.locale ?: new Locale("en"), e)
             render view: 'index'
             return
         }
@@ -69,17 +80,6 @@ class SignupController {
             return
         }
 
-        // validate required contact fields
-        try {
-            def required = new ContactWS()
-            bindData(required, params, 'contact')
-            webServicesValidationAdvice.validateObject(required, EntitySignupValidationGroup.class)
-
-        } catch (SessionInternalError e) {
-            viewUtils.resolveException(flash, session.locale, e)
-            render view: 'index'
-            return
-        }
 
         /*
             Create the new entity, root user and basic contact information

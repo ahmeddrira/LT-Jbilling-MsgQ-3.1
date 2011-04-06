@@ -286,7 +286,20 @@ class PaymentController {
         def payment = new PaymentWS()
         bindPayment(payment, params)
 
-        def user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
+        // make sure the user still exists before
+        def users
+        try {
+            user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
+        } catch (SessionInternalError e) {
+            log.error("Could not fetch WS object", e)
+
+            flash.error = 'customer.not.found'
+            flash.args = [ params.id ]
+
+            redirect controller: 'payment', action: 'list'
+            return
+        }
+
         def invoices = getUnpaidInvoices(user.userId)
         def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
 

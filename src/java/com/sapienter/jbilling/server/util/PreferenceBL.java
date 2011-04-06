@@ -38,14 +38,19 @@ public class PreferenceBL {
     private PreferenceDTO preference = null;
     private PreferenceTypeDTO type = null;
     private JbillingTableDAS jbDAS = null;
-    
+
+    public PreferenceBL() {
+        init();
+    }
+
     public PreferenceBL(Integer preferenceId) {
         init();
         preference = preferenceDas.find(preferenceId);
     }
-    
-    public PreferenceBL() {
+
+    public PreferenceBL(Integer entityId, Integer preferenceTypeId) {
         init();
+        set(entityId, preferenceTypeId);
     }
     
     private void init() {

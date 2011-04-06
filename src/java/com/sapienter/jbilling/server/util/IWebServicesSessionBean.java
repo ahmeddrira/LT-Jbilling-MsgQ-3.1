@@ -294,6 +294,7 @@ public interface IWebServicesSessionBean {
 
     public void updatePreferences(PreferenceWS[] prefList);
     public void updatePreference(PreferenceWS preference);
+    public PreferenceWS getPreference(Integer preferenceTypeId);
 
 
     /*

@@ -54,7 +54,10 @@ import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CustomerPriceDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
+import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
 import org.apache.log4j.Logger;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -2683,6 +2686,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                                                  preference.getValue());
     }
 
+    public PreferenceWS getPreference(Integer preferenceTypeId) {
+        // return preference if set
+        try {
+            PreferenceDTO preference = new PreferenceBL(getCallerCompanyId(), preferenceTypeId).getEntity();
+            return new PreferenceWS(preference);
+
+        } catch (DataAccessException e) {
+            /* ignore */
+        }
+
+        // preference is not set, return empty
+        PreferenceTypeDTO preferenceType = new PreferenceTypeDAS().find(preferenceTypeId);
+        return new PreferenceWS(preferenceType);
+    }
 
     /*
        Notifications

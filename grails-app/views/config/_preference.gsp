@@ -1,6 +1,5 @@
 <%@ page import="com.sapienter.jbilling.server.util.Constants" %>
 
-
 <g:hiddenField name="type.id" value="${type.id}"/>
 
 <g:applyLayout name="form/input">

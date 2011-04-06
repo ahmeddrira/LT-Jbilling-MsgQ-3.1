@@ -561,6 +561,10 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.updatePreference(preference)
     }
 
+    public PreferenceWS getPreference(Integer preferenceTypeId) {
+        webServicesSession.getPreference(preferenceTypeId);
+    }
+
 
     /*
         Notification

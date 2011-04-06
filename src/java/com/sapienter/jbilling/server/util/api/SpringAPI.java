@@ -545,6 +545,10 @@ public class SpringAPI implements JbillingAPI {
         session.updatePreference(preference);
     }
 
+    public PreferenceWS getPreference(Integer preferenceTypeId) {
+        return session.getPreference(preferenceTypeId);
+    }
+
     /*
        Plug-ins
     */

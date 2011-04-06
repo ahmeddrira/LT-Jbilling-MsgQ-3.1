@@ -30,6 +30,7 @@ import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.util.PreferenceTypeWS
 import com.sapienter.jbilling.server.util.PreferenceWS
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO
+import com.sapienter.jbilling.common.Util
 import grails.plugins.springsecurity.Secured
 
 /**
@@ -172,5 +173,47 @@ class ConfigController {
 			flash.error = 'config.company.save.error'
 		}
 		redirect action: company
-	}       
+	}
+
+    /*
+        Invoice display configuration
+     */
+
+    def invoice = {
+        def number = webServicesSession.getPreference(Constants.PREFERENCE_INVOICE_NUMBER)
+        def prefix = webServicesSession.getPreference(Constants.PREFERENCE_INVOICE_PREFIX)
+
+        [ number: number, prefix: prefix, logoPath: entityLogoPath ]
+    }
+
+    def entityLogo = {
+        def logo = new File(getEntityLogoPath())
+        response.outputStream << logo.getBytes()
+    }
+
+    def saveInvoice = {
+        def number = new PreferenceWS(preferenceType: new PreferenceTypeWS(id: Constants.PREFERENCE_INVOICE_NUMBER), value: params.number)
+        def prefix = new PreferenceWS(preferenceType: new PreferenceTypeWS(id: Constants.PREFERENCE_INVOICE_PREFIX), value: params.prefix)
+
+        try {
+            webServicesSession.updatePreferences((PreferenceWS[]) [ number, prefix ])
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e)
+            render view: 'invoice', model: [ number: number, prefix: prefix, logoPath: entityLogoPath ]
+            return
+        }
+
+        // save uploaded file
+        def logo = request.getFile('logo');
+        if (!logo.empty) {
+            logo.transferTo(new File(getEntityLogoPath()))
+        }
+
+        redirect action: invoice
+    }
+
+    def String getEntityLogoPath() {
+        return Util.getSysProp("base_dir") + "${File.separator}logos${File.separator}entity-${session['company_id']}.jpg"
+    }
+
 }

@@ -262,6 +262,7 @@ public interface JbillingAPI {
      */
     public void updatePreferences(PreferenceWS[] prefList);
     public void updatePreference(PreferenceWS preference);
+    public PreferenceWS getPreference(Integer preferenceTypeId);
 
 
     /*

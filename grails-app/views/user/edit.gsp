@@ -137,12 +137,6 @@
                     </div>
                 </div>
 
-                <!-- box text -->
-                <div class="box-text">
-                    <label><g:message code="prompt.notes"/></label>
-                    <g:textArea name="user.notes" value="${user?.notes}" rows="5" cols="60"/>
-                </div>
-
                 <div class="buttons">
                     <ul>
                         <li>

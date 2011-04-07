@@ -23,20 +23,7 @@
         </strong>
     </div>
 
-    <!-- user notes -->
-    <div class="box">
-        <g:if test="${customer?.notes}">
-            <p>${customer.notes}</p>
-        </g:if>
-        <g:else>
-            <p><em><g:message code="customer.detail.note.empty.message"/></em></p>
-        </g:else>
-    </div>
-
     <!-- user details -->
-    <div class="heading">
-        <strong><g:message code="customer.detail.user.title"/></strong>
-    </div>
     <div class="box">
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>

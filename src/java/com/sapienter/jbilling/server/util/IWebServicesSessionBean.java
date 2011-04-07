@@ -298,11 +298,20 @@ public interface IWebServicesSessionBean {
 
 
     /*
+        Currencies
+     */
+
+    public CurrencyWS[] getCurrencies();
+    public void updateCurrencies(CurrencyWS[] currencies);
+    public void updateCurrency(CurrencyWS currency);
+    public Integer createCurrency(CurrencyWS currency);
+
+
+    /*
         Notifications
     */
 
     public void createUpdateNofications(Integer messageId, MessageDTO dto);
-
     public void saveCustomerNotes(Integer userId, String notes);
 
 

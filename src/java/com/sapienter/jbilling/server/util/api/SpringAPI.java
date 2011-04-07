@@ -48,6 +48,7 @@ import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
+import com.sapienter.jbilling.server.util.CurrencyWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.util.PreferenceWS;
 import com.sapienter.jbilling.server.util.RemoteContext;
@@ -548,6 +549,28 @@ public class SpringAPI implements JbillingAPI {
     public PreferenceWS getPreference(Integer preferenceTypeId) {
         return session.getPreference(preferenceTypeId);
     }
+
+
+    /*
+        Currencies
+     */
+
+    public CurrencyWS[] getCurrencies() {
+        return session.getCurrencies();
+    }
+
+    public void updateCurrencies(CurrencyWS[] currencies) {
+        session.updateCurrencies(currencies);
+    }
+
+    public void updateCurrency(CurrencyWS currency) {
+        session.updateCurrency(currency);
+    }
+
+    public Integer createCurrency(CurrencyWS currency) {
+        return session.createCurrency(currency);
+    }
+
 
     /*
        Plug-ins

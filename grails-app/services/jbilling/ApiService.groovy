@@ -32,7 +32,8 @@ import com.sapienter.jbilling.server.item.PlanWS
 import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
-import com.sapienter.jbilling.server.order.OrderPeriodWS;
+import com.sapienter.jbilling.server.order.OrderPeriodWS
+import com.sapienter.jbilling.server.util.CurrencyWS;
 
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
@@ -563,6 +564,27 @@ class ApiService implements IWebServicesSessionBean {
 
     public PreferenceWS getPreference(Integer preferenceTypeId) {
         webServicesSession.getPreference(preferenceTypeId);
+    }
+
+
+    /*
+        Currencies
+     */
+
+    public CurrencyWS[] getCurrencies() {
+        return webServicesSession.getCurrencies()
+    }
+
+    void updateCurrencies(CurrencyWS[] currencies) {
+        webServicesSession.updateCurrencies(currencies)
+    }
+
+    public void updateCurrency(CurrencyWS currency) {
+        webServicesSession.updateCurrency(currency)
+    }
+
+    public Integer createCurrency(CurrencyWS currency) {
+        webServicesSession.createCurrency(currency)
     }
 
 

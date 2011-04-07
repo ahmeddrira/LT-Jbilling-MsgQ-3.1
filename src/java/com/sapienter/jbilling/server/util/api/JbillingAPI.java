@@ -47,6 +47,7 @@ import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
+import com.sapienter.jbilling.server.util.CurrencyWS;
 import com.sapienter.jbilling.server.util.PreferenceWS;
 
 import java.util.Date;
@@ -263,6 +264,16 @@ public interface JbillingAPI {
     public void updatePreferences(PreferenceWS[] prefList);
     public void updatePreference(PreferenceWS preference);
     public PreferenceWS getPreference(Integer preferenceTypeId);
+
+
+    /*
+        Currencies
+     */
+
+    public CurrencyWS[] getCurrencies();
+    public void updateCurrencies(CurrencyWS[] currencies);
+    public void updateCurrency(CurrencyWS currency);
+    public Integer createCurrency(CurrencyWS currency);
 
 
     /*

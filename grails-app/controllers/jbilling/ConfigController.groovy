@@ -34,6 +34,7 @@ import com.sapienter.jbilling.common.Util
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.util.db.CurrencyDTO
 import com.sapienter.jbilling.server.item.CurrencyBL
+import com.sapienter.jbilling.server.util.CurrencyWS
 
 /**
  * ConfigurationController 
@@ -199,6 +200,7 @@ class ConfigController {
 
         try {
             webServicesSession.updatePreferences((PreferenceWS[]) [ number, prefix ])
+
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
             render view: 'invoice', model: [ number: number, prefix: prefix, logoPath: entityLogoPath ]
@@ -211,6 +213,7 @@ class ConfigController {
             logo.transferTo(new File(getEntityLogoPath()))
         }
 
+        flash.message = 'preferences.updated'
         redirect action: invoice
     }
 
@@ -231,6 +234,38 @@ class ConfigController {
 
 
         [ entityCurrency: entityCurrency, currencies: currencies ]
+    }
+
+    def saveCurrencies = {
+        def defaultCurrencyId = params.int('defaultCurrencyId')
+
+        // build a list of currencies
+        def currencies = []
+        params.currencies.each { k, v ->
+            if (v instanceof Map) {
+                def currency = new CurrencyWS()
+                bindData(currency, v, ['_inUse'])
+                currency.defaultCurrency = (currency.id == defaultCurrencyId)
+
+                currencies << currency
+            }
+        }
+
+        // update all currencies
+        try {
+            webServicesSession.updateCurrencies((CurrencyWS[]) currencies)
+
+            flash.message = 'currencies.updated'
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e)
+        }
+
+        redirect action: currency
+    }
+
+    def createCurrency = {
+        redirect action: currency
     }
 
 }

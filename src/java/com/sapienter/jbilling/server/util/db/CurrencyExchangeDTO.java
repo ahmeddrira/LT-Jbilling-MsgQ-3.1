@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.util.db;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -87,7 +88,7 @@ public class CurrencyExchangeDTO  implements java.io.Serializable {
         this.id = id;
     }
     
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="currency_id")
     public CurrencyDTO getCurrency() {
         return this.currencyDTO;

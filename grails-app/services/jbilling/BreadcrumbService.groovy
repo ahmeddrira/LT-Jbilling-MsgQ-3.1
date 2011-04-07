@@ -74,6 +74,10 @@ class BreadcrumbService implements InitializingBean, Serializable {
         addBreadcrumb(new Breadcrumb(controller: controller, action: action, name: name, objectId: objectId))
     }
 
+    def void addBreadcrumb(String controller, String action, String name, Integer objectId, String description) {
+        addBreadcrumb(new Breadcrumb(controller: controller, action: action, name: name, objectId: objectId, description: description))
+    }
+
     /**
      * Add a new breadcrumb to the recent breadcrumb list for the currently logged in user and
      * update the session list.

@@ -579,7 +579,8 @@ CREATE TABLE breadcrumb (
     action character varying(255),
     name character varying(255),
     object_id integer,
-    version integer NOT NULL
+    version integer NOT NULL,
+    description character varying(255)
 );
 
 
@@ -3300,14 +3301,14 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 -- Data for Name: breadcrumb; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-4	1	product	list	\N	2300	0
-5	1	product	show	\N	3000	0
-6	1	product	list	\N	\N	0
-7	1	product	list	\N	1	0
-8	1	product	show	\N	2602	0
-9	1	plan	list	\N	\N	0
-10	1	plan	list	\N	1	0
+COPY breadcrumb (id, user_id, controller, action, name, object_id, version, description) FROM stdin;
+4	1	product	list	\N	2300	0	\N
+5	1	product	show	\N	3000	0	\N
+6	1	product	list	\N	\N	0	\N
+7	1	product	list	\N	1	0	\N
+8	1	product	show	\N	2602	0	\N
+9	1	plan	list	\N	\N	0	\N
+10	1	plan	list	\N	1	0	\N
 \.
 
 

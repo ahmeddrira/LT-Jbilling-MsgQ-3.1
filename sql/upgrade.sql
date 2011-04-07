@@ -1240,7 +1240,8 @@ alter table currency add column OPTLOCK int;
 update currency set OPTLOCK = 0;
 insert into jbilling_seqs (name, next_id) values ('currency', 2);
 
-
+-- breadcrumb descriptions
+alter table breadcrumb add column description varchar(255);
 
 
 

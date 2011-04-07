@@ -86,7 +86,14 @@
     </div>
 
     <div class="btn-box">
-        <a onclick="$('#save-currencies-form').submit();" class="submit save"><span><g:message code="button.save"/></span></a>
-        <g:link controller="config" action="index" class="submit cancel"><span><g:message code="button.cancel"/></span></g:link>
+        <div class="row">
+            <g:remoteLink controller="config" action="editCurrency" class="submit add" before="register(this);" onSuccess="render(data, next);">
+                <span><g:message code="button.create"/></span>
+            </g:remoteLink>
+        </div>
+        <div class="row">
+            <a onclick="$('#save-currencies-form').submit();" class="submit save"><span><g:message code="button.save"/></span></a>
+            <g:link controller="config" action="index" class="submit cancel"><span><g:message code="button.cancel"/></span></g:link>
+        </div>
     </div>
 </div>

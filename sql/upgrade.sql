@@ -1235,11 +1235,10 @@ values (50, 48, 'instruction', 1, 'Set to ''1'' to allow the use of provisioning
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
 values (50, 49, 'instruction', 1, 'The threshold value for automatic payments. Pre-paid users with an automatic recharge value set will generate an automatic payment whenever the account balance falls below this threshold. Note that you need to configure the AutoRechargeTask plug-in for this feature to be fully functional.');
 
-
-
-
-
-
+-- editable currency
+alter table currency add column OPTLOCK int;
+update currency set OPTLOCK = 0;
+insert into jbilling_seqs (name, next_id) values ('currency', 2);
 
 
 

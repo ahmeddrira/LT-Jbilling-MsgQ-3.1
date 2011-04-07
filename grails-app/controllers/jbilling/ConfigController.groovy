@@ -261,11 +261,32 @@ class ConfigController {
             viewUtils.resolveException(flash, session.locale, e)
         }
 
-        redirect action: currency
+        redirect action: 'currency'
     }
 
-    def createCurrency = {
-        redirect action: currency
+    def editCurrency = {
+        // only shows edit template to create new currencies.
+        // currencies can be edited from the main currency config form
+        render template: 'currency/edit', model: [ currency: null ]
+    }
+
+    def saveCurrency = {
+        def currency = new CurrencyWS()
+        bindData(currency, params)
+
+        try {
+            webServicesSession.createCurrency(currency)
+
+            flash.message = 'currency.created'
+            flash.args = [ currency.code ]
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e)
+            chain action: 'currency', model: [ currency: currency ]
+            return
+        }
+
+        redirect action: 'currency'
     }
 
 }

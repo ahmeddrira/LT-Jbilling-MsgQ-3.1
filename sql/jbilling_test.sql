@@ -748,7 +748,8 @@ CREATE TABLE currency (
     id integer NOT NULL,
     symbol character varying(10) NOT NULL,
     code character varying(3) NOT NULL,
-    country_code character varying(2) NOT NULL
+    country_code character varying(2) NOT NULL,
+    optlock integer
 );
 
 
@@ -8755,18 +8756,18 @@ COPY credit_card (id, cc_number, cc_number_plain, cc_expiry, name, cc_type, dele
 -- Data for Name: currency; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY currency (id, symbol, code, country_code) FROM stdin;
-1	US$	USD	US
-2	C$	CAD	CA
-3	&#8364;	EUR	EU
-4	&#165;	JPY	JP
-5	&#163;	GBP	UK
-6	&#8361;	KRW	KR
-7	Sf	CHF	CH
-8	SeK	SEK	SE
-9	S$	SGD	SG
-10	M$	MYR	MY
-11	$	AUD	AU
+COPY currency (id, symbol, code, country_code, optlock) FROM stdin;
+1	US$	USD	US	0
+2	C$	CAD	CA	0
+3	&#8364;	EUR	EU	0
+4	&#165;	JPY	JP	0
+5	&#163;	GBP	UK	0
+6	&#8361;	KRW	KR	0
+7	Sf	CHF	CH	0
+8	SeK	SEK	SE	0
+9	S$	SGD	SG	0
+10	M$	MYR	MY	0
+11	$	AUD	AU	0
 \.
 
 
@@ -11914,8 +11915,6 @@ pluggable_task_type_category	1
 pluggable_task_type	1
 invoice_line_type	1
 invoice_line_type	1
-currency	1
-currency	1
 payment_method	1
 payment_method	1
 payment_result	1
@@ -12049,6 +12048,9 @@ report	1
 report_type	1
 report_parameter	1
 plan_item_bundle	1
+currency	2
+currency	2
+currency	2
 \.
 
 

@@ -12,5 +12,11 @@
     <g:render template="currency/form" />
 </content>
 
+<content tag="column2">
+    <g:if test="${currency}">
+        <g:render template="currency/edit" model="[currency: currency]"/>
+    </g:if>
+</content>
+
 </body>
 </html>

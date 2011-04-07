@@ -38,19 +38,31 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "currency")
+@TableGenerator(
+        name="currency_GEN",
+        table="jbilling_seqs",
+        pkColumnName = "name",
+        valueColumnName = "next_id",
+        pkColumnValue="currency",
+        allocationSize = 10
+)
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class CurrencyDTO extends AbstractDescription implements java.io.Serializable {
 
@@ -67,13 +79,13 @@ public class CurrencyDTO extends AbstractDescription implements java.io.Serializ
     private Set<CompanyDTO> entities_1 = new HashSet<CompanyDTO>(0);
     private Set<InvoiceDTO> invoices = new HashSet<InvoiceDTO>(0);
     private Set<ProcessRunTotalDTO> processRunTotals = new HashSet<ProcessRunTotalDTO>(0);
+    private Integer versionNum;
 
     // from EX
     private String name = null;
     private Boolean inUse = null;
     private String rate = null; // will be converted to float
     private BigDecimal sysRate = null;
-
 
     public CurrencyDTO() {
     }
@@ -110,7 +122,10 @@ public class CurrencyDTO extends AbstractDescription implements java.io.Serializ
     }
 
     public CurrencyDTO(CurrencyWS ws) {
-        this.id = ws.getId();
+        if (ws.getId() != null) {
+            this.id = ws.getId();
+        }
+
         this.symbol = ws.getSymbol();
         this.code = ws.getCode();
         this.countryCode = ws.getCountryCode();
@@ -126,6 +141,7 @@ public class CurrencyDTO extends AbstractDescription implements java.io.Serializ
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "currency_GEN")
     @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return this.id;
@@ -246,6 +262,15 @@ public class CurrencyDTO extends AbstractDescription implements java.io.Serializ
 
     public void setProcessRunTotals(Set<ProcessRunTotalDTO> processRunTotals) {
         this.processRunTotals = processRunTotals;
+    }
+
+    @Version
+    @Column(name="OPTLOCK")
+    public Integer getVersionNum() {
+        return versionNum;
+    }
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
     }
 
     @Transient

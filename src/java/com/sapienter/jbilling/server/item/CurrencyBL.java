@@ -98,7 +98,7 @@ public class CurrencyBL {
                 CurrencyDTO#getSysRate() if no currency exchanges have been mapped.
              */
             if (dto.getCurrencyExchanges().isEmpty()) {
-                // set exchange rate
+                // set optional exchange rate
                 if (dto.getRate() != null) {
                     CurrencyExchangeDTO exchangeRate = new CurrencyExchangeDTO();
                     exchangeRate.setEntityId(entityId);
@@ -110,15 +110,14 @@ public class CurrencyBL {
                 }
 
                 // set system rate
-                if (dto.getSysRate() != null) {
-                    CurrencyExchangeDTO sysRate = new CurrencyExchangeDTO();
-                    sysRate.setEntityId(SYSTEM_RATE_ENTITY_ID);
-                    sysRate.setCurrency(dto);
-                    sysRate.setRate(dto.getSysRate());
-                    sysRate.setCreateDatetime(new Date());
+                CurrencyExchangeDTO sysRate = new CurrencyExchangeDTO();
+                sysRate.setEntityId(SYSTEM_RATE_ENTITY_ID);
+                sysRate.setCurrency(dto);
+                sysRate.setRate(dto.getSysRate() != null ? dto.getSysRate() : BigDecimal.ONE);
+                sysRate.setCreateDatetime(new Date());
 
-                    dto.getCurrencyExchanges().add(sysRate);
-                }
+                dto.getCurrencyExchanges().add(sysRate);
+
             }
 
             this.currency = currencyDas.save(dto);
@@ -144,7 +143,7 @@ public class CurrencyBL {
 
             currency.getCurrencyExchanges().clear();
 
-            // set exchange rate
+            // set optional exchange rate
             if (dto.getRate() != null) {
                 CurrencyExchangeDTO exchangeRate = new CurrencyExchangeDTO();
                 exchangeRate.setEntityId(entityId);
@@ -156,15 +155,14 @@ public class CurrencyBL {
             }
 
             // set system rate
-            if (dto.getSysRate() != null) {
-                CurrencyExchangeDTO sysRate = new CurrencyExchangeDTO();
-                sysRate.setEntityId(SYSTEM_RATE_ENTITY_ID);
-                sysRate.setCurrency(currency);
-                sysRate.setRate(dto.getSysRate());
-                sysRate.setCreateDatetime(new Date());
+            CurrencyExchangeDTO sysRate = new CurrencyExchangeDTO();
+            sysRate.setEntityId(SYSTEM_RATE_ENTITY_ID);
+            sysRate.setCurrency(currency);
+            sysRate.setRate(dto.getSysRate() != null ? dto.getSysRate() : BigDecimal.ONE);
+            sysRate.setCreateDatetime(new Date());
 
-                currency.getCurrencyExchanges().add(sysRate);
-            }
+            currency.getCurrencyExchanges().add(sysRate);
+
 
             // add active currencies to the company map
             CompanyDTO company = new CompanyDAS().find(entityId);

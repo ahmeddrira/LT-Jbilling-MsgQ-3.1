@@ -34,6 +34,7 @@ import java.math.BigDecimal;
 public class CurrencyWS implements Serializable {
 
     private Integer id;
+    private String description;
     private String symbol;
     private String code;
     private String countryCode;
@@ -48,6 +49,7 @@ public class CurrencyWS implements Serializable {
 
     public CurrencyWS(CurrencyDTO dto, boolean defaultCurrency) {
         this.id = dto.getId();
+        this.description = dto.getDescription();
         this.symbol = dto.getSymbol();
         this.code = dto.getCode();
         this.countryCode = dto.getCountryCode();
@@ -65,6 +67,14 @@ public class CurrencyWS implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getSymbol() {

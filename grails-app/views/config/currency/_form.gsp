@@ -23,11 +23,11 @@
                     <table cellpadding="0" cellspacing="0" class="innerTable" width="100%">
                         <thead class="innerHeader">
                             <tr>
-                                <th></th>
-                                <th class="left"><g:message code="currency.config.th.symbol"/></th>
-                                <th class="left"><g:message code="currency.config.th.active"/></th>
-                                <th class="left"><g:message code="currency.config.th.rate"/></th>
-                                <th class="left"><g:message code="currency.config.th.sysRate"/></th>
+                                <th class=""></th>
+                                <th class="left tiny2"><g:message code="currency.config.th.symbol"/></th>
+                                <th class="left tiny2"><g:message code="currency.config.th.active"/></th>
+                                <th class="left medium"><g:message code="currency.config.th.rate"/></th>
+                                <th class="left medium"><g:message code="currency.config.th.sysRate"/></th>
                             </tr>
                         </thead>
                         <tbody>

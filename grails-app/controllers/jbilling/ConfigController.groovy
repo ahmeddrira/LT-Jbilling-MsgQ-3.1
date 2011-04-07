@@ -32,6 +32,8 @@ import com.sapienter.jbilling.server.util.PreferenceWS
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO
 import com.sapienter.jbilling.common.Util
 import grails.plugins.springsecurity.Secured
+import com.sapienter.jbilling.server.util.db.CurrencyDTO
+import com.sapienter.jbilling.server.item.CurrencyBL
 
 /**
  * ConfigurationController 
@@ -214,6 +216,21 @@ class ConfigController {
 
     def String getEntityLogoPath() {
         return Util.getSysProp("base_dir") + "${File.separator}logos${File.separator}entity-${session['company_id']}.jpg"
+    }
+
+
+    /*
+        Currencies
+     */
+
+    def currency = {
+        def currency = new CurrencyBL()
+
+        def entityCurrency = currency.getEntityCurrency(session['company_id'])
+        def currencies = currency.getCurrencies(session['language_id'], session['company_id'])
+
+
+        [ entityCurrency: entityCurrency, currencies: currencies ]
     }
 
 }

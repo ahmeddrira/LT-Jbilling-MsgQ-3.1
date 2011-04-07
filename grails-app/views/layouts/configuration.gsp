@@ -67,8 +67,8 @@
                             <g:message code="configuration.menu.company"/>
                         </g:link>
                     </li>
-                    <li class="${pageProperty(name: 'page.menu.item') == 'currencies' ? 'active' : ''}">
-                        <g:link controller="config" action="currencies">
+                    <li class="${pageProperty(name: 'page.menu.item') == 'currency' ? 'active' : ''}">
+                        <g:link controller="config" action="currency">
                             <g:message code="configuration.menu.currencies"/>
                         </g:link>
                     </li>

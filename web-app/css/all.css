@@ -1686,7 +1686,9 @@ div.box-text {
 	color: #383838;
 	line-height: 30px;
 }
-
+.innerHeader th.left {
+    text-align: left;
+}
 .innerContent {
     text-align:center;
 	padding:3px 0px 10px;

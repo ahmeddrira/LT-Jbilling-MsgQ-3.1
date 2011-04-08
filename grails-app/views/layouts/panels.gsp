@@ -32,18 +32,21 @@
             <g:if test="${filters}">
                 <g:set var="target" value="${filterRender ?: 'first'}"/>
                 <g:set var="action" value="${filterAction ?: 'list'}"/>
-                <g:formRemote id="filters-form" name="filters-form" url="[action: action]" onSuccess="render(data, ${target});">
+
+                <g:formRemote name="filters-form" url="[action: action]" onSuccess="render(data, ${target});">
                     <g:hiddenField name="applyFilter" value="true"/>
-                    <g:render template="/layouts/includes/filters"/>
+                    <g:render template="/layouts/includes/filters" model="[filters: filters, filterRender: filterRender, filterAction: filterAction]"/>
                 </g:formRemote>
+
                 <g:render template="/layouts/includes/filterSaveDialog"/>
             </g:if>
 
-            <!-- shortcuts 
-            <g:render template="/layouts/includes/shortcuts"/>
-            -->
-            <inc:include controller="shortcut" action="index"/>
-            
+            <!-- shortcuts -->
+            <g:if test="${session['shortcuts']}">
+                <g:render template="/layouts/includes/shortcuts"/>
+                <inc:include controller="shortcut" action="index"/>
+            </g:if>
+
             <!-- recently viewed items -->
             <g:render template="/layouts/includes/recent"/>
         </div>

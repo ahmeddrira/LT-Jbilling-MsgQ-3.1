@@ -1,40 +1,37 @@
 
-<%--
-  _filterSaveDialog
-
-  @author Brian Cowdery
-  @since  09-12-2010
---%>
-
 <div id="filter-save-dialog" class="dialog" title="Save Filters">
-    <g:formRemote name="filter-save-form" url="[controller: 'filter', action: 'save']" update="filters">
-        <fieldset>
-            <div class="form-columns">
-                <g:applyLayout name="form/input">
-                    <content tag="label">Name</content>
-                    <content tag="label.for">name</content>
-                    <g:textField name="name" class="field"/>
-                </g:applyLayout>
-            </div>
-        </fieldset>
-    </g:formRemote>
+    <fieldset>
+        <div class="form-columns">
+            <g:formRemote name="filter-save-form" url="[controller: 'filter', action: 'save']" update="filters">
+                <!-- content rendered using ajax -->
+            </g:formRemote>
+        </div>
+    </fieldset>
 </div>
 
 <script type="text/javascript">
-    $('#filter-save-dialog').dialog({
-        autoOpen: false,
-        height: 200,
-        width: 400,
-        modal: true,
-        buttons: {
-            Save: function() {
-                $('#filter-save-form').submit();
-                $('#filter-save-form input:visible').val("");
-                $(this).dialog("close");
+    $(function() {
+        $('#filter-save-dialog').dialog({
+            autoOpen: false,
+            height: 400,
+            width: 500,
+            modal: true,
+            buttons: {
+                Save: function() {
+                    $(this).dialog("close");
+                    $('#filter-save-form').submit();
+                    $('#filter-save-form input:visible').val("");
+                },
+                Cancel: function() {
+                    $(this).dialog("close");
+                }
             },
-            Cancel: function() {
-                $(this).dialog("close");
+            open: function() {
+                $('#filter-save-form').load("${createLink(controller: 'filter', action: 'filtersets')}");
+            },
+            close: function() {
+                $('#filters').load("${createLink(controller: 'filter', action: 'filters')}");
             }
-        }
+        });
     });
 </script>

@@ -30,28 +30,67 @@ class FilterController {
 
     def filterService
 
+    /**
+     * Add a hidden filter to the filter pane.
+     */
     def add = {
-        def filters = filterService.showFilter(params["name"])
-        render template: "/layouts/includes/filters", model:[filters: filters]
+        def filters = filterService.showFilter(params.name)
+        render template: "/layouts/includes/filters", model: [ filters: filters ]
     }
 
+    /**
+     * Remove a filter from the filter pane.
+     */
     def remove = {
-        def filters = filterService.removeFilter(params["name"])
-        render template: "/layouts/includes/filters", model:[filters: filters]
+        def filters = filterService.removeFilter(params.name)
+        render template: "/layouts/includes/filters", model: [ filters: filters ]
+    }
+
+    /**
+     * Load a saved filter set and replace the current filters in the filter pane.
+     */
+    def load = {
+        def filters = filterService.loadFilters(params.int("id"))
+        render template: "/layouts/includes/filters", model: [ filters: filters ]
+    }
+
+
+
+    /**
+     * Render the filter pane
+     */
+    def filters = {
+        def filters = filterService.getCurrentFilters()
+        render template: "/layouts/includes/filters", model: [ filters: filters ]
+    }
+
+    /**
+     * Render a list of filter sets to be edited (from the save dialog)
+     */
+    def filtersets = {
+        def filtersets = FilterSet.findAllByUserId(session['user_id'])
+        render template: "/layouts/includes/filtersets", model: [ filtersets: filtersets ]
     }
 
     def save = {
-        def filters = filterService.getCurrentFilters()
+        def filterset = new FilterSet(name: params.filterset.name, userId: (Integer) session['user_id'])
 
-        def filterset = new FilterSet(name: params["name"], userId: (Integer) session['user_id'])
-        filters.each { filterset.addToFilters(new Filter(it)) }
+        def filters = filterService.getCurrentFilters()
+        filters.each {
+            filterset.addToFilters(new Filter(it))
+        }
+
         filterset.save(flush: true)
 
-        render template: "/layouts/includes/filters", model:[filters: filterset.filters]
+        render template: "/layouts/includes/filters", model:[ filters: filterset.filters ]
     }
 
-    def load = {
-        def filters = filterService.loadFilters(params.int("id"))
-        render template: "/layouts/includes/filters", model:[filters: filters]
+    def delete = {
+        FilterSet.get(params.int('id'))?.delete(flush: true)
+        log.debug("Deleted filter ${params.id}")
+
+
+        def filtersets = FilterSet.findAllByUserId(session['user_id'])
+        render template: "/layouts/includes/filtersets", model: [ filtersets: filtersets ]
     }
 }

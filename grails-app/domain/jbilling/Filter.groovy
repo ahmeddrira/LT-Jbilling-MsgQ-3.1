@@ -135,7 +135,7 @@ class Filter {
 
     @Override
     def String toString ( ) {
-        return "Filter{id=${id}, type=${type}, constrainttype=${constraintType}, field=${field}, value={$value}}"
+        return "Filter{id=${id}, type=${type}, constrainttype=${constraintType}, field=${field}, value=${value}}"
     }
 
     public Criterion getRestrictions() {

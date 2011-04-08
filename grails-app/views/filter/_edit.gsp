@@ -14,7 +14,6 @@
     <div class="box">
         <fieldset>
             <div class="form-columns">
-
                 <g:applyLayout name="form/text">
                     <content tag="label"><g:message code="filters.save.label.id"/></content>
 
@@ -33,9 +32,33 @@
                     <content tag="label.for">name</content>
                     <g:textField class="field" name="name" value="${selected?.name}"/>
                 </g:applyLayout>
-
             </div>
         </fieldset>
+
+        <!-- spacer -->
+        <div>
+        <br/>&nbsp;
+        </div>
+
+        <!-- filter values -->
+        <table cellpadding="0" cellspacing="0" class="innerTable" width="80%">
+            <thead>
+            <tr class="innerHeader">
+                <th><g:message code="filter.values.th.field"/></th>
+                <th><g:message code="filter.values.th.value"/></th>
+            </tr>
+            </thead>
+            <tbody>
+            <g:each var="filter" in="${selected?.filters ?: filters}">
+                <g:if test="${filter.value}">
+                <tr class="innerContent">
+                    <td>${filter.field}</td>
+                    <td>${filter.value}</td>
+                </tr>
+                </g:if>
+            </g:each>
+            </tbody>
+        </table>
 
         <g:if test="${selected}">
             <br/>&nbsp;
@@ -43,6 +66,7 @@
                 <em><g:message code="filters.save.update.message"/></em>
             </p>
         </g:if>
+
     </div>
 
     <div class="btn-box">

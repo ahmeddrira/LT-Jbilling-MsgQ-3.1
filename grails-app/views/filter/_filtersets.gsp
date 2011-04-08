@@ -40,5 +40,5 @@
 </div>
 
 <div id="filterset-edit" class="column">
-    <g:render template="edit" model="[selected: selected]"/>
+    <g:render template="edit" model="[selected: selected, filters: filters]"/>
 </div>

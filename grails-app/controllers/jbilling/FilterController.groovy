@@ -75,8 +75,10 @@ class FilterController {
     }
 
     def edit = {
+        def filters = filterService.getCurrentFilters()
         def filterset = FilterSet.get(params.int('id'))
-        render template: "edit", model: [ selected: filterset ]
+
+        render template: "edit", model: [ selected: filterset, filters: filters ]
     }
 
     def save = {

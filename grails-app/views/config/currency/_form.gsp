@@ -32,7 +32,7 @@
                         </thead>
                         <tbody>
 
-                        <g:each var="currency" in="${currencies}">
+                        <g:each var="currency" in="${currencies.sort{ it.id }}">
                             <tr>
                                 <td class="innerContent">
                                     ${currency.getDescription(session['language_id'])}

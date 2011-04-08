@@ -63,7 +63,7 @@ import java.util.Set;
         pkColumnValue="currency",
         allocationSize = 10
 )
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class CurrencyDTO extends AbstractDescription implements java.io.Serializable {
 
     private int id;

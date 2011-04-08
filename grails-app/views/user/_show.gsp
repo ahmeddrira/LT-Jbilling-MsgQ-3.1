@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO" contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 
 <%--
   Shows an internal user.
@@ -8,7 +8,6 @@
 --%>
 
 <g:set var="customer" value="${selected.customer}"/>
-<g:set var="contact" value="${ContactDTO.findByUserId(selected.id)}"/>
 
 <div class="column-hold">
     <div class="heading">

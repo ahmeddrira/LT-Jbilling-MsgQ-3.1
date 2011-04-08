@@ -1227,12 +1227,6 @@ ul#review-lines {
     left: 4px;
     margin-right: 4px;
 }
-.dialog .form-columns {
-    width: auto;
-}
-.dialog .form-columns label {
-    width: 90px;
-}
 .form-columns .column {
 	float:left;
 	width:385px;
@@ -1390,6 +1384,18 @@ ul#review-lines {
 	margin:3px 0 0;
 	color:#383838;
 	font:bold 12px/16px Arial, Helvetica, sans-serif;
+}
+
+#filter-save-dialog {
+    color: #383838;
+    font-family: "Arial", "Helvetica", sans-serif;
+    font-size: 12px;
+}
+#filter-save-dialog .submit {
+    color:#fff;
+}
+#filter-save-dialog .form-columns label {
+    width: 90px;
 }
 .box-cards {
 	margin:10px 20px 0;

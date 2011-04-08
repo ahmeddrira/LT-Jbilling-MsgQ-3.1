@@ -26,7 +26,7 @@
                     <td>
                         <g:remoteLink class="cell double" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                             <strong>${user.userName}</strong>
-                            <em>Id: ${user.id}</em>
+                            <em><g:message code="table.id.format" args="[user.id]"/></em>
                         </g:remoteLink>
                     </td>
 

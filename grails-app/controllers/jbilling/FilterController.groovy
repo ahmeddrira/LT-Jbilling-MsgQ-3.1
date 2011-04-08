@@ -68,29 +68,40 @@ class FilterController {
      * Render a list of filter sets to be edited (from the save dialog)
      */
     def filtersets = {
+        def filters = filterService.getCurrentFilters()
         def filtersets = FilterSet.findAllByUserId(session['user_id'])
-        render template: "/layouts/includes/filtersets", model: [ filtersets: filtersets ]
+
+        render template: "filtersets", model: [ filtersets: filtersets, filters: filters ]
+    }
+
+    def edit = {
+        def filterset = FilterSet.get(params.int('id'))
+        render template: "edit", model: [ selected: filterset ]
     }
 
     def save = {
-        def filterset = new FilterSet(name: params.filterset.name, userId: (Integer) session['user_id'])
+        def filterset = params.id ? FilterSet.get(params.int('id')) : new FilterSet(params)
+        filterset.userId = session['user_id']
 
         def filters = filterService.getCurrentFilters()
+        filterset.filters?.removeAll(filters);
+
         filters.each {
             filterset.addToFilters(new Filter(it))
         }
 
         filterset.save(flush: true)
 
-        render template: "/layouts/includes/filters", model:[ filters: filterset.filters ]
+        def filtersets = FilterSet.findAllByUserId(session['user_id'])
+        render template: "filtersets", model: [ filtersets: filtersets, selected: filterset  ]
     }
 
     def delete = {
         FilterSet.get(params.int('id'))?.delete(flush: true)
-        log.debug("Deleted filter ${params.id}")
 
+        log.debug("deleted filter set ${params.id}")
 
         def filtersets = FilterSet.findAllByUserId(session['user_id'])
-        render template: "/layouts/includes/filtersets", model: [ filtersets: filtersets ]
+        render template: "filtersets", model: [ filtersets: filtersets ]
     }
 }

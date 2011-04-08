@@ -36,6 +36,7 @@ class FilterSet {
                 value_column_name: 'next_id',
                 segment_value: 'filter_set'
             ]
+        filters cascade: "all,delete-orphan"
     }
 
     static hasMany = [filters: Filter]   

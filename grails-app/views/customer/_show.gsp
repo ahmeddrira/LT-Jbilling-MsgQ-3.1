@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
+<%@ page import="com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL;" %>
 
 <%--
   Shows details of a selected user.
@@ -8,7 +8,6 @@
 --%>
 
 <g:set var="customer" value="${selected.customer}"/>
-<g:set var="contact" value="${ContactDTO.findByUserId(selected.id)}"/>
 
 <div class="column-hold">
     <!-- user notes -->
@@ -126,9 +125,10 @@
             <tbody>
             <tr>
                 <td>Last Order Date</td>
+
                 <td class="value">
-                    <g:remoteLink controller="order" action="show" id="${order.id}" before="register(this);" onSuccess="render(data, next);">
-                        <g:formatDate date="${order.createDate}" formatName="date.pretty.format"/>
+                    <g:remoteLink controller="order" action="show" id="${order?.id}" before="register(this);" onSuccess="render(data, next);">
+                        <g:formatDate date="${order?.createDate}" formatName="date.pretty.format"/>
                     </g:remoteLink>
 
                     <g:if test="${order}"> - </g:if>

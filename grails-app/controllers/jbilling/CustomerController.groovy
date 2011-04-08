@@ -24,6 +24,7 @@ import org.springframework.web.servlet.support.RequestContextUtils
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.i18n.SessionLocaleResolver
 import com.sapienter.jbilling.client.user.UserHelper
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO
 
 @Secured(['isAuthenticated()'])
 class CustomerController {
@@ -81,14 +82,17 @@ class CustomerController {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()
         def users = getList(filters, statuses, params)
-        def selected = params.id ? UserDTO.get(params.int("id")) : null
 
-        breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
+        def selected = params.id ? UserDTO.get(params.int("id")) : null
+        def contact = selected ? ContactDTO.findByUserId(selected.id) : null
+
+        def crumbDescription = selected ? UserHelper.getDisplayName(selected, contact) : null
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, selected?.id, crumbDescription)
 
         if (params.applyFilter) {
-            render template: 'users', model: [users: users, selected: selected, statuses: statuses, filters: filters ]
+            render template: 'users', model: [users: users, selected: selected, contact: contact, statuses: statuses, filters: filters ]
         } else {
-            render view: 'list', model: [ users: users, selected: selected, statuses: statuses, filters: filters ]
+            render view: 'list', model: [ users: users, selected: selected, contact: contact, statuses: statuses, filters: filters ]
         }
     }
 
@@ -115,17 +119,18 @@ class CustomerController {
     }
 
     /**
-     * Show details of the selected user. By default, this action renders the "_details.gsp" template.
+     * Show details of the selected user. By default, this action renders the "_show.gsp" template.
      * When rendering for an AJAX request the template defined by the "template" parameter will be rendered.
      */
     def show = {
-        UserDTO user = UserDTO.get(params.int('id'))
+        def user = UserDTO.get(params.int('id'))
+        def contact = ContactDTO.findByUserId(user.userId)
         def revenue = webServicesSession.getTotalRevenueByUser(user.userId)
 
         recentItemService.addRecentItem(user.userId, RecentItemType.CUSTOMER)
-        breadcrumbService.addBreadcrumb(controllerName, 'list', params.template ?: null, user.userId)
+        breadcrumbService.addBreadcrumb(controllerName, 'list', params.template ?: null, user.userId, UserHelper.getDisplayName(user, contact))
 
-        render template: params.template ?: 'show', model: [ selected: user, revenue: revenue ]
+        render template: params.template ?: 'show', model: [ selected: user, contact: contact, revenue: revenue ]
     }
 
     /**
@@ -198,6 +203,7 @@ class CustomerController {
             user = params.id ? webServicesSession.getUserWS(params.int('id')) : null
             contacts = user ? webServicesSession.getUserContactsWS(user.userId) : null
             parent = params.parentId ? webServicesSession.getUserWS(params.int('parentId')) : null
+
         } catch (SessionInternalError e) {
             log.error("Could not fetch WS object", e)
 
@@ -208,10 +214,11 @@ class CustomerController {
             return
         }
 
+        def crumbName = params.id ? 'update' : 'create'
+        def crumbDescription = params.id ? UserHelper.getDisplayName(user, user.contact) : null
+        breadcrumbService.addBreadcrumb(controllerName, actionName, crumbName, params.int('id'), crumbDescription)
+
         def company = CompanyDTO.get(session['company_id'])
-
-        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
-
         [ user: user, contacts: contacts, parent: parent, company: company, currencies: currencies ]
     }
 

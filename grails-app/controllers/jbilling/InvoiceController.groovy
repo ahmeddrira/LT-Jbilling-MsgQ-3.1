@@ -65,16 +65,8 @@ class InvoiceController {
         ) {
             and {
                 filters.each { filter ->
-                    log.debug "Filter ${filter.field} value: ${filter.value}"
                     if (filter.value) {
-                        //isreview handled exclusively
-                        if (filter.getField().equals('isReview')) {
-                            if (filter.stringValue == '0') {
-                                eq('isReview', 0)
-                            }
-                        } else {
-                            addToCriteria(filter.getRestrictions());
-                        }
+                        addToCriteria(filter.getRestrictions());
                     }
                 }
 

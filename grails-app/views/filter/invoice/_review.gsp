@@ -13,13 +13,13 @@
         <fieldset>
             <div class="input-row">
                 <div class="select-bg">
-                    <g:select name="filters.${filter.name}.stringValue" 
-                              value="${filter.stringValue}"
-                              from="${['0']}"
+                    <g:select name="filters.${filter.name}.integerValue"
+                              value="${filter.integerValue}"
+                              from="${[0, 1]}"
                               valueMessagePrefix='filters.isReview'
                               noSelection="['': message(code: 'filters.isReview.empty')]"/>
                 </div>
-                <label for="filters.${filter.name}.stringValue"><g:message code="filters.isReview.label"/></label>
+                <label for="filters.${filter.name}.integerValue"><g:message code="filters.isReview.label"/></label>
             </div>
         </fieldset>
     </div>

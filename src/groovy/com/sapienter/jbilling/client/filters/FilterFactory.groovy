@@ -41,8 +41,8 @@ class FilterFactory {
 			new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'baseUser.id', template: 'id', visible: true),
 			new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'isReview', template: 'invoice/review', visible: true),
 			new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: false),
-            new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.EQ, field: 'currency.id', template: 'currency', visible: false),
-            new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.IS_NOT_EMPTY, field: 'paymentMap', template: 'invoice/payments', visible: false)
+            new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'currency.id', template: 'currency', visible: false),
+            new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.IS_NOT_EMPTY, field: 'paymentMap', template: 'invoice/payments', visible: false)
         ],
         ORDER: [
             new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.EQ, field: 'u.id', template: 'id', visible: true),

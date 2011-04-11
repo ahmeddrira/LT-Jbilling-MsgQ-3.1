@@ -67,6 +67,7 @@ class FilterService implements Serializable {
 
         // update filters with values from request parameters
         if (params?.boolean("applyFilter")) {
+            filters.each { it.clear() }
             params.filters.each{ filterName, filterParams ->
                 if (filterParams instanceof Map) {
                     bindData(filters.find{ it.name == filterName }, filterParams, null);

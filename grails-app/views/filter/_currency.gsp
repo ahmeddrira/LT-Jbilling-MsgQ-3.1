@@ -18,7 +18,7 @@
                               from="${company?.currencies}"
                               optionValue="${{ it.code }}"
                               optionKey="id"
-                              noSelection="['': message(code: 'filters.manualPrice.empty')]"/>
+                              noSelection="['': message(code: 'filters.' + filter.field + '.empty')]"/>
                 </div>
                 <label for="filters.${filter.name}.stringValue"><g:message code="filters.${filter.field}.label"/></label>
             </div>

@@ -13,7 +13,7 @@
         <fieldset>
             <div class="input-row">
                 <div class="checkbox-row">
-                    <label for="filters.${filter.name}.booleanValue"><g:message code="filters.${filter.field}.title"/></label>
+                    <label for="filters.${filter.name}.booleanValue"><g:message code="filters.${filter.field}.label"/></label>
                     <g:checkBox name="filters.${filter.name}.booleanValue" class="cb check" checked="${filter.booleanValue}"/>
                 </div>
             </div>

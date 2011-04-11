@@ -1,4 +1,4 @@
-<%@ page import="jbilling.FilterSet" %>
+<%@ page import="com.sapienter.jbilling.server.user.db.CompanyDTO; jbilling.FilterSet" %>
 
 <%--
   Filter side panel template. Prints all filters contained in the "filters" page variable.
@@ -7,6 +7,8 @@
   @since  03-12-2010
 --%>
 
+<g:set var="company" value="${CompanyDTO.get(session['company_id'])}"/>
+<g:set var="filters" value="${filters.sort{ it.field }}"/>
 <g:set var="filtersets" value="${FilterSet.findAllByUserId(session['user_id'])}"/>
 
 <div id="filters">
@@ -19,7 +21,8 @@
         <g:each var="filter" in="${filters}">
             <g:if test="${filter.visible}">
                 <li>
-                    <g:render template="/filter/${filter.template}" model="[filter: filter]"/>
+
+                    <g:render template="/filter/${filter.template}" model="[filter: filter, company: company]"/>
                 </li>
             </g:if>
         </g:each>
@@ -36,7 +39,7 @@
                 <a class="submit add open"><span><g:message code="filters.add.button"/></span></a>
                 <div class="drop">
                     <ul>
-                        <g:each var="filter" in="${filters.sort{ it.field }}">
+                        <g:each var="filter" in="${filters}">
                             <g:if test="${!filter.visible}">
                                 <li>
                                     <g:remoteLink controller="filter" action="add" params="[name: filter.name]" update="filters">
@@ -61,7 +64,7 @@
             <g:if test="${filtersets}">
                 <div class="drop">
                     <ul>
-                        <g:each var="filterset" in="${filtersets}">
+                        <g:each var="filterset" in="${filtersets.sort{ it.id }}">
                             <li>
                                 <g:remoteLink controller="filter" action="load" id="${filterset.id}" update="filters">
                                     ${filterset.name}

@@ -1,6 +1,5 @@
-
 <%--
-  _orders - has orders
+  _payments - has payments
 
   @author Brian Cowdery
   @since  11-Apr-2011

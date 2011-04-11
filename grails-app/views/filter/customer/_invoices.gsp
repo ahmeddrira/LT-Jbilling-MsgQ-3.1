@@ -1,6 +1,5 @@
-
 <%--
-  _orders - has orders
+  _invoices - has invoices
 
   @author Brian Cowdery
   @since  11-Apr-2011

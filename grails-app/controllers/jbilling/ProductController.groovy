@@ -295,7 +295,7 @@ class ProductController {
             return
         }
 
-        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'), product.internalNumber)
+        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'), product.number)
 
         [ product: product, currencies: currencies, categories: categories, categoryId: params.category ]
     }

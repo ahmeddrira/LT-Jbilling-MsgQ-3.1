@@ -32,9 +32,7 @@
             </table>
         </div>
         <div class="btn-box">
-            <g:remoteLink controller="filter" action="edit" class="submit add" update="filterset-edit">
-                <span><g:message code="button.create"/></span>
-            </g:remoteLink>
+            <div class="row"></div>
         </div>
     </div>
 </div>

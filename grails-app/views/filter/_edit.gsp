@@ -19,25 +19,33 @@
 
                     <g:if test="${selected}">
                         ${selected.id}
+                        <g:hiddenField name="id" value="${selected?.id}"/>
                     </g:if>
                     <g:else>
                         <em><g:message code="prompt.id.new"/></em>
                     </g:else>
-
-                    <g:hiddenField name="id" value="${selected?.id}"/>
                 </g:applyLayout>
 
-                <g:applyLayout name="form/input">
-                    <content tag="label"><g:message code="filters.save.label.name"/></content>
-                    <content tag="label.for">name</content>
-                    <g:textField class="field" name="name" value="${selected?.name}"/>
-                </g:applyLayout>
+
+                <g:if test="${selected}">
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="filters.save.label.name"/></content>
+                        ${selected.name}
+                    </g:applyLayout>
+                </g:if>
+                <g:else>
+                    <g:applyLayout name="form/input">
+                        <content tag="label"><g:message code="filters.save.label.name"/></content>
+                        <content tag="label.for">name</content>
+                        <g:textField class="field" name="name" value="${selected?.name}"/>
+                    </g:applyLayout>
+                </g:else>
             </div>
         </fieldset>
 
         <!-- spacer -->
         <div>
-        <br/>&nbsp;
+            <br/>&nbsp;
         </div>
 
         <!-- filter values -->
@@ -51,28 +59,22 @@
             <tbody>
             <g:each var="filter" in="${selected?.filters ?: filters}">
                 <g:if test="${filter.value}">
-                <tr class="innerContent">
-                    <td>${filter.field}</td>
-                    <td>${filter.value}</td>
-                </tr>
+                    <tr class="innerContent">
+                        <td>${filter.field}</td>
+                        <td>${filter.value}</td>
+                    </tr>
                 </g:if>
             </g:each>
             </tbody>
         </table>
-
-        <g:if test="${selected}">
-            <br/>&nbsp;
-            <p>
-                <em><g:message code="filters.save.update.message"/></em>
-            </p>
-        </g:if>
-
     </div>
 
     <div class="btn-box">
-        <a class="submit save" onclick="$('#filter-save-form').submit();">
-            <span><g:message code="button.save"/></span>
-        </a>
+        <g:if test="${!selected}">
+            <a class="submit save" onclick="$('#filter-save-form').submit();">
+                <span><g:message code="button.save"/></span>
+            </a>
+        </g:if>
         <g:if test="${selected}">
             <g:remoteLink class="submit delete" controller="filter" action="delete" id="${selected.id}" update="filtersets">
                 <span><g:message code="button.delete"/></span>

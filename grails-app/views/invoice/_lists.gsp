@@ -28,59 +28,33 @@
                 
 				<tr id="invoice-${inv.id}" class="${invoice?.id == inv.id ? 'active' : ''}">
 	            	<td>
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
-			     			before="register(this);" onSuccess="render(data, next);">
-							<strong>
-                                <g:formatDate date="${inv?.getCreateDatetime()}" dateFormat="date.pretty.format"/>
-							</strong>
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                            <g:formatDate date="${inv?.getCreateDatetime()}" dateFormat="date.pretty.format"/>
 						</g:remoteLink>
 					</td>
 					<td class="small">
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
-			     			before="register(this);" onSuccess="render(data, next);">
-							<strong>
-                                <g:formatDate date="${inv?.dueDate}" dateFormat="date.pretty.format"/>
-							</strong>
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                            <g:formatDate date="${inv?.dueDate}" dateFormat="date.pretty.format"/>
 						</g:remoteLink>
 					</td>
 					<td class="small">
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
-				     			before="register(this);" onSuccess="render(data, next);">
-							<strong>
-								${inv.id }
-							</strong>
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                            ${inv.id }
 						</g:remoteLink>
 					</td>
 					<td>
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
-				     			before="register(this);" onSuccess="render(data, next);">
-							<strong>
-								${inv.getInvoiceStatus().getDescription(session['language_id']) }
-							</strong>
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                            ${inv.getInvoiceStatus().getDescription(session['language_id']) }
 						</g:remoteLink>
 					</td>
 					<td class="small">
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
-				     			before="register(this);" onSuccess="render(data, next);">
-							<strong>
-								<g:if test="${null == inv.total }">&nbsp;</g:if>
-								<g:else>
-                                    <g:formatNumber number="${new BigDecimal((inv.total?: 0))}" 
-                                        type="currency" currencySymbol="${currency?.symbol}"/>
-								</g:else>
-							</strong>
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                            <g:formatNumber number="${inv.total}"  type="currency" currencySymbol="${currency?.symbol}"/>
 						</g:remoteLink>
 					</td>
 					<td class="small">
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']"
-				     			before="register(this);" onSuccess="render(data, next);">
-							<strong>
-								<g:if test="${null == inv.balance }">&nbsp;</g:if>
-								<g:else>
-                                    <g:formatNumber number="${new BigDecimal((inv.balance?: 0))}" 
-                                        type="currency" currencySymbol="${currency?.symbol}"/>
-								</g:else>
-							</strong>
+						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                            <g:formatNumber number="${inv.balance}" type="currency" currencySymbol="${currency?.symbol}"/>
 						</g:remoteLink>
 					</td>
 				</tr>

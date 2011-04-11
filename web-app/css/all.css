@@ -473,14 +473,14 @@ hr {
 .accordion li .slide label {
 	float:right;
 	line-height:26px;
-	width:47px;
+	width:50px;
 }
 .accordion li .slide label.lb {
 	width:auto;
 	line-height:20px;
 }
 .accordion li .slide .input-row .select-bg {
-	width:90px;
+	width:88px;
 	height:16px;
     float: right;
     border: none;
@@ -489,7 +489,7 @@ hr {
 }
 .accordion li .slide .checkbox-row label {
     float: none;
-    padding-left: 5px;
+    padding-left: 3px;
 }
 .holder .input-bg a ,
 .accordion li .slide .input-bg a {

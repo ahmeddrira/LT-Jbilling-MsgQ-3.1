@@ -65,7 +65,7 @@ class InvoiceController {
         ) {
             and {
                 filters.each { filter ->
-                    if (filter.value) {
+                    if (filter.value != null) {
                         addToCriteria(filter.getRestrictions());
                     }
                 }

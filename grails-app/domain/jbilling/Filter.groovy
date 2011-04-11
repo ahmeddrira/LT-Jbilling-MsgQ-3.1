@@ -158,60 +158,54 @@ class Filter {
             return null;
         }
 
-
-        def restriction = null;
         switch (constraintType) {
             case FilterConstraint.EQ:
-                restriction = Restrictions.eq(field, getValue())
+                return Restrictions.eq(field, getValue())
                 break
 
             case FilterConstraint.LIKE:
-                restriction = (Restrictions.ilike(field, stringValue))
+                return (Restrictions.ilike(field, stringValue))
                 break
 
             case FilterConstraint.DATE_BETWEEN:
                 if (startDateValue && endDateValue) {
-                    restriction = Restrictions.between(field, startDateValue, endDateValue);
+                    return Restrictions.between(field, startDateValue, endDateValue);
 
                 } else if (startDateValue) {
-                    restriction = Restrictions.ge(field, startDateValue);
+                    return Restrictions.ge(field, startDateValue);
 
                 } else if (endDateValue) {
-                    restriction = Restrictions.le(field, endDateValue);
+                    return Restrictions.le(field, endDateValue);
                 }
                 break
 
             case FilterConstraint.NUMBER_BETWEEN:
-                if (decimalValue && decimalHighValue) {
-                    restriction = Restrictions.between(field, decimalValue, decimalHighValue)
+                // groovy nullability handles 0 as false. explicitly check is not null to allow
+                // zero values in range criteria
+                if (decimalValue != null && decimalHighValue != null) {
+                    return Restrictions.between(field, decimalValue, decimalHighValue)
 
-                } else if (decimalValue) {
-                    restriction = Restrictions.ge(field, decimalValue)
+                } else if (decimalValue != null) {
+                    return Restrictions.ge(field, decimalValue)
 
-                } else if (decimalHighValue) {
-                    restriction = Restrictions.le(field, decimalHighValue)
+                } else if (decimalHighValue != null) {
+                    return Restrictions.le(field, decimalHighValue)
                 }
                 break
 
             case FilterConstraint.IS_EMPTY:
                 if (booleanValue) {
-                    log.debug("${field} is empty")
-                    restriction = Restrictions.isEmpty(field)
+                    return Restrictions.isEmpty(field)
                 }
                 break
 
             case FilterConstraint.IS_NOT_EMPTY:
                 if (booleanValue) {
-                    log.debug("${field} is not empty")
-                    restriction = Restrictions.isNotEmpty(field)
+                    return Restrictions.isNotEmpty(field)
                 }
                 break
-
-            default:
-                log.warn("Filter constraint " + constraintType + " not known, returning null restriction");
         }
 
-        log.debug("Filter restriction: " + restriction)
-        return restriction;
+        return null;
     }
 }

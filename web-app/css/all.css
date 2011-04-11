@@ -1064,6 +1064,7 @@ ul.cloud  {
     list-style-position: inside;
 }
 ul.cloud li {
+    border-radius: 5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     background-color: #3a3a3a;

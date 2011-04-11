@@ -69,11 +69,7 @@ class FilterService implements Serializable {
         if (params?.boolean("applyFilter")) {
             params.filters.each{ filterName, filterParams ->
                 if (filterParams instanceof Map) {
-                    def filter = filters.find{ it.name == filterName }
-                    if (filter) {
-                        bindData(filter, filterParams, null);
-                        log.debug("bound filter: ${filter}")
-                    }
+                    bindData(filters.find{ it.name == filterName }, filterParams, null);
                 }
             }
         }
@@ -193,9 +189,11 @@ class FilterService implements Serializable {
     }
 
     private static def bindData(Object model, modelParams, String prefix) {
-        def args = [ model, modelParams, [exclude:[], include:[]]]
-        if (prefix) args << prefix
+        if (model != null) {
+            def args = [ model, modelParams, [exclude:[], include:[]]]
+            if (prefix) args << prefix
 
-        new BindDynamicMethod().invoke(model, 'bind', (Object[]) args)
+            new BindDynamicMethod().invoke(model, 'bind', (Object[]) args)
+        }
     }
 }

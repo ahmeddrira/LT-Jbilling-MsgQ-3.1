@@ -487,6 +487,10 @@ hr {
     background: none;
     padding: 3px 0 3px 5px;
 }
+.accordion li .slide .checkbox-row label {
+    float: none;
+    padding-left: 5px;
+}
 .holder .input-bg a ,
 .accordion li .slide .input-bg a {
 	float:right;

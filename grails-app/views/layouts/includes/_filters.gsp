@@ -88,9 +88,18 @@
      * filter form to apply them.
      */
     function applyFilters() {
-        $('#filters-form input:visible, #filters-form select:visible').each(function() {
+        $('#filters-form input:visible, #filters-form select:visible').not(":checkbox").each(function() {
             var title = $(this).parents('li').find('.title');
             if ($(this).val()) {
+                title.addClass('active');
+            } else {
+                title.removeClass('active');
+            }
+        });
+
+        $('#filters-form :checkbox').each(function() {
+            var title = $(this).parents('li').find('.title');
+            if ($(this).is(":checked")) {
                 title.addClass('active');
             } else {
                 title.removeClass('active');

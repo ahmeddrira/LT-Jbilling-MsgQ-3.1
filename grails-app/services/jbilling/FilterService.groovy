@@ -26,6 +26,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.context.request.RequestContextHolder
 import java.io.Serializable
 import com.sapienter.jbilling.client.filters.FilterFactory
+import org.codehaus.groovy.grails.web.metaclass.BindDynamicMethod
 
 /**
  * FilterService
@@ -34,8 +35,6 @@ import com.sapienter.jbilling.client.filters.FilterFactory
  * @since  30-11-2010
  */
 class FilterService implements Serializable {
-
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy")
 
     private static final String SESSION_CURRENT_FILTER_TYPE = "current_filter_type";
 
@@ -68,11 +67,14 @@ class FilterService implements Serializable {
 
         // update filters with values from request parameters
         if (params?.boolean("applyFilter")) {
-            filters.each {
-                it.stringValue = params["filters.${it.name}.stringValue"]
-                it.integerValue = params.int("filters.${it.name}.integerValue")
-                it.startDateValue = params["filters.${it.name}.startDateValue"] ? DATE_FORMAT.parse((String) params["filters.${it.name}.startDateValue"]) : null
-                it.endDateValue = params["filters.${it.name}.endDateValue"] ? DATE_FORMAT.parse((String) params["filters.${it.name}.endDateValue"]) : null
+            params.filters.each{ filterName, filterParams ->
+                if (filterParams instanceof Map) {
+                    def filter = filters.find{ it.name == filterName }
+                    if (filter) {
+                        bindData(filter, filterParams, null);
+                        log.debug("bound filter: ${filter}")
+                    }
+                }
             }
         }
 
@@ -188,5 +190,12 @@ class FilterService implements Serializable {
      */
     def String getSessionKey(FilterType type) {
         return "${type.name()}_FILTERS"
+    }
+
+    private static def bindData(Object model, modelParams, String prefix) {
+        def args = [ model, modelParams, [exclude:[], include:[]]]
+        if (prefix) args << prefix
+
+        new BindDynamicMethod().invoke(model, 'bind', (Object[]) args)
     }
 }

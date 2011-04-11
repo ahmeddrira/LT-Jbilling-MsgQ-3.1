@@ -1243,5 +1243,8 @@ insert into jbilling_seqs (name, next_id) values ('currency', 2);
 -- breadcrumb descriptions
 alter table breadcrumb add column description varchar(255);
 
-
+-- new filter types
+alter table filter add column boolean_value boolean;
+alter table filter add column decimal_value numeric(22, 10);
+alter table filter add column decimal_high_value numeric(22, 10);
 

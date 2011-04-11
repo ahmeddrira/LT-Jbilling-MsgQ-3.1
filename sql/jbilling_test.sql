@@ -942,7 +942,10 @@ CREATE TABLE filter (
     string_value character varying(255),
     start_date_value timestamp without time zone,
     end_date_value timestamp without time zone,
-    version integer NOT NULL
+    version integer NOT NULL,
+    boolean_value boolean,
+    decimal_value numeric(22,10),
+    decimal_high_value numeric(22,10)
 );
 
 
@@ -10616,7 +10619,7 @@ COPY event_log_module (id) FROM stdin;
 -- Data for Name: filter; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY filter (id, filter_set_id, type, constraint_type, field, template, visible, integer_value, string_value, start_date_value, end_date_value, version) FROM stdin;
+COPY filter (id, filter_set_id, type, constraint_type, field, template, visible, integer_value, string_value, start_date_value, end_date_value, version, boolean_value, decimal_value, decimal_high_value) FROM stdin;
 \.
 
 

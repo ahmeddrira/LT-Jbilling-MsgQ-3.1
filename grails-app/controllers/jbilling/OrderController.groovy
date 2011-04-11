@@ -103,17 +103,19 @@ class OrderController {
 			createAlias('baseUserByUserId', 'u', Criteria.LEFT_JOIN)
 			and {
 				filters.each { filter ->
-					if (filter.value) {
-						log.debug "Filter value: ${filter.value}"
+					if (filter.value != null) {
+
 						//handle orderStatus & orderPeriod separately
 						if (filter.constraintType == FilterConstraint.STATUS) {
 							if (filter.getField().equals('orderStatus')) {
-								def statuses= new OrderStatusDAS().findAll()
+								def statuses = new OrderStatusDAS().findAll()
 								eq("orderStatus", statuses.find{ it.id?.equals(filter.integerValue) })
+
 							} else if (filter.getField().equals('orderPeriod')) {
-								def periods= new OrderPeriodDAS().findAll()
+								def periods = new OrderPeriodDAS().findAll()
 								eq("orderPeriod", periods.find{ it.id?.equals(filter.integerValue) })
 							}
+
 						} else {
 							addToCriteria(filter.getRestrictions());
 						}

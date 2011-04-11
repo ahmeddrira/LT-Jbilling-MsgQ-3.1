@@ -37,7 +37,7 @@ class FilterFactory {
             new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'id', template: 'id', visible: true)
         ],
         INVOICE: [
-			new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'created', visible: true),
+			new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'date', visible: true),
 			new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'baseUser.id', template: 'id', visible: true),
 			new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'isReview', template: 'invoice/review', visible: true),
 			new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: false),
@@ -48,12 +48,15 @@ class FilterFactory {
             new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.NUMBER_BETWEEN, field: 'carriedBalance', template: 'range', visible: false),
         ],
         ORDER: [
-            new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.EQ, field: 'u.id', template: 'id', visible: true),
+            new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.EQ, field: 'u.id', template: 'id', visible: false),
 			new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.LIKE, field: 'u.userName', template: 'customer/login', visible: true),
-			new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.DATE_BETWEEN, field: 'activeSince', template: 'created', visible: true),
-			new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDate', template: 'created', visible: true),
+			new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.DATE_BETWEEN, field: 'activeSince', template: 'date', visible: true),
+            new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.DATE_BETWEEN, field: 'activeUntil', template: 'date', visible: false),
+			new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDate', template: 'date', visible: true),
+            new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.DATE_BETWEEN, field: 'nextBillableDay', template: 'date', visible: false),
 			new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.STATUS, field: 'orderStatus', template: 'order/status', visible: true),
-			new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.STATUS, field: 'orderPeriod', template: 'order/period', visible: true)
+			new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.STATUS, field: 'orderPeriod', template: 'order/period', visible: true),
+            new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.EQ, field: 'isCurrent', template: 'order/mainSubscription', visible: false),
         ],
         PRODUCT: [
             new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.LIKE, field: 'internalNumber', template: 'product/internalNumber', visible: true),
@@ -61,7 +64,7 @@ class FilterFactory {
             new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.EQ, field: 'priceManual', template: 'product/manualPrice', visible: true),
         ],
         CUSTOMER: [
-            new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'created', visible: true),
+            new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'date', visible: true),
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.STATUS, field: 'userStatus', template: 'customer/status', visible: true),
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.LIKE, field: 'userName', template: 'customer/login', visible: true),
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.EQ, field: 'language.id', template: 'customer/language', visible: false),
@@ -73,7 +76,7 @@ class FilterFactory {
         PAYMENT: [
             new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.EQ, field: 'u.id', template: 'id', visible: false),
             new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.LIKE, field: 'u.userName', template: 'customer/login', visible: true),
-            new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'created', visible: true),
+            new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'date', visible: true),
             new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.EQ, field: 'isRefund', template: 'payment/refund', visible: true),
             new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.EQ, field: 'paymentMethod.id', template: 'payment/method', visible: false),
             new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.EQ, field: 'paymentResult.id', template: 'payment/result', visible: false),
@@ -83,13 +86,13 @@ class FilterFactory {
 
         ],
 		BILLINGPROCESS: [
-			new Filter(type: FilterType.BILLINGPROCESS, constraintType: FilterConstraint.DATE_BETWEEN, field: 'billingDate', template: 'created', visible: true)
+			new Filter(type: FilterType.BILLINGPROCESS, constraintType: FilterConstraint.DATE_BETWEEN, field: 'billingDate', template: 'date', visible: true)
 		],
 		MEDIATIONPROCESS:[
-			new Filter(type: FilterType.MEDIATIONPROCESS, constraintType: FilterConstraint.DATE_BETWEEN, field: 'startDatetime', template: 'created', visible: true)
+			new Filter(type: FilterType.MEDIATIONPROCESS, constraintType: FilterConstraint.DATE_BETWEEN, field: 'startDatetime', template: 'date', visible: true)
 		],
 		LOGS:[
-			new Filter(type: FilterType.LOGS, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'created', visible: true),
+			new Filter(type: FilterType.LOGS, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'date', visible: true),
             new Filter(type: FilterType.LOGS, constraintType: FilterConstraint.LIKE, field: 'u.userName', template: 'customer/login', visible: false),
             new Filter(type: FilterType.LOGS, constraintType: FilterConstraint.EQ, field: 'u.id', template: 'id', visible: true),
             new Filter(type: FilterType.LOGS, constraintType: FilterConstraint.EQ, field: 'table.name', template: 'log/table', visible: true),

@@ -60,8 +60,11 @@ class FilterFactory {
         ],
         PRODUCT: [
             new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.LIKE, field: 'internalNumber', template: 'product/internalNumber', visible: true),
-            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.EQ, field: 'hasDecimals', template: 'product/decimals', visible: true),
-            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.EQ, field: 'priceManual', template: 'product/manualPrice', visible: true),
+            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.EQ, field: 'hasDecimals', template: 'product/decimals', visible: false),
+            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.LIKE, field: 'glCode', template: 'product/glCode', visible: true),
+            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.NUMBER_BETWEEN, field: 'percentage', template: 'range', visible: false),
+            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.EQ, field: 'price.type', template: 'product/priceStrategy', visible: true),
+            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.EQ, field: 'price.rate', template: 'range', visible: true),
         ],
         CUSTOMER: [
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'date', visible: true),

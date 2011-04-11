@@ -16,6 +16,7 @@ import com.sapienter.jbilling.client.pricing.util.PlanHelper
 import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.server.util.csv.Exporter
 import com.sapienter.jbilling.client.util.DownloadHelper
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
 
 @Secured(['isAuthenticated()'])
 class ProductController {
@@ -112,10 +113,18 @@ class ProductController {
                 offset: params.offset
         ) {
             and {
-                filters.each { filter ->
-                    if (filter.value) {
-                        addToCriteria(filter.getRestrictions());
+                createAlias('defaultPrice', 'price')
 
+                filters.each { filter ->
+                    if (filter.value != null) {
+
+                        // handle price model filtering exclusively
+                        if (filter.field == 'price.type') {
+                            eq(filter.field, PriceModelStrategy.valueOf(filter.stringValue))
+
+                        } else {
+                            addToCriteria(filter.getRestrictions());
+                        }
                     }
                 }
 

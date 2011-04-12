@@ -92,7 +92,8 @@ class FilterFactory {
             new Filter(type: FilterType.BILLINGPROCESS, constraintType: FilterConstraint.EQ, field: 'isReview', template: 'invoice/review', visible: true)
 		],
 		MEDIATIONPROCESS:[
-			new Filter(type: FilterType.MEDIATIONPROCESS, constraintType: FilterConstraint.DATE_BETWEEN, field: 'startDatetime', template: 'date', visible: true)
+			new Filter(type: FilterType.MEDIATIONPROCESS, constraintType: FilterConstraint.DATE_BETWEEN, field: 'startDatetime', template: 'date', visible: true),
+            new Filter(type: FilterType.MEDIATIONPROCESS, constraintType: FilterConstraint.SIZE_BETWEEN, field: 'records', template: 'range', visible: true),
 		],
 		LOGS:[
 			new Filter(type: FilterType.LOGS, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'date', visible: true),

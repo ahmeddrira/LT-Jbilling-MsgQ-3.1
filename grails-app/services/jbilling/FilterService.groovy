@@ -72,9 +72,6 @@ class FilterService implements Serializable {
                 if (filterParams instanceof Map) {
                     def filter = filters.find{ it.name == filterName }
                     bindData(filter, filterParams, null);
-
-                    log.debug("filter ${filterName} = ${filterParams}")
-                    log.debug("bound filter ${filter}")
                 }
             }
         }

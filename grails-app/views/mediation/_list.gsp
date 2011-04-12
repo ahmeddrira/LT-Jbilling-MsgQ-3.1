@@ -4,46 +4,43 @@
     	<table id="processes" cellspacing="0" cellpadding="0">
 			<thead>
 				<tr>
-					<th class="small"><g:message code="label.mediation.id" /></th>
-                    <th class="small"><g:message code="label.mediation.config.id" /></th>
-					<th class="medium"><g:message code="label.mediation.start.date" /></th>
-					<th class="medium"><g:message code="label.mediation.end.date" /></th>
-					<th class="large"><g:message code="label.mediation.total.records" /></th>
+					<th class="large"><g:message code="mediation.th.id" /></th>
+					<th class="small2"><g:message code="mediation.th.start.date" /></th>
+					<th class="small2"><g:message code="mediation.th.end.date" /></th>
+					<th class="small"><g:message code="mediation.th.total.records" /></th>
+                    <th class="small"><g:message code="mediation.th.orders.affected"/></th>
 				</tr>
 			</thead>
 	
 			<tbody>
 				<g:each var="proc" in="${processes}">
 					<tr id="mediation-${proc.id}" class="${proc?.id == processId ? 'active' : ''}">
-						<td class="small">
-                            <g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']"
-                                before="register(this);" onSuccess="render(data, next);">
-                                <strong>${proc.id}</strong></g:remoteLink>
-                        </td>
-                        <td class="small">
-                            <g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']"
-                                before="register(this);" onSuccess="render(data, next);">
-                                <strong>${proc.configuration?.id}</strong></g:remoteLink>
-                        </td>
-						<td class="medium">
-							<g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']"
-                                before="register(this);" onSuccess="render(data, next);">
-                                <strong>
-                                    <g:formatDate date="${proc.startDatetime}" formatName="date.timeSecs.format"/>
-                                </strong></g:remoteLink>
-						</td>
-                        <td class="medium">
-                            <g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']"
-                                before="register(this);" onSuccess="render(data, next);">
-                                <strong>
-                                <g:formatDate date="${proc.endDatetime}" formatName="date.timeSecs.format"/>
-                                </strong>
+						<td>
+                            <g:remoteLink breadcrumb="id" class="cell double" action="show" id="${proc.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+
+                                <strong>${proc.id}</strong>
+                                <em>${proc.configuration.name}</em>
                             </g:remoteLink>
                         </td>
-						<td class="large">
-                            <g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']"
-                                before="register(this);" onSuccess="render(data, next);">
-                                <strong>${proc.records?.size()}</strong></g:remoteLink>
+						<td>
+							<g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                                <g:formatDate date="${proc.startDatetime}" formatName="date.timeSecs.format"/>
+                            </g:remoteLink>
+						</td>
+                        <td>
+                            <g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                                <g:formatDate date="${proc.endDatetime}" formatName="date.timeSecs.format"/>
+                            </g:remoteLink>
+                        </td>
+						<td>
+                            <g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                                ${proc.records?.size()}
+                            </g:remoteLink>
+                        </td>
+                        <td>
+                            <g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                                ${proc.ordersAffected}
+                            </g:remoteLink>
                         </td>
 					</tr>
 				</g:each>

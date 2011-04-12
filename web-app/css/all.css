@@ -859,6 +859,7 @@ hr {
 td.large, th.large { width: 300px; }
 td.medium2, th.medium2 { width: 150px; }
 td.medium, th.medium { width: 120px; }
+td.small2, th.small2 { width: 100px; }
 td.small, th.small { width: 80px; }
 td.tiny2, th.tiny2 { width: 60px; }
 td.tiny, th.tiny { width: 40px; }

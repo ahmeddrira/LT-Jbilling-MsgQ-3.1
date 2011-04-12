@@ -168,20 +168,18 @@ class Filter {
                 break
 
             case FilterConstraint.DATE_BETWEEN:
-                if (startDateValue && endDateValue) {
+                if (startDateValue != null && endDateValue != null) {
                     return Restrictions.between(field, startDateValue, endDateValue);
 
-                } else if (startDateValue) {
+                } else if (startDateValue != null) {
                     return Restrictions.ge(field, startDateValue);
 
-                } else if (endDateValue) {
+                } else if (endDateValue != null) {
                     return Restrictions.le(field, endDateValue);
                 }
                 break
 
             case FilterConstraint.NUMBER_BETWEEN:
-                // groovy nullability handles 0 as false. explicitly check is not null to allow
-                // zero values in range criteria
                 if (decimalValue != null && decimalHighValue != null) {
                     return Restrictions.between(field, decimalValue, decimalHighValue)
 
@@ -190,6 +188,21 @@ class Filter {
 
                 } else if (decimalHighValue != null) {
                     return Restrictions.le(field, decimalHighValue)
+                }
+                break
+
+            case FilterConstraint.SIZE_BETWEEN:
+                if (decimalValue != null && decimalHighValue != null) {
+                    return Restrictions.and(
+                                    Restrictions.sizeGe(field, decimalValue.intValue()),
+                                    Restrictions.sizeLe(field, decimalHighValue.intValue())
+                            )
+
+                } else if (decimalValue != null) {
+                    return Restrictions.sizeGe(field, decimalValue.intValue())
+
+                } else if (decimalHighValue != null) {
+                    return Restrictions.sizeLe(field, decimalHighValue.intValue())
                 }
                 break
 

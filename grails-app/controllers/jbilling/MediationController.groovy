@@ -8,6 +8,10 @@ import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO
 import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO
 import com.sapienter.jbilling.server.order.db.OrderDTO
+import org.hibernate.criterion.Restrictions
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.hibernate.FetchMode
+import org.hibernate.Criteria
 
 /**
 * MediationController
@@ -31,16 +35,10 @@ class MediationController {
 	
 	def list = {
 		def filters = filterService.getFilters(FilterType.MEDIATIONPROCESS, params)
-		
-		params.max = (params?.max?.toInteger()) ?: pagination.max
-		params.offset = (params?.offset?.toInteger()) ?: pagination.offset
-		
-		def processes= getFilteredProcesses(filters)
+		def processes = getFilteredProcesses(filters, params)
 
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 
-		log.debug "Found ${processes?.totalCount} Mediation Processs"
-		
 		if (params.applyFilter) {
 			render template: 'list', model: [processes: processes,filters:filters]
 		} else {
@@ -48,54 +46,46 @@ class MediationController {
 		}
     }
 	
-	def getFilteredProcesses (filters) {
+	def getFilteredProcesses (filters, GrailsParameterMap params) {
+		params.max = (params?.max?.toInteger()) ?: pagination.max
+		params.offset = (params?.offset?.toInteger()) ?: pagination.offset
+
 		return MediationProcess.createCriteria().list(
 			max:    params.max,
 			offset: params.offset
 		) {
 			and {
 				filters.each { filter ->
-					if (filter.value) {
+					if (filter.value != null) {
 						addToCriteria(filter.getRestrictions());
 					}
 				}
-
-                configuration {
-                    eq('entityId', session['company_id'])
-                }
 			}
+
+            configuration {
+                eq("entityId", session['company_id'])
+            }
+
 			order("id", "desc")
 		}
 	}
 
 	def show = {
-		int processId= params.int('id')
-		
-		List<MediationRecordWS> records= webServicesSession.getMediationRecordsByMediationProcess(processId)
-		log.debug "Records found ${records.size()}"
-		Map<Integer, Integer> map= new HashMap<Integer, Integer>();
-		for(MediationRecordWS ws: records) {
-			log.debug "Record ${ws.key} Status ID: ${ws.getRecordStatusId()}"
-			if (map[ws.getRecordStatusId()]) {
-				log.debug "found in map"
-				map.put(ws.getRecordStatusId(), new Integer(map[ws.getRecordStatusId()] + 1 ) )
-			} else {
-				log.debug "not found in map. putting now.."
-				map.put(ws.getRecordStatusId(), new Integer(1))
-			}
-		}
+        def process = MediationProcess.get(params.int('id'))
 
-		recentItemService.addRecentItem(processId, RecentItemType.MEDIATIONPROCESS)
-		breadcrumbService.addBreadcrumb(controllerName, actionName, null, processId)
+        log.debug("Got process ${process}")
+
+		recentItemService.addRecentItem(process.id, RecentItemType.MEDIATIONPROCESS)
+		breadcrumbService.addBreadcrumb(controllerName, actionName, null, process.id)
 
 		if (params.template) {
-			render template: params.template, model: [map:map, processId: processId]
+			render template: params.template, model: [ selected: process ]
+
 		} else {
-			params.max = (params?.max?.toInteger()) ?: pagination.max
-			params.offset = (params?.offset?.toInteger()) ?: pagination.offset
-			def filters= filterService.getFilters(FilterType.MEDIATIONPROCESS, params)
-			def processes= getFilteredProcesses(filters)
-			render view: 'showListAndView', model: [map:map, processId: processId, processes:processes, filters:filters ]
+			def filters = filterService.getFilters(FilterType.MEDIATIONPROCESS, params)
+			def processes = getFilteredProcesses(filters, params)
+
+			render view: 'showListAndView', model: [ selected: process, processes: processes, filters: filters ]
 		}
 	}
 

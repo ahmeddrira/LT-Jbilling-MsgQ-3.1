@@ -44,9 +44,10 @@ class Breadcrumb implements Serializable {
     }
 
     static constraints = {
-        action(blank:true, nullable:true)
-        name(blank:true, nullable:true)
-        objectId(nullable:true)
+        action(blank: true, nullable: true)
+        name(blank: true, nullable: true)
+        objectId(nullable: true)
+        description(nullable: true)
     }
 
     Integer userId
@@ -54,6 +55,7 @@ class Breadcrumb implements Serializable {
     String action
     String name
     Integer objectId
+    String description
 
     def String getMessageCode() {
         StringBuilder builder = new StringBuilder();
@@ -94,6 +96,6 @@ class Breadcrumb implements Serializable {
 
     @Override
     def String toString() {
-        return "Breadcrumb{id=${id}, userId=${userId}, controller=${controller}, action=${action}, objectId=${objectId}, name=${name}}"
+        return "Breadcrumb{id=${id}, userId=${userId}, controller=${controller}, action=${action}, objectId=${objectId}, name=${name}, description=${description}}"
     }
 }

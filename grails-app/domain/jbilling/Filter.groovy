@@ -32,8 +32,6 @@ import org.apache.log4j.Logger;
  */
 class Filter {
 
-    private static final Logger LOG = Logger.getLogger(Filter.class);
-
     static transients = [ "value", "name", "restrictions" ]
 
     static mapping = {
@@ -48,8 +46,11 @@ class Filter {
     }
 
     static constraints = {
+        booleanValue(nullable:true)
         stringValue(blank:true, nullable:true)
         integerValue(nullable:true)
+        decimalValue(nullable:true)
+        decimalHighValue(nullable:true)
         startDateValue(nullable:true)
         endDateValue(nullable:true)
     }
@@ -62,8 +63,11 @@ class Filter {
     String template
     Boolean visible
 
+    Boolean booleanValue
     String stringValue
     Integer integerValue
+    BigDecimal decimalValue
+    BigDecimal decimalHighValue
     Date startDateValue
     Date endDateValue
 
@@ -76,6 +80,7 @@ class Filter {
         this.field = filter.field
         this.template = filter.template
         this.visible = filter.visible
+        this.booleanValue = filter.booleanValue
         this.stringValue = filter.stringValue
         this.integerValue = filter.integerValue
         this.startDateValue = filter.startDateValue
@@ -83,11 +88,20 @@ class Filter {
     }
 
     def Object getValue() {
+        if (booleanValue != null)
+            return booleanValue
+
         if (stringValue != null)
             return stringValue
 
         if (integerValue != null)
             return integerValue
+
+        if (decimalValue != null)
+            return decimalValue
+
+        if (decimalHighValue != null)
+            return decimalHighValue
 
         if (startDateValue != null)
             return startDateValue
@@ -103,6 +117,7 @@ class Filter {
     }
 
     def void clear() {
+        booleanValue = null
         stringValue = null
         integerValue = null
         startDateValue = null
@@ -135,7 +150,7 @@ class Filter {
 
     @Override
     def String toString ( ) {
-        return "Filter{id=${id}, type=${type}, constrainttype=${constraintType}, field=${field}, value={$value}}"
+        return "Filter{id=${id}, type=${type}, constrainttype=${constraintType}, field=${field}, value=${value}}"
     }
 
     public Criterion getRestrictions() {
@@ -143,31 +158,67 @@ class Filter {
             return null;
         }
 
-        Criterion retValue = null;
         switch (constraintType) {
             case FilterConstraint.EQ:
-                retValue = Restrictions.eq(field, getValue())
-            break
+                return Restrictions.eq(field, getValue())
+                break
 
             case FilterConstraint.LIKE:
-                retValue = (Restrictions.ilike(field, stringValue))
-            break
+                return (Restrictions.ilike(field, stringValue))
+                break
 
             case FilterConstraint.DATE_BETWEEN:
                 if (startDateValue != null && endDateValue != null) {
-                    retValue = Restrictions.between(field, startDateValue, endDateValue);
-                } else if (startDateValue != null) {
-                    retValue = Restrictions.ge(field, startDateValue);
-                } else if (endDateValue != null) {
-                    retValue = Restrictions.le(field, endDateValue);
-                }
-            break
+                    return Restrictions.between(field, startDateValue, endDateValue);
 
-            default:
-                LOG.warn("Filter constraint " + constraintType + " not known, returning null restriction");
+                } else if (startDateValue != null) {
+                    return Restrictions.ge(field, startDateValue);
+
+                } else if (endDateValue != null) {
+                    return Restrictions.le(field, endDateValue);
+                }
+                break
+
+            case FilterConstraint.NUMBER_BETWEEN:
+                if (decimalValue != null && decimalHighValue != null) {
+                    return Restrictions.between(field, decimalValue, decimalHighValue)
+
+                } else if (decimalValue != null) {
+                    return Restrictions.ge(field, decimalValue)
+
+                } else if (decimalHighValue != null) {
+                    return Restrictions.le(field, decimalHighValue)
+                }
+                break
+
+            case FilterConstraint.SIZE_BETWEEN:
+                if (decimalValue != null && decimalHighValue != null) {
+                    return Restrictions.and(
+                                    Restrictions.sizeGe(field, decimalValue.intValue()),
+                                    Restrictions.sizeLe(field, decimalHighValue.intValue())
+                            )
+
+                } else if (decimalValue != null) {
+                    return Restrictions.sizeGe(field, decimalValue.intValue())
+
+                } else if (decimalHighValue != null) {
+                    return Restrictions.sizeLe(field, decimalHighValue.intValue())
+                }
+                break
+
+            case FilterConstraint.IS_EMPTY:
+                if (booleanValue) {
+                    return Restrictions.isEmpty(field)
+                }
+                break
+
+            case FilterConstraint.IS_NOT_EMPTY:
+                if (booleanValue) {
+                    return Restrictions.isNotEmpty(field)
+                }
+                break
         }
 
-        LOG.debug("Returning " + retValue);
-        return retValue;
+        return null;
     }
 }

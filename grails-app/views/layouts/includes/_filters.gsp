@@ -1,4 +1,4 @@
-<%@ page import="jbilling.FilterSet" %>
+<%@ page import="com.sapienter.jbilling.server.user.db.CompanyDTO; jbilling.FilterSet" %>
 
 <%--
   Filter side panel template. Prints all filters contained in the "filters" page variable.
@@ -7,24 +7,31 @@
   @since  03-12-2010
 --%>
 
+<g:set var="company" value="${CompanyDTO.get(session['company_id'])}"/>
+<g:set var="filters" value="${filters.sort{ it.field }}"/>
+<g:set var="filtersets" value="${FilterSet.findAllByUserId(session['user_id'])}"/>
+
 <div id="filters">
     <div class="heading">
         <strong><g:message code="filters.title"/></strong>
     </div>
 
+    <!-- filters -->
     <ul class="accordion">
         <g:each var="filter" in="${filters}">
             <g:if test="${filter.visible}">
                 <li>
-                    <g:render template="/filter/${filter.template}" model="[filter: filter]"/>
+
+                    <g:render template="/filter/${filter.template}" model="[filter: filter, company: company]"/>
                 </li>
             </g:if>
         </g:each>
     </ul>
 
+    <!-- filter controls -->
     <div class="btn-hold">
         <!-- apply filters -->
-        <a class="submit apply" onclick="applyFilters()"><span><g:message code="filters.apply.button"/></span></a>
+        <a class="submit apply" onclick="$('#filters-form').submit();"><span><g:message code="filters.apply.button"/></span></a>
 
         <!-- add another filter -->
         <g:if test="${filters.find { !it.visible }}">
@@ -54,40 +61,44 @@
         <!-- load saved filter set -->
         <div class="dropdown">
             <a class="submit2 load open"><span><g:message code="filters.load.button"/></span></a>
-            <div class="drop">
-                <ul>
-                    <g:each var="filterset" in="${FilterSet.findAllByUserId((Integer) session['user_id'])}">
-                        <li>
-                            <g:remoteLink controller="filter" action="load" id="${filterset.id}" update="filters">
-                                ${filterset.name}
-                            </g:remoteLink>
-                        </li>
-                    </g:each>
-                </ul>
-            </div>
+            <g:if test="${filtersets}">
+                <div class="drop">
+                    <ul>
+                        <g:each var="filterset" in="${filtersets.sort{ it.id }}">
+                            <li>
+                                <g:remoteLink controller="filter" action="load" id="${filterset.id}" update="filters">
+                                    ${filterset.name}
+                                </g:remoteLink>
+                            </li>
+                        </g:each>
+                    </ul>
+                </div>
+            </g:if>
         </div>
-    </div>
 
-    <script type="text/javascript">
-        /**
-         * Toggles the 'active' class for each filter that has a value and submits the
-         * filter form to apply them.
-         */
-        function applyFilters() {
-            $('#filters-form input:visible, #filters-form select:visible').each(function() {
-                var title = $(this).parents('li').find('.title');
-                if ($(this).val()) {
+        <script type="text/javascript">
+            $(function() {
+                initPopups();
+                initScript();
+            });
+        </script>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        $('body').delegate('#filters-form', 'submit', function() {
+            $(this).find('li').each(function() {
+                var title = $(this).find('.title');
+
+                if ($(this).find(':input[value!=""]').not(':checkbox').length > 0) {
+                    title.addClass('active');
+                } else if ($(this).find(':checkbox:checked').length > 0) {
                     title.addClass('active');
                 } else {
                     title.removeClass('active');
                 }
             });
-
-            $('#filters-form').submit();
-        }
-
-        /* re-initialize popup menus when rendered */
-        initPopups();
-        initScript();    
-    </script>
-</div>
+        });
+    });
+</script>

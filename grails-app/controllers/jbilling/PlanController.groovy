@@ -70,7 +70,7 @@ class PlanController {
         }
 
         def selected = params.id ? PlanDTO.get(params.int("id")) : null
-        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'), selected?.item?.internalNumber)
 
         if (params.applyFilter) {
             render template: 'plans', model: [ plans: plans, selected: selected ]
@@ -84,7 +84,7 @@ class PlanController {
      */
     def show = {
         PlanDTO plan = PlanDTO.get(params.int('id'))
-        breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'), plan.item.internalNumber)
 
         render template: 'show', model: [ plan: plan ]
     }

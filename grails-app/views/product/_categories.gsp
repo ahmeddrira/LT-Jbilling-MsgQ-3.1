@@ -24,7 +24,7 @@
                         <td>
                             <g:remoteLink class="cell double" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
                                 <strong>${category.description}</strong>
-                                <em><g:message code="product.category.id.label" args="[category.id]"/></em>
+                                <em><g:message code="table.id.format" args="[category.id]"/></em>
                             </g:remoteLink>
                         </td>
                         <td class="small">

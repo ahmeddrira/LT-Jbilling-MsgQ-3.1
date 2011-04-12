@@ -24,6 +24,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -41,26 +42,25 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 
 @Entity
 @TableGenerator(
-        name="mediation_cfg_GEN",
-        table="jbilling_seqs",
+        name = "mediation_cfg_GEN",
+        table = "jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
-        pkColumnValue="mediation_cfg",
-        allocationSize=10
+        pkColumnValue = "mediation_cfg",
+        allocationSize = 10
 )
 @Table(name = "mediation_cfg")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class MediationConfiguration implements Serializable {
-    //private static final Logger LOG = Logger.getLogger(MediationConfiguration.class);
 
-    @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="mediation_cfg_GEN")
+    @Id @GeneratedValue(strategy = GenerationType.TABLE, generator = "mediation_cfg_GEN")
     private Integer id;
 
     @Column(name = "entity_id")
     private Integer entityId;
 
-    @OneToOne
-    @JoinColumn(name="pluggable_task_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pluggable_task_id")
     private PluggableTaskDTO pluggableTask;
 
     @Column(name = "name")
@@ -69,13 +69,11 @@ public class MediationConfiguration implements Serializable {
     @Column(name = "order_value")
     private Integer orderValue;
 
-
     @Column(name = "create_datetime")
     private Date createDatetime;
 
-
     @Version
-    @Column(name="OPTLOCK")
+    @Column(name = "OPTLOCK")
     private Integer versionNum;
 
 
@@ -89,7 +87,7 @@ public class MediationConfiguration implements Serializable {
         this.name = ws.getName();
         this.orderValue = ws.getOrderValue();
         this.createDatetime = ws.getCreateDatetime();
-        this.versionNum= ws.getVersionNum();
+        this.versionNum = ws.getVersionNum();
     }
 
     public Integer getId() {
@@ -154,5 +152,4 @@ public class MediationConfiguration implements Serializable {
                " task: " + pluggableTask + " date: " + createDatetime +
                " entity id: " + entityId;
     }
-
 }

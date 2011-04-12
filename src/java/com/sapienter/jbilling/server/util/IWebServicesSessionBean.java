@@ -294,6 +294,17 @@ public interface IWebServicesSessionBean {
 
     public void updatePreferences(PreferenceWS[] prefList);
     public void updatePreference(PreferenceWS preference);
+    public PreferenceWS getPreference(Integer preferenceTypeId);
+
+
+    /*
+        Currencies
+     */
+
+    public CurrencyWS[] getCurrencies();
+    public void updateCurrencies(CurrencyWS[] currencies);
+    public void updateCurrency(CurrencyWS currency);
+    public Integer createCurrency(CurrencyWS currency);
 
 
     /*
@@ -301,7 +312,6 @@ public interface IWebServicesSessionBean {
     */
 
     public void createUpdateNofications(Integer messageId, MessageDTO dto);
-
     public void saveCustomerNotes(Integer userId, String notes);
 
 

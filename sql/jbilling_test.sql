@@ -579,7 +579,8 @@ CREATE TABLE breadcrumb (
     action character varying(255),
     name character varying(255),
     object_id integer,
-    version integer NOT NULL
+    version integer NOT NULL,
+    description character varying(255)
 );
 
 
@@ -748,7 +749,8 @@ CREATE TABLE currency (
     id integer NOT NULL,
     symbol character varying(10) NOT NULL,
     code character varying(3) NOT NULL,
-    country_code character varying(2) NOT NULL
+    country_code character varying(2) NOT NULL,
+    optlock integer
 );
 
 
@@ -940,7 +942,10 @@ CREATE TABLE filter (
     string_value character varying(255),
     start_date_value timestamp without time zone,
     end_date_value timestamp without time zone,
-    version integer NOT NULL
+    version integer NOT NULL,
+    boolean_value boolean,
+    decimal_value numeric(22,10),
+    decimal_high_value numeric(22,10)
 );
 
 
@@ -3299,14 +3304,14 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 -- Data for Name: breadcrumb; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY breadcrumb (id, user_id, controller, action, name, object_id, version) FROM stdin;
-4	1	product	list	\N	2300	0
-5	1	product	show	\N	3000	0
-6	1	product	list	\N	\N	0
-7	1	product	list	\N	1	0
-8	1	product	show	\N	2602	0
-9	1	plan	list	\N	\N	0
-10	1	plan	list	\N	1	0
+COPY breadcrumb (id, user_id, controller, action, name, object_id, version, description) FROM stdin;
+4	1	product	list	\N	2300	0	\N
+5	1	product	show	\N	3000	0	\N
+6	1	product	list	\N	\N	0	\N
+7	1	product	list	\N	1	0	\N
+8	1	product	show	\N	2602	0	\N
+9	1	plan	list	\N	\N	0	\N
+10	1	plan	list	\N	1	0	\N
 \.
 
 
@@ -8755,18 +8760,18 @@ COPY credit_card (id, cc_number, cc_number_plain, cc_expiry, name, cc_type, dele
 -- Data for Name: currency; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY currency (id, symbol, code, country_code) FROM stdin;
-1	US$	USD	US
-2	C$	CAD	CA
-3	&#8364;	EUR	EU
-4	&#165;	JPY	JP
-5	&#163;	GBP	UK
-6	&#8361;	KRW	KR
-7	Sf	CHF	CH
-8	SeK	SEK	SE
-9	S$	SGD	SG
-10	M$	MYR	MY
-11	$	AUD	AU
+COPY currency (id, symbol, code, country_code, optlock) FROM stdin;
+1	US$	USD	US	0
+2	C$	CAD	CA	0
+3	&#8364;	EUR	EU	0
+4	&#165;	JPY	JP	0
+5	&#163;	GBP	UK	0
+6	&#8361;	KRW	KR	0
+7	Sf	CHF	CH	0
+8	SeK	SEK	SE	0
+9	S$	SGD	SG	0
+10	M$	MYR	MY	0
+11	$	AUD	AU	0
 \.
 
 
@@ -10614,7 +10619,7 @@ COPY event_log_module (id) FROM stdin;
 -- Data for Name: filter; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY filter (id, filter_set_id, type, constraint_type, field, template, visible, integer_value, string_value, start_date_value, end_date_value, version) FROM stdin;
+COPY filter (id, filter_set_id, type, constraint_type, field, template, visible, integer_value, string_value, start_date_value, end_date_value, version, boolean_value, decimal_value, decimal_high_value) FROM stdin;
 \.
 
 
@@ -11914,8 +11919,6 @@ pluggable_task_type_category	1
 pluggable_task_type	1
 invoice_line_type	1
 invoice_line_type	1
-currency	1
-currency	1
 payment_method	1
 payment_method	1
 payment_result	1
@@ -12049,6 +12052,9 @@ report	1
 report_type	1
 report_parameter	1
 plan_item_bundle	1
+currency	2
+currency	2
+currency	2
 \.
 
 

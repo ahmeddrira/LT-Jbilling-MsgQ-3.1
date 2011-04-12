@@ -30,7 +30,11 @@ import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.util.PreferenceTypeWS
 import com.sapienter.jbilling.server.util.PreferenceWS
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO
+import com.sapienter.jbilling.common.Util
 import grails.plugins.springsecurity.Secured
+import com.sapienter.jbilling.server.util.db.CurrencyDTO
+import com.sapienter.jbilling.server.item.CurrencyBL
+import com.sapienter.jbilling.server.util.CurrencyWS
 
 /**
  * ConfigurationController 
@@ -172,5 +176,117 @@ class ConfigController {
 			flash.error = 'config.company.save.error'
 		}
 		redirect action: company
-	}       
+	}
+
+    /*
+        Invoice display configuration
+     */
+
+    def invoice = {
+        def number = webServicesSession.getPreference(Constants.PREFERENCE_INVOICE_NUMBER)
+        def prefix = webServicesSession.getPreference(Constants.PREFERENCE_INVOICE_PREFIX)
+
+        [ number: number, prefix: prefix, logoPath: entityLogoPath ]
+    }
+
+    def entityLogo = {
+        def logo = new File(getEntityLogoPath())
+        response.outputStream << logo.getBytes()
+    }
+
+    def saveInvoice = {
+        def number = new PreferenceWS(preferenceType: new PreferenceTypeWS(id: Constants.PREFERENCE_INVOICE_NUMBER), value: params.number)
+        def prefix = new PreferenceWS(preferenceType: new PreferenceTypeWS(id: Constants.PREFERENCE_INVOICE_PREFIX), value: params.prefix)
+
+        try {
+            webServicesSession.updatePreferences((PreferenceWS[]) [ number, prefix ])
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e)
+            render view: 'invoice', model: [ number: number, prefix: prefix, logoPath: entityLogoPath ]
+            return
+        }
+
+        // save uploaded file
+        def logo = request.getFile('logo');
+        if (!logo.empty) {
+            logo.transferTo(new File(getEntityLogoPath()))
+        }
+
+        flash.message = 'preferences.updated'
+        redirect action: invoice
+    }
+
+    def String getEntityLogoPath() {
+        return Util.getSysProp("base_dir") + "${File.separator}logos${File.separator}entity-${session['company_id']}.jpg"
+    }
+
+
+    /*
+        Currencies
+     */
+
+    def currency = {
+        def currency = new CurrencyBL()
+
+        def entityCurrency = currency.getEntityCurrency(session['company_id'])
+        def currencies = currency.getCurrencies(session['language_id'], session['company_id'])
+
+
+        [ entityCurrency: entityCurrency, currencies: currencies ]
+    }
+
+    def saveCurrencies = {
+        def defaultCurrencyId = params.int('defaultCurrencyId')
+
+        // build a list of currencies
+        def currencies = []
+        params.currencies.each { k, v ->
+            if (v instanceof Map) {
+                def currency = new CurrencyWS()
+                bindData(currency, v, ['_inUse'])
+                currency.defaultCurrency = (currency.id == defaultCurrencyId)
+
+                currencies << currency
+            }
+        }
+
+        // update all currencies
+        try {
+            webServicesSession.updateCurrencies((CurrencyWS[]) currencies)
+
+            flash.message = 'currencies.updated'
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e)
+        }
+
+        redirect action: 'currency'
+    }
+
+    def editCurrency = {
+        // only shows edit template to create new currencies.
+        // currencies can be edited from the main currency config form
+        render template: 'currency/edit', model: [ currency: null ]
+    }
+
+    def saveCurrency = {
+        def currency = new CurrencyWS()
+        bindData(currency, params)
+
+        try {
+            webServicesSession.createCurrency(currency)
+
+            flash.message = 'currency.created'
+            flash.args = [ currency.code ]
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e)
+            chain action: 'currency', model: [ currency: currency ]
+            return
+        }
+
+        redirect action: 'currency'
+    }
+
 }

@@ -200,4 +200,15 @@ class UserHelper {
 
         new BindDynamicMethod().invoke(model, 'bind', (Object[]) args)
     }
+
+    static def getDisplayName(user, contact) {
+        if (contact?.firstName || contact?.lastName) {
+            return "${contact.firstName} ${contact.lastName}".trim()
+
+        } else if (contact?.organizationName) {
+            return "${contact.organizationName}".trim()
+        }
+
+        return user.userName
+    }
 }

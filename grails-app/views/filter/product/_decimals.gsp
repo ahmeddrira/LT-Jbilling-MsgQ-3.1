@@ -18,7 +18,7 @@
                               valueMessagePrefix='filters.hasDecimals'
                               noSelection="['': message(code: 'filters.hasDecimals.empty')]"/>
                 </div>
-                <label for="filters.${filter.name}.stringValue"><g:message code="filters.hasDecimals.label"/></label>
+                <label for="filters.${filter.name}.integerValue"><g:message code="filters.hasDecimals.label"/></label>
             </div>
         </fieldset>
     </div>

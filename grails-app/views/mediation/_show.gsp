@@ -1,50 +1,104 @@
-<%@ page import="com.sapienter.jbilling.server.util.Constants;" %>
+<%@ page import="org.joda.time.Period; com.sapienter.jbilling.server.util.Constants;" %>
+
 <%--
     @author Vikas Bodani
     @since 18 Feb 2011
  --%>
-<div class="column-hold">
 
+<div class="column-hold">
     <div class="heading">
-        <strong><g:message code="label.mediation.details"/> <em>${processId}</em>
+        <strong><g:message code="mediation.process.title"/> <em>${selected.id}</em>
         </strong>
     </div>
  
     <div class="box">
-        <table class="dataTable">
-            <tr>
-                <td>
-                    <g:message code="label.mediation.done.billable"/>:
-                </td>
-                <td class="value">
-                    ${map.get(Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE)?:'0'}
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <g:message code="label.mediation.done.not.billable"/>:
-                </td>
-                <td class="value">
-                    ${map.get(Constants.MEDIATION_RECORD_STATUS_DONE_AND_NOT_BILLABLE)?:'0'}
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <g:message code="label.mediation.errors.detected"/>:
-                </td>
-                <td class="value">
-                    ${map.get(Constants.MEDIATION_RECORD_STATUS_ERROR_DETECTED)?:'0'}
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <g:message code="label.mediation.errors.declared"/>:
-                </td>
-                <td class="value">
-                    ${map.get(Constants.MEDIATION_RECORD_STATUS_ERROR_DECLARED)?:'0'}
-                </td>
-            </tr>
+
+        <!-- mediation process info -->
+        <table cellspacing="0" cellpadding="0" class="dataTable">
+            <tbody>
+                <tr>
+                    <td><g:message code="mediation.label.id"/></td>
+                    <td class="value">${selected.id}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="mediation.label.config"/></td>
+                    <td class="value">${selected.configuration.name}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="mediation.label.start.time"/></td>
+                    <td class="value"><g:formatDate date="${selected.startDatetime}" formatName="date.timeSecs.format"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="mediation.label.end.time"/></td>
+                    <td class="value"><g:formatDate date="${selected.endDatetime}" formatName="date.timeSecs.format"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="mediation.label.total.runtime"/></td>
+                    <td class="value">
+                        <g:if test="${selected.startDatetime && selected.endDatetime}">
+                            <g:set var="runtime" value="${new Period(selected.startDatetime?.time, selected.endDatetime?.time)}"/>
+                            <g:message code="mediation.runtime.format" args="[runtime.getHours(), runtime.getMinutes(), runtime.getSeconds()]"/>
+                        </g:if>
+                        <g:else>
+                            -
+                        </g:else>
+                    </td>
+                </tr>
+            </tbody>
         </table>
+
+
+        <!-- separator -->
+        <div>
+            <hr/>
+        </div>
+
+
+        <!-- mediation process stats -->
+        <table cellspacing="0" cellpadding="0" class="dataTable">
+            <tbody>
+                <tr>
+                    <td><g:message code="mediation.label.records"/></td>
+                    <td class="value">${selected.records?.size()}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="mediation.label.orders.affected"/></td>
+                    <td class="value">${selected.ordersAffected}</td>
+                </tr>
+
+                %{
+                    def doneBillable = 0;
+                    def doneNotBillable = 0;
+                    def errorDetected = 0;
+                    def errorDeclared = 0;
+
+                    selected.records?.each {
+                        if (it.recordStatus.id == Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE) doneBillable++;
+                        if (it.recordStatus.id == Constants.MEDIATION_RECORD_STATUS_DONE_AND_NOT_BILLABLE) doneNotBillable++;
+                        if (it.recordStatus.id == Constants.MEDIATION_RECORD_STATUS_ERROR_DETECTED) errorDetected++;
+                        if (it.recordStatus.id == Constants.MEDIATION_RECORD_STATUS_ERROR_DECLARED) errorDeclared++;
+                    }
+                }%
+
+                <tr>
+                    <td><g:message code="mediation.label.done.billable"/></td>
+                    <td class="value">${doneBillable}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="mediation.label.done.not.billable"/></td>
+                    <td class="value">${doneNotBillable}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="mediation.label.errors.detected"/></td>
+                    <td class="value">${errorDetected}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="mediation.label.errors.declared"/></td>
+                    <td class="value">${errorDeclared}</td>
+                </tr>
+            </tbody>
+        </table>
+
     </div>
     <div class="btn-box"></div>
 </div>

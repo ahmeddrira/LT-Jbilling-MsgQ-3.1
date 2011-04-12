@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.item.PlanBL;
 import com.sapienter.jbilling.server.item.PlanItemBL;
 import com.sapienter.jbilling.server.item.PlanItemWS;
@@ -52,9 +53,13 @@ import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CustomerPriceDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
+import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
 import org.apache.log4j.Logger;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,9 +114,6 @@ import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
-import com.sapienter.jbilling.server.order.OrderProcessWS;
-import com.sapienter.jbilling.server.order.db.OrderProcessDAS;
-import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceDTO;
@@ -125,7 +127,6 @@ import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
-import com.sapienter.jbilling.server.payment.db.PaymentInvoiceMapDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
@@ -144,7 +145,6 @@ import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean;
 import com.sapienter.jbilling.server.rule.task.IRulesGenerator;
 import com.sapienter.jbilling.server.user.AchBL;
-import com.sapienter.jbilling.server.rule.task.IRulesGenerator;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -156,8 +156,6 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
-import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
@@ -183,6 +181,8 @@ import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 import com.sapienter.jbilling.server.order.OrderPeriodWS;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
+
+import javax.naming.NamingException;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -2681,6 +2681,95 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         new PreferenceBL().createUpdateForEntity(getCallerCompanyId(),
                                                  preference.getPreferenceType().getId(),
                                                  preference.getValue());
+    }
+
+    public PreferenceWS getPreference(Integer preferenceTypeId) {
+        // return preference if set
+        try {
+            PreferenceDTO preference = new PreferenceBL(getCallerCompanyId(), preferenceTypeId).getEntity();
+            return new PreferenceWS(preference);
+
+        } catch (DataAccessException e) {
+            /* ignore */
+        }
+
+        // preference is not set, return empty
+        PreferenceTypeDTO preferenceType = new PreferenceTypeDAS().find(preferenceTypeId);
+        return new PreferenceWS(preferenceType);
+    }
+
+
+    /*
+        Currencies
+     */
+
+    public CurrencyWS[] getCurrencies() {
+        CurrencyBL currencyBl = new CurrencyBL();
+
+        CurrencyDTO[] currencies;
+        try {
+            currencies = currencyBl.getCurrencies(getCallerCompanyId(), getCallerLanguageId());
+        } catch (SQLException e) {
+            throw new SessionInternalError("Exception fetching currencies for entity " + getCallerCompanyId(), e);
+        } catch (NamingException e) {
+            throw new SessionInternalError("Exception fetching currencies for entity " + getCallerCompanyId(), e);
+        }
+
+        // Id of the default currency for this entity
+        Integer entityDefault = currencyBl.getEntityCurrency(getCallerCompanyId());
+
+        // convert to WS
+        List<CurrencyWS> ws = new ArrayList<CurrencyWS>(currencies.length);
+        for (CurrencyDTO currency : currencies) {
+            ws.add(new CurrencyWS(currency, (currency.getId() == entityDefault)));
+        }
+
+        return ws.toArray(new CurrencyWS[ws.size()]);
+    }
+
+    public void updateCurrencies(CurrencyWS[] currencies) {
+        for (CurrencyWS currency : currencies) {
+            updateCurrency(currency);
+        }
+    }
+
+    public void updateCurrency(CurrencyWS ws) {
+        CurrencyDTO currency = new CurrencyDTO(ws);
+
+        // update currency
+        CurrencyBL currencyBl = new CurrencyBL(currency.getId());
+        currencyBl.update(currency, getCallerCompanyId());
+
+        // set as entity currency if flagged as default
+        if (ws.isDefaultCurrency()) {
+            currencyBl.setEntityCurrency(getCallerCompanyId(), currency.getId());
+        }
+
+        // update the description if its changed
+        if ((ws.getDescription() != null && !ws.getDescription().equals(currency.getDescription()))) {
+            currency.setDescription(ws.getDescription(), getCallerLanguageId());
+        }
+    }
+
+    public Integer createCurrency(CurrencyWS ws) {
+        CurrencyDTO currency = new CurrencyDTO(ws);
+
+        // save new currency
+        CurrencyBL currencyBl = new CurrencyBL(currency.getId());
+        currencyBl.create(currency, getCallerCompanyId());
+        currency = currencyBl.getEntity();
+
+        // set as entity currency if flagged as default
+        if (ws.isDefaultCurrency()) {
+            currencyBl.setEntityCurrency(getCallerCompanyId(), currency.getId());
+        }
+
+        // set description
+        if (ws.getDescription() != null) {
+            currency.setDescription(ws.getDescription(), getCallerLanguageId());
+        }
+
+        return currency.getId();
     }
 
 

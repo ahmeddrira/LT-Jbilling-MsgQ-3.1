@@ -79,18 +79,18 @@ class ReportController {
     def list = {
         def types = getReportTypes()
         def reports = params.id ? getReports(params.int('id')) : null
-        def typeId = params.id ? reports.get(0)?.type?.id : null
+        def type = params.id ? reports.get(0)?.type : null
 
-        breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'), type?.getDescription(session['language_id']))
 
-        render view: 'list', model: [ types: types, reports: reports, selectedTypeId: typeId ]
+        render view: 'list', model: [ types: types, reports: reports, selectedTypeId: type?.id ]
     }
 
     def reports = {
         def typeId = params.int('id')
         def reports = typeId ? getReports(typeId) : null
 
-        breadcrumbService.addBreadcrumb(controllerName, 'list', null, typeId)
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, typeId, reports?.get(0)?.type?.getDescription(session['language_id']))
 
         render template: 'reports', model: [ reports: reports, selectedTypeId: typeId ]
     }
@@ -102,7 +102,7 @@ class ReportController {
 
     def show = {
         ReportDTO report = ReportDTO.get(params.int('id'))
-        breadcrumbService.addBreadcrumb(controllerName, actionName, null, report?.id)
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, report?.id, report ? message(code: report.name) : null)
 
         if (params.template) {
             // render requested template, usually "_show.gsp"

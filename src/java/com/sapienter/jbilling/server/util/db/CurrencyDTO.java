@@ -20,25 +20,6 @@
 package com.sapienter.jbilling.server.util.db;
 
 
-import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
@@ -47,11 +28,43 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.CurrencyWS;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cascade;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
+import javax.persistence.Version;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name="currency")
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class CurrencyDTO extends AbstractDescription  implements java.io.Serializable {
+@Table(name = "currency")
+@TableGenerator(
+        name="currency_GEN",
+        table="jbilling_seqs",
+        pkColumnName = "name",
+        valueColumnName = "next_id",
+        pkColumnValue="currency",
+        allocationSize = 10
+)
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+public class CurrencyDTO extends AbstractDescription implements java.io.Serializable {
 
     private int id;
     private String symbol;
@@ -66,13 +79,13 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
     private Set<CompanyDTO> entities_1 = new HashSet<CompanyDTO>(0);
     private Set<InvoiceDTO> invoices = new HashSet<InvoiceDTO>(0);
     private Set<ProcessRunTotalDTO> processRunTotals = new HashSet<ProcessRunTotalDTO>(0);
+    private Integer versionNum;
 
     // from EX
     private String name = null;
     private Boolean inUse = null;
     private String rate = null; // will be converted to float
     private BigDecimal sysRate = null;
-
 
     public CurrencyDTO() {
     }
@@ -108,13 +121,28 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.processRunTotals = processRunTotals;
     }
 
+    public CurrencyDTO(CurrencyWS ws) {
+        if (ws.getId() != null) {
+            this.id = ws.getId();
+        }
+
+        this.symbol = ws.getSymbol();
+        this.code = ws.getCode();
+        this.countryCode = ws.getCountryCode();
+        this.inUse = ws.getInUse();
+
+        if (StringUtils.isNotBlank(ws.getRate())) this.rate = ws.getRate();
+        if (StringUtils.isNotBlank(ws.getSysRate())) this.sysRate = ws.getSysRateAsDecimal();
+    }
+
     @Transient
     protected String getTable() {
         return Constants.TABLE_CURRENCY;
     }
 
     @Id
-    @Column(name="id", unique=true, nullable=false)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "currency_GEN")
+    @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return this.id;
     }
@@ -123,7 +151,7 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.id = id;
     }
 
-    @Column(name="symbol", nullable=false, length=10)
+    @Column(name = "symbol", nullable = false, length = 10)
     public String getSymbol() {
         return this.symbol;
     }
@@ -132,7 +160,7 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.symbol = symbol;
     }
 
-    @Column(name="code", nullable=false, length=3)
+    @Column(name = "code", nullable = false, length = 3)
     public String getCode() {
         return this.code;
     }
@@ -141,7 +169,7 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.code = code;
     }
 
-    @Column(name="country_code", nullable=false, length=2)
+    @Column(name = "country_code", nullable = false, length = 2)
     public String getCountryCode() {
         return this.countryCode;
     }
@@ -150,7 +178,7 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.countryCode = countryCode;
     }
 
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "currency")
     public Set<CompanyDTO> getEntities() {
         return this.entities;
     }
@@ -159,7 +187,7 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.entities = entities;
     }
 
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "currency")
     public Set<UserDTO> getBaseUsers() {
         return this.baseUsers;
     }
@@ -168,7 +196,7 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.baseUsers = baseUsers;
     }
 
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "currency")
     public Set<OrderDTO> getPurchaseOrders() {
         return this.orderDTOs;
     }
@@ -177,7 +205,7 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.orderDTOs = orderDTOs;
     }
 
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="feeCurrency")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "feeCurrency")
     public Set<Partner> getPartners() {
         return this.partners;
     }
@@ -186,7 +214,7 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.partners = partners;
     }
 
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "currency")
     public Set<PaymentDTO> getPayments() {
         return this.payments;
     }
@@ -195,7 +223,8 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.payments = payments;
     }
 
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "currency")
     public Set<CurrencyExchangeDTO> getCurrencyExchanges() {
         return this.currencyExchanges;
     }
@@ -204,10 +233,11 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.currencyExchanges = currencyExchanges;
     }
 
-    @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="currency_entity_map",
-               joinColumns = { @JoinColumn(name="currency_id", updatable=false) },
-               inverseJoinColumns = { @JoinColumn(name="entity_id", updatable=false) })
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "currency_entity_map",
+               joinColumns = {@JoinColumn(name = "currency_id", updatable = false)},
+               inverseJoinColumns = {@JoinColumn(name = "entity_id", updatable = false)}
+    )
     public Set<CompanyDTO> getEntities_1() {
         return this.entities_1;
     }
@@ -216,7 +246,7 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.entities_1 = entities_1;
     }
 
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "currency")
     public Set<InvoiceDTO> getInvoices() {
         return this.invoices;
     }
@@ -225,13 +255,22 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.invoices = invoices;
     }
 
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "currency")
     public Set<ProcessRunTotalDTO> getProcessRunTotals() {
         return this.processRunTotals;
     }
 
     public void setProcessRunTotals(Set<ProcessRunTotalDTO> processRunTotals) {
         this.processRunTotals = processRunTotals;
+    }
+
+    @Version
+    @Column(name="OPTLOCK")
+    public Integer getVersionNum() {
+        return versionNum;
+    }
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
     }
 
     @Transient

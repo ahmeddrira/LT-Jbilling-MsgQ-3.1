@@ -473,19 +473,23 @@ hr {
 .accordion li .slide label {
 	float:right;
 	line-height:26px;
-	width:47px;
+	width:50px;
 }
 .accordion li .slide label.lb {
 	width:auto;
 	line-height:20px;
 }
 .accordion li .slide .input-row .select-bg {
-	width:90px;
+	width:88px;
 	height:16px;
     float: right;
     border: none;
     background: none;
     padding: 3px 0 3px 5px;
+}
+.accordion li .slide .checkbox-row label {
+    float: none;
+    padding-left: 3px;
 }
 .holder .input-bg a ,
 .accordion li .slide .input-bg a {
@@ -852,11 +856,13 @@ hr {
     padding: 4px 9px;
 }
 
-.table-box .large { width: 300px; }
-.table-box .medium2 { width: 150px; }
-.table-box .medium { width: 120px; }
-.table-box .small { width: 80px; }
-.table-box .tiny { width: 40px; }
+td.large, th.large { width: 300px; }
+td.medium2, th.medium2 { width: 150px; }
+td.medium, th.medium { width: 120px; }
+td.small2, th.small2 { width: 100px; }
+td.small, th.small { width: 80px; }
+td.tiny2, th.tiny2 { width: 60px; }
+td.tiny, th.tiny { width: 40px; }
 
 .table-box tbody tr {
 	display: table-row;
@@ -1059,6 +1065,7 @@ ul.cloud  {
     list-style-position: inside;
 }
 ul.cloud li {
+    border-radius: 5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     background-color: #3a3a3a;
@@ -1226,12 +1233,6 @@ ul#review-lines {
     left: 4px;
     margin-right: 4px;
 }
-.dialog .form-columns {
-    width: auto;
-}
-.dialog .form-columns label {
-    width: 90px;
-}
 .form-columns .column {
 	float:left;
 	width:385px;
@@ -1389,6 +1390,18 @@ ul#review-lines {
 	margin:3px 0 0;
 	color:#383838;
 	font:bold 12px/16px Arial, Helvetica, sans-serif;
+}
+
+#filter-save-dialog {
+    color: #383838;
+    font-family: "Arial", "Helvetica", sans-serif;
+    font-size: 12px;
+}
+#filter-save-dialog .submit {
+    color:#fff;
+}
+#filter-save-dialog .form-columns label {
+    width: 90px;
 }
 .box-cards {
 	margin:10px 20px 0;
@@ -1686,7 +1699,9 @@ div.box-text {
 	color: #383838;
 	line-height: 30px;
 }
-
+.innerHeader th.left {
+    text-align: left;
+}
 .innerContent {
     text-align:center;
 	padding:3px 0px 10px;

@@ -19,6 +19,9 @@
 */
 package com.sapienter.jbilling.server.mediation.db;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,43 +42,42 @@ import java.util.Date;
 
 @Entity
 @TableGenerator(
-        name="mediation_process_GEN",
-        table="jbilling_seqs",
+        name = "mediation_process_GEN",
+        table = "jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
-        pkColumnValue="mediation_process",
-        allocationSize=10
-        )
+        pkColumnValue = "mediation_process",
+        allocationSize = 10
+)
 @Table(name = "mediation_process")
 // no cache. This table is not read repeatedly
 public class MediationProcess implements Serializable {
-    //private static final Logger LOG = Logger.getLogger(MediationProcess.class);
-   
-    @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="mediation_process_GEN")
+
+    @Id @GeneratedValue(strategy = GenerationType.TABLE, generator = "mediation_process_GEN")
     private Integer id;
-   
+
     @Column(name = "start_datetime")
     private Date startDatetime;
-    
+
     @Column(name = "end_datetime")
     private Date endDatetime;
 
     @Column(name = "orders_affected")
     private Integer ordersAffected;
-    
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="configuration_id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "configuration_id")
     private MediationConfiguration configuration;
 
-    @OneToMany(fetch=FetchType.LAZY)
-    @JoinColumn (name = "mediation_process_id") 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mediation_process_id")
     public Collection<MediationOrderMap> orderMap = new ArrayList<MediationOrderMap>(0);
 
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="process")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "process")
     public Collection<MediationRecordDTO> records = new ArrayList<MediationRecordDTO>(0);
 
     @Version
-    @Column(name="OPTLOCK")
+    @Column(name = "OPTLOCK")
     private Integer versionNum;
 
     public Date getEndDatetime() {
@@ -121,7 +123,7 @@ public class MediationProcess implements Serializable {
     public void setOrderMap(Collection<MediationOrderMap> orderMap) {
         this.orderMap = orderMap;
     }
-    
+
     public MediationConfiguration getConfiguration() {
         return configuration;
     }
@@ -140,7 +142,6 @@ public class MediationProcess implements Serializable {
 
     public String toString() {
         return "MediationProcess= " +
-                " orders affected = " + getOrdersAffected();
+               " orders affected = " + getOrdersAffected();
     }
-
 }

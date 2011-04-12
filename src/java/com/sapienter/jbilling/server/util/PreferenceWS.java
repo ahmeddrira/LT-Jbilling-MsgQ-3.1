@@ -27,6 +27,7 @@ import javax.validation.constraints.Min;
 
 import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
 import com.sapienter.jbilling.server.util.db.PreferenceDTO;
+import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
 
 public class PreferenceWS implements Serializable {
 
@@ -37,6 +38,10 @@ public class PreferenceWS implements Serializable {
     private String value;
 
     public PreferenceWS() {
+    }
+
+    public PreferenceWS(PreferenceTypeDTO preferenceType) {
+        this.preferenceType = new PreferenceTypeWS(preferenceType);
     }
 
     public PreferenceWS(PreferenceDTO dto) {

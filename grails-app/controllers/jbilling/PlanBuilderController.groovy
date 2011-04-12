@@ -131,7 +131,9 @@ class PlanBuilderController {
                 log.debug("plan ${plan}")
 
                 // add breadcrumb
-                breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
+                def crumbName = params.id ? 'update' : 'create'
+                def crumbDescription = params.id ? product.number : null
+                breadcrumbService.addBreadcrumb(controllerName, actionName, crumbName, params.int('id'), crumbDescription)
 
                 // model scope for this flow
                 flow.company = company

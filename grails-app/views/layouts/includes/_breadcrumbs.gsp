@@ -20,13 +20,13 @@
         <g:each var="crumb" in="${session['breadcrumbs']}">
             <li>
                 <g:link controller="${crumb.controller}" action="${crumb.action}" id="${crumb.objectId}">
-                    <g:message code="${crumb.messageCode}" args="[crumb.objectId]"/>
+                    <g:message code="${crumb.messageCode}" args="[crumb.description ?: crumb.objectId]"/>
                 </g:link>
             </li>
         </g:each>
+
         <li class="shortcut"> 
-            <g:remoteLink controller="shortcut" action="add" params="['template': 'shortcuts']" class="shortcut" 
-                update="messages">
+            <g:remoteLink controller="shortcut" action="add" params="['template': 'shortcuts']" class="shortcut" update="messages">
                 <span><g:message code="shortcut.add"/></span>
             </g:remoteLink>
         </li>

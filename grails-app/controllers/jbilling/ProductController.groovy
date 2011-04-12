@@ -16,6 +16,7 @@ import com.sapienter.jbilling.client.pricing.util.PlanHelper
 import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.server.util.csv.Exporter
 import com.sapienter.jbilling.client.util.DownloadHelper
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
 
 @Secured(['isAuthenticated()'])
 class ProductController {
@@ -40,14 +41,14 @@ class ProductController {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
         def categories = getCategories()
         def products = params.id ? getProducts(params.int('id'), filters) : null
-        def categoryId = params.id ?: products ? products.get(0)?.itemTypes?.asList()?.get(0)?.id : null
+        def category = params.id ?: products ? products.get(0)?.itemTypes?.asList()?.get(0) : null
 
-        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'), category?.description)
 
         if (params.applyFilter) {
-            render template: 'products', model: [ products: products, selectedCategoryId: categoryId ]
+            render template: 'products', model: [ products: products, selectedCategoryId: category?.id ]
         } else {
-            [ categories: categories, products: products, selectedCategoryId: categoryId, filters: filters, filterRender: 'second', filterAction: 'allProducts' ]
+            [ categories: categories, products: products, selectedCategoryId: category?.id, filters: filters, filterRender: 'second', filterAction: 'allProducts' ]
         }
     }
 
@@ -73,11 +74,12 @@ class ProductController {
     def products = {
         if (params.id) {
             def filters = filterService.getFilters(FilterType.PRODUCT, params)
-            def products = getProducts(params.int('id'), filters)
+            def category = ItemTypeDTO.get(params.int('id'))
+            def products = getProducts(category.id, filters)
 
-            breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
+            breadcrumbService.addBreadcrumb(controllerName, 'list', null, category.id, category.description)
 
-            render template: 'products', model: [ products: products, selectedCategoryId: params.id ]
+            render template: 'products', model: [ products: products, selectedCategoryId: category.id ]
         }
     }
 
@@ -111,10 +113,18 @@ class ProductController {
                 offset: params.offset
         ) {
             and {
-                filters.each { filter ->
-                    if (filter.value) {
-                        addToCriteria(filter.getRestrictions());
+                createAlias('defaultPrice', 'price')
 
+                filters.each { filter ->
+                    if (filter.value != null) {
+
+                        // handle price model filtering exclusively
+                        if (filter.field == 'price.type') {
+                            eq(filter.field, PriceModelStrategy.valueOf(filter.stringValue))
+
+                        } else {
+                            addToCriteria(filter.getRestrictions());
+                        }
                     }
                 }
 
@@ -151,7 +161,7 @@ class ProductController {
     def show = {
         ItemDTO product = ItemDTO.get(params.int('id'))
         recentItemService.addRecentItem(product?.id, RecentItemType.PRODUCT)
-        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'), product.internalNumber)
 
         if (params.template) {
             // render requested template, usually "_show.gsp"
@@ -231,7 +241,7 @@ class ProductController {
             return
         }
 
-        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
+        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'), category.description)
 
         [ category : category ]
     }
@@ -294,7 +304,7 @@ class ProductController {
             return
         }
 
-        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'))
+        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'), product.number)
 
         [ product: product, currencies: currencies, categories: categories, categoryId: params.category ]
     }

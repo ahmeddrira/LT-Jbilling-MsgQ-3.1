@@ -32,6 +32,7 @@ import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.client.user.UserHelper
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO
 
 @Secured(['isAuthenticated()'])
 class UserController {
@@ -40,6 +41,9 @@ class UserController {
 
     IWebServicesSessionBean webServicesSession
     ViewUtils viewUtils
+
+    def breadcrumbService
+
 
     def index = {
         redirect action: list, params: params
@@ -67,18 +71,25 @@ class UserController {
     def list = {
         def users = getList(params)
         def selected = params.id ? UserDTO.get(params.int("id")) : null
+        def contact = selected ? ContactDTO.findByUserId(selected.id) : null
+
+        def crumbDescription = selected ? UserHelper.getDisplayName(selected, contact) : null
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, selected?.id, crumbDescription)
 
         if (params.applyFilter) {
-            render template: 'users', model: [ users: users, selected: selected ]
+            render template: 'users', model: [ users: users, selected: selected, contact: contact ]
         } else {
-            render view: 'list', model: [ users: users, selected: selected ]
+            render view: 'list', model: [ users: users, selected: selected, contact: contact ]
         }
     }
 
     def show = {
         def user = UserDTO.get(params.int('id'))
-        render template: 'show', model: [ selected: user ]
+        def contact = user ? ContactDTO.findByUserId(user.id) : null
 
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, user.userId, UserHelper.getDisplayName(user, contact))
+
+        render template: 'show', model: [ selected: user, contact: contact ]
     }
 
     def edit = {
@@ -88,6 +99,7 @@ class UserController {
         try {
             user = params.id ? webServicesSession.getUserWS(params.int('id')) : new UserWS()
             contacts = user ? webServicesSession.getUserContactsWS(user.userId) : null
+
         } catch (SessionInternalError e) {
             log.error("Could not fetch WS object", e)
 

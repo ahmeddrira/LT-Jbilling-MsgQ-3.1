@@ -64,7 +64,7 @@ class FilterFactory {
             new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.LIKE, field: 'glCode', template: 'product/glCode', visible: true),
             new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.NUMBER_BETWEEN, field: 'percentage', template: 'range', visible: false),
             new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.EQ, field: 'price.type', template: 'product/priceStrategy', visible: true),
-            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.EQ, field: 'price.rate', template: 'range', visible: true),
+            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.NUMBER_BETWEEN, field: 'price.rate', template: 'range', visible: true),
         ],
         CUSTOMER: [
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.DATE_BETWEEN, field: 'createDatetime', template: 'date', visible: true),
@@ -86,7 +86,6 @@ class FilterFactory {
             new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.EQ, field: 'i.invoiceEntity.id', template: 'id', visible: true),
             new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.NUMBER_BETWEEN, field: 'amount', template: 'range', visible: false),
             new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.NUMBER_BETWEEN, field: 'balance', template: 'range', visible: false),
-
         ],
 		BILLINGPROCESS: [
 			new Filter(type: FilterType.BILLINGPROCESS, constraintType: FilterConstraint.DATE_BETWEEN, field: 'billingDate', template: 'date', visible: true),

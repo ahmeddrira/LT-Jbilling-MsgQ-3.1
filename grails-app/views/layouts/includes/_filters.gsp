@@ -31,7 +31,7 @@
     <!-- filter controls -->
     <div class="btn-hold">
         <!-- apply filters -->
-        <a class="submit apply" onclick="applyFilters()"><span><g:message code="filters.apply.button"/></span></a>
+        <a class="submit apply" onclick="$('#filters-form').submit();"><span><g:message code="filters.apply.button"/></span></a>
 
         <!-- add another filter -->
         <g:if test="${filters.find { !it.visible }}">
@@ -86,29 +86,19 @@
 </div>
 
 <script type="text/javascript">
-    /**
-     * Toggles the 'active' class for each filter that has a value and submits the
-     * filter form to apply them.
-     */
-    function applyFilters() {
-        $('#filters-form input:visible, #filters-form select:visible').not(":checkbox").each(function() {
-            var title = $(this).parents('li').find('.title');
-            if ($(this).val()) {
-                title.addClass('active');
-            } else {
-                title.removeClass('active');
-            }
-        });
+    $(function() {
+        $('body').delegate('#filters-form', 'submit', function() {
+            $(this).find('li').each(function() {
+                var title = $(this).find('.title');
 
-        $('#filters-form :checkbox').each(function() {
-            var title = $(this).parents('li').find('.title');
-            if ($(this).is(":checked")) {
-                title.addClass('active');
-            } else {
-                title.removeClass('active');
-            }
+                if ($(this).find(':input[value!=""]').not(':checkbox').length > 0) {
+                    title.addClass('active');
+                } else if ($(this).find(':checkbox:checked').length > 0) {
+                    title.addClass('active');
+                } else {
+                    title.removeClass('active');
+                }
+            });
         });
-
-        $('#filters-form').submit();
-    }
+    });
 </script>

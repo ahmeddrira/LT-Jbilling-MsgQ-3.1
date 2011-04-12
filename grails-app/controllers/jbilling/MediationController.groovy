@@ -40,9 +40,9 @@ class MediationController {
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 
 		if (params.applyFilter) {
-			render template: 'list', model: [processes: processes,filters:filters]
+			render template: 'processes', model: [processes: processes,filters:filters]
 		} else {
-			render view: "index", model: [processes: processes, filters:filters]
+			render view: "list", model: [processes: processes, filters:filters]
 		}
     }
 	
@@ -73,8 +73,6 @@ class MediationController {
 	def show = {
         def process = MediationProcess.get(params.int('id'))
 
-        log.debug("Got process ${process}")
-
 		recentItemService.addRecentItem(process.id, RecentItemType.MEDIATIONPROCESS)
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, process.id)
 
@@ -85,7 +83,7 @@ class MediationController {
 			def filters = filterService.getFilters(FilterType.MEDIATIONPROCESS, params)
 			def processes = getFilteredProcesses(filters, params)
 
-			render view: 'showListAndView', model: [ selected: process, processes: processes, filters: filters ]
+			render view: 'list', model: [ selected: process, processes: processes, filters: filters ]
 		}
 	}
 

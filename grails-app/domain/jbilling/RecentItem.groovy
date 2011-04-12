@@ -26,7 +26,7 @@ package jbilling
  * @author Brian Cowdery
  * @since  07-12-2010
  */
-class RecentItem {
+class RecentItem implements Serializable {
 
     static mapping = {
         id generator: 'org.hibernate.id.enhanced.TableGenerator',

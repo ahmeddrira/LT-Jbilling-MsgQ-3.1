@@ -26,7 +26,7 @@ package jbilling
  * @author Brian Cowdery
  * @since  03-12-2010
  */
-class FilterSet {
+class FilterSet implements Serializable {
 
     static mapping = {
         id generator: 'org.hibernate.id.enhanced.TableGenerator',

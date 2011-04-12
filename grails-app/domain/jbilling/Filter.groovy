@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
  * @author Brian Cowdery
  * @since  30-11-2010
  */
-class Filter {
+class Filter implements Serializable {
 
     static transients = [ "value", "name", "restrictions" ]
 

@@ -59,6 +59,11 @@ class InvoiceController {
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset
 
+        // hide review invoices by default
+        def reviewFilter = filters.find{ it.field == 'isReview' }
+        if (reviewFilter.value == null) reviewFilter.integerValue = 0
+
+        // get list
         return InvoiceDTO.createCriteria().list(
                 max: params.max,
                 offset: params.offset

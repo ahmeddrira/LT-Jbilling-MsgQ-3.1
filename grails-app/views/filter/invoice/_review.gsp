@@ -16,8 +16,7 @@
                     <g:select name="filters.${filter.name}.integerValue"
                               value="${filter.integerValue}"
                               from="${[0, 1]}"
-                              valueMessagePrefix='filters.isReview'
-                              noSelection="['': message(code: 'filters.isReview.empty')]"/>
+                              valueMessagePrefix='filters.isReview'/>
                 </div>
                 <label for="filters.${filter.name}.integerValue"><g:message code="filters.isReview.label"/></label>
             </div>

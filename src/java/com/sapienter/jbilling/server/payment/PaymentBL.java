@@ -60,7 +60,7 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
-import sun.jdbc.rowset.CachedRowSet;
+import javax.sql.rowset.CachedRowSet;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;

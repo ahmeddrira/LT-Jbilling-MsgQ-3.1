@@ -80,7 +80,7 @@ import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import sun.jdbc.rowset.CachedRowSet;
+import javax.sql.rowset.CachedRowSet;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;

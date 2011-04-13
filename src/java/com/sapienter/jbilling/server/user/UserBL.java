@@ -58,9 +58,6 @@ import com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDAS;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask;
-import com.sapienter.jbilling.server.user.validator.AlphaNumValidator;
-import com.sapienter.jbilling.server.user.validator.NoUserInfoInPasswordValidator;
-import com.sapienter.jbilling.server.user.validator.RepeatedPasswordValidator;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.DTOFactory;
@@ -70,7 +67,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
-import sun.jdbc.rowset.CachedRowSet;
+import javax.sql.rowset.CachedRowSet;
 
 import javax.naming.NamingException;
 import java.io.PrintWriter;
@@ -1089,34 +1086,6 @@ public class UserBL extends ResultList implements UserSQL {
         }
 
         LOG.debug("Subscription status updated to " + id);
-    }
-
-    @Deprecated
-    public boolean validatePassword(String password) {
-        boolean result = true;
-        try {
-            result = AlphaNumValidator.basicValidation(password);
-
-            if (result != false) {
-                result = RepeatedPasswordValidator.basicValidation(
-                        getEntity().getUserId(),
-                        getMainRole(),
-                        password);
-
-                if (result != false) {
-                    ContactBL cbl = new ContactBL();
-                    cbl.set(getEntity().getUserId());
-                    ContactDTOEx contact = cbl.getDTO();
-                    result = NoUserInfoInPasswordValidator.basicValidation(
-                            contact,
-                            password);
-                }
-            }
-        } catch (Throwable e) {
-            LOG.error("Error validating password " + password, e);
-            result = false;
-        }
-        return result;
     }
 
     // todo: should be moved into a scheduled task that expires passwords and sets a flag on the user

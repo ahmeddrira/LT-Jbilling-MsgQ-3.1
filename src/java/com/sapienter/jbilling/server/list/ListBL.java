@@ -35,9 +35,10 @@ import java.util.Iterator;
 
 import javax.naming.NamingException;
 
+import com.sun.rowset.CachedRowSetImpl;
 import org.apache.log4j.Logger;
 
-import sun.jdbc.rowset.CachedRowSet;
+import javax.sql.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -487,7 +488,7 @@ public class ListBL {
         }
 
         // run it
-        CachedRowSet results = new CachedRowSet();
+        CachedRowSet results = new CachedRowSetImpl();
         stmt = conn.prepareStatement(sql.toString());
         stmt.setMaxRows(size);
         parameterIndex = setSQLParameters(stmt, start);
@@ -584,7 +585,7 @@ public class ListBL {
         // execute
         stmt.setMaxRows(500); // at no time we want more than 500 rows returned
         ResultSet res = stmt.executeQuery();
-        CachedRowSet result = new CachedRowSet();
+        CachedRowSet result = new CachedRowSetImpl();
         result.populate(res);
 
         // close the connection

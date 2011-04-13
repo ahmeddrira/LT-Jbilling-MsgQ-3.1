@@ -43,22 +43,24 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
 
     private static final Logger LOG = Logger.getLogger(AbstractDAS.class);
     private Class<T> persistentClass;
+
     // if querys will be run cached or not
     private boolean queriesCached = false;
 
-    
+    @SuppressWarnings("unchecked")
     public AbstractDAS() {
-        this.persistentClass = (Class<T>) ((ParameterizedType) getClass()
-                                .getGenericSuperclass()).getActualTypeArguments()[0];
+        this.persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         setSessionFactory((SessionFactory) Context.getBean(Context.Name.HIBERNATE_SESSION));
     }
 
     
     /**
      * Merges the entity, creating or updating as necessary
-     * @param newEntity
-     * @return
+     *
+     * @param newEntity entity to save/update
+     * @return saved entity
      */
+    @SuppressWarnings("unchecked")
     public T save(T newEntity) {
         T retValue = (T) getSession().merge(newEntity);
         return retValue;
@@ -88,9 +90,7 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
     @SuppressWarnings("unchecked")
     public T find(Serializable id) {
         if (id == null) return null;
-        T entity = (T) getHibernateTemplate().load(getPersistentClass(), id);
-
-        return entity;
+        return getHibernateTemplate().load(getPersistentClass(), id);
     }
     
     /**
@@ -102,9 +102,7 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
     @SuppressWarnings("unchecked")
     public T findNow(Serializable id) {
         if (id == null) return null;
-        T entity = (T) getHibernateTemplate().get(getPersistentClass(), id);
-
-        return entity;
+        return getHibernateTemplate().get(getPersistentClass(), id);
     }
 
     /**
@@ -118,9 +116,7 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
         if (id == null) {
             return null;
         }
-        T entity = (T) getHibernateTemplate().get(getPersistentClass(), id, LockMode.UPGRADE);
-
-        return entity;
+        return getHibernateTemplate().get(getPersistentClass(), id, LockMode.UPGRADE);
     }
 
     @SuppressWarnings("unchecked")
@@ -240,19 +236,10 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
     }
     
     protected void touch(List<T> list, String methodName) {
-        
-//      // find any getter, but not the id or we'll get stuck with the proxy
-//      for (Method myMethod: persistentClass.getDeclaredMethods()) {
-//          if (myMethod.getName().startsWith("get") && !myMethod.getName().equals("getId")) {
-//              toCall = myMethod;
-//              break;
-//          }
-//      }
-        
         try {
-            Method toCall = persistentClass.getMethod(methodName, null);
+            Method toCall = persistentClass.getMethod(methodName);
             for(int f=0; list.size() < f; f++) {
-                toCall.invoke(list.get(f), null);
+                toCall.invoke(list.get(f));
             }
         } catch (Exception e) {
             throw new SessionInternalError("Error invoking method when touching proxy object", 

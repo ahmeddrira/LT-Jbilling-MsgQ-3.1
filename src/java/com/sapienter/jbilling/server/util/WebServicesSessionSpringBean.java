@@ -64,7 +64,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import sun.jdbc.rowset.CachedRowSet;
+import javax.sql.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.client.authentication.CompanyUserDetails;
 import com.sapienter.jbilling.common.InvalidArgumentException;
@@ -696,19 +696,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         // get the entity
         Integer entityId = getCallerCompanyId();
         Integer executorId = getCallerId();
-
-        // Check whether the password changes or not.
-        if (user.getPassword() != null) {
-            JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(bl.getMainRole());
-            String newPassword = passwordCryptoService.encrypt(user.getPassword());
-            String oldPassword = bl.getEntity().getPassword();
-            if (!newPassword.equals(oldPassword)) {
-                // If the password is changing, validate it
-                if (!bl.validatePassword(user.getPassword())) {
-                    throw new SessionInternalError("Error updating user");
-                }
-            }
-        }
 
         // convert to a DTO
         UserDTOEx dto = new UserDTOEx(user, entityId);

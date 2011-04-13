@@ -36,7 +36,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import sun.jdbc.rowset.CachedRowSet;
+import javax.sql.rowset.CachedRowSet;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;

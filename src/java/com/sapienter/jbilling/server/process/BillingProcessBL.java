@@ -35,7 +35,7 @@ import java.util.List;
 import com.sapienter.jbilling.server.process.event.InvoicesGeneratedEvent;
 import org.apache.log4j.Logger;
 
-import sun.jdbc.rowset.CachedRowSet;
+import javax.sql.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;

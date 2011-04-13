@@ -1,4 +1,5 @@
-<project name="jbilling" basedir=".">
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jbilling" default="setup" basedir=".">
 
     <property file="build.properties"/>
     <property environment="env"/>
@@ -62,6 +63,13 @@
         <pathelement path="${build.classes.dir}"/>
     </path>
 
+    <path id="jasperreports.classpath">
+        <fileset dir="${jasperreports.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+
+        <path refid="compile.classpath"/>
+    </path>
 
 
     <!--
@@ -113,7 +121,7 @@
 
     <target name="compile-designs" description="Compiles jasper paper invoice designs.">
         <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask">
-            <classpath refid="compile.classpath"/>
+            <classpath refid="jasperreports.classpath"/>
         </taskdef>
 
         <!-- clean old designs -->
@@ -142,7 +150,7 @@
 
     <target name="compile-reports" description="Compiles jasper report designs.">
         <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask">
-            <classpath refid="compile.classpath"/>
+            <classpath refid="jasperreports.classpath"/>
         </taskdef>
 
         <!-- clean old designs -->

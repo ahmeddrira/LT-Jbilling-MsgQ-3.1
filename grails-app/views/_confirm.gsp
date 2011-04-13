@@ -27,7 +27,7 @@
 
 <g:set var="name" value="${[action, id].collect{ it }.join('-')}"/>
 
-<div id="confirm-dialog-${name}" class="bg-lightbox" title="${message(code: 'popup.confirm.title')}" style="display:none;">
+<div id="confirm-dialog-${name}" class="bg-lightbox" title="<g:message code="popup.confirm.title"/>" style="display:none;">
     <!-- command form -->
     <g:if test="${ajax}">
         <g:formRemote name="confirm-command-form-${name}" url="[controller: controller, action: action, id: id]" update="${update}">
@@ -54,7 +54,7 @@
     <table style="margin: 3px 0 0 10px">
         <tbody><tr>
             <td valign="top">
-                <img src="/jbilling/images/icon34.gif" alt="">
+                <img src="${resource(dir:'images', file:'icon34.gif')}" alt="confirm">
             </td>
             <td class="col2" style="padding-left: 7px">
                 <g:message code="${message}" args="[id]"/>
@@ -72,12 +72,12 @@
                 width: 375,
                 modal: true,
                 buttons: {
-                    "${message(code: 'prompt.yes')}": function() {
+                    '<g:message code="prompt.yes"/>': function() {
                         ${onYes};
                         $("#confirm-command-form-${name}").submit();
                         $(this).dialog('close');
                     },
-                    "${message(code: 'prompt.no')}": function() {
+                    '<g:message code="prompt.no"/>': function() {
                         ${onNo};
                         $(this).dialog('close');
                     }

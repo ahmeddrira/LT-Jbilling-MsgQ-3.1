@@ -21,6 +21,8 @@
 package jbilling
 
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO
+import com.sapienter.jbilling.server.payment.IPaymentSessionBean
+import com.sapienter.jbilling.server.util.Context
 
 class BlacklistConfigController {
 
@@ -44,4 +46,16 @@ class BlacklistConfigController {
 
         render template: 'show', model: [ selected: entry ]
     }
+
+    def save = {
+        def replace = params.csvUpload == 'modify'
+        def csvFile = File.createTempFile("blacklist", ".csv")
+
+        def file = request.getFile('csv');
+        if (!file.empty) file.transferTo(csvFile)
+
+        IPaymentSessionBean paymentSession = Context.getBean(Context.Name.PAYMENT_SESSION)
+        paymentSession.processCsvBlacklist(csvFile.getAbsolutePath(), replace, (Integer) session['company_id'])
+    }
+
 }

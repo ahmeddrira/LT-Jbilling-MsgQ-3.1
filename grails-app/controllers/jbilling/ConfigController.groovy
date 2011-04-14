@@ -289,4 +289,63 @@ class ConfigController {
         redirect action: 'currency'
     }
 
+
+    /*
+        Email settings
+     */
+
+    def email = {
+        def selfDeliver = webServicesSession.getPreference(Constants.PREFERENCE_PAPER_SELF_DELIVERY)
+        def customerNotes = webServicesSession.getPreference(Constants.PREFERENCE_TYPE_INCLUDE_CUSTOMER_NOTES)
+        def daysForNotification1 = webServicesSession.getPreference(Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S1)
+        def daysForNotification2 = webServicesSession.getPreference(Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S2)
+        def daysForNotification3 = webServicesSession.getPreference(Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S3)
+        def useInvoiceReminders = webServicesSession.getPreference(Constants.PREFERENCE_USE_INVOICE_REMINDERS)
+        def firstReminder = webServicesSession.getPreference(Constants.PREFERENCE_FIRST_REMINDER)
+        def nextReminder = webServicesSession.getPreference(Constants.PREFERENCE_NEXT_REMINDER)
+
+        [
+                selfDeliver: selfDeliver,
+                customerNotes: customerNotes,
+                daysForNotification1: daysForNotification1,
+                daysForNotification2: daysForNotification2,
+                daysForNotification3: daysForNotification3,
+                useInvoiceReminders: useInvoiceReminders,
+                firstReminder: firstReminder,
+                nextReminder: nextReminder
+        ]
+    }
+
+
+    def saveEmail = {
+        def selfDeliver = new PreferenceWS(preferenceType: new PreferenceTypeWS(id: Constants.PREFERENCE_PAPER_SELF_DELIVERY), value: params.selfDeliver ? '1' : '0')
+        def customerNotes = new PreferenceWS(preferenceType: new PreferenceTypeWS(id: Constants.PREFERENCE_TYPE_INCLUDE_CUSTOMER_NOTES), value: params.customerNotes ? '1' : '0')
+        def daysForNotification1 = new PreferenceWS(preferenceType: new PreferenceTypeWS(id: Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S1), value: params.daysForNotification1)
+        def daysForNotification2 = new PreferenceWS(preferenceType: new PreferenceTypeWS(id: Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S2), value: params.daysForNotification2)
+        def daysForNotification3 = new PreferenceWS(preferenceType: new PreferenceTypeWS(id: Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S3), value: params.daysForNotification3)
+        def useInvoiceReminders = new PreferenceWS(preferenceType: new PreferenceTypeWS(id: Constants.PREFERENCE_USE_INVOICE_REMINDERS), value: params.useInvoiceReminders ? '1' : '0')
+        def firstReminder = new PreferenceWS(preferenceType: new PreferenceTypeWS(id: Constants.PREFERENCE_FIRST_REMINDER), value: params.firstReminder)
+        def nextReminder = new PreferenceWS(preferenceType: new PreferenceTypeWS(id: Constants.PREFERENCE_NEXT_REMINDER), value: params.nextReminder)
+
+        try {
+            webServicesSession.updatePreferences((PreferenceWS[]) [ selfDeliver, customerNotes, daysForNotification1, daysForNotification2, daysForNotification3, useInvoiceReminders, firstReminder, nextReminder ])
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e)
+            render view: 'email', model: [
+                   selfDeliver: selfDeliver,
+                   customerNotes: customerNotes,
+                   daysForNotification1: daysForNotification1,
+                   daysForNotification2: daysForNotification2,
+                   daysForNotification3: daysForNotification3,
+                   useInvoiceReminders: useInvoiceReminders,
+                   firstReminder: firstReminder,
+                   nextReminder: nextReminder
+                   ]
+            return
+        }
+
+        flash.message = 'preferences.updated'
+        redirect action: email
+    }
 }

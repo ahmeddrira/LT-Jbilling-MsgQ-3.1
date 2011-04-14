@@ -8,50 +8,52 @@
         <g:uploadForm name="save-invoice-form" url="[action: 'saveInvoice']">
             <fieldset>
                 <div class="form-columns">
+                    <div class="column single">
 
-                    <!-- invoice numbering -->
-                    <g:applyLayout name="form/input">
-                        <content tag="label"><g:message code="invoice.config.label.number"/></content>
-                        <content tag="label.for">number</content>
-                        <g:textField name="number" class="field" value="${number.value ?: number.preferenceType.defaultValue}"/>
+                        <!-- invoice numbering -->
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="invoice.config.label.number"/></content>
+                            <content tag="label.for">number</content>
+                            <g:textField name="number" class="field" value="${number.value ?: number.preferenceType.defaultValue}"/>
 
-                    </g:applyLayout>
+                        </g:applyLayout>
 
-                    <g:applyLayout name="form/input">
-                        <content tag="label"><g:message code="invoice.config.label.prefix"/></content>
-                        <content tag="label.for">prefix</content>
-                        <g:textField name="prefix" class="field" value="${prefix.value ?: prefix.preferenceType.defaultValue}"/>
-                    </g:applyLayout>
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="invoice.config.label.prefix"/></content>
+                            <content tag="label.for">prefix</content>
+                            <g:textField name="prefix" class="field" value="${prefix.value ?: prefix.preferenceType.defaultValue}"/>
+                        </g:applyLayout>
 
 
-                    <!-- spacer -->
-                    <div>
-                        <br/>&nbsp;
+                        <!-- spacer -->
+                        <div>
+                            <br/>&nbsp;
+                        </div>
+
+
+                        <!-- invoice logo upload -->
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="invoice.config.label.logo"/></content>
+                            <img src="${createLink(action: 'entityLogo')}" alt="logo"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/text">
+                            <content tag="label">&nbsp;</content>
+                            ${logoPath}
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/text">
+                            <content tag="label">&nbsp;</content>
+                            <input type="file" name="logo"/>
+                        </g:applyLayout>
+
+
+                        <!-- spacer -->
+                        <div>
+                            <br/>&nbsp;
+                        </div>
+
                     </div>
-
-
-                    <!-- invoice logo upload -->
-                    <g:applyLayout name="form/text">
-                        <content tag="label"><g:message code="invoice.config.label.logo"/></content>
-                        <img src="${createLink(action: 'entityLogo')}" alt="logo"/>
-                    </g:applyLayout>
-
-                    <g:applyLayout name="form/text">
-                        <content tag="label">&nbsp;</content>
-                        ${logoPath}
-                    </g:applyLayout>
-
-                    <g:applyLayout name="form/text">
-                        <content tag="label">&nbsp;</content>
-                        <input type="file" name="logo"/>
-                    </g:applyLayout>
-
-
-                    <!-- spacer -->
-                    <div>
-                        <br/>&nbsp;
-                    </div>
-
                 </div>
             </fieldset>
         </g:uploadForm>

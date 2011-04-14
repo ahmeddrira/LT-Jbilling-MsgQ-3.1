@@ -658,6 +658,9 @@ hr {
 	float:left;
     position: relative;
 }
+.columns-holder .column.single {
+    width: auto;
+}
 * html .columns-holder .column {margin:0 -1px;}
 * +html .columns-holder .column {margin:0 -1px;}
 .columns-holder .column .column-hold {

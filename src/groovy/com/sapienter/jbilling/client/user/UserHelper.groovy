@@ -209,6 +209,6 @@ class UserHelper {
             return "${contact.organizationName}".trim()
         }
 
-        return user.userName
+        return user?.userName
     }
 }

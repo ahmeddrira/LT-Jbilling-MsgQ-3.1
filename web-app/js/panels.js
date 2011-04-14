@@ -82,7 +82,7 @@ var next = {
  * @param element source element
  */
 function register(element) {
-    var column = $(element).parents('.column');
+    var column = $(element).parents('.column.panel');
     $('#viewport').children().each(function(index, element) {
         if ($(column).get(0) == $(element).get(0)) {
             clicked = index + 1;

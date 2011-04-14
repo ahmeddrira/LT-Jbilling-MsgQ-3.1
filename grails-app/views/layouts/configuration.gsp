@@ -58,7 +58,7 @@
                         </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'blacklist' ? 'active' : ''}">
-                        <g:link controller="config" action="blacklist">
+                        <g:link controller="blacklistConfig" action="list">
                             <g:message code="configuration.menu.blacklist"/>
                         </g:link>
                     </li>

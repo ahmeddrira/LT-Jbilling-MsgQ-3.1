@@ -65,7 +65,7 @@ hr {
     display: block;
     position: relative;
     padding: 0;
-    margin: 10px auto;
+    margin: 20px auto;
     width: 90%;
     clear: both;
     border: none;
@@ -658,9 +658,6 @@ hr {
 	float:left;
     position: relative;
 }
-.columns-holder .column.single {
-    width: auto;
-}
 * html .columns-holder .column {margin:0 -1px;}
 * +html .columns-holder .column {margin:0 -1px;}
 .columns-holder .column .column-hold {
@@ -1230,6 +1227,9 @@ ul#review-lines {
 	margin:0 auto;
 	padding:14px 0 0;
 }
+.form-columns.single {
+    width: auto;
+}
 .form-columns a img {
     position: relative;
     top: 4px;
@@ -1240,6 +1240,11 @@ ul#review-lines {
 	float:left;
 	width:385px;
 	padding:0 0 0 30px;
+}
+.form-columns .column.single {
+    width: 89%;
+    margin: 0 30px;
+    padding: 0;
 }
 .form-columns .one_column {
     width:385px;
@@ -1462,11 +1467,11 @@ ul#review-lines {
 .box-cards .form-columns label {
 	width:165px;
 }
-.box-cards .form-columns label.rb {
+.form-columns label.rb {
 	width:auto;
 	margin-right:20px;
 }
-.box-cards .form-columns label.lb {
+.form-columns label.lb {
 	width:auto;
 }
 .form-columns input.rb {
@@ -1708,4 +1713,33 @@ div.box-text {
 .innerContent {
     text-align:center;
 	padding:3px 0px 10px;
+}
+
+table.blacklist {
+}
+table.blacklist thead tr {
+    height: 30px;
+    background: url(../images/bg-gradient3.gif) repeat-x;
+    font-size: 14px;
+    font-weight: bold;
+	color: #383838;
+	line-height: 30px;
+}
+table.blacklist tbody td {
+    text-align:center;
+	padding:3px 0px 10px;
+    height: 30px;
+    vertical-align: middle;
+}
+table.blacklist tr.even {
+    background-color: #fff;
+}
+table.blacklist tr.odd {
+    background-color: #eee;
+}
+.blacklist td a.cell {
+    display:block;
+    overflow:hidden;
+	height:15px;
+	padding-top:5px;
 }

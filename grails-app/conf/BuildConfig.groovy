@@ -39,6 +39,9 @@ grails.project.dependency.resolution = {
 
         compile 'org.drools:drools-core:5.0.1'
         compile 'org.drools:drools-compiler:5.0.1'
+        build 'org.drools:drools-decisiontables:5.0.1'
+        build 'org.drools:drools-templates:5.0.1'
+        build 'org.drools:drools-ant:5.0.1'
 
         compile 'quartz:quartz:1.4.5'
 

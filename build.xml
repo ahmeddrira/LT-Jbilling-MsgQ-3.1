@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="jbilling" default="setup" basedir=".">
+<project name="jbilling" basedir=".">
 
     <property file="build.properties"/>
     <property environment="env"/>
@@ -46,7 +46,7 @@
          Testing targets
     -->
 
-    <target name="test" depends="prepare-test, test-unit, test-ws, test-integration"/>
+    <target name="test" depends="test-unit, test-ws, test-integration"/>
 
     <target name="test.init">
         <delete dir="${build.test.dir}"/>
@@ -350,96 +350,6 @@
     </target>
 
 
-    <!-- Creates the full downloadable package -->
-    <target name="packageImage">
-        <!-- make sure it'll get the latest binaries -->
-        <copy todir="${image.source.dir}/jbilling/webapps">
-            <fileset dir="${build.deploy.dir}">
-                <include name="billing.war"/>
-            </fileset>
-        </copy>
-        <copy todir="${image.source.dir}/jbilling/conf"
-              file="${source.resources.descriptor.dir}/ehcache.xml"/>
-        <!-- if the app server was up, it generated temp files -->
-        <delete dir="${image.source.dir}/jbilling/work"/>
-        <delete>
-            <fileset dir="${image.source.dir}/jbilling/logs">
-                <include name="*.*"/>
-            </fileset>
-        </delete>
-        <!-- ship with some additional files for the installer and
-		     the paper invoice -->
-        <mkdir dir="${image.source.dir}/jbilling/resources/designs"/>
-        <copy todir="${image.source.dir}/jbilling/resources/designs">
-            <fileset dir="${build.designs.dir}">
-                <include name="simple_invoice_b2b.jasper"/>
-            </fileset>
-        </copy>
-        <mkdir dir="${image.source.dir}/jbilling/resources/logos"/>
-        <copy file="${source.view.dir}/graphics/jbilling-paper.jpg"
-              tofile="${image.source.dir}/jbilling/resources/logos/entity-1.jpg"/>
-        <!-- include the jbilling api as well -->
-        <mkdir dir="${image.source.dir}/jbilling/resources/api"/>
-        <copy todir="${image.source.dir}/jbilling/resources/api"
-              file="${build.deploy.dir}/jbilling_api.jar"/>
-        <copy todir="${image.source.dir}/jbilling/resources/api"
-              file="${build.deploy.dir}/jbilling.jar"/>
-
-        <mkdir dir="${image.target.dir}"/>
-        <zip filesonly="false" update="false"
-             destfile="${image.target.dir}/jbilling-${version}.zip">
-            <fileset dir="${image.source.dir}">
-                <include name="**/*"/>
-            </fileset>
-        </zip>
-    </target>
-
-    <!-- Creates the source packages for distribution -->
-    <target name="packageSource">
-        <delete file="${image.target.dir}/${jbilling-${version}-src.zip}"/>
-        <zip filesonly="false" update="false"
-             destfile="${image.target.dir}/jbilling-${version}-src.zip">
-            <zipfileset dir="${source.dir}" prefix="jbilling/src"
-                        excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml,build/**,nbproject/**,**/.git/,activemq-data/**,*,**/*.swp,tmp/**,**/*.jasper,**/simple_invoice_jb.jrxml,**/Verisign.jar"/>
-            <!-- the following three files are taken from the binary view. My own are configured for my box -->
-            <zipfileset dir="${image.source.dir}/jbilling/conf"
-                        includes="log4j.xml" prefix="jbilling/src/descriptors/resources"/>
-            <zipfileset dir="${basedir}" includes="build.properties.sample"
-                        fullpath="jbilling/src/build.properties"/>
-            <zipfileset dir="${basedir}" includes="build.xml" prefix="jbilling/src"/>
-            <zipfileset dir="${basedir}" includes="COPYING" prefix="jbilling/src"/>
-        </zip>
-    </target>
-
-    <target name="uploadRelease">
-        <ftp password="admin@jbilling.com" remotedir="incoming" depends="yes"
-             server="upload.sourceforge.net" userid="anonymous">
-            <fileset dir="${image.target.dir}">
-                <include name="jbilling-${version}-src.zip"/>
-                <include name="jbilling-${version}.zip"/>
-                <include name="jbilling_installation_instructions.pdf"/>
-            </fileset>
-        </ftp>
-    </target>
-
-    <target name="package-war"
-            depends="war, clean, copy-resources, compile-designs, compile-reports, compile-rules"
-            description="Packages a war file with the necessary config files and resources for release.">
-
-        <tstamp/>
-
-        <delete dir="${basedir}/target" includes="jbilling-*.zip"/>
-
-        <zip filesonly="false" update="false" destfile="${basedir}/target/jbilling-${DSTAMP}-${TSTAMP}.zip">
-            <zipfileset dir="${build.resources.dir}" prefix="resources"/>
-            <zipfileset dir="${source.dir}/java" includes="jbilling.properties"/>
-            <zipfileset dir="${source.grails.conf}" includes="Config.groovy" fullpath="jbilling-Config.groovy"/>
-            <zipfileset dir="${source.grails.conf}" includes="DataSource.groovy" fullpath="jbilling-DataSource.groovy"/>
-            <zipfileset dir="${basedir}/target" includes="jbilling.war"/>
-            <zipfileset dir="${basedir}/sql" includes="jbilling_test.sql"/>
-        </zip>
-    </target>
-
     <!--
         Utility targets
     -->
@@ -476,42 +386,6 @@
         <delete>
             <fileset dir="${basedir}" includes="velocity.log*"/>
         </delete>
-    </target>
-
-    <target name="export">
-        <tstamp/>
-        <delete file="${source.dir}/jbilling-exp-${DSTAMP}.zip"/>
-
-        <zip filesonly="false" update="false" destfile="${source.dir}/jbilling-exp-${DSTAMP}.zip">
-            <!-- Copy jbilling.war and guvnor.war. -->
-            <zipfileset dir="${deploy.local.dir}" prefix="webapps" includes="*.war"/>
-
-            <!-- Copy jasperserver -->
-            <zipfileset dir="${deploy.local.dir}" prefix="webapps" includes="jasperserver/**/*"/>
-
-            <!-- Copy the API jar file -->
-            <zipfileset dir="${build.deploy.dir}" prefix="resources/api" includes="jbilling_api.jar"/>
-
-            <!-- Copy the conf directory. -->
-            <zipfileset dir="${jbilling.conf.dir}" prefix="conf"/>
-
-            <!-- Copy the resources directory. -->
-            <zipfileset dir="${deploy.resources.dir}" prefix="resources"/>
-
-            <!-- Copy the DB dump (assumed to be 'data.sql' in the 'src' directory). -->
-            <zipfileset dir="${source.dir}" includes="data.sql" fullpath="backup/data-${DSTAMP}.sql"/>
-
-            <!-- Copy the reports DB dump (assumed to be reports.sql in the 'src' directory). -->
-            <zipfileset dir="${source.dir}" includes="reports.sql" fullpath="backup/reports-${DSTAMP}.sql"/>
-
-            <!-- Copy the rules repository files (from 'bin' directory). -->
-            <zipfileset dir="${server.dir}/bin" includes="repository.xml" prefix="bin"/>
-            <zipfileset dir="${server.dir}/bin/repository" prefix="bin/repository"/>
-
-            <!-- Copy the extra libs required by Guvnor -->
-            <zipfileset dir="${server.dir}/lib/" includes="jsf*.jar" prefix="lib"/>
-            <zipfileset dir="${server.dir}/lib/" includes="jboss-faces.jar" prefix="lib"/>
-        </zip>
     </target>
 
     <target  name="reformat-text" description="Cleans up text files and sets the appropriate eol character.">

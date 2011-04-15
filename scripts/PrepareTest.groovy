@@ -1,4 +1,3 @@
-
 includeTargets << new File("${basedir}/scripts/CopyResources.groovy")
 includeTargets << new File("${basedir}/scripts/CompileDesigns.groovy")
 includeTargets << new File("${basedir}/scripts/CompileReports.groovy")

@@ -32,6 +32,7 @@ target(copyResources: "Creates the jbilling 'resources/' directories and copies 
         fileset(dir: "${descriptorsDir}/mediation", includes: "mediation.dtd")
         fileset(dir: "${descriptorsDir}/mediation", includes: "asterisk.xml")
     }
+    touch(file: "${resourcesDir}/mediation/errors/emptyfile.txt")
 }
 
 setDefaultTarget(copyResources)

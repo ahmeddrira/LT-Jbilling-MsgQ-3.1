@@ -38,7 +38,7 @@ grails.project.dependency.resolution = {
         }
 
         compile('org.apache.xmlrpc:xmlrpc-client:3.1') {
-            excludes 'xml-apis'
+            excludes 'junit', 'xml-apis'
         }
 
         compile 'org.drools:drools-core:5.0.1'
@@ -51,9 +51,13 @@ grails.project.dependency.resolution = {
 
         compile 'joda-time:joda-time:1.6.2'
 
-        compile 'net.sf.opencsv:opencsv:2.1'
+        compile('net.sf.opencsv:opencsv:2.1') {
+            excludes 'junit'
+        }
 
-        compile 'commons-httpclient:commons-httpclient:3.0.1'
+        compile('commons-httpclient:commons-httpclient:3.0.1') {
+            excludes 'junit'
+        }
         compile 'commons-net:commons-net:2.0'
 
         compile 'org.hibernate:hibernate-validator:4.1.0.Final'

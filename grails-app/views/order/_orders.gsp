@@ -22,15 +22,13 @@
                 <g:each var="ordr" in="${orders}">
                     <g:set var="contact" value="${ContactDTO.findByUserId(ordr?.baseUserByUserId?.id)}"/>
                     <tr id="order-${ordr.id}" class="${(order?.id == ordr?.id) ? 'active' : ''}">
-                        <td class="small">
-                            <g:remoteLink breadcrumb="id" class="cell" action="show" id="${ordr.id}" params="['template': 'show']"
-                                before="register(this);" onSuccess="render(data, next);">
-                                <strong>${ordr.id}</strong>
+                        <td>
+                            <g:remoteLink breadcrumb="id" class="cell" action="show" id="${ordr.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                                ${ordr.id}
                             </g:remoteLink>
                         </td>
-                        <td class="large">
-                            <g:remoteLink breadcrumb="id" class="double cell" action="show" id="${ordr.id}"
-                                params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                        <td>
+                            <g:remoteLink breadcrumb="id" class="double cell" action="show" id="${ordr.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
                                 <strong>
                                     <g:if test="${contact?.firstName || contact?.lastName}">
                                         ${contact.firstName} &nbsp;${contact.lastName}
@@ -42,22 +40,14 @@
                                 <em>${contact?.organizationName}</em>
                             </g:remoteLink>
                         </td>
-                        <td class="small">
-                            <g:remoteLink breadcrumb="id" class="cell" action="show" id="${ordr.id}" params="['template': 'show']"
-                                before="register(this);" onSuccess="render(data, next);">
-                                <strong>
-                                    <g:formatDate date="${ordr?.createDate}" formatName="date.pretty.format"/>
-                                </strong>
+                        <td>
+                            <g:remoteLink breadcrumb="id" class="cell" action="show" id="${ordr.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                                <g:formatDate date="${ordr?.createDate}" formatName="date.pretty.format"/>
                             </g:remoteLink>
                         </td>
-                        <td class="small">
-                            <g:remoteLink breadcrumb="id" class="cell" action="show" id="${ordr.id}" params="['template': 'show']"
-                                    before="register(this);" onSuccess="render(data, next);">
-                                <strong>
-                                    <g:formatNumber 
-                                        number="${ordr?.total}" type="currency" 
-                                        currencySymbol="${ordr?.currency?.symbol}"/>
-                                </strong>
+                        <td>
+                            <g:remoteLink breadcrumb="id" class="cell" action="show" id="${ordr.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                                <g:formatNumber number="${ordr?.total}" type="currency" currencySymbol="${ordr?.currency?.symbol}"/>
                             </g:remoteLink>
                         </td>
                     </tr>

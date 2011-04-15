@@ -50,11 +50,21 @@
                             <g:hiddenField name="user.userId" value="${user?.userId}"/>
                         </g:applyLayout>
 
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.login.name"/></content>
-                            <content tag="label.for">user.userName</content>
-                            <g:textField class="field" name="user.userName" value="${user?.userName}"/>
-                        </g:applyLayout>
+                        <g:if test="${isNew}">
+                            <g:applyLayout name="form/input">
+                                <content tag="label"><g:message code="prompt.login.name"/></content>
+                                <content tag="label.for">user.userName</content>
+                                <g:textField class="field" name="user.userName" value="${user?.userName}"/>
+                            </g:applyLayout>
+                        </g:if>
+                        <g:else>
+                            <g:applyLayout name="form/text">
+                                <content tag="label"><g:message code="prompt.login.name"/></content>
+
+                                ${user?.userName}
+                                <g:hiddenField name="user.userName" value="${user?.userName}"/>
+                            </g:applyLayout>
+                        </g:else>
 
                         <g:if test="${!isNew}">
                              <g:applyLayout name="form/input">

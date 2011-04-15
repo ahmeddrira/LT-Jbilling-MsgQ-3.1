@@ -98,7 +98,7 @@ class UserController {
 
         try {
             user = params.id ? webServicesSession.getUserWS(params.int('id')) : new UserWS()
-            contacts = user ? webServicesSession.getUserContactsWS(user.userId) : null
+            contacts = params.id ? webServicesSession.getUserContactsWS(user.userId) : null
 
         } catch (SessionInternalError e) {
             log.error("Could not fetch WS object", e)

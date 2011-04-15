@@ -11,14 +11,6 @@
                 }
             });
 
-            $('#user\\.mainRoleId').change(function() {
-                if ($(this).val() != ${Constants.TYPE_CUSTOMER}) {
-                    $(':input.customer-field').attr('disabled', 'true');
-                } else {
-                    $(':input.customer-field').attr('disabled', '')
-                }
-            }).change();
-
             $('#contactType').change(function() {
                 var selected = $('#contact-' + $(this).val());
                 $(selected).show();
@@ -65,11 +57,21 @@
                             <g:hiddenField name="user.userId" value="${user?.userId}"/>
                         </g:applyLayout>
 
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="prompt.login.name"/></content>
-                            <content tag="label.for">user.userName</content>
-                            <g:textField class="field" name="user.userName" value="${user?.userName}"/>
-                        </g:applyLayout>
+                        <g:if test="${isNew}">
+                            <g:applyLayout name="form/input">
+                                <content tag="label"><g:message code="prompt.login.name"/></content>
+                                <content tag="label.for">user.userName</content>
+                                <g:textField class="field" name="user.userName" value="${user?.userName}"/>
+                            </g:applyLayout>
+                        </g:if>
+                        <g:else>
+                            <g:applyLayout name="form/text">
+                                <content tag="label"><g:message code="prompt.login.name"/></content>
+
+                                ${user?.userName}
+                                <g:hiddenField name="user.userName" value="${user?.userName}"/>
+                            </g:applyLayout>
+                        </g:else>
 
                         <g:if test="${!isNew}">
                              <g:applyLayout name="form/input">
@@ -100,7 +102,7 @@
                         <g:applyLayout name="form/select">
                             <content tag="label"><g:message code="prompt.user.subscriber.status"/></content>
                             <content tag="label.for">user.subscriberStatusId</content>
-                            <g:subscriberStatus cssClass="customer-field" name="user.subscriberStatusId" value="${user?.subscriberStatusId}" languageId="${session['language_id']}" />
+                            <g:subscriberStatus name="user.subscriberStatusId" value="${user?.subscriberStatusId}" languageId="${session['language_id']}" />
                         </g:applyLayout>
 
                         <g:applyLayout name="form/select">
@@ -137,26 +139,26 @@
                             <g:applyLayout name="form/input">
                                 <content tag="label"><g:message code="prompt.parent.id"/></content>
                                 <content tag="label.for">user.parentId</content>
-                                <g:textField class="field customer-field" name="user.parentId" value="${user?.parentId}"/>
+                                <g:textField class="field" name="user.parentId" value="${user?.parentId}"/>
                             </g:applyLayout>
                         </g:else>
 
                         <g:applyLayout name="form/checkbox">
                             <content tag="label"><g:message code="prompt.allow.sub.accounts"/></content>
                             <content tag="label.for">user.isParent</content>
-                            <g:checkBox class="cb checkbox customer-field" name="user.isParent" checked="${user?.isParent}"/>
+                            <g:checkBox class="cb checkbox" name="user.isParent" checked="${user?.isParent}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/checkbox">
                             <content tag="label"><g:message code="prompt.invoice.if.child"/></content>
                             <content tag="label.for">user.invoiceChild</content>
-                            <g:checkBox class="cb checkbox customer-field" name="user.invoiceChild" checked="${user?.invoiceChild}"/>
+                            <g:checkBox class="cb checkbox" name="user.invoiceChild" checked="${user?.invoiceChild}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/checkbox">
                             <content tag="label"><g:message code="prompt.exclude.ageing"/></content>
                             <content tag="label.for">user.excludeAgeing</content>
-                            <g:checkBox class="cb checkbox customer-field" name="user.excludeAgeing" checked="${user?.excludeAgeing}"/>
+                            <g:checkBox class="cb checkbox" name="user.excludeAgeing" checked="${user?.excludeAgeing}"/>
                         </g:applyLayout>
                     </div>
 
@@ -222,20 +224,19 @@
                             <g:select from="[Constants.BALANCE_NO_DYNAMIC, Constants.BALANCE_PRE_PAID, Constants.BALANCE_CREDIT_LIMIT]"
                                       valueMessagePrefix="customer.balance.type"
                                       name="user.balanceType"
-                                      class="customer-field"
                                       value="${user?.balanceType}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.credit.limit"/></content>
                             <content tag="label.for">user.creditLimitAsDecimal</content>
-                            <g:textField class="field customer-field" name="user.creditLimitAsDecimal" value="${formatNumber(number: user?.creditLimitAsDecimal ?: 0, formatName: 'money.format')}"/>
+                            <g:textField class="field" name="user.creditLimitAsDecimal" value="${formatNumber(number: user?.creditLimitAsDecimal ?: 0, formatName: 'money.format')}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.auto.recharge"/></content>
                             <content tag="label.for">user.autoRechargeAsDecimal</content>
-                            <g:textField class="field customer-field" name="user.autoRechargeAsDecimal" value="${formatNumber(number: user?.autoRechargeAsDecimal ?: 0, formatName: 'money.format')}"/>
+                            <g:textField class="field" name="user.autoRechargeAsDecimal" value="${formatNumber(number: user?.autoRechargeAsDecimal ?: 0, formatName: 'money.format')}"/>
                         </g:applyLayout>
                     </div>
 
@@ -247,7 +248,6 @@
                                       optionKey="id"
                                       valueMessagePrefix="customer.invoice.delivery.method"
                                       name="user.invoiceDeliveryMethodId"
-                                      class="customer-field"
                                       value="${user?.invoiceDeliveryMethodId}"/>
                         </g:applyLayout>
 
@@ -256,7 +256,7 @@
                             <content tag="label.for">user.dueDateValue</content>
 
                             <div class="inp-bg inp4">
-                                <g:textField class="field customer-field" name="user.dueDateValue" value="${user?.dueDateValue}"/>
+                                <g:textField class="field" name="user.dueDateValue" value="${user?.dueDateValue}"/>
                             </div>
 
                             <div class="select4">
@@ -264,7 +264,6 @@
                                         optionKey="id"
                                         optionValue="${{it.getDescription(session['language_id'])}}"
                                         name="user.dueDateUnitId"
-                                        class="customer-field"
                                         value="${user?.dueDateUnitId}"/>
                             </div>
                         </g:applyLayout>

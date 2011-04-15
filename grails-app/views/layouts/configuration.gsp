@@ -83,7 +83,7 @@
                         </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'mediation' ? 'active' : ''}">
-                        <g:link controller="config" action="mediation">
+                        <g:link controller="mediationConfig" action="list">
                             <g:message code="configuration.menu.mediation"/>
                         </g:link>
                     </li>
@@ -93,7 +93,7 @@
                         </g:link>
                     </li>
                     <li class="${pageProperty(name: 'page.menu.item') == 'periods' ? 'active' : ''}">
-                        <g:link controller="config" action="periods">
+                        <g:link controller="orderPeriod" action="list">
                             <g:message code="configuration.menu.order.periods"/>
                         </g:link>
                     </li>

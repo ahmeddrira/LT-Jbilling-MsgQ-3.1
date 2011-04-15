@@ -114,11 +114,14 @@
 
             %{
                 def isConfiguration = controllerName == 'config' ||
-                                      controllerName == 'plugin' ||
-                                      controllerName == 'notifications' ||
-                                      controllerName == 'billingconfiguration' ||
                                       controllerName == 'contactFieldConfig' ||
+                                      controllerName == 'contactTypeConfig' ||
+                                      controllerName == 'billingconfiguration' ||
+                                      controllerName == 'blacklistConfig' ||
                                       controllerName == 'mediationConfig' ||
+                                      controllerName == 'notifications' ||
+                                      controllerName == 'orderPeriod' ||
+                                      controllerName == 'plugin' ||
                                       controllerName == 'user'
             }%
 

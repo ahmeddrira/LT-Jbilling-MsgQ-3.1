@@ -50,15 +50,6 @@ class ConfigController {
 	def viewUtils
 	def userSession
 
-	def periods = {
-		redirect controller: 'orderPeriod', action: 'list'
-	}
-
-	def mediation = {
-		redirect controller: 'mediationConfig', action: 'list'
-	}
-
-
     /*
         Show/edit all preferences
      */

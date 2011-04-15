@@ -42,6 +42,7 @@ public class SecuritySession {
     private static final Logger LOG = Logger.getLogger(SecuritySession.class);
 
     public static final String USER_ID = "user_id";
+    public static final String USER_MAIN_ROLE_ID = "main_role_id";
     public static final String USER_LANGUAGE_ID = "language_id";
     public static final String USER_CURRENCY_ID = "currency_id";
     public static final String USER_COMPANY_ID = "company_id";
@@ -71,6 +72,7 @@ public class SecuritySession {
         HttpSession session = request.getSession();
 
         session.setAttribute(USER_ID, principal.getUserId());
+        session.setAttribute(USER_MAIN_ROLE_ID, principal.getMainRoleId());
         session.setAttribute(USER_LANGUAGE_ID, principal.getLanguageId());
         session.setAttribute(USER_CURRENCY_ID, principal.getCurrencyId());
         session.setAttribute(USER_COMPANY_ID, principal.getCompanyId());
@@ -98,6 +100,7 @@ public class SecuritySession {
         HttpSession session = request.getSession();
 
         session.removeAttribute(USER_ID);
+        session.removeAttribute(USER_MAIN_ROLE_ID);
         session.removeAttribute(USER_LANGUAGE_ID);
         session.removeAttribute(USER_CURRENCY_ID);
         session.removeAttribute(USER_COMPANY_ID);

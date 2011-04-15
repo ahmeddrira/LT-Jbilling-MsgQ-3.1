@@ -1,4 +1,4 @@
-<%@ page import="jbilling.SearchType" %>
+<%@ page import="com.sapienter.jbilling.common.Constants; jbilling.SearchType" %>
 
 <%--
   Page header for all common jBilling layouts.
@@ -47,12 +47,38 @@
     </div>
 
     <ul class="top-nav">
-        <%-- todo: great user using first name if available, add actions for account manipulation, training and help --%>
         <li><g:message code="topnav.greeting"/> <sec:loggedInUserInfo field="plainUsername"/></li>
-        <li><a href="#"><img src="${resource(dir:'images', file:'icon25.gif')}" alt="account" /><g:message code="topnav.link.account"/></a></li>
-        <li><a href="#"><img src="${resource(dir:'images', file:'icon26.gif')}" alt="training" /><g:message code="topnav.link.training"/></a></li>
-        <li><a href="#"><img src="${resource(dir:'images', file:'icon27.gif')}" alt="help" /><g:message code="topnav.link.help"/></a></li>
-        <li><g:link controller='logout'><img src="${resource(dir:'images', file:'icon28.gif')}" alt="logout" /><g:message code="topnav.link.logout"/></g:link></li>
+        <li>
+            <g:if test="${session['main_role_id'] == Constants.TYPE_CUSTOMER}">
+                <g:link controller="customer" action="edit" id="${session['user_id']}">
+                    <img src="${resource(dir:'images', file:'icon25.gif')}" alt="account" />
+                    <g:message code="topnav.link.account"/>
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link controller="user" action="edit" id="${session['user_id']}">
+                    <img src="${resource(dir:'images', file:'icon25.gif')}" alt="account" />
+                    <g:message code="topnav.link.account"/>
+                </g:link>
+            </g:else>
+        </li>
+        <li>
+            <a href="http://www.jbilling.com/professional-services/training">
+                <img src="${resource(dir:'images', file:'icon26.gif')}" alt="training" />
+                <g:message code="topnav.link.training"/>
+            </a>
+        </li>
+        <li>
+            <a href="http://www.jbilling.com/product/documentation">
+                <img src="${resource(dir:'images', file:'icon27.gif')}" alt="help" />
+                <g:message code="topnav.link.help"/>
+            </a>
+        </li>
+        <li>
+            <g:link controller='logout'>
+                <img src="${resource(dir:'images', file:'icon28.gif')}" alt="logout" /><g:message code="topnav.link.logout"/>
+            </g:link>
+        </li>
     </ul>
 
     <div id="navigation">

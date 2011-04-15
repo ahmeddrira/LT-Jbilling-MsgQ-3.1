@@ -114,6 +114,8 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
             authorities.add(role);
         }
 
+        Integer mainRoleId = bl.getMainRole();
+
         // rebuild username token with company ID from retrieved user (just to be safe).
         String usernameToken = UsernameHelper.buildUsernameToken(user.getUserName(), user.getEntity().getId());
         
@@ -121,7 +123,7 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
         return new CompanyUserDetails(usernameToken, user.getPassword(), user.isEnabled(),
                                       !user.isAccountExpired(), !user.isPasswordExpired(), !user.isAccountLocked(),
                                       authorities.isEmpty() ? NO_AUTHORITIES : authorities,
-                                      user, UserBL.getLocale(user), user.getId(),
+                                      user, UserBL.getLocale(user), user.getId(), mainRoleId,
                                       user.getEntity().getId(), user.getCurrency().getId(), user.getLanguage().getId());
     }
 }

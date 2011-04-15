@@ -42,6 +42,7 @@ public class CompanyUserDetails extends GrailsUser {
 
     private final UserDTO user;
     private final Locale locale;
+    private final Integer mainRoleId;
     private final Integer companyId;
     private final Integer currencyId;
     private final Integer languageId;
@@ -50,12 +51,13 @@ public class CompanyUserDetails extends GrailsUser {
                               boolean credentialsNonExpired, boolean accountNonLocked,
                               Collection<GrantedAuthority> authorities,
                               UserDTO user, Locale locale,
-                              Integer id, Integer companyId, Integer currencyId, Integer languageId) {
+                              Integer id, Integer mainRoleId, Integer companyId, Integer currencyId, Integer languageId) {
 
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities, id);
 
         this.user = user;
         this.locale = locale;
+        this.mainRoleId = mainRoleId;
         this.companyId = companyId;
         this.currencyId = currencyId;
         this.languageId = languageId;
@@ -91,6 +93,15 @@ public class CompanyUserDetails extends GrailsUser {
      */
     public Locale getLocale() {
         return locale;
+    }
+
+    /**
+     * Returns the users main role ID.
+     *
+     * @return main role id
+     */
+    public Integer getMainRoleId() {
+        return mainRoleId;
     }
 
     /**
@@ -135,6 +146,7 @@ public class CompanyUserDetails extends GrailsUser {
         sb.append("CompanyUserDetails");
         sb.append("{id=").append(getId());
         sb.append(", username=").append("'").append(getUsername()).append("'");
+        sb.append(", mainRoleId=").append(getMainRoleId());
         sb.append(", companyId=").append(getCompanyId());
         sb.append(", currencyId=").append(getCurrencyId());
         sb.append(", languageId=").append(getLanguageId());

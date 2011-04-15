@@ -245,17 +245,26 @@ class InvoiceController {
     }
 
     def notifyInvoiceByEmail = {
-        Integer invId = params.id as Integer
-        log.debug "invoice.sendInvoiceByEmail ${invId}"
-        try {
-            webServicesSession.notifyInvoiceByEmail(invId)
-            flash.message = 'invoice.prompt.success.email.invoice'
-        } catch (Exception e) {
-            log.error e.getMessage()
-            flash.error = 'invoice.prompt.failure.email.invoice'
-            flash.args = params.id
+        if (params.id) {
+            try {
+                def sent = webServicesSession.notifyInvoiceByEmail(params.int('id'))
+
+                if (sent) {
+                    flash.message = 'invoice.prompt.success.email.invoice'
+                    flash.args =  [ params.id ]
+                } else {
+                    flash.error = 'invoice.prompt.failure.email.invoice'
+                    flash.args = [ params.id ]
+                }
+
+            } catch (Exception e) {
+                log.error("Exception occurred sending invoice email", e)
+                flash.error = 'invoice.prompt.failure.email.invoice'
+                flash.args = params.id
+            }
         }
-        redirect(action: 'showListAndInvoice', params: [id: invId])
+
+        redirect action: 'showListAndInvoice', params: [ id: params.id ]
     }
 
     def downloadPdf = {

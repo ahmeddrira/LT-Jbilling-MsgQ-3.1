@@ -19,7 +19,7 @@ target(createStructure: "Creates the jbilling resources directory structure.") {
     }
 }
 
-target(main: "Creates the jbilling 'resources/' directories and copies necessary files.") {
+target(copyResources: "Creates the jbilling 'resources/' directories and copies necessary files.") {
     depends(cleanResources, createStructure)
 
     // copy default company logos
@@ -34,4 +34,4 @@ target(main: "Creates the jbilling 'resources/' directories and copies necessary
     }
 }
 
-setDefaultTarget(main)
+setDefaultTarget(copyResources)

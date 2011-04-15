@@ -41,53 +41,6 @@
         <pathelement location="${source.spring.descriptor.dir}"/>
     </path>    
 
-    <path id="drools.classpath">
-        <fileset dir="${drools.dir}">
-            <include name="**/*.jar"/>
-        </fileset>
-    </path>
-    
-    <path id="drools.compile.classpath">
-        <!-- jbilling libraries -->
-        <fileset dir="${source.lib.dir}">
-            <include name="*.jar"/>
-            <exclude name="drools*.jar"/>
-        </fileset>
-
-        <!-- grails libraries-->
-        <fileset dir="${env.GRAILS_HOME}/lib/">
-            <include name="*.jar"/>
-        </fileset>
-
-        <!-- compiled jbilling classes -->
-        <pathelement path="${build.classes.dir}"/>
-    </path>
-
-    <path id="jasperreports.classpath">
-        <fileset dir="${jasperreports.dir}">
-            <include name="**/*.jar"/>
-        </fileset>
-
-        <path refid="compile.classpath"/>
-    </path>
-
-
-    <!--
-       Resource Compile Targets
-    -->
-
-    <target name="clean" description="Removes all generated resources and compiled test classes.">
-        <delete dir="${build.resources.dir}"/>
-        <delete dir="${build.test.dir}"/>
-        <delete dir="${build.test-results.dir}"/>
-
-        <!-- delete output logs and temporary files -->
-        <delete>
-            <fileset dir="${basedir}" includes="velocity.log*"/>
-            <fileset dir="${basedir}" includes="TEST-*.xml"/>
-        </delete>
-    </target>
-
     
     <!--
          Testing targets
@@ -95,21 +48,10 @@
 
     <target name="test" depends="prepare-test, test-unit, test-ws, test-integration"/>
 
-    <target name="prepare-test"
-            depends="clean, copy-resources, compile-designs, compile-reports, compile-rules, prepare-test-db"
-            description="Prepares the testing environment">
-
-        <echo message="Environment prepared for test run. Start grails with './run-app' and run 'ant test'."/>
-    </target>
-    
-    <target name="prepare-test-db">
-        <echo message="Importing jbilling_test database"/>
-        <exec executable="psql" failonerror="true">
-            <arg line=" -U jbilling -f ${basedir}/sql/jbilling_test.sql jbilling_test"/>
-        </exec>
-    </target>
-
     <target name="test.init">
+        <delete dir="${build.test.dir}"/>
+        <delete dir="${build.test-results.dir}"/>
+
         <mkdir dir="${build.test.dir}"/>
         <mkdir dir="${build.test-results.dir}"/>
     </target>
@@ -497,15 +439,6 @@
             <zipfileset dir="${basedir}/sql" includes="jbilling_test.sql"/>
         </zip>
     </target>
-
-    <target name="war" description="Build the jbilling.war file.">
-        <!-- ant GrailsTask only works with ant 1.7, use exec to build the war file -->
-        <echo message="GRAILS_HOME = ${grails.home}"/>
-        <exec executable="${grails.home}/bin/grails" failonerror="true">
-            <arg line="war"/>
-        </exec>
-    </target>
-
 
     <!--
         Utility targets

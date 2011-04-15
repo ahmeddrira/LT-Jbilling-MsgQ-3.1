@@ -4,7 +4,7 @@ final tempDir = "${basedir}/tmp"
 final resourcesDir = "${basedir}/resources"
 final descriptorsDir = "${basedir}/descriptors"
 
-target(main: "Compiles jasper report designs.") {
+target(compileReports: "Compiles jasper report designs.") {
     ant.taskdef(name: "jrc", classname: "net.sf.jasperreports.ant.JRAntCompileTask" )
 
     delete(dir: "${resourcesDir}/reports")
@@ -22,4 +22,4 @@ target(main: "Compiles jasper report designs.") {
     delete(dir: tempDir)
 }
 
-setDefaultTarget(main)
+setDefaultTarget(compileReports)

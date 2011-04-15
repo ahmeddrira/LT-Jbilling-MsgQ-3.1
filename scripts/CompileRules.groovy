@@ -32,8 +32,7 @@ getPkgFileName = { f ->
     return f.file.name.replaceAll("(\\.drl|\\.xls)", ".pkg")
 }
 
-target(main: "Compiles DROOLS binary rules packages.") {
-
+target(compileRules: "Compiles DROOLS binary rules packages.") {
     ant.taskdef( name: "rulebase", classname: "org.drools.contrib.DroolsCompilerAntTask" )
     ant.path( id: "drools.compile.classpath", droolsCompileClasspath)
 
@@ -54,4 +53,4 @@ target(main: "Compiles DROOLS binary rules packages.") {
     }
 }
 
-setDefaultTarget(main)
+setDefaultTarget(compileRules)

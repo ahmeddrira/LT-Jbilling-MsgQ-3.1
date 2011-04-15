@@ -99,7 +99,7 @@
                     </g:applyLayout>
 
                     <g:applyLayout name="form/text">
-                        <content tag="label"><g:message code="partner.prompt.id"/></content>
+                        <content tag="label"><g:message code="prompt.partner.id"/></content>
                         <span>${user.partner?.id}</span>
                     </g:applyLayout>
 
@@ -141,6 +141,13 @@
             <div id="notes" class="form-columns">
                 <label><g:message code="prompt.notes"/></label>
                 <p class="description">${customer?.notes}</p>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <div class="btn-row">
+                    <g:link controller="blacklist" action="user" id="${user.id}" class="submit add"><span><g:message code="customer.blacklist.button"/></span></g:link>
+
+                </div>
             </div>
 
             <!-- separator -->

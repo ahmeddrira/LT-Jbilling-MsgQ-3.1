@@ -117,7 +117,7 @@
                                       controllerName == 'contactFieldConfig' ||
                                       controllerName == 'contactTypeConfig' ||
                                       controllerName == 'billingconfiguration' ||
-                                      controllerName == 'blacklistConfig' ||
+                                      controllerName == 'blacklist' ||
                                       controllerName == 'mediationConfig' ||
                                       controllerName == 'notifications' ||
                                       controllerName == 'orderPeriod' ||

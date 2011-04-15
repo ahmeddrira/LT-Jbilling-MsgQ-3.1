@@ -25,8 +25,9 @@ import com.sapienter.jbilling.server.payment.IPaymentSessionBean
 import com.sapienter.jbilling.server.util.Context
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.user.UserBL
 
-class BlacklistConfigController {
+class BlacklistController {
 
     def index = {
         redirect action: list, params: params
@@ -74,13 +75,32 @@ class BlacklistConfigController {
 
     def save = {
         def replace = params.csvUpload == 'modify'
-        def csvFile = File.createTempFile("blacklist", ".csv")
-
         def file = request.getFile('csv');
-        if (!file.empty) file.transferTo(csvFile)
 
-        IPaymentSessionBean paymentSession = Context.getBean(Context.Name.PAYMENT_SESSION)
-        paymentSession.processCsvBlacklist(csvFile.getAbsolutePath(), replace, (Integer) session['company_id'])
+        if (!file.empty) {
+            def csvFile = File.createTempFile("blacklist", ".csv")
+            file.transferTo(csvFile)
+
+            IPaymentSessionBean paymentSession = Context.getBean(Context.Name.PAYMENT_SESSION)
+            def added = paymentSession.processCsvBlacklist(csvFile.getAbsolutePath(), replace, (Integer) session['company_id'])
+
+            flash.message = replace ? 'blacklist.updated' : 'blacklist.added'
+            flash.args = [ added ]
+        }
+
+        redirect view: 'list'
+    }
+
+    def user = {
+        if (params.id) {
+            def bl = new UserBL(params.int('id'))
+            bl.setUserBlacklisted((Integer) session['user_id'], true)
+
+            flash.message = 'user.blacklisted'
+            flash.args = [ params.id ]
+        }
+
+        redirect controller: 'customerInspector', action: 'inspect', id: params.id
     }
 
 }

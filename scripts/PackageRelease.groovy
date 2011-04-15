@@ -11,7 +11,7 @@ final sqlDir = "${basedir}/sql"
 final javaDir = "${basedir}/src/java"
 final targetDir = "${basedir}/target"
 
-target(packageRelease: "Packages a war file with the necessary config files and resources for release.") {
+target(packageRelease: "Builds the war and packages all the necessary config files and resources in a release zip file.") {
     // build all resources
     copyResources()
     compileDesigns()

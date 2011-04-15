@@ -23,6 +23,8 @@ package jbilling
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO
 import com.sapienter.jbilling.server.payment.IPaymentSessionBean
 import com.sapienter.jbilling.server.util.Context
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import com.sapienter.jbilling.server.user.db.CompanyDTO
 
 class BlacklistConfigController {
 
@@ -30,15 +32,38 @@ class BlacklistConfigController {
         redirect action: list, params: params
     }
 
-    def list = {
+    def getFilteredList(GrailsParameterMap params) {
         def blacklist = BlacklistDTO.createCriteria().list() {
+
+            if (params.filterBy && params.filterBy != message(code: 'blacklist.filter.by.default')) {
+                or {
+                    eq('user.id', params.int('filterBy'))
+                    user {
+                        ilike('userName', "%${params.filterBy}%")
+                    }
+                    creditCard {
+                        ilike('ccNumberPlain', "%${params.filterBy}%")
+                    }
+                }
+            }
+
             eq('company.id', session['company_id'])
             order('id', 'asc')
         }
 
+    }
+
+    def list = {
+        def blacklist = getFilteredList(params)
         def selected = params.id ? BlacklistDTO.get(params.int('id')) : null
 
         [ blacklist: blacklist, selected: selected ]
+    }
+
+    def filter = {
+        def blacklist = getFilteredList(params)
+
+        render template: 'entryList', model: [ blacklist: blacklist ]
     }
 
     def show = {

@@ -37,6 +37,10 @@ grails.project.dependency.resolution = {
             excludes 'junit', 'commons-logging', 'log4j'
         }
 
+        compile('org.apache.xmlrpc:xmlrpc-client:3.1') {
+            excludes 'xml-apis'
+        }
+
         compile 'org.drools:drools-core:5.0.1'
         compile 'org.drools:drools-compiler:5.0.1'
         build 'org.drools:drools-decisiontables:5.0.1'
@@ -47,15 +51,13 @@ grails.project.dependency.resolution = {
 
         compile 'joda-time:joda-time:1.6.2'
 
+        compile 'net.sf.opencsv:opencsv:2.1'
+
         compile 'commons-httpclient:commons-httpclient:3.0.1'
         compile 'commons-net:commons-net:2.0'
 
         compile 'org.hibernate:hibernate-validator:4.1.0.Final'
         compile 'javax.validation:validation-api:1.0.0.GA'
-
-        compile('org.apache.xmlrpc:xmlrpc-client:3.1') {
-            excludes 'xml-apis'
-        }
 
         compile 'org.codehaus.jackson:jackson-core-asl:1.7.4'
         compile 'org.codehaus.jackson:jackson-mapper-asl:1.7.4'
@@ -65,15 +67,15 @@ grails.project.dependency.resolution = {
             excludes 'struts-core', 'struts-taglib', 'struts-tiles'
         }
 
-        compile('net.sf.barcode4j:barcode4j:2.0') {
-            excludes 'xerces', 'xalan', 'xml-apis'
-        }
-
         compile('net.sf.jasperreports:jasperreports:4.0.0') {
             excludes 'jaxen', 'xalan', 'xml-apis'
         }
         compile 'net.sf.jasperreports:jasperreports-fonts:4.0.0'
         compile 'net.sourceforge.jexcelapi:jxl:2.6.10'
+
+        compile('net.sf.barcode4j:barcode4j:2.0') {
+            excludes 'xerces', 'xalan', 'xml-apis'
+        }
 
         compile 'c3p0:c3p0:0.9.1.2'
 

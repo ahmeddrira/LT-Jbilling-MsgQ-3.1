@@ -257,6 +257,32 @@
                 </div>
             </div>
 
+            <!-- blacklist matches -->
+            <g:if test="${blacklistMatches}">
+                <div id="blacklist" class="box-cards">
+                    <div class="box-cards-title">
+                        <a class="btn-open"><span><g:message code="customer.inspect.blacklist.title"/></span></a>
+                    </div>
+                    <div class="box-card-hold">
+                        <div class="form-columns">
+                            <table cellpadding="0" cellspacing="0" class="dataTable">
+                                <tbody>
+
+                                    <g:each var="match" status="i" in="${blacklistMatches}">
+                                        <tr>
+                                            <td class="value">
+                                                ${match}
+                                            </td>
+                                        </tr>
+                                    </g:each>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </g:if>
+
             <!-- contact information -->
             <div id="address" class="box-cards">
                 <div class="box-cards-title">

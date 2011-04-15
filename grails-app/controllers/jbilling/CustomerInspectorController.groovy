@@ -14,6 +14,7 @@ import com.sapienter.jbilling.server.user.CustomerPriceBL
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.user.db.UserDTO
+import com.sapienter.jbilling.server.payment.blacklist.BlacklistBL
 
 class CustomerInspectorController {
 	
@@ -54,6 +55,9 @@ class CustomerInspectorController {
             contact.setContactTypeDescr(contactType?.getDescription(session['language_id'].toInteger()))
         }
 
+        // blacklist matches
+        def blacklistMatches = BlacklistBL.getBlacklistMatches(user.id)
+
         // used to find the next invoice date
         def cycle = new OrderDAS().findEarliestActiveOrder(user.id)
 
@@ -70,6 +74,7 @@ class CustomerInspectorController {
         [
                 user: user,
                 contacts: contacts,
+                blacklistMatches: blacklistMatches,
                 invoice: invoice,
                 payment: payment,
                 subscriptions: subscriptions,

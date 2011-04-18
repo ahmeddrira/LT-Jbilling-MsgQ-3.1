@@ -49,6 +49,7 @@ import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
@@ -114,6 +115,7 @@ import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceDTO;
@@ -181,6 +183,8 @@ import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 import com.sapienter.jbilling.server.order.OrderPeriodWS;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
+
+import com.sapienter.jbilling.server.user.CompanyWS;
 
 import javax.naming.NamingException;
 
@@ -2759,6 +2763,28 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return currency.getId();
     }
 
+    public CompanyWS getCompany() {
+        CompanyDTO company= new CompanyDAS().find(getCallerCompanyId());
+        LOG.debug(company);
+        return new CompanyWS(company);
+    }
+    
+    public void updateCompany(CompanyWS companyWS) {
+        CompanyDTO dto= companyWS.getDTO();
+            ContactWS contactWs= companyWS.getContact();
+            ContactBL contactBl= new ContactBL();
+            contactBl.setEntity(getCallerCompanyId());
+            ContactDTO contact= contactBl.getEntity();
+            contact.setAddress1(contactWs.getAddress1());
+            contact.setAddress2(contactWs.getAddress2());
+            contact.setCity(contactWs.getCity());
+            contact.setCountryCode(contactWs.getCountryCode());
+            contact.setPostalCode(contactWs.getPostalCode());
+            contact.setStateProvince(contactWs.getStateProvince());
+            contact.setCountryCode(contactWs.getCountryCode());
+            new ContactDAS().save(contact);
+        new CompanyDAS().save(dto);
+    }
 
     /*
        Notifications

@@ -96,6 +96,13 @@ public class EntityBL extends ResultList
         return retValue;
     }
 
+    public ContactDTO getContact() {
+        //get company contact
+        ContactBL contact = new ContactBL();
+        contact.setEntity(entity.getId());
+        return contact.getEntity();
+    }
+    
     /**
      * Creates a new entity with its root user. Uses all defaults.
      * @param user

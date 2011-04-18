@@ -83,6 +83,19 @@ public class ContactWS implements Serializable {
         super();
     }
 
+    public ContactWS(Integer id, String address1,
+            String address2, String city, String stateProvince,
+            String postalCode, String countryCode, int deleted) {
+            this.id = id;
+            this.address1 = address1;
+            this.address2 = address2;
+            this.city = city;
+            this.stateProvince = stateProvince;
+            this.postalCode = postalCode;
+            this.countryCode = countryCode;
+            this.deleted = deleted;
+        }
+    
     public ContactWS(Integer id, String organizationName, String address1,
                      String address2, String city, String stateProvince,
                      String postalCode, String countryCode, String lastName,

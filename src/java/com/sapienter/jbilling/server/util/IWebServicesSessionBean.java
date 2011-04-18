@@ -57,8 +57,8 @@ import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
-
 import com.sapienter.jbilling.server.order.OrderPeriodWS;
+import com.sapienter.jbilling.server.user.CompanyWS;
 
 /**
  * Web service bean interface. 
@@ -306,7 +306,9 @@ public interface IWebServicesSessionBean {
     public void updateCurrency(CurrencyWS currency);
     public Integer createCurrency(CurrencyWS currency);
 
-
+    public CompanyWS getCompany();
+    public void updateCompany(CompanyWS companyWS);
+    
     /*
         Notifications
     */

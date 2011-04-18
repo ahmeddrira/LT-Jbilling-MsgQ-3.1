@@ -4,7 +4,7 @@
 <%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactMapDTO" %>
 <%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO" %>
 
-<g:set var="contact" value="${ContactMapDTO.findByForeignIdAndContactType(company.id, ContactTypeDTO.get(1))?.contact}"/>
+<g:set var="contact" value="${company?.contact}"/>
 
 <div class="form-edit">
     <div class="heading">
@@ -72,18 +72,18 @@
                     -->
                         <g:applyLayout name="form/select">
                             <content tag="label"><g:message code="prompt.company.currency"/></content>
-                            <content tag="label.for">currency.id</content>
-                            <g:select name="currency.id" 
+                            <content tag="label.for">currencyId</content>
+                            <g:select name="currencyId" 
                                       from="${CurrencyDTO.list()}"
                                       optionKey="id"
                                       optionValue="${{it.getDescription(session['language_id'])}}"
-                                      value="${company.currency.id}" />
+                                      value="${company.currencyId}" />
                         </g:applyLayout>
                         <g:applyLayout name="form/select">
                             <content tag="label"><g:message code="prompt.company.language"/></content>
-                            <content tag="label.for">language.id</content>
-                            <g:select name="language.id" from="${LanguageDTO.list()}"
-                                    optionKey="id" optionValue="description" value="${company.language?.id}"  />
+                            <content tag="label.for">languageId</content>
+                            <g:select name="languageId" from="${LanguageDTO.list()}"
+                                    optionKey="id" optionValue="description" value="${company.languageId}"  />
                         </g:applyLayout>
                     </div>
                 </div>

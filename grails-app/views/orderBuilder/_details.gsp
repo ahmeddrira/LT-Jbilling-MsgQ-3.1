@@ -106,7 +106,6 @@
     </g:formRemote>
 
     <script type="text/javascript">
-        var statusIdPrevValue = ${order?.statusId};
         $(function() {
             $('#period').change(function() {
                 if ($(this).val() == ${Constants.ORDER_PERIOD_ONCE}) {
@@ -118,15 +117,11 @@
             }).change();
 
             $('#statusId').change(function() {
-            	if ($(this).val() == ${Constants.ORDER_STATUS_SUSPENDED}) {
-                    //('Are you sure');
-            		showConfirm('edit-' + ${order?.id});
-                    //return true;
-                } else {
-                	statusIdPrevValue= $(this).val();
+                if ($(this).val() == ${Constants.ORDER_STATUS_SUSPENDED}) {
+                    showConfirm("edit-${order?.id}");
                 }
-            })
-            
+            });
+
             $('#order-details-form').find(':text.hasDatepicker, select, :checkbox').change(function() {
                 $('#order-details-form').submit();
             });
@@ -140,11 +135,11 @@
 
 
 <g:render template="/confirm" 
-	   model="['message': 'order.prompt.set.suspended',
-       'controller': 'orderBuilder',
-       'action': 'edit',
-       'id': order?.id,
-       'ajax': false,
-       'onNo': '$(\'#statusId\').val(statusIdPrevValue)',
-       'onYes': '$(\'#confirm-dialog-edit-${order?.id}\').dialog(\'close\')'
+	   model="[message: 'order.prompt.set.suspended',
+               controller: 'orderBuilder',
+               action: 'edit',
+               id: order?.id,
+               ajax: false,
+               onNo: '$(\'#statusId\').val(statusIdPrevValue)',
+               onYes: '$(\'#confirm-dialog-edit-${order?.id}\').dialog(\'close\')'
      ]"/>

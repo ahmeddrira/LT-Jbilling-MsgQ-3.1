@@ -35,6 +35,8 @@ import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.server.util.db.CurrencyDTO
 import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.util.CurrencyWS
+import com.sapienter.jbilling.server.user.ContactWS
+import com.sapienter.jbilling.server.user.CompanyWS
 
 /**
  * ConfigurationController 
@@ -140,24 +142,25 @@ class ConfigController {
      */
     
 	def company = {
-		CompanyDTO company= CompanyDTO.get(session['company_id'])
+		CompanyWS company= webServicesSession.getCompany()
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
-		log.debug company
+		log.debug "getCompany: ${company}"
 		[company:company]
 	}
 	
 	def saveCompany= {
 		log.debug params.description
 		try {
-			CompanyDTO company= CompanyDTO.get(session['company_id'])
+			CompanyWS company= new CompanyWS(session['company_id'].intValue())
 			//ContactType.get(1) or Contact Type 1 is always Company Contact
-			ContactDTO contact=
-			ContactMapDTO.findByForeignIdAndContactType(company.id, ContactTypeDTO.get(1))?.contact
+			ContactWS contact= new ContactWS()
 			bindData(company, params, ['id'])
 			bindData(contact, params, ['id'])
-			log.debug "Company: ${company.language?.id} & ${params.language?.id} & company.description"
-			contact.save()
-			company.save()
+            company.setContact(contact)
+			log.debug "Company: ${company}"
+
+            webServicesSession.updateCompany(company)
+            
 			flash.message = 'config.company.save.success'
 		} catch (SessionInternalError e){
 			//log.info e.getMessage()

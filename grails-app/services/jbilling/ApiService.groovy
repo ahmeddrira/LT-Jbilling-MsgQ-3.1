@@ -34,7 +34,7 @@ import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 import com.sapienter.jbilling.server.order.OrderPeriodWS
 import com.sapienter.jbilling.server.util.CurrencyWS;
-
+import com.sapienter.jbilling.server.user.CompanyWS;
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
  * the WebServicesSessionBean just like the core JbillingAPI.
@@ -587,7 +587,14 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.createCurrency(currency)
     }
 
-
+    public CompanyWS getCompany() {
+        webServicesSession.getCompany();
+    }
+    
+    public void updateCompany(CompanyWS companyWS) {
+        webServicesSession.saveCompany(companyWS);
+    }
+    
     /*
         Notification
     */

@@ -56,8 +56,6 @@ process.run_order_expire=false
 process.run_invoice_reminder=false
 # if the daily batch includes running the overdue penalties process
 process.run_penalty=false
-# if the daily batch includes running the list statistic collection process
-process.run_list=false
 # if the daily batch includes running the credit card expiration notification process
 process.run_cc_expire=false
 # if the daily batch includes running the mediation process

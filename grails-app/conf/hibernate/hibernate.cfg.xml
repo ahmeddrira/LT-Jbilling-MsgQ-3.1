@@ -40,7 +40,6 @@
         <mapping class="com.sapienter.jbilling.server.util.audit.db.EventLogDTO" />
         <mapping class="com.sapienter.jbilling.server.util.audit.db.EventLogModuleDTO" />
         <mapping package="com.sapienter.jbilling.server.util.db" />
-        <mapping class="com.sapienter.jbilling.server.util.db.MenuOptionDTO" />
         <mapping class="com.sapienter.jbilling.server.util.db.LanguageDTO" />
         <mapping class="com.sapienter.jbilling.server.util.db.PreferenceTypeDTO" />
         <mapping class="com.sapienter.jbilling.server.util.db.PreferenceDTO" />
@@ -121,11 +120,6 @@
         <mapping class="com.sapienter.jbilling.server.order.db.OrderPeriodDTO" />
         <mapping class="com.sapienter.jbilling.server.order.db.OrderDTO" />
         <mapping class="com.sapienter.jbilling.server.order.db.OrderStatusDTO" />
-        <mapping package="com.sapienter.jbilling.server.list.db" />
-        <mapping class="com.sapienter.jbilling.server.list.db.ListFieldEntityDTO" />
-        <mapping class="com.sapienter.jbilling.server.list.db.ListDTO" />
-        <mapping class="com.sapienter.jbilling.server.list.db.ListFieldDTO" />
-        <mapping class="com.sapienter.jbilling.server.list.db.ListEntityDTO" />
         <mapping package="com.sapienter.jbilling.server.user.partner.db" />
         <mapping class="com.sapienter.jbilling.server.user.partner.db.Partner" />
         <mapping class="com.sapienter.jbilling.server.user.partner.db.PartnerRange" />

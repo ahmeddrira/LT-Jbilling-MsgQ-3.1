@@ -78,7 +78,6 @@ ALTER TABLE ONLY public.notification_message DROP CONSTRAINT notification_messag
 ALTER TABLE ONLY public.notification_message DROP CONSTRAINT notification_message_fk_2;
 ALTER TABLE ONLY public.notification_message DROP CONSTRAINT notification_message_fk_1;
 ALTER TABLE ONLY public.notification_message_arch_line DROP CONSTRAINT notif_mess_arch_line_fk_1;
-ALTER TABLE ONLY public.menu_option DROP CONSTRAINT menu_option_fk_1;
 ALTER TABLE ONLY public.mediation_record_line DROP CONSTRAINT mediation_record_line_fk_2;
 ALTER TABLE ONLY public.mediation_record_line DROP CONSTRAINT mediation_record_line_fk_1;
 ALTER TABLE ONLY public.mediation_record DROP CONSTRAINT mediation_record_fk_2;
@@ -87,11 +86,6 @@ ALTER TABLE ONLY public.mediation_process DROP CONSTRAINT mediation_process_fk_1
 ALTER TABLE ONLY public.mediation_order_map DROP CONSTRAINT mediation_order_map_fk_2;
 ALTER TABLE ONLY public.mediation_order_map DROP CONSTRAINT mediation_order_map_fk_1;
 ALTER TABLE ONLY public.mediation_cfg DROP CONSTRAINT mediation_cfg_fk_1;
-ALTER TABLE ONLY public.list_field DROP CONSTRAINT list_field_fk_1;
-ALTER TABLE ONLY public.list_field_entity DROP CONSTRAINT list_field_entity_fk_2;
-ALTER TABLE ONLY public.list_field_entity DROP CONSTRAINT list_field_entity_fk_1;
-ALTER TABLE ONLY public.list_entity DROP CONSTRAINT list_entity_fk_2;
-ALTER TABLE ONLY public.list_entity DROP CONSTRAINT list_entity_fk_1;
 ALTER TABLE ONLY public.item_type_map DROP CONSTRAINT item_type_map_fk_2;
 ALTER TABLE ONLY public.item_type_map DROP CONSTRAINT item_type_map_fk_1;
 ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_fk_1;
@@ -256,16 +250,11 @@ ALTER TABLE ONLY public.notification_message_line DROP CONSTRAINT notification_m
 ALTER TABLE ONLY public.notification_message_arch DROP CONSTRAINT notification_message_arch_pkey;
 ALTER TABLE ONLY public.notification_message_arch_line DROP CONSTRAINT notification_message_arch_line_pkey;
 ALTER TABLE ONLY public.notification_category DROP CONSTRAINT notification_category_pk;
-ALTER TABLE ONLY public.menu_option DROP CONSTRAINT menu_option_pkey;
 ALTER TABLE ONLY public.mediation_record DROP CONSTRAINT mediation_record_pkey;
 ALTER TABLE ONLY public.mediation_record_line DROP CONSTRAINT mediation_record_line_pkey;
 ALTER TABLE ONLY public.mediation_process DROP CONSTRAINT mediation_process_pkey;
 ALTER TABLE ONLY public.mediation_errors DROP CONSTRAINT mediation_errors_pkey;
 ALTER TABLE ONLY public.mediation_cfg DROP CONSTRAINT mediation_cfg_pkey;
-ALTER TABLE ONLY public.list DROP CONSTRAINT list_pkey;
-ALTER TABLE ONLY public.list_field DROP CONSTRAINT list_field_pkey;
-ALTER TABLE ONLY public.list_field_entity DROP CONSTRAINT list_field_entity_pkey;
-ALTER TABLE ONLY public.list_entity DROP CONSTRAINT list_entity_pkey;
 ALTER TABLE ONLY public.language DROP CONSTRAINT language_pkey;
 ALTER TABLE ONLY public.jbilling_table DROP CONSTRAINT jbilling_table_pkey;
 ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_pkey;
@@ -355,17 +344,12 @@ DROP TABLE public.notification_message_arch_line;
 DROP TABLE public.notification_message_arch;
 DROP TABLE public.notification_message;
 DROP TABLE public.notification_category;
-DROP TABLE public.menu_option;
 DROP TABLE public.mediation_record_line;
 DROP TABLE public.mediation_record;
 DROP TABLE public.mediation_process;
 DROP TABLE public.mediation_order_map;
 DROP TABLE public.mediation_errors;
 DROP TABLE public.mediation_cfg;
-DROP TABLE public.list_field_entity;
-DROP TABLE public.list_field;
-DROP TABLE public.list_entity;
-DROP TABLE public.list;
 DROP TABLE public.language;
 DROP TABLE public.jbilling_table;
 DROP TABLE public.jbilling_seqs;
@@ -1180,75 +1164,6 @@ CREATE TABLE language (
 ALTER TABLE public.language OWNER TO jbilling;
 
 --
--- Name: list; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE list (
-    id integer NOT NULL,
-    legacy_name character varying(30),
-    title_key character varying(100) NOT NULL,
-    instr_key character varying(100),
-    optlock integer NOT NULL
-);
-
-
-ALTER TABLE public.list OWNER TO jbilling;
-
---
--- Name: list_entity; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE list_entity (
-    id integer NOT NULL,
-    list_id integer,
-    entity_id integer NOT NULL,
-    total_records integer NOT NULL,
-    last_update date NOT NULL,
-    optlock integer NOT NULL
-);
-
-
-ALTER TABLE public.list_entity OWNER TO jbilling;
-
---
--- Name: list_field; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE list_field (
-    id integer NOT NULL,
-    list_id integer,
-    title_key character varying(100) NOT NULL,
-    column_name character varying(50) NOT NULL,
-    ordenable smallint NOT NULL,
-    searchable smallint NOT NULL,
-    data_type character varying(10) NOT NULL,
-    optlock integer NOT NULL
-);
-
-
-ALTER TABLE public.list_field OWNER TO jbilling;
-
---
--- Name: list_field_entity; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE list_field_entity (
-    id integer NOT NULL,
-    list_field_id integer,
-    list_entity_id integer,
-    min_value integer,
-    max_value integer,
-    min_str_value character varying(100),
-    max_str_value character varying(100),
-    min_date_value timestamp without time zone,
-    max_date_value timestamp without time zone,
-    optlock integer NOT NULL
-);
-
-
-ALTER TABLE public.list_field_entity OWNER TO jbilling;
-
---
 -- Name: mediation_cfg; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -1355,20 +1270,6 @@ CREATE TABLE mediation_record_line (
 
 
 ALTER TABLE public.mediation_record_line OWNER TO jbilling;
-
---
--- Name: menu_option; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE menu_option (
-    id integer NOT NULL,
-    link character varying(100) NOT NULL,
-    level_field integer NOT NULL,
-    parent_id integer
-);
-
-
-ALTER TABLE public.menu_option OWNER TO jbilling;
 
 --
 -- Name: notification_category; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -11075,103 +10976,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 60	4	title	1	Partner
 60	5	description	1	A customer that will query his/her account
 60	5	title	1	Customer
-63	1	display	1	Orders
-63	2	display	1	Payments
-63	3	display	1	Reports
-63	4	display	1	System
-63	5	display	1	Users
-63	6	display	1	Staff
-63	7	display	1	Create New User
-63	8	display	1	My Account
-63	9	display	1	Change Password
-63	10	display	1	Edit Contact Information
-63	11	display	1	Account
-63	12	display	1	Change Password
-63	13	display	1	Edit Contact Information
-63	14	display	1	OBSOLETED
-63	15	display	1	Items
-63	16	display	1	Types
-63	17	display	1	Create
-63	18	display	1	List
-63	19	display	1	Create Type
-63	20	display	1	List/Edit Types
-63	21	display	1	Promotions
-63	22	display	1	Create
-63	23	display	1	List
-63	24	display	1	Cheque
-63	25	display	1	Credit Card
-63	26	display	1	List
-63	27	display	1	Create
-63	28	display	1	List
-63	29	display	1	Edit Credit Card
-63	30	display	1	Edit Credit Card
-63	31	display	1	Refunds
-63	32	display	1	Cheque
-63	33	display	1	Credit Card
-63	34	display	1	List
-63	35	display	1	Invoices
-63	36	display	1	List
-63	37	display	1	Process
-63	38	display	1	List
-63	39	display	1	Configuration
-63	40	display	1	Latest
-63	41	display	1	Review
-63	42	display	1	Notification
-63	43	display	1	Compose
-63	44	display	1	Parameters
-63	45	display	1	Emails list
-63	46	display	1	Customers
-63	47	display	1	Reports
-63	48	display	1	Reports
-63	49	display	1	Reports
-63	50	display	1	Reports
-63	51	display	1	Reports
-63	52	display	1	List
-63	53	display	1	List
-63	54	display	1	New
-63	55	display	1	Branding
-63	56	display	1	Currencies
-63	57	display	1	Ageing
-63	58	display	1	Create
-63	59	display	1	Partners
-63	60	display	1	Customers
-63	61	display	1	New
-63	62	display	1	List
-63	63	display	1	Defaults
-63	64	display	1	Reports
-63	65	display	1	Reports
-63	66	display	1	List
-63	67	display	1	New
-63	68	display	1	Statement
-63	69	display	1	Latest
-63	70	display	1	Payouts
-63	71	display	1	Reports
-63	72	display	1	Partners Due Payout
-63	73	display	1	List
-63	74	display	1	Preferences
-63	75	display	1	ACH
-63	76	display	1	Numbering
-63	77	display	1	Edit ACH
-63	78	display	1	Sub-accounts
-63	79	display	1	Help
-63	80	display	1	Help
-63	81	display	1	Help
-63	82	display	1	Help
-63	83	display	1	Help
-63	84	display	1	Help
-63	85	display	1	Help
-63	86	display	1	Help
-63	87	display	1	Help
-63	88	display	1	Help
-63	89	display	1	Help
-63	90	display	1	PayPal
-63	91	display	1	Periods
-63	92	display	1	Download
-63	93	display	1	Plug-ins
-63	94	display	1	Logo
-63	95	display	1	Mediation
-63	96	display	1	Mediation
-63	97	display	1	Blacklist
 64	1	description	1	Afghanistan
 64	2	description	1	Albania
 64	3	description	1	Algeria
@@ -11913,8 +11717,6 @@ order_line_type	1
 order_line_type	1
 order_billing_type	1
 order_billing_type	1
-menu_option	1
-menu_option	1
 pluggable_task_type_category	1
 pluggable_task_type	1
 invoice_line_type	1
@@ -11934,11 +11736,8 @@ role	1
 role	1
 country	3
 country	3
-list_entity	1
-list_entity	1
 permission	2
 permission	2
-list_field_entity	1
 currency_exchange	3
 currency_exchange	3
 billing_process_configuration	1
@@ -12017,7 +11816,6 @@ permission_type	1
 permission_type	1
 invoice_delivery_method	1
 event_log_module	1
-list_field_entity	1
 pluggable_task_parameter	8313
 billing_process_configuration	1
 price_model	21
@@ -12102,7 +11900,6 @@ COPY jbilling_table (id, name) FROM stdin;
 60	role
 61	permission_role_map
 62	user_role_map
-63	menu_option
 64	country
 65	promotion
 66	payment_authorization
@@ -12111,8 +11908,6 @@ COPY jbilling_table (id, name) FROM stdin;
 69	ageing_entity_step
 70	partner_payout
 75	ach
-77	list_entity
-78	list_field_entity
 80	payment_invoice
 81	subscriber_status
 82	mediation_cfg
@@ -12172,82 +11967,6 @@ COPY language (id, code, description) FROM stdin;
 
 
 --
--- Data for Name: list; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY list (id, legacy_name, title_key, instr_key, optlock) FROM stdin;
-1	customerSimple	list.customers.title	\N	1
-2	invoiceGeneral	list.invoices.title	\N	1
-3	order	list.orders.title	\N	1
-4	payment	list.payments.title	\N	1
-\.
-
-
---
--- Data for Name: list_entity; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY list_entity (id, list_id, entity_id, total_records, last_update, optlock) FROM stdin;
-1	1	1	1	2006-12-20	1
-2	2	1	6	2006-12-20	1
-3	3	1	4	2006-12-20	1
-4	4	1	4	2006-12-20	1
-5	1	2	1	2006-12-20	1
-6	2	2	0	2006-12-20	1
-7	3	2	1	2006-12-20	1
-8	4	2	0	2006-12-20	1
-\.
-
-
---
--- Data for Name: list_field; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY list_field (id, list_id, title_key, column_name, ordenable, searchable, data_type, optlock) FROM stdin;
-1	1	user.prompt.id	c.id	1	1	integer	1
-2	1	contact.list.organization	a.organization_name	0	1	string	1
-3	1	customer.last_name	a.last_name	0	1	string	1
-4	1	customer.first_name	a.first_name	0	1	string	1
-5	1	user.prompt.username	c.user_name	0	1	string	1
-6	2	invoice.id.prompt	i.id	0	0	integer	1
-7	2	invoice.number	i.public_number	0	1	string	1
-8	2	user.prompt.username	bu.user_name	0	1	string	1
-9	2	invoice.id.prompt	i.id	1	1	integer	1
-10	2	invoice.create_date	i.create_datetime	0	1	date	1
-11	2	contact.list.organization	co.organization_name	0	1	string	1
-12	2		c.symbol	0	0	string	1
-13	2	invoice.total	i.total	0	0	float	1
-14	2	invoice.balance	i.balance	0	0	float	1
-15	2	invoice.is_payable	i.to_process	0	0	integer	1
-16	3	order.prompt.id	po.id	1	1	integer	1
-17	3	user.prompt.username	bu.user_name	0	1	string	1
-18	3	contact.list.organization	c.organization_name	0	1	string	1
-19	3	order.prompt.createDate	po.create_datetime	0	1	date	1
-20	4	payment.id	p.id	1	1	integer	1
-21	4	user.prompt.username	u.user_name	0	1	string	1
-22	4	contact.list.organization	co.organization_name	0	1	string	1
-23	4	payment.date	p.create_datetime	0	1	date	1
-24	1	creditcard.list.filter	CUSTOM_CC	0	1	string	1
-\.
-
-
---
--- Data for Name: list_field_entity; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY list_field_entity (id, list_field_id, list_entity_id, min_value, max_value, min_str_value, max_str_value, min_date_value, max_date_value, optlock) FROM stdin;
-1	1	1	2	2	\N	\N	\N	\N	1
-2	9	2	1	15	\N	\N	\N	\N	1
-3	16	3	1	4	\N	\N	\N	\N	1
-4	20	4	1	4	\N	\N	\N	\N	1
-5	1	5	13	13	\N	\N	\N	\N	1
-6	9	6	0	0	\N	\N	\N	\N	1
-7	16	7	5	5	\N	\N	\N	\N	1
-8	20	8	0	0	\N	\N	\N	\N	1
-\.
-
-
---
 -- Data for Name: mediation_cfg; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -12297,111 +12016,6 @@ COPY mediation_record (id_key, start_datetime, mediation_process_id, optlock, st
 --
 
 COPY mediation_record_line (id, order_line_id, event_date, amount, quantity, description, optlock, mediation_record_id) FROM stdin;
-\.
-
-
---
--- Data for Name: menu_option; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY menu_option (id, link, level_field, parent_id) FROM stdin;
-1	/order/list.jsp	1	\N
-2	/payment/list.jsp	1	\N
-3	/report/list.jsp	1	\N
-4	/userAccount.do	1	\N
-5	/user/maintain.jsp	1	\N
-6	/user/maintain.jsp	2	5
-7	/user/create.jsp?create=yes	3	6
-8	/userAccount.do	2	4
-9	/user/edit.jsp	3	8
-10	/user/editContact.jsp	3	8
-11	/userAccount.do	1	\N
-12	/user/edit.jsp	2	11
-13	/contactEdit.do?action=setup	2	11
-14	/logout.do	1	\N
-15	/item/list.jsp	1	\N
-16	/item/listType.jsp	2	15
-17	/item/create.jsp?create=yes	2	15
-18	/item/list.jsp	2	15
-19	/item/createType.jsp?create=yes	3	16
-20	/item/listType.jsp	3	16
-21	/item/promotionList.jsp	1	\N
-22	/item/promotionCreate.jsp?create=yes	2	21
-23	/item/promotionList.jsp	2	21
-24	/payment/customerSelect.jsp?create=yes&cheque=yes	2	2
-25	/payment/customerSelect.jsp?create=yes&cc=yes	2	2
-26	/payment/list.jsp	2	2
-27	/order/newOrder.jsp	2	1
-28	/order/list.jsp	2	1
-29	/creditCardMaintain.do?action=setup&mode=creditCard	3	8
-30	/creditCardMaintain.do?action=setup&mode=creditCard	2	11
-31	/payment/listRefund.jsp	1	\N
-32	/payment/customerSelect.jsp?create=yes&cheque=yes&refund=yes	2	31
-33	/payment/customerSelect.jsp?create=yes&cc=yes&refund=yes	2	31
-34	/payment/listRefund.jsp	2	31
-35	/invoice/list.jsp	1	\N
-36	/invoice/list.jsp	2	35
-37	/processMaintain.do?action=view&latest=yes	1	\N
-38	/process/list.jsp	2	37
-39	/processConfigurationMaintain.do?action=setup&mode=configuration	2	37
-40	/processMaintain.do?action=view&latest=yes	2	37
-41	/processMaintain.do?action=review	2	37
-42	/notification/listTypes.jsp	1	\N
-43	/notification/listTypes.jsp	2	42
-44	/parameterMaintain.do?action=setup&mode=parameter&type=notification	2	42
-45	/notification/emails.jsp	2	42
-46	/user/list.jsp	1	\N
-47	/reportList.do?type=1	2	1
-48	/reportList.do?type=2	2	35
-49	/reportList.do?type=3	2	2
-50	/reportList.do?type=4	2	31
-51	/reportList.do?type=5	2	46
-52	/user/list.jsp	2	46
-53	/report/list.jsp	2	3
-54	/user/create.jsp?create=yes&customer=yes&frompartner=yes	2	46
-55	/brandingMaintain.do?action=setup&mode=branding	2	4
-56	/currencyMaintain.do?action=setup	2	4
-57	/ageingMaintain.do?action=setup	2	4
-58	/user/create.jsp?create=yes	3	6
-59	/user/listPartner.jsp	2	5
-60	/user/list.jsp	2	5
-61	/user/create.jsp?create=yes&partner=yes	3	59
-62	/user/listPartner.jsp	3	59
-63	/partnerDefaults.do?action=setup&mode=partnerDefault	3	59
-64	/reportList.do?type=6	3	59
-65	/reportList.do?type=5	3	60
-66	/user/list.jsp	3	60
-67	/user/create.jsp?create=yes&customer=yes	3	60
-68	/partnerMaintain.do?action=view&self=yes	1	\N
-69	/partnerMaintain.do?action=view&self=yes	2	68
-70	/user/payoutList.jsp	2	68
-71	/reportList.do?type=7	1	\N
-72	/reportTrigger.do?mode=partner&id=15	3	59
-73	/reportList.do?type=7	2	71
-74	/notificationPreference.do?action=setup&mode=notificationPreference	2	42
-75	/payment/customerSelect.jsp?create=yes&ach=yes	2	2
-76	/numberingMaintain.do?action=setup&mode=invoiceNumbering	2	35
-77	/achMaintain.do?action=setup&mode=ach	2	11
-78	/user/listSubAccounts.jsp?own=yes	1	\N
-79	HELP|page=items|anchor=	2	15
-80	HELP|page=reports|anchor=	2	3
-81	HELP|page=process|anchor=	2	37
-82	HELP|page=users|anchor=	2	5
-83	HELP|page=orders|anchor=	2	1
-84	HELP|page=notifications|anchor=	2	42
-85	HELP|page=system|anchor=	2	4
-86	HELP|page=payments|anchor=	2	2
-87	HELP|page=invoices|anchor=	2	35
-88	HELP|page=promotions|anchor=	2	21
-89	HELP|page=payments|anchor=refunds	2	31
-90	/payment/customerSelect.jsp?create=yes&paypal=yes	2	2
-91	/orderPeriod.do?action=setup	2	1
-92	/invoice/batchDownload.jsp	2	35
-93	/task.do?action=setup	2	4
-94	/invoice/logo.jsp	2	35
-95	/mediation/processList.do	2	37
-96	/mediation/configuration.do?action=setup	2	4
-97	/system/blacklist.jsp	2	4
 \.
 
 
@@ -19252,38 +18866,6 @@ ALTER TABLE ONLY language
 
 
 --
--- Name: list_entity_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY list_entity
-    ADD CONSTRAINT list_entity_pkey PRIMARY KEY (id);
-
-
---
--- Name: list_field_entity_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY list_field_entity
-    ADD CONSTRAINT list_field_entity_pkey PRIMARY KEY (id);
-
-
---
--- Name: list_field_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY list_field
-    ADD CONSTRAINT list_field_pkey PRIMARY KEY (id);
-
-
---
--- Name: list_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY list
-    ADD CONSTRAINT list_pkey PRIMARY KEY (id);
-
-
---
 -- Name: mediation_cfg_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -19321,14 +18903,6 @@ ALTER TABLE ONLY mediation_record_line
 
 ALTER TABLE ONLY mediation_record
     ADD CONSTRAINT mediation_record_pkey PRIMARY KEY (id);
-
-
---
--- Name: menu_option_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY menu_option
-    ADD CONSTRAINT menu_option_pkey PRIMARY KEY (id);
 
 
 --
@@ -20582,46 +20156,6 @@ ALTER TABLE ONLY item_type_map
 
 
 --
--- Name: list_entity_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY list_entity
-    ADD CONSTRAINT list_entity_fk_1 FOREIGN KEY (list_id) REFERENCES list(id);
-
-
---
--- Name: list_entity_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY list_entity
-    ADD CONSTRAINT list_entity_fk_2 FOREIGN KEY (entity_id) REFERENCES entity(id);
-
-
---
--- Name: list_field_entity_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY list_field_entity
-    ADD CONSTRAINT list_field_entity_fk_1 FOREIGN KEY (list_entity_id) REFERENCES list_entity(id);
-
-
---
--- Name: list_field_entity_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY list_field_entity
-    ADD CONSTRAINT list_field_entity_fk_2 FOREIGN KEY (list_field_id) REFERENCES list_field(id);
-
-
---
--- Name: list_field_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY list_field
-    ADD CONSTRAINT list_field_fk_1 FOREIGN KEY (list_id) REFERENCES list(id);
-
-
---
 -- Name: mediation_cfg_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
 --
 
@@ -20683,14 +20217,6 @@ ALTER TABLE ONLY mediation_record_line
 
 ALTER TABLE ONLY mediation_record_line
     ADD CONSTRAINT mediation_record_line_fk_2 FOREIGN KEY (order_line_id) REFERENCES order_line(id);
-
-
---
--- Name: menu_option_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY menu_option
-    ADD CONSTRAINT menu_option_fk_1 FOREIGN KEY (parent_id) REFERENCES menu_option(id);
 
 
 --

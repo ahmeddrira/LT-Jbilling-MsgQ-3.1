@@ -20,13 +20,11 @@
 
 package com.sapienter.jbilling.server.util;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.payment.blacklist.BlacklistBL;
 import com.sapienter.jbilling.server.user.AchBL;
-import com.sapienter.jbilling.server.user.MenuOption;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.db.AchDTO;
@@ -36,8 +34,6 @@ import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
-import com.sapienter.jbilling.server.util.db.MenuOptionDAS;
-import com.sapienter.jbilling.server.util.db.MenuOptionDTO;
 import org.apache.log4j.Logger;
 
 import javax.naming.NamingException;
@@ -72,7 +68,6 @@ public class DTOFactory {
      * 
      * @param username
      * @return UserDTO
-     * @throws HomeFactoryException
      * @throws NamingException
      */
     public static UserDTOEx getUserDTO(String username, Integer entityId)
@@ -189,24 +184,6 @@ public class DTOFactory {
         dto.setBalance(new UserBL().getBalance(dto.getId()));
 
         return dto;
-    }
-
-    public static MenuOption getMenuOption(Integer id, Integer languageId)
-            throws NamingException {
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        MenuOptionDAS menuDas = new MenuOptionDAS();
-
-        MenuOptionDTO option = menuDas.find(id);
-        MenuOption opt = new MenuOption();
-        opt.setId(option.getId());
-        opt.setLevelField(option.getLevelField());
-        opt.setLink(option.getLink());
-        opt.setDisplay(option.getDisplay(languageId));
-        // opt.setParentId((option.getParent() == null ? null :
-        // option.getParent().getId()));
-        opt.setParentId((option.getMenuOption() == null ? null : option
-                .getMenuOption().getId()));
-        return opt;
     }
 
 }

@@ -919,44 +919,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return retValue;
     }
 
-    /**
-     * Validates the credentials and returns if the user can login or not
-     * @param username
-     * @param password
-     * @return
-     * 0 if the user can login (success), or grater than 0 if the user can not login.
-     * See the constants in WebServicesConstants (AUTH*) for details.
-     * @throws SessionInternalError
-     */
-    @Deprecated
-    public Integer authenticate(String username, String password)
-            throws SessionInternalError {
-        Integer retValue = null;
-
-        // the caller will tell us what entity is this
-        UserBL bl = new UserBL();
-        Integer entityId = getCallerCompanyId();
-
-        // prepare the DTO for the authentication call
-        UserDTOEx user = new UserDTOEx();
-        user.setEntityId(entityId);
-        user.setUserName(username);
-        user.setPassword(password);
-
-        // do the authentication
-        IUserSessionBean myRemoteSession = (IUserSessionBean) Context.getBean(Context.Name.USER_SESSION);
-        retValue = myRemoteSession.authenticate(user);
-        if (retValue.equals(Constants.AUTH_OK)) {
-            // see if the password is not expired
-            bl.set(user.getUserName(), entityId);
-            if (bl.isPasswordExpired()) {
-                retValue = WebServicesConstants.AUTH_EXPIRED;
-            }
-        }
-
-        return retValue;
-    }
-
     public void processPartnerPayouts(Date runDate) {
         IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
         userSession.processPayouts(runDate);

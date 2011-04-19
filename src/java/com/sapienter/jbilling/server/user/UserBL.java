@@ -472,7 +472,6 @@ public class UserBL extends ResultList implements UserSQL {
         return new UserDAS().find(userId);
     }
 
-
      /**
       * sent the lost password to the user
       * @param entityId
@@ -530,130 +529,6 @@ public class UserBL extends ResultList implements UserSQL {
 
          return ret;
      }
-
-    // todo: remove all menu permissions from the DB, a new set will be needed for the new UI anyways...
-    @Deprecated
-    public Menu getMenu(List<PermissionDTO> permissions)
-            throws NamingException, SessionInternalError {
-
-        Menu menu = new Menu();
-        // this should be doable in EJB/QL !! :( :(
-        LOG.debug("getting menu for user=" + user.getUserId());
-
-        for (PermissionDTO permission : permissions) {
-            if (permission.getPermissionType().getId() == Constants.PERMISSION_TYPE_MENU) {
-                // get the menu
-                MenuOption option = DTOFactory.getMenuOption(
-                        permission.getForeignId(),
-                        user.getLanguageIdField());
-                if (specialMenuFilter(option.getId())) {
-                    menu.addOption(option);
-                }
-                //LOG.debug("adding option " + option + " to menu");
-            }
-        }
-
-        menu.init();
-
-        return menu;
-     }
-
-    /**
-     * Some menu options depend on more than a permission, like payment
-     * types are on the entity's accepted methods.
-     * @param menuOptionId
-     * @return
-     */
-    @Deprecated
-    private boolean specialMenuFilter(Integer menuOptionId) {
-        boolean retValue = true;
-
-        // this constants have to be in synch with the DB
-        final int OPTION_SUB_ACCOUNTS = 78;
-        final int OPTION_PAYMENT_CHEQUE = 24;
-        final int OPTION_PAYMENT_CC = 25;
-        final int OPTION_PAYMENT_ACH = 75;
-        final int OPTION_PAYMENT_PAYPAL = 90;
-        final int OPTION_CUSTOMER_CONTACT_EDIT = 13;
-        final int OPTION_PLUG_IN_EDIT = 93;
-
-        switch (menuOptionId.intValue()) {
-        case OPTION_SUB_ACCOUNTS:
-            // this one is only for parents
-            if (user.getCustomer() == null ||
-                    user.getCustomer().getIsParent() == null ||
-                    user.getCustomer().getIsParent().intValue() == 0) {
-                retValue = false;
-            }
-            break;
-        case OPTION_PAYMENT_CHEQUE:
-            try {
-                PaymentBL payment = new PaymentBL();
-                retValue = payment.isMethodAccepted(user.getEntity().getId(),
-                        Constants.PAYMENT_METHOD_CHEQUE);
-            } catch (Exception e) {
-                LOG.error("Exception ", e);
-            }
-            break;
-        case OPTION_PAYMENT_ACH:
-            try {
-                PaymentBL payment = new PaymentBL();
-                retValue = payment.isMethodAccepted(user.getEntity().getId(),
-                        Constants.PAYMENT_METHOD_ACH);
-            } catch (Exception e) {
-                LOG.error("Exception ", e);
-            }
-            break;
-        case OPTION_PAYMENT_CC:
-            try {
-                PaymentBL payment = new PaymentBL();
-                retValue = payment.isMethodAccepted(user.getEntity().getId(),
-                        Constants.PAYMENT_METHOD_AMEX) ||
-                        payment.isMethodAccepted(user.getEntity().getId(),
-                                Constants.PAYMENT_METHOD_VISA) ||
-                        payment.isMethodAccepted(user.getEntity().getId(),
-                                Constants.PAYMENT_METHOD_MASTERCARD) ||
-                        payment.isMethodAccepted(user.getEntity().getId(),
-                                Constants.PAYMENT_METHOD_DINERS) ||
-                        payment.isMethodAccepted(user.getEntity().getId(),
-                                Constants.PAYMENT_METHOD_DISCOVERY);
-            } catch (Exception e) {
-                LOG.error("Exception ", e);
-            }
-            break;
-        case OPTION_PAYMENT_PAYPAL:
-            try {
-                PaymentBL payment = new PaymentBL();
-                retValue = payment.isMethodAccepted(user.getEntity().getId(),
-                        Constants.PAYMENT_METHOD_PAYPAL);
-            } catch (Exception e) {
-                LOG.error("Exception ", e);
-            }
-            break;
-        case OPTION_CUSTOMER_CONTACT_EDIT:
-            PreferenceBL preference = null;
-            try {
-                preference = new PreferenceBL();
-                preference.set(user.getEntity().getId(),
-                        Constants.PREFERENCE_CUSTOMER_CONTACT_EDIT);
-                retValue = (preference.getInt() == 1);
-            } catch (EmptyResultDataAccessException e) {
-                // It doesn't matter, I will take the default
-            } catch (Exception e) {
-                LOG.error("Exception ", e);
-            }
-
-            retValue = (preference.getInt() == 1);
-            break;
-        case OPTION_PLUG_IN_EDIT:
-            UserDTOEx dto = new UserDTOEx();
-            dto.setAllPermissions(getPermissions());
-            retValue = dto.isGranted(PermissionConstants.P_TASK_MODIFY);
-            break;
-        }
-
-        return retValue;
-    }
 
     public UserWS getUserWS() throws SessionInternalError {
         UserDTOEx dto = DTOFactory.getUserDTOEx(user);

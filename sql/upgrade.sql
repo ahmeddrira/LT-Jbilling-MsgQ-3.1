@@ -1248,3 +1248,16 @@ alter table filter add column boolean_value boolean;
 alter table filter add column decimal_value numeric(22, 10);
 alter table filter add column decimal_high_value numeric(22, 10);
 
+-- remove old gui tables
+drop table menu_option;
+drop table list_field_entity;
+drop table list_field;
+drop table list_entity;
+drop table list;
+
+delete from international_description where table_id = 63; -- menu_option
+delete from international_description where table_id = 77; -- list_entity
+delete from international_description where table_id = 78; -- list_field_entity
+
+delete from jbilling_table where name in ('list', 'list_entity', 'list_field', 'list_field_entity', 'menu_option');
+delete from jbilling_seqs where name in ('list', 'list_entity', 'list_field', 'list_field_entity', 'menu_option');

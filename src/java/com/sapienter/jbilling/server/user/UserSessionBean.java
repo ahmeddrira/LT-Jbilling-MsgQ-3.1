@@ -35,7 +35,6 @@ import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
-import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.PreferenceBL;
@@ -87,81 +86,6 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
     // -------------------------------------------------------------------------
     // Methods
     // -------------------------------------------------------------------------
-
-    /**
-     * @return the populated userDTO if ok, or null if fails.
-     * @param clientUser The userDTO with the username and password to authenticate
-     */
-    @Deprecated
-    public Integer authenticate(UserDTOEx clientUser)
-            throws SessionInternalError {
-        Integer result = Constants.AUTH_WRONG_CREDENTIALS;
-        try {
-            LOG.debug("Authentication of " + clientUser.getUserName() +
-                      " password = [" + clientUser.getPassword() + "]" +
-                      " entity = " + clientUser.getEntityId());
-            UserDTOEx dbUser = DTOFactory.getUserDTO(clientUser.getUserName(),
-                                                     clientUser.getEntityId());
-            if (dbUser == null) return result; // username is wrong (not found in DB)
-            LOG.debug("DB password is [" + dbUser.getPassword() + "]");
-            // the permissions and menu will get loaded only for
-            // successfulls logins
-            UserBL user = new UserBL();
-            if(user.validateUserNamePassword(clientUser, dbUser)) {
-                result = Constants.AUTH_OK;
-                user.successLoginAttempt();
-            } else {
-                user.set(clientUser.getUserName(), clientUser.getEntityId());
-                if (user.failedLoginAttempt()) {
-                    result = Constants.AUTH_LOCKED;
-                }
-            }
-
-        } catch (Exception e) { // all the rest are internal error
-            // I catch everything here, and let know to the client that an
-            // internal error has happened.
-            throw new SessionInternalError(e);
-        }
-
-        LOG.debug("result is " + result);
-        return result;
-    }
-
-    /**
-     * Returns UserDTO if authentication successful, otherwise null.
-     */
-    @Deprecated
-    public UserDTO webServicesAuthenticate(String username, String password)
-            throws SessionInternalError{
-        try {
-            UserBL user = new UserBL();
-            return user.webServicesAuthenticate(username, password);
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
-    }
-
-    /**
-     * This returns more than a DTOEx, it includes the permissions and menu that
-     * the GUI needs
-     * @param username user name
-     * @param entityId entity id
-     * @return DTO for GUI
-     */
-    @Deprecated
-    public UserDTOEx getGUIDTO(String username, Integer entityId) {
-        UserDTOEx retValue;
-        try {
-            UserBL bl = new UserBL(username, entityId);
-            retValue = DTOFactory.getUserDTOEx(bl.getEntity());
-            retValue.setAllPermissions(bl.getPermissions());
-            retValue.setMenu(bl.getMenu(retValue.getAllPermissions()));
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
-
-        return retValue;
-    }
 
     /**
      * @return the new user id if everthing ok, or null if the username is already

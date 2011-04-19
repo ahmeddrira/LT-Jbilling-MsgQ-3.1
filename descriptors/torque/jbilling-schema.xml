@@ -749,67 +749,6 @@
         <column name="code" required="true" size="2" type="VARCHAR"/>
         <column name="description" required="true" size="50" type="VARCHAR"/>
     </table>
-    <table name="list">
-        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="legacy_name" size="30" type="VARCHAR"/>
-        <column name="title_key" required="true" size="100" type="VARCHAR"/>
-        <column name="instr_key" size="100" type="VARCHAR"/>
-        <column name="OPTLOCK" required="true" type="INTEGER"/>
-    </table>
-    <table name="list_entity">
-        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="list_id" type="INTEGER"/>
-        <column name="entity_id" required="true" type="INTEGER"/>
-        <column name="total_records" required="true" type="INTEGER"/>
-        <column name="last_update" required="true" type="DATE"/>
-        <column name="OPTLOCK" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="list">
-            <reference foreign="id" local="list_id"/>
-        </foreign-key>
-        <foreign-key foreignTable="entity">
-            <reference foreign="id" local="entity_id"/>
-        </foreign-key>
-    </table>
-    <table name="list_field">
-        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="list_id" type="INTEGER"/>
-        <column name="title_key" required="true" size="100" type="VARCHAR"/>
-        <column name="column_name" required="true" size="50" type="VARCHAR"/>
-        <column name="ordenable" required="true" type="SMALLINT"/>
-        <column name="searchable" required="true" type="SMALLINT"/>
-        <column name="data_type" required="true" size="10" type="VARCHAR"/>
-        <column name="OPTLOCK" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="list">
-            <reference foreign="id" local="list_id"/>
-        </foreign-key>
-    </table>
-    <table name="list_field_entity">
-        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="list_field_id" type="INTEGER"/>
-        <column name="list_entity_id" type="INTEGER"/>
-        <column name="min_value" type="INTEGER"/>
-        <column name="max_value" type="INTEGER"/>
-        <column name="min_str_value" size="100" type="VARCHAR"/>
-        <column name="max_str_value" size="100" type="VARCHAR"/>
-        <column name="min_date_value" type="TIMESTAMP"/>
-        <column name="max_date_value" type="TIMESTAMP"/>
-        <column name="OPTLOCK" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="list_entity">
-            <reference foreign="id" local="list_entity_id"/>
-        </foreign-key>
-        <foreign-key foreignTable="list_field">
-            <reference foreign="id" local="list_field_id"/>
-        </foreign-key>
-    </table>
-    <table name="menu_option">
-        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="link" required="true" size="100" type="VARCHAR"/>
-        <column name="level_field" required="true" type="INTEGER"/>
-        <column name="parent_id" type="INTEGER"/>
-        <foreign-key foreignTable="menu_option">
-            <reference foreign="id" local="parent_id"/>
-        </foreign-key>
-    </table>
     <table name="notification_message">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="type_id" type="INTEGER"/>

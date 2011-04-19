@@ -77,10 +77,6 @@ public class SpringAPI implements JbillingAPI {
         return session.processPayment(payment, invoiceId);
     }
 
-    public Integer authenticate(String username, String password) {
-        return session.authenticate(username, password);
-    }
-
     public void processPartnerPayouts(Date runDate) {
         session.processPartnerPayouts(runDate);
     }

@@ -50,26 +50,6 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
  * @author emilc
  */
 public interface IUserSessionBean {
-    /**
-    * @return the populated userDTO if ok, or null if fails.
-    * @param clientUser The userDTO with the username and password to authenticate
-    */
-    public Integer authenticate(UserDTOEx clientUser) 
-            throws SessionInternalError;
-
-    /**
-     * Returns UserDTO if authentication successful, otherwise null.
-     */
-    public UserDTO webServicesAuthenticate(String username, String password)
-            throws SessionInternalError;
-
-    /**
-     * This returns more than a DTOEx, it includes the permissions and menu that
-     * the GUI needs
-     * @param userId
-     * @return
-     */
-    public UserDTOEx getGUIDTO(String username, Integer entityId);
 
     /**
      * @return the new user id if everthing ok, or null if the username is already 

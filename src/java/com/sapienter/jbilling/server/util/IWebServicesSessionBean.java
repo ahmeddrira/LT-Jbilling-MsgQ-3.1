@@ -102,9 +102,6 @@ public interface IWebServicesSessionBean {
     public Integer getUserId(String username) throws SessionInternalError;
 
     public void saveCustomContactFields(ContactFieldTypeWS[] fields) throws SessionInternalError;
-    
-    @Deprecated
-    public Integer authenticate(String username, String password) throws SessionInternalError;
 
     public void processPartnerPayouts(Date runDate);
     public PartnerWS getPartner(Integer partnerId) throws SessionInternalError;

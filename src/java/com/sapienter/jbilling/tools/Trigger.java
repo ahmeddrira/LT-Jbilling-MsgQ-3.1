@@ -30,11 +30,9 @@ import java.util.Date;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
-import com.sapienter.jbilling.server.list.IListSessionBean;
 import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
-import com.sapienter.jbilling.server.util.RemoteContext;
 
 /**
  * @author Emil
@@ -71,7 +69,7 @@ public class Trigger {
         	IUserSessionBean remoteUser = null;
         	IOrderSessionBean remoteOrder = null;
         	IInvoiceSessionBean remoteInvoice = null;
-        	IListSessionBean remoteList = null;
+
             // determine the date for this run
             Date today = Calendar.getInstance().getTime();
             Integer step = null; //means all
@@ -133,15 +131,6 @@ public class Trigger {
             if (step == null || step.intValue() == 6) {
                 // Penalty processing removed, now handled as an internal event
                 // based of the ageing NewUserStatusEvent
-            }
-            
-            // update the listing statistics
-            if (step == null || step.intValue() == 7) {
-                System.out.println("Starting list stats at " + 
-                        Calendar.getInstance().getTime());
-                remoteList.updateStatistics();
-                System.out.println("Ended list stats at " + 
-                        Calendar.getInstance().getTime());
             }
 
             // send credit card expiration emails

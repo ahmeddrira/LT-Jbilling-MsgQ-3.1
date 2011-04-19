@@ -52,7 +52,6 @@ import org.hibernate.annotations.OrderBy;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
-import com.sapienter.jbilling.server.list.db.ListEntityDTO;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageDTO;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
@@ -99,7 +98,6 @@ public class CompanyDTO implements java.io.Serializable {
     private Set<ItemTypeDTO> itemTypes = new HashSet<ItemTypeDTO>(0);
     private Set<BillingProcessConfigurationDTO> billingProcessConfigurations = new HashSet<BillingProcessConfigurationDTO>(0);
     private Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods = new HashSet<InvoiceDeliveryMethodDTO>(0);
-    private Set<ListEntityDTO> listEntities = new HashSet<ListEntityDTO>(0);
     private int versionNum;
 
     public CompanyDTO() {
@@ -124,7 +122,7 @@ public class CompanyDTO implements java.io.Serializable {
                       Set<ItemDTO> items, Set<EventLogDTO> eventLogs, Set<NotificationMessageDTO> notificationMessages,
                       Set<ContactFieldTypeDTO> contactFieldTypes, Set<CurrencyDTO> currencyDTOs,
                       Set<ItemTypeDTO> itemTypes, Set<BillingProcessConfigurationDTO> billingProcessConfigurations,
-                      Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods, Set<ListEntityDTO> listEntities) {
+                      Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods) {
         this.id = id;
         this.currencyDTO = currencyDTO;
         this.language = language;
@@ -145,7 +143,6 @@ public class CompanyDTO implements java.io.Serializable {
         this.itemTypes = itemTypes;
         this.billingProcessConfigurations = billingProcessConfigurations;
         this.invoiceDeliveryMethods = invoiceDeliveryMethods;
-        this.listEntities = listEntities;
     }
 
     @Id
@@ -358,15 +355,6 @@ public class CompanyDTO implements java.io.Serializable {
 
     public void setInvoiceDeliveryMethods(Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods) {
         this.invoiceDeliveryMethods = invoiceDeliveryMethods;
-    }
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "entity")
-    public Set<ListEntityDTO> getListEntities() {
-        return this.listEntities;
-    }
-
-    public void setListEntities(Set<ListEntityDTO> listEntities) {
-        this.listEntities = listEntities;
     }
 
     /*

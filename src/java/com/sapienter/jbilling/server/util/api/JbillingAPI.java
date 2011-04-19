@@ -85,9 +85,6 @@ public interface JbillingAPI {
 
     public Integer getUserId(String username);
 
-    @Deprecated
-    public Integer authenticate(String username, String password);
-
     public void processPartnerPayouts(Date runDate);
     public PartnerWS getPartner(Integer partnerId);
 

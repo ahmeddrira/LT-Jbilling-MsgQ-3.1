@@ -38,7 +38,6 @@ import org.quartz.SimpleTrigger;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
-import com.sapienter.jbilling.server.list.IListSessionBean;
 import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean;
@@ -166,8 +165,6 @@ public class Trigger implements Job {
                     Context.Name.ORDER_SESSION);
             IInvoiceSessionBean remoteInvoice = (IInvoiceSessionBean) 
                     Context.getBean(Context.Name.INVOICE_SESSION);
-            IListSessionBean remoteList = (IListSessionBean) Context.getBean(
-                    Context.Name.LIST_SESSION);
             IProvisioningProcessSessionBean remoteProvisioningProcess = 
                     (IProvisioningProcessSessionBean) Context.getBean(
                     Context.Name.PROVISIONING_PROCESS_SESSION);
@@ -216,12 +213,6 @@ public class Trigger implements Job {
                     LOG.info("Starting invoice reminders at " + Calendar.getInstance().getTime());
                     remoteInvoice.sendReminders(today);
                     LOG.info("Ended invoice reminders at " + Calendar.getInstance().getTime());
-                }
-                if (Util.getSysPropBooleanTrue("process.run_list")) {
-                    // update the listing statistics
-                    LOG.info("Starting list stats at " + Calendar.getInstance().getTime());
-                    remoteList.updateStatistics();
-                    LOG.info("Ended list stats at " + Calendar.getInstance().getTime());
                 }
                 if (Util.getSysPropBooleanTrue("process.run_cc_expire")) {
                     // send credit card expiration emails

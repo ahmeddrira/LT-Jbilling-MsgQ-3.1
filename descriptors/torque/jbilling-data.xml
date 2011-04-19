@@ -335,9 +335,6 @@
     <InternationalDescription TableId="47" ForeignId="16" PsudoColumn="description" LanguageId="1" Content="A purchase order as been manually applied to an invoice."/>
     <InternationalDescription TableId="52" ForeignId="17" PsudoColumn="description" LanguageId="1" Content="Payment (failed)"/>
     <InternationalDescription TableId="52" ForeignId="16" PsudoColumn="description" LanguageId="1" Content="Payment (successful)"/>
-    <InternationalDescription TableId="63" ForeignId="7" PsudoColumn="display" LanguageId="1" Content="Create New User"/>
-    <InternationalDescription TableId="63" ForeignId="76" PsudoColumn="display" LanguageId="1" Content="Numbering"/>
-    <InternationalDescription TableId="63" ForeignId="92" PsudoColumn="display" LanguageId="1" Content="Download"/>
     <InternationalDescription TableId="59" ForeignId="111" PsudoColumn="description" LanguageId="1" Content="Menu Reports invoice details option"/>
     <InternationalDescription TableId="59" ForeignId="111" PsudoColumn="title" LanguageId="1" Content="Menu Reports Invoice Details"/>
     <InternationalDescription TableId="59" ForeignId="112" PsudoColumn="description" LanguageId="1" Content="Menu Reports users option"/>
@@ -346,14 +343,12 @@
     <InternationalDescription TableId="35" ForeignId="6" PsudoColumn="description" LanguageId="1" Content="Discovery"/>
     <InternationalDescription TableId="35" ForeignId="7" PsudoColumn="description" LanguageId="1" Content="Diners"/>
     <InternationalDescription TableId="59" ForeignId="109" PsudoColumn="title" LanguageId="1" Content="Menu Payment ACH"/>
-    <InternationalDescription TableId="59" ForeignId="109" PsudoColumn="description" LanguageId="1" Content="Menu Payment ACH"/>
-    <InternationalDescription TableId="63" ForeignId="75" PsudoColumn="display" LanguageId="1" Content="ACH"/>
+    <InternationalDescription TableId="59" ForeignId="109" PsudoColumn="description" LanguageId="1" Content="Menu Payment ACH"/>    
     <InternationalDescription TableId="50" ForeignId="16" PsudoColumn="description" LanguageId="1" Content="Days before expiration for order notification 2"/>
     <InternationalDescription TableId="50" ForeignId="17" PsudoColumn="description" LanguageId="1" Content="Days before expiration for order notification 3"/>
     <InternationalDescription TableId="52" ForeignId="13" PsudoColumn="description" LanguageId="1" Content="Order about to expire. Step 1"/>
     <InternationalDescription TableId="52" ForeignId="14" PsudoColumn="description" LanguageId="1" Content="Order about to expire. Step 2"/>
     <InternationalDescription TableId="52" ForeignId="15" PsudoColumn="description" LanguageId="1" Content="Order about to expire. Step 3"/>
-    <InternationalDescription TableId="63" ForeignId="91" PsudoColumn="display" LanguageId="1" Content="Periods"/>
     <InternationalDescription TableId="59" ForeignId="113" PsudoColumn="title" LanguageId="1" Content="Invoice delete"/>
     <InternationalDescription TableId="59" ForeignId="110" PsudoColumn="description" LanguageId="1" Content="Menu Invoice Numbering"/>
     <InternationalDescription TableId="59" ForeignId="110" PsudoColumn="title" LanguageId="1" Content="Menu Invoice Numbering"/>
@@ -381,7 +376,6 @@
     <InternationalDescription TableId="64" ForeignId="227" PsudoColumn="description" LanguageId="1" Content="Uzbekistan"/>
     <InternationalDescription TableId="59" ForeignId="107" PsudoColumn="title" LanguageId="1" Content="Menu Notif Preferences"/>
     <InternationalDescription TableId="59" ForeignId="107" PsudoColumn="description" LanguageId="1" Content="Menu Notification preferences"/>
-    <InternationalDescription TableId="63" ForeignId="74" PsudoColumn="display" LanguageId="1" Content="Preferences"/>
     <InternationalDescription TableId="59" ForeignId="108" PsudoColumn="title" LanguageId="1" Content="Order left menu options"/>
     <InternationalDescription TableId="59" ForeignId="108" PsudoColumn="description" LanguageId="1" Content="Order options: g.invoice,"/>
     <InternationalDescription TableId="64" ForeignId="147" PsudoColumn="description" LanguageId="1" Content="Nauru"/>
@@ -560,43 +554,6 @@
     <InternationalDescription TableId="64" ForeignId="144" PsudoColumn="description" LanguageId="1" Content="Mozambique"/>
     <InternationalDescription TableId="64" ForeignId="145" PsudoColumn="description" LanguageId="1" Content="Myanmar"/>
     <InternationalDescription TableId="64" ForeignId="146" PsudoColumn="description" LanguageId="1" Content="Namibia"/>
-    <InternationalDescription TableId="63" ForeignId="37" PsudoColumn="display" LanguageId="1" Content="Process"/>
-    <InternationalDescription TableId="63" ForeignId="38" PsudoColumn="display" LanguageId="1" Content="List"/>
-    <InternationalDescription TableId="63" ForeignId="39" PsudoColumn="display" LanguageId="1" Content="Configuration"/>
-    <InternationalDescription TableId="63" ForeignId="40" PsudoColumn="display" LanguageId="1" Content="Latest"/>
-    <InternationalDescription TableId="63" ForeignId="41" PsudoColumn="display" LanguageId="1" Content="Review"/>
-    <InternationalDescription TableId="63" ForeignId="42" PsudoColumn="display" LanguageId="1" Content="Notification"/>
-    <InternationalDescription TableId="63" ForeignId="43" PsudoColumn="display" LanguageId="1" Content="Compose"/>
-    <InternationalDescription TableId="63" ForeignId="44" PsudoColumn="display" LanguageId="1" Content="Parameters"/>
-    <InternationalDescription TableId="63" ForeignId="45" PsudoColumn="display" LanguageId="1" Content="Emails list"/>
-    <InternationalDescription TableId="63" ForeignId="46" PsudoColumn="display" LanguageId="1" Content="Customers"/>
-    <InternationalDescription TableId="63" ForeignId="47" PsudoColumn="display" LanguageId="1" Content="Reports"/>
-    <InternationalDescription TableId="63" ForeignId="48" PsudoColumn="display" LanguageId="1" Content="Reports"/>
-    <InternationalDescription TableId="63" ForeignId="49" PsudoColumn="display" LanguageId="1" Content="Reports"/>
-    <InternationalDescription TableId="63" ForeignId="50" PsudoColumn="display" LanguageId="1" Content="Reports"/>
-    <InternationalDescription TableId="63" ForeignId="51" PsudoColumn="display" LanguageId="1" Content="Reports"/>
-    <InternationalDescription TableId="63" ForeignId="52" PsudoColumn="display" LanguageId="1" Content="List"/>
-    <InternationalDescription TableId="63" ForeignId="53" PsudoColumn="display" LanguageId="1" Content="List"/>
-    <InternationalDescription TableId="63" ForeignId="54" PsudoColumn="display" LanguageId="1" Content="New"/>
-    <InternationalDescription TableId="63" ForeignId="55" PsudoColumn="display" LanguageId="1" Content="Branding"/>
-    <InternationalDescription TableId="63" ForeignId="56" PsudoColumn="display" LanguageId="1" Content="Currencies"/>
-    <InternationalDescription TableId="63" ForeignId="57" PsudoColumn="display" LanguageId="1" Content="Ageing"/>
-    <InternationalDescription TableId="63" ForeignId="58" PsudoColumn="display" LanguageId="1" Content="Create"/>
-    <InternationalDescription TableId="63" ForeignId="59" PsudoColumn="display" LanguageId="1" Content="Partners"/>
-    <InternationalDescription TableId="63" ForeignId="60" PsudoColumn="display" LanguageId="1" Content="Customers"/>
-    <InternationalDescription TableId="63" ForeignId="61" PsudoColumn="display" LanguageId="1" Content="New"/>
-    <InternationalDescription TableId="63" ForeignId="62" PsudoColumn="display" LanguageId="1" Content="List"/>
-    <InternationalDescription TableId="63" ForeignId="63" PsudoColumn="display" LanguageId="1" Content="Defaults"/>
-    <InternationalDescription TableId="63" ForeignId="64" PsudoColumn="display" LanguageId="1" Content="Reports"/>
-    <InternationalDescription TableId="63" ForeignId="65" PsudoColumn="display" LanguageId="1" Content="Reports"/>
-    <InternationalDescription TableId="63" ForeignId="66" PsudoColumn="display" LanguageId="1" Content="List"/>
-    <InternationalDescription TableId="63" ForeignId="67" PsudoColumn="display" LanguageId="1" Content="New"/>
-    <InternationalDescription TableId="63" ForeignId="68" PsudoColumn="display" LanguageId="1" Content="Statement"/>
-    <InternationalDescription TableId="63" ForeignId="69" PsudoColumn="display" LanguageId="1" Content="Latest"/>
-    <InternationalDescription TableId="63" ForeignId="70" PsudoColumn="display" LanguageId="1" Content="Payouts"/>
-    <InternationalDescription TableId="63" ForeignId="71" PsudoColumn="display" LanguageId="1" Content="Reports"/>
-    <InternationalDescription TableId="63" ForeignId="72" PsudoColumn="display" LanguageId="1" Content="Partners Due Payout"/>
-    <InternationalDescription TableId="63" ForeignId="73" PsudoColumn="display" LanguageId="1" Content="List"/>
     <InternationalDescription TableId="64" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Afghanistan"/>
     <InternationalDescription TableId="64" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Albania"/>
     <InternationalDescription TableId="64" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Algeria"/>
@@ -727,9 +684,6 @@
     <InternationalDescription TableId="60" ForeignId="4" PsudoColumn="title" LanguageId="1" Content="Partner"/>
     <InternationalDescription TableId="60" ForeignId="5" PsudoColumn="description" LanguageId="1" Content="A customer that will query his/her account"/>
     <InternationalDescription TableId="60" ForeignId="5" PsudoColumn="title" LanguageId="1" Content="Customer"/>
-    <InternationalDescription TableId="63" ForeignId="1" PsudoColumn="display" LanguageId="1" Content="Orders"/>
-    <InternationalDescription TableId="63" ForeignId="2" PsudoColumn="display" LanguageId="1" Content="Payments"/>
-    <InternationalDescription TableId="63" ForeignId="3" PsudoColumn="display" LanguageId="1" Content="Reports"/>
     <InternationalDescription TableId="17" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="One time"/>
     <InternationalDescription TableId="18" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Items"/>
     <InternationalDescription TableId="18" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Tax"/>
@@ -786,7 +740,6 @@
     <InternationalDescription TableId="47" ForeignId="7" PsudoColumn="description" LanguageId="1" Content="A row was marked as deleted."/>
     <InternationalDescription TableId="47" ForeignId="8" PsudoColumn="description" LanguageId="1" Content="A user password was changed."/>
     <InternationalDescription TableId="47" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="A row was updated."/>
-    <InternationalDescription TableId="63" ForeignId="4" PsudoColumn="display" LanguageId="1" Content="System"/>
     <InternationalDescription TableId="47" ForeignId="10" PsudoColumn="description" LanguageId="1" Content="Running a billing process, but a review is found unapproved."/>
     <InternationalDescription TableId="47" ForeignId="11" PsudoColumn="description" LanguageId="1" Content="Running a billing process, review is required but not present."/>
     <InternationalDescription TableId="47" ForeignId="12" PsudoColumn="description" LanguageId="1" Content="A user status was changed."/>
@@ -999,67 +952,20 @@
     <InternationalDescription TableId="59" ForeignId="113" PsudoColumn="description" LanguageId="1" Content="Invoice delete left menu option"/>
     <InternationalDescription TableId="59" ForeignId="114" PsudoColumn="description" LanguageId="1" Content="User edit links"/>
     <InternationalDescription TableId="59" ForeignId="115" PsudoColumn="description" LanguageId="1" Content="User create - inital left menu"/>
-    <InternationalDescription TableId="63" ForeignId="77" PsudoColumn="display" LanguageId="1" Content="Edit ACH"/>
     <InternationalDescription TableId="59" ForeignId="116" PsudoColumn="description" LanguageId="1" Content="Menu edit ach option"/>
     <InternationalDescription TableId="59" ForeignId="116" PsudoColumn="title" LanguageId="1" Content="Menu edit ach option"/>
-    <InternationalDescription TableId="63" ForeignId="5" PsudoColumn="display" LanguageId="1" Content="Users"/>
-    <InternationalDescription TableId="63" ForeignId="8" PsudoColumn="display" LanguageId="1" Content="My Account"/>
-    <InternationalDescription TableId="63" ForeignId="9" PsudoColumn="display" LanguageId="1" Content="Change Password"/>
-    <InternationalDescription TableId="63" ForeignId="10" PsudoColumn="display" LanguageId="1" Content="Edit Contact Information"/>
-    <InternationalDescription TableId="63" ForeignId="11" PsudoColumn="display" LanguageId="1" Content="Account"/>
-    <InternationalDescription TableId="63" ForeignId="12" PsudoColumn="display" LanguageId="1" Content="Change Password"/>
-    <InternationalDescription TableId="63" ForeignId="13" PsudoColumn="display" LanguageId="1" Content="Edit Contact Information"/>
-    <InternationalDescription TableId="63" ForeignId="14" PsudoColumn="display" LanguageId="1" Content="OBSOLETED"/>
-    <InternationalDescription TableId="63" ForeignId="15" PsudoColumn="display" LanguageId="1" Content="Items"/>
-    <InternationalDescription TableId="63" ForeignId="16" PsudoColumn="display" LanguageId="1" Content="Types"/>
-    <InternationalDescription TableId="63" ForeignId="17" PsudoColumn="display" LanguageId="1" Content="Create"/>
-    <InternationalDescription TableId="63" ForeignId="18" PsudoColumn="display" LanguageId="1" Content="List"/>
-    <InternationalDescription TableId="63" ForeignId="19" PsudoColumn="display" LanguageId="1" Content="Create Type"/>
-    <InternationalDescription TableId="63" ForeignId="20" PsudoColumn="display" LanguageId="1" Content="List/Edit Types"/>
-    <InternationalDescription TableId="63" ForeignId="22" PsudoColumn="display" LanguageId="1" Content="Create"/>
-    <InternationalDescription TableId="63" ForeignId="23" PsudoColumn="display" LanguageId="1" Content="List"/>
-    <InternationalDescription TableId="63" ForeignId="24" PsudoColumn="display" LanguageId="1" Content="Cheque"/>
-    <InternationalDescription TableId="63" ForeignId="25" PsudoColumn="display" LanguageId="1" Content="Credit Card"/>
-    <InternationalDescription TableId="63" ForeignId="26" PsudoColumn="display" LanguageId="1" Content="List"/>
-    <InternationalDescription TableId="63" ForeignId="27" PsudoColumn="display" LanguageId="1" Content="Create"/>
-    <InternationalDescription TableId="63" ForeignId="28" PsudoColumn="display" LanguageId="1" Content="List"/>
-    <InternationalDescription TableId="63" ForeignId="29" PsudoColumn="display" LanguageId="1" Content="Edit Credit Card"/>
-    <InternationalDescription TableId="63" ForeignId="30" PsudoColumn="display" LanguageId="1" Content="Edit Credit Card"/>
-    <InternationalDescription TableId="63" ForeignId="31" PsudoColumn="display" LanguageId="1" Content="Refunds"/>
-    <InternationalDescription TableId="63" ForeignId="32" PsudoColumn="display" LanguageId="1" Content="Cheque"/>
-    <InternationalDescription TableId="63" ForeignId="33" PsudoColumn="display" LanguageId="1" Content="Credit Card"/>
-    <InternationalDescription TableId="63" ForeignId="34" PsudoColumn="display" LanguageId="1" Content="List"/>
-    <InternationalDescription TableId="63" ForeignId="35" PsudoColumn="display" LanguageId="1" Content="Invoices"/>
-    <InternationalDescription TableId="63" ForeignId="36" PsudoColumn="display" LanguageId="1" Content="List"/>
     <InternationalDescription TableId="50" ForeignId="24" PsudoColumn="description" LanguageId="1" Content="Data Fattura Fine Mese"/>
     <InternationalDescription TableId="4" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="Singapore Dollar"/>
     <InternationalDescription TableId="4" ForeignId="10" PsudoColumn="description" LanguageId="1" Content="Malaysian Ringgit"/>
     <InternationalDescription TableId="4" ForeignId="11" PsudoColumn="description" LanguageId="1" Content="Australian Dollar"/>
     <InternationalDescription TableId="50" ForeignId="19" PsudoColumn="description" LanguageId="1" Content="Next invoice number"/>
-    <InternationalDescription TableId="63" ForeignId="83" PsudoColumn="display" LanguageId="1" Content="Help"/>
-    <InternationalDescription TableId="63" ForeignId="84" PsudoColumn="display" LanguageId="1" Content="Help"/>
-    <InternationalDescription TableId="63" ForeignId="85" PsudoColumn="display" LanguageId="1" Content="Help"/>
-    <InternationalDescription TableId="63" ForeignId="86" PsudoColumn="display" LanguageId="1" Content="Help"/>
-    <InternationalDescription TableId="63" ForeignId="87" PsudoColumn="display" LanguageId="1" Content="Help"/>
-    <InternationalDescription TableId="63" ForeignId="88" PsudoColumn="display" LanguageId="1" Content="Help"/>
-    <InternationalDescription TableId="63" ForeignId="89" PsudoColumn="display" LanguageId="1" Content="Help"/>
     <InternationalDescription TableId="7" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Email + Paper"/>
-    <InternationalDescription TableId="63" ForeignId="79" PsudoColumn="display" LanguageId="1" Content="Help"/>
     <InternationalDescription TableId="35" ForeignId="8" PsudoColumn="description" LanguageId="1" Content="PayPal"/>
-    <InternationalDescription TableId="63" ForeignId="90" PsudoColumn="display" LanguageId="1" Content="PayPal"/>
-    <InternationalDescription TableId="63" ForeignId="78" PsudoColumn="display" LanguageId="1" Content="Sub-accounts"/>
-    <InternationalDescription TableId="63" ForeignId="6" PsudoColumn="display" LanguageId="1" Content="Staff"/>
     <InternationalDescription TableId="73" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="Item"/>
-    <InternationalDescription TableId="63" ForeignId="82" PsudoColumn="display" LanguageId="1" Content="Help"/>
-    <InternationalDescription TableId="63" ForeignId="81" PsudoColumn="display" LanguageId="1" Content="Help"/>
-    <InternationalDescription TableId="63" ForeignId="80" PsudoColumn="display" LanguageId="1" Content="Help"/>
     <InternationalDescription TableId="52" ForeignId="19" PsudoColumn="description" LanguageId="1" Content="Update Credit Card"/>
     <InternationalDescription TableId="20" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Suspended (auto)"/>
     <InternationalDescription TableId="18" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Penalty"/>
     <InternationalDescription TableId="52" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="Lost password"/>
-    <InternationalDescription TableId="63" ForeignId="93" PsudoColumn="display" LanguageId="1" Content="Plug-ins"/>
-    <InternationalDescription TableId="63" ForeignId="94" PsudoColumn="display" LanguageId="1" Content="Logo"/>
-    <InternationalDescription TableId="63" ForeignId="97" PsudoColumn="display" LanguageId="1" Content="Blacklist"/>
     <InternationalDescription TableId="88" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Active"/>
     <InternationalDescription TableId="88" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Inactive"/>
     <InternationalDescription TableId="88" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Pending Active"/>
@@ -1072,9 +978,6 @@
     <InternationalDescription TableId="47" ForeignId="16" PsudoColumn="description" LanguageId="2" Content="Uma ordem de compra foi aplicada manualmente a uma factura."/>
     <InternationalDescription TableId="52" ForeignId="17" PsudoColumn="description" LanguageId="2" Content="Payment (sem sucesso)"/>
     <InternationalDescription TableId="52" ForeignId="16" PsudoColumn="description" LanguageId="2" Content="Payment (com sucesso)"/>
-    <InternationalDescription TableId="63" ForeignId="7" PsudoColumn="display" LanguageId="2" Content="Criar Novo Utilizador"/>
-    <InternationalDescription TableId="63" ForeignId="76" PsudoColumn="display" LanguageId="2" Content="Numeração"/>
-    <InternationalDescription TableId="63" ForeignId="92" PsudoColumn="display" LanguageId="2" Content="Baixar Ficheiro"/>
     <InternationalDescription TableId="59" ForeignId="111" PsudoColumn="description" LanguageId="2" Content="Menu Relatórios opção de detalhes de facturas"/>
     <InternationalDescription TableId="59" ForeignId="111" PsudoColumn="title" LanguageId="2" Content="Menu Relatórios Detalhes de Facturas"/>
     <InternationalDescription TableId="59" ForeignId="112" PsudoColumn="description" LanguageId="2" Content="Menu Relatórios opção de utilizadores"/>
@@ -1084,13 +987,11 @@
     <InternationalDescription TableId="35" ForeignId="7" PsudoColumn="description" LanguageId="2" Content="Diners"/>
     <InternationalDescription TableId="59" ForeignId="109" PsudoColumn="title" LanguageId="2" Content="Menu Pagamento CCA"/>
     <InternationalDescription TableId="59" ForeignId="109" PsudoColumn="description" LanguageId="2" Content="Menu Pagamento CCA"/>
-    <InternationalDescription TableId="63" ForeignId="75" PsudoColumn="display" LanguageId="2" Content="CCA"/>
     <InternationalDescription TableId="50" ForeignId="16" PsudoColumn="description" LanguageId="2" Content="Dias antes da expiração para notificação de ordens 2"/>
     <InternationalDescription TableId="50" ForeignId="17" PsudoColumn="description" LanguageId="2" Content="Dias antes da expiração para notificação de ordens 3"/>
     <InternationalDescription TableId="52" ForeignId="13" PsudoColumn="description" LanguageId="2" Content="Ordem de compra a expirar. Passo 1"/>
     <InternationalDescription TableId="52" ForeignId="14" PsudoColumn="description" LanguageId="2" Content="Ordem de compra a expirar. Passo 2"/>
     <InternationalDescription TableId="52" ForeignId="15" PsudoColumn="description" LanguageId="2" Content="Ordem de compra a expirar. Passo 3"/>
-    <InternationalDescription TableId="63" ForeignId="91" PsudoColumn="display" LanguageId="2" Content="Períodos"/>
     <InternationalDescription TableId="59" ForeignId="113" PsudoColumn="title" LanguageId="2" Content="Eliminar factura"/>
     <InternationalDescription TableId="59" ForeignId="110" PsudoColumn="description" LanguageId="2" Content="Menu Numeração de Facturas"/>
     <InternationalDescription TableId="59" ForeignId="110" PsudoColumn="title" LanguageId="2" Content="Menu Numeração de Facturas"/>
@@ -1118,7 +1019,6 @@
     <InternationalDescription TableId="64" ForeignId="227" PsudoColumn="description" LanguageId="2" Content="Uzbekistão"/>
     <InternationalDescription TableId="59" ForeignId="107" PsudoColumn="title" LanguageId="2" Content="Menu Preferências de Notificação"/>
     <InternationalDescription TableId="59" ForeignId="107" PsudoColumn="description" LanguageId="2" Content="Menu Preferências de Notificação"/>
-    <InternationalDescription TableId="63" ForeignId="74" PsudoColumn="display" LanguageId="2" Content="Preferências"/>
     <InternationalDescription TableId="59" ForeignId="108" PsudoColumn="title" LanguageId="2" Content="Ordem opções menu esquerdo"/>
     <InternationalDescription TableId="59" ForeignId="108" PsudoColumn="description" LanguageId="2" Content="Ordem opções: g.invoice,"/>
     <InternationalDescription TableId="64" ForeignId="147" PsudoColumn="description" LanguageId="2" Content="Nauru"/>
@@ -1297,43 +1197,6 @@
     <InternationalDescription TableId="64" ForeignId="144" PsudoColumn="description" LanguageId="2" Content="Moçambique"/>
     <InternationalDescription TableId="64" ForeignId="145" PsudoColumn="description" LanguageId="2" Content="Mianmar"/>
     <InternationalDescription TableId="64" ForeignId="146" PsudoColumn="description" LanguageId="2" Content="Namíbia"/>
-    <InternationalDescription TableId="63" ForeignId="37" PsudoColumn="display" LanguageId="2" Content="Processo"/>
-    <InternationalDescription TableId="63" ForeignId="38" PsudoColumn="display" LanguageId="2" Content="Lista"/>
-    <InternationalDescription TableId="63" ForeignId="39" PsudoColumn="display" LanguageId="2" Content="Configuração"/>
-    <InternationalDescription TableId="63" ForeignId="40" PsudoColumn="display" LanguageId="2" Content="Última"/>
-    <InternationalDescription TableId="63" ForeignId="41" PsudoColumn="display" LanguageId="2" Content="Revêr"/>
-    <InternationalDescription TableId="63" ForeignId="42" PsudoColumn="display" LanguageId="2" Content="Notificação"/>
-    <InternationalDescription TableId="63" ForeignId="43" PsudoColumn="display" LanguageId="2" Content="Compôr"/>
-    <InternationalDescription TableId="63" ForeignId="44" PsudoColumn="display" LanguageId="2" Content="Parâmetros"/>
-    <InternationalDescription TableId="63" ForeignId="45" PsudoColumn="display" LanguageId="2" Content="Lista de Emails"/>
-    <InternationalDescription TableId="63" ForeignId="46" PsudoColumn="display" LanguageId="2" Content="Clientes"/>
-    <InternationalDescription TableId="63" ForeignId="47" PsudoColumn="display" LanguageId="2" Content="Relatórios"/>
-    <InternationalDescription TableId="63" ForeignId="48" PsudoColumn="display" LanguageId="2" Content="Relatórios"/>
-    <InternationalDescription TableId="63" ForeignId="49" PsudoColumn="display" LanguageId="2" Content="Relatórios"/>
-    <InternationalDescription TableId="63" ForeignId="50" PsudoColumn="display" LanguageId="2" Content="Relatórios"/>
-    <InternationalDescription TableId="63" ForeignId="51" PsudoColumn="display" LanguageId="2" Content="Relatórios"/>
-    <InternationalDescription TableId="63" ForeignId="52" PsudoColumn="display" LanguageId="2" Content="Lista"/>
-    <InternationalDescription TableId="63" ForeignId="53" PsudoColumn="display" LanguageId="2" Content="Lista"/>
-    <InternationalDescription TableId="63" ForeignId="54" PsudoColumn="display" LanguageId="2" Content="Novo"/>
-    <InternationalDescription TableId="63" ForeignId="55" PsudoColumn="display" LanguageId="2" Content="Branding"/>
-    <InternationalDescription TableId="63" ForeignId="56" PsudoColumn="display" LanguageId="2" Content="Moedas"/>
-    <InternationalDescription TableId="63" ForeignId="57" PsudoColumn="display" LanguageId="2" Content="Antiguidade"/>
-    <InternationalDescription TableId="63" ForeignId="58" PsudoColumn="display" LanguageId="2" Content="Criar"/>
-    <InternationalDescription TableId="63" ForeignId="59" PsudoColumn="display" LanguageId="2" Content="Parceiros"/>
-    <InternationalDescription TableId="63" ForeignId="60" PsudoColumn="display" LanguageId="2" Content="Clientes"/>
-    <InternationalDescription TableId="63" ForeignId="61" PsudoColumn="display" LanguageId="2" Content="Novo"/>
-    <InternationalDescription TableId="63" ForeignId="62" PsudoColumn="display" LanguageId="2" Content="Lista"/>
-    <InternationalDescription TableId="63" ForeignId="63" PsudoColumn="display" LanguageId="2" Content="Por Defeito"/>
-    <InternationalDescription TableId="63" ForeignId="64" PsudoColumn="display" LanguageId="2" Content="Relatórios"/>
-    <InternationalDescription TableId="63" ForeignId="65" PsudoColumn="display" LanguageId="2" Content="Relatórios"/>
-    <InternationalDescription TableId="63" ForeignId="66" PsudoColumn="display" LanguageId="2" Content="Lista"/>
-    <InternationalDescription TableId="63" ForeignId="67" PsudoColumn="display" LanguageId="2" Content="Novo"/>
-    <InternationalDescription TableId="63" ForeignId="68" PsudoColumn="display" LanguageId="2" Content="Extracto"/>
-    <InternationalDescription TableId="63" ForeignId="69" PsudoColumn="display" LanguageId="2" Content="Última"/>
-    <InternationalDescription TableId="63" ForeignId="70" PsudoColumn="display" LanguageId="2" Content="Pagamentos (Fornecedores)"/>
-    <InternationalDescription TableId="63" ForeignId="71" PsudoColumn="display" LanguageId="2" Content="Relatórios"/>
-    <InternationalDescription TableId="63" ForeignId="72" PsudoColumn="display" LanguageId="2" Content="Parceiros Pagamentos Devidos"/>
-    <InternationalDescription TableId="63" ForeignId="73" PsudoColumn="display" LanguageId="2" Content="Lista"/>
     <InternationalDescription TableId="64" ForeignId="1" PsudoColumn="description" LanguageId="2" Content="Afganistão"/>
     <InternationalDescription TableId="64" ForeignId="2" PsudoColumn="description" LanguageId="2" Content="Albânia"/>
     <InternationalDescription TableId="64" ForeignId="3" PsudoColumn="description" LanguageId="2" Content="Algéria"/>
@@ -1457,9 +1320,6 @@
     <InternationalDescription TableId="60" ForeignId="4" PsudoColumn="title" LanguageId="2" Content="Parceiro"/>
     <InternationalDescription TableId="60" ForeignId="5" PsudoColumn="description" LanguageId="2" Content="Um cliente que vai fazer pesquisas na sua conta"/>
     <InternationalDescription TableId="60" ForeignId="5" PsudoColumn="title" LanguageId="2" Content="Cliente"/>
-    <InternationalDescription TableId="63" ForeignId="1" PsudoColumn="display" LanguageId="2" Content="Ordens"/>
-    <InternationalDescription TableId="63" ForeignId="2" PsudoColumn="display" LanguageId="2" Content="Pagamentos"/>
-    <InternationalDescription TableId="63" ForeignId="3" PsudoColumn="display" LanguageId="2" Content="Relatórios"/>
     <InternationalDescription TableId="17" ForeignId="1" PsudoColumn="description" LanguageId="2" Content="Vez única"/>
     <InternationalDescription TableId="18" ForeignId="1" PsudoColumn="description" LanguageId="2" Content="Items"/>
     <InternationalDescription TableId="18" ForeignId="2" PsudoColumn="description" LanguageId="2" Content="Imposto"/>
@@ -1516,7 +1376,6 @@
     <InternationalDescription TableId="47" ForeignId="7" PsudoColumn="description" LanguageId="2" Content="A linha marcada foi eliminada."/>
     <InternationalDescription TableId="47" ForeignId="8" PsudoColumn="description" LanguageId="2" Content="A senha de utilizador foi alterada."/>
     <InternationalDescription TableId="47" ForeignId="9" PsudoColumn="description" LanguageId="2" Content="Uma linha foi actualizada."/>
-    <InternationalDescription TableId="63" ForeignId="4" PsudoColumn="display" LanguageId="2" Content="Sistema"/>
     <InternationalDescription TableId="47" ForeignId="10" PsudoColumn="description" LanguageId="2" Content="A correr um processo de facturação, foi encontrada uma revisão rejeitada."/>
     <InternationalDescription TableId="47" ForeignId="11" PsudoColumn="description" LanguageId="2" Content="A correr um processo de facturação, uma é necessária mas não encontrada."/>
     <InternationalDescription TableId="47" ForeignId="12" PsudoColumn="description" LanguageId="2" Content="Um status de utilizador foi alterado."/>
@@ -1728,69 +1587,21 @@
     <InternationalDescription TableId="52" ForeignId="18" PsudoColumn="description" LanguageId="2" Content="Lembrete de Factura"/>
     <InternationalDescription TableId="59" ForeignId="113" PsudoColumn="description" LanguageId="2" Content="Factura eliminar menu esquerdo opção"/>
     <InternationalDescription TableId="59" ForeignId="114" PsudoColumn="description" LanguageId="2" Content="Utilizador editar hiperligações"/>
-    <InternationalDescription TableId="59" ForeignId="115" PsudoColumn="description" LanguageId="2" Content="Utilizador criar - menu inicial esquerdo"/>
-    <InternationalDescription TableId="63" ForeignId="77" PsudoColumn="display" LanguageId="2" Content="Editar CCA"/>
+    <InternationalDescription TableId="59" ForeignId="115" PsudoColumn="description" LanguageId="2" Content="Utilizador criar - menu inicial esquerdo"/>   
     <InternationalDescription TableId="59" ForeignId="116" PsudoColumn="description" LanguageId="2" Content="Menu editar cca opção"/>
     <InternationalDescription TableId="59" ForeignId="116" PsudoColumn="title" LanguageId="2" Content="Menu editar cca opção"/>
-    <InternationalDescription TableId="63" ForeignId="5" PsudoColumn="display" LanguageId="2" Content="Utilizadores"/>
-    <InternationalDescription TableId="63" ForeignId="8" PsudoColumn="display" LanguageId="2" Content="Minha conta"/>
-    <InternationalDescription TableId="63" ForeignId="9" PsudoColumn="display" LanguageId="2" Content="Alterar senha"/>
-    <InternationalDescription TableId="63" ForeignId="10" PsudoColumn="display" LanguageId="2" Content="Editar Informação de Contacto"/>
-    <InternationalDescription TableId="63" ForeignId="11" PsudoColumn="display" LanguageId="2" Content="Conta"/>
-    <InternationalDescription TableId="63" ForeignId="12" PsudoColumn="display" LanguageId="2" Content="Alterar senha"/>
-    <InternationalDescription TableId="63" ForeignId="13" PsudoColumn="display" LanguageId="2" Content="Editar Informação de Contacto"/>
-    <InternationalDescription TableId="63" ForeignId="14" PsudoColumn="display" LanguageId="2" Content="OBSOLETO"/>
-    <InternationalDescription TableId="63" ForeignId="15" PsudoColumn="display" LanguageId="2" Content="Items"/>
-    <InternationalDescription TableId="63" ForeignId="16" PsudoColumn="display" LanguageId="2" Content="Tipos"/>
-    <InternationalDescription TableId="63" ForeignId="17" PsudoColumn="display" LanguageId="2" Content="Criar"/>
-    <InternationalDescription TableId="63" ForeignId="18" PsudoColumn="display" LanguageId="2" Content="Lista"/>
-    <InternationalDescription TableId="63" ForeignId="19" PsudoColumn="display" LanguageId="2" Content="Criar Tipo"/>
-    <InternationalDescription TableId="63" ForeignId="20" PsudoColumn="display" LanguageId="2" Content="Listar/Editar Tipos"/>
-    <InternationalDescription TableId="63" ForeignId="21" PsudoColumn="display" LanguageId="2" Content="Promoções"/>
-    <InternationalDescription TableId="63" ForeignId="22" PsudoColumn="display" LanguageId="2" Content="Criar"/>
-    <InternationalDescription TableId="63" ForeignId="23" PsudoColumn="display" LanguageId="2" Content="Listar"/>
-    <InternationalDescription TableId="63" ForeignId="24" PsudoColumn="display" LanguageId="2" Content="Cheque"/>
-    <InternationalDescription TableId="63" ForeignId="25" PsudoColumn="display" LanguageId="2" Content="Cartão de Crédito"/>
-    <InternationalDescription TableId="63" ForeignId="26" PsudoColumn="display" LanguageId="2" Content="Listar"/>
-    <InternationalDescription TableId="63" ForeignId="27" PsudoColumn="display" LanguageId="2" Content="Criar"/>
-    <InternationalDescription TableId="63" ForeignId="28" PsudoColumn="display" LanguageId="2" Content="Listar"/>
-    <InternationalDescription TableId="63" ForeignId="29" PsudoColumn="display" LanguageId="2" Content="Editar Cartão de Crédito"/>
-    <InternationalDescription TableId="63" ForeignId="30" PsudoColumn="display" LanguageId="2" Content="Editar Cartão de Crédito"/>
-    <InternationalDescription TableId="63" ForeignId="31" PsudoColumn="display" LanguageId="2" Content="Devoluções"/>
-    <InternationalDescription TableId="63" ForeignId="32" PsudoColumn="display" LanguageId="2" Content="Cheque"/>
-    <InternationalDescription TableId="63" ForeignId="33" PsudoColumn="display" LanguageId="2" Content="Cartão de Crédito"/>
-    <InternationalDescription TableId="63" ForeignId="34" PsudoColumn="display" LanguageId="2" Content="Listar"/>
-    <InternationalDescription TableId="63" ForeignId="35" PsudoColumn="display" LanguageId="2" Content="Facturas"/>
-    <InternationalDescription TableId="63" ForeignId="36" PsudoColumn="display" LanguageId="2" Content="Listar"/>
     <InternationalDescription TableId="50" ForeignId="24" PsudoColumn="description" LanguageId="2" Content="Data Factura Fim do Mês"/>
     <InternationalDescription TableId="4" ForeignId="9" PsudoColumn="description" LanguageId="2" Content="Dólar da Singapura"/>
     <InternationalDescription TableId="4" ForeignId="10" PsudoColumn="description" LanguageId="2" Content="Ringgit Malasiano"/>
     <InternationalDescription TableId="4" ForeignId="11" PsudoColumn="description" LanguageId="2" Content="Dólar Australiano"/>
     <InternationalDescription TableId="50" ForeignId="19" PsudoColumn="description" LanguageId="2" Content="Próximo número de factura"/>
-    <InternationalDescription TableId="63" ForeignId="83" PsudoColumn="display" LanguageId="2" Content="Ajuda"/>
-    <InternationalDescription TableId="63" ForeignId="84" PsudoColumn="display" LanguageId="2" Content="Ajuda"/>
-    <InternationalDescription TableId="63" ForeignId="85" PsudoColumn="display" LanguageId="2" Content="Ajuda"/>
-    <InternationalDescription TableId="63" ForeignId="86" PsudoColumn="display" LanguageId="2" Content="Ajuda"/>
-    <InternationalDescription TableId="63" ForeignId="87" PsudoColumn="display" LanguageId="2" Content="Ajuda"/>
-    <InternationalDescription TableId="63" ForeignId="88" PsudoColumn="display" LanguageId="2" Content="Ajuda"/>
-    <InternationalDescription TableId="63" ForeignId="89" PsudoColumn="display" LanguageId="2" Content="Ajuda"/>
     <InternationalDescription TableId="7" ForeignId="3" PsudoColumn="description" LanguageId="2" Content="Email + Papel"/>
-    <InternationalDescription TableId="63" ForeignId="79" PsudoColumn="display" LanguageId="2" Content="Ajuda"/>
     <InternationalDescription TableId="35" ForeignId="8" PsudoColumn="description" LanguageId="2" Content="PayPal"/>
-    <InternationalDescription TableId="63" ForeignId="90" PsudoColumn="display" LanguageId="2" Content="PayPal"/>
-    <InternationalDescription TableId="63" ForeignId="78" PsudoColumn="display" LanguageId="2" Content="Sub-contas"/>
-    <InternationalDescription TableId="63" ForeignId="6" PsudoColumn="display" LanguageId="2" Content="Staff"/>
     <InternationalDescription TableId="73" ForeignId="9" PsudoColumn="description" LanguageId="2" Content="Item"/>
-    <InternationalDescription TableId="63" ForeignId="82" PsudoColumn="display" LanguageId="2" Content="Ajuda"/>
-    <InternationalDescription TableId="63" ForeignId="81" PsudoColumn="display" LanguageId="2" Content="Ajuda"/>
-    <InternationalDescription TableId="63" ForeignId="80" PsudoColumn="display" LanguageId="2" Content="Ajuda"/>
     <InternationalDescription TableId="52" ForeignId="19" PsudoColumn="description" LanguageId="2" Content="Actualizar Cartão de Crédito"/>
     <InternationalDescription TableId="20" ForeignId="4" PsudoColumn="description" LanguageId="2" Content="Suspender (auto)"/>
     <InternationalDescription TableId="18" ForeignId="3" PsudoColumn="description" LanguageId="2" Content="Penalidade"/>
     <InternationalDescription TableId="52" ForeignId="20" PsudoColumn="description" LanguageId="2" Content="Senha esquecida"/>
-    <InternationalDescription TableId="63" ForeignId="93" PsudoColumn="display" LanguageId="2" Content="Plug-ins"/>
-    <InternationalDescription TableId="63" ForeignId="95" PsudoColumn="display" LanguageId="1" Content="Mediation"/>
-    <InternationalDescription TableId="63" ForeignId="96" PsudoColumn="display" LanguageId="1" Content="Mediation"/>
     <InternationalDescription TableId="89" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="None"/>
     <InternationalDescription TableId="89" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Pre-paid balance"/>
     <InternationalDescription TableId="89" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Credit limit"/>
@@ -1869,7 +1680,6 @@
     <JbillingTable Id="9" Name="user_status"/>
     <JbillingTable Id="18" Name="order_line_type"/>
     <JbillingTable Id="19" Name="order_billing_type"/>
-    <JbillingTable Id="63" Name="menu_option"/>
     <JbillingTable Id="20" Name="order_status"/>
     <JbillingTable Id="23" Name="pluggable_task_type_category"/>
     <JbillingTable Id="24" Name="pluggable_task_type"/>
@@ -1883,9 +1693,7 @@
     <JbillingTable Id="52" Name="notification_message_type"/>
     <JbillingTable Id="60" Name="role"/>
     <JbillingTable Id="64" Name="country"/>
-    <JbillingTable Id="77" Name="list_entity"/>
     <JbillingTable Id="59" Name="permission"/>
-    <JbillingTable Id="78" Name="list_field_entity"/>
     <JbillingTable Id="67" Name="currency_exchange"/>
     <JbillingTable Id="26" Name="pluggable_task_parameter"/>
     <JbillingTable Id="34" Name="billing_process_configuration"/>
@@ -1961,7 +1769,6 @@
     <JbillingSeqs Name="user_status" NextId="9"/>
     <JbillingSeqs Name="order_line_type" NextId="4"/>
     <JbillingSeqs Name="order_billing_type" NextId="3"/>
-    <JbillingSeqs Name="menu_option" NextId="92"/>
     <JbillingSeqs Name="order_status" NextId="5"/>
     <JbillingSeqs Name="pluggable_task_type_category" NextId="22"/>
     <JbillingSeqs Name="pluggable_task_type" NextId="70"/>
@@ -1975,9 +1782,7 @@
     <JbillingSeqs Name="notification_message_type" NextId="20"/>
     <JbillingSeqs Name="role" NextId="6"/>
     <JbillingSeqs Name="country" NextId="238"/>
-    <JbillingSeqs Name="list_entity" NextId="1"/>
     <JbillingSeqs Name="permission" NextId="135"/>
-    <JbillingSeqs Name="list_field_entity" NextId="1"/>
     <JbillingSeqs Name="currency_exchange" NextId="25"/>
     <JbillingSeqs Name="pluggable_task_parameter" NextId="1"/>
     <JbillingSeqs Name="billing_process_configuration" NextId="1"/>
@@ -2043,127 +1848,6 @@
     <JbillingSeqs Name="report_parameter" NextId="0"/>
     <Language Id="1" Code="en" Description="English"/>
     <Language Id="2" Code="pt" Description="Português"/>
-    <List Id="1" LegacyName="customerSimple" TitleKey="list.customers.title" Optlock="1"/>
-    <List Id="2" LegacyName="invoiceGeneral" TitleKey="list.invoices.title" Optlock="1"/>
-    <List Id="3" LegacyName="order" TitleKey="list.orders.title" Optlock="1"/>
-    <List Id="4" LegacyName="payment" TitleKey="list.payments.title" Optlock="1"/>
-    <ListField Id="1" ListId="1" TitleKey="user.prompt.id" ColumnName="c.id" Ordenable="1" Searchable="1" DataType="integer" Optlock="1"/>
-    <ListField Id="2" ListId="1" TitleKey="contact.list.organization" ColumnName="a.organization_name" Ordenable="0" Searchable="1" DataType="string" Optlock="1"/>
-    <ListField Id="3" ListId="1" TitleKey="customer.last_name" ColumnName="a.last_name" Ordenable="0" Searchable="1" DataType="string" Optlock="1"/>
-    <ListField Id="4" ListId="1" TitleKey="customer.first_name" ColumnName="a.first_name" Ordenable="0" Searchable="1" DataType="string" Optlock="1"/>
-    <ListField Id="5" ListId="1" TitleKey="user.prompt.username" ColumnName="c.user_name" Ordenable="0" Searchable="1" DataType="string" Optlock="1"/>
-    <ListField Id="6" ListId="2" TitleKey="invoice.id.prompt" ColumnName="i.id" Ordenable="0" Searchable="0" DataType="integer" Optlock="1"/>
-    <ListField Id="7" ListId="2" TitleKey="invoice.number" ColumnName="i.public_number" Ordenable="0" Searchable="1" DataType="string" Optlock="1"/>
-    <ListField Id="8" ListId="2" TitleKey="user.prompt.username" ColumnName="bu.user_name" Ordenable="0" Searchable="1" DataType="string" Optlock="1"/>
-    <ListField Id="9" ListId="2" TitleKey="invoice.id.prompt" ColumnName="i.id" Ordenable="1" Searchable="1" DataType="integer" Optlock="1"/>
-    <ListField Id="12" ListId="2" TitleKey=" " ColumnName="c.symbol" Ordenable="0" Searchable="0" DataType="string" Optlock="1"/>
-    <ListField Id="13" ListId="2" TitleKey="invoice.total" ColumnName="i.total" Ordenable="0" Searchable="0" DataType="float" Optlock="1"/>
-    <ListField Id="14" ListId="2" TitleKey="invoice.balance" ColumnName="i.balance" Ordenable="0" Searchable="0" DataType="float" Optlock="1"/>
-    <ListField Id="15" ListId="2" TitleKey="invoice.is_payable" ColumnName="i.to_process" Ordenable="0" Searchable="0" DataType="integer" Optlock="1"/>
-    <ListField Id="16" ListId="3" TitleKey="order.prompt.id" ColumnName="po.id" Ordenable="1" Searchable="1" DataType="integer" Optlock="1"/>
-    <ListField Id="17" ListId="3" TitleKey="user.prompt.username" ColumnName="bu.user_name" Ordenable="0" Searchable="1" DataType="string" Optlock="1"/>
-    <ListField Id="18" ListId="3" TitleKey="contact.list.organization" ColumnName="c.organization_name" Ordenable="0" Searchable="1" DataType="string" Optlock="1"/>
-    <ListField Id="19" ListId="3" TitleKey="order.prompt.createDate" ColumnName="po.create_datetime" Ordenable="0" Searchable="1" DataType="date" Optlock="1"/>
-    <ListField Id="20" ListId="4" TitleKey="payment.id" ColumnName="p.id" Ordenable="1" Searchable="1" DataType="integer" Optlock="1"/>
-    <ListField Id="21" ListId="4" TitleKey="user.prompt.username" ColumnName="u.user_name" Ordenable="0" Searchable="1" DataType="string" Optlock="1"/>
-    <ListField Id="22" ListId="4" TitleKey="contact.list.organization" ColumnName="co.organization_name" Ordenable="0" Searchable="1" DataType="string" Optlock="1"/>
-    <ListField Id="23" ListId="4" TitleKey="payment.date" ColumnName="p.create_datetime" Ordenable="0" Searchable="1" DataType="date" Optlock="1"/>
-    <ListField Id="24" ListId="1" TitleKey="creditcard.list.filter" ColumnName="CUSTOM_CC" Ordenable="0" Searchable="1" DataType="string" Optlock="1"/>
-    <ListField Id="10" ListId="2" TitleKey="invoice.create_date" ColumnName="i.create_datetime" Ordenable="0" Searchable="1" DataType="date" Optlock="1"/>
-    <ListField Id="11" ListId="2" TitleKey="contact.list.organization" ColumnName="co.organization_name" Ordenable="0" Searchable="1" DataType="string" Optlock="1"/>
-    <MenuOption Id="1" Link="/order/list.jsp" LevelField="1"/>
-    <MenuOption Id="2" Link="/payment/list.jsp" LevelField="1"/>
-    <MenuOption Id="3" Link="/report/list.jsp" LevelField="1"/>
-    <MenuOption Id="4" Link="/userAccount.do" LevelField="1"/>
-    <MenuOption Id="77" Link="/achMaintain.do?action=setup&amp;mode=ach" LevelField="2" ParentId="11"/>
-    <MenuOption Id="59" Link="/user/listPartner.jsp" LevelField="2" ParentId="5"/>
-    <MenuOption Id="78" Link="/user/listSubAccounts.jsp?own=yes" LevelField="1"/>
-    <MenuOption Id="8" Link="/userAccount.do" LevelField="2" ParentId="4"/>
-    <MenuOption Id="9" Link="/user/edit.jsp" LevelField="3" ParentId="8"/>
-    <MenuOption Id="10" Link="/user/editContact.jsp" LevelField="3" ParentId="8"/>
-    <MenuOption Id="11" Link="/userAccount.do" LevelField="1"/>
-    <MenuOption Id="12" Link="/user/edit.jsp" LevelField="2" ParentId="11"/>
-    <MenuOption Id="13" Link="/contactEdit.do?action=setup" LevelField="2" ParentId="11"/>
-    <MenuOption Id="14" Link="/logout.do" LevelField="1"/>
-    <MenuOption Id="15" Link="/item/list.jsp" LevelField="1"/>
-    <MenuOption Id="16" Link="/item/listType.jsp" LevelField="2" ParentId="15"/>
-    <MenuOption Id="17" Link="/item/create.jsp?create=yes" LevelField="2" ParentId="15"/>
-    <MenuOption Id="18" Link="/item/list.jsp" LevelField="2" ParentId="15"/>
-    <MenuOption Id="19" Link="/item/createType.jsp?create=yes" LevelField="3" ParentId="16"/>
-    <MenuOption Id="20" Link="/item/listType.jsp" LevelField="3" ParentId="16"/>
-    <MenuOption Id="24" Link="/payment/customerSelect.jsp?create=yes&amp;cheque=yes" LevelField="2" ParentId="2"/>
-    <MenuOption Id="25" Link="/payment/customerSelect.jsp?create=yes&amp;cc=yes" LevelField="2" ParentId="2"/>
-    <MenuOption Id="26" Link="/payment/list.jsp" LevelField="2" ParentId="2"/>
-    <MenuOption Id="27" Link="/order/newOrder.jsp" LevelField="2" ParentId="1"/>
-    <MenuOption Id="28" Link="/order/list.jsp" LevelField="2" ParentId="1"/>
-    <MenuOption Id="29" Link="/creditCardMaintain.do?action=setup&amp;mode=creditCard" LevelField="3" ParentId="8"/>
-    <MenuOption Id="30" Link="/creditCardMaintain.do?action=setup&amp;mode=creditCard" LevelField="2" ParentId="11"/>
-    <MenuOption Id="31" Link="/payment/listRefund.jsp" LevelField="1"/>
-    <MenuOption Id="32" Link="/payment/customerSelect.jsp?create=yes&amp;cheque=yes&amp;refund=yes" LevelField="2" ParentId="31"/>
-    <MenuOption Id="33" Link="/payment/customerSelect.jsp?create=yes&amp;cc=yes&amp;refund=yes" LevelField="2" ParentId="31"/>
-    <MenuOption Id="34" Link="/payment/listRefund.jsp" LevelField="2" ParentId="31"/>
-    <MenuOption Id="35" Link="/invoice/list.jsp" LevelField="1"/>
-    <MenuOption Id="36" Link="/invoice/list.jsp" LevelField="2" ParentId="35"/>
-    <MenuOption Id="37" Link="/processMaintain.do?action=view&amp;latest=yes" LevelField="1"/>
-    <MenuOption Id="38" Link="/process/list.jsp" LevelField="2" ParentId="37"/>
-    <MenuOption Id="39" Link="/processConfigurationMaintain.do?action=setup&amp;mode=configuration" LevelField="2" ParentId="37"/>
-    <MenuOption Id="40" Link="/processMaintain.do?action=view&amp;latest=yes" LevelField="2" ParentId="37"/>
-    <MenuOption Id="41" Link="/processMaintain.do?action=review" LevelField="2" ParentId="37"/>
-    <MenuOption Id="42" Link="/notification/listTypes.jsp" LevelField="1"/>
-    <MenuOption Id="43" Link="/notification/listTypes.jsp" LevelField="2" ParentId="42"/>
-    <MenuOption Id="44" Link="/parameterMaintain.do?action=setup&amp;mode=parameter&amp;type=notification" LevelField="2" ParentId="42"/>
-    <MenuOption Id="45" Link="/notification/emails.jsp" LevelField="2" ParentId="42"/>
-    <MenuOption Id="46" Link="/user/list.jsp" LevelField="1"/>
-    <MenuOption Id="47" Link="/reportList.do?type=1" LevelField="2" ParentId="1"/>
-    <MenuOption Id="48" Link="/reportList.do?type=2" LevelField="2" ParentId="35"/>
-    <MenuOption Id="49" Link="/reportList.do?type=3" LevelField="2" ParentId="2"/>
-    <MenuOption Id="50" Link="/reportList.do?type=4" LevelField="2" ParentId="31"/>
-    <MenuOption Id="51" Link="/reportList.do?type=5" LevelField="2" ParentId="46"/>
-    <MenuOption Id="52" Link="/user/list.jsp" LevelField="2" ParentId="46"/>
-    <MenuOption Id="53" Link="/report/list.jsp" LevelField="2" ParentId="3"/>
-    <MenuOption Id="54" Link="/user/create.jsp?create=yes&amp;customer=yes&amp;frompartner=yes" LevelField="2" ParentId="46"/>
-    <MenuOption Id="55" Link="/brandingMaintain.do?action=setup&amp;mode=branding" LevelField="2" ParentId="4"/>
-    <MenuOption Id="56" Link="/currencyMaintain.do?action=setup" LevelField="2" ParentId="4"/>
-    <MenuOption Id="57" Link="/ageingMaintain.do?action=setup" LevelField="2" ParentId="4"/>
-    <MenuOption Id="58" Link="/user/create.jsp?create=yes" LevelField="3" ParentId="6"/>
-    <MenuOption Id="79" Link="HELP|page=items|anchor=" LevelField="2" ParentId="15"/>
-    <MenuOption Id="60" Link="/user/list.jsp" LevelField="2" ParentId="5"/>
-    <MenuOption Id="61" Link="/user/create.jsp?create=yes&amp;partner=yes" LevelField="3" ParentId="59"/>
-    <MenuOption Id="62" Link="/user/listPartner.jsp" LevelField="3" ParentId="59"/>
-    <MenuOption Id="63" Link="/partnerDefaults.do?action=setup&amp;mode=partnerDefault" LevelField="3" ParentId="59"/>
-    <MenuOption Id="64" Link="/reportList.do?type=6" LevelField="3" ParentId="59"/>
-    <MenuOption Id="65" Link="/reportList.do?type=5" LevelField="3" ParentId="60"/>
-    <MenuOption Id="66" Link="/user/list.jsp" LevelField="3" ParentId="60"/>
-    <MenuOption Id="67" Link="/user/create.jsp?create=yes&amp;customer=yes" LevelField="3" ParentId="60"/>
-    <MenuOption Id="68" Link="/partnerMaintain.do?action=view&amp;self=yes" LevelField="1"/>
-    <MenuOption Id="69" Link="/partnerMaintain.do?action=view&amp;self=yes" LevelField="2" ParentId="68"/>
-    <MenuOption Id="70" Link="/user/payoutList.jsp" LevelField="2" ParentId="68"/>
-    <MenuOption Id="71" Link="/reportList.do?type=7" LevelField="1"/>
-    <MenuOption Id="72" Link="/reportTrigger.do?mode=partner&amp;id=15" LevelField="3" ParentId="59"/>
-    <MenuOption Id="73" Link="/reportList.do?type=7" LevelField="2" ParentId="71"/>
-    <MenuOption Id="74" Link="/notificationPreference.do?action=setup&amp;mode=notificationPreference" LevelField="2" ParentId="42"/>
-    <MenuOption Id="75" Link="/payment/customerSelect.jsp?create=yes&amp;ach=yes" LevelField="2" ParentId="2"/>
-    <MenuOption Id="76" Link="/numberingMaintain.do?action=setup&amp;mode=invoiceNumbering" LevelField="2" ParentId="35"/>
-    <MenuOption Id="5" Link="/user/maintain.jsp" LevelField="1"/>
-    <MenuOption Id="6" Link="/user/maintain.jsp" LevelField="2" ParentId="5"/>
-    <MenuOption Id="7" Link="/user/create.jsp?create=yes" LevelField="3" ParentId="6"/>
-    <MenuOption Id="80" Link="HELP|page=reports|anchor=" LevelField="2" ParentId="3"/>
-    <MenuOption Id="82" Link="HELP|page=users|anchor=" LevelField="2" ParentId="5"/>
-    <MenuOption Id="83" Link="HELP|page=orders|anchor=" LevelField="2" ParentId="1"/>
-    <MenuOption Id="81" Link="HELP|page=process|anchor=" LevelField="2" ParentId="37"/>
-    <MenuOption Id="84" Link="HELP|page=notifications|anchor=" LevelField="2" ParentId="42"/>
-    <MenuOption Id="85" Link="HELP|page=system|anchor=" LevelField="2" ParentId="4"/>
-    <MenuOption Id="86" Link="HELP|page=payments|anchor=" LevelField="2" ParentId="2"/>
-    <MenuOption Id="87" Link="HELP|page=invoices|anchor=" LevelField="2" ParentId="35"/>
-    <MenuOption Id="89" Link="HELP|page=payments|anchor=refunds" LevelField="2" ParentId="31"/>
-    <MenuOption Id="90" Link="/payment/customerSelect.jsp?create=yes&amp;paypal=yes" LevelField="2" ParentId="2"/>
-    <MenuOption Id="91" Link="/orderPeriod.do?action=setup" LevelField="2" ParentId="1"/>
-    <MenuOption Id="92" Link="/invoice/batchDownload.jsp" LevelField="2" ParentId="35"/>
-    <MenuOption Id="93" Link="/task.do?action=setup" LevelField="2" ParentId="4"/>
-    <MenuOption Id="94" Link="/invoice/logo.jsp" LevelField="2" ParentId="35"/>
-    <MenuOption Id="95" Link="/mediation/processList.do" LevelField="2" ParentId="37"/>
-    <MenuOption Id="96" Link="/mediation/configuration.do?action=setup" LevelField="2" ParentId="4"/>
-    <MenuOption Id="97" Link="/system/blacklist.jsp" LevelField="2" ParentId="4"/>
     <NotificationMessageType Id="1" Optlock="1" />
     <NotificationMessageType Id="2" Optlock="1" />
     <NotificationMessageType Id="3" Optlock="1" />

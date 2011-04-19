@@ -61,8 +61,7 @@ public final class UserDTOEx extends UserDTO {
     public static final Integer SUBSCRIBER_EXPIRED = new Integer(5);
     public static final Integer SUBSCRIBER_NONSUBSCRIBED = new Integer(6);
     public static final Integer SUBSCRIBER_DISCONTINUED = new Integer(7);
-    
-    private Menu menu = null;
+
     private List<PermissionDTO> allPermissions = null;
     private List<PermissionDTO> permissionsTypeId = null; // same as before but sorted by type
     private List<Integer> roles = null;
@@ -224,20 +223,6 @@ public final class UserDTOEx extends UserDTO {
      */
     public void setEntityId(Integer entityId) {
         setCompany(new CompanyDAS().find(entityId));
-    }
-
-    /**
-     * @return
-     */
-    public Menu getMenu() {
-        return menu;
-    }
-
-    /**
-     * @param menu
-     */
-    public void setMenu(Menu menu) {
-        this.menu = menu;
     }
 
     /**

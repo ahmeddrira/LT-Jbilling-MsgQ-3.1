@@ -106,6 +106,8 @@
     </g:formRemote>
 
     <script type="text/javascript">
+        var orderStatus = $('#statusId').val();
+
         $(function() {
             $('#period').change(function() {
                 if ($(this).val() == ${Constants.ORDER_PERIOD_ONCE}) {
@@ -118,7 +120,9 @@
 
             $('#statusId').change(function() {
                 if ($(this).val() == ${Constants.ORDER_STATUS_SUSPENDED}) {
-                    showConfirm("edit-${order?.id}");
+                    $('#status-suspended-dialog').dialog('open');
+                } else {
+                    orderStatus = $(this).val();
                 }
             });
 
@@ -129,17 +133,38 @@
             $('#order-details-form').find('textarea, :text').blur(function() {
                 $('#order-details-form').submit();
             });
+
+            $('#status-suspended-dialog').dialog({
+                 autoOpen: false,
+                 height: 200,
+                 width: 375,
+                 modal: true,
+                 buttons: {
+                     '<g:message code="prompt.yes"/>': function() {
+                         $(this).dialog('close');
+                     },
+                     '<g:message code="prompt.no"/>': function() {
+                         $('#statusId').val(orderStatus);
+                         $(this).dialog('close');
+                     }
+                 }
+             });
         });
     </script>
+
+    <!-- confirmation dialog for status changes -->
+    <div id="status-suspended-dialog" title="${message(code: 'popup.confirm.title')}">
+        <table style="margin: 3px 0 0 10px">
+            <tbody>
+            <tr>
+                <td valign="top">
+                    <img src="${resource(dir:'images', file:'icon34.gif')}" alt="confirm">
+                </td>
+                <td class="col2" style="padding-left: 7px">
+                    <g:message code="order.prompt.set.suspended" args="[order?.id]"/>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
-
-
-<g:render template="/confirm" 
-	   model="[message: 'order.prompt.set.suspended',
-               controller: 'orderBuilder',
-               action: 'edit',
-               id: order?.id,
-               ajax: false,
-               onNo: '$(\'#statusId\').val(statusIdPrevValue)',
-               onYes: '$(\'#confirm-dialog-edit-${order?.id}\').dialog(\'close\')'
-     ]"/>

@@ -18,20 +18,19 @@
         <fileset dir="${env.GRAILS_HOME}/lib/">
             <include name="*.jar"/>
         </fileset>
-
     </path>
         
     <path id="test.classpath">
+        <!-- test classes and junit -->
         <pathelement location="${build.test.dir}"/>
         <pathelement location="${junit.dir}/junit.jar"/>
+        <fileset dir="${easymock.dir}" includes="*.jar"/>
 
-        <fileset dir="${easymock.dir}">
-            <include name="*.jar"/>
-        </fileset>
-
-        <fileset dir="${drools.dir}">
-            <include name="*.jar"/>
-        </fileset>
+        <!-- required dependencies -->
+        <fileset dir="${digester.dir}" includes="*.jar"/>
+        <fileset dir="${drools.dir}" includes="*.jar"/>
+        <fileset dir="${velocity.dir}" includes="*.jar"/>
+        <fileset dir="${quartz.dir}" includes="*.jar"/>
 
         <!-- compiled jbilling classes -->
         <pathelement path="${build.classes.dir}"/>

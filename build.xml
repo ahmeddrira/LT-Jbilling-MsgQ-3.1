@@ -31,6 +31,7 @@
         <fileset dir="${drools.dir}" includes="*.jar"/>
         <fileset dir="${velocity.dir}" includes="*.jar"/>
         <fileset dir="${quartz.dir}" includes="*.jar"/>
+        <fileset dir="${spring.dir}" includes="*.jar"/>
 
         <!-- compiled jbilling classes -->
         <pathelement path="${build.classes.dir}"/>

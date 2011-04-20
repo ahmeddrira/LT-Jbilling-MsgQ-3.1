@@ -225,21 +225,6 @@ public class WSTest extends TestCase {
             assertEquals("Balance type updated", Constants.BALANCE_CREDIT_LIMIT, retUser.getBalanceType());
             assertEquals("credit limit updated", new BigDecimal("112233.00"), retUser.getCreditLimitAsDecimal());
 
-            System.out.println("Updating user - Pass 2 - Should fail due to invalid password");
-            retUser.setPassword("newPassword");
-            System.out.println("Updating user...");
-            boolean catched = false;
-            try {
-                api.updateUser(retUser);
-            } catch (Throwable e) {
-                catched = true;
-            }
-            if (!catched) {
-                fail("User was updated - Password validation not working!");
-            } else {
-                System.out.println("User was not updated. Password validation worked.");
-            }
-
             // again, for the contact info, and no cc
             retUser.getContact().setFirstName("New Name");
             retUser.getContact().setLastName("New L.Name");
@@ -519,47 +504,6 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
         }
     }
-    
-    public void testAuthentication() {
-        try {
-            JbillingAPI api = JbillingAPIFactory.getAPI();
-
-            System.out.println("Auth with wrong credentials");
-            Integer result = api.authenticate("authuser", "notAGoodOne");
-            assertEquals("Authentication has to fail", 
-                    WebServicesConstants.AUTH_WRONG_CREDENTIALS, result);
-            result = api.authenticate("authuser", "notAGoodOne");
-            assertEquals("Authentication has to fail", 
-                    WebServicesConstants.AUTH_WRONG_CREDENTIALS, result);
-            System.out.println("Too many retries");
-            result = api.authenticate("authuser", "notAGoodOne");
-            assertEquals("Now locked out", 
-                    WebServicesConstants.AUTH_LOCKED, result);
-
-            // it is locked, but we know the secret password
-            System.out.println("Auth for expired");
-            result = api.authenticate("authuser", "totalSecret");
-            assertEquals("Password should be expired", 
-                    WebServicesConstants.AUTH_EXPIRED, result);
-            
-            // update the user's password
-            Integer userId = api.getUserId("authuser");
-            UserWS user = api.getUserWS(userId);
-            user.setPassword("234qwe");
-            api.updateUser(user);
-            
-            // try again ...
-            System.out.println("Auth after password update");
-            result = api.authenticate("authuser", "234qwe");
-            assertEquals("Should auth ok now", 
-                    WebServicesConstants.AUTH_OK, result);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Exception caught:" + e);
-        }
-        
-    }
 
 /*
           Parent 1 10752
@@ -788,13 +732,6 @@ Ch8: no applicable orders
             childIds = retUser.getChildIds();
             assertEquals("1 child for child2", 1, childIds.length);
             assertEquals("created user child", child5Id, childIds[0]);
-
-            // test authentication of two of them
-            System.out.println("Authenticating new users ");
-            assertEquals("auth of parent", new Integer(0), 
-                    api.authenticate("parent1", "asdfasdf1"));
-            assertEquals("auth of child", new Integer(0), 
-                    api.authenticate("child1", "asdfasdf1"));
 
             // create an order for all these users
             System.out.println("Creating orders for all users");

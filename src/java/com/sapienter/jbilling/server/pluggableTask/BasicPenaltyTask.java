@@ -204,7 +204,7 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
         type.setId(Constants.ORDER_BILLING_PRE_PAID);
         summary.setOrderBillingType(type);
         summary.setCreateDate(Calendar.getInstance().getTime());
-        summary.setCurrencyId(invoice.getCurrency().getId());
+        summary.setCurrency(invoice.getCurrency());
 
         UserDTO user = new UserDTO();
         user.setId(invoice.getBaseUser().getId());

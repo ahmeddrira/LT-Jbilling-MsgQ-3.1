@@ -159,10 +159,6 @@ public class RemotingTest extends TestCase {
             assertNotNull(userIds);
             assertTrue(userIds.length > 0);
 
-            Integer authResult = service.authenticate(newUser.getUserName(), "asdfasdf1");
-            assertNotNull(authResult);
-            assertEquals(AUTH_OK, authResult);
-
             invoice = service.getLatestInvoiceByItemType(USER_ID, 1);
             assertNotNull(invoice);
 

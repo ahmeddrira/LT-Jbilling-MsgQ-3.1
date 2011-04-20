@@ -15,9 +15,6 @@ target(compileReports: "Compiles jasper report designs.") {
         src {
             fileset(dir: "${descriptorsDir}/reports", includes: "**/*.jrxml")
         }
-        classpath {
-            path(refid: compileClasspath)
-        }
     }
     delete(dir: tempDir)
 }

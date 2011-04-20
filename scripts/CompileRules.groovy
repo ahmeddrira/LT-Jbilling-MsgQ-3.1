@@ -33,22 +33,22 @@ getPkgFileName = { f ->
 }
 
 target(compileRules: "Compiles DROOLS binary rules packages.") {
-    ant.taskdef( name: "rulebase", classname: "org.drools.contrib.DroolsCompilerAntTask" )
-    ant.path( id: "drools.compile.classpath", droolsCompileClasspath)
+    ant.taskdef(name: "rulebase", classname: "org.drools.contrib.DroolsCompilerAntTask")
+    ant.path(id: "drools.compile.classpath", droolsCompileClasspath)
 
-    delete( dir: "./resources/rules" )
-    mkdir( dir: "./resources/rules" )
+    delete(dir: "./resources/rules")
+    mkdir(dir: "./resources/rules")
 
     getRulesSourceFiles().each { f ->
         def pkgName = getPkgFileName(f)
         println "Compiling rules file ${f.file.name} to ${pkgName} ..."
 
-        rulebase( srcdir: "./descriptors/rules/",
-                  tofile: "./resources/rules/${pkgName}",
-                  classpathref: "drools.compile.classpath",
-                  binformat: "package" ) {
+        rulebase(srcdir: "./descriptors/rules/",
+                 tofile: "./resources/rules/${pkgName}",
+                 classpathref: "drools.compile.classpath",
+                 binformat: "package") {
 
-            include( name: f.file.name )
+            include(name: f.file.name)
         }
     }
 }

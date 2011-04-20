@@ -15,9 +15,6 @@ target(compileDesigns: "Compiles jasper paper invoice designs.") {
         src {
             fileset(dir: "${descriptorsDir}/designs", includes: "**/*.jrxml")
         }
-        classpath {
-            path(refid: runtimeClasspath)
-        }
     }
     delete(dir: tempDir)
 }

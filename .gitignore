@@ -2,6 +2,8 @@
 build/
 target/
 resources/
+image/
+changelog
 
 # temp files
 activemq-data/

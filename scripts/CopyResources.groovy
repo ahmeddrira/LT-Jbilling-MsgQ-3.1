@@ -16,6 +16,7 @@ target(createStructure: "Creates the jbilling resources directory structure.") {
         mkdir(dir: "${resourcesDir}/mediation")
         mkdir(dir: "${resourcesDir}/mediation/errors")
         mkdir(dir: "${resourcesDir}/reports")
+        mkdir(dir: "${resourcesDir}/rules")
     }
 }
 
@@ -32,7 +33,10 @@ target(copyResources: "Creates the jbilling 'resources/' directories and copies 
         fileset(dir: "${descriptorsDir}/mediation", includes: "mediation.dtd")
         fileset(dir: "${descriptorsDir}/mediation", includes: "asterisk.xml")
     }
+
+    // preserve empty directories when zipping
     touch(file: "${resourcesDir}/mediation/errors/emptyfile.txt")
+    touch(file: "${resourcesDir}/rules/emptyfile.txt")
 }
 
 setDefaultTarget(copyResources)

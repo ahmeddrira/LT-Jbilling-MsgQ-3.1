@@ -109,7 +109,7 @@ public class CurrentOrder {
             currencyId = order.getEntity().getCurrencyId();
             mainOrder = order.getEntity().getId();
         } catch (Exception e) {
-            throw new SessionInternalError("Error looking for main subscription order", 
+            throw new SessionInternalError("Error looking for main subscription order",
                     CurrentOrder.class, e);
         }
 
@@ -125,6 +125,7 @@ public class CurrentOrder {
             if (newOrderDate == null) {
                 // this is an error, there isn't a good date give the event date and
                 // the main subscription order
+                LOG.error("Could not calculate order date for event. Event date is before the order active since date.");
                 return null;
             }
 
@@ -191,7 +192,7 @@ public class CurrentOrder {
         final Date startingTime = order.getEntity().getActiveSince() == null
                                   ? order.getEntity().getCreateDate()
                                   : order.getEntity().getActiveSince();
-                
+
         // calculate the event date with the added future periods
         Date actualEventDate = eventDate;
         cal.setTime(actualEventDate);
@@ -200,7 +201,7 @@ public class CurrentOrder {
                                             order.getEntity().getOrderPeriod().getValue());
         }
         actualEventDate = cal.getTime();
-                
+
         // is the starting date beyond the time frame of the main order?
         if (order.getEntity().getActiveSince() != null && actualEventDate.before(order.getEntity().getActiveSince())) {
             LOG.error("The event for date " + actualEventDate
@@ -216,7 +217,7 @@ public class CurrentOrder {
             cal.add(MapPeriodToCalendar.map(order.getEntity().getOrderPeriod().getPeriodUnit().getId()), 
                                             order.getEntity().getOrderPeriod().getValue());
         }
-        
+
         // is the found date beyond the time frame of the main order?
         if (order.getEntity().getActiveUntil() != null && newOrderDate.after(order.getEntity().getActiveUntil())) {
             LOG.error("The event for date " + actualEventDate

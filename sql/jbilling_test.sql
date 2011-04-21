@@ -16421,21 +16421,21 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 1053	1071	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
 1054	1072	2	1	2006-11-01	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
 107500	121	1	1	2009-07-20	\N	\N	2009-07-20 16:41:52.315	\N	1	17	1	0	0	\N	\N	3	\N	0	\N	0		0	0	1
-107700	10760	2	2	2009-12-15	\N	2009-01-01	2009-12-15 16:38:36.74	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Long Distance Plan A - fixed rate	0	1	3
-107701	10761	2	2	2009-12-15	\N	2009-01-01	2009-12-15 16:39:04.505	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Long Distance Plan B - fixed rate	0	1	3
-107702	10762	2	2	2009-12-15	\N	2009-01-01	2009-12-15 16:39:31.16	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Long Distance Plan - 1000 minutes included	0	1	2
-107800	10770	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:17:00.141	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	1
-107801	10771	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:17:58.45	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107802	10772	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:18:17.379	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107803	10773	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:18:59.123	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107804	10774	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:19:17.927	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107805	10775	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:19:38.062	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107806	10776	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:19:56.159	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107807	10777	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:20:23.277	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107808	10778	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:20:44.579	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107809	10779	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:21:03.215	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107810	10780	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:21:21.348	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
-107811	10781	2	2	2009-12-21	\N	2009-01-01	2009-12-21 13:21:42.292	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107700	10760	2	2	2006-01-01	\N	2006-01-01	2006-01-01 16:38:36.74	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Long Distance Plan A - fixed rate	0	1	3
+107701	10761	2	2	2006-01-01	\N	2006-01-01	2006-01-01 16:39:04.505	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Long Distance Plan B - fixed rate	0	1	3
+107702	10762	2	2	2006-01-01	\N	2006-01-01	2006-01-01 16:39:31.16	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Long Distance Plan - 1000 minutes included	0	1	2
+107800	10770	2	2	2006-01-01	\N	2006-01-01	2006-01-01 13:17:00.141	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	1
+107801	10771	2	2	2006-01-01	\N	2006-01-01	2006-01-01 13:17:58.45	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107802	10772	2	2	2006-01-01	\N	2006-01-01	2006-01-01 13:18:17.379	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107803	10773	2	2	2006-01-01	\N	2006-01-01	2006-01-01 13:18:59.123	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107804	10774	2	2	2006-01-01	\N	2006-01-01	2006-01-01 13:19:17.927	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107805	10775	2	2	2006-01-01	\N	2006-01-01	2006-01-01 13:19:38.062	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107806	10776	2	2	2006-01-01	\N	2006-01-01	2006-01-01 13:19:56.159	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107807	10777	2	2	2006-01-01	\N	2006-01-01	2006-01-01 13:20:23.277	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107808	10778	2	2	2006-01-01	\N	2006-01-01	2006-01-01 13:20:44.579	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107809	10779	2	2	2006-01-01	\N	2006-01-01	2006-01-01 13:21:03.215	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107810	10780	2	2	2006-01-01	\N	2006-01-01	2006-01-01 13:21:21.348	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107811	10781	2	2	2006-01-01	\N	2006-01-01	2006-01-01 13:21:42.292	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
 \.
 
 

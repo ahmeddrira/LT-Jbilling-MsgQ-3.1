@@ -35,7 +35,7 @@
     ItemTypeMap|
     ItemUserPrice|
     JbillingTable|
-    JbillingTableColumn|
+    JbillingSeqs|
     Language|
     List|
     ListEntity|
@@ -47,6 +47,7 @@
     NotificationMessageArchLine|
     NotificationMessageLine|
     NotificationMessageSection|
+    NotificationCategory|
     NotificationMessageType|
     OrderBillingType|
     OrderLine|
@@ -86,7 +87,6 @@
     UserRoleMap|
     MediationCfg|
     MediationProcess|
-    MediationOrderMap|
     GenericStatusType|
     GenericStatus)*>
 <!ATTLIST dataset
@@ -247,6 +247,7 @@
     Id CDATA #REQUIRED
     EntityId CDATA #IMPLIED
     IsPrimary CDATA #IMPLIED
+    Optlock CDATA #REQUIRED
 >
 
 <!ELEMENT Country EMPTY>
@@ -272,6 +273,7 @@
     Symbol CDATA #REQUIRED
     Code CDATA #REQUIRED
     CountryCode CDATA #REQUIRED
+    Optlock CDATA #REQUIRED
 >
 
 <!ELEMENT CurrencyEntityMap EMPTY>
@@ -287,6 +289,7 @@
     CurrencyId CDATA #IMPLIED
     Rate CDATA #REQUIRED
     CreateDatetime CDATA #REQUIRED
+    Optlock CDATA #REQUIRED
 >
 
 <!ELEMENT Customer EMPTY>
@@ -460,14 +463,12 @@
 <!ATTLIST JbillingTable
     Id CDATA #REQUIRED
     Name CDATA #REQUIRED
-    NextId CDATA #REQUIRED
 >
 
-<!ELEMENT JbillingTableColumn EMPTY>
-<!ATTLIST JbillingTableColumn
-    TableId CDATA #REQUIRED
-    Id CDATA #REQUIRED
+<!ELEMENT JbillingSeqs EMPTY>
+<!ATTLIST JbillingSeqs
     Name CDATA #REQUIRED
+    NextId CDATA #REQUIRED
 >
 
 <!ELEMENT Language EMPTY>
@@ -566,10 +567,16 @@
     Section CDATA #IMPLIED
 >
 
+<!ELEMENT NotificationCategory EMPTY>
+<!ATTLIST NotificationCategory
+    Id CDATA #REQUIRED
+>
+
 <!ELEMENT NotificationMessageType EMPTY>
 <!ATTLIST NotificationMessageType
     Id CDATA #REQUIRED
-    Sections CDATA #REQUIRED
+    CategoryId CDATA #REQUIRED
+    Optlock CDATA #REQUIRED
 >
 
 <!ELEMENT OrderBillingType EMPTY>
@@ -604,7 +611,7 @@
     EntityId CDATA #IMPLIED
     Value CDATA #IMPLIED
     UnitId CDATA #IMPLIED
-    optlock CDATA #IMPLIED
+    Optlock CDATA #REQUIRED
 >
 
 <!ELEMENT OrderProcess EMPTY>
@@ -798,7 +805,6 @@
 <!ELEMENT PluggableTaskTypeCategory EMPTY>
 <!ATTLIST PluggableTaskTypeCategory
     Id CDATA #REQUIRED
-    Description CDATA #REQUIRED
     InterfaceName CDATA #REQUIRED
 >
 
@@ -816,9 +822,7 @@
 <!ELEMENT PreferenceType EMPTY>
 <!ATTLIST PreferenceType
     Id CDATA #REQUIRED
-    IntDefValue CDATA #IMPLIED
-    StrDefValue CDATA #IMPLIED
-    FloatDefValue CDATA #IMPLIED
+    DefValue CDATA #IMPLIED
 >
 
 <!ELEMENT Promotion EMPTY>
@@ -870,12 +874,14 @@
     TypeId CDATA #IMPLIED
     Name CDATA #IMPLIED
     FileName CDATA #REQUIRED
+    Optlock CDATA #REQUIRED
 >
 
 <!ELEMENT ReportType EMPTY>
 <!ATTLIST ReportType
     Id CDATA #REQUIRED
     Name CDATA #REQUIRED
+    Optlock CDATA #REQUIRED
 >
 
 <!ELEMENT ReportParameter EMPTY>

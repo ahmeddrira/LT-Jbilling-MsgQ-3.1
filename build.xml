@@ -289,64 +289,60 @@
         <copy todir="${torque.home.dir}/src/schema">
             <fileset dir="${source.torque.descriptor.dir}" includes="jbilling*"/>
         </copy>
+
+        <!-- mysql -->
         <ant dir="${torque.home.dir}" antfile="build-torque.xml" target="sql">
             <property name="torque.database" value="mysql"/>
         </ant>
         <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
               tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-mysql.sql"/>
-        <ant dir="${torque.home.dir}"
-             antfile="build-torque.xml"
-             target="sql">
+
+        <!-- db2 -->
+        <ant dir="${torque.home.dir}" antfile="build-torque.xml" target="sql">
             <property name="torque.database" value="db2"/>
         </ant>
         <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
               tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-db2.sql"/>
-        <ant dir="${torque.home.dir}"
-             antfile="build-torque.xml"
-             target="sql">
+
+        <!-- hypersonic -->
+        <ant dir="${torque.home.dir}" antfile="build-torque.xml" target="sql">
             <property name="torque.database" value="hypersonic"/>
         </ant>
         <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
               tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-hypersonic.sql"/>
 
-        <ant dir="${torque.home.dir}"
-             antfile="build-torque.xml"
-             target="sql">
+        <!-- mssql -->
+        <ant dir="${torque.home.dir}" antfile="build-torque.xml" target="sql">
             <property name="torque.database" value="mssql"/>
         </ant>
         <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
               tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-mssql.sql"/>
 
-        <ant dir="${torque.home.dir}"
-             antfile="build-torque.xml"
-             target="sql">
+        <!-- oracle -->
+        <ant dir="${torque.home.dir}" antfile="build-torque.xml" target="sql">
             <property name="torque.database" value="oracle"/>
         </ant>
         <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
               tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-oracle.sql"/>
 
-        <ant dir="${torque.home.dir}"
-             antfile="build-torque.xml"
-             target="sql">
+        <!-- postgresql -->
+        <ant dir="${torque.home.dir}" antfile="build-torque.xml" target="sql">
             <property name="torque.database" value="postgresql"/>
         </ant>
         <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
               tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-postgresql.sql"/>
 
-        <ant dir="${torque.home.dir}"
-             antfile="build-torque.xml"
-             target="sql">
+        <!-- sybase -->
+        <ant dir="${torque.home.dir}" antfile="build-torque.xml" target="sql">
             <property name="torque.database" value="sybase"/>
         </ant>
         <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
               tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-sybase.sql"/>
 
-        <ant dir="${torque.home.dir}"
-             antfile="build-torque.xml"
-             target="datasql"/>
+        <!-- jbilling base data -->
+        <ant dir="${torque.home.dir}" antfile="build-torque.xml" target="datasql"/>
         <copy file="${torque.home.dir}/src/jbilling-data.sql"
               todir="${image.source.dir}/jbilling/resources/db-samples"/>
-
     </target>
 
 

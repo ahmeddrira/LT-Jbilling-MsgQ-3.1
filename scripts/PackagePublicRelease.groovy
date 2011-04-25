@@ -112,13 +112,18 @@ target(updateImage: "Updates the jbilling image with the current release artifac
 target(packageTomcat: "Builds and packages the binary jbilling tomcat release.") {
     updateImage()
 
+    // clear tomcat temp and work directories
+    delete(dir: "${imageDir}/temp")
+    mkdir(dir: "${imageDir}/temp")
+
+    delete(dir: "${imageDir}/work")
+    mkdir(dir: "${imageDir}/work")
+
+    // zip tomcat image
     zip(filesonly: false, update: false, destfile: packageName) {
         zipfileset(dir: imageDir, prefix: grailsAppName) {
             exclude(name: "webapps/jbilling/")
             exclude(name: "webapps/drools-guvnor/")
-
-            exclude(name: "work/")
-            exclude(name: "temp/")
 
             exclude(name: "**/logs/")
             exclude(name: "**/activemq-data/")

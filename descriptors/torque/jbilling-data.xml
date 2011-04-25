@@ -21,7 +21,8 @@
 <!DOCTYPE dataset SYSTEM "file://jbilling-data.dtd">
 <dataset name="all">
 
-    <ContactType Id="1"/>
+    <ContactType Id="1" Optlock="0"/>
+
     <Country Id="1" Code="AF"/>
     <Country Id="2" Code="AL"/>
     <Country Id="3" Code="DZ"/>
@@ -259,17 +260,19 @@
     <Country Id="235" Code="YE"/>
     <Country Id="236" Code="ZM"/>
     <Country Id="237" Code="ZW"/>
-    <Currency Id="1" Symbol="US$" Code="USD" CountryCode="US"/>
-    <Currency Id="2" Symbol="C$" Code="CAD" CountryCode="CA"/>
-    <Currency Id="3" Symbol="&amp;#8364;" Code="EUR" CountryCode="EU"/>
-    <Currency Id="4" Symbol="&amp;#165;" Code="JPY" CountryCode="JP"/>
-    <Currency Id="5" Symbol="&amp;#163;" Code="GBP" CountryCode="UK"/>
-    <Currency Id="6" Symbol="&amp;#8361;" Code="KRW" CountryCode="KR"/>
-    <Currency Id="7" Symbol="Sf" Code="CHF" CountryCode="CH"/>
-    <Currency Id="8" Symbol="SeK" Code="SEK" CountryCode="SE"/>
-    <Currency Id="9" Symbol="S$" Code="SGD" CountryCode="SG"/>
-    <Currency Id="10" Symbol="M$" Code="MYR" CountryCode="MY"/>
-    <Currency Id="11" Symbol="$" Code="AUD" CountryCode="AU"/>
+
+    <Currency Id="1" Symbol="US$" Code="USD" CountryCode="US" Optlock="0"/>
+    <Currency Id="2" Symbol="C$" Code="CAD" CountryCode="CA" Optlock="0"/>
+    <Currency Id="3" Symbol="&amp;#8364;" Code="EUR" CountryCode="EU" Optlock="0"/>
+    <Currency Id="4" Symbol="&amp;#165;" Code="JPY" CountryCode="JP" Optlock="0"/>
+    <Currency Id="5" Symbol="&amp;#163;" Code="GBP" CountryCode="UK" Optlock="0"/>
+    <Currency Id="6" Symbol="&amp;#8361;" Code="KRW" CountryCode="KR" Optlock="0"/>
+    <Currency Id="7" Symbol="Sf" Code="CHF" CountryCode="CH" Optlock="0"/>
+    <Currency Id="8" Symbol="SeK" Code="SEK" CountryCode="SE" Optlock="0"/>
+    <Currency Id="9" Symbol="S$" Code="SGD" CountryCode="SG" Optlock="0"/>
+    <Currency Id="10" Symbol="M$" Code="MYR" CountryCode="MY" Optlock="0"/>
+    <Currency Id="11" Symbol="$" Code="AUD" CountryCode="AU" Optlock="0"/>
+
     <CurrencyExchange Id="1" EntityId="0" CurrencyId="2" Rate="1.325" CreateDatetime="2004-03-09 00:00:00" Optlock="1"/>
     <CurrencyExchange Id="2" EntityId="0" CurrencyId="3" Rate="0.8118" CreateDatetime="2004-03-09 00:00:00" Optlock="1"/>
     <CurrencyExchange Id="3" EntityId="0" CurrencyId="4" Rate="111.4" CreateDatetime="2004-03-09 00:00:00" Optlock="1"/>
@@ -280,6 +283,7 @@
     <CurrencyExchange Id="10" EntityId="0" CurrencyId="9" Rate="1.68" CreateDatetime="2004-10-12 00:00:00" Optlock="1"/>
     <CurrencyExchange Id="11" EntityId="0" CurrencyId="10" Rate="3.8" CreateDatetime="2004-10-12 00:00:00" Optlock="1"/>
     <CurrencyExchange Id="12" EntityId="0" CurrencyId="11" Rate="1.288" CreateDatetime="2007-01-25 00:00:00" Optlock="1"/>
+
     <EventLogMessage Id="1"/>
     <EventLogMessage Id="2"/>
     <EventLogMessage Id="3"/>
@@ -314,6 +318,7 @@
     <EventLogMessage Id="32"/>
     <EventLogMessage Id="33"/>
     <EventLogMessage Id="34"/>
+
     <EventLogModule Id="1"/>
     <EventLogModule Id="2"/>
     <EventLogModule Id="3"/>
@@ -329,6 +334,7 @@
     <EventLogModule Id="13"/>
     <EventLogModule Id="14"/>
     <EventLogModule Id="15"/>
+
     <InternationalDescription TableId="50" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="Manual invoice deletion"/>
     <InternationalDescription TableId="46" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="Invoice maintenance"/>
     <InternationalDescription TableId="46" ForeignId="11" PsudoColumn="description" LanguageId="1" Content="Pluggable tasks maintenance"/>
@@ -339,7 +345,6 @@
     <InternationalDescription TableId="59" ForeignId="111" PsudoColumn="title" LanguageId="1" Content="Menu Reports Invoice Details"/>
     <InternationalDescription TableId="59" ForeignId="112" PsudoColumn="description" LanguageId="1" Content="Menu Reports users option"/>
     <InternationalDescription TableId="59" ForeignId="112" PsudoColumn="title" LanguageId="1" Content="Menu Reports Users"/>
-    <InternationalDescription TableId="73" ForeignId="8" PsudoColumn="description" LanguageId="1" Content="User"/>
     <InternationalDescription TableId="35" ForeignId="6" PsudoColumn="description" LanguageId="1" Content="Discovery"/>
     <InternationalDescription TableId="35" ForeignId="7" PsudoColumn="description" LanguageId="1" Content="Diners"/>
     <InternationalDescription TableId="59" ForeignId="109" PsudoColumn="title" LanguageId="1" Content="Menu Payment ACH"/>
@@ -362,13 +367,6 @@
     <InternationalDescription TableId="64" ForeignId="235" PsudoColumn="description" LanguageId="1" Content="Yemen"/>
     <InternationalDescription TableId="64" ForeignId="236" PsudoColumn="description" LanguageId="1" Content="Zambia"/>
     <InternationalDescription TableId="64" ForeignId="237" PsudoColumn="description" LanguageId="1" Content="Zimbabwe"/>
-    <InternationalDescription TableId="73" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Order"/>
-    <InternationalDescription TableId="73" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Invoice"/>
-    <InternationalDescription TableId="73" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Payment"/>
-    <InternationalDescription TableId="73" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Refund"/>
-    <InternationalDescription TableId="73" ForeignId="5" PsudoColumn="description" LanguageId="1" Content="Customer"/>
-    <InternationalDescription TableId="73" ForeignId="6" PsudoColumn="description" LanguageId="1" Content="Partner"/>
-    <InternationalDescription TableId="73" ForeignId="7" PsudoColumn="description" LanguageId="1" Content="Partner selected"/>
     <InternationalDescription TableId="50" ForeignId="15" PsudoColumn="description" LanguageId="1" Content="Days before expiration for order notification"/>
     <InternationalDescription TableId="50" ForeignId="21" PsudoColumn="description" LanguageId="1" Content="Use invoice reminders"/>
     <InternationalDescription TableId="50" ForeignId="22" PsudoColumn="description" LanguageId="1" Content="Number of days after the invoice generation for the first reminder"/>
@@ -692,30 +690,6 @@
     <InternationalDescription TableId="20" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Active"/>
     <InternationalDescription TableId="20" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Finished"/>
     <InternationalDescription TableId="20" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Suspended"/>
-    <InternationalDescription TableId="24" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Takes the quantity and the price to calculate the totals for each line and the order total"/>
-    <InternationalDescription TableId="24" ForeignId="1" PsudoColumn="title" LanguageId="1" Content="Basic calculation of totals"/>
-    <InternationalDescription TableId="24" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Adds a line with a 7% and update the order total"/>
-    <InternationalDescription TableId="24" ForeignId="2" PsudoColumn="title" LanguageId="1" Content="GST calculation"/>
-    <InternationalDescription TableId="24" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Adds one month to the billing date for the due date"/>
-    <InternationalDescription TableId="24" ForeignId="3" PsudoColumn="title" LanguageId="1" Content="Due date calculation"/>
-    <InternationalDescription TableId="24" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Copies all the lines to generate the invoice"/>
-    <InternationalDescription TableId="24" ForeignId="4" PsudoColumn="title" LanguageId="1" Content="Basic invoice generation"/>
-    <InternationalDescription TableId="24" ForeignId="5" PsudoColumn="description" LanguageId="1" Content="Considers the active period and the last process"/>
-    <InternationalDescription TableId="24" ForeignId="5" PsudoColumn="title" LanguageId="1" Content="Basic order filter"/>
-    <InternationalDescription TableId="24" ForeignId="6" PsudoColumn="description" LanguageId="1" Content="Takes only those invoices with due date past the process date"/>
-    <InternationalDescription TableId="24" ForeignId="6" PsudoColumn="title" LanguageId="1" Content="Basic invoice filter"/>
-    <InternationalDescription TableId="24" ForeignId="7" PsudoColumn="description" LanguageId="1" Content="Most common logic to calculate the billable period of an order"/>
-    <InternationalDescription TableId="24" ForeignId="7" PsudoColumn="title" LanguageId="1" Content="Basic period calculator"/>
-    <InternationalDescription TableId="24" ForeignId="8" PsudoColumn="description" LanguageId="1" Content="Authorize.net payment process"/>
-    <InternationalDescription TableId="24" ForeignId="8" PsudoColumn="title" LanguageId="1" Content="Authorize.net payment"/>
-    <InternationalDescription TableId="24" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="Simple email notification"/>
-    <InternationalDescription TableId="24" ForeignId="9" PsudoColumn="title" LanguageId="1" Content="Simple email notification"/>
-    <InternationalDescription TableId="24" ForeignId="10" PsudoColumn="description" LanguageId="1" Content="Gets a valid cc from the user"/>
-    <InternationalDescription TableId="24" ForeignId="10" PsudoColumn="title" LanguageId="1" Content="Simple payment instrument finder"/>
-    <InternationalDescription TableId="24" ForeignId="11" PsudoColumn="description" LanguageId="1" Content="Test partner payout processor"/>
-    <InternationalDescription TableId="24" ForeignId="11" PsudoColumn="title" LanguageId="1" Content="Test partner payout"/>
-    <InternationalDescription TableId="24" ForeignId="12" PsudoColumn="description" LanguageId="1" Content="Paper invoice notification with JasperReports"/>
-    <InternationalDescription TableId="24" ForeignId="12" PsudoColumn="title" LanguageId="1" Content="Paper invoice notificaiton"/>
     <InternationalDescription TableId="35" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Cheque"/>
     <InternationalDescription TableId="35" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Visa"/>
     <InternationalDescription TableId="35" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="MasterCard"/>
@@ -961,7 +935,6 @@
     <InternationalDescription TableId="50" ForeignId="19" PsudoColumn="description" LanguageId="1" Content="Next invoice number"/>
     <InternationalDescription TableId="7" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Email + Paper"/>
     <InternationalDescription TableId="35" ForeignId="8" PsudoColumn="description" LanguageId="1" Content="PayPal"/>
-    <InternationalDescription TableId="73" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="Item"/>
     <InternationalDescription TableId="52" ForeignId="19" PsudoColumn="description" LanguageId="1" Content="Update Credit Card"/>
     <InternationalDescription TableId="20" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Suspended (auto)"/>
     <InternationalDescription TableId="18" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Penalty"/>
@@ -982,7 +955,6 @@
     <InternationalDescription TableId="59" ForeignId="111" PsudoColumn="title" LanguageId="2" Content="Menu Relatórios Detalhes de Facturas"/>
     <InternationalDescription TableId="59" ForeignId="112" PsudoColumn="description" LanguageId="2" Content="Menu Relatórios opção de utilizadores"/>
     <InternationalDescription TableId="59" ForeignId="112" PsudoColumn="title" LanguageId="2" Content="Menu Relatórios de Utilizadores"/>
-    <InternationalDescription TableId="73" ForeignId="8" PsudoColumn="description" LanguageId="2" Content="Utilizador"/>
     <InternationalDescription TableId="35" ForeignId="6" PsudoColumn="description" LanguageId="2" Content="Discovery"/>
     <InternationalDescription TableId="35" ForeignId="7" PsudoColumn="description" LanguageId="2" Content="Diners"/>
     <InternationalDescription TableId="59" ForeignId="109" PsudoColumn="title" LanguageId="2" Content="Menu Pagamento CCA"/>
@@ -1005,13 +977,6 @@
     <InternationalDescription TableId="64" ForeignId="235" PsudoColumn="description" LanguageId="2" Content="Yemen"/>
     <InternationalDescription TableId="64" ForeignId="236" PsudoColumn="description" LanguageId="2" Content="Zâmbia"/>
     <InternationalDescription TableId="64" ForeignId="237" PsudoColumn="description" LanguageId="2" Content="Zimbabwe"/>
-    <InternationalDescription TableId="73" ForeignId="1" PsudoColumn="description" LanguageId="2" Content="Ordem"/>
-    <InternationalDescription TableId="73" ForeignId="2" PsudoColumn="description" LanguageId="2" Content="Factura"/>
-    <InternationalDescription TableId="73" ForeignId="3" PsudoColumn="description" LanguageId="2" Content="Pagamento"/>
-    <InternationalDescription TableId="73" ForeignId="4" PsudoColumn="description" LanguageId="2" Content="Devolução"/>
-    <InternationalDescription TableId="73" ForeignId="5" PsudoColumn="description" LanguageId="2" Content="Cliente"/>
-    <InternationalDescription TableId="73" ForeignId="6" PsudoColumn="description" LanguageId="2" Content="Parceiro"/>
-    <InternationalDescription TableId="73" ForeignId="7" PsudoColumn="description" LanguageId="2" Content="Parceiro seleccionado"/>
     <InternationalDescription TableId="50" ForeignId="15" PsudoColumn="description" LanguageId="2" Content="Dias antes da expiração para notificação de ordens"/>
     <InternationalDescription TableId="50" ForeignId="21" PsudoColumn="description" LanguageId="2" Content="Usar os lembretes de factura"/>
     <InternationalDescription TableId="50" ForeignId="22" PsudoColumn="description" LanguageId="2" Content="Número de dias após a geração da factura para o primeiro lembrete"/>
@@ -1328,30 +1293,6 @@
     <InternationalDescription TableId="20" ForeignId="1" PsudoColumn="description" LanguageId="2" Content="Activo"/>
     <InternationalDescription TableId="20" ForeignId="2" PsudoColumn="description" LanguageId="2" Content="Terminado"/>
     <InternationalDescription TableId="20" ForeignId="3" PsudoColumn="description" LanguageId="2" Content="Suspenso"/>
-    <InternationalDescription TableId="24" ForeignId="1" PsudoColumn="description" LanguageId="2" Content="Leva a quantidade e preço em conta para calcular o total por linha e o valor total da ordem"/>
-    <InternationalDescription TableId="24" ForeignId="1" PsudoColumn="title" LanguageId="2" Content="Cálculo básico de totais"/>
-    <InternationalDescription TableId="24" ForeignId="2" PsudoColumn="description" LanguageId="2" Content="Adiciona uma linha com 7% e actualiza o total da ordem"/>
-    <InternationalDescription TableId="24" ForeignId="2" PsudoColumn="title" LanguageId="2" Content="Cálculo de Imposto"/>
-    <InternationalDescription TableId="24" ForeignId="3" PsudoColumn="description" LanguageId="2" Content="Adiciona um mês à data de facturação para a data limite"/>
-    <InternationalDescription TableId="24" ForeignId="3" PsudoColumn="title" LanguageId="2" Content="Calculo da data limite"/>
-    <InternationalDescription TableId="24" ForeignId="4" PsudoColumn="description" LanguageId="2" Content="Copia todas as linhas para gerar a factura"/>
-    <InternationalDescription TableId="24" ForeignId="4" PsudoColumn="title" LanguageId="2" Content="Geração básica da factura"/>
-    <InternationalDescription TableId="24" ForeignId="5" PsudoColumn="description" LanguageId="2" Content="Considera o período activo e o último processamento"/>
-    <InternationalDescription TableId="24" ForeignId="5" PsudoColumn="title" LanguageId="2" Content="Filtro de ordem básico"/>
-    <InternationalDescription TableId="24" ForeignId="6" PsudoColumn="description" LanguageId="2" Content="Leva em consideração apenas as facturas com data acima da data limite"/>
-    <InternationalDescription TableId="24" ForeignId="6" PsudoColumn="title" LanguageId="2" Content="Fltro básico de facturas"/>
-    <InternationalDescription TableId="24" ForeignId="7" PsudoColumn="description" LanguageId="2" Content="Lógica mais comum para calcular o período facturável de uma ordem"/>
-    <InternationalDescription TableId="24" ForeignId="7" PsudoColumn="title" LanguageId="2" Content="Cálculo de período básico"/>
-    <InternationalDescription TableId="24" ForeignId="8" PsudoColumn="description" LanguageId="2" Content="Processo de Pagamento Authorize.net"/>
-    <InternationalDescription TableId="24" ForeignId="8" PsudoColumn="title" LanguageId="2" Content="Pagamento Authorize.net"/>
-    <InternationalDescription TableId="24" ForeignId="9" PsudoColumn="description" LanguageId="2" Content="Notificação simples de email"/>
-    <InternationalDescription TableId="24" ForeignId="9" PsudoColumn="title" LanguageId="2" Content="Notificação simples de email"/>
-    <InternationalDescription TableId="24" ForeignId="10" PsudoColumn="description" LanguageId="2" Content="Recebe um CC válido do utilizador"/>
-    <InternationalDescription TableId="24" ForeignId="10" PsudoColumn="title" LanguageId="2" Content="Localizador simples de instrumentos de pagamento"/>
-    <InternationalDescription TableId="24" ForeignId="11" PsudoColumn="description" LanguageId="2" Content="Teste o processador de pagamentos do parceiro"/>
-    <InternationalDescription TableId="24" ForeignId="11" PsudoColumn="title" LanguageId="2" Content="Teste o pagamento de parceiros"/>
-    <InternationalDescription TableId="24" ForeignId="12" PsudoColumn="description" LanguageId="2" Content="Notifição de facturas de papel com o JasperReports"/>
-    <InternationalDescription TableId="24" ForeignId="12" PsudoColumn="title" LanguageId="2" Content="Notificação de factura em papel"/>
     <InternationalDescription TableId="35" ForeignId="1" PsudoColumn="description" LanguageId="2" Content="Cheque"/>
     <InternationalDescription TableId="35" ForeignId="2" PsudoColumn="description" LanguageId="2" Content="Visa"/>
     <InternationalDescription TableId="35" ForeignId="3" PsudoColumn="description" LanguageId="2" Content="MasterCard"/>
@@ -1597,7 +1538,6 @@
     <InternationalDescription TableId="50" ForeignId="19" PsudoColumn="description" LanguageId="2" Content="Próximo número de factura"/>
     <InternationalDescription TableId="7" ForeignId="3" PsudoColumn="description" LanguageId="2" Content="Email + Papel"/>
     <InternationalDescription TableId="35" ForeignId="8" PsudoColumn="description" LanguageId="2" Content="PayPal"/>
-    <InternationalDescription TableId="73" ForeignId="9" PsudoColumn="description" LanguageId="2" Content="Item"/>
     <InternationalDescription TableId="52" ForeignId="19" PsudoColumn="description" LanguageId="2" Content="Actualizar Cartão de Crédito"/>
     <InternationalDescription TableId="20" ForeignId="4" PsudoColumn="description" LanguageId="2" Content="Suspender (auto)"/>
     <InternationalDescription TableId="18" ForeignId="3" PsudoColumn="description" LanguageId="2" Content="Penalidade"/>
@@ -1635,6 +1575,154 @@
     <InternationalDescription TableId="23" ForeignId="21" PsudoColumn="description" LanguageId="1" Content="Mediation Error Handler"/>
     <InternationalDescription TableId="23" ForeignId="22" PsudoColumn="description" LanguageId="1" Content="Scheduled Plug-ins"/>
     <InternationalDescription TableId="23" ForeignId="23" PsudoColumn="description" LanguageId="1" Content="Rules Generators"/>
+    <InternationalDescription TableId="24" ForeignId="1" PsudoColumn="title" LanguageId="1" Content="Default order totals"/>
+    <InternationalDescription TableId="24" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Calculates the order total and the total for each line, considering the item prices, the quantity and if the prices are percentage or not."/>
+    <InternationalDescription TableId="24" ForeignId="2" PsudoColumn="title" LanguageId="1" Content="VAT"/>
+    <InternationalDescription TableId="24" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Adds an additional line to the order with a percentage charge to represent the value added tax."/>
+    <InternationalDescription TableId="24" ForeignId="3" PsudoColumn="title" LanguageId="1" Content="Invoice due date"/>
+    <InternationalDescription TableId="24" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="A very simple implementation that sets the due date of the invoice. The due date is calculated by just adding the period of time to the invoice date."/>
+    <InternationalDescription TableId="24" ForeignId="4" PsudoColumn="title" LanguageId="1" Content="Default invoice composition."/>
+    <InternationalDescription TableId="24" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="This task will copy all the lines on the orders and invoices to the new invoice, considering the periods involved for each order, but not the fractions of periods. It will not copy the lines that are taxes. The quantity and total of each line will be multiplied by the amount of periods."/>
+    <InternationalDescription TableId="24" ForeignId="5" PsudoColumn="title" LanguageId="1" Content="Standard Order Filter"/>
+    <InternationalDescription TableId="24" ForeignId=" 5" PsudoColumn="description" LanguageId="1" Content="Decides if an order should be included in an invoice for a given billing process.  This is done by taking the billing process time span, the order period, the active since/until, etc."/>
+    <InternationalDescription TableId="24" ForeignId=" 6" PsudoColumn="title" LanguageId="1" Content="Standard Invoice Filter"/>
+    <InternationalDescription TableId="24" ForeignId=" 6" PsudoColumn="description" LanguageId="1" Content="Always returns true, meaning that the overdue invoice will be carried over to a new invoice."/>
+    <InternationalDescription TableId="24" ForeignId=" 7" PsudoColumn="title" LanguageId="1" Content="Default Order Periods"/>
+    <InternationalDescription TableId="24" ForeignId=" 7" PsudoColumn="description" LanguageId="1" Content="Calculates the start and end period to be included in an invoice. This is done by taking the billing process time span, the order period, the active since/until, etc."/>
+    <InternationalDescription TableId="24" ForeignId=" 8" PsudoColumn="title" LanguageId="1" Content="Authorize.net payment processor"/>
+    <InternationalDescription TableId="24" ForeignId=" 8" PsudoColumn="description" LanguageId="1" Content="Integration with the authorize.net payment gateway."/>
+    <InternationalDescription TableId="24" ForeignId=" 9" PsudoColumn="title" LanguageId="1" Content="Standard Email Notification"/>
+    <InternationalDescription TableId="24" ForeignId=" 9" PsudoColumn="description" LanguageId="1" Content="Notifies a user by sending an email. It supports text and HTML emails"/>
+    <InternationalDescription TableId="24" ForeignId=" 10" PsudoColumn="title" LanguageId="1" Content="Default payment information"/>
+    <InternationalDescription TableId="24" ForeignId=" 10" PsudoColumn="description" LanguageId="1" Content="Finds the information of a payment method available to a customer, given priority to credit card. In other words, it will return the credit car of a customer or the ACH information in that order."/>
+    <InternationalDescription TableId="24" ForeignId=" 11" PsudoColumn="title" LanguageId="1" Content="Testing plug-in for partner payouts"/>
+    <InternationalDescription TableId="24" ForeignId=" 11" PsudoColumn="description" LanguageId="1" Content="Plug-in useful only for testing"/>
+    <InternationalDescription TableId="24" ForeignId=" 12" PsudoColumn="title" LanguageId="1" Content="PDF invoice notification"/>
+    <InternationalDescription TableId="24" ForeignId=" 12" PsudoColumn="description" LanguageId="1" Content="Will generate a PDF version of an invoice."/>
+    <InternationalDescription TableId="24" ForeignId=" 14" PsudoColumn="title" LanguageId="1" Content="No invoice carry over"/>
+    <InternationalDescription TableId="24" ForeignId=" 14" PsudoColumn="description" LanguageId="1" Content="Returns always false, which makes jBilling to never carry over an invoice into another newer invoice."/>
+    <InternationalDescription TableId="24" ForeignId=" 15" PsudoColumn="title" LanguageId="1" Content="Default interest task"/>
+    <InternationalDescription TableId="24" ForeignId=" 15" PsudoColumn="description" LanguageId="1" Content="Will create a new order with a penalty item. The item is taken as a parameter to the task."/>
+    <InternationalDescription TableId="24" ForeignId=" 16" PsudoColumn="title" LanguageId="1" Content="Anticipated order filter"/>
+    <InternationalDescription TableId="24" ForeignId=" 16" PsudoColumn="description" LanguageId="1" Content="Extends BasicOrderFilterTask, modifying the dates to make the order applicable a number of months before it would be by using the default filter."/>
+    <InternationalDescription TableId="24" ForeignId=" 17" PsudoColumn="title" LanguageId="1" Content="Anticipate order periods."/>
+    <InternationalDescription TableId="24" ForeignId=" 17" PsudoColumn="description" LanguageId="1" Content="Extends BasicOrderPeriodTask, modifying the dates to make the order applicable a number of months before itd be by using the default task."/>
+    <InternationalDescription TableId="24" ForeignId=" 19" PsudoColumn="title" LanguageId="1" Content="Email &amp; process authorize.net"/>
+    <InternationalDescription TableId="24" ForeignId=" 19" PsudoColumn="description" LanguageId="1" Content="Extends the standard authorize.net payment processor to also send an email to the company after processing the payment."/>
+    <InternationalDescription TableId="24" ForeignId=" 20" PsudoColumn="title" LanguageId="1" Content="Payment gateway down alarm"/>
+    <InternationalDescription TableId="24" ForeignId=" 20" PsudoColumn="description" LanguageId="1" Content="Sends an email to the billing administrator as an alarm when a payment gateway is down."/>
+    <InternationalDescription TableId="24" ForeignId=" 21" PsudoColumn="title" LanguageId="1" Content="Test payment processor"/>
+    <InternationalDescription TableId="24" ForeignId=" 21" PsudoColumn="description" LanguageId="1" Content="A test payment processor implementation to be able to test jBillings functions without using a real payment gateway."/>
+    <InternationalDescription TableId="24" ForeignId=" 22" PsudoColumn="title" LanguageId="1" Content="Router payment processor based on Custom Fields"/>
+    <InternationalDescription TableId="24" ForeignId=" 22" PsudoColumn="description" LanguageId="1" Content="Allows a customer to be assigned a specific payment gateway. It checks a custom contact field to identify the gateway and then delegates the actual payment processing to another plugin."/>
+    <InternationalDescription TableId="24" ForeignId=" 23" PsudoColumn="title" LanguageId="1" Content="Default subscription status manager"/>
+    <InternationalDescription TableId="24" ForeignId=" 23" PsudoColumn="description" LanguageId="1" Content="It determines how a payment event affects the subscription status of a user, considering its present status and a state machine."/>
+    <InternationalDescription TableId="24" ForeignId=" 24" PsudoColumn="title" LanguageId="1" Content="ACH Commerce payment processor"/>
+    <InternationalDescription TableId="24" ForeignId=" 24" PsudoColumn="description" LanguageId="1" Content="Integration with the ACH commerce payment gateway."/>
+    <InternationalDescription TableId="24" ForeignId=" 25" PsudoColumn="title" LanguageId="1" Content="Standard asynchronous parameters"/>
+    <InternationalDescription TableId="24" ForeignId=" 25" PsudoColumn="description" LanguageId="1" Content="A dummy task that does not add any parameters for asynchronous payment processing. This is the default."/>
+    <InternationalDescription TableId="24" ForeignId=" 26" PsudoColumn="title" LanguageId="1" Content="Router asynchronous parameters"/>
+    <InternationalDescription TableId="24" ForeignId=" 26" PsudoColumn="description" LanguageId="1" Content="This plug-in adds parameters for asynchronous payment processing to have one processing message bean per payment processor. It is used in combination with the router payment processor plug-ins."/>
+    <InternationalDescription TableId="24" ForeignId=" 28" PsudoColumn="title" LanguageId="1" Content="Standard Item Manager"/>
+    <InternationalDescription TableId="24" ForeignId=" 28" PsudoColumn="description" LanguageId="1" Content="It adds items to an order. If the item is already in the order, it only updates the quantity."/>
+    <InternationalDescription TableId="24" ForeignId=" 29" PsudoColumn="title" LanguageId="1" Content="Rules Item Manager"/>
+    <InternationalDescription TableId="24" ForeignId=" 29" PsudoColumn="description" LanguageId="1" Content="This is a rules-based plug-in. It will do what the basic item manager does (actually calling it); but then it will execute external rules as well. These external rules have full control on changing the order that is getting new items."/>
+    <InternationalDescription TableId="24" ForeignId=" 30" PsudoColumn="title" LanguageId="1" Content="Rules Line Total"/>
+    <InternationalDescription TableId="24" ForeignId=" 30" PsudoColumn="description" LanguageId="1" Content="This is a rules-based plug-in. It calculates the total for an order line (typically this is the price multiplied by the quantity); allowing for the execution of external rules."/>
+    <InternationalDescription TableId="24" ForeignId=" 31" PsudoColumn="title" LanguageId="1" Content="Rules Pricing"/>
+    <InternationalDescription TableId="24" ForeignId=" 31" PsudoColumn="description" LanguageId="1" Content="This is a rules-based plug-in. It gives a price to an item by executing external rules. You can then add logic externally for pricing. It is also integrated with the mediation process by having access to the mediation pricing data."/>
+    <InternationalDescription TableId="24" ForeignId=" 32" PsudoColumn="title" LanguageId="1" Content="Separator file reader"/>
+    <InternationalDescription TableId="24" ForeignId=" 32" PsudoColumn="description" LanguageId="1" Content="This is a reader for the mediation process. It reads records from a text file whose fields are separated by a character (or string)."/>
+    <InternationalDescription TableId="24" ForeignId=" 33" PsudoColumn="title" LanguageId="1" Content="Rules mediation processor"/>
+    <InternationalDescription TableId="24" ForeignId=" 33" PsudoColumn="description" LanguageId="1" Content="This is a rules-based plug-in (see chapter 7). It takes an event record from the mediation process and executes external rules to translate the record into billing meaningful data. This is at the core of the mediation component, see the ?Telecom Guide? document for more information."/>
+    <InternationalDescription TableId="24" ForeignId=" 34" PsudoColumn="title" LanguageId="1" Content="Fixed length file reader"/>
+    <InternationalDescription TableId="24" ForeignId=" 34" PsudoColumn="description" LanguageId="1" Content="This is a reader for the mediation process. It reads records from a text file whose fields have fixed positions,and the record has a fixed length."/>
+    <InternationalDescription TableId="24" ForeignId=" 35" PsudoColumn="title" LanguageId="1" Content="Payment information without validation"/>
+    <InternationalDescription TableId="24" ForeignId=" 35" PsudoColumn="description" LanguageId="1" Content="This is exactly the same as the standard payment information task, the only difference is that it does not validate if the credit card is expired. Use this plug-in only if you want to submit payment with expired credit cards."/>
+    <InternationalDescription TableId="24" ForeignId=" 36" PsudoColumn="title" LanguageId="1" Content="Notification task for testing"/>
+    <InternationalDescription TableId="24" ForeignId=" 36" PsudoColumn="description" LanguageId="1" Content="This plug-in is only used for testing purposes. Instead of sending an email (or other real notification); it simply stores the text to be sent in a file named emails_sent.txt."/>
+    <InternationalDescription TableId="24" ForeignId=" 37" PsudoColumn="title" LanguageId="1" Content="Order periods calculator with pro rating."/>
+    <InternationalDescription TableId="24" ForeignId=" 37" PsudoColumn="description" LanguageId="1" Content="This plugin takes into consideration the field cycle starts of orders to calculate fractional order periods."/>
+    <InternationalDescription TableId="24" ForeignId=" 38" PsudoColumn="title" LanguageId="1" Content="Invoice composition task with pro-rating (day as fraction)"/>
+    <InternationalDescription TableId="24" ForeignId=" 38" PsudoColumn="description" LanguageId="1" Content="When creating an invoice from an order, this plug-in will pro-rate any fraction of a period taking a day as the smallest billable unit."/>
+    <InternationalDescription TableId="24" ForeignId=" 39" PsudoColumn="title" LanguageId="1" Content="Payment process for the Intraanuity payment gateway"/>
+    <InternationalDescription TableId="24" ForeignId=" 39" PsudoColumn="description" LanguageId="1" Content="Integration with the Intraanuity payment gateway."/>
+    <InternationalDescription TableId="24" ForeignId=" 40" PsudoColumn="title" LanguageId="1" Content="Automatic cancellation credit."/>
+    <InternationalDescription TableId="24" ForeignId=" 40" PsudoColumn="description" LanguageId="1" Content="This plug-in will create a new order with a negative price to reflect a credit when an order is canceled within a period that has been already invoiced."/>
+    <InternationalDescription TableId="24" ForeignId=" 41" PsudoColumn="title" LanguageId="1" Content="Fees for early cancellation of a plan."/>
+    <InternationalDescription TableId="24" ForeignId=" 41" PsudoColumn="description" LanguageId="1" Content="This plug-in will use external rules to determine if an order that is being canceled should create a new order with a penalty fee. This is typically used for early cancels of a contract."/>
+    <InternationalDescription TableId="24" ForeignId=" 42" PsudoColumn="title" LanguageId="1" Content="Blacklist filter payment processor."/>
+    <InternationalDescription TableId="24" ForeignId=" 42" PsudoColumn="description" LanguageId="1" Content="Used for blocking payments from reaching real payment processors. Typically configured as first payment processor in the processing chain."/>
+    <InternationalDescription TableId="24" ForeignId=" 43" PsudoColumn="title" LanguageId="1" Content="Blacklist user when their status becomes suspended or higher."/>
+    <InternationalDescription TableId="24" ForeignId=" 43" PsudoColumn="description" LanguageId="1" Content="Causes users and their associated details (e.g., credit card number, phone number, etc.) to be blacklisted when their status becomes suspended or higher. "/>
+    <InternationalDescription TableId="24" ForeignId=" 44" PsudoColumn="title" LanguageId="1" Content="JDBC Mediation Reader."/>
+    <InternationalDescription TableId="24" ForeignId=" 44" PsudoColumn="description" LanguageId="1" Content="This is a reader for the mediation process. It reads records from a JDBC database source."/>
+    <InternationalDescription TableId="24" ForeignId=" 45" PsudoColumn="title" LanguageId="1" Content="MySQL Mediation Reader."/>
+    <InternationalDescription TableId="24" ForeignId=" 45" PsudoColumn="description" LanguageId="1" Content="This is a reader for the mediation process. It is an extension of the JDBC reader, allowing easy configuration of a MySQL database source."/>
+    <InternationalDescription TableId="24" ForeignId=" 46" PsudoColumn="title" LanguageId="1" Content="Provisioning commands rules task."/>
+    <InternationalDescription TableId="24" ForeignId=" 46" PsudoColumn="description" LanguageId="1" Content="Responds to order related events. Runs rules to generate commands to send via JMS messages to the external provisioning module."/>
+    <InternationalDescription TableId="24" ForeignId=" 47" PsudoColumn="title" LanguageId="1" Content="Test external provisioning task."/>
+    <InternationalDescription TableId="24" ForeignId=" 47" PsudoColumn="description" LanguageId="1" Content="This plug-in is only used for testing purposes. It is a test external provisioning task for testing the provisioning modules."/>
+    <InternationalDescription TableId="24" ForeignId=" 48" PsudoColumn="title" LanguageId="1" Content="CAI external provisioning task."/>
+    <InternationalDescription TableId="24" ForeignId=" 48" PsudoColumn="description" LanguageId="1" Content="An external provisioning plug-in for communicating with the Ericsson Customer Administration Interface (CAI)."/>
+    <InternationalDescription TableId="24" ForeignId=" 49" PsudoColumn="title" LanguageId="1" Content="Currency Router payment processor"/>
+    <InternationalDescription TableId="24" ForeignId=" 49" PsudoColumn="description" LanguageId="1" Content="Delegates the actual payment processing to another plug-in based on the currency of the payment."/>
+    <InternationalDescription TableId="24" ForeignId=" 50" PsudoColumn="title" LanguageId="1" Content="MMSC external provisioning task."/>
+    <InternationalDescription TableId="24" ForeignId=" 50" PsudoColumn="description" LanguageId="1" Content="An external provisioning plug-in for communicating with the TeliaSonera MMSC."/>
+    <InternationalDescription TableId="24" ForeignId=" 51" PsudoColumn="title" LanguageId="1" Content="Filters out negative invoices for carry over."/>
+    <InternationalDescription TableId="24" ForeignId=" 51" PsudoColumn="description" LanguageId="1" Content="This filter will only invoices with a positive balance to be carried over to the next invoice."/>
+    <InternationalDescription TableId="24" ForeignId=" 52" PsudoColumn="title" LanguageId="1" Content="File invoice exporter."/>
+    <InternationalDescription TableId="24" ForeignId=" 52" PsudoColumn="description" LanguageId="1" Content="It will generate a file with one line per invoice generated."/>
+    <InternationalDescription TableId="24" ForeignId=" 53" PsudoColumn="title" LanguageId="1" Content="Rules caller on an event."/>
+    <InternationalDescription TableId="24" ForeignId=" 53" PsudoColumn="description" LanguageId="1" Content="It will call a package of rules when an internal event happens."/>
+    <InternationalDescription TableId="24" ForeignId=" 54" PsudoColumn="title" LanguageId="1" Content="Dynamic balance manager"/>
+    <InternationalDescription TableId="24" ForeignId=" 54" PsudoColumn="description" LanguageId="1" Content="It will update the dynamic balance of a customer (pre-paid or credit limit) when events affecting the balance happen."/>
+    <InternationalDescription TableId="24" ForeignId=" 55" PsudoColumn="title" LanguageId="1" Content="Balance validator based on the customer balance."/>
+    <InternationalDescription TableId="24" ForeignId=" 55" PsudoColumn="description" LanguageId="1" Content="Used for real-time mediation, this plug-in will validate a call based on the current dynamic balance of a customer."/>
+    <InternationalDescription TableId="24" ForeignId=" 56" PsudoColumn="title" LanguageId="1" Content="Balance validator based on rules."/>
+    <InternationalDescription TableId="24" ForeignId=" 56" PsudoColumn="description" LanguageId="1" Content="Used for real-time mediation, this plug-in will validate a call based on a package or rules"/>
+    <InternationalDescription TableId="24" ForeignId=" 57" PsudoColumn="title" LanguageId="1" Content="Payment processor for Payments Gateway."/>
+    <InternationalDescription TableId="24" ForeignId=" 57" PsudoColumn="description" LanguageId="1" Content="Integration with the Payments Gateway payment processor."/>
+    <InternationalDescription TableId="24" ForeignId=" 58" PsudoColumn="title" LanguageId="1" Content="Credit cards are stored externally."/>
+    <InternationalDescription TableId="24" ForeignId=" 58" PsudoColumn="description" LanguageId="1" Content="Saves the credit card information in the payment gateway, rather than the jBilling DB."/>
+    <InternationalDescription TableId="24" ForeignId=" 59" PsudoColumn="title" LanguageId="1" Content="Rules Item Manager 2"/>
+    <InternationalDescription TableId="24" ForeignId=" 59" PsudoColumn="description" LanguageId="1" Content="This is a rules-based plug-in compatible with the mediation module of jBilling 2.2.x. It will do what the basic item manager does (actually calling it); but then it will execute external rules as well. These external rules have full control on changing the order that is getting new items."/>
+    <InternationalDescription TableId="24" ForeignId=" 60" PsudoColumn="title" LanguageId="1" Content="Rules Line Total - 2"/>
+    <InternationalDescription TableId="24" ForeignId=" 60" PsudoColumn="description" LanguageId="1" Content="This is a rules-based plug-in, compatible with the mediation process of jBilling 2.2.x and later. It calculates the total for an order line (typically this is the price multiplied by the quantity); allowing for the execution of external rules."/>
+    <InternationalDescription TableId="24" ForeignId=" 61" PsudoColumn="title" LanguageId="1" Content="Rules Pricing 2"/>
+    <InternationalDescription TableId="24" ForeignId=" 61" PsudoColumn="description" LanguageId="1" Content="This is a rules-based plug-in compatible with the mediation module of jBilling 2.2.x. It gives a price to an item by executing external rules. You can then add logic externally for pricing. It is also integrated with the mediation process by having access to the mediation pricing data."/>
+    <InternationalDescription TableId="24" ForeignId=" 63" PsudoColumn="title" LanguageId="1" Content="Test payment processor for external storage."/>
+    <InternationalDescription TableId="24" ForeignId=" 63" PsudoColumn="description" LanguageId="1" Content="A fake plug-in to test payments that would be stored externally."/>
+    <InternationalDescription TableId="24" ForeignId=" 64" PsudoColumn="title" LanguageId="1" Content="WorldPay integration"/>
+    <InternationalDescription TableId="24" ForeignId=" 64" PsudoColumn="description" LanguageId="1" Content="Payment processor plug-in to integrate with RBS WorldPay"/>
+    <InternationalDescription TableId="24" ForeignId=" 65" PsudoColumn="title" LanguageId="1" Content="WorldPay integration with external storage"/>
+    <InternationalDescription TableId="24" ForeignId=" 65" PsudoColumn="description" LanguageId="1" Content="Payment processor plug-in to integrate with RBS WorldPay. It stores the credit card information (number, etc) in the gateway."/>
+    <InternationalDescription TableId="24" ForeignId=" 66" PsudoColumn="title" LanguageId="1" Content="Auto recharge"/>
+    <InternationalDescription TableId="24" ForeignId=" 66" PsudoColumn="description" LanguageId="1" Content="Monitors the balance of a customer and upon reaching a limit, it requests a real-time payment"/>
+    <InternationalDescription TableId="24" ForeignId=" 67" PsudoColumn="title" LanguageId="1" Content="Beanstream gateway integration"/>
+    <InternationalDescription TableId="24" ForeignId=" 67" PsudoColumn="description" LanguageId="1" Content="Payment processor for integration with the Beanstream payment gateway"/>
+    <InternationalDescription TableId="24" ForeignId=" 68" PsudoColumn="title" LanguageId="1" Content="Sage payments gateway integration"/>
+    <InternationalDescription TableId="24" ForeignId=" 68" PsudoColumn="description" LanguageId="1" Content="Payment processor for integration with the Sage payment gateway"/>
+    <InternationalDescription TableId="24" ForeignId=" 69" PsudoColumn="title" LanguageId="1" Content="Standard billing process users filter"/>
+    <InternationalDescription TableId="24" ForeignId=" 69" PsudoColumn="description" LanguageId="1" Content="Called when the billing process runs to select which users to evaluate. This basic implementation simply returns every user not in suspended (or worse) status"/>
+    <InternationalDescription TableId="24" ForeignId=" 70" PsudoColumn="title" LanguageId="1" Content="Selective billing process users filter"/>
+    <InternationalDescription TableId="24" ForeignId=" 70" PsudoColumn="description" LanguageId="1" Content="Called when the billing process runs to select which users to evaluate. This only returns users with orders that have a next invoice date earlier than the billing process."/>
+    <InternationalDescription TableId="24" ForeignId=" 71" PsudoColumn="title" LanguageId="1" Content="Mediation file error handler"/>
+    <InternationalDescription TableId="24" ForeignId=" 71" PsudoColumn="description" LanguageId="1" Content="Event records with errors are saved to a file"/>
+    <InternationalDescription TableId="24" ForeignId=" 73" PsudoColumn="title" LanguageId="1" Content="Mediation data base error handler"/>
+    <InternationalDescription TableId="24" ForeignId=" 73" PsudoColumn="description" LanguageId="1" Content="Event records with errors are saved to a database table"/>
+    <InternationalDescription TableId="24" ForeignId=" 75" PsudoColumn="title" LanguageId="1" Content="Paypal integration with external storage"/>
+    <InternationalDescription TableId="24" ForeignId=" 75" PsudoColumn="description" LanguageId="1" Content="Submits payments to paypal as a payment gateway and stores credit card information in PayPal as well"/>
+    <InternationalDescription TableId="24" ForeignId=" 76" PsudoColumn="title" LanguageId="1" Content="Authorize.net integration with external storage"/>
+    <InternationalDescription TableId="24" ForeignId=" 76" PsudoColumn="description" LanguageId="1" Content="Submits payments to authorize.net as a payment gateway and stores credit card information in authorize.net as well"/>
+    <InternationalDescription TableId="24" ForeignId=" 77" PsudoColumn="title" LanguageId="1" Content="Payment method router payment processor"/>
+    <InternationalDescription TableId="24" ForeignId=" 77" PsudoColumn="description" LanguageId="1" Content="Delegates the actual payment processing to another plug-in based on the payment method of the payment."/>
+    <InternationalDescription TableId="24" ForeignId=" 78" PsudoColumn="title" LanguageId="1" Content="Dynamic rules generator"/>
+    <InternationalDescription TableId="24" ForeignId=" 78" PsudoColumn="description" LanguageId="1" Content="Generates rules dynamically based on a Velocity template."/>
+    <InternationalDescription TableId="24" ForeignId=" 79" PsudoColumn="title" LanguageId="1" Content="Mediation Process Task"/>
+    <InternationalDescription TableId="24" ForeignId=" 79" PsudoColumn="description" LanguageId="1" Content="A scheduled task to execute the Mediation Process."/>
+    <InternationalDescription TableId="24" ForeignId=" 80" PsudoColumn="title" LanguageId="1" Content="Billing Process Task"/>
+    <InternationalDescription TableId="24" ForeignId=" 80" PsudoColumn="description" LanguageId="1" Content="A scheduled task to execute the Billing Process."/>
 	<InternationalDescription TableId="99" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Referral Fee"/>
     <InternationalDescription TableId="99" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Payment Processor"/>
     <InternationalDescription TableId="99" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="IP Address"/>
@@ -1657,15 +1745,100 @@
     <InternationalDescription TableId="47" ForeignId="33" PsudoColumn="description" LanguageId="1" Content="The dynamic balance of a user has changed"/>
     <InternationalDescription TableId="47" ForeignId="34" PsudoColumn="description" LanguageId="1" Content="The invoice if child flag has changed"/>
     <InternationalDescription TableId="101" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Invoice Reports"/>
+    <InternationalDescription TableId="101" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Order Reports"/>
+    <InternationalDescription TableId="101" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Payment Reports"/>
+    <InternationalDescription TableId="101" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="User Reports"/>
     <InternationalDescription TableId="100" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Total amount invoiced grouped by period."/>
+    <InternationalDescription TableId="100" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Detailed balance ageing report. Shows the age of outstanding customer balances."/>
+    <InternationalDescription TableId="100" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Number of users subscribed to a specific product."/>
+    <InternationalDescription TableId="100" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Total payment amount received grouped by period."/>
+    <InternationalDescription TableId="100" ForeignId="5" PsudoColumn="description" LanguageId="1" Content="Number of customers created within a period."/>
+    <InternationalDescription TableId="100" ForeignId="6" PsudoColumn="description" LanguageId="1" Content="Total revenue (sum of received payments) per customer."/>
+    <InternationalDescription TableId="100" ForeignId="7" PsudoColumn="description" LanguageId="1" Content="Simple accounts receivable report showing current account balances."/>
+    <InternationalDescription TableId="100" ForeignId="8" PsudoColumn="description" LanguageId="1" Content="General ledger details of all invoiced charges for the given day."/>
+    <InternationalDescription TableId="100" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="General ledger summary of all invoiced charges for the given day, grouped by item type."/>
+    <InternationalDescription TableId="103" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Invoices"/>
+    <InternationalDescription TableId="103" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Orders"/>
+    <InternationalDescription TableId="103" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Payments"/>
+    <InternationalDescription TableId="103" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Users"/>
+    <InternationalDescription TableId="50" ForeignId="25" PsudoColumn="description" LanguageId="1" Content="Use overdue penalties (interest)."/>
+    <InternationalDescription TableId="50" ForeignId="27" PsudoColumn="description" LanguageId="1" Content="Use order anticipation."/>
+    <InternationalDescription TableId="50" ForeignId="28" PsudoColumn="description" LanguageId="1" Content="Paypal account."/>
+    <InternationalDescription TableId="50" ForeignId="29" PsudoColumn="description" LanguageId="1" Content="Paypal button URL."/>
+    <InternationalDescription TableId="50" ForeignId="30" PsudoColumn="description" LanguageId="1" Content="URL for HTTP ageing callback."/>
+    <InternationalDescription TableId="50" ForeignId="31" PsudoColumn="description" LanguageId="1" Content="Use continuous invoice dates."/>
+    <InternationalDescription TableId="50" ForeignId="32" PsudoColumn="description" LanguageId="1" Content="Attach PDF invoice to email notification."/>
+    <InternationalDescription TableId="50" ForeignId="33" PsudoColumn="description" LanguageId="1" Content="Force one order per invoice."/>
+    <InternationalDescription TableId="50" ForeignId="35" PsudoColumn="description" LanguageId="1" Content="Add order Id to invoice lines."/>
+    <InternationalDescription TableId="50" ForeignId="36" PsudoColumn="description" LanguageId="1" Content="Allow customers to edit own contact information."/>
+    <InternationalDescription TableId="50" ForeignId="37" PsudoColumn="description" LanguageId="1" Content="Hide (mask) credit card numbers."/>
+    <InternationalDescription TableId="50" ForeignId="38" PsudoColumn="description" LanguageId="1" Content="Link ageing to customer subscriber status."/>
+    <InternationalDescription TableId="50" ForeignId="39" PsudoColumn="description" LanguageId="1" Content="Lock-out user after failed login attempts."/>
+    <InternationalDescription TableId="50" ForeignId="40" PsudoColumn="description" LanguageId="1" Content="Expire user passwords after days."/>
+    <InternationalDescription TableId="50" ForeignId="41" PsudoColumn="description" LanguageId="1" Content="Use main-subscription orders."/>
+    <InternationalDescription TableId="50" ForeignId="42" PsudoColumn="description" LanguageId="1" Content="Use pro-rating."/>
+    <InternationalDescription TableId="50" ForeignId="43" PsudoColumn="description" LanguageId="1" Content="Use payment blacklist."/>
+    <InternationalDescription TableId="50" ForeignId="44" PsudoColumn="description" LanguageId="1" Content="Allow negative payments."/>
+    <InternationalDescription TableId="50" ForeignId="45" PsudoColumn="description" LanguageId="1" Content="Delay negative invoice payments."/>
+    <InternationalDescription TableId="50" ForeignId="46" PsudoColumn="description" LanguageId="1" Content="Allow invoice without orders."/>
+    <InternationalDescription TableId="50" ForeignId="47" PsudoColumn="description" LanguageId="1" Content="Last read mediation record id."/>
+    <InternationalDescription TableId="50" ForeignId="48" PsudoColumn="description" LanguageId="1" Content="Use provisioning."/>
+    <InternationalDescription TableId="50" ForeignId="49" PsudoColumn="description" LanguageId="1" Content="Automatic customer recharge threshold."/>
+    <InternationalDescription TableId="50" ForeignId="4" PsudoColumn="instruction" LanguageId="1" Content="Grace period in days before ageing a customer with an overdue invoice."/>
+    <InternationalDescription TableId="50" ForeignId="5" PsudoColumn="instruction" LanguageId="1" Content="Partner default percentage commission rate. See the Partner section of the documentation."/>
+    <InternationalDescription TableId="50" ForeignId="6" PsudoColumn="instruction" LanguageId="1" Content="Partner default flat fee to be paid as commission. See the Partner section of the documentation."/>
+    <InternationalDescription TableId="50" ForeignId="7" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to enable one-time payment for partners. If set, partners will only get paid once per customer. See the Partner section of the documentation."/>
+    <InternationalDescription TableId="50" ForeignId="8" PsudoColumn="instruction" LanguageId="1" Content="Partner default payout period unit. See the Partner section of the documentation."/>
+    <InternationalDescription TableId="50" ForeignId="9" PsudoColumn="instruction" LanguageId="1" Content="Partner default payout period value. See the Partner section of the documentation."/>
+    <InternationalDescription TableId="50" ForeignId="10" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to enable batch payment payouts using the billing process and the configured payment processor. See the Partner section of the documentation."/>
+    <InternationalDescription TableId="50" ForeignId="11" PsudoColumn="instruction" LanguageId="1" Content="Partner default assigned clerk id. See the Partner section of the documentation."/>
+    <InternationalDescription TableId="50" ForeignId="12" PsudoColumn="instruction" LanguageId="1" Content="Currency ID to use when paying partners. See the Partner section of the documentation."/>
+    <InternationalDescription TableId="50" ForeignId="13" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to e-mail invoices as the billing company. '0' to deliver invoices as jBilling."/>
+    <InternationalDescription TableId="50" ForeignId="14" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to show notes in invoices, '0' to disable."/>
+    <InternationalDescription TableId="50" ForeignId="15" PsudoColumn="instruction" LanguageId="1" Content="Days before the orders 'active until' date to send the 1st notification. Leave blank to disable."/>
+    <InternationalDescription TableId="50" ForeignId="16" PsudoColumn="instruction" LanguageId="1" Content="Days before the orders 'active until' date to send the 2nd notification. Leave blank to disable."/>
+    <InternationalDescription TableId="50" ForeignId="17" PsudoColumn="instruction" LanguageId="1" Content="Days before the orders 'active until' date to send the 3rd notification. Leave blank to disable."/>
+    <InternationalDescription TableId="50" ForeignId="18" PsudoColumn="instruction" LanguageId="1" Content="Prefix value for generated invoice public numbers."/>
+    <InternationalDescription TableId="50" ForeignId="19" PsudoColumn="instruction" LanguageId="1" Content="The current value for generated invoice public numbers. New invoices will be assigned a public number by incrementing this value."/>
+    <InternationalDescription TableId="50" ForeignId="20" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to allow invoices to be deleted, '0' to disable."/>
+    <InternationalDescription TableId="50" ForeignId="21" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to allow invoice reminder notifications, '0' to disable."/>
+    <InternationalDescription TableId="50" ForeignId="24" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to enable, '0' to disable."/>
+    <InternationalDescription TableId="50" ForeignId="25" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to enable the billing process to calculate interest on overdue payments, '0' to disable. Calculation of interest is handled by the selected penalty plug-in."/>
+    <InternationalDescription TableId="50" ForeignId="27" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to use the 'OrderFilterAnticipateTask' to invoice a number of months in advance, '0' to disable. Plug-in must be configured separately."/>
+    <InternationalDescription TableId="50" ForeignId="28" PsudoColumn="instruction" LanguageId="1" Content="PayPal account name."/>
+    <InternationalDescription TableId="50" ForeignId="29" PsudoColumn="instruction" LanguageId="1" Content="A URL where the graphic of the PayPal button resides. The button is displayed to customers when they are making a payment. The default is usually the best option, except when another language is needed."/>
+    <InternationalDescription TableId="50" ForeignId="30" PsudoColumn="instruction" LanguageId="1" Content="URL for the HTTP Callback to invoke when the ageing process changes a status of a user."/>
+    <InternationalDescription TableId="50" ForeignId="31" PsudoColumn="instruction" LanguageId="1" Content="Default '2000-01-01'. If this preference is used, the system will make sure that all your invoices have their dates in a incremental way. Any invoice with a greater 'ID' will also have a greater (or equal) date. In other words, a new invoice can not have an earlier date than an existing (older) invoice. To use this preference, set it as a string with the date where to start."/>
+    <InternationalDescription TableId="50" ForeignId="32" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to attach a PDF version of the invoice to all invoice notification e-mails. '0' to disable."/>
+    <InternationalDescription TableId="50" ForeignId="33" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to show the 'include in separate invoice' flag on an order. '0' to disable."/>
+    <InternationalDescription TableId="50" ForeignId="35" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to include the ID of the order in the description text of the resulting invoice line. '0' to disable. This can help to easily track which exact orders is responsible for a line in an invoice, considering that many orders can be included in a single invoice."/>
+    <InternationalDescription TableId="50" ForeignId="36" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to allow customers to edit their own contact information. '0' to disable."/>
+    <InternationalDescription TableId="50" ForeignId="37" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to mask all credit card numbers. '0' to disable. When set, numbers are masked to all users, even administrators, and in all log files."/>
+    <InternationalDescription TableId="50" ForeignId="38" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to change the subscription status of a user when the user ages. '0' to disable."/>
+    <InternationalDescription TableId="50" ForeignId="39" PsudoColumn="instruction" LanguageId="1" Content="The number of retries to allow before locking the user account. A locked user account will have their password changed to the value of lockout_password in the jbilling.properties configuration file."/>
+    <InternationalDescription TableId="50" ForeignId="40" PsudoColumn="instruction" LanguageId="1" Content="If greater than zero, it represents the number of days that a password is valid. After those days, the password is expired and the user is forced to change it."/>
+    <InternationalDescription TableId="50" ForeignId="41" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to allow the usage of the 'main subscription' flag for orders This flag is read only by the mediation process when determining where to place charges coming from external events."/>
+    <InternationalDescription TableId="50" ForeignId="42" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to allow the use of pro-rating to invoice fractions of a period. Shows the 'cycle' attribute of an order. Note that you need to configure the corresponding plug-ins for this feature to be fully functional."/>
+    <InternationalDescription TableId="50" ForeignId="43" PsudoColumn="instruction" LanguageId="1" Content="If the payment blacklist feature is used, this is set to the id of the configuration of the PaymentFilterTask plug-in. See the Blacklist section of the documentation."/>
+    <InternationalDescription TableId="50" ForeignId="44" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to allow negative payments. '0' to disable"/>
+    <InternationalDescription TableId="50" ForeignId="45" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to delay payment of negative invoice amounts, causing the balance to be carried over to the next invoice. Invoices that have had negative balances from other invoices transferred to them are allowed to immediately make a negative payment (credit) if needed. '0' to disable. Preference 44 &amp; 46 are usually also enabled."/>
+    <InternationalDescription TableId="50" ForeignId="46" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to allow invoices with negative balances to generate a new invoice that isn't composed of any orders so that their balances will always get carried over to a new invoice for the credit to take place. '0' to disable. Preference 44 &amp; 45 are usually also enabled."/>
+    <InternationalDescription TableId="50" ForeignId="47" PsudoColumn="instruction" LanguageId="1" Content="ID of the last record read by the mediation process. This is used to determine what records are 'new' and need to be read."/>
+    <InternationalDescription TableId="50" ForeignId="48" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to allow the use of provisioning. '0' to disable."/>
+    <InternationalDescription TableId="50" ForeignId="49" PsudoColumn="instruction" LanguageId="1" Content="The threshold value for automatic payments. Pre-paid users with an automatic recharge value set will generate an automatic payment whenever the account balance falls below this threshold. Note that you need to configure the AutoRechargeTask plug-in for this feature to be fully functional."/>
+
+
     <InvoiceDeliveryMethod Id="1"/>
     <InvoiceDeliveryMethod Id="2"/>
     <InvoiceDeliveryMethod Id="3"/>
-    <InvoiceLineType Id="5" Description="sub account" OrderPosition="4"/>
+
+    <InvoiceLineType Id="1" Description="item recurring" OrderPosition="2"/>
+    <InvoiceLineType Id="2" Description="tax" OrderPosition="6"/>
     <InvoiceLineType Id="3" Description="due invoice" OrderPosition="1"/>
-    <InvoiceLineType Id="1" Description="item" OrderPosition="2"/>
-    <InvoiceLineType Id="4" Description="interests" OrderPosition="3"/>
-    <InvoiceLineType Id="2" Description="tax" OrderPosition="5"/>
+    <InvoiceLineType Id="4" Description="interests" OrderPosition="4"/>
+    <InvoiceLineType Id="5" Description="sub account" OrderPosition="5"/>
+    <InvoiceLineType Id="6" Description="item one-time" OrderPosition="3"/>
+
     <JbillingTable Id="8" Name="entity_delivery_method_map"/>
     <JbillingTable Id="99" Name="contact_field_type"/>
     <JbillingTable Id="62" Name="user_role_map"/>
@@ -1747,14 +1920,14 @@
     <JbillingTable Id="89" Name="balance_type"/>
     <JbillingTable Id="91" Name="mediation_record_status"/>
     <JbillingTable Id="92" Name="process_run_status"/>
-    <JbillingTable Id="93" Name="price_model"/>
-    <JbillingTable Id="94" Name="price_model_attribute"/>
     <JbillingTable Id="95" Name="plan"/>
     <JbillingTable Id="96" Name="plan_item"/>
     <JbillingTable Id="97" Name="customer_price"/>
     <JbillingTable Id="100" Name="report"/>
     <JbillingTable Id="101" Name="report_type"/>
     <JbillingTable Id="102" Name="report_parameter"/>
+    <JbillingTable Id="103" Name="notification_category"/>
+
     <JbillingSeqs Name="entity_delivery_method_map" NextId="4"/>
     <JbillingSeqs Name="contact_field_type" NextId="10"/>
     <JbillingSeqs Name="user_role_map" NextId="13"/>
@@ -1792,6 +1965,7 @@
     <JbillingSeqs Name="partner" NextId="1"/>
     <JbillingSeqs Name="entity" NextId="1"/>
     <JbillingSeqs Name="contact_type" NextId="2"/>
+    <JbillingSeqs Name="contact_field_type" NextId="10"/>
     <JbillingSeqs Name="promotion" NextId="1"/>
     <JbillingSeqs Name="pluggable_task" NextId="1"/>
     <JbillingSeqs Name="ach" NextId="1"/>
@@ -1843,37 +2017,49 @@
     <JbillingSeqs Name="filter_set" NextId="0"/>
     <JbillingSeqs Name="recent_item" NextId="0"/>
     <JbillingSeqs Name="breadcrumb" NextId="0"/>
+    <JbillingSeqs Name="shortcut" NextId="0"/>
     <JbillingSeqs Name="report" NextId="0"/>
     <JbillingSeqs Name="report_type" NextId="0"/>
     <JbillingSeqs Name="report_parameter" NextId="0"/>
+
     <Language Id="1" Code="en" Description="English"/>
     <Language Id="2" Code="pt" Description="Português"/>
-    <NotificationMessageType Id="1" Optlock="1" />
-    <NotificationMessageType Id="2" Optlock="1" />
-    <NotificationMessageType Id="3" Optlock="1" />
-    <NotificationMessageType Id="4" Optlock="1" />
-    <NotificationMessageType Id="5" Optlock="1" />
-    <NotificationMessageType Id="6" Optlock="1" />
-    <NotificationMessageType Id="7" Optlock="1" />
-    <NotificationMessageType Id="8" Optlock="1" />
-    <NotificationMessageType Id="9" Optlock="1" />
-    <NotificationMessageType Id="10" Optlock="1" />
-    <NotificationMessageType Id="11" Optlock="1" />
-    <NotificationMessageType Id="12" Optlock="1" />
-    <NotificationMessageType Id="13" Optlock="1" />
-    <NotificationMessageType Id="14" Optlock="1" />
-    <NotificationMessageType Id="15" Optlock="1" />
-    <NotificationMessageType Id="16" Optlock="1" />
-    <NotificationMessageType Id="17" Optlock="1" />
-    <NotificationMessageType Id="18" Optlock="1" />
-    <NotificationMessageType Id="19" Optlock="1" />
-    <NotificationMessageType Id="20" Optlock="1" />
+
+    <NotificationCategory Id="1"/>
+    <NotificationCategory Id="2"/>
+    <NotificationCategory Id="3"/>
+    <NotificationCategory Id="4"/>
+
+    <NotificationMessageType Id="1" CategoryId="1" Optlock="1" />
+    <NotificationMessageType Id="2" CategoryId="4" Optlock="1" />
+    <NotificationMessageType Id="3" CategoryId="4" Optlock="1" />
+    <NotificationMessageType Id="4" CategoryId="4" Optlock="1" />
+    <NotificationMessageType Id="5" CategoryId="4" Optlock="1" />
+    <NotificationMessageType Id="6" CategoryId="4" Optlock="1" />
+    <NotificationMessageType Id="7" CategoryId="4" Optlock="1" />
+    <NotificationMessageType Id="8" CategoryId="4" Optlock="1" />
+    <NotificationMessageType Id="9" CategoryId="4" Optlock="1" />
+    <NotificationMessageType Id="10" CategoryId="3" Optlock="1" />
+    <NotificationMessageType Id="11" CategoryId="3" Optlock="1" />
+    <NotificationMessageType Id="12" CategoryId="1" Optlock="1" />
+    <NotificationMessageType Id="13" CategoryId="2" Optlock="1" />
+    <NotificationMessageType Id="14" CategoryId="2" Optlock="1" />
+    <NotificationMessageType Id="15" CategoryId="2" Optlock="1" />
+    <NotificationMessageType Id="16" CategoryId="3" Optlock="1" />
+    <NotificationMessageType Id="17" CategoryId="3" Optlock="1" />
+    <NotificationMessageType Id="18" CategoryId="1" Optlock="1" />
+    <NotificationMessageType Id="19" CategoryId="4" Optlock="1" />
+    <NotificationMessageType Id="20" CategoryId="4" Optlock="1" />
+
     <OrderBillingType Id="1"/>
     <OrderBillingType Id="2"/>
+
     <OrderLineType Id="1" Editable="1"/>
     <OrderLineType Id="2" Editable="0"/>
     <OrderLineType Id="3" Editable="0"/>
+
     <OrderPeriod Id="1" Optlock="1"/>
+
     <PaymentMethod Id="1"/>
     <PaymentMethod Id="2"/>
     <PaymentMethod Id="3"/>
@@ -1886,10 +2072,12 @@
     <PaymentResult Id="2"/>
     <PaymentResult Id="3"/>
     <PaymentResult Id="4"/>
+
     <PeriodUnit Id="1"/>
     <PeriodUnit Id="2"/>
     <PeriodUnit Id="3"/>
     <PeriodUnit Id="4"/>
+
     <Permission Id="1" TypeId="1" ForeignId="1"/>
     <Permission Id="2" TypeId="1" ForeignId="2"/>
     <Permission Id="3" TypeId="1" ForeignId="3"/>
@@ -2031,6 +2219,7 @@
     <Permission Id="144" TypeId="1" ForeignId="96"/>
     <Permission Id="145" TypeId="3"/>
     <Permission Id="146" TypeId="1" ForeignId="97"/>
+
     <PermissionRoleMap PermissionId="1" RoleId="1"/>
     <PermissionRoleMap PermissionId="2" RoleId="1"/>
     <PermissionRoleMap PermissionId="3" RoleId="1"/>
@@ -2375,6 +2564,7 @@
     <PermissionRoleMap PermissionId="145" RoleId="3"/>
     <PermissionRoleMap PermissionId="146" RoleId="2"/>
     <PermissionRoleMap PermissionId="146" RoleId="3"/>
+
     <PermissionType Id="1" Description="Menu option"/>
     <PermissionType Id="2" Description="User creation"/>
     <PermissionType Id="3" Description="User edition"/>
@@ -2384,6 +2574,7 @@
     <PermissionType Id="7" Description="Inovices"/>
     <PermissionType Id="8" Description="Web Services"/>
     <PermissionType Id="9" Description="Server Access"/>
+
     <PluggableTaskType Id="1" CategoryId="1" ClassName="com.sapienter.jbilling.server.pluggableTask.BasicLineTotalTask" MinParameters="0"/>
     <PluggableTaskType Id="13" CategoryId="4" ClassName="com.sapienter.jbilling.server.pluggableTask.CalculateDueDateDfFm" MinParameters="0"/>
     <PluggableTaskType Id="3" CategoryId="4" ClassName="com.sapienter.jbilling.server.pluggableTask.CalculateDueDate" MinParameters="0"/>
@@ -2466,34 +2657,31 @@
     <PluggableTaskType Id="84" CategoryId="17" ClassName="com.sapienter.jbilling.server.payment.tasks.SaveACHExternallyTask" MinParameters="1"/>
     <PluggableTaskType Id="85" CategoryId="20" ClassName="com.sapienter.jbilling.server.process.task.BillableUserOrdersBillingProcessFilterTask" MinParameters="0"/>
     <PluggableTaskType Id="86" CategoryId="17" ClassName="com.sapienter.jbilling.server.item.tasks.PlanChangesExternalTask" MinParameters="0"/>
-    
-    <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
-    <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
-    <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>
-    <PluggableTaskTypeCategory Id="4" Description="invoice composition task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask"/>
-    <PluggableTaskTypeCategory Id="5" Description="order period calculation task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderPeriodTask"/>
-    <PluggableTaskTypeCategory Id="6" Description="payment processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.PaymentTask"/>
-    <PluggableTaskTypeCategory Id="7" Description="notification task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.NotificationTask"/>
-    <PluggableTaskTypeCategory Id="8" Description="payment information task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask"/>
-    <PluggableTaskTypeCategory Id="9" Description="invoice overdue penalty" InterfaceName="com.sapienter.jbilling.server.pluggableTask.PenaltyTask"/>
-    <PluggableTaskTypeCategory Id="10" Description="processor alarm task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.ProcessorAlarm"/>
-    <PluggableTaskTypeCategory Id="11" Description="subscription status manager" InterfaceName="com.sapienter.jbilling.server.user.tasks.ISubscriptionStatusManager"/>
-    <PluggableTaskTypeCategory Id="12" Description="async processor parameters" InterfaceName="com.sapienter.jbilling.server.payment.tasks.IAsyncPaymentParameters"/>
-    <PluggableTaskTypeCategory Id="13" Description="item purchase manager" InterfaceName="com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager"/>
-    <PluggableTaskTypeCategory Id="14" Description="item pricing (rating)" InterfaceName="com.sapienter.jbilling.server.item.tasks.IPricing"/>
-    <PluggableTaskTypeCategory Id="15" Description="Mediation Reader" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationReader"/>
-    <PluggableTaskTypeCategory Id="16" Description="Mediation Processor" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationProcess"/>
-    <PluggableTaskTypeCategory Id="17" Description="Internal events" InterfaceName="com.sapienter.jbilling.server.system.event.task.IInternalEventsTask"/>
-    <PluggableTaskTypeCategory Id="18" Description="External Provisioning" InterfaceName="com.sapienter.jbilling.server.provisioning.task.IExternalProvisioning"/>
-    <PluggableTaskTypeCategory Id="19" Description="Validate Purchase" InterfaceName="com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask"/>
-    <PluggableTaskTypeCategory Id="20" Description="BillingProcessFilterTask" InterfaceName="com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask"/>
-    <PluggableTaskTypeCategory Id="21" Description="Mediation Error Handler" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler"/>
-    <PluggableTaskTypeCategory Id="22" Description="Scheduled Tasks" InterfaceName="com.sapienter.jbilling.server.process.task.IScheduledTask"/>
-    <PluggableTaskTypeCategory Id="23" Description="Rules Generator" InterfaceName="com.sapienter.jbilling.server.rule.task.IRulesGenerator"/>
 
-    <PreferenceType Id="1"/>
-    <PreferenceType Id="25" IntDefValue="0"/>
-    <PreferenceType Id="26" IntDefValue="20"/>
+    <PluggableTaskTypeCategory Id="1" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
+    <PluggableTaskTypeCategory Id="2" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
+    <PluggableTaskTypeCategory Id="3" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>
+    <PluggableTaskTypeCategory Id="4" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask"/>
+    <PluggableTaskTypeCategory Id="5" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderPeriodTask"/>
+    <PluggableTaskTypeCategory Id="6" InterfaceName="com.sapienter.jbilling.server.pluggableTask.PaymentTask"/>
+    <PluggableTaskTypeCategory Id="7" InterfaceName="com.sapienter.jbilling.server.pluggableTask.NotificationTask"/>
+    <PluggableTaskTypeCategory Id="8" InterfaceName="com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask"/>
+    <PluggableTaskTypeCategory Id="9" InterfaceName="com.sapienter.jbilling.server.pluggableTask.PenaltyTask"/>
+    <PluggableTaskTypeCategory Id="10" InterfaceName="com.sapienter.jbilling.server.pluggableTask.ProcessorAlarm"/>
+    <PluggableTaskTypeCategory Id="11" InterfaceName="com.sapienter.jbilling.server.user.tasks.ISubscriptionStatusManager"/>
+    <PluggableTaskTypeCategory Id="12" InterfaceName="com.sapienter.jbilling.server.payment.tasks.IAsyncPaymentParameters"/>
+    <PluggableTaskTypeCategory Id="13" InterfaceName="com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager"/>
+    <PluggableTaskTypeCategory Id="14" InterfaceName="com.sapienter.jbilling.server.item.tasks.IPricing"/>
+    <PluggableTaskTypeCategory Id="15" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationReader"/>
+    <PluggableTaskTypeCategory Id="16" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationProcess"/>
+    <PluggableTaskTypeCategory Id="17" InterfaceName="com.sapienter.jbilling.server.system.event.task.IInternalEventsTask"/>
+    <PluggableTaskTypeCategory Id="18" InterfaceName="com.sapienter.jbilling.server.provisioning.task.IExternalProvisioning"/>
+    <PluggableTaskTypeCategory Id="19" InterfaceName="com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask"/>
+    <PluggableTaskTypeCategory Id="20" InterfaceName="com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask"/>
+    <PluggableTaskTypeCategory Id="21" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler"/>
+    <PluggableTaskTypeCategory Id="22" InterfaceName="com.sapienter.jbilling.server.process.task.IScheduledTask"/>
+    <PluggableTaskTypeCategory Id="23" InterfaceName="com.sapienter.jbilling.server.rule.task.IRulesGenerator"/>
+
     <PreferenceType Id="4"/>
     <PreferenceType Id="5"/>
     <PreferenceType Id="6"/>
@@ -2509,50 +2697,79 @@
     <PreferenceType Id="16"/>
     <PreferenceType Id="17"/>
     <PreferenceType Id="18"/>
-    <PreferenceType Id="27" IntDefValue="0"/>
+    <PreferenceType Id="19" DefValue="1"/>
+    <PreferenceType Id="20" DefValue="1"/>
+    <PreferenceType Id="21" DefValue="0"/>
     <PreferenceType Id="22"/>
     <PreferenceType Id="23"/>
-    <PreferenceType Id="2" StrDefValue="/billing/css/jbilling.css"/>
-    <PreferenceType Id="3" StrDefValue="/billing/graphics/jb-log-small.jpg"/>
-    <PreferenceType Id="20" IntDefValue="1"/>
-    <PreferenceType Id="24" IntDefValue="0"/>
-    <PreferenceType Id="19" IntDefValue="1"/>
-    <PreferenceType Id="21" IntDefValue="0"/>
+    <PreferenceType Id="24" DefValue="0"/>
+    <PreferenceType Id="25" DefValue="0"/>
+    <PreferenceType Id="27" DefValue="0"/>
     <PreferenceType Id="28"/>
-    <PreferenceType Id="31" StrDefValue="2000-01-01"/>
+    <PreferenceType Id="29" DefValue="https://www.paypal.com/en_US/i/btn/x-click-but6.gif"/>
     <PreferenceType Id="30"/>
-    <PreferenceType Id="29" StrDefValue="https://www.paypal.com/en_US/i/btn/x-click-but6.gif"/>
-    <PreferenceType Id="32" IntDefValue="0"/>
-    <PreferenceType Id="33" IntDefValue="0"/>
-    <PreferenceType Id="34" FloatDefValue="0"/>
-    <PreferenceType Id="35" IntDefValue="0"/>
-    <PreferenceType Id="36" IntDefValue="1"/>
-    <PreferenceType Id="37" IntDefValue="0"/>
-    <PreferenceType Id="38" IntDefValue="1"/>
-    <PreferenceType Id="39" IntDefValue="0"/>
-    <PreferenceType Id="40" IntDefValue="0"/>
-    <PreferenceType Id="41" IntDefValue="0"/>
-    <PreferenceType Id="42" IntDefValue="0"/>
-    <PreferenceType Id="43" IntDefValue="0"/>
-    <PreferenceType Id="44" IntDefValue="0"/>
-    <PreferenceType Id="45" IntDefValue="0"/>
-    <PreferenceType Id="46" IntDefValue="0"/>
-    <PreferenceType Id="47" IntDefValue="0"/>
-    <PreferenceType Id="48" IntDefValue="1"/>
+    <PreferenceType Id="31" DefValue="2000-01-01"/>
+    <PreferenceType Id="32" DefValue="0"/>
+    <PreferenceType Id="33" DefValue="0"/>
+    <PreferenceType Id="35" DefValue="0"/>
+    <PreferenceType Id="36" DefValue="1"/>
+    <PreferenceType Id="37" DefValue="0"/>
+    <PreferenceType Id="38" DefValue="1"/>
+    <PreferenceType Id="39" DefValue="0"/>
+    <PreferenceType Id="40" DefValue="0"/>
+    <PreferenceType Id="41" DefValue="0"/>
+    <PreferenceType Id="42" DefValue="0"/>
+    <PreferenceType Id="43" DefValue="0"/>
+    <PreferenceType Id="44" DefValue="0"/>
+    <PreferenceType Id="45" DefValue="0"/>
+    <PreferenceType Id="46" DefValue="0"/>
+    <PreferenceType Id="47" DefValue="0"/>
+    <PreferenceType Id="48" DefValue="1"/>
     <PreferenceType Id="49"/>
 
-    <ReportType Id="1" Name="invoice"/>
+    <ReportType Id="1" Name="invoice" Optlock="0"/>
+    <ReportType Id="2" Name="order" Optlock="0"/>
+    <ReportType Id="3" Name="payment" Optlock="0"/>
+    <ReportType Id="4" Name="user" Optlock="0"/>
 
-    <Report Id="1" TypeId="1" Name="total_invoiced" FileName="total_invoiced.jasper"/>
+    <Report Id="1" TypeId="1" Name="total_invoiced" FileName="total_invoiced.jasper" Optlock="0"/>
     <ReportParameter Id="1" ReportId="1" Dtype="date" Name="start_date"/>
-    <ReportParameter Id="1" ReportId="1" Dtype="date" Name="end_date"/>
-    <ReportParameter Id="1" ReportId="1" Dtype="integer" Name="period"/>
+    <ReportParameter Id="2" ReportId="1" Dtype="date" Name="end_date"/>
+    <ReportParameter Id="3" ReportId="1" Dtype="integer" Name="period"/>
+
+    <Report Id="2" TypeId="1" Name="ageing_balance" FileName="ageing_balance.jasper" Optlock="0"/>
+
+    <Report Id="3" TypeId="2" Name="product_subscribers" FileName="product_subscribers.jasper" Optlock="0"/>
+    <ReportParameter Id="4" ReportId="3" Dtype="integer" Name="item_id"/>
+
+    <Report Id="4" TypeId="3" Name="total_payments" FileName="total_payments.jasper" Optlock="0"/>
+    <ReportParameter Id="5" ReportId="4" Dtype="date" Name="start_date"/>
+    <ReportParameter Id="6" ReportId="4" Dtype="date" Name="end_date"/>
+    <ReportParameter Id="7" ReportId="4" Dtype="integer" Name="period"/>
+
+    <Report Id="5" TypeId="4" Name="user_signups" FileName="user_signups.jasper" Optlock="0"/>
+    <ReportParameter Id="8" ReportId="5" Dtype="date" Name="start_date"/>
+    <ReportParameter Id="9" ReportId="5" Dtype="date" Name="end_date"/>
+    <ReportParameter Id="10" ReportId="5" Dtype="integer" Name="period"/>
+
+    <Report Id="6" TypeId="4" Name="top_customers" FileName="top_customers.jasper" Optlock="0"/>
+    <ReportParameter Id="11" ReportId="6" Dtype="date" Name="start_date"/>
+    <ReportParameter Id="12" ReportId="6" Dtype="date" Name="end_date"/>
+
+    <Report Id="7" TypeId="1" Name="accounts_receivable" FileName="accounts_receivable.jasper" Optlock="0"/>
+
+    <Report Id="8" TypeId="1" Name="gl_detail" FileName="gl_detail.jasper" Optlock="0"/>
+    <ReportParameter Id="13" ReportId="8" Dtype="date" Name="date"/>
+
+    <Report Id="9" TypeId="1" Name="gl_summary" FileName="gl_summary.jasper" Optlock="0"/>
+    <ReportParameter Id="14" ReportId="9" Dtype="date" Name="date"/>
 
     <Role Id="1"/>
     <Role Id="2"/>
     <Role Id="3"/>
     <Role Id="4"/>
     <Role Id="5"/>
+
     <GenericStatusType Id="order_line_provisioning_status"/>
     <GenericStatusType Id="order_status"/>
     <GenericStatusType Id="subscriber_status"/>
@@ -2595,4 +2812,5 @@
     <GenericStatus Id="33" Dtype="process_run_status" StatusValue="1"/>
     <GenericStatus Id="34" Dtype="process_run_status" StatusValue="2"/>
     <GenericStatus Id="35" Dtype="process_run_status" StatusValue="3"/>
+
 </dataset>

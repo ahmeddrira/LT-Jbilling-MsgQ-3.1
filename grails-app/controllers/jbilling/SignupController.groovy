@@ -66,7 +66,9 @@ class SignupController {
             def user = new UserWS()
             bindData(user, params, 'user')
 
-            webServicesValidationAdvice.validateObjects([user, contact], Default.class, EntitySignupValidationGroup.class)
+            user.contact = contact
+
+            webServicesValidationAdvice.validateObject(user, Default.class, EntitySignupValidationGroup.class)
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session?.locale ?: new Locale("en"), e)

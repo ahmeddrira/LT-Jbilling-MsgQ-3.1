@@ -9,8 +9,8 @@ import org.apache.log4j.*
 def appHome = System.getProperty("JBILLING_HOME") ?: System.getenv("JBILLING_HOME")
 if (appHome) {
     grails.config.locations = [
-            "file:${appHome}/conf/${appName}-Config.groovy",
-            "file:${appHome}/conf/${appName}-DataSource.groovy",
+            "file:${appHome}/${appName}-Config.groovy",
+            "file:${appHome}/${appName}-DataSource.groovy",
     ]
 
     println "Configuration files loaded from ${appHome}"

@@ -10,6 +10,7 @@ target(cleanResources: "Removes the existing jbilling resources directory.") {
 target(createStructure: "Creates the jbilling resources directory structure.") {
     ant.sequential {
         mkdir(dir: "${resourcesDir}")
+        mkdir(dir: "${resourcesDir}/api")
         mkdir(dir: "${resourcesDir}/designs")
         mkdir(dir: "${resourcesDir}/invoices")
         mkdir(dir: "${resourcesDir}/logos")
@@ -35,6 +36,7 @@ target(copyResources: "Creates the jbilling 'resources/' directories and copies 
     }
 
     // preserve empty directories when zipping
+    touch(file: "${resourcesDir}/invoices/emptyfile.txt")
     touch(file: "${resourcesDir}/mediation/errors/emptyfile.txt")
     touch(file: "${resourcesDir}/rules/emptyfile.txt")
 }

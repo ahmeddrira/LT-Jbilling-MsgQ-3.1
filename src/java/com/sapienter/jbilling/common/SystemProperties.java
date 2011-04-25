@@ -101,7 +101,7 @@ public class SystemProperties {
         String jbillingHome = getJBillingHome();
         if (jbillingHome != null) {
             // properties file from filesystem
-            return new File(jbillingHome + File.separator + "conf" + File.separator + PROPERTIES_FILE);
+            return new File(jbillingHome + File.separator + PROPERTIES_FILE);
 
         } else {
             // properties file from classpath

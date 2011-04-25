@@ -4,6 +4,7 @@ includeTargets << new File("${basedir}/scripts/CopyResources.groovy")
 includeTargets << new File("${basedir}/scripts/CompileDesigns.groovy")
 includeTargets << new File("${basedir}/scripts/CompileReports.groovy")
 includeTargets << new File("${basedir}/scripts/CompileRules.groovy")
+includeTargets << new File("${basedir}/scripts/Jar.groovy")
 
 resourcesDir = "${basedir}/resources"
 configDir = "${basedir}/grails-app/conf"
@@ -19,6 +20,7 @@ target(prepareRelease: "Builds the war and all necessary resources.") {
     compileDesigns()
     compileReports()
     compileRules()
+    jar()
     war()
 }
 
@@ -30,9 +32,10 @@ target(packageRelease: "Builds the war and packages all the necessary config fil
 
     zip(filesonly: false, update: false, destfile: packageName) {
         zipfileset(dir: resourcesDir, prefix: "resources")
-        zipfileset(dir: javaDir, includes: "jbilling.properties.sample", fullpath: "conf/jbilling.properties")
-        zipfileset(dir: configDir, includes: "Config.groovy", fullpath: "conf/${grailsAppName}-Config.groovy")
-        zipfileset(dir: configDir, includes: "DataSource.groovy", fullpath: "conf/${grailsAppName}-DataSource.groovy")
+        zipfileset(dir: targetDir, includes: "${grailsAppName}.jar", prefix: "resources/api")
+        zipfileset(dir: javaDir, includes: "jbilling.properties.sample", fullpath: "jbilling.properties")
+        zipfileset(dir: configDir, includes: "Config.groovy", fullpath: "${grailsAppName}-Config.groovy")
+        zipfileset(dir: configDir, includes: "DataSource.groovy", fullpath: "${grailsAppName}-DataSource.groovy")
         zipfileset(dir: targetDir, includes: "${grailsAppName}.war")
         zipfileset(dir: sqlDir, includes: "jbilling_test.sql")
     }

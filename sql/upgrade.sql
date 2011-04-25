@@ -137,12 +137,12 @@ insert into notification_category (id) values (2);
 insert into notification_category (id) values (3);
 insert into notification_category (id) values (4);
 
-insert into jbilling_table (id, name) values (103, 'notification_category');
+insert into jbilling_table (id, name) values (104, 'notification_category');
 
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (103, 1, 'description',1, 'Invoices');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (103, 2, 'description',1, 'Orders');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (103, 3, 'description',1, 'Payments');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (103, 4, 'description',1, 'Users');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (104, 1, 'description',1, 'Invoices');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (104, 2, 'description',1, 'Orders');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (104, 3, 'description',1, 'Payments');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (104, 4, 'description',1, 'Users');
 
 -- new column to store the notification category for this notification
 ALTER table notification_message_type add column category_id integer;

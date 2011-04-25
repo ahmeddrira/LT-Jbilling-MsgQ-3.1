@@ -1757,10 +1757,10 @@
     <InternationalDescription TableId="100" ForeignId="7" PsudoColumn="description" LanguageId="1" Content="Simple accounts receivable report showing current account balances."/>
     <InternationalDescription TableId="100" ForeignId="8" PsudoColumn="description" LanguageId="1" Content="General ledger details of all invoiced charges for the given day."/>
     <InternationalDescription TableId="100" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="General ledger summary of all invoiced charges for the given day, grouped by item type."/>
-    <InternationalDescription TableId="103" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Invoices"/>
-    <InternationalDescription TableId="103" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Orders"/>
-    <InternationalDescription TableId="103" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Payments"/>
-    <InternationalDescription TableId="103" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Users"/>
+    <InternationalDescription TableId="104" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Invoices"/>
+    <InternationalDescription TableId="104" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Orders"/>
+    <InternationalDescription TableId="104" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Payments"/>
+    <InternationalDescription TableId="104" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Users"/>
     <InternationalDescription TableId="50" ForeignId="25" PsudoColumn="description" LanguageId="1" Content="Use overdue penalties (interest)."/>
     <InternationalDescription TableId="50" ForeignId="27" PsudoColumn="description" LanguageId="1" Content="Use order anticipation."/>
     <InternationalDescription TableId="50" ForeignId="28" PsudoColumn="description" LanguageId="1" Content="Paypal account."/>
@@ -1926,7 +1926,8 @@
     <JbillingTable Id="100" Name="report"/>
     <JbillingTable Id="101" Name="report_type"/>
     <JbillingTable Id="102" Name="report_parameter"/>
-    <JbillingTable Id="103" Name="notification_category"/>
+    <JbillingTable Id="103" Name="plan_item_bundle"/>
+    <JbillingTable Id="104" Name="notification_category"/>
 
     <JbillingSeqs Name="entity_delivery_method_map" NextId="4"/>
     <JbillingSeqs Name="contact_field_type" NextId="10"/>
@@ -2021,6 +2022,7 @@
     <JbillingSeqs Name="report" NextId="0"/>
     <JbillingSeqs Name="report_type" NextId="0"/>
     <JbillingSeqs Name="report_parameter" NextId="0"/>
+    <JbillingSeqs Name="plan_item_bundle" NextId="0"/>
 
     <Language Id="1" Code="en" Description="English"/>
     <Language Id="2" Code="pt" Description="Português"/>

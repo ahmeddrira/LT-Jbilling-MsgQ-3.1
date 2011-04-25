@@ -11261,10 +11261,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 92	1	description	1	Running
 92	2	description	1	Finished: successful
 92	3	description	1	Finished: failed
-93	1	description	1	Invoices
-93	2	description	1	Orders
-93	3	description	1	Payments
-93	4	description	1	Users
 23	1	description	1	Item management and order line total calculation
 23	2	description	1	Billing process: order filters
 23	3	description	1	Billing process: invoice filters
@@ -11535,6 +11531,10 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 50	49	instruction	1	The threshold value for automatic payments. Pre-paid users with an automatic recharge value set will generate an automatic payment whenever the account balance falls below this threshold. Note that you need to configure the AutoRechargeTask plug-in for this feature to be fully functional.
 50	48	description	1	Use provisioning.
 50	49	description	1	Automatic customer recharge threshold.
+104	1	description	1	Invoices
+104	2	description	1	Orders
+104	3	description	1	Payments
+104	4	description	1	Users
 \.
 
 
@@ -11942,7 +11942,6 @@ COPY jbilling_table (id, name) FROM stdin;
 87	generic_status
 91	mediation_record_status
 92	process_run_status
-93	notification_category
 94	price_model
 95	price_model_attribute
 96	plan
@@ -11953,6 +11952,7 @@ COPY jbilling_table (id, name) FROM stdin;
 101	report_type
 102	report_parameter
 103	plan_item_bundle
+104	notification_category
 \.
 
 

@@ -13,16 +13,22 @@
     <!-- Order Details -->
     <div class="box">
         <table class="dataTable">
-            <tr><td><strong>
-                    <g:if test="${user?.contact?.firstName || user?.contact?.lastName}">
-                        ${user.contact.firstName}&nbsp;${user.contact.lastName}
-                    </g:if>
-                    <g:else>
-                        ${user?.userName}
-                    </g:else>
-                </strong><br>
-                <em>${user?.contact?.organizationName}</em>
-            </td></tr>
+            <tr>
+                <td colspan="2">
+                    <strong>
+                        <g:if test="${user?.contact?.firstName || user?.contact?.lastName}">
+                            ${user.contact.firstName}&nbsp;${user.contact.lastName}
+                        </g:if>
+                        <g:else>
+                            ${user?.userName}
+                        </g:else>
+                    </strong><br>
+                    <em>${user?.contact?.organizationName}</em>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td><td></td>
+            </tr>
             <tr>
                 <td><g:message code="order.label.user.id"/>:</td>
                 <td class="value">
@@ -95,18 +101,10 @@
     <!-- Order Notes -->
     <div class="box">
         <g:if test="${order?.notes}">
-                <table class="innerTable">
-                    <tbody>
-                        <tr>
-                            <td class="innerContent" style="text-align: left">
-                                ${order?.notes}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <p>${order?.notes}</p>
         </g:if>
         <g:else>
-            <em><g:message code="order.prompt.no.notes"/></em>
+            <p><em><g:message code="order.prompt.no.notes"/></em></p>
         </g:else>
     </div>
     
@@ -232,8 +230,8 @@
 </div>
 
 <g:render template="/confirm"
-     model="['message':'order.prompt.are.you.sure',
-             'controller':'order',
-             'action':'deleteOrder',
-             'id':order.id,
+     model="[message: 'order.prompt.are.you.sure',
+             controller: 'order',
+             action: 'deleteOrder',
+             id: order.id,
             ]"/>

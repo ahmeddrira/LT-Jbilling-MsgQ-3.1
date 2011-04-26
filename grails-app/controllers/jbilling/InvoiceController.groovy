@@ -39,19 +39,17 @@ class InvoiceController {
     }
 
     def list = {
-        if (params.id) {
-            redirect(action: 'showListAndInvoice', params: [id: params.id as Integer])
-        }
-
         def filters = filterService.getFilters(FilterType.INVOICE, params)
-        def invoiceList = getInvoices(filters, params)
+        def invoices = getInvoices(filters, params)
 
-        breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
+        def selected = params.id ? webServicesSession.getReviewInvoiceWS(params.int('id')) : null
+
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, selected?.id)
 
         if (params.applyFilter) {
-            render template: 'lists', model: [invoices: invoiceList, filters: filters]
+            render template: 'lists', model: [ invoices: invoices, filters: filters, selected: selected ]
         } else {
-            [invoices: invoiceList, filters: filters]
+            [ invoices: invoices, filters: filters, selected: selected ]
         }
     }
 
@@ -81,51 +79,6 @@ class InvoiceController {
                 eq('deleted', 0)
             }
             order("id", "desc")
-        }
-    }
-
-    def showListAndInvoice = {
-        try {
-            def invId = params.id as Integer
-
-            log.debug "showListAndInvoice(${invId}) called.."
-
-            def filters = filterService.getFilters(FilterType.INVOICE, params)
-            def invoices = getInvoices(filters, params)
-
-            def invoice = webServicesSession.getInvoiceWS(invId)
-            def user = webServicesSession.getUserWS(invoice?.getUserId())
-
-            log.debug "Found invoice ${invoice?.number}, Loading..."
-            log.debug "Found user ${user}"
-
-            def payments = new ArrayList<PaymentWS>(invoice?.payments?.length)
-            for (Integer pid: invoice?.payments) {
-                PaymentWS payment = webServicesSession.getPayment(pid)
-                payments.add(payment)
-            }
-            def totalRevenue = webServicesSession.getTotalRevenueByUser(invoice?.getUserId())
-
-            InvoiceWS temp = invoice;
-            String delegatedInvoices = ""
-            while (temp?.getDelegatedInvoiceId()) {
-                delegatedInvoices += (" > " + temp?.getDelegatedInvoiceId())
-                temp = webServicesSession.getInvoiceWS(temp?.getDelegatedInvoiceId())
-            }
-            if (delegatedInvoices.length() > 0) {
-                delegatedInvoices = delegatedInvoices.substring(3)
-            }
-            log.debug "rendering view showListAndInvoice"
-
-            recentItemService.addRecentItem(invId, RecentItemType.INVOICE)
-            breadcrumbService.addBreadcrumb(controllerName, 'list', null, invId, invoice?.number)
-
-            render view: 'showListAndInvoice', model: [invoices: invoices, totalRevenue: totalRevenue, user: user, invoice: invoice, delegatedInvoices: delegatedInvoices, payments: payments, currencies: currencies]
-        } catch (Exception e) {
-            log.error e.getMessage()
-            flash.error = 'error.invoice.details'
-            flash.args = [params["id"]]
-            redirect(action: 'list')
         }
     }
 
@@ -161,87 +114,77 @@ class InvoiceController {
     }
 
     def show = {
-        log.debug "method invoice.show for id ${params.id} & userId ${params.userId}"
-        InvoiceWS invoice;
-        UserWS user;
-        List<PaymentWS> payments;
-        BigDecimal totalRevenue;
+        InvoiceWS invoice
+        UserWS user
+        List<PaymentWS> payments
+        BigDecimal totalRevenue
         String delegatedInvoices = ""
 
-        log.debug "Show Invoice |${params.id}|"
+        Integer invoiceId = params.int('id')
 
-        if (params["id"] && params["id"].matches("^[0-9]+")) {
-
-            Integer invId = params['id'] as Integer
-            log.debug "Template: ${params.template} invId: ${invId}"
-
+        if (invoiceId) {
             try {
-                invoice = webServicesSession.getReviewInvoiceWS(invId)
-
-                log.debug "Invoice User: ${invoice?.getUserId()}, supposed to be 76."
-
+                invoice = webServicesSession.getReviewInvoiceWS(invoiceId)
                 user = webServicesSession.getUserWS(invoice?.getUserId())
 
-                log.debug "Found invoice ${invoice?.number}, Loading..."
-                log.debug "Found user ${user?.contact?.firstName}"
-
                 payments = new ArrayList<PaymentWS>(invoice?.payments?.length)
-                for (Integer pid: invoice?.payments) {
-                    PaymentWS payment = webServicesSession.getPayment(pid)
+                for (Integer paymentId : invoice?.payments) {
+                    PaymentWS payment = webServicesSession.getPayment(paymentId)
                     payments.add(payment)
                 }
                 totalRevenue = webServicesSession.getTotalRevenueByUser(invoice?.getUserId())
 
-                InvoiceWS temp = invoice;
-                while (temp?.getDelegatedInvoiceId()) {
-                    delegatedInvoices += (" > " + temp?.getDelegatedInvoiceId())
-                    temp = webServicesSession.getInvoiceWS(temp?.getDelegatedInvoiceId())
+                InvoiceWS delegate = invoice;
+                while (delegate?.getDelegatedInvoiceId()) {
+                    delegatedInvoices += (" > " + delegate?.getDelegatedInvoiceId())
+                    delegate = webServicesSession.getInvoiceWS(delegate?.getDelegatedInvoiceId())
                 }
+
                 if (delegatedInvoices.length() > 0) {
                     delegatedInvoices = delegatedInvoices.substring(3)
                 }
 
-                recentItemService.addRecentItem(invId, RecentItemType.INVOICE)
-                breadcrumbService.addBreadcrumb(controllerName, 'list', null, invId, invoice?.number)
+                recentItemService.addRecentItem(invoiceId, RecentItemType.INVOICE)
+                breadcrumbService.addBreadcrumb(controllerName, 'list', null, invoiceId, invoice?.number)
 
             } catch (Exception e) {
-                log.error e.getMessage()
+                log.error("Exception retrieving WS object.", e)
                 flash.error = 'error.invoice.details'
-                flash.args = [params["id"]]
-                render template: 'show'
+                flash.args = [ invoiceId ]
             }
         }
 
-        render template: params.template ?: 'show', model: [totalRevenue: totalRevenue, user: user, invoice: invoice, delegatedInvoices: delegatedInvoices, payments: payments, currencies: currencies]
+        render template: params.template ?: 'show', model: [selected: invoice, user: user, totalRevenue: totalRevenue, delegatedInvoices: delegatedInvoices, payments: payments, currencies: currencies]
     }
 
     def snapshot = {
-        if (params["id"] && params["id"].matches("^[0-9]+")) {
-            int invId = Integer.parseInt(params["id"])
-            InvoiceWS invoice = webServicesSession.getInvoiceWS(invId)
-            render template: 'snapshot', model: [invoice: invoice, currencies: currencies]
+        def invoiceId = params.int('id')
+        if (invoiceId) {
+            InvoiceWS invoice = webServicesSession.getInvoiceWS(invoiceId)
+            render template: 'snapshot', model: [ invoice: invoice, currencies: currencies ]
         }
     }
 
     def delete = {
+        int invoiceId = params.int('id')
+        int userId = params.int('_userId')
 
-        log.debug "Delete params= id: ${params.id} , for userId: ${params._userId}"
-        int invoiceId = params["id"]?.toInteger()
-        int userId = params._userId?.toInteger()
         if (invoiceId) {
             try {
                 webServicesSession.deleteInvoice(invoiceId)
                 flash.message = 'invoice.delete.success'
-                flash.args = [invoiceId]
+                flash.args = [ invoiceId ]
+
             } catch (Exception e) {
-                log.debug(e.getMessage())
+                log.error("Exception deleting invoice.", e)
                 flash.error = 'error.invoice.delete'
-                flash.args = [params["id"]]
-                redirect(action: 'list', params: [id: userId])
+                flash.args = [ params.id ]
+                redirect action: 'list', params: [ id: userId ]
+                return
             }
         }
 
-        redirect(action: list, params: [id: userId])
+        redirect action: list, params: [id: userId]
     }
 
     def notifyInvoiceByEmail = {
@@ -264,39 +207,40 @@ class InvoiceController {
             }
         }
 
-        redirect action: 'showListAndInvoice', params: [ id: params.id ]
+        redirect action: 'list', params: [ id: params.id ]
     }
 
     def downloadPdf = {
-        log.debug 'calling downloadPdf'
-        Integer invId = params.id as Integer
+        Integer invoiceId = params.int('id')
+
         try {
-            byte[] pdfBytes = webServicesSession.getPaperInvoicePDF(invId)
-            DownloadHelper.sendFile(response, "Invoice-${invId}.pdf", "application/pdf", pdfBytes)
+            byte[] pdfBytes = webServicesSession.getPaperInvoicePDF(invoiceId)
+            DownloadHelper.sendFile(response, "invoice-${invoiceId}.pdf", "application/pdf", pdfBytes)
 
         } catch (Exception e) {
-            log.error e.getMessage()
+            log.error("Exception fetching PDF invoice data.", e)
             flash.error = 'invoice.prompt.failure.downloadPdf'
-            redirect(action: 'showListAndInvoice', params: [id: invId])
+            redirect action: 'list', params: [ id: invoiceId ]
         }
     }
 
     def removePaymentLink = {
-
-        Integer invId = params.id as Integer
-        Integer paymentId = params.paymentId as Integer
-        log.debug "Parameters[Invoice Id: ${invId}, Payment Id: ${paymentId}"
+        Integer invoiceId = params.int('id')
+        Integer paymentId = params.int('paymentId')
 
         try {
-            webServicesSession.removePaymentLink(invId, paymentId)
+            webServicesSession.removePaymentLink(invoiceId, paymentId)
             flash.message = "payment.unlink.success"
+
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
+
         } catch (Exception e) {
-            log.error e.getMessage()
+            log.error("Exception unlinking invoice.", e)
             flash.error = "error.invoice.unlink.payment"
         }
-        redirect(action: 'showListAndInvoice', params: [id: invId])
+
+        redirect action: 'list', params: [ id: invoiceId ]
     }
 
     def getCurrencies() {

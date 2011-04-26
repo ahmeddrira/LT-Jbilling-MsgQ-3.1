@@ -306,11 +306,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return ids.toArray(new InvoiceWS[ids.size()]);
     }
 
-    public void notifyInvoiceByEmail(Integer invoiceId) {
+    public boolean notifyInvoiceByEmail(Integer invoiceId) {
     	INotificationSessionBean notificationSession =
 	            (INotificationSessionBean) Context.getBean(
 	            Context.Name.NOTIFICATION_SESSION);
-	    Boolean result = notificationSession.emailInvoice(invoiceId);
+	    return notificationSession.emailInvoice(invoiceId);
     }
 
     public Integer[] getAllInvoices(Integer userId) {

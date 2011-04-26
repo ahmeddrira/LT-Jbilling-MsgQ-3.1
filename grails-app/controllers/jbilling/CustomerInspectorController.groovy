@@ -64,7 +64,7 @@ class CustomerInspectorController {
         // all customer prices and products
         def company = CompanyDTO.get(session['company_id'])
         def itemTypes = company.itemTypes.sort{ it.id }
-        params.typeId = itemTypes?.asList()?.first()?.id
+        params.typeId = !itemTypes.isEmpty() ? itemTypes?.asList()?.first()?.id : null
 
         def products = productService.getFilteredProducts(company, params)
         def prices = new CustomerPriceBL(user.id).getCustomerPrices()

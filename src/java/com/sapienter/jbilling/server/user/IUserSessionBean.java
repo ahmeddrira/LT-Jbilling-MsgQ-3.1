@@ -58,10 +58,6 @@ public interface IUserSessionBean {
     public Integer create(UserDTOEx newUser, ContactDTOEx contact) 
             throws SessionInternalError;
 
-    public Integer createEntity(ContactDTO contact, UserDTOEx user, 
-            Integer pack, Boolean config, String language,
-            ContactDTO paymentContact) throws SessionInternalError;
-  
     public UserDTO getUserDTO(String userName, Integer entityId) 
             throws SessionInternalError;
 

@@ -212,7 +212,8 @@ class SignupController {
         new ContactMapDTO(
                 jbillingTable: JbillingTable.findByName(Constants.TABLE_ENTITY),
                 contactType: ContactTypeDTO.get(Constants.ENTITY_CONTACT_TYPE),
-                contact: entityContact
+                contact: entityContact,
+                foreignId: company.id
         ).save()
 
         return entityContact

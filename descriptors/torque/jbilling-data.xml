@@ -1966,7 +1966,6 @@
     <JbillingSeqs Name="partner" NextId="1"/>
     <JbillingSeqs Name="entity" NextId="1"/>
     <JbillingSeqs Name="contact_type" NextId="2"/>
-    <JbillingSeqs Name="contact_field_type" NextId="10"/>
     <JbillingSeqs Name="promotion" NextId="1"/>
     <JbillingSeqs Name="pluggable_task" NextId="1"/>
     <JbillingSeqs Name="ach" NextId="1"/>

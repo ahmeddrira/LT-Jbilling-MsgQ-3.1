@@ -185,6 +185,7 @@ import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
 
 import com.sapienter.jbilling.server.user.CompanyWS;
+import com.sapienter.jbilling.server.user.EntityBL; 
 
 import javax.naming.NamingException;
 
@@ -2732,20 +2733,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
     
     public void updateCompany(CompanyWS companyWS) {
-        CompanyDTO dto= companyWS.getDTO();
-            ContactWS contactWs= companyWS.getContact();
-            ContactBL contactBl= new ContactBL();
-            contactBl.setEntity(getCallerCompanyId());
-            ContactDTO contact= contactBl.getEntity();
-            contact.setAddress1(contactWs.getAddress1());
-            contact.setAddress2(contactWs.getAddress2());
-            contact.setCity(contactWs.getCity());
-            contact.setCountryCode(contactWs.getCountryCode());
-            contact.setPostalCode(contactWs.getPostalCode());
-            contact.setStateProvince(contactWs.getStateProvince());
-            contact.setCountryCode(contactWs.getCountryCode());
-            new ContactDAS().save(contact);
-        new CompanyDAS().save(dto);
+        new EntityBL().updateEntityAndContact(companyWS, getCallerCompanyId(), getCallerId());
     }
 
     /*

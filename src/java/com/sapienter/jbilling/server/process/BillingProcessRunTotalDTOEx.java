@@ -18,7 +18,7 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ackage com.sapienter.jbilling.server.process;
+package com.sapienter.jbilling.server.process;
 
 import java.math.BigDecimal;
 import java.util.Hashtable;

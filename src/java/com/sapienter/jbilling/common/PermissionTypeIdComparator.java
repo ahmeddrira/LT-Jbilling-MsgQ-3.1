@@ -18,7 +18,7 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ackage com.sapienter.jbilling.common;
+package com.sapienter.jbilling.common;
 
 import java.util.Comparator;
 

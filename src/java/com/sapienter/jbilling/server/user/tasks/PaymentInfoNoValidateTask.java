@@ -18,7 +18,7 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ackage com.sapienter.jbilling.server.user.tasks;
+package com.sapienter.jbilling.server.user.tasks;
 
 import java.util.Iterator;
 

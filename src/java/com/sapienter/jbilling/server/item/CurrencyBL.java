@@ -18,7 +18,7 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ackage com.sapienter.jbilling.server.item;
+package com.sapienter.jbilling.server.item;
 
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.common.JNDILookup;

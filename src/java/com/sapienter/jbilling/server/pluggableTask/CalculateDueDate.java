@@ -18,7 +18,7 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ackage com.sapienter.jbilling.server.pluggableTask;
+package com.sapienter.jbilling.server.pluggableTask;
 
 import java.math.BigDecimal;
 import java.util.Date;

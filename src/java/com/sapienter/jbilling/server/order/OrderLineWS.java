@@ -18,7 +18,7 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ackage com.sapienter.jbilling.server.order;
+package com.sapienter.jbilling.server.order;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

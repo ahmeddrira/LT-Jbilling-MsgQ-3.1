@@ -1,7 +1,6 @@
-package jbilling
 /*
  jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
+ Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
  This file is part of jbilling.
 
@@ -19,6 +18,7 @@ package jbilling
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package jbilling
 enum SearchType {
     CUSTOMERS, ORDERS, INVOICES, PAYMENTS, BILLINGPROCESS, MEDIATIONPROCESS
 }

@@ -1,6 +1,6 @@
 /*
  jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
+ Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
  This file is part of jbilling.
 
@@ -18,12 +18,7 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on Dec 30, 2003
- *
- * Copyright Sapienter Enterprise Software
- */
-package com.sapienter.jbilling.server.order;
+ackage com.sapienter.jbilling.server.order;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

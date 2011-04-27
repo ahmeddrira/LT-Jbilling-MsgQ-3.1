@@ -1,9 +1,6 @@
-import grails.plugins.springsecurity.Secured
-import jbilling.Breadcrumb
-import com.sapienter.jbilling.common.SessionInternalError
 /*
  jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
+ Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
  This file is part of jbilling.
 
@@ -21,6 +18,9 @@ import com.sapienter.jbilling.common.SessionInternalError
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import grails.plugins.springsecurity.Secured
+import jbilling.Breadcrumb
+import com.sapienter.jbilling.common.SessionInternalError
 /**
  * Shows the user's home page after login.
  *

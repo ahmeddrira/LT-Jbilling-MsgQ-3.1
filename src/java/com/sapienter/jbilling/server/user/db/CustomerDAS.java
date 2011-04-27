@@ -1,6 +1,6 @@
 /*
  jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
+ Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
  This file is part of jbilling.
 
@@ -18,12 +18,7 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on Apr 7, 2004
- *
- * Copyright Sapienter Enterprise Software
- */
-package com.sapienter.jbilling.server.user.db;
+ackage com.sapienter.jbilling.server.user.db;
 
 import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDAS;
 import com.sapienter.jbilling.server.util.Constants;

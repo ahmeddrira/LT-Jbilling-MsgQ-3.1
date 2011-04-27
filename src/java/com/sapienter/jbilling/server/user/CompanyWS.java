@@ -49,14 +49,23 @@ public class CompanyWS implements java.io.Serializable {
         this.currencyId= companyDto.getCurrencyId();
         this.languageId = companyDto.getLanguageId();
         this.description = companyDto.getDescription();
-        ContactDTO contact= new EntityBL(new Integer(this.id)).getContact();
-        this.contact= new ContactWS(contact.getId(), contact.getAddress1(), 
-                contact.getAddress2(),contact.getCity(),contact.getStateProvince(), contact.getPostalCode(), 
-                contact.getCountryCode(), contact.getDeleted());
+
+        ContactDTO contact = new EntityBL(new Integer(this.id)).getContact();
+
+        if (contact != null) {
+            this.contact = new ContactWS(contact.getId(),
+                                         contact.getAddress1(),
+                                         contact.getAddress2(),
+                                         contact.getCity(),
+                                         contact.getStateProvince(),
+                                         contact.getPostalCode(),
+                                         contact.getCountryCode(),
+                                         contact.getDeleted());
+        }
     }
     
     public CompanyDTO getDTO(){
-        CompanyDTO dto= new CompanyDAS().find(new Integer(this.id));
+        CompanyDTO dto = new CompanyDAS().find(new Integer(this.id));
         dto.setCurrency(new CurrencyDAS().find(this.currencyId));
         dto.setLanguage(new LanguageDAS().find(this.languageId));
         dto.setDescription(this.description);

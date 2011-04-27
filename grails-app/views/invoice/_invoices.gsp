@@ -14,8 +14,7 @@
                 <tr>
                     <th class="medium"><g:message code="invoice.label.id"/></th>
                     <th class="small"><g:message code="label.gui.date"/></th>
-                    <th class="small"><g:message code="invoice.label.duedate"/></th>
-                    <th class="small"><g:message code="invoice.label.status"/></th>
+                    <th class="medium"><g:message code="invoice.label.status"/></th>
                     <th class="small"><g:message code="invoice.label.amount"/></th>
                     <th class="small"><g:message code="invoice.label.balance"/></th>
                 </tr>
@@ -35,15 +34,9 @@
 					</td>
 	            	<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
-                            <g:formatDate date="${inv?.getCreateDatetime()}" dateFormat="date.pretty.format"/>
+                            <g:formatDate date="${inv?.getCreateDatetime()}" formatName="date.pretty.format"/>
 						</g:remoteLink>
 					</td>
-					<td class="small">
-						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
-                            <g:formatDate date="${inv?.dueDate}" dateFormat="date.pretty.format"/>
-						</g:remoteLink>
-					</td>
-
 					<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
                             ${inv.getInvoiceStatus().getDescription(session['language_id']) }

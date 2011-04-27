@@ -189,7 +189,7 @@ public interface IWebServicesSessionBean {
     public void deleteInvoice(Integer invoiceId);
 
     public InvoiceWS[] getAllInvoicesForUser(Integer userId);
-    public void notifyInvoiceByEmail(Integer invoiceId) ;
+    public boolean notifyInvoiceByEmail(Integer invoiceId);
     public Integer[] getAllInvoices(Integer userId);
     public InvoiceWS getLatestInvoice(Integer userId) throws SessionInternalError;
     public Integer[] getLastInvoices(Integer userId, Integer number) throws SessionInternalError;

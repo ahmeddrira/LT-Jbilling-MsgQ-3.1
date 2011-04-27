@@ -117,7 +117,7 @@ class EntityDefaults {
          */
         // todo: for now add all reports to the company. restrict this to core reports once they've been written.
         ReportDTO.list().each { report ->
-            report.entities << company
+            company.reports << report
         }
 
 

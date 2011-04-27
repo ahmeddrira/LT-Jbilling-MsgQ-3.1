@@ -142,33 +142,33 @@ class ConfigController {
      */
     
 	def company = {
-		CompanyWS company= webServicesSession.getCompany()
+		CompanyWS company = webServicesSession.getCompany()
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
-		log.debug "getCompany: ${company}"
-		[company:company]
+
+		[ company: company ]
 	}
 	
 	def saveCompany= {
-		log.debug params.description
 		try {
 			CompanyWS company= new CompanyWS(session['company_id'].intValue())
-			//ContactType.get(1) or Contact Type 1 is always Company Contact
-			ContactWS contact= new ContactWS()
+
+			// Contact Type 1 is always Company Contact
+			ContactWS contact = new ContactWS()
 			bindData(company, params, ['id'])
 			bindData(contact, params, ['id'])
             company.setContact(contact)
-			log.debug "Company: ${company}"
 
             webServicesSession.updateCompany(company)
             
 			flash.message = 'config.company.save.success'
+
 		} catch (SessionInternalError e){
-			//log.info e.getMessage()
 			viewUtils.resolveException(flash, session.locale, e);
+
 		} catch (Exception e) {
-			//log.debug e.printStackTrace()
 			flash.error = 'config.company.save.error'
 		}
+
 		redirect action: company
 	}
 

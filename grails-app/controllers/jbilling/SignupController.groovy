@@ -66,7 +66,9 @@ class SignupController {
             def user = new UserWS()
             bindData(user, params, 'user')
 
-            webServicesValidationAdvice.validateObjects([user, contact], Default.class, EntitySignupValidationGroup.class)
+            user.contact = contact
+
+            webServicesValidationAdvice.validateObject(user, Default.class, EntitySignupValidationGroup.class)
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session?.locale ?: new Locale("en"), e)
@@ -210,7 +212,8 @@ class SignupController {
         new ContactMapDTO(
                 jbillingTable: JbillingTable.findByName(Constants.TABLE_ENTITY),
                 contactType: ContactTypeDTO.get(Constants.ENTITY_CONTACT_TYPE),
-                contact: entityContact
+                contact: entityContact,
+                foreignId: company.id
         ).save()
 
         return entityContact

@@ -1,9 +1,9 @@
 includeTargets << grailsScript("Init")
 
 includeTargets << new File("${basedir}/scripts/PackageRelease.groovy")
+includeTargets << new File("${basedir}/scripts/Jar.groovy")
 
 imageDir = "${basedir}/image"
-
 sourcePackageName = "${targetDir}/${releaseName}-src.zip"
 
 target(cleanPackages: "Remove old packages from the target directory.") {
@@ -38,7 +38,7 @@ target(packageSource: "Packages the source code.") {
             exclude(name: ".gitattributes")
         }
 
-        zipfileset(file: "${javaDir}/jbilling.properties.sample", fullpath: "${releaseName}/src/java/jbilling.properties")
+        zipfileset(file: "${javaDir}/jbilling.properties.sample", fullpath: "${grailsAppName}/src/java/jbilling.properties")
     }
 }
 
@@ -56,60 +56,74 @@ target(updateImage: "Updates the jbilling image with the current release artifac
     copyResources()
     compileDesigns()
     compileReports()
-    generateChangelog()
+    jar()
     war()
 
-    mkdir(dir: "${imageDir}/resources")
+    def jbillingHome = "${imageDir}/jbilling/"
+
+    mkdir(dir: "${jbillingHome}/resources")
 
     // copy reports
-    delete(dir: "${imageDir}/resources/reports", includes: "**/*")
-    copy(todir: "${imageDir}/resources/reports") {
+    delete(dir: "${jbillingHome}/resources/reports", includes: "**/*")
+    copy(todir: "${jbillingHome}/resources/reports") {
         fileset(dir: "${resourcesDir}/reports")
     }
 
     // copy invoice designs
-    delete(dir: "${imageDir}/resources/designs", includes: "**/*")
-    copy(todir: "${imageDir}/resources/designs") {
+    delete(dir: "${jbillingHome}/resources/designs", includes: "**/*")
+    copy(todir: "${jbillingHome}/resources/designs") {
         fileset(dir: "${resourcesDir}/designs")
     }
 
     // copy logos
-    delete(dir: "${imageDir}/resources/logos", includes: "**/*")
-    copy(todir: "${imageDir}/resources/logos") {
+    delete(dir: "${jbillingHome}/resources/logos", includes: "**/*")
+    copy(todir: "${jbillingHome}/resources/logos") {
         fileset(dir: "${resourcesDir}/logos")
     }
 
     // copy mediation descriptors and sample asterisk files
-    copy(todir: "${imageDir}/resources/mediation", overwrite: true) {
+    copy(todir: "${jbillingHome}/resources/mediation", overwrite: true) {
         fileset(dir: "${resourcesDir}/mediation", includes: "asterisk.xml")
         fileset(dir: "${resourcesDir}/mediation", includes: "asterisk-sample*.csv")
         fileset(dir: "${resourcesDir}/mediation", includes: "jbilling_cdr.*")
         fileset(dir: "${resourcesDir}/mediation", includes: "mediation.dtd")
     }
 
+    // copy jbilling.jar
+    delete(file: "${jbillingHome}/resources/api")
+    mkdir(dir: "${jbillingHome}/resources/api")
+    copy(file: "${targetDir}/${grailsAppName}.jar", todir: "${jbillingHome}/resources/api")
+
     // copy configuration files
     // don't copy DataSource, the reference tomcat install uses HSQLDB
-    copy(file: "${javaDir}/jbilling.properties.sample", tofile: "${imageDir}/conf/jbilling.properties", overwrite: true)
-    copy(file: "${configDir}/Config.groovy", tofile: "${imageDir}/conf/${grailsAppName}-Config.groovy", overwrite: true)
+    copy(file: "${javaDir}/jbilling.properties.sample", tofile: "${jbillingHome}/jbilling.properties", overwrite: true)
+    copy(file: "${configDir}/Config.groovy", tofile: "${jbillingHome}/${grailsAppName}-Config.groovy", overwrite: true)
 
     // copy log4j configuration
     mkdir(dir: "${imageDir}/bin/grails-app/conf")
     copy(file: "${configDir}/log4j.xml", todir: "${imageDir}/bin/grails-app/conf", overwrite: true)
 
     // copy jbilling.war
-    copy(file: "${targetDir}/${grailsAppName}.war", todir: "${imageDir}/webapps", overwrite: true)
+    delete(file: "${imageDir}/webapps/${grailsAppName}.war")
+    copy(file: "${targetDir}/${grailsAppName}.war", todir: "${imageDir}/webapps")
 }
 
 
 target(packageTomcat: "Builds and packages the binary jbilling tomcat release.") {
     updateImage()
 
+    // clear tomcat temp and work directories
+    delete(dir: "${imageDir}/temp")
+    mkdir(dir: "${imageDir}/temp")
+
+    delete(dir: "${imageDir}/work")
+    mkdir(dir: "${imageDir}/work")
+
+    // zip tomcat image
     zip(filesonly: false, update: false, destfile: packageName) {
         zipfileset(dir: imageDir, prefix: grailsAppName) {
             exclude(name: "webapps/jbilling/")
-
-            exclude(name: "work/")
-            exclude(name: "temp/")
+            exclude(name: "webapps/drools-guvnor/")
 
             exclude(name: "**/logs/")
             exclude(name: "**/activemq-data/")
@@ -119,9 +133,18 @@ target(packageTomcat: "Builds and packages the binary jbilling tomcat release.")
 }
 
 target(packagePublicRelease: "Builds the public binary jbilling tomcat release, and the jbilling source release packages. ") {
-    cleanPackages()
-    packageSource()
-    packageTomcat()
+    switch(args) {
+        case "-update":
+            println "Updating image ..."
+            updateImage()
+            break
+
+        default:
+            println "Building release packages ..."
+            cleanPackages()
+            packageSource()
+            packageTomcat()
+    }
 }
 
 setDefaultTarget(packagePublicRelease)

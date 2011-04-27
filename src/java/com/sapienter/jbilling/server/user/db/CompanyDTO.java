@@ -42,6 +42,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.report.db.ReportDTO;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -98,6 +99,7 @@ public class CompanyDTO implements java.io.Serializable {
     private Set<ItemTypeDTO> itemTypes = new HashSet<ItemTypeDTO>(0);
     private Set<BillingProcessConfigurationDTO> billingProcessConfigurations = new HashSet<BillingProcessConfigurationDTO>(0);
     private Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods = new HashSet<InvoiceDeliveryMethodDTO>(0);
+    private Set<ReportDTO> reports = new HashSet<ReportDTO>();
     private int versionNum;
 
     public CompanyDTO() {
@@ -357,9 +359,26 @@ public class CompanyDTO implements java.io.Serializable {
         this.invoiceDeliveryMethods = invoiceDeliveryMethods;
     }
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "entity_report_map",
+           joinColumns = {
+                   @JoinColumn(name = "entity_id", updatable = false)
+           },
+           inverseJoinColumns = {
+                   @JoinColumn(name = "report_id", updatable = false)
+           }
+    )
+    public Set<ReportDTO> getReports() {
+        return reports;
+    }
+
+    public void setReports(Set<ReportDTO> reports) {
+        this.reports = reports;
+    }
+
     /*
-     * Conveniant methods to ease migration from entity beans
-     */
+    * Conveniant methods to ease migration from entity beans
+    */
     @Transient
     public Integer getCurrencyId() {
         return currencyDTO.getId();

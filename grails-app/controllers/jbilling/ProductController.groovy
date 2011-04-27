@@ -40,8 +40,10 @@ class ProductController {
     def list = {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
         def categories = getCategories()
-        def products = params.id ? getProducts(params.int('id'), filters) : null
-        def category = params.id ?: products ? products.get(0)?.itemTypes?.asList()?.get(0) : null
+
+        def categoryId = params.int('id')
+        def category = categoryId ? categories.find { it.id == categoryId } : null
+        def products = category ? getProducts(category.id, filters) : null
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'), category?.description)
 
@@ -77,7 +79,7 @@ class ProductController {
             def category = ItemTypeDTO.get(params.int('id'))
             def products = getProducts(category.id, filters)
 
-            breadcrumbService.addBreadcrumb(controllerName, 'list', null, category.id, category.description)
+            breadcrumbService.addBreadcrumb(controllerName, 'list', null, category.id, category?.description)
 
             render template: 'products', model: [ products: products, selectedCategoryId: category.id ]
         }
@@ -161,7 +163,7 @@ class ProductController {
     def show = {
         ItemDTO product = ItemDTO.get(params.int('id'))
         recentItemService.addRecentItem(product?.id, RecentItemType.PRODUCT)
-        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'), product.internalNumber)
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'), product?.internalNumber)
 
         if (params.template) {
             // render requested template, usually "_show.gsp"
@@ -241,7 +243,7 @@ class ProductController {
             return
         }
 
-        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'), category.description)
+        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'), category?.description)
 
         [ category : category ]
     }
@@ -304,7 +306,7 @@ class ProductController {
             return
         }
 
-        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'), product.number)
+        breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'), product?.number)
 
         [ product: product, currencies: currencies, categories: categories, categoryId: params.category ]
     }

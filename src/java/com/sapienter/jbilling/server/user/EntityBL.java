@@ -108,21 +108,6 @@ public class EntityBL extends ResultList
         return contact.getEntity();
     }
     
-    /**
-     * Creates a new entity with its root user. Uses all defaults.
-     * @param user
-     * @param contact
-     * @param languageId
-     * @return
-     * @throws Exception
-     */
-    public Integer create(UserDTOEx user, ContactDTO contact, 
-            Integer languageId) 
-            throws Exception {
-        EntitySignup sign = new EntitySignup(user, contact, languageId);
-        return new Integer(sign.process());
-    }
-    
     public Integer[] getAllIDs() 
             throws SQLException, NamingException {
         List list = new ArrayList();

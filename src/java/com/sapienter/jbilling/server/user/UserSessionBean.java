@@ -123,49 +123,6 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         }
     }
 
-    public Integer createEntity(ContactDTO contact, UserDTOEx user,
-                                Integer pack, Boolean config, String language,
-                                ContactDTO paymentContact)
-            throws SessionInternalError {
-        try {
-            // start by creating the new entity
-            EntityBL bl = new EntityBL();
-            Integer languageId = new LanguageDAS().findByCode(language).getId();
-            Integer entityId = bl.create(user, contact, languageId);
-
-            final String notCryptedPassword = user.getPassword();
-
-            if (paymentContact != null) {
-                // now a new customer for Sapienter
-                user.setEntityId(new Integer(1));
-                String userName = user.getUserName();
-                Integer newUserId = null;
-                Random rnd = new Random();
-                while (newUserId == null) {
-                    newUserId = create(user, new ContactDTOEx(paymentContact));
-                    if (newUserId == null) {
-                        user.setUserName(userName + rnd.nextInt(100));
-                    }
-                }
-                createCreditCard(newUserId, user.getCreditCard());
-
-                String params[] = new String[6];
-                params[0] = contact.getFirstName();
-                params[1] = contact.getLastName();
-                params[2] = userName;
-                params[3] = notCryptedPassword;
-                params[4] = entityId.toString();
-                params[5] = entityId.toString();
-                NotificationBL.sendSapienterEmail(entityId, "signup.welcome",
-                                                  null, params);
-            }
-
-            return entityId;
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
-    }
-
     public UserDTO getUserDTO(String userName, Integer entityId)
             throws SessionInternalError {
         UserDTO dto = null;

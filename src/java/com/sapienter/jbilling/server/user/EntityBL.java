@@ -35,9 +35,12 @@ import javax.sql.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import java.util.ArrayList;
@@ -49,6 +52,7 @@ public class EntityBL extends ResultList
         implements EntitySQL {
     private CompanyDAS das = null;
     private CompanyDTO entity = null;
+    private EventLogger eLogger = null;
     
     public EntityBL()  {
         init();
@@ -69,6 +73,7 @@ public class EntityBL extends ResultList
     
     private void init() {
         das = new CompanyDAS();
+        eLogger = EventLogger.getInstance();
     }
     
     public CompanyDTO getEntity() {
@@ -158,5 +163,32 @@ public class EntityBL extends ResultList
             throw new SessionInternalError("Finding root user for entity " + 
                     entity.getId(), EntityBL.class, e);
         } 
+    }
+    
+    public void updateEntityAndContact(CompanyWS companyWS, Integer entityId, Integer userId) {
+        CompanyDTO dto= companyWS.getDTO();
+            ContactWS contactWs= companyWS.getContact();
+            ContactBL contactBl= new ContactBL();
+            contactBl.setEntity(entityId);
+            ContactDTO contact= contactBl.getEntity();
+            contact.setAddress1(contactWs.getAddress1());
+            contact.setAddress2(contactWs.getAddress2());
+            contact.setCity(contactWs.getCity());
+            contact.setCountryCode(contactWs.getCountryCode());
+            contact.setPostalCode(contactWs.getPostalCode());
+            contact.setStateProvince(contactWs.getStateProvince());
+            contact.setCountryCode(contactWs.getCountryCode());
+            new ContactDAS().save(contact);
+            eLogger.auditBySystem(entityId,
+                    userId, Constants.TABLE_CONTACT,
+                    contact.getId(),
+                    EventLogger.MODULE_WEBSERVICES,
+                    EventLogger.ROW_UPDATED, null, null, null);
+        new CompanyDAS().save(dto);
+        eLogger.auditBySystem(entityId,
+                userId, Constants.TABLE_ENTITY,
+                entityId,
+                EventLogger.MODULE_WEBSERVICES,
+                EventLogger.ROW_UPDATED, null, null, null);
     }
 }

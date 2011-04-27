@@ -12,7 +12,7 @@ target(cleanPackages: "Remove old packages from the target directory.") {
 
 target(packageSource: "Packages the source code.") {
     zip(filesonly: false, update: false, destfile: sourcePackageName) {
-        zipfileset(dir: basedir, prefix: grailsAppName) {
+        zipfileset(dir: basedir, prefix: releaseName) {
             exclude(name: "activemq-data/")
             exclude(name: "logs/")
             exclude(name: "tmp/")
@@ -38,7 +38,7 @@ target(packageSource: "Packages the source code.") {
             exclude(name: ".gitattributes")
         }
 
-        zipfileset(file: "${javaDir}/jbilling.properties.sample", fullpath: "${grailsAppName}/src/java/jbilling.properties")
+        zipfileset(file: "${javaDir}/jbilling.properties.sample", fullpath: "${releaseName}/src/java/jbilling.properties")
     }
 }
 
@@ -121,13 +121,13 @@ target(packageTomcat: "Builds and packages the binary jbilling tomcat release.")
 
     // zip tomcat image
     zip(filesonly: false, update: false, destfile: packageName) {
-        zipfileset(dir: imageDir, prefix: grailsAppName) {
+        zipfileset(dir: imageDir, prefix: releaseName) {
             exclude(name: "webapps/jbilling/")
-            exclude(name: "webapps/drools-guvnor/")
+            exclude(name: "webapps/drools-guvnor/") // exclude exploded application directories
 
-            exclude(name: "**/logs/")
             exclude(name: "**/activemq-data/")
-            exclude(name: "**/*.log")
+            exclude(name: "**/logs/")
+            exclude(name: "**/*.log")               // exclude log files
         }
     }
 }
@@ -135,7 +135,7 @@ target(packageTomcat: "Builds and packages the binary jbilling tomcat release.")
 target(packagePublicRelease: "Builds the public binary jbilling tomcat release, and the jbilling source release packages. ") {
     switch(args) {
         case "-update":
-            println "Updating image ..."
+            println "Updating release image ..."
             updateImage()
             break
 

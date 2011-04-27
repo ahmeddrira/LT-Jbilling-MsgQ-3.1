@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.drools.KnowledgeBase;
 import org.drools.agent.KnowledgeAgent;
@@ -270,40 +271,46 @@ public abstract class PluggableTask {
         for (String key : parameters.keySet()) {
             String value = (String) parameters.get(key);
             LOG.debug("processing parameter " + key + " value " + value);
-            if (key.equals("file")) {
-                String[] files = com.sapienter.jbilling.server.util.Util
-                        .csvSplitLine(value, ' ');
-                for (String file : files) {
-                    prefix = "";
-                    if (!(new File(file)).isAbsolute()) {
-                        // prepend the default directory if file path is relative
-                        prefix = defaultDir + File.separator;
+
+            if (StringUtils.isNotEmpty(value)) {
+                if (key.equals("file")) {
+                    String[] files = com.sapienter.jbilling.server.util.Util
+                            .csvSplitLine(value, ' ');
+                    for (String file : files) {
+                        prefix = "";
+                        if (!(new File(file)).isAbsolute()) {
+                            // prepend the default directory if file path is relative
+                            prefix = defaultDir + File.separator;
+                        }
+                        LOG.debug("adding parameter " + file);
+                        appendResource(str, "file:" + prefix + file, "PKG");
                     }
-                    LOG.debug("adding parameter " + file);
-                    appendResource(str, "file:" + prefix + file, "PKG");
-                }
-            } else if (key.equals("dir")) {
-                String[] dirs = com.sapienter.jbilling.server.util.Util
-                        .csvSplitLine(value, ' ');
-                for (String dir : dirs) {
-                    prefix = "";
-                    if (!new File(dir).isAbsolute()) {
-                        // prepend the default directory if directory path is relative
-                        prefix = defaultDir + File.separator;
+
+                } else if (key.equals("dir")) {
+                    String[] dirs = com.sapienter.jbilling.server.util.Util
+                            .csvSplitLine(value, ' ');
+                    for (String dir : dirs) {
+                        prefix = "";
+                        if (!new File(dir).isAbsolute()) {
+                            // prepend the default directory if directory path is relative
+                            prefix = defaultDir + File.separator;
+                        }
+                        LOG.debug("adding parameter " + dir);
+                        appendResource(str, "file:" + prefix + dir, "PKG");
                     }
-                    LOG.debug("adding parameter " + dir);
-                    appendResource(str, "file:" + prefix + dir, "PKG");
+
+                } else if (key.equals("url")) {
+                    String[] urls = com.sapienter.jbilling.server.util.Util
+                            .csvSplitLine(value, ' ');
+                    for (String url : urls) {
+                        LOG.debug("adding parameter " + url);
+                        appendResource(str, url, "PKG");
+                    }
+
+                } else {
+                    //for other types of resources
+                    LOG.warn("Resource for parameter " + key + "->" + value + " not supported");
                 }
-            } else if (key.equals("url")) {
-                String[] urls = com.sapienter.jbilling.server.util.Util
-                        .csvSplitLine(value, ' ');
-                for (String url : urls) {
-                    LOG.debug("adding parameter " + url);
-                    appendResource(str, url, "PKG");
-                }
-            } else {
-                //for other types of resources
-                LOG.warn("Resource for parameter " + key + "->" + value + " not supported");
             }
         }
         if (parameters.isEmpty()) {

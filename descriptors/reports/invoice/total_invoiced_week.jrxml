@@ -35,7 +35,7 @@
 	<queryString>
 		<![CDATA[select
           sum(i.total) as total,
-          count(i.id) as count,
+          count(i.id) as invoice_count,
           to_char(i.create_datetime, 'WW') as week_of_year,
           to_char(i.create_datetime, 'yyyy') as year
         from
@@ -51,7 +51,7 @@
         order by year, week_of_year]]>
 	</queryString>
 	<field name="total" class="java.math.BigDecimal"/>
-	<field name="count" class="java.lang.Long"/>
+	<field name="invoice_count" class="java.lang.Long"/>
 	<field name="week_of_year" class="java.lang.String"/>
 	<field name="year" class="java.lang.String"/>
 	<variable name="subtotal" class="java.math.BigDecimal" calculation="Sum">
@@ -156,7 +156,7 @@
 			<textField>
 				<reportElement x="0" y="0" width="120" height="20"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Long"><![CDATA[$F{count}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Long"><![CDATA[$F{invoice_count}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="120" y="0" width="100" height="20"/>

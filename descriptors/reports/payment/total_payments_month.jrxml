@@ -37,7 +37,7 @@
 	<queryString>
 		<![CDATA[select
 	        sum(p.amount) as amount,
-	        count(p.id) as count,
+	        count(p.id) as payment_count,
 	        to_char(p.payment_date, 'MM') as month_of_year,
 	        to_char(p.payment_date, 'Month') as month,
 	        to_char(p.payment_date, 'yyyy') as year
@@ -55,7 +55,7 @@
         order by year, month_of_year]]>
 	</queryString>
 	<field name="amount" class="java.math.BigDecimal"/>
-	<field name="count" class="java.lang.Long"/>
+	<field name="payment_count" class="java.lang.Long"/>
 	<field name="month_of_year" class="java.lang.String"/>
 	<field name="month" class="java.lang.String"/>
 	<field name="year" class="java.lang.String"/>
@@ -161,7 +161,7 @@
 			<textField>
 				<reportElement x="0" y="0" width="140" height="20"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Long"><![CDATA[$F{count}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Long"><![CDATA[$F{payment_count}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="140" y="0" width="100" height="20"/>

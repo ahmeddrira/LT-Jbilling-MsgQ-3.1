@@ -10,7 +10,7 @@
 		<queryString>
 			<![CDATA[select
                 sum(i.total) as total,
-                      count(i.id) as count,
+                      count(i.id) as invoice_count,
                 i.create_datetime
             from
                 invoice i
@@ -33,7 +33,7 @@
 	<queryString>
 		<![CDATA[select
             sum(i.total) as total,
-            count(i.id) as count,
+            count(i.id) as invoice_count,
             i.create_datetime
         from
             invoice i
@@ -48,7 +48,7 @@
         order by i.create_datetime]]>
 	</queryString>
 	<field name="total" class="java.math.BigDecimal"/>
-	<field name="count" class="java.lang.Long"/>
+	<field name="invoice_count" class="java.lang.Long"/>
 	<field name="create_datetime" class="java.sql.Timestamp"/>
 	<variable name="subtotal" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{total}]]></variableExpression>
@@ -144,7 +144,7 @@
 			<textField>
 				<reportElement x="0" y="0" width="120" height="20"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Long"><![CDATA[$F{count}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Long"><![CDATA[$F{invoice_count}]]></textFieldExpression>
 			</textField>
 			<textField pattern="MMMMM dd, yyyy">
 				<reportElement x="120" y="0" width="130" height="20"/>

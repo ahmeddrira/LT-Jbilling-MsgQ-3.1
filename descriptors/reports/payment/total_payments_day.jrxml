@@ -10,7 +10,7 @@
 		<queryString>
 			<![CDATA[select
                 sum(p.amount) as amount,
-                count(p.id) as count,
+                count(p.id) as payment_count,
                 p.payment_date
             from
                 payment p
@@ -26,7 +26,7 @@
             order by p.payment_date]]>
 		</queryString>
 		<field name="amount" class="java.math.BigDecimal"/>
-		<field name="count" class="java.lang.Long"/>
+		<field name="payment_count" class="java.lang.Long"/>
 		<field name="payment_date" class="java.sql.Timestamp"/>
 	</subDataset>
 	<parameter name="entityId" class="java.lang.Integer"/>
@@ -35,7 +35,7 @@
 	<queryString>
 		<![CDATA[select
             sum(p.amount) as amount,
-            count(p.id) as count,
+            count(p.id) as payment_count,
             p.payment_date
         from
             payment p
@@ -51,7 +51,7 @@
         order by p.payment_date]]>
 	</queryString>
 	<field name="amount" class="java.math.BigDecimal"/>
-	<field name="count" class="java.lang.Long"/>
+	<field name="payment_count" class="java.lang.Long"/>
 	<field name="payment_date" class="java.sql.Timestamp"/>
 	<variable name="subtotal" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
@@ -147,7 +147,7 @@
 			<textField>
 				<reportElement x="0" y="0" width="140" height="20"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Long"><![CDATA[$F{count}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Long"><![CDATA[$F{payment_count}]]></textFieldExpression>
 			</textField>
 			<textField pattern="MMMMM dd, yyyy">
 				<reportElement x="140" y="0" width="130" height="20"/>

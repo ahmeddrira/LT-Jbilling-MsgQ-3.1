@@ -5,7 +5,17 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="user_id" class="java.lang.Integer"/>
 	<parameter name="start_days" class="java.lang.Integer"/>
+    <parameter name="start_date" class="java.util.Date" isForPrompting="false">
+        <defaultValueExpression>
+            <![CDATA[new Date(System.currentTimeMillis() - ($P{start_days} * 1000 * 60 * 60 * 24))]]>
+        </defaultValueExpression>
+    </parameter>
 	<parameter name="end_days" class="java.lang.Integer"/>
+    <parameter name="end_date" class="java.util.Date" isForPrompting="false">
+        <defaultValueExpression>
+            <![CDATA[new Date(System.currentTimeMillis() - ($P{end_days} * 1000 * 60 * 60 * 24))]]>
+        </defaultValueExpression>
+    </parameter>
 	<queryString>
 		<![CDATA[select
             (
@@ -17,22 +27,22 @@
                         and i.status_id != 26
                         and i.is_review != 1
                         and i.user_id = u.id
-                        and i.create_datetime <= (current_date - $P{start_days})
-                        and i.create_datetime > (current_date - $P{end_days})
+                        and i.create_datetime <= $P{start_date}
+                        and i.create_datetime > $P{end_date}
                   ) - (
                     select coalesce(sum(p.balance), 0)
                     from payment p
                     where
                         p.deleted = 0
                         and p.user_id = u.id
-                        and p.create_datetime <= (current_date - $P{start_days})
-                        and p.create_datetime > (current_date - $P{end_days})
+                        and p.create_datetime <= $P{start_date}
+                        and p.create_datetime > $P{end_date}
                 )
             ) as balance
         from
             base_user u
         where
-            u.id = $P{user_id}]]>
+            u.id = $P!{user_id}]]>
 	</queryString>
 	<field name="balance" class="java.math.BigDecimal"/>
 	<variable name="sub_total" class="java.math.BigDecimal" calculation="Sum">

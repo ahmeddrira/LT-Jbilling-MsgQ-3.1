@@ -9,8 +9,8 @@
 		<parameter name="endDate" class="java.util.Date"/>
 		<queryString>
 			<![CDATA[select
-                count(u.id) as count,
-                date(u.create_datetime) as create_date
+                count(u.id) as user_count,
+                cast(u.create_datetime as date) as create_date
             from
                 base_user u
                 inner join user_role_map r on r.user_id = u.id
@@ -23,7 +23,7 @@
             group by create_date
             order by create_date]]>
 		</queryString>
-		<field name="count" class="java.lang.Long"/>
+		<field name="user_count" class="java.lang.Long"/>
 		<field name="create_date" class="java.sql.Date"/>
 	</subDataset>
 	<parameter name="entityId" class="java.lang.Integer"/>
@@ -31,8 +31,8 @@
 	<parameter name="endDate" class="java.util.Date"/>
 	<queryString>
 		<![CDATA[select
-            count(u.id) as count,
-            date(u.create_datetime) as create_date
+            count(u.id) as user_count,
+            cast(u.create_datetime as date) as create_date
         from
             base_user u
             inner join user_role_map r on r.user_id = u.id
@@ -45,10 +45,10 @@
         group by create_date
         order by create_date]]>
 	</queryString>
-	<field name="count" class="java.lang.Long"/>
+	<field name="user_count" class="java.lang.Long"/>
 	<field name="create_date" class="java.sql.Date"/>
 	<variable name="subtotal" class="java.lang.Long" calculation="Sum">
-		<variableExpression><![CDATA[$F{count}]]></variableExpression>
+		<variableExpression><![CDATA[$F{user_count}]]></variableExpression>
 		<initialValueExpression><![CDATA[Long.valueOf("0")]]></initialValueExpression>
 	</variable>
 	<title>
@@ -78,7 +78,7 @@
 					<categorySeries>
 						<seriesExpression><![CDATA[""]]></seriesExpression>
 						<categoryExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{create_date})]]></categoryExpression>
-						<valueExpression><![CDATA[$F{count}]]></valueExpression>
+						<valueExpression><![CDATA[$F{user_count}]]></valueExpression>
 					</categorySeries>
 				</categoryDataset>
 				<barPlot>
@@ -134,7 +134,7 @@
 			<textField>
 				<reportElement x="407" y="0" width="120" height="20"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Long"><![CDATA[$F{count}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Long"><![CDATA[$F{user_count}]]></textFieldExpression>
 			</textField>
 			<textField pattern="MMMMM dd, yyyy">
 				<reportElement x="0" y="0" width="130" height="20"/>

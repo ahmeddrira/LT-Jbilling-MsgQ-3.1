@@ -9,7 +9,7 @@
 		<parameter name="endDate" class="java.util.Date"/>
 		<queryString>
 			<![CDATA[select
-                count(u.id) as count,
+                count(u.id) as user_count,
                 to_char(u.create_datetime, 'MM') as month_of_year,
                 to_char(u.create_datetime, 'Month') as month,
                 to_char(u.create_datetime, 'yyyy') as year
@@ -25,7 +25,7 @@
             group by month_of_year, month, year
             order by year, month_of_year]]>
 		</queryString>
-		<field name="count" class="java.lang.Long"/>
+		<field name="user_count" class="java.lang.Long"/>
 		<field name="month_of_year" class="java.lang.String"/>
 		<field name="month" class="java.lang.String"/>
 		<field name="year" class="java.lang.String"/>
@@ -35,7 +35,7 @@
 	<parameter name="endDate" class="java.util.Date"/>
 	<queryString>
 		<![CDATA[select
-            count(u.id) as count,
+            count(u.id) as user_count,
             to_char(u.create_datetime, 'MM') as month_of_year,
             to_char(u.create_datetime, 'Month') as month,
             to_char(u.create_datetime, 'yyyy') as year
@@ -51,12 +51,12 @@
         group by month_of_year, month, year
         order by year, month_of_year]]>
 	</queryString>
-	<field name="count" class="java.lang.Long"/>
+	<field name="user_count" class="java.lang.Long"/>
 	<field name="month_of_year" class="java.lang.String"/>
 	<field name="month" class="java.lang.String"/>
 	<field name="year" class="java.lang.String"/>
 	<variable name="subtotal" class="java.lang.Long" calculation="Sum">
-		<variableExpression><![CDATA[$F{count}]]></variableExpression>
+		<variableExpression><![CDATA[$F{user_count}]]></variableExpression>
 		<initialValueExpression><![CDATA[Long.valueOf("0")]]></initialValueExpression>
 	</variable>
 	<title>
@@ -86,7 +86,7 @@
 					<categorySeries>
 						<seriesExpression><![CDATA[""]]></seriesExpression>
 						<categoryExpression><![CDATA[$F{month} + " " + $F{year}]]></categoryExpression>
-						<valueExpression><![CDATA[$F{count}]]></valueExpression>
+						<valueExpression><![CDATA[$F{user_count}]]></valueExpression>
 						<labelExpression><![CDATA[$F{month_of_year} + "-" + $F{year}]]></labelExpression>
 					</categorySeries>
 				</categoryDataset>
@@ -150,7 +150,7 @@
 			<textField>
 				<reportElement x="407" y="0" width="120" height="20"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Long"><![CDATA[$F{count}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Long"><![CDATA[$F{user_count}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="100" height="20"/>

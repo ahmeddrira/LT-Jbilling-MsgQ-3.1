@@ -198,7 +198,7 @@ class OrderController {
 		if ( null != invoiceID) {
 			flash.message ='order.geninvoice.success'
 			flash.args = [order.getId()]
-			redirect controller: 'invoice', action: 'showListAndInvoice', params: [id: invoiceID]
+			redirect controller: 'invoice', action: 'list', params: [id: invoiceID]
 		}
 	}
 
@@ -210,7 +210,7 @@ class OrderController {
 		if (!invoices || invoices.size() == 0) {
 			flash.error = 'order.error.invoices.not.found'
 			flash.args = [params.userId]
-			redirect (action: 'showListAndOrder', params: [id: params.id as Integer]) 
+			redirect (action: 'showListAndOrder', params: [id: params.id as Integer])
 		}
 		session.applyToInvoiceOrderId= params.int('id')
 		[invoices:invoices, currencies: currencies, orderId: params.id]

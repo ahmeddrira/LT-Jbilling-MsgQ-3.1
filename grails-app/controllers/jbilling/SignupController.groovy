@@ -40,6 +40,7 @@ import com.sapienter.jbilling.server.util.api.validation.EntitySignupValidationG
 import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.server.user.UserWS
 import javax.validation.groups.Default
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 /**
  * SignupController 
@@ -53,6 +54,8 @@ class SignupController {
     def messageSource
     def passwordEncoder
     def viewUtils
+    def springSecurityService
+    def securityContextLogoutHandler
 
     def index = {
     }
@@ -101,10 +104,17 @@ class SignupController {
         // set all entity defaults
         new EntityDefaults(company, user, language, messageSource).init()
 
+        if (springSecurityService.isLoggedIn()) {
+            // if logged in, delete the remember me cookie and log the user out
+            // the user should always be shown the login page after signup
+            response.deleteCookie(SpringSecurityUtils.securityConfig.rememberMe.cookieName)
+            redirect uri: SpringSecurityUtils.securityConfig.logout.filterProcessesUrl
 
-        flash.message = 'signup.successful'
-        flash.args = [ companyContact.organizationName, user.userName ]
-        redirect controller: 'login', action: 'auth', params: [ userName: user.userName, companyId: company.id ]
+        } else {
+            flash.message = 'signup.successful'
+            flash.args = [ companyContact.organizationName, user.userName ]
+            redirect controller: 'login', action: 'auth', params: [ userName: user.userName, companyId: company.id ]
+        }
     }
 
     /**

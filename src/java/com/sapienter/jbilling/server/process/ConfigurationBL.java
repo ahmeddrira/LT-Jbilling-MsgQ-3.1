@@ -225,14 +225,17 @@ public class ConfigurationBL {
     	ProcessRunDTO run = new ProcessRunDAS().getLatestSuccessful(ws.getEntityId());
     	
     	//The nextRunDate must be greater than the latest successful one
-    	if (!run.getBillingProcess().getBillingDate().before(ws.getNextRunDate())) {
-    		LOG.error("Trying to set this configuration: " + ws + " but the it should be in the future " + 
-    		        run.getBillingProcess());
-			SessionInternalError exception = new SessionInternalError(
-			        "The new next date needs to be in the future from the last successful run");
+    	if (run != null
+            && run.getBillingProcess().getBillingDate() != null
+            && !run.getBillingProcess().getBillingDate().before(ws.getNextRunDate())) {
+
+    		LOG.error("Trying to set this configuration: " + ws + " but the it should be in the future " + run.getBillingProcess());
+			SessionInternalError exception = new SessionInternalError("The new next date needs to be in the future from the last successful run");
 			String messages[] = new String[1];
-			messages[0] = new String("BillingProcessConfigurationWS,nextRunDate," +
-					"billing.configuration.error.past.nextrundate,"+run.getBillingProcess().getBillingDate());
+			messages[0] = new String("BillingProcessConfigurationWS,nextRunDate,"
+                                     + "billing.configuration.error.past.nextrundate,"
+                                     + run.getBillingProcess().getBillingDate());
+
 			exception.setErrorMessages(messages);
 			throw exception;
 		}

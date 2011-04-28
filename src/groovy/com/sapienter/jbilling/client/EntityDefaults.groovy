@@ -138,7 +138,8 @@ class EntityDefaults {
                 dueDateValue: 1,
                 onlyRecurring: 1,
                 invoiceDateProcess: 0,
-                autoPayment: 0
+                autoPayment: 0,
+                maximumPeriods: 1
         ).save()
 
 

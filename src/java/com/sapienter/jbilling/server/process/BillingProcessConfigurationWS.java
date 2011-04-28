@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  * BillingProcessConfigurationWS
@@ -39,6 +40,7 @@ public class BillingProcessConfigurationWS implements Serializable {
     private int id;
     private Integer periodUnitId;
     private Integer entityId;
+    @NotNull(message = "validation.error.is.required")
     private Date nextRunDate;
     private Integer generateReport;
     private Integer retries;

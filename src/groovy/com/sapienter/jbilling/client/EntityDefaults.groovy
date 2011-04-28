@@ -167,6 +167,8 @@ class EntityDefaults {
         new PluggableTaskDTO(entityId: company.id, type: new PluggableTaskTypeDTO(28), processingOrder: 1).save()   // BasicItemManager
         new PluggableTaskDTO(entityId: company.id, type: new PluggableTaskTypeDTO(33), processingOrder: 1).save()   // RulesMediationTask
         new PluggableTaskDTO(entityId: company.id, type: new PluggableTaskTypeDTO(54), processingOrder: 1).save()   // DynamicBalanceManagerTask
+        new PluggableTaskDTO(entityId: company.id, type: new PluggableTaskTypeDTO(82), processingOrder: 1).save()   // BillingProcessTask
+
 
 
         /*

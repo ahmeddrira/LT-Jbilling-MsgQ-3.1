@@ -3206,13 +3206,6 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version, description) FROM stdin;
-4	1	product	list	\N	2300	0	\N
-5	1	product	show	\N	3000	0	\N
-6	1	product	list	\N	\N	0	\N
-7	1	product	list	\N	1	0	\N
-8	1	product	show	\N	2602	0	\N
-9	1	plan	list	\N	\N	0	\N
-10	1	plan	list	\N	1	0	\N
 \.
 
 
@@ -16369,8 +16362,6 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 --
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
-1	PRODUCT	3000	1	0
-2	PRODUCT	2602	1	0
 \.
 
 

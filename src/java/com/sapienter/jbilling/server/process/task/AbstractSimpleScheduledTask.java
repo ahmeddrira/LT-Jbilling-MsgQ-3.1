@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateMidnight;
 import org.quartz.Scheduler;
@@ -126,20 +127,20 @@ public abstract class AbstractSimpleScheduledTask extends ScheduledTask {
     }
 
     protected Date getParameter(String key, Date defaultValue) throws PluggableTaskException {
-        Object value = parameters.get(key);
+        String value = parameters.get(key);
 
         try {
-            return value != null ? DATE_FORMAT.parse((String) value) : defaultValue;
+            return StringUtils.isNotBlank(value) ? DATE_FORMAT.parse(value) : defaultValue;
         } catch (ParseException e) {
             throw new PluggableTaskException(key + " could not be parsed as a date!", e);
         }
     }
 
     protected Integer getParameter(String key, Integer defaultValue) throws PluggableTaskException {
-        Object value = parameters.get(key);
+        String value = parameters.get(key);
 
         try {
-            return value != null ? Integer.parseInt((String) value) : defaultValue;
+            return StringUtils.isNotBlank(value) ? Integer.parseInt(value) : defaultValue;
         } catch (NumberFormatException e) {
             throw new PluggableTaskException(key + " could not be parsed as an integer!", e);
         }

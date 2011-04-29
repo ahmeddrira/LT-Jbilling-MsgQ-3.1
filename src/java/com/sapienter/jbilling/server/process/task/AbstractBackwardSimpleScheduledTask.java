@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.process.task;
 
 import java.text.ParseException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -91,12 +92,12 @@ public abstract class AbstractBackwardSimpleScheduledTask extends
     try {
             // set process.time as trigger start time if set
             String start = Util.getSysProp(PROPERTY_PROCESS_TIME);
-            if (start != null && !"".equals(start))
+            if (StringUtils.isNotBlank(start))
                 trigger.setStartTime(DATE_FORMAT.parse(start));
 
             // set process.frequency as trigger repeat interval if set
             String repeat = Util.getSysProp(PROPERTY_PROCESS_FREQ);
-            if (repeat != null && !"".equals(repeat))
+            if (StringUtils.isNotBlank(repeat))
                 trigger.setRepeatInterval(Long.parseLong(repeat) * 60 * 1000);
 
         } catch (ParseException e) {

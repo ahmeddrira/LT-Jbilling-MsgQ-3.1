@@ -895,3 +895,9 @@ delete from international_description where table_id = 78; -- list_field_entity
 
 delete from jbilling_table where name in ('list', 'list_entity', 'list_field', 'list_field_entity', 'menu_option');
 delete from jbilling_seqs where name in ('list', 'list_entity', 'list_field', 'list_field_entity', 'menu_option');
+
+-- ageing plug-ins
+insert into pluggable_task_type_category (id, description, interface_name) values (24, 'user ageing process task', 'com.sapienter.jbilling.server.process.task.IAgeingTask');
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (83, 24, 'com.sapienter.jbilling.server.process.task.BasicAgeingTask', 0);
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (84, 22, 'com.sapienter.jbilling.server.process.task.AgeingProcessTask', 0);
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (85, 24, 'com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask', 0);

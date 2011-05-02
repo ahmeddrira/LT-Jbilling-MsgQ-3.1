@@ -1,22 +1,22 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
+    jBilling - The Enterprise Open Source Billing System
+    Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
 
- This file is part of jbilling.
+    This file is part of jbilling.
 
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+    jbilling is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
+    jbilling is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
 
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
- */
+    You should have received a copy of the GNU Affero General Public License
+    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 package com.sapienter.jbilling.server.process;
 
@@ -134,7 +134,7 @@ public interface IBillingProcessSessionBean {
     public InvoiceDTO generateInvoice(Integer orderId, Integer invoiceId,
             Integer languageId) throws SessionInternalError;
     
-    public void reviewUsersStatus(Date today) throws SessionInternalError;
+    public void reviewUsersStatus(Integer entityId, Date today) throws SessionInternalError;
 
     /**
      * Update status of BillingProcessRun in new transaction
@@ -154,10 +154,4 @@ public interface IBillingProcessSessionBean {
      * @return id of inserted ProcessRunUserDTO
      */
     public Integer addProcessRunUser(Integer billingProcessId, Integer userId, Integer status);
-    
-    /**
-     * Returns true if the Billing Process is currently running.
-     * @return
-     */
-    public boolean isBillingRunning() ;
 }

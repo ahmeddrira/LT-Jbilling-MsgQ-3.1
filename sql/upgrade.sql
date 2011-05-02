@@ -7,6 +7,7 @@
 -- comment out the labeled 'postgresql' statements and un-comment the ones labeled 'mysql'
 
 -- plans and pricing models
+DROP TABLE IF EXISTS price_model;
 CREATE TABLE price_model (
     id integer NOT NULL,
     strategy_type varchar(20) NOT NULL,
@@ -79,7 +80,7 @@ insert into jbilling_table (id, name) values (98, 'customer_price');
 ALTER TABLE item add column price_model_id integer;
 ALTER TABLE price_model add column tmp_item_id integer;
 insert into price_model (id, strategy_type, tmp_item_id, rate, currency_id) (select distinct on (item_id) id, 'METERED', item_id, price, currency_id from item_price where currency_id = 1);
-update item i set price_model_id = m.id from price_model m where m.tmp_item_id = i.id
+update item i set i.price_model_id = (select id from price_model where tmp_item_id = i.id);
 ALTER TABLE price_model drop column tmp_item_id;
 -- mysql
 -- ALTER TABLE item add column price_model_id integer;
@@ -439,6 +440,35 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (99, 2, 'description', 1, 'Payment Processor');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (99, 3, 'description', 1, 'IP Address');
 
+
+-- internal item types
+alter table item_type add column internal boolean null;
+update item_type set internal = false;
+alter table item_type alter column internal set not null;
+
+-- internal 'plans' category, add for each company
+insert into item_type (id, entity_id, description, internal, order_line_type_id, optlock) values ((select max(id)+1 from item_type), 1, 'plans', true, 1, 0);
+
+-- price model chaining
+alter table price_model add column next_model_id int null;
+alter table price_model add constraint price_model_next_id_FK foreign key (next_model_id) references price_model (id);
+
+-- plan item bundled quantity
+alter table plan_item add column bundled_quantity numeric(22,10) null;
+
+-- nullable price model rate and currency
+alter table price_model alter column rate drop not null;
+alter table price_model alter column currency_id drop not null;
+
+-- target period for plans and plan items
+alter table plan add column period_id int;
+update plan set period_id = (select min(id) from order_period where entity_id = 1);
+alter table plan alter column period_id set not null;
+alter table plan add constraint plan_period_id_FK foreign key (period_id) references order_period (id);
+
+alter table plan_item add column period_id int;
+alter table plan_item add constraint plan_item_period_id_FK foreign key (period_id) references order_period (id);
+
 -- descriptions of messages for the audit log screens
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
 values (47, 20, 'description', 1, 'User subscription status has changed');
@@ -498,6 +528,12 @@ insert into jbilling_seqs values ('shortcut', 1);
 
 -- gl code new field in item table
 alter table item add column gl_code character varying (50);
+
+-- drop item manual pricing flag
+alter table item drop column price_manual;
+
+-- sugar crm plans integration
+insert into pluggable_task_type values (86, 17, 'com.sapienter.jbilling.server.item.tasks.PlanChangesExternalTask', 0);
 
 -- drop legacy reporting tables
 drop table report_field;
@@ -627,6 +663,36 @@ insert into report (id, type_id, name, file_name, optlock) values (9, 1, 'gl_sum
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 9, 'description', 1, 'General ledger summary of all invoiced charges for the given day, grouped by item type.');
 insert into report_parameter (id, report_id, dtype, name) values (14, 9, 'date', 'date');
 insert into entity_report_map (report_id, entity_id) values (9, 1);
+
+-- plan item bundling tables
+drop table if exists plan_item_bundle;
+create table plan_item_bundle (
+    id int NOT NULL,
+    quantity numeric(22, 10) NOT NULL,
+    period_id int NOT NULL,
+    target_customer varchar(20) NOT NULL,
+    add_if_exists boolean NOT NULL,
+    PRIMARY KEY (id)
+);
+alter table plan_item_bundle add constraint plan_item_bundle_period_FK foreign key (period_id) references order_period (id);
+
+insert into jbilling_table (id, name) values (103, 'plan_item_bundle');
+insert into jbilling_seqs (name, next_id) values ('plan_item_bundle', 1);
+
+-- migrate item bundles to new format
+alter table plan_item add column plan_item_bundle_id int;
+
+insert into plan_item_bundle (id, quantity, period_id, target_customer, add_if_exists) (select id, bundled_quantity, period_id, 'SELF', true from plan_item where bundled_quantity is not null and period_id is not null);
+update plan_item set plan_item_bundle_id = id where bundled_quantity is not null and period_id is not null;
+
+alter table plan_item drop constraint plan_item_period_id_fk;
+alter table plan_item drop column period_id;
+alter table plan_item drop column bundled_quantity;
+
+alter table plan_item add constraint plan_item_bundle_id_FK foreign key (plan_item_bundle_id) references plan_item_bundle (id);
+
+update jbilling_seqs set next_id = coalesce((select round(max(id)/100)+1 from plan_item_bundle), 1) where name = 'plan_item_bundle';
+
 
 -- preference value consolidation
 update preference set str_value = int_value where int_value is not null;

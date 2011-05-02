@@ -37,6 +37,7 @@ import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.server.util.csv.Exporter
 import com.sapienter.jbilling.client.util.DownloadHelper
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
+import org.hibernate.Criteria
 
 @Secured(['isAuthenticated()'])
 class ProductController {
@@ -135,7 +136,7 @@ class ProductController {
                 offset: params.offset
         ) {
             and {
-                createAlias('defaultPrice', 'price')
+                createAlias('defaultPrice', 'price', Criteria.LEFT_JOIN)
 
                 filters.each { filter ->
                     if (filter.value != null) {

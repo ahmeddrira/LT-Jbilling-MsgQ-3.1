@@ -132,7 +132,10 @@ target(updateImage: "Updates the jbilling image with the current release artifac
 target(packageTomcat: "Builds and packages the binary jbilling tomcat release.") {
     updateImage()
 
-    // clear tomcat temp and work directories
+    // clear tomcat logs, temp and work directories
+    delete(dir: "${imageDir}/logs")
+    mkdir(dir: "${imageDir}/logs")
+
     delete(dir: "${imageDir}/temp")
     mkdir(dir: "${imageDir}/temp")
 
@@ -146,7 +149,7 @@ target(packageTomcat: "Builds and packages the binary jbilling tomcat release.")
             exclude(name: "webapps/drools-guvnor/") // exclude exploded application directories
 
             exclude(name: "**/activemq-data/")
-            exclude(name: "**/logs/")
+            exclude(name: "**/*.out")
             exclude(name: "**/*.log")               // exclude log files
         }
     }

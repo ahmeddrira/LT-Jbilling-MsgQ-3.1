@@ -87,6 +87,14 @@ environments {
 
 }
 
+
+/*
+    Documentation
+ */
+grails.doc.authors="Emiliano Conde, Brian Cowdery"
+grails.doc.license="AGPL v3"
+
+
 /*
     Spring Security
  */

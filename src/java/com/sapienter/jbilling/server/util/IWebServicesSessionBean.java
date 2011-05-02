@@ -132,8 +132,6 @@ public interface IWebServicesSessionBean {
     
     public String isUserSubscribedTo(Integer userId, Integer itemId);
 
-    public Integer[] getUnpaidInvoices(Integer userId) throws SessionInternalError;
-
     public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId) throws SessionInternalError;
     public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number) throws SessionInternalError;
 
@@ -189,15 +187,16 @@ public interface IWebServicesSessionBean {
     public void deleteInvoice(Integer invoiceId);
 
     public InvoiceWS[] getAllInvoicesForUser(Integer userId);
-    public boolean notifyInvoiceByEmail(Integer invoiceId);
     public Integer[] getAllInvoices(Integer userId);
     public InvoiceWS getLatestInvoice(Integer userId) throws SessionInternalError;
     public Integer[] getLastInvoices(Integer userId, Integer number) throws SessionInternalError;
 
     public Integer[] getInvoicesByDate(String since, String until) throws SessionInternalError;
     public Integer[] getUserInvoicesByDate(Integer userId, String since, String until) throws SessionInternalError;
+    public Integer[] getUnpaidInvoices(Integer userId) throws SessionInternalError;
 
     public byte[] getPaperInvoicePDF(Integer invoiceId) throws SessionInternalError;
+    public boolean notifyInvoiceByEmail(Integer invoiceId);
 
 
     /*
@@ -222,8 +221,6 @@ public interface IWebServicesSessionBean {
     public Integer applyPayment(PaymentWS payment, Integer invoiceId) throws SessionInternalError;
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId);
 
-    public AgeingWS[] getAgeingConfiguration(Integer languageId) throws SessionInternalError ;
-    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError;
     
     /*
         Billing process
@@ -247,6 +244,9 @@ public interface IWebServicesSessionBean {
     public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws SessionInternalError;
 
     public List<Integer> getBillingProcessGeneratedInvoices(Integer processId);
+
+    public AgeingWS[] getAgeingConfiguration(Integer languageId) throws SessionInternalError ;
+    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError;
 
 
     /*

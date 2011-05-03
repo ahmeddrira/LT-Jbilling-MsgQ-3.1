@@ -62,7 +62,7 @@ h2. Item API Methods
 @getAllItemCategories()@ | - | @ItemTypeWS []@ | Returns an array of all item types in the system.
 @createItemCategory(ItemTypeWS itemType)@ | @ItemTypeWS@ | @Integer@ | Saves the given item type and returns the newly created object.
 @updateItemCategory(ItemTypeWS itemType)@ | @ItemTypeWS@ | - | Updates the stored item type and returns the updated object. Given item type must have an ID.
-@deleteItemCategory(Integer itemCategoryId)@ | @Item Type ID | - | Deletes the given item type.
+@deleteItemCategory(Integer itemCategoryId)@ | Item Type ID | - | Deletes the given item type.
 @isUserSubscribedTo(Integer userId, Integer itemId)@ | User ID, Item ID| @String@ | Returns the total quantity of an item found on a users active recurring orders.
 @getLatestInvoiceByItemType(Integer userId, Integer itemTypeId)@ | User ID, Item Type ID | @InvoiceWS@ | Returns the latest invoice for a user containing an item of the given type.
 @getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number)@ | User ID, Item Type ID, Integer number | @Integer []@ | Returns the last _N_ invoice IDs containing an item of the given type for a user.
@@ -81,7 +81,7 @@ h2. Payment API Methods
 @getLatestPayment(Integer userId)@ | User ID | @PaymentWS@ | Returns the most recent payment for the given user.
 @getLastPayments(Integer userId, Integer number)@ | User ID, number of payments | @Integer []@ | Returns the last _N_ payment IDs for the given user.
 @getTotalRevenueByUser(Integer userId)@ | User ID | @BigDecimal@ | Returns the total revenue (payments recieved) for the given user.
-@getUserPaymentInstrument(Integer userId)@ | User ID | @PaymentWS | Returns the selected "automatic payment" details for the given user.
+@getUserPaymentInstrument(Integer userId)@ | User ID | @PaymentWS@ | Returns the selected "automatic payment" details for the given user.
 @createPayment(PaymentWS payment)@ | @PaymentWS@ | @Integer@ | Saves the given payment and applies it to the user's account (as per configured entity preferences). Does not process the payment, only creates it as 'Entered'.
 @updatePayment(PaymentWS payment)@ | @PaymentWS@ | - | Updates the stored payment to match the details in the given payment. Given payment must have an ID.
 @deletePayment(Integer paymentId)@ | Payment ID | - | Deletes the given payment.
@@ -97,7 +97,7 @@ h2. User API Methods
 
 {table}
 *API Method* | *Arguments* | *Returns* | *Description*
-@getUserWS(Integer userId)@ | User ID | @UserWS | Returns the user for the given ID.
+@getUserWS(Integer userId)@ | User ID | @UserWS@ | Returns the user for the given ID.
 @createUser(UserWS newUser)@ | @UserWS | @Integer@ | Save the given item and returns the new ID.
 @updateUser(UserWS user)@ | @UserWS @ | - | Updates the stored user details to match the given user object. Given user must have an ID.
 @deleteUser(Integer userId)@ | User ID | - | Deletes the given user.
@@ -204,15 +204,12 @@ h2. Preference API Methods
 @updatePreferences(PreferenceWS[] prefList)@ | @PreferenceWS []@ | - | Stores all the given preference values.
 @updatePreference(PreferenceWS preference)@ | @PreferenceWS@ | - | Stored the given preference value.
 @getPreference(Integer preferenceTypeId)@ @ | Preference Type ID | @PreferenceWS@ | Returns the preference for the given preference type id.
-
 @getCurrencies()@ | - | @CurrencyWS []@ | Returns a list of configured currencies.
 @updateCurrencies(CurrencyWS[] currencies)@ | @CurrencyWS []@ | - | Stores all the given currency values.
 @updateCurrency(CurrencyWS currency)@ | @CurrencyWS@ | - | Updates the given currency. Storing the exchange rate, system rate, and currency availability.
 @createCurrency(CurrencyWS currency)@ | @CurrencyWS@ | @Integer@ | Saves a new currency type and returns the new ID.
-
 @getCompany()@ | - | @CompanyWS@ | Returns the company contact details for the API users company.
 @updateCompany(CompanyWS companyWS)@ | @CompanyWS@ | - | Updates the company contact details for the API users company.
-
 @createUpdateNofications(Integer messageId, MessageDTO dto)@ | Mesage ID , @MessageDTO@ | - | Saves or updates an existing notification message.
 {table}
 

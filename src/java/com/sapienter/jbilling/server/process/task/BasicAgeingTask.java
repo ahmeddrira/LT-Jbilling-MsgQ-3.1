@@ -148,7 +148,7 @@ public class BasicAgeingTask extends PluggableTask implements IAgeingTask {
      * @return the resulting ageing step for the user after ageing
      */
     public AgeingEntityStepDTO ageUser(Set<AgeingEntityStepDTO> steps, UserDTO user, Date today, Integer executorId) {
-        LOG.debug("Ageing user " + user.getUserId());
+        LOG.debug("Ageing user " + user.getId());
 
         Integer currentStatusId = user.getStatus().getId();
         UserStatusDTO nextStatus = null;
@@ -166,14 +166,14 @@ public class BasicAgeingTask extends PluggableTask implements IAgeingTask {
                 // determine the next ageing step
                 if (isAgeingRequired(user, ageingStep, today)) {
                     nextStatus = getNextAgeingStep(steps, currentStatusId);
-                    LOG.debug("User " + user.getId() + " needs to be aged to '" + nextStatus.getDescription() + "'");
+                    LOG.debug("User " + user.getId() + " needs to be aged to '" + getStatusDescription(nextStatus) + "'");
                 }
 
             } else {
                 // User is in a non-existent ageing status... Either the status was removed or
                 // the data is bad. As a workaround, just move to the next status.
                 nextStatus =  getNextAgeingStep(steps, currentStatusId);
-                LOG.warn("User " + user.getId() + " is in an invalid ageing step. Moving to '" + nextStatus.getDescription() + "'");
+                LOG.warn("User " + user.getId() + " is in an invalid ageing step. Moving to '" + getStatusDescription(nextStatus) + "'");
             }
         }
 
@@ -182,6 +182,7 @@ public class BasicAgeingTask extends PluggableTask implements IAgeingTask {
             setUserStatus(user, nextStatus, today, null);
 
         } else {
+            LOG.debug("Next status is null, no further ageing steps are available.");
             eLogger.warning(user.getEntity().getId(),
                             user.getUserId(),
                             user.getUserId(),
@@ -302,7 +303,7 @@ public class BasicAgeingTask extends PluggableTask implements IAgeingTask {
             return;
         }
 
-        LOG.debug("Setting user " + user.getId() + " status to '" + status.getDescription() + "'");
+        LOG.debug("Setting user " + user.getId() + " status to '" + getStatusDescription(status) + "'");
 
         if (executorId != null) {
             // this came from the gui
@@ -425,7 +426,7 @@ public class BasicAgeingTask extends PluggableTask implements IAgeingTask {
 
         } catch (NotificationNotFoundException e) {
             LOG.warn("Failed to send ageing notification. Entity " + user.getEntity().getId()
-                     + " does not have an ageing message configured for status '" + newStatus.getDescription() + "'.");
+                     + " does not have an ageing message configured for status '" + getStatusDescription(newStatus) + "'.");
             return false;
         }
         return true;
@@ -446,6 +447,19 @@ public class BasicAgeingTask extends PluggableTask implements IAgeingTask {
             }
         }
 
+        return null;
+    }
+
+    /**
+     * Null safe convenience method to return the status description.
+     *
+     * @param status user status
+     * @return description
+     */
+    private String getStatusDescription(UserStatusDTO status) {
+        if (status != null) {
+            return status.getDescription();
+        }
         return null;
     }
 }

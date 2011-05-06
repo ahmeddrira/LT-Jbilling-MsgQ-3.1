@@ -724,12 +724,14 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             parameters.put("invoiceId", invoice.getId());
             parameters.put("entityName", printable(from.getOrganizationName()));
             parameters.put("entityAddress", printable(from.getAddress1()));
+            parameters.put("entityAddress2", printable(from.getAddress2()));
             parameters.put("entityPostalCode", printable(from.getPostalCode()));
             parameters.put("entityCity", printable(from.getCity()));
             parameters.put("entityProvince", printable(from.getStateProvince()));
             parameters.put("customerOrganization", printable(to.getOrganizationName()));
             parameters.put("customerName", printable(to.getFirstName(), to.getLastName()));
             parameters.put("customerAddress", printable(to.getAddress1()));
+            parameters.put("customerAddress2", printable(to.getAddress2()));
             parameters.put("customerPostalCode", printable(to.getPostalCode()));
             parameters.put("customerCity", printable(to.getCity()));
             parameters.put("customerProvince", printable(to.getStateProvince()));

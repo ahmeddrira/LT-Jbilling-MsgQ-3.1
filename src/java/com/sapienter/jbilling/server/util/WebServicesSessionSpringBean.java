@@ -2732,7 +2732,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             new NotificationBL().createUpdate(getCallerCompanyId(), dto);
         } else {
             new NotificationBL(messageId).createUpdate(getCallerCompanyId(), dto);
-}
+        }
     }
 
     /*Secured via WSSecurityMethodMapper entry.*/

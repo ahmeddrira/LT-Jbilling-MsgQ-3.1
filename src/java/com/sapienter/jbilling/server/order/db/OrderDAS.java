@@ -239,7 +239,7 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
                     "  from OrderDTO o " +
                     " where o.baseUserByUserId.id = :userId " +
                     "   and o.orderPeriod.id = :periodId " +
-                    "   and date(activeSince) = :activeSince " +
+                    "   and cast(activeSince as date) = :activeSince " +
                     "   and deleted = 0";    
 
     @SuppressWarnings("unchecked")

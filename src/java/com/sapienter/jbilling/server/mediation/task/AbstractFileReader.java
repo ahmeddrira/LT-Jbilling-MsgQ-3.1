@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.List;
 
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
@@ -109,36 +111,34 @@ public abstract class AbstractFileReader extends AbstractReader {
     public boolean validate(List<String> messages) {
         boolean retValue = super.validate(messages);
 
-        String formatFile = (String) parameters.get(PARAMETER_FORMAT_FILE.getName());
+        String formatFile = getParameter(PARAMETER_FORMAT_FILE.getName(), (String) null);
+        String formatDirectory = getParameter(PARAMETER_FORMAT_DIRECTORY.getName(), Util.getSysProp("base_dir") + "mediation");
+
         if (formatFile == null) {
             messages.add("parameter format_file is required");
             return false;
         }
 
-        String formatDirectory = ((String) parameters.get(PARAMETER_FORMAT_DIRECTORY.getName()) == null)
-            ? Util.getSysProp("base_dir") + "mediation" : (String) parameters.get(PARAMETER_FORMAT_DIRECTORY.getName());
-
-        formatFileName = formatDirectory + "/" + formatFile;
+        formatFileName = formatDirectory + File.separator + formatFile;
 
         // optionals
-        directory = ((String) parameters.get(PARAMETER_DIRECTORY.getName()) == null)
-                ? Util.getSysProp("base_dir") + "mediation" : (String) parameters.get(PARAMETER_DIRECTORY.getName());
-        suffix = ((String) parameters.get(PARAMETER_SUFFIX.getName()) == null)
-                ? "ALL" : (String) parameters.get(PARAMETER_SUFFIX.getName());
-        rename = Boolean.parseBoolean(((String) parameters.get(PARAMETER_RENAME.getName() ) == null)
-                ? "false" : (String) parameters.get(PARAMETER_RENAME.getName()));
-        dateFormat = new SimpleDateFormat(((String) parameters.get(PARAMETER_DATE_FORMAT.getName()) == null)
-                ? "yyyyMMdd-HHmmss" : (String) parameters.get(PARAMETER_DATE_FORMAT.getName()));
-        removeQuote = ( parameters.get(PARAMETER_REMOVE_QUOTE.getName()) == null )
-                ? true : Boolean.parseBoolean((String) parameters.get(PARAMETER_REMOVE_QUOTE.getName()));
-        autoID = (parameters.get(PARAMETER_AUTO_ID.getName()) == null)
-                ? false : new Boolean(parameters.get(PARAMETER_AUTO_ID.getName())).booleanValue();
-        bufferSize = Integer.parseInt(((String) parameters.get(PARAMETER_BUFFER_SIZE.getName()) == null)
-                ? "0" : (String) parameters.get(PARAMETER_BUFFER_SIZE.getName()));
+        directory = getParameter(PARAMETER_DIRECTORY.getName(), Util.getSysProp("base_dir") + "mediation");
 
         if (directory == null) {
             messages.add("The plug-in parameter 'directory' is mandatory");
             retValue = false;
+        }
+
+        suffix = getParameter(PARAMETER_SUFFIX.getName(), "ALL");
+        rename = getParameter(PARAMETER_RENAME.getName(), false);
+        dateFormat = new SimpleDateFormat(getParameter(PARAMETER_DATE_FORMAT.getName(), "yyyyMMdd-HHmmss"));
+        removeQuote = getParameter(PARAMETER_REMOVE_QUOTE.getName(), true);
+        autoID = getParameter(PARAMETER_AUTO_ID.getName(), false);
+
+        try {
+            bufferSize = getParameter(PARAMETER_BUFFER_SIZE.getName(), 0);
+        } catch (PluggableTaskException e) {
+            messages.add(e.getMessage());
         }
 
         LOG.debug("Started with " + " directory: " + directory + " suffix " + suffix + " rename " +

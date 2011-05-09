@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
+import org.apache.commons.lang.StringUtils;
 
 public class SeparatorFileReader extends AbstractFileReader {
     
@@ -48,8 +49,8 @@ public class SeparatorFileReader extends AbstractFileReader {
         boolean retValue = super.validate(messages); 
         
         // optionals
-        fieldSeparator = ((String) parameters.get(PARAMETER_SEPARATOR.getName()) == null) 
-                ? "," : (String) parameters.get(PARAMETER_SEPARATOR.getName());
+        fieldSeparator = (StringUtils.isBlank(parameters.get(PARAMETER_SEPARATOR.getName()))
+                          ? "," : parameters.get(PARAMETER_SEPARATOR.getName()));
        
         return retValue;
     }

@@ -115,9 +115,9 @@ public abstract class AbstractBackwardSimpleScheduledTask extends
      * @return true if properties should be used for scheduling, false if schedule from plug-ins
      */
     protected boolean useProperties() {
-        return parameters.get(PARAM_START_TIME.getName()) == null
-            && parameters.get(PARAM_END_TIME.getName()) == null
-            && parameters.get(PARAM_REPEAT.getName()) == null
-            && parameters.get(PARAM_INTERVAL.getName()) == null;
+        return StringUtils.isBlank(parameters.get(PARAM_START_TIME.getName()))
+            && StringUtils.isBlank(parameters.get(PARAM_END_TIME.getName()))
+            && StringUtils.isBlank(parameters.get(PARAM_REPEAT.getName()))
+            && StringUtils.isBlank(parameters.get(PARAM_INTERVAL.getName()));
     }
 }

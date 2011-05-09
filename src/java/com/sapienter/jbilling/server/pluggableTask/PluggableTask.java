@@ -127,8 +127,8 @@ public abstract class PluggableTask {
      * @return parameter value, or default if not defined
      */
     protected String getParameter(String key, String defaultValue) {
-        Object value = parameters.get(key);
-        return value != null ? (String) value : defaultValue;
+        String value = parameters.get(key);
+        return StringUtils.isNotBlank(value) ? value : defaultValue;
     }
 
     /**
@@ -140,10 +140,10 @@ public abstract class PluggableTask {
      * @return parameter value, or default if not defined
      */
     protected Integer getParameter(String key, Integer defaultValue) throws PluggableTaskException {
-        Object value = parameters.get(key);
+        String value = parameters.get(key);
 
         try {
-            return value != null ? Integer.parseInt((String) value) : defaultValue;
+            return StringUtils.isNotBlank(value) ? Integer.parseInt(value) : defaultValue;
         } catch (NumberFormatException e) {
             throw new PluggableTaskException(key + " could not be parsed as an integer!", e);
         }
@@ -160,8 +160,8 @@ public abstract class PluggableTask {
      * @return parameter value, or default if not defined
      */
     protected Boolean getParameter(String key, Boolean defaultValue) {
-        Object value = parameters.get(key);
-        return value != null ? ((String) value).equalsIgnoreCase("true") : defaultValue;
+        String value = parameters.get(key);
+        return StringUtils.isNotBlank(value) ? (value).equalsIgnoreCase("true") : defaultValue;
     }
 
     /**
@@ -176,9 +176,10 @@ public abstract class PluggableTask {
      * @throws PluggableTaskException thrown if parameter could not be parsed as a date
      */
     protected Date getParameter(String key, Date defaultValue) throws PluggableTaskException {
-        Object value = parameters.get(key);
+        String value = parameters.get(key);
+
         try {
-            return value != null ? PARAMETER_DATE_FORMAT.parse((String) value) : defaultValue;
+            return StringUtils.isNotBlank(value) ? PARAMETER_DATE_FORMAT.parse(value) : defaultValue;
         } catch (ParseException e) {
             throw new PluggableTaskException(key + " could not be parsed as a date!", e);
         }

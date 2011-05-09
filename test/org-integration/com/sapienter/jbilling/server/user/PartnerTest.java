@@ -18,7 +18,7 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ackage com.sapienter.jbilling.server.user;
+package com.sapienter.jbilling.server.user;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

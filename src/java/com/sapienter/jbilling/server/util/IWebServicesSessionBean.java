@@ -180,8 +180,6 @@ public interface IWebServicesSessionBean {
      */
 
     public InvoiceWS getInvoiceWS(Integer invoiceId) throws SessionInternalError;
-    public InvoiceWS getReviewInvoiceWS(Integer invoiceId) throws SessionInternalError;
-
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring) throws SessionInternalError;
     public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws SessionInternalError;
     public void deleteInvoice(Integer invoiceId);

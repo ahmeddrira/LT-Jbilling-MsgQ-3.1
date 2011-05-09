@@ -62,7 +62,7 @@ class InvoiceController {
         def filters = filterService.getFilters(FilterType.INVOICE, params)
         def invoices = getInvoices(filters, params)
 
-        def selected = params.id ? webServicesSession.getReviewInvoiceWS(params.int('id')) : null
+        def selected = params.id ? webServicesSession.getInvoiceWS(params.int('id')) : null
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, selected?.id)
 
@@ -144,7 +144,7 @@ class InvoiceController {
 
         if (invoiceId) {
             try {
-                invoice = webServicesSession.getReviewInvoiceWS(invoiceId)
+                invoice = webServicesSession.getInvoiceWS(invoiceId)
                 user = webServicesSession.getUserWS(invoice?.getUserId())
 
                 payments = new ArrayList<PaymentWS>(invoice?.payments?.length)

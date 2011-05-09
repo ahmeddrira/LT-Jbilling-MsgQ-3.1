@@ -125,7 +125,7 @@ public class BillingProcessTest extends TestCase {
         System.out.println("Invoice ids: " + Arrays.toString(invoiceIds));
 
 
-        InvoiceWS invoice = api.getReviewInvoiceWS(invoiceIds[0]);
+        InvoiceWS invoice = api.getInvoiceWS(invoiceIds[0]);
         System.out.println("TODO: check and write assert. Review invoice: " + invoice);
 
 //        assertEquals("New invoice should be 1 day and one month",
@@ -920,7 +920,7 @@ public class BillingProcessTest extends TestCase {
 
     private InvoiceWS getReviewInvoice(Integer[] invoiceIds) {
         for (Integer id : invoiceIds) {
-            InvoiceWS invoice = api.getReviewInvoiceWS(id);
+            InvoiceWS invoice = api.getInvoiceWS(id);
             if (invoice != null && invoice.getIsReview() == 1)
                 return invoice;
         }

@@ -129,10 +129,6 @@ public class SpringAPI implements JbillingAPI {
         return session.getInvoiceWS(invoiceId);
     }
 
-    public InvoiceWS getReviewInvoiceWS(Integer invoiceId) {
-        return session.getReviewInvoiceWS(invoiceId);
-    }
-
     public Integer[] getInvoicesByDate(String since, String until) {
         return session.getInvoicesByDate(since, until);
     }

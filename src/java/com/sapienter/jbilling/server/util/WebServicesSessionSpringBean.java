@@ -250,7 +250,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
         InvoiceDTO invoice = new InvoiceDAS().find(invoiceId);
 
-        if (invoice.getDeleted() == 1 || invoice.getIsReview() == 1) {
+        if (invoice.getDeleted() == 1) {
             return null;
         }
 
@@ -260,19 +260,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         	wsDto.setStatusDescr(invoice.getInvoiceStatus().getDescription(getCallerLanguageId()));
         }
         return wsDto;
-    }
-
-    /**
-     * Returns an invoice by ID regardless of the review or deleted status.
-     * @param invoiceId invoice ID
-     * @return invoice
-     */
-    public InvoiceWS getReviewInvoiceWS(Integer invoiceId) {
-        if (invoiceId == null)
-            return null;
-
-        InvoiceDTO invoice = new InvoiceDAS().find(invoiceId);
-        return InvoiceBL.getWS(invoice);
     }
 
     public InvoiceWS[] getAllInvoicesForUser(Integer userId) {

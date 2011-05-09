@@ -20,7 +20,9 @@
 
 package com.sapienter.jbilling.server.pluggableTask.admin;
 
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -41,7 +43,7 @@ public class PluggableTaskWS implements java.io.Serializable, WSSecured {
     private String notes;
     @NotNull(message="validation.error.notnull")
     private Integer typeId;
-    private Hashtable<String, String> parameters = new Hashtable<String, String>();
+    private Map<String, String> parameters = new HashMap<String, String>();
     private int versionNumber;
     
     public PluggableTaskWS() {
@@ -98,7 +100,7 @@ public class PluggableTaskWS implements java.io.Serializable, WSSecured {
     }
 
 
-    public Hashtable<String, String> getParameters() {
+    public Map<String, String> getParameters() {
         return parameters;
     }
 

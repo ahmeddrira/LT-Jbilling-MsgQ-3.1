@@ -142,8 +142,9 @@ class PluginController {
         PluggableTaskWS newTask = new PluggableTaskWS();
         bindData(newTask, params);
         for(String key: params.keySet()) { // manually bind the plug-in parameters
-            if (key.startsWith("plg-parm-")) {
-                newTask.getParameters().put(key.substring(9),params.get(key));
+            def value = params.get(key)
+            if (key.startsWith("plg-parm-") && value) {
+                newTask.getParameters().put(key.substring(9), value);
             }
         }
         

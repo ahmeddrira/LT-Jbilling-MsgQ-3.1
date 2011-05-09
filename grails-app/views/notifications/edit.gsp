@@ -1,12 +1,4 @@
-<html>
-<head>
-    <meta name="layout" content="main" />
-	<script language="javascript">	
-		//test cursor position code
-		var targetElement;
-		var position;
-		var glFlag= false;//implement onchange
-		var askPreference='%{--
+%{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
@@ -24,25 +16,32 @@
 
   You should have received a copy of the GNU Affero General Public License
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
-  --}%
+ --}%
 
-${askPreference}';
-		
+<html>
+<head>
+    <meta name="layout" content="main" />
+	<script language="javascript">	
+		//test cursor position code
+		var targetElement;
+		var position;
+		var glFlag= false;//implement onchange
+		var askPreference='${askPreference}';
+		var callAction= null;
+        
 		$(function (){
-			//alert('on document ready' + $ { l anguageId});
+			//alert('on document ready' + ${languageId});
 			$("#language.id").val(${languageId});
 		});
 		
-		function Show_Popup(action, userid) {	
-			$('#popup').fadeIn('fast');
-			$('#window').fadeIn('fast');
-		}
+		//function Show_Popup(action, userid) {	
+		//	$('#popup').fadeIn('fast');
+		//	$('#window').fadeIn('fast');
+		//}
 		
-		function Close_Popup() {	
-			$('#popup').fadeOut('fast');
-			$('#window').fadeOut('fast');
+		function Close_Popup(popUpRef) {	
 			checkCookieValue();
-			justGo()
+			justGo();
 		}
 		
 		function checkCookieValue(){
@@ -62,26 +61,53 @@ ${askPreference}';
 			elementClick(elm);
 		}
 		
-		function saveFirst() {
+		function saveFirst(popUpRef) {
+			$(popUpRef).dialog('close');
 			checkCookieValue();
 			$('#askPreference').val('saveFirst');
 			glFlag=false;
-			document.forms[0].action='/jbilling/notifications/saveAndRedirect/' + document.getElementById('_id').value;
-		    document.forms[0].submit();
+			document.forms["notifications"].action='/jbilling/notifications/saveAndRedirect/' + $('#_id').val();
+            document.forms["notifications"].submit();
 		}
 		
 		function justGo(){
 			glFlag= false;
 			$('#askPreference').val('justGo');
 			//alert (document.getElementById('language.id').value);
-		    document.forms[0].action='/jbilling/notifications/edit/' + document.getElementById('_id').value;
-		    document.forms[0].submit();	
+		    document.forms["notifications"].action='/jbilling/notifications/edit/' + $('#_id').val();
+		    document.forms["notifications"].submit();	
 		}
+
+        function cancelAfterChange() { 
+        	if (glFlag) {
+                if ( null == askPreference || '' == askPreference ) {
+                	callAction= 'saveAndCancel';
+                    showConfirm('saveAndCancel-' + ${params.id});
+                    return false;
+                }
+        	} else { return true; }
+        }
+
+        function saveAndCancel(popUpRef) {
+            $(popUpRef).dialog('close');
+            $('#askPreference').val('saveFirst');
+            glFlag=false;
+            document.forms["notifications"].action='/jbilling/notifications/saveAndCancel/' + $('#_id').val();
+            document.forms["notifications"].submit();
+        }
+
+        function cancelNoSave(popUpRef) {
+            $(popUpRef).dialog('close');
+            glFlag=false;
+            document.forms["notifications"].action='/jbilling/notifications/cancelEdit/' + $('#_id').val();
+            document.forms["notifications"].submit();
+        }
 		
 		function lchange() {
 			if (glFlag) {
 				if ( null == askPreference || '' == askPreference ) {
-					Show_Popup(null,null);
+                    //Show_Popup(null,null);
+					showConfirm('saveAndRedirect-' + ${params.id});
 				} else if ('saveFirst' == askPreference ) {
 					saveFirst();
 				} else {
@@ -113,8 +139,8 @@ ${askPreference}';
 				var endPos = targetElement.selectionEnd;
 				//alert('Start=' + startPos + ' End=' + endPos);
 				targetElement.value = targetElement.value.substring(0, startPos)
-				+ testval
-				+ targetElement.value.substring(endPos, targetElement.value.length);				
+    				+ testval
+    				+ targetElement.value.substring(endPos, targetElement.value.length);
 			} else {
 				targetElement.value+=testval;
 			}
@@ -182,7 +208,7 @@ ${askPreference}';
 						</div>
 					</div>
 					<div class="row">
-						<label><g:message code="prompt.product.language" />:</label>
+						<label><g:message code="prompt.edit.notification.language" />:</label>
 						<div style="width: 220px; " class="selectArea">
 							<g:select name="language.id"
 								from="${com.sapienter.jbilling.server.util.db.LanguageDTO.list()}"
@@ -333,12 +359,36 @@ ${askPreference}';
 							<span><g:message code="label.token.company.name"/></span></a>
 						</div>
 					</div>
+                    <div class="row">
+                        <div >
+                        <a href="javascript:void(0)" onclick="testfunc('$days');" class="">
+                            <span><g:message code="label.token.invoice.days"/></span></a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div >
+                        <a href="javascript:void(0)" onclick="testfunc('$dueDate');" class="">
+                            <span><g:message code="label.token.invoice.dueDate"/></span></a>
+                        </div>
+                    </div>
 					<div class="row">
 						<div >
 							<a href="javascript:void(0)" onclick="testfunc('$number');" class="">
-							<span><g:message code="label.token.number"/></span></a>
+							<span><g:message code="label.token.invoice.number"/></span></a>
 						</div>
 					</div>
+                    <div class="row">
+                        <div >
+                        <a href="javascript:void(0)" onclick="testfunc('$total');" class="">
+                            <span><g:message code="label.token.invoice.total"/></span></a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div >
+                        <a href="javascript:void(0)" onclick="testfunc('$date');" class="">
+                            <span><g:message code="label.token.invoice.date"/></span></a>
+                        </div>
+                    </div>
 					<div class="row">
 						<div ><a href="javascript:void(0)" onclick="testfunc('$password');" class="">
 							<span><g:message code="label.token.password"/></span></a>
@@ -357,23 +407,29 @@ ${askPreference}';
 		<div class="btn-box">
 			<a href="javascript:void(0)" onclick="$('#notifications').submit();" class="submit save">
 				<span><g:message code="button.save"/></span></a>
-			<a href="${createLink(action: 'cancelEdit', params: [id: messageTypeId])}" class="submit cancel">
+			<a href="${createLink(action: 'cancelEdit', params: [id: messageTypeId])}" onclick="return cancelAfterChange();" class="submit cancel">
 					<span><g:message code="button.cancel"/></span></a>
 		</div>
-
 	</g:form>
-	<div id="popup" style="display: none;"></div>
-	<div id="window" style="display: none;">
-		<div id="popup_content">
-			<h1>Notification has changed.</h1>
-			<p>You've made changes to this notification. Do you want to save the changes before switching?</p>
-			<p><g:checkBox id="popupCheckbox" value="${false}" />Don't ask me again</p>
-			<g:actionSubmit value="Yes"
-				action="saveAndRedirect" class="form_button" onclick="saveFirst()"/>
-			<g:actionSubmit value="No"
-				action="" class="form_button" onclick="Close_Popup();"/>
-		</div>
 	</div>
-	</div></div>
+</div>
+
+<g:render template="/confirm"
+  model="[message: 'prompt.notifications.changed',
+      controller: 'notifications',
+      action: 'saveAndRedirect',
+      id: params.id,
+      onYes: 'saveFirst(this)',
+      onNo: 'Close_Popup(this)'
+     ]"/>
+
+<g:render template="/confirm"
+  model="[message: 'prompt.notifications.changed',
+      controller: 'notifications',
+      action: 'saveAndCancel',
+      id: params.id,
+      onYes: 'saveAndCancel(this)',
+      onNo: 'cancelNoSave(this)'
+     ]"/>
 </body>
 </html>

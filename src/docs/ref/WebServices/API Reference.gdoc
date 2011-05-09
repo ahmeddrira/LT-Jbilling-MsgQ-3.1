@@ -5,7 +5,6 @@ h2. Invoice API Methods
 {table}
 *API Method* | *Arguments* | *Returns* | *Description*
 @getInvoiceWS(Integer invoiceId)@ | Invoice ID | @InvoiceWS@ | Returns the invoice for the given ID. Will return null if invoice is a review invoice.
-@getReviewInvoiceWS(Integer invoiceId)@ | Invoice ID | @InvoiceWS@ | Returns the invoice for the given ID, even if the invoice is a review invoice.
 @createInvoice(Integer userId, boolean onlyRecurring)@ | User ID, Orders to include | @Integer []@ | Creates an invoice for the given user, including all orders or only recurring orders. Returns the an array of generated invoice IDs.
 @createInvoiceFromOrder(Integer orderId, Integer invoiceId)@ | Order ID, Invoice ID | @Integer@ | Creates an invoice for the given order. If an invoice ID is given, the order will be added to the selected invoice - Otherwise a new invoice will be created.
 @deleteInvoice(Integer invoiceId)@ | Invoice ID | - | Deletes the given invoice.

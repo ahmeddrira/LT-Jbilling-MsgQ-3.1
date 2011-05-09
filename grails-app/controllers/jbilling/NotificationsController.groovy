@@ -60,7 +60,7 @@ class NotificationsController {
 	
 	def list = {
 		
-		log.debug  "Id=${params.id} selectedId= ${params.selectedId}"
+		log.debug  "METHOD: list\nId=${params.id} selectedId= ${params.selectedId}"
 		Integer categoryId= params.int('id')
 		def lstByCateg= NotificationMessageTypeDTO.findAllByCategory(new NotificationCategoryDTO(categoryId))
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, categoryId)
@@ -72,7 +72,7 @@ class NotificationsController {
 	}
 
 	def show = {
-		
+        log.debug  "METHOD: show"
 		log.debug  "Id is=" + params.id
 		Integer messageTypeId= params.id.toInteger()
 
@@ -181,6 +181,7 @@ class NotificationsController {
 
 
 	def List<PreferenceWS> bindDTOs(params)  {
+        log.debug  "bindDTOs"
         List<PreferenceWS> prefDTOs= new ArrayList<PreferenceWS>();
 
         def count = params.recCnt.toInteger()
@@ -228,7 +229,8 @@ class NotificationsController {
     }
 
 	def edit = {
-		
+        log.debug  "METHOD: edit"
+        
 		//set cookies here..
 		log.debug  ("doNotAskAgain=" + params.doNotAskAgain + " askPreference=" + params.askPreference)
 		
@@ -249,12 +251,12 @@ class NotificationsController {
 		
 		Integer _languageId= session['language_id']
 		if (params.get('language.id')) {
-			log.debug  "params.language.id is not null= ${params.get('language.id')}"
+			log.debug  "Param 'language.id' is Not Null [${params.language.id}]"
 			_languageId= params.get('language.id')?.toInteger()
-			log.debug  "setting language id from requrest= ${_languageId}"
 		}
+		Integer entityId = webServicesSession.getCallerCompanyId()?.toInteger()
 
-		Integer entityId = webServicesSession.getCallerCompanyId()
+		log.debug  "Language Id Set to ${_languageId}, Entity ${entityId}, askPreference= ${askPreference}"
 
 		NotificationMessageTypeDTO typeDto= NotificationMessageTypeDTO.findById(messageTypeId)
 		NotificationMessageDTO dto=null
@@ -271,18 +273,18 @@ class NotificationsController {
 	}
 	
 	def saveAndRedirect = {
+        log.debug  "METHOD: saveAndRedirect"
 		try {
 			saveAction(params)
 		} catch (SessionInternalError e) {
 			log.error "Error: " + e.getMessage()
 			flash.error= "error.illegal.modification"
-			//
 		}
         redirect (action:edit, params:params)
     }
     
     def saveNotification = {
-        log.debug  "_Id= " + params._id
+        log.debug  "METHOD: saveNotification"
 		def _id=params._id
         try {
 			saveAction(params)
@@ -294,40 +296,63 @@ class NotificationsController {
     }
     
     def saveAction(params) {
+
+        log.debug "METHOD: saveAction\nAll params\n${params}"
+        
         NotificationMessageDTO msgDTO = new NotificationMessageDTO()
         msgDTO.setLanguage(new LanguageDTO())
         msgDTO.setEntity(new CompanyDTO())
         bindData(msgDTO, params)
-
+        def _id = null;
+        if (params._id) {
+            _id=params._id?.toInteger()
+            msgDTO.setId(_id)
+        }
+        
+        log.debug  "useFlag: '${params.useFlag}', NotificationMessageDTO.useFlag=${msgDTO.getUseFlag()}"
+        if ('on' == params.useFlag) {
+            msgDTO.setUseFlag((short)1)
+        } else {
+            msgDTO.setUseFlag((short)0)
+        }
+        
+        log.debug  "NotificationMessageType ID=${_id}, Entity=${params.get('entity.id')?.toInteger()}, Language = ${params._languageId}"
         MessageDTO messageDTO= new MessageDTO()
-        log.debug  "params.get('_languageId')?.toInteger() = " + params.get('_languageId')?.toInteger()
+        messageDTO.setTypeId(_id)
         messageDTO.setLanguageId(params.get('_languageId')?.toInteger())
-        messageDTO.setTypeId(params._id.toInteger())
-        log.debug  "params.useFlag=" + params.useFlag
-        log.debug  "params.useFlag && 0 = msgDTO.getUseFlag()=" + ( (params.useFlag) && 0 == msgDTO.getUseFlag() )
-        messageDTO.setUseFlag( (params.useFlag) && 0 == msgDTO.getUseFlag())
+        messageDTO.setUseFlag(0 == msgDTO.getUseFlag())
+        messageDTO.setContent(bindSections(params))
+
+        Integer entityId= params.get('entity.id')?.toInteger()
         Integer messageId= null;
-        Integer entityId= msgDTO.getEntity().getId()
         if (params.msgDTOId) {
             messageId= params.msgDTOId.toInteger()
         } else {
             //new record
             messageId= null;
         }        
-        messageDTO.setContent(bindSections(params))
+
         log.debug  "msgDTO.language.id=" + messageDTO?.getLanguageId()
         log.debug  "msgDTO.type.id=" + messageDTO?.getTypeId()
         log.debug  "msgDTO.use.flag=" + messageDTO.getUseFlag()
-        log.debug  "entityId= " + entityId
-
-		if (entityId != webServicesSession.getCallerCompanyId()) {
-			throw new SessionInternalError("Cannot update another company's data.")
-		}
-		webServicesSession.createUpdateNofications(messageId, messageDTO)
-		flash.message = 'notification.save.success'
+        
+        log.debug  "EntityId = ${entityId?.intValue()}, callerCompanyId= ${webServicesSession.getCallerCompanyId()?.intValue()}"
+		if (entityId?.intValue() == webServicesSession.getCallerCompanyId()?.intValue()) {
+            try {
+                webServicesSession.createUpdateNofications(messageId, messageDTO)
+                flash.message = 'notification.save.success'
+            } catch (Exception e) {
+                log.error("ERROR: " + e.getMessage())
+                throw new SessionInternalError(e)
+            }
+		} else {
+            log.error("ERROR: Entity IDs do not match.")
+            throw new SessionInternalError("Cannot update another company data.")
+        }
     }
 
     def MessageSection[] bindSections (params) {
+        log.debug  "METHOD: bindSections"
         MessageSection[] lines= new MessageSection[3];
         Integer section= null;
         String content= null;
@@ -351,8 +376,19 @@ class NotificationsController {
         return lines;
     }
 	
+    def saveAndCancel = {
+        log.debug  "METHOD: saveAndCancel"
+        try {
+            saveAction(params)
+        } catch (SessionInternalError e) {
+            log.error "Error: " + e.getMessage()
+            flash.error= "error.illegal.modification"
+        }
+        redirect (action:cancelEdit, params:params)
+    }
+    
 	def cancelEdit = {
-		log.debug  "id=${params['id']}"
+		log.debug  "METHOD: cancelEdit\nid=${params.id}"
 		NotificationMessageTypeDTO typeDto= NotificationMessageTypeDTO.findById( Integer.parseInt (params["id"]) )
 		Integer entityId= webServicesSession.getCallerCompanyId()
 		NotificationMessageDTO dto=null

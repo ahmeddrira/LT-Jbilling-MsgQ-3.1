@@ -580,38 +580,39 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         Integer entityId = getCallerCompanyId();
         UserBL bl = new UserBL();
 
-        if (!bl.exists(newUser.getUserName(), entityId)) {
-
-            ContactBL cBl = new ContactBL();
-            UserDTOEx dto = new UserDTOEx(newUser, entityId);
-            Integer userId = bl.create(dto);
-            if (newUser.getContact() != null) {
-                newUser.getContact().setId(0);
-                cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId);
-            }
-
-            if (newUser.getCreditCard() != null) {
-                CreditCardDTO card = new CreditCardDTO(newUser.getCreditCard()); // new CreditCardDTO
-                card.setId(0);
-                card.getBaseUsers().add(bl.getEntity());
-
-                CreditCardBL ccBL = new CreditCardBL();
-                ccBL.create(card);
-
-                UserDTO userD = new UserDAS().find(userId);
-                userD.getCreditCards().add(ccBL.getEntity());
-            }
-
-            if (newUser.getAch() != null) {
-                AchDTO ach = new AchDTO(newUser.getAch());
-                ach.setId(0);
-                ach.setBaseUser(bl.getEntity());
-                AchBL abl = new AchBL();
-                abl.create(ach);
-            }
-            return userId;
+        if (bl.exists(newUser.getUserName(), entityId)) {
+            throw new SessionInternalError("User already exists with username " + newUser.getUserName(),
+                                            new String[] { "UserWS,userName,validation.error.user.already.exists" });
         }
-        return null;
+
+        ContactBL cBl = new ContactBL();
+        UserDTOEx dto = new UserDTOEx(newUser, entityId);
+        Integer userId = bl.create(dto);
+        if (newUser.getContact() != null) {
+            newUser.getContact().setId(0);
+            cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId);
+        }
+
+        if (newUser.getCreditCard() != null) {
+            CreditCardDTO card = new CreditCardDTO(newUser.getCreditCard()); // new CreditCardDTO
+            card.setId(0);
+            card.getBaseUsers().add(bl.getEntity());
+
+            CreditCardBL ccBL = new CreditCardBL();
+            ccBL.create(card);
+
+            UserDTO userD = new UserDAS().find(userId);
+            userD.getCreditCards().add(ccBL.getEntity());
+        }
+
+        if (newUser.getAch() != null) {
+            AchDTO ach = new AchDTO(newUser.getAch());
+            ach.setId(0);
+            ach.setBaseUser(bl.getEntity());
+            AchBL abl = new AchBL();
+            abl.create(ach);
+        }
+        return userId;
     }
 
     public void deleteUser(Integer userId) throws SessionInternalError {

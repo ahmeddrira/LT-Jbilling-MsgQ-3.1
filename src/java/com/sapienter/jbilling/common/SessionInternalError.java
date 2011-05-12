@@ -67,6 +67,11 @@ public class SessionInternalError extends RuntimeException {
         super(message + " Cause: " + e.getMessage(), e);
     }
 
+    public SessionInternalError(String message, Throwable e, String[] errors) {
+        super(message, e);
+        setErrorMessages(errors);
+    }
+
     public SessionInternalError(String message, String[] errors) {
         super(message);
         setErrorMessages(errors);

@@ -1462,6 +1462,12 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throws SessionInternalError {
         validatePayment(payment);
         payment.setIsRefund(0);
+
+        if (payment.getMethodId() == null) {
+            throw new SessionInternalError("Cannot apply a payment without a payment method.",
+                                           new String[] { "PaymentWS,paymentMethodId,validation.error.apply.without.method" });
+        }
+
         IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
         return session.applyPayment(new PaymentDTOEx(payment), invoiceId);
     }
@@ -1494,10 +1500,19 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             PaymentDTO instrument;
             try {
                 instrument = PaymentBL.findPaymentInstrument(entityId, payment.getUserId());
+
             } catch (PluggableTaskException e) {
-                throw new SessionInternalError("Exception occurred fetching payment info plug-in.", e);
+                throw new SessionInternalError("Exception occurred fetching payment info plug-in.",
+                                               new String[] { "PaymentWS,baseUserId,validation.error.no.payment.instrument" });
+
             } catch (TaskException e) {
-                throw new SessionInternalError("Exception occurred with plug-in when fetching payment instrument.", e);
+                throw new SessionInternalError("Exception occurred with plug-in when fetching payment instrument.",
+                                               new String[] { "PaymentWS,baseUserId,validation.error.no.payment.instrument" });
+            }
+
+            if (instrument == null || (instrument.getCreditCard() == null && instrument.getAch() == null)) {
+                throw new SessionInternalError("User " + payment.getUserId() + "does not have a default payment instrument.",
+                                               new String[] { "PaymentWS,baseUserId,validation.error.no.payment.instrument" });
             }
 
             dto.setCreditCard(instrument.getCreditCard());

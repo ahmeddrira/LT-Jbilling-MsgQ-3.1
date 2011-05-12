@@ -357,7 +357,6 @@ class PaymentController {
 
             } else {
                 log.debug("saving changes to payment ${payment.id}")
-
                 webServicesSession.updatePayment(payment)
 
                 flash.message = 'payment.updated'
@@ -366,11 +365,16 @@ class PaymentController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.local, e)
-            render view: edit, model: [ payment: payment ]
+
+            def user = webServicesSession.getUserWS(payment.userId)
+            def invoices = getUnpaidInvoices(user.userId)
+            def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
+
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId') ]
             return
         }
 
-        chain action: list, params: [ id: payment.id ]
+        chain action: 'list', params: [ id: payment.id ]
     }
 
     def bindPayment(PaymentWS payment, GrailsParameterMap params) {

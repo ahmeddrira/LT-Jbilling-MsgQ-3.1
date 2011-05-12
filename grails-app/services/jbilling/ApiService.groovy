@@ -697,12 +697,4 @@ class ApiService implements IWebServicesSessionBean {
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
         return webServicesSession.getCustomerPrice(userId, itemId);
     }
-
-    public PlanItemWS[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
-        return webServicesSession.getCustomerPriceByAttributes(userId, itemId, attrs);
-    }
-
-    public PlanItemWS[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
-        return webServicesSession.getCustomerPriceByWildcardAttributes(userId, itemId, attrs);
-    }
 }

@@ -2860,16 +2860,4 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         CustomerPriceBL bl = new CustomerPriceBL(userId);
         return PlanItemBL.getWS(bl.getPrice(itemId));
     }
-
-    public PlanItemWS[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
-        List<PlanItemDTO> prices = new CustomerPriceBL(userId).getPricesByAttributes(itemId, attrs);
-        List<PlanItemWS> ws = PlanItemBL.getWS(prices);
-        return ws.toArray(new PlanItemWS[ws.size()]);
-    }
-
-    public PlanItemWS[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
-        List<PlanItemDTO> prices = new CustomerPriceBL(userId).getPricesByWildcardAttributes(itemId, attrs);
-        List<PlanItemWS> ws = PlanItemBL.getWS(prices);
-        return ws.toArray(new PlanItemWS[ws.size()]);
-    }
 }

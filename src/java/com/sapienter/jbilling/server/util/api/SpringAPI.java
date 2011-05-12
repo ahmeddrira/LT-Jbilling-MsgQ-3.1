@@ -648,12 +648,4 @@ public class SpringAPI implements JbillingAPI {
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
         return session.getCustomerPrice(userId, itemId);
     }
-
-    public PlanItemWS[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
-        return session.getCustomerPriceByAttributes(userId, itemId, attrs);
-    }
-
-    public PlanItemWS[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
-        return session.getCustomerPriceByWildcardAttributes(userId, itemId, attrs);
-    }
 }

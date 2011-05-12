@@ -303,6 +303,4 @@ public interface JbillingAPI {
 
     public PlanItemWS[] getCustomerPrices(Integer userId);
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId);
-    public PlanItemWS[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs);
-    public PlanItemWS[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs);
 }

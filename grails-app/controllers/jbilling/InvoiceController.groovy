@@ -79,7 +79,7 @@ class InvoiceController {
 
         // hide review invoices by default
         def reviewFilter = filters.find{ it.field == 'isReview' }
-        if (reviewFilter.value == null) reviewFilter.integerValue = 0
+        if (reviewFilter && reviewFilter.value == null) reviewFilter.integerValue = 0
 
         // get list
         return InvoiceDTO.createCriteria().list(
@@ -261,6 +261,26 @@ class InvoiceController {
         }
 
         redirect action: 'list', params: [ id: invoiceId ]
+    }
+    
+    def byProcess = {
+        def filters = []
+        def _processId= params.int('id')
+        
+        log.debug "Listing invoices by process id ${_processId}" 
+        
+        if (!_processId) {
+            flash.error  =  'error.invoice.byprocess.missing.id'
+            redirect action: 'list'
+        }
+        def filter =  new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: false, integerValue: _processId)
+        
+        filters << filter
+        def invoices = getInvoices(filters, params)
+
+        //breadcrumbService.addBreadcrumb(controllerName, actionName, null, _processId)
+
+        render view: 'list', model: [invoices: invoices, filters: filterService.getFilters(FilterType.INVOICE, params)]
     }
 
     def getCurrencies() {

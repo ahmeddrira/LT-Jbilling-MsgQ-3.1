@@ -21,11 +21,14 @@
 package com.sapienter.jbilling.server.util.csv;
 
 import au.com.bytecode.opencsv.CSVWriter;
+import com.sapienter.jbilling.server.util.converter.BigDecimalConverter;
 import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.Converter;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -40,6 +43,10 @@ public class CsvExporter<T extends Exportable> implements Exporter<T> {
 
     /** The maximum safe number of exportable elements to processes.  */
     public static final Integer MAX_RESULTS = 10000;
+
+    static {
+        ConvertUtils.register(new BigDecimalConverter(), BigDecimal.class);
+    }
 
     private Class<T> type;
 
@@ -103,7 +110,12 @@ public class CsvExporter<T extends Exportable> implements Exporter<T> {
 
         int i = 0;
         for (Object object : objects) {
-            strings[i++] = ConvertUtils.convert(object);
+            if (object != null) {
+                Converter converter = ConvertUtils.lookup(object.getClass());
+                strings[i++] = converter.convert(object.getClass(), object).toString();
+            } else {
+                strings[i++] = "";
+            }
         }
 
         return strings;

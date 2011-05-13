@@ -27,19 +27,19 @@
     <div class="form-hold">
         <g:form name="save-currencies-form" url="[action: 'saveCurrencies']">
             <fieldset>
-                <div class="form-columns">
+                <div class="form-columns single">
                     <g:applyLayout name="form/select">
                         <content tag="label"><g:message code="currency.config.label.default"/></content>
                         <content tag="label.for">defaultCurrencyId</content>
                         <g:select name="defaultCurrencyId" from="${currencies}"
-                                  optionKey="id"
-                                  optionValue="${{ it.getDescription(session['language_id']) }}"
-                                  value="${entityCurrency}"/>
+                                optionKey="id"
+                                optionValue="${{ it.getDescription(session['language_id']) }}"
+                                value="${entityCurrency}"/>
                     </g:applyLayout>
                 </div>
 
 
-                <div class="form-columns" style="width: auto;">
+                <div class="form-columns single">
                     <table cellpadding="0" cellspacing="0" class="innerTable" width="100%">
                         <thead class="innerHeader">
                             <tr>

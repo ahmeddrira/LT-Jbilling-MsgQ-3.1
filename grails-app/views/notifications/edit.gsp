@@ -127,6 +127,11 @@
 		
 		function testfunc(testval) { 
 			//alert ('testfunc called. Elm=' + testval);
+            if ( null == targetElement || targetElement.name == 'useFlag') {
+                return;
+            }
+            //alert(targetElement.name + " and value " + testval);
+            
 			if ($.browser.msie) {
 				//if (document.selection) {
 					targetElement.focus();
@@ -235,7 +240,7 @@
 										<g:set var="tempContent"
 											value="${tempContent=tempContent + line?.getContent()}" />
 									</g:each>
-									<input class="field" type="text" onChange="anychange(this)" size="30"
+									<input class="field" type="text" onclick="elementClick(this)" onChange="anychange(this)" size="30"
 										name="messageSections[${section.section}].notificationMessageLines.content"
 										value="${tempContent}" />
 									<g:set var="flag" value="${false}" />
@@ -246,7 +251,7 @@
 										name="messageSections[1].id" value="" />
 								<g:hiddenField
 										name="messageSections[1].section" value="1" />
-								<g:textField  class="field" onchange="anychange(this)" size="30"
+								<g:textField class="field" onclick="elementClick(this)" onchange="anychange(this)" size="30"
 									name="messageSections[1].notificationMessageLines.content"
 									value="" />
 							</g:if>

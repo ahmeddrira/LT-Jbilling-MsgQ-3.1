@@ -177,11 +177,10 @@ class BillingController {
 
 	def showInvoices = {
 		def _processId= params.int('id')
-		log.debug "showInvoices, params.id=${_processId}"
-		def filter =  new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: false, integerValue: _processId)
-		filterService.setFilter(FilterType.INVOICE, filter)
-		
-		redirect controller: 'invoice', action: 'list'
+		log.debug "redirecting to invoice controller for process id=${_processId}"
+		//def filter =  new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: false, integerValue: _processId)
+		//filterService.setFilter(FilterType.INVOICE, filter)
+		redirect controller: 'invoice', action: 'byProcess', id:_processId
 	}
 	
 	def showOrders = {

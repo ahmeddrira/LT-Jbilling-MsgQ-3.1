@@ -320,7 +320,7 @@ class NotificationsController {
         MessageDTO messageDTO= new MessageDTO()
         messageDTO.setTypeId(_id)
         messageDTO.setLanguageId(params.get('_languageId')?.toInteger())
-        messageDTO.setUseFlag(0 == msgDTO.getUseFlag())
+        messageDTO.setUseFlag(1 == msgDTO.getUseFlag())
         messageDTO.setContent(bindSections(params))
 
         Integer entityId= params.get('entity.id')?.toInteger()
@@ -338,6 +338,7 @@ class NotificationsController {
         
         log.debug  "EntityId = ${entityId?.intValue()}, callerCompanyId= ${webServicesSession.getCallerCompanyId()?.intValue()}"
 		if (entityId?.intValue() == webServicesSession.getCallerCompanyId()?.intValue()) {
+            log.debug "Calling createUpdateNotifications..."
             try {
                 webServicesSession.createUpdateNofications(messageId, messageDTO)
                 flash.message = 'notification.save.success'
@@ -346,7 +347,7 @@ class NotificationsController {
                 throw new SessionInternalError(e)
             }
 		} else {
-            log.error("ERROR: Entity IDs do not match.")
+            log.error("ERROR: Entity Idis do not match.")
             throw new SessionInternalError("Cannot update another company data.")
         }
     }

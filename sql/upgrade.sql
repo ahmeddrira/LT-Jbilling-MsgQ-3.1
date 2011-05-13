@@ -938,7 +938,9 @@ values (50, 49, 'instruction', 1, 'The threshold value for automatic payments. P
 -- editable currency
 alter table currency add column OPTLOCK int;
 update currency set OPTLOCK = 0;
-insert into jbilling_seqs (name, next_id) values ('currency', 2);
+
+insert into jbilling_seqs (name, next_id) values ('currency', 2); -- if does not exist
+-- update jbilling_seqs set next_id = (select (max(id)/10)+1 from currency) where name = 'currency'; -- if already exists
 
 -- breadcrumb descriptions
 alter table breadcrumb add column description varchar(255);

@@ -11703,7 +11703,7 @@ order_status	5
 subscriber_status	7
 order_line_provisioning_status	1
 invoice_line_type	1
-currency	1
+currency	2
 report_type	1
 payment_method	1
 payment_result	1

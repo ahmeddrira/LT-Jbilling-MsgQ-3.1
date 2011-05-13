@@ -28,6 +28,7 @@ import com.sapienter.jbilling.server.util.csv.Exportable;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -183,6 +184,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
 		this.glCode = glCode;
 	}
 
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "price_model_id", nullable = true)
     public PriceModelDTO getDefaultPrice() {

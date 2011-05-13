@@ -105,21 +105,28 @@ public class ItemBL {
             dto.setHasDecimals(0);
         }
 
-        // Backwards compatible with the old ItemDTOEx Web Service API, use the
-        // transient price field as the rate for a default pricing model.
-        if (dto.getPrice() != null) {
-            dto.setDefaultPrice(getDefaultPrice(dto.getPrice()));
+        if (dto.getPercentage() == null) {
+            // Backwards compatible with the old ItemDTOEx Web Service API, use the
+            // transient price field as the rate for a default pricing model.
+            if (dto.getPrice() != null) {
+                dto.setDefaultPrice(getDefaultPrice(dto.getPrice()));
+            }
+
+            // default currency for new prices (if currency is not explicitly set)
+            if (dto.getDefaultPrice() != null && dto.getDefaultPrice().getCurrency() == null) {
+                dto.getDefaultPrice().setCurrency(entity.getEntity().getCurrency());
+            }
+
+            // validate all pricing attributes
+            if (dto.getDefaultPrice() != null) {
+                PriceModelBL.validateAttributes(dto.getDefaultPrice());
+            }
+
+        } else {
+            LOG.debug("Percentage items cannot have a default price model.");
+            dto.setDefaultPrice(null);
         }
 
-        // default currency for new prices (if currency is not explicitly set)
-        if (dto.getDefaultPrice() != null && dto.getDefaultPrice().getCurrency() == null) {
-            dto.getDefaultPrice().setCurrency(entity.getEntity().getCurrency());
-        }
-
-        // validate all pricing attributes
-        if (dto.getDefaultPrice() != null) {
-            PriceModelBL.validateAttributes(dto.getDefaultPrice());
-        }
 
         dto.setDeleted(0);
 
@@ -145,12 +152,18 @@ public class ItemBL {
         item.setPercentage(dto.getPercentage());
         item.setHasDecimals(dto.getHasDecimals());
 
-        updateDefaultPrice(dto);
-        updateTypes(dto);
+        if (item.getPercentage() == null) {
+            updateDefaultPrice(dto);
+            updateTypes(dto);
 
-        // validate all pricing attributes
-        if (item.getDefaultPrice() != null) {
-            PriceModelBL.validateAttributes(item.getDefaultPrice());
+            // validate all pricing attributes
+            if (item.getDefaultPrice() != null) {
+                PriceModelBL.validateAttributes(item.getDefaultPrice());
+            }
+
+        } else {
+            LOG.debug("Percentage items cannot have a default price model.");
+            item.setDefaultPrice(null);
         }
 
         itemDas.save(item);

@@ -444,10 +444,11 @@ class ProductController {
 
         // bind parameters with odd types (integer booleans, string integers  etc.)
         product.hasDecimals = params.product.hasDecimals ? 1 : 0
-        product.percentage = !params.product.percentage?.equals('') ? params.product.percentage : null
 
-        // default price model
-        product.defaultPrice = PlanHelper.bindPriceModel(params)
+        // default price model if not a percentage item
+        if (!product.percentage) {
+            product.defaultPrice = PlanHelper.bindPriceModel(params)
+        }
     }
 
     def getCurrencies() {

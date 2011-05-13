@@ -44,4 +44,4 @@
     </g:if>
 </g:applyLayout>
 
-<g:hiddenField name="model.${modelIndex}.rate" value="${BigDecimal.ZERO}"/>
+<g:hiddenField name="model.${modelIndex}.rateAsDecimal" value="${BigDecimal.ZERO}"/>

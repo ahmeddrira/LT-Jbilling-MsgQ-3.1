@@ -23,6 +23,20 @@
 <html>
 <head>
     <meta name="layout" content="main" />
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#product\\.percentageAsDecimal').blur(function() {
+                if ($(this).val()) {
+                    $('#pricing :input').val('').attr('disabled', 'true');
+                    closeSlide('#pricing');
+                } else {
+                    $('#pricing :input').attr('disabled', '');
+                    openSlide('#pricing');
+                }
+            }).blur();
+        });
+    </script>
 </head>
 <body>
 <div class="form-edit">
@@ -105,7 +119,7 @@
                 </div>
 
                 <!-- pricing controls -->
-                <div class="box-cards box-cards-open">
+                <div id="pricing" class="box-cards box-cards-open">
                     <div class="box-cards-title">
                         <a class="btn-open" href="#"><span><g:message code="product.prices"/></span></a>
                     </div>

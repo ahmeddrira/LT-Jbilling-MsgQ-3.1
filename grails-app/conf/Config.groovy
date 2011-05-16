@@ -27,13 +27,29 @@ import org.apache.log4j.*
  */
 
 def appHome = System.getProperty("JBILLING_HOME") ?: System.getenv("JBILLING_HOME")
+
 if (appHome) {
+    println "Loading configuration files from JBILLING_HOME = ${appHome}"
     grails.config.locations = [
             "file:${appHome}/${appName}-Config.groovy",
-            "file:${appHome}/${appName}-DataSource.groovy",
+            "file:${appHome}/${appName}-DataSource.groovy"
     ]
 
-    println "Configuration files loaded from ${appHome}"
+} else {
+    appHome = new File("../${appName}")
+    if (appHome.listFiles({dir, file -> file ==~ /${appName}-.*\.groovy/} as FilenameFilter )) {
+        println "Loading configuration files from ${appHome.canonicalPath}"
+        grails.config.locations = [
+                "file:${appHome.canonicalPath}/${appName}-Config.groovy",
+                "file:${appHome.canonicalPath}/${appName}-DataSource.groovy"
+        ]
+
+        println "Setting JBILLING_HOME to ${appHome.canonicalPath}"
+        System.setProperty("JBILLING_HOME", appHome.canonicalPath)
+
+    } else {
+        println "Loading configuration files from classpath"
+    }
 }
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination

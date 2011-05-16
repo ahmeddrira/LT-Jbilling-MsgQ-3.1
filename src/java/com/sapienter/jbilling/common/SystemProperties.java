@@ -38,9 +38,12 @@ public class SystemProperties {
 
     private static final String JBILLING_HOME = "JBILLING_HOME";
     private static final String PROPERTIES_FILE = "jbilling.properties";
+    private static final String RESOURCES_DIR = "resources";
+    private static final String BASE_DIR_PROPERTY = "base_dir";
 
     private static SystemProperties INSTANCE;
 
+    private String resourcesDir = null;
     private Properties prop = null;
 
     /*
@@ -57,6 +60,11 @@ public class SystemProperties {
 
         LOG.debug("System properties loaded from: " + properties.getPath());
         System.out.println("System properties loaded from: " + properties.getPath());
+
+        resourcesDir = getJBillingResourcesDir();
+
+        LOG.debug("Resolved jbilling resources directory to: " + resourcesDir);
+        System.out.println("Resolved jbilling resources directory to: " + resourcesDir);
     }
 
     /**
@@ -93,6 +101,40 @@ public class SystemProperties {
     }
 
     /**
+     * Returns the path to the jBilling resources directory.
+     *
+     * The resources directory is always assumed to be located in JBILLING_HOME. If JBILLING_HOME is not
+     * set, this method will return a relative path as the default location for the resources directory.
+     *
+     * @return path to the resources directory
+     */
+    public String getJBillingResourcesDir() {
+        // try JBILLING_HOME
+        String jbillingHome = getJBillingHome();
+        if (jbillingHome != null) {
+            return jbillingHome + File.separator + RESOURCES_DIR + File.separator;
+        }
+
+        try {
+            // try root dir
+            File resources = new File("." + File.separator + RESOURCES_DIR);
+            if (resources.exists()) {
+                return resources.getCanonicalPath() + File.separator;
+            }
+
+            // try one level down (tomcat root)
+            resources = new File(".." + File.separator + RESOURCES_DIR);
+            if (resources.exists()) {
+                return resources.getCanonicalPath() + File.separator;
+            }
+        } catch (IOException e) {
+            LOG.warn("IOException when attempting to resolve canonical path to jbilling resources/", e);
+        }
+
+        return "";
+    }
+
+    /**
      * Returns the path to the jbilling.properties file.
      *
      * @return properties file
@@ -111,6 +153,13 @@ public class SystemProperties {
     }
 
     public String get(String key) throws Exception {
+        // "base_dir" should always resolve to the JBILLING_HOME resources dir
+        // this value is no longer part of jbilling.properties
+        if (BASE_DIR_PROPERTY.equals(key)) {
+            return resourcesDir;
+        }
+
+        // get value from jbilling.properties
         String value = prop.getProperty(key);
 
         if (value == null)

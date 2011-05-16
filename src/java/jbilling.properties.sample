@@ -1,6 +1,3 @@
-# directory where many temporary files
-# will be created. Also other files, like logos, will be put here
-base_dir=/path/to/jbilling/resources/
 # email server parameters for emails
 # sent to the entities and as a default
 smtp_server=localhost

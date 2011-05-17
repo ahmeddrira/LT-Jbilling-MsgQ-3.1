@@ -57,7 +57,7 @@ import org.hibernate.Criteria
 @Secured(['isAuthenticated()'])
 class OrderController {
 
-	static pagination = [ max: 25, offset: 0 ]
+	static pagination = [ max: 10, offset: 0 ]
 
     def webServicesSession
     def viewUtils
@@ -79,7 +79,7 @@ class OrderController {
 		
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 		
-		if (params.applyFilter) {
+		if (params.applyFilter || params.partial) {
 			render template: 'orders', model: [orders:orders, filters:filters]
 		} else {
 			[orders:orders, filters:filters]

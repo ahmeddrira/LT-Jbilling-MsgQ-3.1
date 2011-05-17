@@ -42,10 +42,10 @@
                             value="${filter.integerValue}"
                             from="${(company.orderPeriods << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE)).sort{it.id}}" 
                             optionKey="id" optionValue="description"
-                            noSelection="['': message(code: 'filters.status.empty')]" />
+                            noSelection="['': message(code: 'filters.orderPeriod.empty')]" />
 
                 </div>
-                <label for="filters.${filter.name}.stringValue"><g:message code="filters.status.label"/></label>
+                <label for="filters.${filter.name}.stringValue"><g:message code="filters.orderPeriod.label"/></label>
             </div>
         </fieldset>
     </div>

@@ -42,7 +42,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 @Secured(['isAuthenticated()'])
 class BillingController {
 
-	static pagination = [ max: 25, offset: 0 ]
+	static pagination = [ max: 10, offset: 0 ]
 
 	def webServicesSession
 	def recentItemService
@@ -81,7 +81,7 @@ class BillingController {
 		}
 		
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
-		if (params.applyFilter) {
+		if (params.applyFilter || params.partial) {
 			render template: 'list', model: [lstBillingProcesses: filteredList, dataHashMap:dataHashMap, filters:filters]
 		} else {
 			render view: "index", model: [lstBillingProcesses: filteredList, dataHashMap:dataHashMap, filters:filters]

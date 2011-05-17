@@ -46,7 +46,7 @@ import com.sapienter.jbilling.server.item.CurrencyBL;
 @Secured(['isAuthenticated()'])
 class InvoiceController {
 
-    static pagination = [max: 25, offset: 0]
+    static pagination = [max: 10, offset: 0]
 
     def webServicesSession
     def viewUtils
@@ -66,7 +66,7 @@ class InvoiceController {
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, selected?.id)
 
-        if (params.applyFilter) {
+        if (params.applyFilter || params.partial) {
             render template: 'invoices', model: [ invoices: invoices, filters: filters, selected: selected ]
         } else {
             [ invoices: invoices, filters: filters, selected: selected ]

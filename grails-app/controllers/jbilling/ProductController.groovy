@@ -68,7 +68,7 @@ class ProductController {
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'), category?.description)
 
-        if (params.applyFilter) {
+        if (params.applyFilter || params.partial) {
             render template: 'products', model: [ products: products, selectedCategoryId: category?.id ]
         } else {
             [ categories: categories, products: products, selectedCategoryId: category?.id, filters: filters, filterRender: 'second', filterAction: 'allProducts' ]

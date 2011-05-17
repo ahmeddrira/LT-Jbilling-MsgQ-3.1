@@ -42,7 +42,7 @@ import org.hibernate.Criteria
 @Secured(['isAuthenticated()'])
 class MediationController {
 
-    static pagination = [ max: 25, offset: 0 ]
+    static pagination = [ max: 10, offset: 0 ]
 
 	def webServicesSession
 	def recentItemService
@@ -59,7 +59,7 @@ class MediationController {
 
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 
-		if (params.applyFilter) {
+		if (params.applyFilter || params.partial) {
 			render template: 'processes', model: [processes: processes,filters:filters]
 		} else {
 			render view: "list", model: [processes: processes, filters:filters]

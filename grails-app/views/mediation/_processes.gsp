@@ -77,7 +77,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="mediation" action="index" params="[applyFilter: true]" total="${processes?.totalCount ?: 0}" update="column1"/>
+        <util:remotePaginate controller="mediation" action="index" params="[partial: true]" total="${processes?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 

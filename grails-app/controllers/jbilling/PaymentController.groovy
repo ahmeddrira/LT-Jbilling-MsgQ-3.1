@@ -102,7 +102,7 @@ class PaymentController {
 
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
 
-        if (params.applyFilter) {
+        if (params.applyFilter || params.partial) {
             render template: 'payments', model: [ payments: payments, selected: selected, filters: filters ]
         } else {
             [ payments: payments, selected: selected, filters: filters ]

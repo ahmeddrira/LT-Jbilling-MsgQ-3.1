@@ -45,6 +45,7 @@ import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.i18n.SessionLocaleResolver
 import com.sapienter.jbilling.client.user.UserHelper
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO
+import org.hibernate.criterion.Restrictions
 
 @Secured(['isAuthenticated()'])
 class CustomerController {
@@ -109,7 +110,7 @@ class CustomerController {
         def crumbDescription = selected ? UserHelper.getDisplayName(selected, contact) : null
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, selected?.id, crumbDescription)
 
-        if (params.applyFilter) {
+        if (params.applyFilter || params.partial) {
             render template: 'users', model: [users: users, selected: selected, contact: contact, statuses: statuses, filters: filters ]
         } else {
             render view: 'list', model: [ users: users, selected: selected, contact: contact, statuses: statuses, filters: filters ]

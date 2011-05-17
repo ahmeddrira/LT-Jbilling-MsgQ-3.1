@@ -92,7 +92,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="invoice" action="list" params="[applyFilter: true]" total="${invoices?.totalCount ?: 0}" update="column1"/>
+        <util:remotePaginate controller="invoice" action="list" params="[partial: true]" total="${invoices?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 

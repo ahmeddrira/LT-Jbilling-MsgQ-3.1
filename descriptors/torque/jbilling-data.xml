@@ -1828,7 +1828,7 @@
     <InternationalDescription TableId="50" ForeignId="49" PsudoColumn="instruction" LanguageId="1" Content="The threshold value for automatic payments. Pre-paid users with an automatic recharge value set will generate an automatic payment whenever the account balance falls below this threshold. Note that you need to configure the AutoRechargeTask plug-in for this feature to be fully functional."/>
     <InternationalDescription TableId="90" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Paid"/>
     <InternationalDescription TableId="90" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Unpaid"/>
-    <InternationalDescription TableId="90" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Unpaid, balance carried to new invoice"/>
+    <InternationalDescription TableId="90" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Carried"/>
 
     <InvoiceDeliveryMethod Id="1"/>
     <InvoiceDeliveryMethod Id="2"/>

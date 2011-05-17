@@ -11235,7 +11235,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 89	3	description	1	Credit limit
 90	1	description	1	Paid
 90	2	description	1	Unpaid
-90	3	description	1	Unpaid, balance carried to new invoice
+90	3	description	1	Carried
 91	1	description	1	Done and billable
 91	2	description	1	Done and not billable
 91	3	description	1	Error detected

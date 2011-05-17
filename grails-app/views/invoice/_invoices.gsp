@@ -1,3 +1,4 @@
+<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 
 %{--
@@ -32,9 +33,10 @@
 		<table id="invoices" cellspacing="0" cellpadding="0">
 			<thead>
                 <tr>
-                    <th class="medium"><g:message code="invoice.label.id"/></th>
-                    <th class="small"><g:message code="label.gui.date"/></th>
-                    <th class="medium"><g:message code="invoice.label.status"/></th>
+                    <th class="small"><g:message code="invoice.label.id"/></th>
+                    <th class="large"><g:message code="invoice.label.customer"/></th>
+                    <th class="medium"><g:message code="label.gui.date"/></th>
+                    <th class="tiny"><g:message code="invoice.label.status"/></th>
                     <th class="small"><g:message code="invoice.label.amount"/></th>
                     <th class="small"><g:message code="invoice.label.balance"/></th>
                 </tr>
@@ -44,6 +46,7 @@
 			<g:each var="inv" in="${invoices}">
             
                 <g:set var="currency" value="${currencies.find{ it.id == inv?.currencyId}}"/>
+                <g:set var="contact" value="${ContactDTO.findByUserId(inv?.baseUser?.id)}"/>
                 
 				<tr id="invoice-${inv.id}" class="${invoice?.id == inv.id ? 'active' : ''}">
 					<td class="small">
@@ -52,6 +55,17 @@
                             <em><g:message code="table.id.format" args="[inv.id]"/></em>
 						</g:remoteLink>
 					</td>
+                    <td>
+                        <strong>
+                            <g:if test="${contact?.firstName || contact?.lastName}">
+                                ${contact.firstName} &nbsp;${contact.lastName}
+                            </g:if>
+                            <g:else>
+                                ${ordr?.baseUserByUserId?.userName}
+                            </g:else>
+                        </strong>
+                        <em>${contact?.organizationName}</em>
+                    </td>
 	            	<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
                             <g:formatDate date="${inv?.getCreateDatetime()}" formatName="date.pretty.format"/>
@@ -62,12 +76,12 @@
                             ${inv.getInvoiceStatus().getDescription(session['language_id']) }
 						</g:remoteLink>
 					</td>
-					<td class="small">
+					<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
                             <g:formatNumber number="${inv.total}"  type="currency" currencySymbol="${currency?.symbol}"/>
 						</g:remoteLink>
 					</td>
-					<td class="small">
+					<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
                             <g:formatNumber number="${inv.balance}" type="currency" currencySymbol="${currency?.symbol}"/>
 						</g:remoteLink>

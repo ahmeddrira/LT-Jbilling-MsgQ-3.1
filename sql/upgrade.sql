@@ -963,3 +963,6 @@ delete from international_description where table_id = 78; -- list_field_entity
 
 delete from jbilling_table where name in ('list', 'list_entity', 'list_field', 'list_field_entity', 'menu_option');
 delete from jbilling_seqs where name in ('list', 'list_entity', 'list_field', 'list_field_entity', 'menu_option');
+
+-- shorter description for carried invoice status
+update international_description set content = 'Carried' where table_id = 90 and foreign_id = 3 and psudo_column = 'description' and language_id = 1;

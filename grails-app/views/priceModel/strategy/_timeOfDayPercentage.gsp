@@ -37,6 +37,8 @@
               valueMessagePrefix="price.strategy"
               value="${model?.type ?: type.name()}"/>
 
+    <g:hiddenField name="model.${modelIndex}.oldType" value="${model?.type ?: type.name()}"/>
+
     <g:if test="${modelIndex > 0}">
         <a onclick="removeChainModel(this, ${modelIndex});">
             <img src="${resource(dir:'images', file:'cross.png')}" alt="remove"/>

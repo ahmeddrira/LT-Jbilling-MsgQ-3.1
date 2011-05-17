@@ -21,6 +21,8 @@
 package com.sapienter.jbilling.client.pricing.util
 
 import com.sapienter.jbilling.server.pricing.PriceModelWS
+import com.sapienter.jbilling.server.pricing.db.AttributeDefinition
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
 import org.codehaus.groovy.grails.web.metaclass.BindDynamicMethod
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
@@ -60,6 +62,14 @@ class PlanHelper {
                 if (attrParams instanceof Map)
                     if (attrParams.name)
                         model.attributes.put(attrParams.name, attrParams.value)
+            }
+
+            // clear type specific attributes after a change in strategy
+            if (modelParams.type != modelParams.oldType) {
+                PriceModelStrategy oldType = PriceModelStrategy.valueOf(modelParams.oldType)
+                for (AttributeDefinition attribute : oldType.strategy.attributeDefinitions) {
+                    model.attributes.remove(attribute.name)
+                }
             }
         }
 

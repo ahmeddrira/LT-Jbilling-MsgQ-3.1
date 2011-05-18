@@ -49,6 +49,7 @@
         <span class="strategy">
             <g:message code="price.strategy.${planItem.model.type}"/>
         </span>
+        <div style="clear: both;"></div>
     </li>
 
     <!-- line ${index} editor -->

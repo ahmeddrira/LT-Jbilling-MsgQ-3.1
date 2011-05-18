@@ -54,6 +54,7 @@
                 <g:message code="order.review.quantity.by.price" args="[quantity, price]"/>
             </g:else>
         </span>
+        <div style="clear: both;"></div>
     </li>
 
     <li id="line-${index}-editor" class="editor ${editable ? 'open' : ''}">
@@ -88,7 +89,7 @@
                         <span class="included-qty">
                             + <g:formatNumber number="${planItem.bundle?.quantity}"/>
                             <g:if test="${planItem.bundle?.period}">
-                                ${WordUtils.capitalize(planItem.bundle?.period.getDescription(session['language_id']).toLowerCase())}
+                                ${WordUtils.capitalize(planItem.bundle?.period?.getDescription(session['language_id'])?.toLowerCase())}
                             </g:if>
                             <g:if test="${planItem.bundle?.targetCustomer != PlanItemBundleDTO.Customer.SELF}">
                                 <g:message code="bundle.for.target.customer.${planItem.bundle?.targetCustomer}"/>

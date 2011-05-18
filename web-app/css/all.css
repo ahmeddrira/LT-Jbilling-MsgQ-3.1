@@ -1140,7 +1140,7 @@ ul#review-lines {
     display: block;
 }
 #review-lines li.active, #review-lines li.line:hover {
-    background: url(../images/bg-gradient2.gif) right -1px repeat-x;
+    background: #d0e7fc url(../images/bg-gradient2.gif) right -1px repeat-x;
     border: 1px dashed #c1c1c1;
     cursor: pointer;
 }
@@ -1174,6 +1174,9 @@ ul#review-lines {
 }
 #review-lines span.description {
     padding-left: 3px;
+    display: block;
+    float: left;
+    width: 250px;
 }
 #review-lines span.qty-price, #review-lines span.strategy {
     display: block;

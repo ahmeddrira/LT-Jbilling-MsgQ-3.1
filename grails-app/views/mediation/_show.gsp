@@ -79,7 +79,7 @@
             <tbody>
                 <tr>
                     <td><g:message code="mediation.label.records"/></td>
-                    <td class="value">${selected.records?.size()}</td>
+                    <td class="value">${recordCount}</td>
                 </tr>
                 <tr>
                     <td><g:message code="mediation.label.orders.affected"/></td>

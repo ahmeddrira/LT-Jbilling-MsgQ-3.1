@@ -1,10 +1,4 @@
-
-<div class="table-box">
-	<div class="table-scroll">
-    	<table id="processes" cellspacing="0" cellpadding="0">
-			<thead>
-				<tr>
-					<th class="large">%{--
+%{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
@@ -24,7 +18,12 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<g:message code="mediation.th.id" /></th>
+<div class="table-box">
+	<div class="table-scroll">
+    	<table id="processes" cellspacing="0" cellpadding="0">
+			<thead>
+				<tr>
+					<th class="large"><g:message code="mediation.th.id" /></th>
 					<th class="small2"><g:message code="mediation.th.start.date" /></th>
 					<th class="small2"><g:message code="mediation.th.end.date" /></th>
 					<th class="small"><g:message code="mediation.th.total.records" /></th>
@@ -33,11 +32,13 @@
 			</thead>
 	
 			<tbody>
-				<g:each var="proc" in="${processes}">
+				<g:each var="entry" in="${processes.entrySet()}">
+                    <g:set var="proc" value="${entry.key}"/>
+                    <g:set var="recordCount" value="${entry.value}"/>
+
 					<tr id="mediation-${proc.id}" class="${proc?.id == processId ? 'active' : ''}">
 						<td>
                             <g:remoteLink breadcrumb="id" class="cell double" action="show" id="${proc.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
-
                                 <strong>${proc.id}</strong>
                                 <em>${proc.configuration.name}</em>
                             </g:remoteLink>
@@ -54,7 +55,7 @@
                         </td>
 						<td>
                             <g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
-                                ${proc.records?.size()}
+                                ${recordCount}
                             </g:remoteLink>
                         </td>
                         <td>

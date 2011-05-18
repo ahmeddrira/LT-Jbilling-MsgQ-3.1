@@ -70,7 +70,9 @@ class MediationController {
 		params.max = (params?.max?.toInteger()) ?: pagination.max
 		params.offset = (params?.offset?.toInteger()) ?: pagination.offset
 
-		return MediationProcess.createCriteria().list(
+		def processes = new HashMap<MediationProcess, Integer>()
+
+        MediationProcess.createCriteria().list(
 			max:    params.max,
 			offset: params.offset
 		) {
@@ -87,23 +89,39 @@ class MediationController {
             }
 
 			order("id", "desc")
-		}
+
+        }.each { process ->
+            processes.put(process, getRecordCount(process))
+        }
+
+        return processes
 	}
+
+    def Integer getRecordCount(MediationProcess process) {
+        return MediationRecordDTO.createCriteria().get() {
+            eq('process.id', process.id)
+
+            projections {
+                rowCount()
+            }
+        }
+    }
 
 	def show = {
         def process = MediationProcess.get(params.int('id'))
+        def recordCount = getRecordCount(process)
 
 		recentItemService.addRecentItem(process.id, RecentItemType.MEDIATIONPROCESS)
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, process.id)
 
 		if (params.template) {
-			render template: params.template, model: [ selected: process ]
+			render template: params.template, model: [ selected: process, recordCount: recordCount ]
 
 		} else {
 			def filters = filterService.getFilters(FilterType.MEDIATIONPROCESS, params)
 			def processes = getFilteredProcesses(filters, params)
 
-			render view: 'list', model: [ selected: process, processes: processes, filters: filters ]
+			render view: 'list', model: [ selected: process, recordCount: recordCount, processes: processes, filters: filters ]
 		}
 	}
 

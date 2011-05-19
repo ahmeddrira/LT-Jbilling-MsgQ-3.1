@@ -766,21 +766,5 @@ public class WSTest extends PricingTestCase {
             assertTrue("Could not get price for user belonging to entity 2", true);
 
         }
-
-        // getCustomerPriceByAttributes
-        try {
-            api.getCustomerPriceByAttributes(BAD_USER_ID, PLAN_AFFECTED_ITEM_ID, new HashMap<String, String>());
-            fail("Should not be able to get price for a user belonging to another entity.");
-        } catch (SecurityException e) {
-            assertTrue("Could not get price for user belonging to entity 2", true);
-        }
-
-        // getCustomerPriceByWildcardAttributes
-        try {
-            api.getCustomerPriceByWildcardAttributes(BAD_USER_ID, PLAN_AFFECTED_ITEM_ID, new HashMap<String, String>());
-            fail("Should not be able to get price for a user belonging to another entity.");
-        } catch (SecurityException e) {
-            assertTrue("Could not get price for user belonging to entity 2", true);
-        }
     }
 }

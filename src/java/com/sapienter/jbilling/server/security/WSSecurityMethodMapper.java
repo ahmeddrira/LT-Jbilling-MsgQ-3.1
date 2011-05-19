@@ -61,7 +61,7 @@ public class WSSecurityMethodMapper {
     private static final Class WS_INTERFACE = IWebServicesSessionBean.class;
 
     /** Types of secured web-service methods */
-    private enum Type {
+    public static enum Type {
 
         USER {
             public WSSecured getMappedSecuredWS(Serializable id) {
@@ -165,7 +165,7 @@ public class WSSecurityMethodMapper {
     }
 
     /** Secured web-service methods */
-    private enum WSSecureMethod {
+    public static enum WSSecureMethod {
 
         GET_USER                        ("getUserWS", 0, Type.USER),        
         DELETE_USER                     ("deleteUser", 0, Type.USER),
@@ -235,8 +235,6 @@ public class WSSecurityMethodMapper {
         GET_PLANS_BY_SUBSCRIPTION_ITEM  ("getPlansBySubscriptionItem", 0, Type.ITEM),
         GET_PLANS_BY_AFFECTED_ITEM      ("getPlansByAffectedItem", 0, Type.ITEM),
         GET_CUSTOMER_PRICE              ("getCustomerPrice", 0, Type.USER),
-        GET_CUSTOMER_PRICE_BY_ATTR      ("getCustomerPriceByAttributes", 0, Type.USER),
-        GET_CUSTOMER_PRICE_BY_WILDCARD  ("getCustomerPriceByWildcardAttributes", 0, Type.USER),
         ;
         
         private Method method;

@@ -56,15 +56,17 @@
 						</g:remoteLink>
 					</td>
                     <td>
-                        <strong>
-                            <g:if test="${contact?.firstName || contact?.lastName}">
-                                ${contact.firstName} &nbsp;${contact.lastName}
-                            </g:if>
-                            <g:else>
-                                ${ordr?.baseUserByUserId?.userName}
-                            </g:else>
-                        </strong>
-                        <em>${contact?.organizationName}</em>
+                        <g:remoteLink breadcrumb="id" class="cell double" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                            <strong>
+                                <g:if test="${contact?.firstName || contact?.lastName}">
+                                    ${contact.firstName} &nbsp;${contact.lastName}
+                                </g:if>
+                                <g:else>
+                                    ${ordr?.baseUserByUserId?.userName}
+                                </g:else>
+                            </strong>
+                            <em>${contact?.organizationName}</em>
+                        </g:remoteLink>
                     </td>
 	            	<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">

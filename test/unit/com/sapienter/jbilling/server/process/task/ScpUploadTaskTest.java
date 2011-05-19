@@ -50,10 +50,10 @@ public class ScpUploadTaskTest extends TestCase {
 
         // entityNotification.properties should be the only file
         // located on the root jbilling/resources/ path.
-        List<File> files = task.collectFiles(path, ".*\\.gif", false);
+        List<File> files = task.collectFiles(path, ".*\\.jpg", false);
 
         assertEquals(1, files.size());
-        assertEquals("jbilling.gif", files.get(0).getName());
+        assertEquals("entity-1.jpg", files.get(0).getName());
     }
 
     public void testCollectFilesRecursive() throws Exception {
@@ -76,12 +76,12 @@ public class ScpUploadTaskTest extends TestCase {
         assertEquals("simple_invoice_telco_events.jasper", files.get(3).getName());
     }
 
-    public void testCollectfilesCompoundRegex() throws Exception {
+    public void testCollectFilesCompoundRegex() throws Exception {
         File path = new File(BASE_DIR);
 
         // look for multiple files recursively matching *.jasper and *.jpg
         // should find files in jbilling/resources/design/ and jbilling/resources/logos/
-        List<File> files = task.collectFiles(path, "(.*designs.*\\.jasper|.*\\.gif)", true);
+        List<File> files = task.collectFiles(path, "(.*designs.*\\.jasper|.*\\.jpg)", true);
         Collections.sort(files);
 
         assertEquals(5, files.size());
@@ -89,7 +89,7 @@ public class ScpUploadTaskTest extends TestCase {
         assertEquals("simple_invoice_b2b.jasper", files.get(1).getName());
         assertEquals("simple_invoice_telco.jasper", files.get(2).getName());
         assertEquals("simple_invoice_telco_events.jasper", files.get(3).getName());
-        assertEquals("jbilling.gif", files.get(4).getName());
+        assertEquals("entity-1.jpg", files.get(4).getName());
     }
 
 /*

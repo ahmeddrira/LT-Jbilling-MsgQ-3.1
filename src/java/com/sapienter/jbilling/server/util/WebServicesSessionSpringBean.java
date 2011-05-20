@@ -2397,7 +2397,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public void triggerAgeing(Date runDate) {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        processBean.reviewUsersStatus(runDate);
+        processBean.reviewUsersStatus(getCallerCompanyId(), runDate);
     }
 
     public BillingProcessConfigurationWS getBillingProcessConfiguration() throws SessionInternalError {

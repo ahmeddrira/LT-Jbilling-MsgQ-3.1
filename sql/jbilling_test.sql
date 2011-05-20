@@ -10441,6 +10441,8 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 466022	1	\N	21	107810	2009-12-21 13:21:26.002	2	7	25	\N	\N	\N	0	10780
 466023	1	1	21	107811	2009-12-21 13:21:44.511	2	7	22	\N	\N	\N	0	10781
 466024	1	\N	21	107811	2009-12-21 13:21:44.518	2	7	25	\N	\N	\N	0	10781
+467000	1	1	25	6060	2011-05-20 15:11:00.037	2	11	25	\N	\N	\N	0	\N
+467001	1	1	25	6061	2011-05-20 15:11:24.625	2	11	25	\N	\N	\N	0	\N
 \.
 
 
@@ -11528,6 +11530,13 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 104	2	description	1	Orders
 104	3	description	1	Payments
 104	4	description	1	Users
+23	24	description	1	Ageing for customers with overdue invoices
+24	87	title	1	Basic ageing
+24	87	description	1	Ages a user based on the number of days that the account is overdue.
+24	88	title	1	Ageing process task
+24	88	description	1	A scheduled task to execute the Ageing Process.
+24	89	title	1	Business day ageing
+24	89	description	1	Ages a user based on the number of business days (excluding holidays) that the account is overdue.
 \.
 
 
@@ -11724,7 +11733,6 @@ partner	2
 entity	1
 contact_type	1
 contact_map	7910
-pluggable_task	606
 payment_info_cheque	17
 billing_process	2
 process_run	1
@@ -11736,7 +11744,6 @@ notification_message_line	1
 ageing_entity_step	1
 item_type	24
 item	31
-event_log	467
 purchase_order	1079
 order_line	2081
 invoice	86
@@ -11768,9 +11775,11 @@ mediation_record	1
 filter	1
 filter_set	1
 recent_item	1
-breadcrumb	1
 shortcut	1
 report_parameter	1
+pluggable_task	607
+event_log	468
+breadcrumb	7
 \.
 
 
@@ -14935,6 +14944,8 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 6030	1	81	1	1	\N
 6040	1	78	1	4	\N
 6050	1	82	2	7	\N
+6060	1	87	1	1	
+6061	1	88	3	1	
 \.
 
 
@@ -15108,6 +15119,9 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 80	14	com.sapienter.jbilling.server.pricing.tasks.TieredPriceModelPricingTask	0
 84	17	com.sapienter.jbilling.server.payment.tasks.SaveACHExternallyTask	1
 85	20	com.sapienter.jbilling.server.process.task.BillableUserOrdersBillingProcessFilterTask	0
+87	24	com.sapienter.jbilling.server.process.task.BasicAgeingTask	0
+88	22	com.sapienter.jbilling.server.process.task.AgeingProcessTask	0
+89	24	com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask	0
 \.
 
 
@@ -15139,6 +15153,7 @@ COPY pluggable_task_type_category (id, interface_name) FROM stdin;
 21	com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler
 22	com.sapienter.jbilling.server.process.task.IScheduledTask
 23	com.sapienter.jbilling.server.rule.task.IRulesGenerator
+24	com.sapienter.jbilling.server.process.task.IAgeingTask
 \.
 
 

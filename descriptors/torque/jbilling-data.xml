@@ -1575,6 +1575,7 @@
     <InternationalDescription TableId="23" ForeignId="21" PsudoColumn="description" LanguageId="1" Content="Mediation Error Handler"/>
     <InternationalDescription TableId="23" ForeignId="22" PsudoColumn="description" LanguageId="1" Content="Scheduled Plug-ins"/>
     <InternationalDescription TableId="23" ForeignId="23" PsudoColumn="description" LanguageId="1" Content="Rules Generators"/>
+    <InternationalDescription TableId="23" ForeignId="24" PsudoColumn="description" LanguageId="1" Content="Ageing for customers with overdue invoices"/>
     <InternationalDescription TableId="24" ForeignId="1" PsudoColumn="title" LanguageId="1" Content="Default order totals"/>
     <InternationalDescription TableId="24" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Calculates the order total and the total for each line, considering the item prices, the quantity and if the prices are percentage or not."/>
     <InternationalDescription TableId="24" ForeignId="2" PsudoColumn="title" LanguageId="1" Content="VAT"/>
@@ -1723,6 +1724,12 @@
     <InternationalDescription TableId="24" ForeignId=" 79" PsudoColumn="description" LanguageId="1" Content="A scheduled task to execute the Mediation Process."/>
     <InternationalDescription TableId="24" ForeignId=" 80" PsudoColumn="title" LanguageId="1" Content="Billing Process Task"/>
     <InternationalDescription TableId="24" ForeignId=" 80" PsudoColumn="description" LanguageId="1" Content="A scheduled task to execute the Billing Process."/>
+    <InternationalDescription TableId="24" ForeignId=" 87" PsudoColumn="title" LanguageId="1" Content="Basic ageing"/>
+    <InternationalDescription TableId="24" ForeignId=" 87" PsudoColumn="description" LanguageId="1" Content="Ages a user based on the number of days that the account is overdue."/>
+    <InternationalDescription TableId="24" ForeignId=" 88" PsudoColumn="title" LanguageId="1" Content="Ageing process task"/>
+    <InternationalDescription TableId="24" ForeignId=" 88" PsudoColumn="description" LanguageId="1" Content="A scheduled task to execute the Ageing Process."/>
+    <InternationalDescription TableId="24" ForeignId=" 89" PsudoColumn="title" LanguageId="1" Content="Business day ageing"/>
+    <InternationalDescription TableId="24" ForeignId=" 89" PsudoColumn="description" LanguageId="1" Content="Ages a user based on the number of business days (excluding holidays) that the account is overdue."/>
 	<InternationalDescription TableId="99" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Referral Fee"/>
     <InternationalDescription TableId="99" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Payment Processor"/>
     <InternationalDescription TableId="99" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="IP Address"/>

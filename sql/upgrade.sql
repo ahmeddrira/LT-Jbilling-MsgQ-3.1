@@ -968,8 +968,17 @@ delete from jbilling_seqs where name in ('list', 'list_entity', 'list_field', 'l
 update international_description set content = 'Carried' where table_id = 90 and foreign_id = 3 and psudo_column = 'description' and language_id = 1;
 
 -- ageing plug-ins
-insert into pluggable_task_type_category (id, description, interface_name) values (24, 'user ageing process task', 'com.sapienter.jbilling.server.process.task.IAgeingTask');
-insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (83, 24, 'com.sapienter.jbilling.server.process.task.BasicAgeingTask', 0);
-insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (84, 22, 'com.sapienter.jbilling.server.process.task.AgeingProcessTask', 0);
-insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (85, 24, 'com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask', 0);
+insert into pluggable_task_type_category (id, interface_name) values (24, 'com.sapienter.jbilling.server.process.task.IAgeingTask');
 
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (87, 24, 'com.sapienter.jbilling.server.process.task.BasicAgeingTask', 0);
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (88, 22, 'com.sapienter.jbilling.server.process.task.AgeingProcessTask', 0);
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (89, 24, 'com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask', 0);
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (23, 24, 'description', 1, 'Ageing for customers with overdue invoices');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24, 87, 'title', 1, 'Basic ageing');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24, 87, 'description', 1, 'Ages a user based on the number of days that the account is overdue.');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24, 88, 'title', 1, 'Ageing process task');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24, 88, 'description', 1, 'A scheduled task to execute the Ageing Process.');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24, 89, 'title', 1, 'Business day ageing');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24, 89, 'description', 1, 'Ages a user based on the number of business days (excluding holidays) that the account is overdue.');

@@ -125,7 +125,7 @@ public class BillingProcessTest extends TestCase {
         System.out.println("Invoice ids: " + Arrays.toString(invoiceIds));
 
 
-        InvoiceWS invoice = api.getInvoiceWS(invoiceIds[0]);
+        InvoiceWS invoice = api.getReviewInvoiceWS(invoiceIds[0]);
         System.out.println("TODO: check and write assert. Review invoice: " + invoice);
 
 //        assertEquals("New invoice should be 1 day and one month",
@@ -838,8 +838,9 @@ public class BillingProcessTest extends TestCase {
         System.out.println("Running testAgeing()");
 
         try {
-            Integer userId = new Integer(876);
-
+            final Integer userId = 876;
+            final Integer entityId = 1;
+            
             // grace period = 5
             // overdue1 = 3
             // overdue2 = 1
@@ -847,14 +848,14 @@ public class BillingProcessTest extends TestCase {
             // suspended 3 = 30
             // deleted (end)
             // invoice 3543 Due date 11/26/2006 (1540)
-
+            
             // the grace period should keep this user active
             cal.clear();
             cal.set(2006, GregorianCalendar.DECEMBER, 1);
             api.triggerAgeing(cal.getTime());
             UserWS user = api.getUserWS(userId);
             assertEquals("Grace period", UserDTOEx.STATUS_ACTIVE, user.getStatusId());
-
+                    
             // when the grace over, she should be warned
             cal.set(2006, GregorianCalendar.DECEMBER, 2);
             api.triggerAgeing(cal.getTime());
@@ -889,7 +890,8 @@ public class BillingProcessTest extends TestCase {
             cal.add(GregorianCalendar.DATE, 30);
             api.triggerAgeing(cal.getTime());
             user = api.getUserWS(userId);
-            assertEquals("deleted", 1, user.getDeleted());
+            assertEquals("deleted",1, user.getDeleted());
+            
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception:" + e);

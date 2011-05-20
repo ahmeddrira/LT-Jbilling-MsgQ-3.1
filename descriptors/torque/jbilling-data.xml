@@ -2661,6 +2661,9 @@
     <PluggableTaskType Id="84" CategoryId="17" ClassName="com.sapienter.jbilling.server.payment.tasks.SaveACHExternallyTask" MinParameters="1"/>
     <PluggableTaskType Id="85" CategoryId="20" ClassName="com.sapienter.jbilling.server.process.task.BillableUserOrdersBillingProcessFilterTask" MinParameters="0"/>
     <PluggableTaskType Id="86" CategoryId="17" ClassName="com.sapienter.jbilling.server.item.tasks.PlanChangesExternalTask" MinParameters="0"/>
+    <PluggableTaskType Id="87" CategoryId="24" ClassName="com.sapienter.jbilling.server.process.task.BasicAgeingTask" MinParameters="0"/>
+    <PluggableTaskType Id="88" CategoryId="22" ClassName="com.sapienter.jbilling.server.process.task.AgeingProcessTask" MinParameters="0"/>
+    <PluggableTaskType Id="89" CategoryId="24" ClassName="com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask" MinParameters="0"/>
 
     <PluggableTaskTypeCategory Id="1" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
@@ -2685,6 +2688,7 @@
     <PluggableTaskTypeCategory Id="21" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler"/>
     <PluggableTaskTypeCategory Id="22" InterfaceName="com.sapienter.jbilling.server.process.task.IScheduledTask"/>
     <PluggableTaskTypeCategory Id="23" InterfaceName="com.sapienter.jbilling.server.rule.task.IRulesGenerator"/>
+    <PluggableTaskTypeCategory Id="24" InterfaceName="com.sapienter.jbilling.server.process.task.IAgeingTask"/>
 
     <PreferenceType Id="4"/>
     <PreferenceType Id="5"/>

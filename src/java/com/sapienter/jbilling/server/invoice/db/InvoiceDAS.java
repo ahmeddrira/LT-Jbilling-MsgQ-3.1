@@ -1,21 +1,21 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
+    jBilling - The Enterprise Open Source Billing System
+    Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
 
- This file is part of jbilling.
+    This file is part of jbilling.
 
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+    jbilling is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
+    jbilling is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
 
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Affero General Public License
+    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.sapienter.jbilling.server.invoice.db;
@@ -240,16 +240,6 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         return criteria.list();
 
     }
-    
-    public Collection<InvoiceDTO> findAllApplicableInvoicesByUser(Integer userId) {
-
-        Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
-        criteria.add(Restrictions.eq("baseUser.id", userId));
-        criteria.add(Restrictions.eq("deleted", 0));
-        criteria.add(Restrictions.eq("isReview", 0));
-        criteria.setProjection(Projections.id()).addOrder(Order.desc("id"));
-        return criteria.list();
-    }    
 
     public InvoiceDTO create(Integer userId, NewInvoiceDTO invoice,
             BillingProcessDTO process) {
@@ -330,24 +320,6 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         return (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
     }
 
-    /**
-     * Returns the sum total balance of all unpaid invoices for the given user.
-     *
-     * @param userId user id
-     * @return total balance of all unpaid invoices.
-     */
-    public BigDecimal findTotalAmountOwed(Integer userId) {
-        Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
-        addUserCriteria(criteria, userId);
-        criteria.createAlias("invoiceStatus", "status");
-        criteria.add(Restrictions.ne("status.id", Constants.INVOICE_STATUS_PAID));
-        criteria.add(Restrictions.eq("isReview", 0));
-        criteria.setProjection(Projections.sum("balance"));
-        criteria.setComment("InvoiceDAS.findTotalAmountOwed");
-
-        return (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
-    }
-
     /*
      * signature="Collection findProccesableByUser(java.lang.Integer userId)"
  *             query="SELECT OBJECT(a) 
@@ -358,7 +330,7 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
  *                       AND a.deleted = 0"
  *             result-type-mapping="Local"
      */
-    public Collection findProccesableByUser(UserDTO user) {
+    public Collection<InvoiceDTO> findProccesableByUser(UserDTO user) {
 
         Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
         criteria.add(Restrictions.eq("baseUser", user));

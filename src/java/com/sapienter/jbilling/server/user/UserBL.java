@@ -1,24 +1,44 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
+    jBilling - The Enterprise Open Source Billing System
+    Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
 
- This file is part of jbilling.
+    This file is part of jbilling.
 
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+    jbilling is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
+    jbilling is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
 
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
- */
+    You should have received a copy of the GNU Affero General Public License
+    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 package com.sapienter.jbilling.server.user;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Set;
+import java.util.List;
+
+import javax.naming.NamingException;
+
+import org.apache.log4j.Logger;
+
+import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.PermissionConstants;
@@ -41,8 +61,8 @@ import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.AgeingBL;
-import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
-import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
+import com.sapienter.jbilling.server.report.db.ReportUserDAS;
+import com.sapienter.jbilling.server.report.db.ReportUserDTO;
 import com.sapienter.jbilling.server.user.db.AchDAS;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
@@ -58,6 +78,9 @@ import com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDAS;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask;
+import com.sapienter.jbilling.server.user.validator.AlphaNumValidator;
+import com.sapienter.jbilling.server.user.validator.NoUserInfoInPasswordValidator;
+import com.sapienter.jbilling.server.user.validator.RepeatedPasswordValidator;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.DTOFactory;
@@ -65,34 +88,17 @@ import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
-import org.apache.log4j.Logger;
-import org.springframework.dao.EmptyResultDataAccessException;
-import javax.sql.rowset.CachedRowSet;
-
-import javax.naming.NamingException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 
-public class UserBL extends ResultList implements UserSQL {
-
-    private final static Logger LOG = Logger.getLogger(UserBL.class);
-
+public class UserBL extends ResultList
+        implements UserSQL {
     private UserDTO user = null;
+    private final static Logger LOG = Logger.getLogger(UserBL.class);
     private EventLogger eLogger = null;
     private Integer mainRole = null;
     private UserDAS das = null;
@@ -138,7 +144,7 @@ public class UserBL extends ResultList implements UserSQL {
     }
 
     /**
-     * @param executorId This is the user that has ordered the update
+     * @param userId This is the user that has ordered the update
      * @param dto This is the user that will be updated
      */
     public void update(Integer executorId, UserDTOEx dto)
@@ -183,18 +189,20 @@ public class UserBL extends ResultList implements UserSQL {
                 dto.getCurrencyId())) {
             user.setCurrency(new CurrencyDAS().find(dto.getCurrencyId()));
         }
-
         if (dto.getCustomer() != null) {
             if (dto.getCustomer().getInvoiceDeliveryMethod() != null) {
-                user.getCustomer().setInvoiceDeliveryMethod(dto.getCustomer().getInvoiceDeliveryMethod());
+                // this is not nullable
+                user.getCustomer().setInvoiceDeliveryMethod(
+                        dto.getCustomer().getInvoiceDeliveryMethod());
             }
-
-            user.getCustomer().setDueDateUnitId(dto.getCustomer().getDueDateUnitId());
-            user.getCustomer().setDueDateValue(dto.getCustomer().getDueDateValue());
+            user.getCustomer().setDueDateUnitId(
+                    dto.getCustomer().getDueDateUnitId());
+            user.getCustomer().setDueDateValue(
+                    dto.getCustomer().getDueDateValue());
             user.getCustomer().setDfFm(dto.getCustomer().getDfFm());
-
             if (dto.getCustomer().getPartner() != null) {
-                user.getCustomer().setPartner(dto.getCustomer().getPartner());
+                user.getCustomer().setPartner(
+                        dto.getCustomer().getPartner());
             } else {
                 user.getCustomer().setPartner(null);
             }
@@ -203,26 +211,6 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
-
-            // set the sub-account fields
-            user.getCustomer().setIsParent(dto.getCustomer().getIsParent());
-            if (dto.getCustomer().getParent() != null) {
-                // the API accepts the user ID of the parent instead of the customer ID
-                user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
-
-                // log invoice if child changes
-                Integer oldInvoiceIfChild = user.getCustomer().getInvoiceChild();
-                user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
-
-                eLogger.audit(executorId,
-                              user.getId(),
-                              Constants.TABLE_CUSTOMER,
-                              user.getCustomer().getId(),
-                              EventLogger.MODULE_USER_MAINTENANCE,
-                              EventLogger.INVOICE_IF_CHILD_CHANGE,
-                              (oldInvoiceIfChild != null ? oldInvoiceIfChild : 0),
-                              null, null);
-            }
 
             // update the main order
             if (dto.getCustomer().getCurrentOrderId() != null) {
@@ -322,33 +310,24 @@ public class UserBL extends ResultList implements UserSQL {
                     dto.getPassword(), dto.getLanguageId(),
                     roles, dto.getCurrencyId(),
                     dto.getStatusId(), dto.getSubscriptionStatusId());
-
             user.setCustomer(new CustomerDAS().create());
             user.getCustomer().setBaseUser(user);
-            user.getCustomer().setReferralFeePaid(dto.getCustomer().getReferralFeePaid());
-
+            user.getCustomer().setReferralFeePaid(dto.getCustomer().
+                    getReferralFeePaid());
             if (partner != null) {
                 user.getCustomer().setPartner(partner.getEntity());
             }
-
             // set the sub-account fields
             user.getCustomer().setIsParent(dto.getCustomer().getIsParent());
             if (dto.getCustomer().getParent() != null) {
-                // the API accepts the user ID of the parent instead of the customer ID
                 user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
                 user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
             }
-
             // set dynamic balance fields
             user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setDynamicBalance(dto.getCustomer().getDynamicBalance());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
-
-            //additional customer fields
-            user.getCustomer().setNotes(dto.getCustomer().getNotes());
-            user.getCustomer().setAutoPaymentType(dto.getCustomer().getAutoPaymentType());
-            
         } else { // all the rest
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(),
                     dto.getLanguageId(), roles, dto.getCurrencyId(),
@@ -411,7 +390,7 @@ public class UserBL extends ResultList implements UserSQL {
         return user.getUserId();
     }
 
-    @Deprecated
+
     public boolean validateUserNamePassword(UserDTOEx loggingUser,
            UserDTOEx db) {
 
@@ -442,7 +421,6 @@ public class UserBL extends ResultList implements UserSQL {
      * The user must be an administrator and have permission 120 set.
      * Returns the user's UserDTO if successful, otherwise null.
      */
-    @Deprecated
     public UserDTO webServicesAuthenticate(String username, String password) {
         // try to get root user for this username that has web
         // services permission
@@ -471,6 +449,7 @@ public class UserBL extends ResultList implements UserSQL {
     public static UserDTO getUserEntity(Integer userId) {
         return new UserDAS().find(userId);
     }
+
 
      /**
       * sent the lost password to the user
@@ -508,7 +487,7 @@ public class UserBL extends ResultList implements UserSQL {
          // now add / remove those privileges that were granted / revoked
          // to this particular user
          for(PermissionUserDTO permission : user.getPermissions()) {
-             if (permission.isGranted()) {
+             if (permission.getIsGrant() == 1) {
                  // see that this guy has it
                  if (!ret.contains(permission.getPermission())) {
                      // not there, add it
@@ -529,6 +508,127 @@ public class UserBL extends ResultList implements UserSQL {
 
          return ret;
      }
+
+    public Menu getMenu(List<PermissionDTO> permissions)
+            throws NamingException, SessionInternalError {
+
+        Menu menu = new Menu();
+        // this should be doable in EJB/QL !! :( :(
+        LOG.debug("getting menu for user=" + user.getUserId());
+
+        for (PermissionDTO permission : permissions) {
+            if (permission.getPermissionType().getId() == Constants.PERMISSION_TYPE_MENU) {
+                // get the menu
+                MenuOption option = DTOFactory.getMenuOption(
+                        permission.getForeignId(),
+                        user.getLanguageIdField());
+                if (specialMenuFilter(option.getId())) {
+                    menu.addOption(option);
+                }
+                //LOG.debug("adding option " + option + " to menu");
+            }
+        }
+
+        menu.init();
+
+        return menu;
+     }
+
+    /**
+     * Some menu options depend on more than a permission, like payment
+     * types are on the entity's accepted methods.
+     * @param menuOptionId
+     * @return
+     */
+    private boolean specialMenuFilter(Integer menuOptionId) {
+        boolean retValue = true;
+
+        // this constants have to be in synch with the DB
+        final int OPTION_SUB_ACCOUNTS = 78;
+        final int OPTION_PAYMENT_CHEQUE = 24;
+        final int OPTION_PAYMENT_CC = 25;
+        final int OPTION_PAYMENT_ACH = 75;
+        final int OPTION_PAYMENT_PAYPAL = 90;
+        final int OPTION_CUSTOMER_CONTACT_EDIT = 13;
+        final int OPTION_PLUG_IN_EDIT = 93;
+
+        switch (menuOptionId.intValue()) {
+        case OPTION_SUB_ACCOUNTS:
+            // this one is only for parents
+            if (user.getCustomer() == null ||
+                    user.getCustomer().getIsParent() == null ||
+                    user.getCustomer().getIsParent().intValue() == 0) {
+                retValue = false;
+            }
+            break;
+        case OPTION_PAYMENT_CHEQUE:
+            try {
+                PaymentBL payment = new PaymentBL();
+                retValue = payment.isMethodAccepted(user.getEntity().getId(),
+                        Constants.PAYMENT_METHOD_CHEQUE);
+            } catch (Exception e) {
+                LOG.error("Exception ", e);
+            }
+            break;
+        case OPTION_PAYMENT_ACH:
+            try {
+                PaymentBL payment = new PaymentBL();
+                retValue = payment.isMethodAccepted(user.getEntity().getId(),
+                        Constants.PAYMENT_METHOD_ACH);
+            } catch (Exception e) {
+                LOG.error("Exception ", e);
+            }
+            break;
+        case OPTION_PAYMENT_CC:
+            try {
+                PaymentBL payment = new PaymentBL();
+                retValue = payment.isMethodAccepted(user.getEntity().getId(),
+                        Constants.PAYMENT_METHOD_AMEX) ||
+                        payment.isMethodAccepted(user.getEntity().getId(),
+                                Constants.PAYMENT_METHOD_VISA) ||
+                        payment.isMethodAccepted(user.getEntity().getId(),
+                                Constants.PAYMENT_METHOD_MASTERCARD) ||
+                        payment.isMethodAccepted(user.getEntity().getId(),
+                                Constants.PAYMENT_METHOD_DINERS) ||
+                        payment.isMethodAccepted(user.getEntity().getId(),
+                                Constants.PAYMENT_METHOD_DISCOVERY);
+            } catch (Exception e) {
+                LOG.error("Exception ", e);
+            }
+            break;
+        case OPTION_PAYMENT_PAYPAL:
+            try {
+                PaymentBL payment = new PaymentBL();
+                retValue = payment.isMethodAccepted(user.getEntity().getId(),
+                        Constants.PAYMENT_METHOD_PAYPAL);
+            } catch (Exception e) {
+                LOG.error("Exception ", e);
+            }
+            break;
+        case OPTION_CUSTOMER_CONTACT_EDIT:
+            PreferenceBL preference = null;
+            try {
+                preference = new PreferenceBL();
+                preference.set(user.getEntity().getId(),
+                        Constants.PREFERENCE_CUSTOMER_CONTACT_EDIT);
+                retValue = (preference.getInt() == 1);
+            } catch (EmptyResultDataAccessException e) {
+                // It doesn't matter, I will take the default
+            } catch (Exception e) {
+                LOG.error("Exception ", e);
+            }
+
+            retValue = (preference.getInt() == 1);
+            break;
+        case OPTION_PLUG_IN_EDIT:
+            UserDTOEx dto = new UserDTOEx();
+            dto.setAllPermissions(getPermissions());
+            retValue = dto.isGranted(PermissionConstants.P_TASK_MODIFY);
+            break;
+        }
+
+        return retValue;
+    }
 
     public UserWS getUserWS() throws SessionInternalError {
         UserDTOEx dto = DTOFactory.getUserDTOEx(user);
@@ -586,34 +686,25 @@ public class UserBL extends ResultList implements UserSQL {
         return result;
     }
 
-    /**
-     * Get the locale for this user.
-     *
-     * @return users locale
-     */
     public Locale getLocale() {
-        return getLocale(user);
-    }
+        Locale retValue = null;
+        // get the language first
+        Integer languageId = user.getLanguageIdField();
+        LanguageDTO language = new LanguageDAS().find(languageId);
+        String languageCode = language.getCode();
 
-    /**
-     * Get a locale for the given user based on their selected language and set country.
-     *
-     * This method assumes that the user is part of the current persistence context, and that
-     * the LanguageDTO association can safely be lazy-loaded.
-     *
-     * @param user user
-     * @return users locale
-     */
-    public static Locale getLocale(UserDTO user) {
-        String languageCode = user.getLanguage().getCode();
+        // now the country
+        ContactBL contact = new ContactBL();
+        contact.set(user.getUserId());
+        String countryCode = contact.getEntity().getCountryCode();
 
-        ContactDTO contact = new ContactDAS().findPrimaryContact(user.getId());
+        if (countryCode != null) {
+            retValue = new Locale(languageCode, countryCode);
+        } else {
+            retValue = new Locale(languageCode);
+        }
 
-        String countryCode = null;
-        if (contact != null)
-            countryCode = contact.getCountryCode();
-
-        return countryCode != null ? new Locale(languageCode, countryCode) : new Locale(languageCode);
+        return retValue;
     }
 
     public Integer getCurrencyId() {
@@ -648,6 +739,11 @@ public class UserBL extends ResultList implements UserSQL {
         }
         // permisions
         user.getPermissions().clear();
+        // user saved reports
+        for (ReportUserDTO report: user.getReports()) {
+            new ReportUserDAS().delete(report);
+        }
+        user.getReports().clear();
         // roles
         user.getRoles().clear();
 
@@ -784,9 +880,11 @@ public class UserBL extends ResultList implements UserSQL {
         return retValue;
     }
 
-    public CachedRowSet findActiveWithOpenInvoices()
+    public CachedRowSet findActiveWithOpenInvoices(Integer entityId)
             throws SQLException, NamingException {
         prepareStatement(UserSQL.findActiveWithOpenInvoices);
+        cachedResults.setInt(1, entityId);
+
         execute();
         conn.close();
         return cachedResults;
@@ -857,10 +955,6 @@ public class UserBL extends ResultList implements UserSQL {
     public BigDecimal getBalance(Integer userId) {
         return new InvoiceDAS().findTotalBalanceByUser(userId).subtract(
                 new PaymentDAS().findTotalBalanceByUser(userId));
-    }
-
-    public BigDecimal getTotalOwed(Integer userId) {
-        return new InvoiceDAS().findTotalAmountOwed(userId);
     }
 
     public UserTransitionResponseWS[] getUserTransitionsByDate(Integer entityId,
@@ -963,8 +1057,33 @@ public class UserBL extends ResultList implements UserSQL {
         LOG.debug("Subscription status updated to " + id);
     }
 
-    // todo: should be moved into a scheduled task that expires passwords and sets a flag on the user
-    @Deprecated
+    public boolean validatePassword(String password) {
+        boolean result = true;
+        try {
+            result = AlphaNumValidator.basicValidation(password);
+
+            if (result != false) {
+                result = RepeatedPasswordValidator.basicValidation(
+                        getEntity().getUserId(),
+                        getMainRole(),
+                        password);
+
+                if (result != false) {
+                    ContactBL cbl = new ContactBL();
+                    cbl.set(getEntity().getUserId());
+                    ContactDTOEx contact = cbl.getDTO();
+                    result = NoUserInfoInPasswordValidator.basicValidation(
+                            contact,
+                            password);
+                }
+            }
+        } catch (Throwable e) {
+            LOG.error("Error validating password " + password, e);
+            result = false;
+        }
+        return result;
+    }
+
     public boolean isPasswordExpired() {
         boolean retValue = false;
         try {

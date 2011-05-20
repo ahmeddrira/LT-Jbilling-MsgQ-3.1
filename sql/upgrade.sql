@@ -966,3 +966,10 @@ delete from jbilling_seqs where name in ('list', 'list_entity', 'list_field', 'l
 
 -- shorter description for carried invoice status
 update international_description set content = 'Carried' where table_id = 90 and foreign_id = 3 and psudo_column = 'description' and language_id = 1;
+
+-- ageing plug-ins
+insert into pluggable_task_type_category (id, description, interface_name) values (24, 'user ageing process task', 'com.sapienter.jbilling.server.process.task.IAgeingTask');
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (83, 24, 'com.sapienter.jbilling.server.process.task.BasicAgeingTask', 0);
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (84, 22, 'com.sapienter.jbilling.server.process.task.AgeingProcessTask', 0);
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (85, 24, 'com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask', 0);
+

@@ -1,22 +1,22 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
+    jBilling - The Enterprise Open Source Billing System
+    Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
 
- This file is part of jbilling.
+    This file is part of jbilling.
 
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+    jbilling is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
+    jbilling is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
 
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
- */
+    You should have received a copy of the GNU Affero General Public License
+    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 /*
  * Created on Jul 14, 2004
@@ -30,26 +30,25 @@ import java.util.Date;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
+import com.sapienter.jbilling.server.list.IListSessionBean;
 import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.RemoteContext;
 
 /**
  * @author Emil
  *
  */
 public class Trigger {
-    
-    
-    
+
     public static void main(String[] args) {
         IBillingProcessSessionBean remoteBillingProcess = null;
         
         
         try {
-        	// TODO, change this to use the standard API
             // get a session for the remote interfaces
- /*           remoteBillingProcess = (IBillingProcessSessionBean) 
+            remoteBillingProcess = (IBillingProcessSessionBean) 
                     RemoteContext.getBean(
                     RemoteContext.Name.BILLING_PROCESS_REMOTE_SESSION);
             IUserSessionBean remoteUser = (IUserSessionBean) 
@@ -64,12 +63,7 @@ public class Trigger {
             IListSessionBean remoteList = (IListSessionBean) 
                     RemoteContext.getBean(
                     RemoteContext.Name.LIST_REMOTE_SESSION);
- */           
-        	remoteBillingProcess = null;
-        	IUserSessionBean remoteUser = null;
-        	IOrderSessionBean remoteOrder = null;
-        	IInvoiceSessionBean remoteInvoice = null;
-
+            
             // determine the date for this run
             Date today = Calendar.getInstance().getTime();
             Integer step = null; //means all
@@ -80,7 +74,9 @@ public class Trigger {
                 }
             }
             today = Util.truncateDate(today);
-            
+
+            Integer entityId = Integer.valueOf(args[3]);
+
             // run the billing process
             if (step == null || step.intValue() == 1) {
                 System.out.println("Running trigger for " + today);
@@ -90,13 +86,18 @@ public class Trigger {
                 System.out.println("Ended billing process at " + 
                         Calendar.getInstance().getTime());
             }
-            
+
             // now the ageing process
             if (step == null || step.intValue() == 2) {
-                System.out.println("Starting ageing process at " + 
+                if (entityId == null) {
+                    System.out.println("Cannot start ageing process without an entity ID.");
+                    return;
+                }
+
+                System.out.println("Starting ageing process at " +
                         Calendar.getInstance().getTime());
-                remoteBillingProcess.reviewUsersStatus(today);
-                System.out.println("Ended ageing process at " + 
+                remoteBillingProcess.reviewUsersStatus(entityId, today);
+                System.out.println("Ended ageing process at " +
                         Calendar.getInstance().getTime());
             }
 
@@ -131,6 +132,15 @@ public class Trigger {
             if (step == null || step.intValue() == 6) {
                 // Penalty processing removed, now handled as an internal event
                 // based of the ageing NewUserStatusEvent
+            }
+            
+            // update the listing statistics
+            if (step == null || step.intValue() == 7) {
+                System.out.println("Starting list stats at " + 
+                        Calendar.getInstance().getTime());
+                remoteList.updateStatistics();
+                System.out.println("Ended list stats at " + 
+                        Calendar.getInstance().getTime());
             }
 
             // send credit card expiration emails

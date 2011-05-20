@@ -1,6 +1,6 @@
 /*
     jBilling - The Enterprise Open Source Billing System
-    Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
+    Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
     This file is part of jbilling.
 
@@ -241,6 +241,16 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 
     }
 
+    public Collection<InvoiceDTO> findAllApplicableInvoicesByUser(Integer userId) {
+
+        Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
+        criteria.add(Restrictions.eq("baseUser.id", userId));
+        criteria.add(Restrictions.eq("deleted", 0));
+        criteria.add(Restrictions.eq("isReview", 0));
+        criteria.setProjection(Projections.id()).addOrder(Order.desc("id"));
+        return criteria.list();
+    }
+
     public InvoiceDTO create(Integer userId, NewInvoiceDTO invoice,
             BillingProcessDTO process) {
 
@@ -316,6 +326,24 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         criteria.add(Restrictions.eq("isReview", 0));
         criteria.setProjection(Projections.sum("balance")); 
         criteria.setComment("InvoiceDAS.findTotalBalanceByUser");
+
+        return (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
+    }
+
+    /**
+     * Returns the sum total balance of all unpaid invoices for the given user.
+     *
+     * @param userId user id
+     * @return total balance of all unpaid invoices.
+     */
+    public BigDecimal findTotalAmountOwed(Integer userId) {
+        Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
+        addUserCriteria(criteria, userId);
+        criteria.createAlias("invoiceStatus", "status");
+        criteria.add(Restrictions.ne("status.id", Constants.INVOICE_STATUS_PAID));
+        criteria.add(Restrictions.eq("isReview", 0));
+        criteria.setProjection(Projections.sum("balance"));
+        criteria.setComment("InvoiceDAS.findTotalAmountOwed");
 
         return (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
     }

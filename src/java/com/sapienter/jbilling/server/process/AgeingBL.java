@@ -23,44 +23,13 @@
  */
 package com.sapienter.jbilling.server.process;
 
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import javax.naming.NamingException;
-
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
-import com.sapienter.jbilling.server.process.task.IAgeingTask;
-import com.sapienter.jbilling.server.user.EntityBL;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.log4j.Logger;
-
-import sun.jdbc.rowset.CachedRowSet;
-
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.invoice.InvoiceBL;
-import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.notification.INotificationSessionBean;
-import com.sapienter.jbilling.server.notification.MessageDTO;
-import com.sapienter.jbilling.server.notification.NotificationBL;
-import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
-import com.sapienter.jbilling.server.order.OrderBL;
-import com.sapienter.jbilling.server.order.db.OrderDAS;
-import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.db.AgeingEntityStepDAS;
 import com.sapienter.jbilling.server.process.db.AgeingEntityStepDTO;
-import com.sapienter.jbilling.server.process.event.NewUserStatusEvent;
-import com.sapienter.jbilling.server.system.event.EventManager;
-import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.process.task.IAgeingTask;
+import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
@@ -68,10 +37,14 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.db.UserStatusDAS;
 import com.sapienter.jbilling.server.user.db.UserStatusDTO;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.Context;
-import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.apache.log4j.Logger;
+
+import javax.naming.NamingException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author Emil
@@ -206,6 +179,57 @@ public class AgeingBL {
         return result;
     }
     
+	public AgeingDTOEx[] validate(AgeingDTOEx[] steps) throws SessionInternalError {
+
+        int lastSelected = 0;
+        for (int f = 1; f < steps.length; f++) {
+            AgeingDTOEx line = steps[f];
+            if (line.getInUse()) {
+                lastSelected = f;
+            }
+        }
+
+        for (int f = 0; f < steps.length; f++) {
+        	//Active Step cannot be set to not-in-use
+	        if (steps[f].getStatusId().equals(UserDTOEx.STATUS_ACTIVE)) {
+	            steps[f].setInUse(true);
+	        }
+
+	        if (steps[f].getInUse()) {
+	        	//if the Step is not deleted, welcome message may not be null
+                if (!steps[f].getStatusId().equals(UserDTOEx.STATUS_DELETED) &&
+                        steps[f].getWelcomeMessage() == null ) {
+                	SessionInternalError exception = new SessionInternalError("Welcome message may not be null for a step");
+                	exception.setErrorMessages(new String[] {"AgeingWS,welcomeMessage,config.ageing.error.null.message,null"});
+                	throw exception;
+                }
+
+                //for inUse steps (NOT ACTIVE or DELETE Step) , days may not be zero
+                if ( ! ( steps[f].getStatusId().equals(UserDTOEx.STATUS_ACTIVE) ||
+                		steps[f].getStatusId().equals(UserDTOEx.STATUS_DELETED) )
+                		&& f != lastSelected ) {
+
+                	if (steps[f].getDays() <= 0 ) {
+                		SessionInternalError exception = new SessionInternalError("Days cannot be zero for an 'in use' step");
+                    	exception.setErrorMessages(new String[] {"AgeingWS,days,config.ageing.error.zero.days,0"});
+                    	throw exception;
+                	}
+                }
+
+                //set days to zero by default for the last Selected Step
+                if (f == lastSelected ) {
+                	if (steps[f].getDays() > 0) {
+	                	SessionInternalError exception = new SessionInternalError("The days for the last selected step has to be 0");
+	                	exception.setErrorMessages(new String[] {"AgeingWS,days,config.ageing.error.lastDay," + steps[f].getDays()});
+	                	throw exception;
+                	}
+                	else {steps[f].setDays(0);}
+                }
+	        }
+        }
+        return steps;
+	}
+
     public void setSteps(Integer entityId, Integer languageId, AgeingDTOEx[] steps) throws NamingException {
         for (AgeingDTOEx step : steps) {
             // get the existing data for this step
@@ -243,4 +267,18 @@ public class AgeingBL {
         }
     }
 
+    public AgeingWS getWS(AgeingDTOEx dto) {
+        return null == dto ? null : new AgeingWS(dto);
+    }
+
+    public AgeingDTOEx getDTOEx(AgeingWS ws) {
+        AgeingDTOEx dto= new AgeingDTOEx();
+        dto.setStatusId(ws.getStatusId());
+        dto.setStatusStr(ws.getStatusStr());
+        dto.setInUse(null == ws.getInUse() ? Boolean.FALSE : ws.getInUse());
+        dto.setDays(null == ws.getDays() ? 0 : ws.getDays().intValue());
+        dto.setWelcomeMessage(ws.getWelcomeMessage());
+        dto.setFailedLoginMessage(ws.getFailedLoginMessage());
+        return dto;
+    }
 }

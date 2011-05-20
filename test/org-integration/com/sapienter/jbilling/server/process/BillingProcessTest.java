@@ -839,7 +839,6 @@ public class BillingProcessTest extends TestCase {
 
         try {
             final Integer userId = 876;
-            final Integer entityId = 1;
             
             // grace period = 5
             // overdue1 = 3
@@ -890,7 +889,7 @@ public class BillingProcessTest extends TestCase {
             cal.add(GregorianCalendar.DATE, 30);
             api.triggerAgeing(cal.getTime());
             user = api.getUserWS(userId);
-            assertEquals("deleted",1, user.getDeleted());
+            assertEquals("deleted", 1, user.getDeleted());
             
         } catch (Exception e) {
             e.printStackTrace();

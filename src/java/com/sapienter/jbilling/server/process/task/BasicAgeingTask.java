@@ -51,9 +51,9 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
-import sun.jdbc.rowset.CachedRowSet;
 
 import javax.naming.NamingException;
+import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;

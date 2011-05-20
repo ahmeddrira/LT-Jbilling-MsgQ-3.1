@@ -154,4 +154,10 @@ public interface IBillingProcessSessionBean {
      * @return id of inserted ProcessRunUserDTO
      */
     public Integer addProcessRunUser(Integer billingProcessId, Integer userId, Integer status);
+
+    /**
+     * Returns true if the Billing Process is currently running.
+     * @return
+     */
+    public boolean isBillingRunning() ;
 }

@@ -1,6 +1,6 @@
 /*
     jBilling - The Enterprise Open Source Billing System
-    Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
+    Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
     This file is part of jbilling.
 
@@ -240,7 +240,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             BillingProcessDAS bpDas = new BillingProcessDAS();
 
             int usersFailed = 0;
-            ScrollableResults userCursor = task.findUsersToProcess(entityId);
+            ScrollableResults userCursor = task.findUsersToProcess(entityId, billingDate);
             if (userCursor!= null){
                 int count = 0;
                 while (userCursor.next()) {
@@ -818,5 +818,12 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
         BillingProcessRunBL runBL = new BillingProcessRunBL();
         runBL.setProcess(billingProcessId);
         return runBL.addProcessRunUser(userId, status).getId();
+    }
+
+    /**
+     * Returns true if the Billing Process is running.
+     */
+    public boolean isBillingRunning() {
+    	return running.get();
     }
 }

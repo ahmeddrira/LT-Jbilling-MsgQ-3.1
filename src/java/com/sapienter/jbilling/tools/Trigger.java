@@ -30,11 +30,9 @@ import java.util.Date;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
-import com.sapienter.jbilling.server.list.IListSessionBean;
 import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
-import com.sapienter.jbilling.server.util.RemoteContext;
 
 /**
  * @author Emil
@@ -42,13 +40,16 @@ import com.sapienter.jbilling.server.util.RemoteContext;
  */
 public class Trigger {
 
+
+
     public static void main(String[] args) {
         IBillingProcessSessionBean remoteBillingProcess = null;
         
         
         try {
+        	// TODO, change this to use the standard API
             // get a session for the remote interfaces
-            remoteBillingProcess = (IBillingProcessSessionBean) 
+ /*           remoteBillingProcess = (IBillingProcessSessionBean)
                     RemoteContext.getBean(
                     RemoteContext.Name.BILLING_PROCESS_REMOTE_SESSION);
             IUserSessionBean remoteUser = (IUserSessionBean) 
@@ -63,7 +64,12 @@ public class Trigger {
             IListSessionBean remoteList = (IListSessionBean) 
                     RemoteContext.getBean(
                     RemoteContext.Name.LIST_REMOTE_SESSION);
-            
+ */
+        	remoteBillingProcess = null;
+        	IUserSessionBean remoteUser = null;
+        	IOrderSessionBean remoteOrder = null;
+        	IInvoiceSessionBean remoteInvoice = null;
+
             // determine the date for this run
             Date today = Calendar.getInstance().getTime();
             Integer step = null; //means all
@@ -134,15 +140,6 @@ public class Trigger {
                 // based of the ageing NewUserStatusEvent
             }
             
-            // update the listing statistics
-            if (step == null || step.intValue() == 7) {
-                System.out.println("Starting list stats at " + 
-                        Calendar.getInstance().getTime());
-                remoteList.updateStatistics();
-                System.out.println("Ended list stats at " + 
-                        Calendar.getInstance().getTime());
-            }
-
             // send credit card expiration emails
             if (step == null || step.intValue() == 8) {
                 System.out.println("Starting credit card expiration at " + 

@@ -161,8 +161,6 @@ public class Trigger implements Job {
 
         try {
             // get a session for the remote interfaces
-            remoteBillingProcess = (IBillingProcessSessionBean) Context.getBean(
-                    Context.Name.BILLING_PROCESS_SESSION);
             IUserSessionBean remoteUser = (IUserSessionBean) Context.getBean(
                     Context.Name.USER_SESSION);
             IOrderSessionBean remoteOrder = (IOrderSessionBean) Context.getBean(
@@ -191,14 +189,6 @@ public class Trigger implements Job {
 
             // now the ageing process
             if (firstOfToday) {
-                if (Util.getSysPropBooleanTrue("process.run_ageing")) {
-                    LOG.info("Starting ageing process at " +
-                            Calendar.getInstance().getTime());
-                    remoteBillingProcess.reviewUsersStatus(today);
-                    LOG.info("Ended ageing process at " +
-                            Calendar.getInstance().getTime());
-                }
-
                 if (Util.getSysPropBooleanTrue("process.run_partner")) {
                     // now the partner payout process
                     LOG.info("Starting partner process at " + Calendar.getInstance().getTime());

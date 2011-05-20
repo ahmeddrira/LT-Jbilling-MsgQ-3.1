@@ -67,6 +67,7 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_PLUGGABLE_TASK_PARAMETER = "pluggable_task_parameter";
     public static final String TABLE_CONTACT = "contact";
     public static final String TABLE_CONTACT_FIELD = "contact_field";
+    public static final String TABLE_CONTACT_FIELD_TYPE = "contact_field_type";
     public static final String TABLE_CONTACT_TYPE = "contact_type";
     public static final String TABLE_CONTACT_MAP = "contact_map";
     public static final String TABLE_INVOICE_LINE_TYPE = "invoice_line_type";
@@ -87,11 +88,7 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_NOTIFICATION_MESSAGE_ARCHIVE = "notification_message_arch";
     public static final String TABLE_NOTIFICATION_MESSAGE_ARCHIVE_LINE = "notification_message_arch_line";
     public static final String TABLE_REPORT = "report";
-    public static final String TABLE_REPORT_USER = "report_user";
-    public static final String TABLE_REPORT_ENTITY_MAP = "report_entity_map";
-    public static final String TABLE_REPORT_FIELD = "report_field";
     public static final String TABLE_REPORT_TYPE = "report_type";
-    public static final String TABLE_REPORT_TYPE_MAP = "report_type_map";
     public static final String TABLE_PERMISSION = "permission";
     public static final String TABLE_PERMISSION_TYPE = "permission_type";
     public static final String TABLE_ROLE= "role";
@@ -129,7 +126,8 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_ORDER_LINE_PROVISIONING_STATUS = "order_line_provisioning_status";
     public static final String TABLE_MEDIATION_RECORD_STATUS = "mediation_record_status";
     public static final String TABLE_PROCESS_RUN_STATUS = "process_run_status";
-                
+    public static final String TABLE_NOTIFICATION_CATEGORY = "notification_category";
+
     // order line types
     public static final Integer ORDER_LINE_TYPE_ITEM = new Integer(1);
     public static final Integer ORDER_LINE_TYPE_TAX = new Integer(2);
@@ -178,12 +176,13 @@ public final class Constants implements CommonConstants {
     public static final Integer PLUGGABLE_TASK_T_PAPER_INVOICE = new Integer(12);
     
     // invoice line types
-    public static final Integer INVOICE_LINE_TYPE_ITEM = new Integer(1);
+    public static final Integer INVOICE_LINE_TYPE_ITEM_RECURRING = new Integer(1);
     public static final Integer INVOICE_LINE_TYPE_TAX = new Integer(2);
     public static final Integer INVOICE_LINE_TYPE_DUE_INVOICE = new Integer(3);
     public static final Integer INVOICE_LINE_TYPE_PENALTY = new Integer(4);
     public static final Integer INVOICE_LINE_TYPE_SUB_ACCOUNT = new Integer(5);
-    
+    public static final Integer INVOICE_LINE_TYPE_ITEM_ONETIME = new Integer(6);
+
     // permission types - this should be moved to PermissionConstant.java
     public static final Integer PERMISSION_TYPE_MENU= new Integer(1);
     
@@ -195,4 +194,42 @@ public final class Constants implements CommonConstants {
 
     public static final Integer ORDER_PROCESS_ORIGIN_PROCESS = new Integer(1);
     public static final Integer ORDER_PROCESS_ORIGIN_MANUAL = new Integer(2);
+
+    //Notification Preference Types
+    public static final Integer PREFERENCE_TYPE_SELF_DELIVER_PAPER_INVOICES = new Integer(13);
+    public static final Integer PREFERENCE_TYPE_INCLUDE_CUSTOMER_NOTES = new Integer(14);
+    public static final Integer PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP = new Integer(15);
+    public static final Integer PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP2 = new Integer(16);
+    public static final Integer PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP3 = new Integer(17);
+    public static final Integer PREFERENCE_TYPE_USE_INVOICE_REMINDERS = new Integer(21);
+    public static final Integer PREFERENCE_TYPE_NO_OF_DAYS_INVOICE_GEN_1_REMINDER = new Integer(22);
+    public static final Integer PREFERENCE_TYPE_NO_OF_DAYS_NEXT_REMINDER = new Integer(23);
+
+    // notification message types
+    public static final Integer NOTIFICATION_TYPE_INVOICE_EMAIL = 1;
+    public static final Integer NOTIFICATION_TYPE_USER_REACTIVATED = 2;
+    public static final Integer NOTIFICATION_TYPE_USER_OVERDUE = 3;
+    public static final Integer NOTIFICATION_TYPE_USER_OVERDUE_2 = 4;
+    public static final Integer NOTIFICATION_TYPE_USER_OVERDUE_3 = 5;
+    public static final Integer NOTIFICATION_TYPE_USER_SUSPENDED = 6;
+    public static final Integer NOTIFICATION_TYPE_USER_SUSPENDED_2 = 7;
+    public static final Integer NOTIFICATION_TYPE_USER_SUSPENDED_3 = 8;
+    public static final Integer NOTIFICATION_TYPE_USER_DELETED = 9;
+    public static final Integer NOTIFICATION_TYPE_PAYOUT_REMINDER = 10;
+    public static final Integer NOTIFICATION_TYPE_PARTNER_PAYOUT = 11;
+    public static final Integer NOTIFICATION_TYPE_INVOICE_PAPER = 12;
+    public static final Integer NOTIFICATION_TYPE_ORDER_EXPIRE_1 = 13;
+    public static final Integer NOTIFICATION_TYPE_ORDER_EXPIRE_2 = 14;
+    public static final Integer NOTIFICATION_TYPE_ORDER_EXPIRE_3 = 15;
+    public static final Integer NOTIFICATION_TYPE_PAYMENT_SUCCESS = 16;
+    public static final Integer NOTIFICATION_TYPE_PAYMENT_FAILED = 17;
+    public static final Integer NOTIFICATION_TYPE_INVOICE_REMINDER = 18;
+    public static final Integer NOTIFICATION_TYPE_CREDIT_CARD_UPDATE = 19;
+    public static final Integer NOTIFICATION_TYPE_LOST_PASSWORD = 20;
+
+    // contact type
+    public static final Integer ENTITY_CONTACT_TYPE = new Integer(1);
+
+    //Jbilling Table Ids
+    public static final Integer ENTITY_TABLE_ID = new Integer(5);
 }

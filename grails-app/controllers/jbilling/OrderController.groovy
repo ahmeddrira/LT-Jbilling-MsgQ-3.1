@@ -182,24 +182,23 @@ class OrderController {
 	def generateInvoice = {
 		log.debug "generateInvoice for order ${params.id}"
 		
-		OrderDTO order= new OrderDAS().find(params.int('id'))
-		if (!order.getStatusId().equals(
-			Constants.ORDER_STATUS_ACTIVE)) {
-			flash.error ='order.error.geninvoice.inactive'
-			redirect (action: 'showListAndOrder', params: [id: params.id as Integer])
-		}
+        def orderId = params.id?.toInteger()
+        
 		Integer invoiceID= null;
 		try {
-			invoiceID= webServicesSession.createInvoiceFromOrder(order.getId(), null)
+			invoiceID= webServicesSession.createInvoiceFromOrder(orderId, null)
 		} catch (SessionInternalError e) {
 			flash.error= 'order.error.generating.invoice'
 			redirect (action: 'showListAndOrder', params: [id: params.id])
 		}
 		if ( null != invoiceID) {
 			flash.message ='order.geninvoice.success'
-			flash.args = [order.getId()]
+			flash.args = [orderId]
 			redirect controller: 'invoice', action: 'list', params: [id: invoiceID]
-		}
+		} else {
+            flash.error ='order.error.geninvoice.inactive'
+            redirect (action: 'showListAndOrder', params: [id: params.id as Integer])
+        }
 	}
 
 	def applyToInvoice = {

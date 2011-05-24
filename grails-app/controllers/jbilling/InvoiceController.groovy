@@ -61,11 +61,34 @@ class InvoiceController {
     def list = {
         def filters = filterService.getFilters(FilterType.INVOICE, params)
         def invoices = getInvoices(filters, params)
+        def selected= params.id ? webServicesSession.getInvoiceWS(params.int('id')) : null
+        if (selected) {
+            def user = webServicesSession.getUserWS(selected?.getUserId())
+            def payments = new ArrayList<PaymentWS>(selected?.payments?.length)
+            
+            for (Integer paymentId : selected?.payments) {
+                PaymentWS payment = webServicesSession.getPayment(paymentId)
+                payments.add(payment)
+            }
+            
+            def totalRevenue = webServicesSession.getTotalRevenueByUser(selected?.getUserId())
+            def delegatedInvoices= ""
+            
+            InvoiceWS delegate = selected;
+            while (delegate?.getDelegatedInvoiceId()) {
+                delegatedInvoices += (" > " + delegate?.getDelegatedInvoiceId())
+                delegate = webServicesSession.getInvoiceWS(delegate?.getDelegatedInvoiceId())
+            }
 
-        def selected = params.id ? webServicesSession.getInvoiceWS(params.int('id')) : null
+            if (delegatedInvoices.length() > 0) {
+                delegatedInvoices = delegatedInvoices.substring(3)
+            }
 
-        breadcrumbService.addBreadcrumb(controllerName, actionName, null, selected?.id)
-
+            recentItemService.addRecentItem(selected.id, RecentItemType.INVOICE)
+            breadcrumbService.addBreadcrumb(controllerName, actionName, null, selected.id)
+            render view: 'list', model: [invoices: invoices, filters: filters, selected: selected, user: user, totalRevenue: totalRevenue, delegatedInvoices: delegatedInvoices, payments: payments, currencies: currencies]
+        }
+        
         if (params.applyFilter || params.partial) {
             render template: 'invoices', model: [ invoices: invoices, filters: filters, selected: selected ]
         } else {

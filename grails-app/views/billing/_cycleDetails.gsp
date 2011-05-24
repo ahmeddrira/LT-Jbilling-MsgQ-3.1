@@ -22,20 +22,25 @@
 <%@page import="com.sapienter.jbilling.common.CommonConstants;com.sapienter.jbilling.server.util.db.CurrencyDTO"%>
 <%@page import="com.sapienter.jbilling.server.process.db.ProcessRunUserDAS"%>
 
-<g:set var="dtFmt" value="${new java.text.SimpleDateFormat('dd-MMM-yyyy')}"/>
 <div class="table-info" >
-    <em><g:message code="billing.details.label.process.id"/>: 
-        <strong> ${process.id} </strong> 
+    <em><g:message code="billing.details.label.process.id"/>:
+        <strong> ${process?.id} </strong> 
     </em> 
-    <em><g:message code="billing.details.label.start.date"/>: 
-        <strong> ${dtFmt.format(process.billingDate)} </strong></em> 
-    <em><g:message code="billing.details.label.end.date"/>: 
-        <strong> ${dtFmt.format(BillingProcessBL.getEndOfProcessPeriod(process))}</strong></em> 
-    <em><g:message code="billing.details.label.number.runs" />: 
+    <em><g:message code="billing.details.label.start.date"/>:
+        <strong> 
+            <g:formatDate date="${process?.billingDate}" formatName="date.pretty.format"/>
+        </strong>
+    </em> 
+    <em><g:message code="billing.details.label.end.date"/>:
+        <strong>
+            <g:formatDate date="${BillingProcessBL.getEndOfProcessPeriod(process)}" formatName="date.pretty.format"/>
+        </strong>
+    </em>
+    <em><g:message code="billing.details.label.number.runs" />:
         <strong>${process?.processRuns?.size()} </strong></em>
 </div>
 
-<g:if test="${process.isReview}">
+<g:if test="${process?.isReview}">
 <div class="table-info">
         <p><strong><g:message code="billing.details.is.review"/></strong>
         <g:message code="billing.details.is.review.explain"/></p>
@@ -93,8 +98,6 @@
     <g:set var="diffCurrncy" value="${false}"/>
     
     <g:each var="run" in="${process.processRuns}">
-        <g:set var="dtFmt" value="${new java.text.SimpleDateFormat('dd MMM yyyy')}"/>
-        <g:set var="timeFmt" value="${new java.text.SimpleDateFormat('hh:mm:ss a')}"/>
         <g:set var="ttlInvcd" value="${new BigDecimal(0)}"/>
         <g:set var="ttlSuccessAmt" value="${new BigDecimal(0)}"/>
         <g:set var="ttlFailedAmt" value="${new BigDecimal(0)}"/>
@@ -102,11 +105,18 @@
         <g:each status="idx" var="cur" in="${countAndSumByCurrency}">
             <tr>
                 <g:if test="${idx == 0}">
-                    <td class="col02">${dtFmt.format(run.started)}<br>${timeFmt.format(run.started) }</td>
-                    <td>${dtFmt.format(run.finished)}<br>${timeFmt.format(run.finished) }</td>
+                    <td class="col02">
+                        <g:formatDate date="${run?.started}" formatName="date.pretty.format"/><br>
+                        <g:formatDate date="${run?.started}" format="hh:mm:ss a"/>
+                    </td>
+                    <td>
+                        <g:formatDate date="${run?.finished}" formatName="date.pretty.format"/><br>
+                        <g:formatDate date="${run?.finished}" format="hh:mm:ss a"/>
+                    </td>
                     <td>
                         <g:if test="${run.paymentFinished != null}">
-                            ${dtFmt.format(run?.paymentFinished)}<br>${timeFmt.format(run?.paymentFinished)}
+                            <g:formatDate date="${run?.paymentFinished}" formatName="date.pretty.format"/><br>
+                            <g:formatDate date="${run?.paymentFinished}" format="hh:mm:ss a"/>
                         </g:if>
                     </td>
                     <td>${run?.status?.getDescription(session.language_id) }</td>

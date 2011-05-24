@@ -228,13 +228,21 @@ public class PluggableTaskBL<T> {
         }
         
         // now validate that the processing order is not already taken
-    	PluggableTaskDTO samePlugin = das.findByEntityCategoryOrder(task.getEntityId(), task.getType().getCategory().getId(), 
-            	task.getProcessingOrder()); 
-        if (samePlugin != null && !samePlugin.getId().equals(task.getId())) {
-        	SessionInternalError exception = new SessionInternalError("Validation of new plug-in");
-        	exception.setErrorMessages(new String[] {
-                	"PluggableTaskWS,processingOrder,plugins.error.same_order," + task.getProcessingOrder()});
-        	throw exception;
+        boolean nonUniqueResult= false;
+    	try {
+    	    PluggableTaskDTO samePlugin = das.findByEntityCategoryOrder(task.getEntityId(), task.getType().getCategory().getId(), 
+                    task.getProcessingOrder());
+    	    if (samePlugin != null && !samePlugin.getId().equals(task.getId())) {
+    	        nonUniqueResult=true;
+    	    }
+    	} catch (Exception e) {
+    	    nonUniqueResult=true;
+    	}
+        if (nonUniqueResult) {
+            SessionInternalError exception = new SessionInternalError("Validation of new plug-in");
+            exception.setErrorMessages(new String[] {
+                    "PluggableTaskWS,processingOrder,plugins.error.same_order," + task.getProcessingOrder()});
+            throw exception;
         }
     }
  

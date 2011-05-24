@@ -973,3 +973,8 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (84, 22, 'com.sapienter.jbilling.server.process.task.AgeingProcessTask', 0);
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (85, 24, 'com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask', 0);
 
+-- Date: 25-May-2011
+-- Redmine Issue: 996
+-- Description: Fixed reference data for error in processing order of Mediation Reader plugins
+update pluggable_task set processing_order=2 where id=6020;
+update pluggable_task set processing_order=3 where id=480;

@@ -14910,7 +14910,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 450	1	41	1	1	\N
 460	1	42	1	1	\N
 470	1	43	1	1	\N
-480	1	44	1	1	\N
+480	1	44	3	1	\N
 490	1	46	1	2	\N
 500	1	47	1	1	\N
 510	1	48	2	1	\N
@@ -14931,7 +14931,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 1	1	59	1	3	\N
 430	1	60	1	1	\N
 572	1	73	2	0	\N
-6020	1	44	1	1	\N
+6020	1	44	2	1	\N
 6030	1	81	1	1	\N
 6040	1	78	1	4	\N
 6050	1	82	2	7	\N

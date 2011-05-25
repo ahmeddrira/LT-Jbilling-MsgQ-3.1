@@ -110,6 +110,10 @@ environments {
 grails.doc.authors="Emiliano Conde, Brian Cowdery"
 grails.doc.license="AGPL v3"
 
+/*
+ * document aliases for use in document links
+ */
+grails.doc.alias.userGuide="1. jBilling User Guide"
 
 /*
     Spring Security

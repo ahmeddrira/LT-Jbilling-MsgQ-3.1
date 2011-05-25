@@ -1,0 +1,286 @@
+h1. Introduction
+
+Thank you for your interest in jBilling!
+
+In this document, you will find detailed information on how to connect the billing infrastructure 
+provided by *j*Billing with your own application programs.
+
+jBilling provides a comprehensive set of GUI enabled features for viewing, managing, and keeping
+track of all billing and invoicing operations for your organization. This, however, is
+just the tip of the iceberg. Along with its core functionality, jBilling provides a rich
+integration layer that enables your applications to tightly interact with the billing infrastructure
+and streamline all billing-related operations into your organization's work flow.
+
+h2. Scope
+
+This document contains valuable information for application developers and architects what want to
+integrate jBilling with their own systems, or perform actions in jBilling from external applications.
+Here, you'll find a comprehensive reference to the jBilling Web Services APIs and an introductory example in
+tutorial form that explains how many of these integration tasks can be accomplished.
+
+h2. Requirements
+
+jBilling provides its _integration_ services in three distinct flavors: 
+
+# SOAP (Simple-Object Access Protocol)
+# Hessian/Burlap (lightweight web service protocols) 
+# Java RMI
+
+In order to fully acquire, and take advantage of, the information contained herein, you may
+need to have at least a basic grasp of what [SOAP|http://www.w3schools.com/soap/soap_intro.asp] is and how it works. To learn about
+[Hessian|http://hessian.caucho.com] and Burlap, visit their homepage. Also, in order to take advantage of Java RMI,
+you'll need to have knowledge of, and work with, the Java language and platform.
+
+SOAP is a XML-based programming language independent protocol for exchanging information over HTTP. 
+Since jBilling implements its services through SOAP, business applications may running on any non-Java platform, 
+can still talk to or integrate with jBilling because of its SOAP support.
+
+Hessian is a fast binary web services protocol that works over HTTP, with
+implementations available in a number of languages. Like SOAP, it has the advantages
+of being firewall friendly and the ability to make use of authentication and encryption, yet it 
+is similar in speed and bandwidth performance to Java RMI. Burlap is closely related to
+Hessian except that it uses human readable XML instead of binary messages. However, neither Hessian nor Burlap 
+require an externally defined WSDL file, which is required by SOAP.
+
+Most examples provided in this document are explained in Java, therefore, some knowledge of Java programming language 
+would prove very useful. However, there is still a small section dedicated to implementing jBilling integration in other
+languages such as C#.NET and PHP. Please refer to your language/platform’s documentation in order to determine
+what specific SOAP support it provides, and how to make use of it (specifically, how to call remote SOAP services, 
+and how to pass parameters and decode the returned values).
+
+It is recommended that you have a basic understanding of jBilling’s functionality and usage. 
+You can find this information in other documents available from [jBilling User Guide|guide:userGuide] and *[Getting Started|http://www.jbilling.com/documentation/getting-started-with-jbilling]*.
+Knowing how the program works is of course necessary to understand the scope and usage of each service call. Last but not least, 
+you will need a running copy of jBilling in order to execute the examples contained in this document. 
+Following the *Trend* tutorial on the *[Getting Started|http://www.jbilling.com/documentation/getting-started-with-jbilling]* document is also necessary to generate some of the data required for the
+examples to work.
+
+h2. The Need for Integration
+
+A self-contained billing application, while perfectly valid, has an important drawback: to keep it updated, 
+you would need a separate data-entry process that feeds the billing data from your system into the billing application. 
+This is both time and resource consuming.
+
+Let’s suppose you own a website with a member’s area. In order to access the member
+area, the customer would need to pay a monthly fee. If the billing data is kept separately,
+when a new user subscribes to the website, the billing data would need to wait until
+somebody enters data into the billing application, and after the payment is cleared the
+same person would need to update the website in order to grant access to the user.
+
+The manual authorization process would have a heavy impact on the site’s functionality.
+Even if there are instant payment options, such as credit cards, the user would have to
+wait for a manual operation to take place before being granted access to the service he
+paid for.
+
+jBilling solves this problem by rendering common billing and data retrieval operations
+available to your system via service calls. With a relatively small programming effort, you
+can integrate the billing application with your own system, so that when the new user
+signs in, you can instantly pass the data to the billing application, have the payment
+cleared and grant access without the need for manual operations.
+
+As we’ll see in the following sections, integration services in jBilling are almost as
+comprehensive as the billing functionality provided through the standard web interface.
+Using the integration layer, you can retrieve lots of useful data from jBilling, as well as
+_create_, _update_ or _delete_ Users, Items, Orders and Invoices.
+
+h2. Preparing jBilling for Integration
+
+h3. Configuring a Remoting Method
+
+jBilling is distributed with SOAP, Hessian and Burlap already configured, ready to accept
+connections from clients. To enable Java RMI edit the following file:
+@jbilling\conf\jbilling-remoting.xml@
+
+Look for the @<!-- RMI Service -->@ comment and uncomment the bean definition XML
+below it. Because RMI is an unauthenticated remoting method, a default caller
+username and password must be provided. See the *Enabling/Disabling authentication
+for jBilling web services* section below for information regarding this.
+
+If other remoting methods are not being used, their definition beans may be commented
+out from this file to give a small improvement in jBilling startup time and memory
+footprint. However, other files within the @jbilling\webapps\billing.war@ archive will
+need to be modified. For *Hessian/Burlap*, delete the appropriate mapping from @WEB-INF\
+jbilling-server.xml@. For SOAP, search for and delete any sections of XML that
+reference *'cxf'* in @WEB-INF\web.xml@.
+
+h3. Securing Integration Access
+
+h4. Overview
+
+While integration services could be an extremely useful feature, they do bring up some
+security concerns you’ll need to take into account. It is critical that the services are not
+exposed to external parties, otherwise it could be possible for them to invoke the same
+functionality you’re using (and, most probably, you don’t want an outsider to be able to
+create a payment or invoice).
+
+Therefore, the integration services should be exposed only to properly authorized
+parties. This is, at least in part, guaranteed by jBilling, since by default it requires a client
+application to identify itself via a user name/password pair, before servicing any of its
+requests. It would also be important to transmit all data over a secure channel, which
+can be accomplished by using the SOAP or Hessian/Burlap calls over an SSL tunnel,
+something we’ll cover shortly.
+
+Ideally, the web services would be exposed only to the server(s) that require it, and any
+other parties should be excluded. This can be accomplished by using a firewall
+application that limits the IP addresses that have access to jBilling's integration services.
+Please refer to the documentation of the Operating System or platform in which your
+copy of jBilling is to run, in order to have some information on how to restrict access to
+specific TCP ports in your system.
+
+It is also recommended that all service calls are performed by means of an encrypted
+channel, as provided by the SSL (Secure Socket Layer) protocol. This effectively avoids
+any threats related to unauthorized interception or decryption of the service calls. SSL
+also ensures that the party you're engaging communication with is actually your intended
+recipient, nullifying any impersonation attempts.
+
+In order to determine if the party engaged in communication is actually who it is
+pretending to be, SSL uses certificates. Therefore, in order to establish an SSL
+connection to jBilling, it could be required to have a copy of jBilling's certificate in your
+development and production systems.
+
+h4. Enabling/Disabling authentication for jBilling web services
+
+By default, all calls to jBilling must be authenticated. In most cases, this is the desired
+behavior. If Java RMI is the remoting method being used to make calls to jBilling,
+authentication must be disabled. If the jBilling server is called by clients within an internal
+network secured from outside access, it maybe preferable to disable authentication to
+give a slight increase in performance.
+To disable authenticated calls, a default username and password will be set on the
+server. Open the following file for editing:
+
+@jbilling\conf\jbilling-remoting.xml@
+
+Uncomment the bean definition with @id="webServicesCallerDefaults"@. Set the
+default username and password. The user must still be setup according to the section
+below, *Setting up jBilling to accept external calls*.
+
+If SOAP or Hessian/Burlap are being used, an extra step must be performed. Extract the
+jBilling web archive:
+
+@jbilling\webapps\billing.war@
+
+Open the following file for editing:
+
+@WEB-INF\web.xml@
+
+Comment out or delete the XML that refers to *Web Services Authentication Filter*. 
+This includes one <filter> tag and two <filter-mapping> tags. Save the file and recreate (zip) the web archive.
+
+h4. Enabling/Disabling company security checks
+
+If only one company is using the jBilling installation, unnecessary security checks, which
+make sure one company is not accessing another company's data, can be disabled to
+further increase performance. To disable the check, edit the following file:
+
+@jbilling\conf\jbilling-remoting.xml@
+
+Comment out or delete the two XML beans under the comment *<!-- Security Advice
+for WebServicesSessionBean --> (ids webServicesSecurityAdvice and
+webServicesSecurityAdvisor)*.
+
+h4. Enabling SSL for jBilling web services
+
+Since web services run on HTTPS, for jBilling this is actually managed by Tomcat. Tomcat is the web server that 
+comes with the jBilling distribution. Thus, the first step is to enable SSL in the Tomcat configuration. This is 
+explained in the *Security* chapter of the [jBilling User Guide|guide:userGuide]. Please refer to that document. 
+Once you can use your standard web client over SSL, you can immediately start doing all the web
+services communication through HTTPS, effectively securing your web services. A further step is to force all 
+the web services communication over SSL. To achieve that extract the billing web archive:
+
+@jbilling\webapps\billing.war@ and edit the file: @WEB-INF\web.xml@
+
+Notice that there is already a section at the bottom to force HTTPS, but it is commented.
+Uncomment the XML tag *<security-constraint>* and its contents to force HTTPS.
+It will use the SSL certificate that Tomcat is using to secure the standard web client.
+Recreate the web archive (compress with a zip utility program) when done.
+
+h3. Setting up jBilling to accept external calls
+
+As mentioned earlier, jBilling will not accept all external calls it gets, but will require the
+caller to identify itself with a user name and password in order to service the request.
+Otherwise, the request will receive an error in response. This is a simple but effective
+measure that improves overall security. Of course, this also means you (or the system
+administrator) will need to set up an account in jBilling that will be authorized to perform
+external calls.
+
+Once you've followed the *[Getting Started|http://www.jbilling.com/documentation/getting-started-with-jbilling]* 
+tutorial and created the initial billing entity, the user name and password you entered in the entity setup screen will represent the
+user name and password of jBilling's administrator account. You can grant access to this administrator account 
+(or any other account you create for this purpose) to connect remotely and perform service calls.
+
+In order to do so, you'll need to enter jBilling's database, and annotate the +User ID+ of the
+account you wish to authorize for external connection. This number can be obtained
+from the @BASE_USER@ table, you can retrieve it with a simple SQL query:
+
+{code}
+SELECT USER_ID FROM BASE_USER WHERE USER_NAME = 'your-username';
+{code}
+
+Once this number is known, you can proceed to activate external calls permission by
+adding a line in the @PERMISSION_USER@ table. The @PERMISSION_ID@ contains the code for
+web services, which is *120* by default. The SQL query that does the insertion is:
+
+{code}
+INSERT INTO PERMISSION_USER(ID, PERMISSION_ID, USER_ID, IS_GRANT) VALUES
+(SELECT MAX(ID)+1 FROM PERMISSION_USER, 120, <your-user-id>, 1);
+{code}
+
+The ID for the @PERMISSION_USER@ table is obtained by finding the largest @ID@ number
+already in use and adding 1. The @IS_GRANT@ field contains a boolean value, if it equals
+'0', the permission is not granted, if it is assigned '1', the permission is granted.
+Assuming the +User ID+ obtained in the previous step was '1', the query would be:
+
+{code}
+INSERT INTO PERMISSION_USER(ID, PERMISSION_ID, USER_ID, IS_GRANT) VALUES
+(SELECT MAX(ID)+1 FROM PERMISSION_USER, 120, 1, 1);
+{code}
+
+Now the administrator user is allowed to perform external calls. Note that you'll need to
+specify the user name and password in the caller program.
+
+{note}
+Since jBilling is not tied to a specific database program, it could be possible (but
+highly unlikely) that your specific database does not support the queries indicated above.
+Please consult your vendor's manual on how to query and insert data in your database,
+if the above SQL instructions do not happen to work in your specific system.
+{note}
+
+h2. Connecting to jBilling
+
+h3. SOAP
+
+Once it is properly configured, you'll need to address all integration calls to jBilling's web
+service endpoint. This endpoint is accessible at the same server where jBilling was
+deployed, in a specific URL address, which follows this form:
+
+@http://localhost/billing/cxf/soap.service@
+
+You can query the service's WSDL (Web Service Description Language) file. It consists
+of an XML containing a description of the available service calls and parameters used by
+each call, and could be useful if your programming platform provides a way of
+automatically generating code for service calls from a WSDL, or you have a tool that can
+perform test calls (such as *SoapUI*).
+
+To query the WSDL file, you'll need to append the ?wsdl parameter to the call, for
+example:
+
+@http://localhost/billing/cxf/soap.service?wsdl@
+
+h3. Hessian/Burlap
+
+The Hessian service URL is in the following form:
+
+@http://localhost/billing/services/hessian.service@
+
+Similarly for Burlap:
+
+@http://localhost/billing/services/burlap.service@
+
+h3. Java RMI
+
+The Java RMI service URL is in the following form:
+
+@rmi://localhost:1199/RmiService@
+
+h1. Integrating jBilling to your Application
+

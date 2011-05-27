@@ -2,21 +2,18 @@ h1. Introduction
 
 Thank you for your interest in *j*Billing!
 
-In this document, you will find detailed information on how to connect the billing infrastructure 
-provided by *j*Billing with your own application programs.
+In this document, we will explore in detail the integration features of jBilling that help external applications to 
+to connect with the billing infrastructure provided by *j*Billing and perform seamless interaction.
 
-*j*Billing provides a comprehensive set of GUI enabled features for viewing, managing, and keeping
-track of all billing and invoicing operations for your organization. This, however, is
-just the tip of the iceberg. Along with its core functionality, *j*Billing provides a rich
-integration layer that enables your applications to tightly interact with the billing infrastructure
-and streamline all billing-related operations into your organization's work flow.
-
-h2. Scope
+*j*Billing provides a comprehensive set of GUI enabled features for viewing, managing, and keeping 
+track of all billing and invoicing operations for your organization. Along with its core functionality, *j*Billing 
+provides a rich integration layer that enables your applications to tightly interact with the billing infrastructure and 
+streamline all billing-related operations into your organization's work flow.
 
 This document contains valuable information for application developers and architects what want to
 integrate *j*Billing with their own systems, or perform actions in *j*Billing from external applications.
-Here, you'll find a comprehensive reference to the *j*Billing Web Services APIs and an introductory example in
-tutorial form that explains how many of these integration tasks can be accomplished.
+Here, you'll find a comprehensive reference to the *j*Billing Web Services APIs and an introductory examples including the 
+glue code that explains how many of these integration tasks can be accomplished.
 
 h2. Requirements
 
@@ -30,25 +27,24 @@ In order to fully acquire, and take advantage of, the information contained here
 need to have at least a basic grasp of what [SOAP|http://www.w3schools.com/soap/soap_intro.asp] is and how it works. To learn about
 [Hessian|http://hessian.caucho.com] and Burlap, visit their homepage. 
 
-SOAP is a XML-based programming language independent protocol for exchanging information over HTTP. 
-Since *j*Billing implements its services through SOAP, business applications may running on any non-Java platform, 
-can still talk to or integrate with *j*Billing because of its SOAP support.
+SOAP is a XML-based 'programming language independent' protocol for exchanging information over HTTP. Therefore, it enables diverse 
+platforms to communicate without bias. Since *j*Billing implements its services through SOAP, even business applications running on 
+non-Java platforms can communicate to or integrate with *j*Billing because of its SOAP support.
 
-Hessian is a fast binary web services protocol that works over HTTP, with
-implementations available in a number of languages. Like SOAP, it has the advantages
-of being firewall friendly and the ability to make use of authentication and encryption, yet it 
-is similar in speed and bandwidth performance to Java RMI. Burlap is closely related to
-Hessian except that it uses human readable XML instead of binary messages. However, neither Hessian nor Burlap 
-require an externally defined WSDL file, which is required by SOAP.
+Hessian is a fast binary web services protocol that works over HTTP, with implementations available in a number of languages. 
+Like SOAP, it has the advantages of being firewall friendly and the ability to make use of authentication and encryption, yet it 
+is similar in speed and bandwidth performance to Java RMI. Hessian 2 provides even much better performance as compared to its previous version.
+Burlap is closely related to Hessian except that it uses human readable XML instead of binary messages. However, neither Hessian nor 
+Burlap require an externally defined WSDL file, which is required by SOAP.
 
 Most examples provided in this document are explained in Java, therefore, some knowledge of Java programming language 
-would prove very useful. However, there is still a small section dedicated to implementing *j*Billing integration in other
+would prove very useful. There is still a small section dedicated to implementing *j*Billing integration in other
 languages such as C#.NET and PHP. Please refer to your language/platform's documentation in order to determine
 what specific SOAP support it provides, and how to make use of it (specifically, how to call remote SOAP services, 
 and how to pass parameters and decode the returned values).
 
-It is recommended that you have a basic understanding of *j*Billing's functionality and usage. 
-You can find this information in other documents available from *[*j*Billing User Guide|guide:userGuide]* and *[Getting Started|http://www.jbilling.com/documentation/getting-started-with-jbilling]*.
+It is also recommended that you have a basic understanding of *j*Billing's functionality and usage. 
+You can find this information in other documents available from *[jBilling User Guide|guide:userGuide]* and *[Getting Started|http://www.jbilling.com/documentation/getting-started-with-jbilling]*.
 Knowing how the program works is of course necessary to understand the scope and usage of each service call. Last but not least, 
 you will need a running copy of *j*Billing in order to execute the examples contained in this document. 
 Following the *Trend* tutorial on the *[Getting Started|http://www.jbilling.com/documentation/getting-started-with-jbilling]* document is also necessary to generate some of the data required for the
@@ -56,9 +52,11 @@ examples to work.
 
 h2. The Need for Integration
 
-A self-contained billing application, while perfectly valid, has an important drawback: to keep it updated, 
-you would need a separate data-entry process that feeds the billing data from your system into the billing application. 
-This is both time and resource consuming.
+Applications need to interface with other applications. More so, for a billing application that contains significant information 
+about things like Customer Status, Payments Overdue, Subscriptions for Customer etc. This information is likely to be important inputs for 
+decision making in other business applications and processes. A self-contained billing application, on the other hand, has another big drawback: 
+to keep it updated, you would need a separate data-entry process that feeds the billing data from your system into the billing application. 
+This is both time and resource consuming. For example:
 
 Let's suppose you own a website with a member's area. In order to access the member
 area, the customer would need to pay a monthly fee. If the billing data is kept separately,
@@ -73,7 +71,7 @@ paid for.
 
 *j*Billing solves this problem by rendering common billing and data retrieval operations
 available to your system via service calls. With a relatively small programming effort, you
-can integrate the billing application with your own system, so that when the new user
+can integrate the billing application with your own systems or business processes, so that when the new user
 signs in, you can instantly pass the data to the billing application, have the payment
 cleared and grant access without the need for manual operations.
 
@@ -84,21 +82,27 @@ _create_, _update_ or _delete_ Users, Items, Orders and Invoices.
 
 h2. Preparing *j*Billing for Integration
 
-h3. Configuring a Remoting Method
+h3. Configuring and Using a Remoting Method
 
-*j*Billing is distributed with SOAP, Hessian and Burlap already configured, ready to accept
-connections from clients. Spring HTTP Invoker and RMI are unauthenticated remoting methods. For these 
-non-authenticated protocols, you must configure an alternate authentication filter that sets the credentials 
-to be used when making non-authenticated API calls. 
+h4. Configuration
+
+jBilling Integration services are configured as remote beans in @descriptors\spring\jbilling-remote-beans.xml@ file.
+This file contains three entries with Spring Bean ID starting with *'apiClient'*, one for each of the 3 integration methods 
+available in jBilling out-of-the-box. Thus, *j*Billing comes pre-configured with *Hessian/Burlap* (Bean Id: _apiClient_), *SOAP* (Bean Id: _apiClient2_) and 
+*Spring HTTP Invoker* (Bean Id: _apiClient3_) beans, ready to accept connections from clients. Unlike others, Spring HTTP Invoker is an unauthenticated 
+protocol. Therefore, in this case, we must configure an alternate authentication filter that sets the credentials to be 
+used when making non-authenticated API calls. 
 
 See the section *Enabling/Disabling authentication for jBilling web services* section below for information regarding this.
 
-If other remoting methods are not being used, their definition beans may be commented
-out from this file to give a small improvement in *j*Billing startup time and memory
-footprint. However, other files within the @jbilling\webapps\billing.war@ archive will
-need to be modified. For *Hessian/Burlap*, delete the appropriate mapping from @WEB-INF\
-jbilling-server.xml@. For SOAP, search for and delete any sections of XML that
-reference *'cxf'* in @WEB-INF\web.xml@.
+If other remoting methods are not being used, their definition beans may be commented out from this file to give a small 
+improvement in *j*Billing startup time and memory footprint. This can be done by commenting the appropriate bean definitions in the file
+@descriptors\spring\jbilling-remote-beans.xml@
+
+Additionally:
+
+* For disabling *Hessian/Burlap*, delete the appropriate Web Services mapping from @descriptors\web\jbilling-servlet.xml@. 
+* For disabling *SOAP*, search for and delete any sections of XML that reference *'cxf'* in @WEB-INF\web.xml@.
 
 h3. Securing Integration Access
 
@@ -163,7 +167,7 @@ h4. Enabling SSL for *j*Billing web services
 
 Since web services run on HTTPS, for *j*Billing this is actually managed by Tomcat. Tomcat is the web server that 
 comes with the *j*Billing distribution. Thus, the first step is to enable SSL in the Tomcat configuration. This is 
-explained in the *Security* chapter of the *[*j*Billing User Guide|guide:userGuide]*. Please refer to that document. 
+explained in the *Security* chapter of the *[jBilling User Guide|guide:userGuide]*. Please refer to that document. 
 Once you can use your standard web client over SSL, you can immediately start doing all the web
 services communication through HTTPS, effectively securing your web services. A further step is to force all 
 the web services communication over SSL. To achieve that extract the billing web archive:
@@ -234,7 +238,7 @@ Once it is properly configured, you'll need to address all integration calls to 
 service endpoint. This endpoint is accessible at the same server where *j*Billing was
 deployed, in a specific URL address, which follows this form:
 
-@http://localhost/billing/cxf/soap.service@
+@http://localhost:8080/jbilling/services/api@
 
 You can query the service's WSDL (Web Service Description Language) file. It consists
 of an XML containing a description of the available service calls and parameters used by
@@ -245,23 +249,23 @@ perform test calls (such as *SoapUI*).
 To query the WSDL file, you'll need to append the ?wsdl parameter to the call, for
 example:
 
-@http://localhost/billing/cxf/soap.service?wsdl@
+@http://localhost:8080/jbilling/services/api?wsdl@
 
 h3. Hessian/Burlap
 
 The Hessian service URL is in the following form:
 
-@http://localhost/billing/services/hessian.service@
+@http://localhost:8080/jbilling/hessian/ApiService@
 
 Similarly for Burlap:
 
-@http://localhost/billing/services/burlap.service@
+@http://localhost:8080/jbilling/burlap/ApiService@
 
-h3. Java RMI
+h3. Spring HTTP Invoker
 
-The Java RMI service URL is in the following form:
+The Spring HTTP Invoker service URL is in the following form:
 
-@rmi://localhost:1199/RmiService@
+@http://localhost:8080/jbilling/httpinvoker/ApiService@
 
 h1. Integrating *j*Billing to your Application
 
@@ -273,8 +277,8 @@ other ways of interacting with that layer too, based on the technology available
 application developer in the target system. 
 
 Therefore, if your application is written in Java or at has a way of interfacing with Java,
-then the simplest way of integrating *j*Billing with your application is by making use of the +*j*Billing
-Client API+. The +*j*Billing client API+ is a pure Java API that another Java program can directly call/use.
+then the simplest way of integrating *j*Billing with your application is by making use of the +jBilling
+Client API+. The +jBilling client API+ is a pure Java API that another Java program can directly call/use.
 
 Service calls can also be performed by means of plain SOAP or Hessian/Burlap calls. This type 
 of interaction is useful for those situations in which you cannot use Java as your programming 
@@ -303,12 +307,12 @@ interface to *j*Billing; so, even if in the future the SOAP interfaces change or
 code will require little or no modification at all to adapt to those changes. Last, but not least, its
 code is Open Source, so that you can get down to the implementation details if needed.
 
-The +*j*Billing client API+ is well equiped to perform service calls to *j*Billing in four distinct ways: 
+The +jBilling client API+ is well equiped to perform service calls to *j*Billing in four distinct ways: 
 
 # By means of standard SOAP calls
 # Through Hessian calls
 # Through Burlap calls
-# Through Java RMI calls
+# Through Spring HTTP Invoker calls
 
 , of which, you may choose one that best meets your project requirements. 
 
@@ -323,7 +327,7 @@ above by simply changing a parameter, and by making the required libraries avail
 
 h3. The advantages of using *j*Billing client API
 
-As discussed earlier, the +*j*Billing Client API+ is by far the most convenient means of integrating with *j*Billing as compared to 
+As discussed earlier, the +jBilling Client API+ is by far the most convenient means of integrating with *j*Billing as compared to 
 handling SOAP/Hessian calls through custom programming. Here are few additional reasons to support this argument:
 
 First, the client implementation is *cleanly separated from the underlying transport protocol* used. 
@@ -372,7 +376,7 @@ import org.apache.axis.encoding.ser.BeanSerializerFactory;
 
 Service service = new Service();
 Call call = (Call) service.createCall();
-call.setTargetEndpointAddress("http://localhost/billing/cxf/soap.service");
+call.setTargetEndpointAddress("http://localhost:8080/jbilling/services/api");
 call.setUsername("myusername");
 call.setPassword("mypassword");
 call.setOperationName("getUserId");
@@ -440,7 +444,7 @@ h3. Configuration
 The @jbilling\conf\jbilling-remote-beans.xml@ file contains some fundamental parameters that define the connection to the *j*Billing server you wish to
 communicate with. This file is required by the *j*Billing API library for all connection alternatives.
 
-Each connection option is contained within XML bean configuration tag with *id="apiClient"* as an attribute. There are four example configuration beans – one for
+Each connection option is contained within XML bean configuration tag with *id="apiClient"* as an attribute. There are four example configuration beans, one for
 each of the four different remoting protocols. Only one bean should be enabled/uncommented at any given time, which is the configuration the API will use. The note/comment above each
 bean indicates which protocol it configures. Common properties to the SOAP, Hessian and Burlap protocols: username and password.
 these values must correspond to a valid account in jbilling that has been granted permission to execute web service calls.
@@ -455,19 +459,19 @@ to your application's class path in order to be usable by the API.
 
 While SOAP is a solid way of communicating with remote applications, it requires the parties to exchange XML files when the service call takes place. 
 These files can be quite massive, and a great deal of time is wasted in serializing parameters into an XML, and deserializing the response. 
-For this reason, SOAP is relatively inefficient when it comes to implementing fast service calls. Therefore, you're advised to use Hessian or RMI,
-since they are much faster.
+For this reason, SOAP is relatively inefficient when it comes to implementing fast service calls. Therefore, you're advised to use Hessian or Spring HTTP Invoker 
+service, since they are much faster.
 
 h4. Properties
 
-* address - This is the URL that points to the jbilling Web Services endpoint (as discussed in the *Connecting to *j*Billing* section of the *Preparing *j*Billing for
+* address - This is the URL that points to the jbilling Web Services endpoint (as discussed in the *Connecting to jBilling* section of the *Preparing jBilling for
 Integration* chapter of this document). As a part of this property, you may specify the correct protocol (either http or https) and the port number, if it differs 
 from the standard port (which is 80 for HTTP and 443 for HTTPS). 
 
 For example:
 
 {code}
-address="http://localhost:8080/billing/cxf/soap.service"
+address="http://localhost:8080/jbilling/services/api"
 {code}
 
 h3. The Hessian/Burlap Method
@@ -478,31 +482,47 @@ and can be found in the @WEBINF\lib\@ directory of the @jbilling\webapps\billing
 
 h4. Properties
 
-* serviceUrl - This is the Hessian Service Url that *j*Billing exposes (as discussed in *Connecting to *j*Billing* section of the *Preparing *j*Billing for Integration*
+* _serviceUrl_ - This is the Hessian Service Url that *j*Billing exposes (as discussed in *Connecting to *j*Billing* section of the *Preparing *j*Billing for Integration*
  chapter of this document)
 
 {code}
-<property name="serviceUrl" value="http://localhost:8080/billing/services/hessian.service"/>
+<property name="serviceUrl" value="http://localhost:8080/jbilling/hessian/ApiService"/>
+{code}
+
+* _serviceInterface_ - This is the business interface that exposes the business functionality
+
+{code}
+<property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
 {code}
 
 * hessian2 - This is a true/false Hessian specific property. It indicates whether Hessian should use the newer version 2 protocol, which is faster than version 1. 
 Although Hessian 2 is still a draft specification, a value of true is generally recommended for performance
 
-h3. Java RMI
+h3. Spring HTTP Invoker Method
 
-RMI is the standard Java binary remoting protocol, which provides excellent performance and requires no extra libraries. Since it is unauthenticated, 
-some setup is required on the server. See the *Enabling/Disabling authentication for *j*Billing web services* section of the *Preparing *j*Billing for 
-Integration* chapter for more information.
+Spring HTTP Invokers provide a powerful mechanism of remote component communication. On the server side, services are exposed on top of Spring's infrastructure,
+using the Spring bean configuration mechanism. On the client side, Spring provides proxy capabilities that allow access to HTTP Invoker exposed 
+services via a business interface. Since it is unauthenticated, you must configure an alternate authentication filter that sets the credentials to be used
+when making non-authenticated API calls.
+
+This business interface is specified as a property of the [HttpInvokerProxyFactoryBean|api:org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean].
+This is pre-configured in *j*Billing to use [IWebServicesSessionBean|api:com.sapienter.jbilling.server.util.IWebServicesSessionBean]
 
 h4. Properties
 
-* serviceUrl - The service URL RMI should connect to (as defined in the *Connecting to *j*Billing* section of the *Preparing *j*Billing for Integration* 
+* _serviceUrl_ - The service URL RMI should connect to (as defined in the *Connecting to *j*Billing* section of the *Preparing *j*Billing for Integration* 
 chapter of this document)
 
 For example:
 
 {code}
 <property name="serviceUrl" value="rmi://localhost:1199/RmiService"/>
+{code}
+
+* _serviceInterface_ - This is the business interface that exposes the business functionality
+
+{code}
+<property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
 {code}
 
 h2. Integration with non-Java Applications
@@ -571,7 +591,7 @@ code executes), for simplicity we'll demonstrate the use of the PEAR module with
 {code}
 require_once 'SOAP/Client.php';
 $requestParams = array ('user'=>'admin', 'pass'=>'asdfasdf');
-$wsdl = new SOAP_WSDL('http://localhost/billing/cxf/soap.service?wsdl',
+$wsdl = new SOAP_WSDL('http://localhost:8080/jbilling/services/api?wsdl',
 $requestParams);
 $client = $wsdl->getProxy();
 $userIdParams = array('in0' => $username);
@@ -598,7 +618,7 @@ This section provides an introduction to the use of *j*Billing integration calls
 found in *j*Billing's *[Getting Started|http://www.jbilling.com/documentation/getting-started-with-jbilling]* guide. 
 As such, if you wish to follow the examples in this section, you'll need to follow the *[Getting Started|http://www.jbilling.com/documentation/getting-started-with-jbilling]* Guide
 tutorial, creating the Trend entity and adding the Items and Orders. The examples in this section will mainly use the 
-+*j*Billing client API+. If you're unable to use this API (most probably because your system does not make use of the Java 
++jBilling client API+. If you're unable to use this API (most probably because your system does not make use of the Java 
 programming language), you'll need to substitute the API calls with direct SOAP requests. Please, refer to the Integrating *j*Billing to your 
 Application chapter, which explains the options for performing service calls to *j*Billing in more detail and provides
 examples for some programming languages and SOAP APIs available.
@@ -772,7 +792,7 @@ item created under this category. In the example, we assume the Item ID code is 
 item types to choose from, or you would otherwise need to determine what the Item ID is from the *j*Billing user interface.
 
 We also assume the periodicity code for the order is '2', which maps to monthly payments. This however depends on the setup of the specific 
-instance of *j*Billing, you can determine what specific code each period has by consulting the *[*j*Billing User Guide|guide:userGuide]* under *Orders -> Periods*.
+instance of *j*Billing, you can determine what specific code each period has by consulting the *[jBilling User Guide|guide:userGuide]* under *Orders -> Periods*.
 
 {note}
 The item we're creating an order for is, according to the Getting Started Guide, the fee for displaying a banner in Trend's front-page. 
@@ -1018,7 +1038,7 @@ status for a user that has been deleted (for example, in the login page), you'll
 h4. The user's _main_ order
 
 *j*Billing introduces the concept of a main order for each user. This simply tells *j*Billing which order should be the target when executing automated 
-operations such as recurring charges. *[*j*Billing User Guide|guide:userGuide]* covers this concept in greater detail, here we're mainly interested 
+operations such as recurring charges. *[jBilling User Guide|guide:userGuide]* covers this concept in greater detail, here we're mainly interested 
 in how the user's main order can be specified or modified by means of API calls.
 
 The main order of a user can be found on the [UserWS|api:com.sapienter.jbilling.server.user.UserWS] structure (returned by @getUserWS()@), in field _mainOrderId_ (which contains the unique identifier of the order

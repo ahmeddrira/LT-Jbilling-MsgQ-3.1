@@ -34,7 +34,7 @@ public class SeparatorFileReader extends AbstractFileReader {
     }
     
     public static final ParameterDescription PARAMETER_SEPARATOR = 
-    	new ParameterDescription("separator", true, ParameterDescription.Type.STR);
+    	new ParameterDescription("separator", false, ParameterDescription.Type.STR);
     
     
     //initializer for pluggable params

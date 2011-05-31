@@ -61,17 +61,17 @@ public abstract class AbstractJDBCReader extends AbstractReader {
     private static final String MEDIATION_DIR = Util.getSysProp("base_dir") + "mediation/";
 
     // plug-in parameters
-    protected static final ParameterDescription PARAM_DATABASE_NAME = new ParameterDescription("database_name", true, STR);
-    protected static final ParameterDescription PARAM_TABLE_NAME = new ParameterDescription("table_name", true, STR);
-    protected static final ParameterDescription PARAM_KEY_COLUMN_NAME = new ParameterDescription("key_column_name", true, STR);
-    protected static final ParameterDescription PARAM_WHERE_APPEND = new ParameterDescription("where_append", true, STR);
-    protected static final ParameterDescription PARAM_ORDER_BY = new ParameterDescription("order_by", true, STR);
-    protected static final ParameterDescription PARAM_DRIVER = new ParameterDescription("driver", true, STR);
-    protected static final ParameterDescription PARAM_URL = new ParameterDescription("url", true, STR);
-    protected static final ParameterDescription PARAM_USERNAME = new ParameterDescription("username", true, STR);
-    protected static final ParameterDescription PARAM_PASSWORD = new ParameterDescription("password", true, STR);
-    protected static final ParameterDescription PARAM_TIMESTAMP_COLUMN_NAME = new ParameterDescription("timestamp_column_name", true, STR);
-    protected static final ParameterDescription PARAM_LOWERCASE_COLUMN_NAME = new ParameterDescription("lc_column_names", true, STR);
+    protected static final ParameterDescription PARAM_DATABASE_NAME = new ParameterDescription("database_name", false, STR);
+    protected static final ParameterDescription PARAM_TABLE_NAME = new ParameterDescription("table_name", false, STR);
+    protected static final ParameterDescription PARAM_KEY_COLUMN_NAME = new ParameterDescription("key_column_name", false, STR);
+    protected static final ParameterDescription PARAM_WHERE_APPEND = new ParameterDescription("where_append", false, STR);
+    protected static final ParameterDescription PARAM_ORDER_BY = new ParameterDescription("order_by", false, STR);
+    protected static final ParameterDescription PARAM_DRIVER = new ParameterDescription("driver", false, STR);
+    protected static final ParameterDescription PARAM_URL = new ParameterDescription("url", false, STR);
+    protected static final ParameterDescription PARAM_USERNAME = new ParameterDescription("username", false, STR);
+    protected static final ParameterDescription PARAM_PASSWORD = new ParameterDescription("password", false, STR);
+    protected static final ParameterDescription PARAM_TIMESTAMP_COLUMN_NAME = new ParameterDescription("timestamp_column_name", false, STR);
+    protected static final ParameterDescription PARAM_LOWERCASE_COLUMN_NAME = new ParameterDescription("lc_column_names", false, STR);
 
     // parameter defaults
     protected static final String DATABASE_NAME_DEFAULT = "jbilling_cdr";

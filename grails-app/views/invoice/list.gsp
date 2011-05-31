@@ -30,7 +30,7 @@
 
 <content tag="column2">
 	<g:if test="${selected}">
-        <g:render template="show" model="[selected: selected]"/>
+        <g:render template="show" model="${pageScope.variables}"/>
     </g:if>
 </content>
 

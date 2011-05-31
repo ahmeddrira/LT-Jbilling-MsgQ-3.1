@@ -982,3 +982,9 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24, 88, 'description', 1, 'A scheduled task to execute the Ageing Process.');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24, 89, 'title', 1, 'Business day ageing');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24, 89, 'description', 1, 'Ages a user based on the number of business days (excluding holidays) that the account is overdue.');
+
+-- Date: 25-May-2011
+-- Redmine Issue: 996
+-- Description: Fixed reference data for error in processing order of Mediation Reader plugins
+update pluggable_task set processing_order=2 where id=6020;
+update pluggable_task set processing_order=3 where id=480;

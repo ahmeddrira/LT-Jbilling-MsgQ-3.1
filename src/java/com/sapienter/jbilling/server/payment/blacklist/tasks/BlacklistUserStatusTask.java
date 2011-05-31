@@ -83,8 +83,13 @@ public class BlacklistUserStatusTask extends PluggableTask
                 BlacklistDTO.SOURCE_USER_STATUS_CHANGE, null, null, user);
 
         // user's contact
-        ContactDTO contact = new ContactDAS().findPrimaryContact(
-                myEvent.getUserId());
+        ContactDTO contact = new ContactDAS().findPrimaryContact(myEvent.getUserId());
+
+        if (contact == null) {
+            LOG.warn("User " + myEvent.getUserId() + " does not have contact information to blacklist.");
+            return;
+        }
+
         // contact to be added to blacklist
         ContactDTO newContact = null;
 

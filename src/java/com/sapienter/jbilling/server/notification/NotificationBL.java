@@ -1031,39 +1031,39 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
             // this user's info
             contact.set(userId);
-            retValue.addParameter("first_name", contact.getEntity()
-                    .getFirstName());
-            retValue.addParameter("last_name", contact.getEntity()
-                    .getLastName());
-            retValue
-                    .addParameter("address1", contact.getEntity().getAddress1());
-            retValue
-                    .addParameter("address2", contact.getEntity().getAddress2());
-            retValue.addParameter("city", contact.getEntity().getCity());
-            retValue.addParameter("organization_name", contact.getEntity()
-                    .getOrganizationName());
-            retValue.addParameter("postal_code", contact.getEntity()
-                    .getPostalCode());
-            retValue.addParameter("state_province", contact.getEntity()
-                    .getStateProvince());
-            retValue.addParameter("username", user.getEntity().getUserName());
-            retValue.addParameter("password", user.getEntity().getPassword());
-            retValue.addParameter("user_id", user.getEntity().getUserId()
-                    .toString());
-            
-            // full objects for velocity
-            retValue.addParameter("contact", contact.getEntity());
-            retValue.addParameter("user", user.getEntity());
+            if (contact.getEntity() != null) {
+                retValue.addParameter("contact", contact.getEntity());
+
+                retValue.addParameter("first_name", contact.getEntity().getFirstName());
+                retValue.addParameter("last_name", contact.getEntity().getLastName());
+                retValue.addParameter("address1", contact.getEntity().getAddress1());
+                retValue.addParameter("address2", contact.getEntity().getAddress2());
+                retValue.addParameter("city", contact.getEntity().getCity());
+                retValue.addParameter("organization_name", contact.getEntity().getOrganizationName());
+                retValue.addParameter("postal_code", contact.getEntity().getPostalCode());
+                retValue.addParameter("state_province", contact.getEntity().getStateProvince());
+            }
+
+            if (user.getEntity() != null) {
+                retValue.addParameter("user", user.getEntity());
+
+                retValue.addParameter("username", user.getEntity().getUserName());
+                retValue.addParameter("password", user.getEntity().getPassword());
+                retValue.addParameter("user_id", user.getEntity().getUserId().toString());
+            }
+
+            if (user.getCreditCard() != null) {
+                retValue.addParameter("credit_card", user.getCreditCard());
+            }
 
             // the entity info
             contact.setEntity(entityId);
-            retValue.addParameter("company_id", entityId.toString());
-            retValue.addParameter("company_name", contact.getEntity()
-                    .getOrganizationName());
-            
-            // full objects for velocity
-            retValue.addParameter("company_contact", contact.getEntity());
-            retValue.addParameter("credit_card", user.getCreditCard());
+            if (contact.getEntity() != null) {
+                retValue.addParameter("company_contact", contact.getEntity());
+
+                retValue.addParameter("company_id", entityId.toString());
+                retValue.addParameter("company_name", contact.getEntity().getOrganizationName());
+            }
 
             //velocity tools
             retValue.addParameter("tools-date", new DateTool());

@@ -125,7 +125,7 @@ public class BillingProcessTest extends TestCase {
         System.out.println("Invoice ids: " + Arrays.toString(invoiceIds));
 
 
-        InvoiceWS invoice = api.getReviewInvoiceWS(invoiceIds[0]);
+        InvoiceWS invoice = api.getInvoiceWS(invoiceIds[0]);
         System.out.println("TODO: check and write assert. Review invoice: " + invoice);
 
 //        assertEquals("New invoice should be 1 day and one month",
@@ -206,7 +206,7 @@ public class BillingProcessTest extends TestCase {
 
         // let's monitor invoice 45, which is the one to be retried
         invoice = api.getInvoiceWS(45);
-        
+
         System.out.println("TODO: add some asserts about the payments and payment attempts on this invoice " + invoice);
         //assertEquals("Invoice without payments after retry", 1, invoice.getPaymentAttempts().intValue());
         //assertEquals("Invoice without payments after retry - 2", 1, invoice.getPayments().length);
@@ -216,9 +216,7 @@ public class BillingProcessTest extends TestCase {
         ProcessRunWS run = process.getProcessRuns().get(process.getProcessRuns().size() - 1);
         ProcessRunTotalWS total = run.getProcessRunTotals().get(0);
 
-        // todo: total should be paid automatically
-        //  assertEquals("Retry total paid equals to invoice total", invoice.getTotalAsDecimal(), total.getTotalPaidAsDecimal());
-        assertEquals(BigDecimal.ZERO, total.getTotalPaidAsDecimal());
+        assertEquals("Retry total paid equals to invoice total", invoice.getTotalAsDecimal(), total.getTotalPaidAsDecimal());
     }
 
     public void testRun() {
@@ -832,69 +830,6 @@ public class BillingProcessTest extends TestCase {
         // cleanup
         api.deleteOrder(orderId);
         api.deleteUser(user.getUserId());
-    }
-
-    public void testAgeing() {
-        System.out.println("Running testAgeing()");
-
-        try {
-            final Integer userId = 876;
-            
-            // grace period = 5
-            // overdue1 = 3
-            // overdue2 = 1
-            // suspended 1 = 2
-            // suspended 3 = 30
-            // deleted (end)
-            // invoice 3543 Due date 11/26/2006 (1540)
-            
-            // the grace period should keep this user active
-            cal.clear();
-            cal.set(2006, GregorianCalendar.DECEMBER, 1);
-            api.triggerAgeing(cal.getTime());
-            UserWS user = api.getUserWS(userId);
-            assertEquals("Grace period", UserDTOEx.STATUS_ACTIVE, user.getStatusId());
-                    
-            // when the grace over, she should be warned
-            cal.set(2006, GregorianCalendar.DECEMBER, 2);
-            api.triggerAgeing(cal.getTime());
-            user = api.getUserWS(userId);
-            assertEquals("to overdue", UserDTOEx.STATUS_ACTIVE.intValue() + 1, user.getStatusId().intValue());
-
-            // two day after, the status should be the same
-            cal.set(2006, GregorianCalendar.DECEMBER, 4);
-            api.triggerAgeing(cal.getTime());
-            user = api.getUserWS(userId);
-            assertEquals("still overdue", UserDTOEx.STATUS_ACTIVE.intValue() + 1, user.getStatusId().intValue());
-
-            // after three days of the warning, fire the next one
-            cal.set(2006, GregorianCalendar.DECEMBER, 5);
-            api.triggerAgeing(cal.getTime());
-            user = api.getUserWS(userId);
-            assertEquals("to overdue 2", UserDTOEx.STATUS_ACTIVE.intValue() + 2, user.getStatusId().intValue());
-
-            // the next day it goes to suspended
-            cal.set(2006, GregorianCalendar.DECEMBER, 6);
-            api.triggerAgeing(cal.getTime());
-            user = api.getUserWS(userId);
-            assertEquals("to suspended", UserDTOEx.STATUS_ACTIVE.intValue() + 4, user.getStatusId().intValue());
-
-            // two days for suspended 3
-            cal.set(2006, GregorianCalendar.DECEMBER, 8);
-            api.triggerAgeing(cal.getTime());
-            user = api.getUserWS(userId);
-            assertEquals("to suspended 3", UserDTOEx.STATUS_ACTIVE.intValue() + 6, user.getStatusId().intValue());
-
-            // 30 days for deleted
-            cal.add(GregorianCalendar.DATE, 30);
-            api.triggerAgeing(cal.getTime());
-            user = api.getUserWS(userId);
-            assertEquals("deleted", 1, user.getDeleted());
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Exception:" + e);
-        }
     }
 
     public static Date parseDate(String str) throws Exception {

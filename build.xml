@@ -236,6 +236,7 @@
             -->
             <test name="com.sapienter.jbilling.server.user.PartnerTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.process.BillingProcessTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
+            <test name="com.sapienter.jbilling.server.process.AgeingTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.mediation.MediationTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.provisioning.ProvisioningTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
 
@@ -273,6 +274,10 @@
         <antcall target="test-integration" inheritall="true"/>
     </target>
 
+    <target name="test-ageing">
+        <property name="test.class" value="com.sapienter.jbilling.server.process.AgeingTest"/>
+        <antcall target="test-integration" inheritall="true"/>
+    </target>
 
     <!--
         jBilling "official" release generation targets

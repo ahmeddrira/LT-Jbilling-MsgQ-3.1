@@ -66,14 +66,14 @@ public class BusinessDayAgeingTask extends BasicAgeingTask {
         Date dueDate = getBusinessDaysHelper().addBusinessDays(invoice.getDueDate(), gracePeriod);
 
         // invoice due date + grace period as week days
-        if (dueDate.compareTo(today) < 0) {
+        if (dueDate.before(today)) {
             LOG.debug("Invoice is overdue (due date " + invoice.getDueDate() + " + "
-                      + gracePeriod + " days grace, is after today " + today + ")");
+                      + gracePeriod + " days grace, is before today " + today + ")");
             return true;
         }
 
         LOG.debug("Invoice is NOT overdue (due date " + invoice.getDueDate() + " + "
-                  + gracePeriod + " days grace is before today " + today + ")");
+                  + gracePeriod + " days grace is after today " + today + ")");
         return false;
     }
 
@@ -86,14 +86,14 @@ public class BusinessDayAgeingTask extends BasicAgeingTask {
         Date expiryDate = getBusinessDaysHelper().addBusinessDays(lastStatusChange, currentStep.getDays());
 
         // last status change + step days as week days
-        if (expiryDate.compareTo(today) <= 0) {
+        if (expiryDate.equals(today) || expiryDate.before(today)) {
             LOG.debug("User status has expired (last change " + lastStatusChange + " + "
-                      + currentStep.getDays() + " days is after today " + today + ")");
+                      + currentStep.getDays() + " days is before today " + today + ")");
             return true;
         }
 
         LOG.debug("User does not need to be aged (last change " + lastStatusChange + " + "
-                  + currentStep.getDays() + " days is before today " + today + ")");
+                  + currentStep.getDays() + " days is after today " + today + ")");
         return false;
     }
 }

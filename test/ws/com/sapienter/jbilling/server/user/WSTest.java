@@ -329,9 +329,9 @@ public class WSTest extends TestCase {
              */
             System.out.println("Getting active users...");
             Integer[] users = api.getUsersInStatus(new Integer(1));
-            assertEquals(1033,users.length);
+            assertEquals(1034,users.length);
             assertEquals("First return user ", 1, users[0].intValue());
-            assertEquals("Last returned user ", 10792, users[users.length-1].intValue());
+            assertEquals("Last returned user ", 10802, users[users.length-1].intValue());
 
             /*
              * Get list of not active customers

@@ -448,8 +448,7 @@
                     <ul>
                         <li>
                             <a onclick="$('#payment-edit-form').submit()" class="submit payment">
-                                <g:if test="${isNew}"><span><g:message code="button.make.payment"/></span></g:if>
-                                <g:if test="${!isNew}"><span><g:message code="button.save"/></span></g:if>
+                                <span><g:message code="button.review.payment"/></span>
                             </a>
                         </li>
                         <li>

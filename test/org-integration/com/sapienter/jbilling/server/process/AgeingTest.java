@@ -43,7 +43,7 @@ import java.util.GregorianCalendar;
  */
 public class AgeingTest extends TestCase {
 
-    private static final Integer AGEING_TEST_USER_ID = 876;
+    private static final Integer AGEING_TEST_USER_ID = 10790; // ageing-test-01
 
     Calendar calendar = GregorianCalendar.getInstance();
 

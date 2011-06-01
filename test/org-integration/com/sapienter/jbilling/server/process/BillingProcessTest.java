@@ -525,50 +525,45 @@ public class BillingProcessTest extends TestCase {
                      user.getSubscriberStatusId());
     }
 
-    // This should work when data of the order lines makes sense (quantity *
-    // price = total).
-    // Yet, the periods have to be added in this function
     public void testGeneratedInvoices() {
         System.out.println("Running testGeneratedInvoices()");
 
         List<Integer> invoiceIds = api.getBillingProcessGeneratedInvoices(api.getLastBillingProcess());
+        assertEquals("Invoices generated", 1013, invoiceIds.size());
 
-        // we know that only one invoice should be generated
-        assertEquals("Invoices generated", 1012, invoiceIds.size());
-
+        // validate each invoice and check that the invoiced total matches the
+        // sum of the comprising order totals.
         for (Integer id : invoiceIds) {
             InvoiceWS invoice = api.getInvoiceWS(id);
 
+            // calculate the total value from the source orders
             BigDecimal orderTotal = BigDecimal.ZERO;
             boolean isProRated = false;
 
-            List<OrderProcessWS> invoiceOrderProcesses = api.getOrderProcessesByInvoice(id);
-            for (OrderProcessWS orderProcess : invoiceOrderProcesses) {
+            for (OrderProcessWS orderProcess : api.getOrderProcessesByInvoice(id)) {
                 OrderWS orderDto = api.getOrder(orderProcess.getOrderId());
-
                 orderTotal = orderTotal.add(orderDto.getTotalAsDecimal());
-                if (orderProcess.getOrderId() >= 103 &&
-                    orderProcess.getOrderId() <= 108 ||
-                    orderProcess.getOrderId() == 113 ||
-                    orderProcess.getOrderId() == 107600) {
+
+                // these orders result in a pro-rated invoice, we can't validate the pro-rated
+                // total without knowing the date ranges and without duplicating the pro-rating calc.
+                if ((orderProcess.getOrderId() >= 103 && orderProcess.getOrderId() <= 108)
+                    || orderProcess.getOrderId() == 113
+                    || orderProcess.getOrderId() == 107600
+                    || (orderProcess.getOrderId() >= 107700 && orderProcess.getOrderId() <= 107811)) {
 
                     isProRated = true;
                 }
             }
 
+            // validate the invoice total for non pro-rated invoices
             if (!isProRated) {
-                BigDecimal total = invoice.getTotalAsDecimal();
-                BigDecimal carried = invoice.getCarriedBalanceAsDecimal();
-
-                assertEquals("Orders total = Invoice " + invoice.getId() + " total",
-                             orderTotal,
-                             total.subtract(carried));
-            } else {
-                // TODO: add exact calculations for pro-rated invoices
+                BigDecimal invoiceTotal = invoice.getTotalAsDecimal().subtract(invoice.getCarriedBalanceAsDecimal());
+                assertEquals("sum of orders does not equal total for invoice " + invoice.getId()
+                             + " (total: " + invoice.getTotal() + ", carried: " + invoice.getCarriedBalance() + ")",
+                             orderTotal, invoiceTotal);
             }
         }
 
-        // take the invoice and examine
         assertTrue("invoice was generated", api.getAllInvoices(1067).length != 0);
     }
 

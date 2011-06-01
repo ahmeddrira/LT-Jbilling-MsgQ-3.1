@@ -3207,9 +3207,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version, description) FROM stdin;
-7	1	customer	list	\N	\N	0	\N
 8	1	customer	edit	create	\N	0	\N
 9	1	customer	list	\N	10790	0	ageing-test-01
+10	1	config	index	\N	\N	0	\N
+11	1	plugin	listCategories	\N	\N	0	\N
+12	1	plugin	plugins	\N	18	0	\N
+13	1	plugin	show	\N	530	0	\N
+14	1	plugin	edit	\N	530	0	\N
 \.
 
 
@@ -10455,6 +10459,7 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 467001	1	1	25	6061	2011-05-20 15:11:24.625	2	11	25	\N	\N	\N	0	\N
 468000	1	\N	10	10790	2011-06-01 10:36:25.494	2	2	25	\N	\N	\N	0	10790
 468001	\N	\N	27	113100	2011-06-01 10:36:25.665	2	2	25	\N	\N	\N	0	\N
+469000	1	1	25	530	2011-06-01 17:15:48.842	2	11	9	\N	\N	\N	0	\N
 \.
 
 
@@ -11736,7 +11741,6 @@ role	1
 country	3
 permission	2
 currency_exchange	3
-pluggable_task_parameter	8313
 billing_process_configuration	1
 order_period	1
 report	1
@@ -11781,17 +11785,18 @@ balance_type	1
 mediation_record	1
 filter	1
 filter_set	1
-recent_item	1
 shortcut	1
 report_parameter	1
 pluggable_task	607
 base_user	1080
-event_log	469
 customer	1071
 contact_map	7911
 contact	1132
 contact_field	2027
-breadcrumb	10
+breadcrumb	15
+recent_item	2
+pluggable_task_parameter	8314
+event_log	470
 \.
 
 
@@ -14938,7 +14943,6 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 520	1	49	3	1	\N
 20	1	21	4	1	\N
 22	1	21	5	1	\N
-530	1	50	3	1	\N
 540	1	53	1	2	\N
 541	1	54	1	1	\N
 550	1	55	1	1	\N
@@ -14958,6 +14962,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 6050	1	82	2	7	\N
 6060	1	87	1	1	
 6061	1	88	3	1	
+530	1	50	3	2	
 \.
 
 
@@ -15043,6 +15048,10 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 830801	6040	output_filename	\N	InternalEventsRulesTask520.pkg	\N	1
 830802	6040	template_filename	\N	rules-generator-template-integration-test.vm	\N	1
 831200	6050	start_time	\N	20100728-0000	\N	1
+831300	530	msisdn	\N	1	\N	0
+831301	530	subscriptionType	\N	1	\N	0
+831302	530	mmsCapability	\N	1	\N	0
+831303	530	methodName	\N	test	\N	0
 \.
 
 
@@ -16389,6 +16398,7 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 --
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
+1	PLUGIN	530	1	0
 \.
 
 

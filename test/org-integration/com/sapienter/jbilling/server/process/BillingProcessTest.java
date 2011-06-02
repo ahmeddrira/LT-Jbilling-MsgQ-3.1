@@ -168,6 +168,7 @@ public class BillingProcessTest extends TestCase {
         Date retryDate = Util.truncateDate(cal.getTime());
 
         // let's monitor invoice 45, which is the one to be retried
+        // belongs to gandalf (user id 2)
         InvoiceWS invoice = api.getInvoiceWS(45);
 
         assertEquals("Invoice without payments before retry", 0, invoice.getPaymentAttempts().intValue());

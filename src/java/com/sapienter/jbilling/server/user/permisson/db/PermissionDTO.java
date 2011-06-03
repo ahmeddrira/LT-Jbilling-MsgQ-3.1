@@ -21,6 +21,8 @@ package com.sapienter.jbilling.server.user.permisson.db;
 
 
 import com.sapienter.jbilling.client.authentication.InitializingGrantedAuthority;
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.AbstractDescription;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -44,7 +46,7 @@ import java.util.Set;
 @Entity
 @Table(name = "permission")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class PermissionDTO implements Serializable, InitializingGrantedAuthority {
+public class PermissionDTO extends AbstractDescription implements Serializable, InitializingGrantedAuthority {
 
     private int id;
     private PermissionTypeDTO permissionType;
@@ -126,7 +128,11 @@ public class PermissionDTO implements Serializable, InitializingGrantedAuthority
         this.roles = roles;
     }
 
-    // todo: more meaningful authority strings. something like "orders_create", "user_edit_password" etc.
+    @Transient
+    protected String getTable() {
+        return Constants.TABLE_PERMISSION;
+    }
+
     /**
      * Initialize the authority value
      */

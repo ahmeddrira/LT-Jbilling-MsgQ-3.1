@@ -25,16 +25,16 @@
 <body>
 
 <!-- selected configuration menu item -->
-<content tag="menu.item">users</content>
+<content tag="menu.item">roles</content>
 
 <content tag="column1">
-    <g:render template="users" />
+    <g:render template="roles" />
 </content>
 
 <content tag="column2">
     <g:if test="${selected}">
         <!-- show selected user -->
-        <g:render template="show" model="[selected: selected, contact: contact ]"/>
+        <g:render template="show" model="[ selected: selected ]"/>
     </g:if>
 </content>
 

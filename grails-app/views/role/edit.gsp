@@ -85,8 +85,10 @@
                                         permission.initializeAuthority()
                                     }%
 
+                                    <g:set var="label" value="${permission.getDescription(session['language_id']) ?: permission.authority}"/>
+
                                     <g:applyLayout name="form/checkbox">
-                                        <content tag="label">${permission.authority}</content>
+                                        <content tag="label"><g:message code="permission.label.format" args='[permission.id, label]'/></content>
                                         <content tag="label.for">permission.${permission.id}</content>
 
                                         <g:checkBox name="permission.${permission.id}" class="check cb" checked="${rolePermission}"/>
@@ -106,8 +108,10 @@
                                         permission.initializeAuthority()
                                     }%
 
+                                    <g:set var="label" value="${permission.getDescription(session['language_id']) ?: permission.authority}"/>
+
                                     <g:applyLayout name="form/checkbox">
-                                        <content tag="label">${permission.authority}</content>
+                                        <content tag="label"><g:message code="permission.label.format" args='[permission.id, label]'/></content>
                                         <content tag="label.for">permission.${permission.id}</content>
 
                                         <g:checkBox name="permission.${permission.id}" class="check cb" checked="${rolePermission}"/>

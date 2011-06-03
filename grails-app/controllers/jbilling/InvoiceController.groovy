@@ -208,6 +208,7 @@ class InvoiceController {
         }
     }
 
+    @Secured(['INVOICES_113'])
     def delete = {
         int invoiceId = params.int('id')
         int userId = params.int('_userId')

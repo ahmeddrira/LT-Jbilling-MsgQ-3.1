@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.user.permisson.db.RoleDTO
 import com.sapienter.jbilling.server.user.permisson.db.PermissionTypeDTO
 import com.sapienter.jbilling.server.user.RoleBL
 import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO
+import grails.plugins.springsecurity.Secured
 
 /**
  * RoleController 
@@ -32,6 +33,7 @@ import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO
  * @author Brian Cowdery
  * @since 02/06/11
  */
+@Secured(['isAuthenticated()'])
 class RoleController {
 
     def breadcrumbService

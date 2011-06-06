@@ -20,9 +20,12 @@
 
 package com.sapienter.jbilling.server.user;
 
+import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDAS;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import org.apache.log4j.Logger;
+
+import java.util.Set;
 
 /**
  * RoleBL
@@ -62,6 +65,14 @@ public class RoleBL {
         return role;
     }
 
+    /**
+     * Saves a new role to and sets the BL entity to the newly created role. This method does not
+     * save the description or title of a permission. Use {@link #setDescription(Integer, String)} and
+     * {@link #setTitle(Integer, String)} to set the international descriptions.
+     *
+     * @param role role to save
+     * @return id of the new role
+     */
     public Integer create(RoleDTO role) {
         if (role != null) {
             this.role = roleDas.save(role);
@@ -72,10 +83,26 @@ public class RoleBL {
         return null;
     }
 
+    /**
+     * Updates this role's permissions with those of the given role. This method does not
+     * update the description or title of a permission. Use {@link #setDescription(Integer, String)} and
+     * {@link #setTitle(Integer, String)} to update the roles international descriptions.
+     *
+     * @param dto role with permissions
+     */
     public void update(RoleDTO dto) {
+        setPermissions(dto.getPermissions());
+    }
+
+    /**
+     * Sets the granted permissions of this role to the given set.
+     *
+     * @param grantedPermissions list of granted permissions
+     */
+    public void setPermissions(Set<PermissionDTO> grantedPermissions) {
         if (role != null) {
             role.getPermissions().clear();
-            role.getPermissions().addAll(dto.getPermissions());
+            role.getPermissions().addAll(grantedPermissions);
 
             this.role = roleDas.save(role);
 
@@ -84,6 +111,9 @@ public class RoleBL {
         }
     }
 
+    /**
+     * Deletes this role.
+     */
     public void delete() {
         if (role != null) {
             roleDas.delete(role);

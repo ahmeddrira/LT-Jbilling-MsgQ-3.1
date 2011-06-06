@@ -17,15 +17,18 @@ glue code that explains how many of these integration tasks can be accomplished.
 
 h2. Requirements
 
-*j*Billing provides its _integration_ services in three distinct flavors: 
+*j*Billing provides its 'integration' services in three distinct flavors: 
 
 # SOAP (Simple-Object Access Protocol)
 # Hessian/Burlap (lightweight web service protocols) 
 # Spring HTTP Invoker
 
 In order to fully acquire, and take advantage of, the information contained herein, you may
-need to have at least a basic grasp of what [SOAP|http://www.w3schools.com/soap/soap_intro.asp] is and how it works. To learn about
-[Hessian|http://hessian.caucho.com] and Burlap, visit their homepage. 
+need to have at least a basic grasp of what [SOAP|http://www.w3schools.com/soap/soap_intro.asp] is and how it works. 
+
+{note}
+To learn about Hessian and Burlap, visit their homepage at [http://hessian.caucho.com|http://hessian.caucho.com] 
+{note}
 
 SOAP is a XML-based 'programming language independent' protocol for exchanging information over HTTP. Therefore, it enables diverse 
 platforms to communicate without bias. Since *j*Billing implements its services through SOAP, even business applications running on 
@@ -93,6 +96,26 @@ available in jBilling out-of-the-box. Thus, *j*Billing comes pre-configured with
 protocol. Therefore, in this case, we must configure an alternate authentication filter that sets the credentials to be 
 used when making non-authenticated API calls. 
 
+{code}
+<xml ...>
+<beans ....>
+	
+	<!-- Hessian Remote WS Bean -->
+	<bean id="apiClient" ... >
+		<property .../>
+	</bean>
+	
+	<!-- SOAP WS Bean -->
+	<jaxws:client id="apiClient2" ... />
+	
+	<!-- Spring HTTPInvoker Remote WS Bean -->
+	<bean id="apiClient3" ... >
+		<property .../>
+	</bean>
+	
+</beans>
+{code}
+
 See the section *Enabling/Disabling authentication for jBilling web services* section below for information regarding this.
 
 If other remoting methods are not being used, their definition beans may be commented out from this file to give a small 
@@ -102,7 +125,7 @@ improvement in *j*Billing startup time and memory footprint. This can be done by
 Additionally:
 
 * For disabling *Hessian/Burlap*, delete the appropriate Web Services mapping from @descriptors\web\jbilling-servlet.xml@. 
-* For disabling *SOAP*, search for and delete any sections of XML that reference *'cxf'* in @WEB-INF\web.xml@.
+* For disabling *SOAP*, search for and delete any sections of XML that reference *'cxf'* in @descriptors\web\web.xml@.
 
 h3. Securing Integration Access
 
@@ -149,7 +172,7 @@ it maybe preferable to disable authentication to give a slight increase in perfo
 If SOAP or Hessian/Burlap are being used, this can be done as follows:
 
 * Extract the *j*Billing web archive @jbilling\webapps\billing.war@
-* Open the file @WEB-INF\web.xml@ for editing
+* Open the file @descriptors\web\web.xml@ for editing
 * Comment out or delete the XML that refers to *Web Services Authentication Filter*. This includes one <filter> tag and two <filter-mapping> tags. Save the file and recreate (zip) the web archive.
 
 h4. Enabling/Disabling company security checks
@@ -172,7 +195,7 @@ Once you can use your standard web client over SSL, you can immediately start do
 services communication through HTTPS, effectively securing your web services. A further step is to force all 
 the web services communication over SSL. To achieve that extract the billing web archive:
 
-@jbilling\webapps\billing.war@ and edit the file: @WEB-INF\web.xml@
+@jbilling\webapps\billing.war@ and edit the file: @descriptors\web\web.xml@
 
 Notice that there is already a section at the bottom to force HTTPS, but it is commented.
 Uncomment the XML tag *<security-constraint>* and its contents to force HTTPS.
@@ -250,6 +273,9 @@ To query the WSDL file, you'll need to append the ?wsdl parameter to the call, f
 example:
 
 @http://localhost:8080/jbilling/services/api?wsdl@
+
+{code}
+{code}
 
 h3. Hessian/Burlap
 
@@ -548,7 +574,7 @@ The difficult part in implementing SOAP on C# is to map the input and output par
 quickly gets difficult to create all the necessary classes.
 
 {note}
-Therefore, a handy utility, distributed as part of the Visual Studio® distribution, is the @wsdl.exe@. This utility takes care of 
+Therefore, a handy utility, distributed as part of the Visual Studio&reg; distribution, is the @wsdl.exe@. This utility takes care of 
 converting a WSDL file into appropriate data structures and creates an output file that contains a class that performs all web service
 calls. You can find this command line tool in the *Visual Studio 8\SDK\v2.0\Bin* directory of your Visual Studio installation. 
 Consult your Visual Studio documentation or just call *wsdl.exe* with no parameters to obtain some information on how to invoke this
@@ -787,7 +813,7 @@ information as well. These can be added as parameters to the user creation proce
 
 Once the new user is created, we can add an order to that user with the *Active Since* date set to TODAY + 15, and *Active Until* date 
 set to _null_, which indicates the Order is permanently active and will continue to invoice until it is canceled. We are assuming the
-Item has been created as indicated in the Getting Started Guide, so that we have a 'Banners' category and a 'Front Page Banner – Monthly Fee'
+Item has been created as indicated in the Getting Started Guide, so that we have a 'Banners' category and a 'Front Page Banner Monthly Fee'
 item created under this category. In the example, we assume the Item ID code is '1', in a more realistic situation you could have several 
 item types to choose from, or you would otherwise need to determine what the Item ID is from the *j*Billing user interface.
 
@@ -1309,19 +1335,314 @@ and production environments that *j*Billing can integrate with.
 
 h1. Client API Reference
 
-All service calls provided by the API are covered in the Web Services API Reference docs. 
+h2. Data Structures/Object Classes
 
-The APIs are grouped according to functional area or data entities in jBilling, for example: User Management APIs, Orders, Items, etc. 
-All data contained in the Client API data structures can be accessed by means of the "getter" and "setter" methods of each property 
-(i.e., @getFaxNumber()@ and @setFaxNumber()@ provide access to the _faxNumber_ property). When describing data 
-structures, this guide always provides the property name. This reference is equally useful for those planning to use the web services 
-directly, or for those that will be using the jBilling Client API. For non-Java languages, the data 
-structures will look slightly different: they are described in the WSDL descriptor and how 
-that is translated to each language varies. For those using the jBilling Client API from a 
-Java application, the data structures can be used directly as classes.
+h3. User Management
 
+h4. UserWS
+
+{table}
+ | Property name | Type | Description |
+ | ach | AchDTO | ACH Payment details saved for the User. If available, the ACH info can be used during Automatic Payment processing. |
+| autoRecharge | String | The amount by the Customer's Prepaid balance will be recharged by the system if the system is configured to use Auto-Recharge feature. |
+| automaticPaymentType | Integer | Integer value to determine which of the three payment methods does the customer want to apply for automatic payment processing. Refer to Appendix A for acceptable values. |
+| balanceType | Integer | The type of dynamic balance for this user. Refer to Appendix A for acceptable values. |
+| blacklistMatches |  String[] | Lists any blacklist matches for this user. See the "jBilling User Guide" for more information on blacklists.  |
+| childIds |  Integer[] | The identifiers of any sub-accounts for this user.  |
+| companyName |  |  |
+| contact |  |  |
+| createDatetime |  |  |
+| creditCard |  |  |
+| creditLimit |  |  |
+| currencyId |  |  |
+| customerId |  |  |
+| deleted |  |  |
+| dueDateUnitId |  |  |
+| dueDateValue |  |  |
+| dynamicBalance |  |  |
+| excludeAgeing |  |  |
+| failedAttempts |  |  |
+| invoiceChild |  |  |
+| invoiceDeliveryMethodId |  |  |
+| isParent |  |  |
+| language |  |  |
+| languageId |  |  |
+| lastLogin |  |  |
+| lastStatusChange |  |  |
+| mainOrderId |  |  |
+| mainRoleId |  |  |
+| nextInvoiceDate |  |  |
+| notes |  |  |
+| owingBalance |  |  |
+| parentId |  |  |
+| partnerId |  |  |
+| password |  |  |
+| role |  |  |
+| status |  |  |
+| statusId |  |  |
+| subscriberStatusId |  |  |
+| userIdBlacklisted |  |  |
+| userName |  |  |
+{table}
+
+h4. CreditCardDTO
+
+{table}
+ | Property name | Type | Description |
+ |  |  |  |
+{table}
+
+h4. ContactWS
+
+{table}
+ | Property name | Type | Description |
+ |  |  |  |
+{table}
+
+h4. UserTransitionResponseWS
+
+{table}
+ | Property name | Type | Description |
+ |  |  |  |
+{table}
+
+h3. Order Management Calls
+
+Useful for entering Orders and querying information about Orders.
+
+h4. OrderWS
+
+{table}
+ | Property name | Type | Description |
+ |  |  |  |
+{table}
+
+h4. OrderLineWS
+
+{table}
+ | Property name | Type | Description |
+ |  |  |  |
+{table}
+
+h4. CreateResponseWS
+
+{table}
+ | Property name | Type | Description |
+ |  |  |  |
+{table}
+
+h4. Pricing Field
+
+{table}
+ | Property name | Type | Description |
+ |  |  |  |
+{table}
+
+h3. Item Management Calls
+
+Items are the building blocks of purchase orders. Items are usually managed from the GUI Web App since they don’t have the 
+level of activity of orders or payments. Use this service for integration with other applications (for example, an inventory system)
+or when handling high volumes to get better throughput as compared to the Web Application. An item can have a simple price or a percentage price. 
+Items with a simple price will simply add that price to the total of a purchase order. A percentage price will impact that
+total by a percentage. Examples of items with percentage prices are taxes and interests.
+
+h4. ItemDTOEx
+
+{table}
+ | Property name | Type | Description |
+ |  |  |  |
+{table}
+
+h4. ItemPriceDTOEx
+
+{table}
+ | Property name | Type | Description |
+ |  |  |  |
+{table}
+
+h4. ItemTypeWS
+
+{table}
+ | Property name | Type | Description |
+ |  |  |  |
+{table}
+
+h4. ValidatePurchaseWS
+
+{table}
+ | Property name | Type | Description |
+ |  |  |  |
+{table}
+
+h2. API Service Calls
+
+The Service APIs/Calls are grouped according to functional area or data entities in jBilling, for example: 
+User Management APIs, Orders, Items, etc. All data contained in the Client API data structures can be accessed by means 
+of the "getter" and "setter" methods of each property (i.e., @getFaxNumber()@ and @setFaxNumber()@ provide access to the _faxNumber_ property). 
+When describing data structures, this guide always provides the property name. This reference is equally useful for those 
+planning to use the web services directly, or for those that will be using the jBilling Client API. For non-Java languages, the data 
+structures will look slightly different: they are described in the WSDL descriptor and how that is translated to each language varies. 
+For those using the jBilling Client API from a Java application, the data structures can be used directly as classes.
+
+{note}
 For a finer coverage of the SOAP support, refer to the WSDL file or use a SOAP
 introspection tool (such as SoapUI). All the SOAP methods, however, share the same
 name, parameters and functionality as their API counterparts.
+{note}
+
+All service calls provided by the API are covered in the Web Services API Reference docs. 
 
 Please refer to the client/Web Services API from here: [WebServices|API Reference].
+
+
+h1. Appendix A
+
+h2. Constants Reference
+
+h3. Language Codes
+{table}
+| Code | Name |
+| 1 | English |
+| 2 | Portuguese |
+{table}
+
+h3. Currency Codes
+{table}
+|Currency name |Currency code| ISO Code |Symbol Country|
+|1 |United States Dollar |USD |US$| USA|
+|2 |Canadian Dollar |CAD |C$ |Canada|
+|3 |Euro| EUR| <pre>&euro;</pre> | Europe|
+|4 |Yen| JPY | ¥ |Japan|
+|5 |Pound Sterling |GBP | £ | United Kingdom|
+|6 |South Korean Won| KRW |South Korea|
+|7 |Swiss Franc| CHF |Sf |Switzerland|
+|8 |Swedish Krona| SEK |SeK |Sweden|
+|9 |Singapore Dollar |SGD |S$ |Singapore|
+|10|Ringgit |MYR |M$ |Malaysia|
+|11|Australian Dollar |AUD| $ |Australia|
+{table}
+
+h3. Role Codes
+{table}
+| Role Code | Meaning | 
+| 1 | Internal | 
+| 2 | Super User| 
+| 3 | Clerk| 
+| 4 | Partner| 
+| 5 | Customer| 
+{table}
+
+h3. User Status Codes
+{table}
+| User Status Code | Meaning| 
+| 1 | Active| 
+| 2 | Overdue| 
+| 3 | Overdue 2| 
+| 4 | Overdue 3| 
+| 5 | Suspended| 
+| 6 | Suspended 2| 
+| 7 | Suspended 3| 
+| 8 | Deleted| 
+{table}
+
+h3. Subscriber Status Codes
+{table}
+| Subscriber Status Code | Meaning| 
+| 1 | Active| 
+| 2 | Pending Subscription| 
+| 3 | Unsubscribed| 
+| 4 | Pending Expiration| 
+| 5 | Expired| 
+| 6 | Nonsubscriber| 
+{table}
+
+h3. Payment Method Codes
+{table}
+| Payment Method Code | Meaning| 
+| 1 | Cheque| 
+| 2 | Visa| 
+| 3 | MasterCard| 
+| 4 | AMEX| 
+| 5 | ACH| 
+| 6 | Discovery| 
+| 7 | Diners| 
+| 8 | PayPal| 
+{table}
+
+h3. Order Status Codes
+{table}
+| Order Status Code | Meaning| 
+| 1 | Active| 
+| 2 | Finished| 
+| 3 | Suspended| 
+| 4 | Suspended (auto)| 
+{table}
+
+h3. Order Billing Type Codes
+{table}
+| Order Billing Type Code | Meaning| 
+| 1 | Pre-paid| 
+| 2 | Post-paid| 
+{table}
+
+h3. Order Line Type Codes
+{table}
+| Order Line Type Code | Meaning| 
+| 1 | Item| 
+| 2 | Tax| 
+| 3 | Penalty| 
+{table}
+
+h3. Invoice Status Codes
+{table}
+| Invoice Status Code | Meaning| 
+| 1 | Paid| 
+| 2 | Unpaid| 
+| 3 | Unpaid, balance carried to a new invoice.| 
+{table}
+
+h3. Period units (units of time)
+{table}
+| Unit | Meaning| 
+| 1 | Month| 
+| 2 | Week|
+| 3 | Day| 
+| 4 | Year| 
+{table}
+
+h3. Payment results
+{table}
+| Result | Meaning| 
+| 1 | Successful| 
+| 2 | Failed| 
+| 3 | Payment gateway not available| 
+| 4 | Manually entered (payment gateway not involved, such as a cheque).| 
+{table}
+
+h3. Dynamic Balance Codes
+{table}
+| Dynamic Balance Code | Meaning| 
+| 1 | No dynamic balance| 
+| 2 | Pre paid| 
+| 3 | Credit limit| 
+{table}
+
+h3. Provisioning Status Codes
+{table}
+| Provisioning Status Code | Meaning| 
+| 1 | Active| 
+| 2 | Inactive| 
+| 3 | Pending Active| 
+| 4 | Pending Inactive| 
+| 5 | Failed| 
+| 6 | Unavailable| 
+{table}
+
+h3. Automatic Payment Type
+{table}
+| Automatic Payment Type Code |  Meaning | 
+| 1 | Credit Card| 
+| 2 | ACH |
+| 3 | Cheque|
+{table}
+

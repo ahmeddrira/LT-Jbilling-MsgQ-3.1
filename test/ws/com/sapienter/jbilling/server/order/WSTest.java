@@ -111,14 +111,19 @@ public class WSTest  extends TestCase {
         newOrder.setOrderLines(lines);
 
         System.out.println("Creating order ... " + newOrder);
-        Integer ret = api.createOrderAndInvoice(newOrder);
-        assertNotNull("The order was not created", ret);
+        Integer invoiceId_1 = api.createOrderAndInvoice(newOrder);
+        InvoiceWS invoice_1 = api.getInvoiceWS(invoiceId_1);
+        Integer orderId_1 = invoice_1.getOrders()[0];
+
+        assertNotNull("The order was not created", invoiceId_1);
+
 
         // create another one so we can test get by period.
-        ret = api.createOrderAndInvoice(newOrder);
-        System.out.println("Created invoice " + ret);
-        InvoiceWS newInvoice = api.getInvoiceWS(ret);
-        ret = newInvoice.getOrders()[0]; // this is the order that was also created
+        Integer invoiceId = api.createOrderAndInvoice(newOrder);
+        System.out.println("Created invoice " + invoiceId);
+
+        InvoiceWS newInvoice = api.getInvoiceWS(invoiceId);
+        Integer orderId = newInvoice.getOrders()[0]; // this is the order that was also created
 
         /*
         * get
@@ -131,12 +136,15 @@ public class WSTest  extends TestCase {
         } catch (Exception e) {
         }
 
-        System.out.println("Getting created order " + ret);
-        OrderWS retOrder = api.getOrder(ret);
+        System.out.println("Getting created order " + invoiceId);
+        OrderWS retOrder = api.getOrder(orderId);
 
         assertEquals("created order billing type", retOrder.getBillingTypeId(), newOrder.getBillingTypeId());
         assertEquals("created order billing period", retOrder.getPeriod(), newOrder.getPeriod());
         assertEquals("created order cycle starts", retOrder.getCycleStarts().getTime(), newOrder.getCycleStarts().getTime());
+
+        // cleanup
+        api.deleteInvoice(invoiceId);
 
         /*
         * get order line. The new order should include a new discount
@@ -183,7 +191,6 @@ public class WSTest  extends TestCase {
         retOrderLine = normalOrderLine; // use a normal one, not the percentage
         retOrderLine.setQuantity(new Integer(99));
 
-        Integer oldOrderId = retOrderLine.getOrderId();
         try {
             System.out.println("Updating bad order line");
             retOrderLine.setOrderId(5);
@@ -191,19 +198,21 @@ public class WSTest  extends TestCase {
             fail("Order line 6 belongs to entity 301");
         } catch (Exception e) {
         }
-        retOrderLine.setOrderId(oldOrderId);
+        retOrderLine.setOrderId(orderId);
 
         System.out.println("Update order line " + lineId);
         api.updateOrderLine(retOrderLine);
         retOrderLine = api.getOrderLine(retOrderLine.getId());
         assertEquals("updated quantity", new BigDecimal("99.00"), retOrderLine.getQuantityAsDecimal());
+
         //delete a line through updating with quantity = 0
         System.out.println("Delete order line");
         retOrderLine.setQuantity(new Integer(0));
         api.updateOrderLine(retOrderLine);
         int totalLines = retOrder.getOrderLines().length;
         pause(2000); // pause while provisioning status is being updated
-        retOrder = api.getOrder(retOrder.getId());
+        retOrder = api.getOrder(orderId);
+
         // the order has to have one less line now
         assertEquals("order should have one less line", totalLines, retOrder.getOrderLines().length + 1);
 
@@ -219,7 +228,6 @@ public class WSTest  extends TestCase {
         retOrder.setStatusId(new Integer(2));
 
         System.out.println("Updating order...");
-        ret = retOrder.getId();
         api.updateOrder(retOrder);
 
         // try to update an order of another entity
@@ -233,7 +241,7 @@ public class WSTest  extends TestCase {
 
         // and ask for it to verify the modification
         System.out.println("Getting updated order ");
-        retOrder = api.getOrder(ret);
+        retOrder = api.getOrder(orderId);
 
         assertNotNull("Didn't get updated order", retOrder);
         assertTrue("Active since", retOrder.getActiveSince().compareTo(cal.getTime()) == 0);
@@ -260,7 +268,7 @@ public class WSTest  extends TestCase {
         System.out.println("Getting latest");
         OrderWS lastOrder = api.getLatestOrder(new Integer(2));
         assertNotNull("Didn't get any latest order", lastOrder);
-        assertEquals("Latest id", ret, lastOrder.getId());
+        assertEquals("Latest id", orderId, lastOrder.getId());
 
         // now one for an invalid user
         System.out.println("Getting latest invalid");
@@ -280,7 +288,7 @@ public class WSTest  extends TestCase {
 
         // the first in the list is the last one created
         retOrder = api.getOrder(new Integer(list[0]));
-        assertEquals("Latest id " + Arrays.toString(list), ret, retOrder.getId());
+        assertEquals("Latest id " + Arrays.toString(list), orderId, retOrder.getId());
 
 
         // try to get the orders of my neighbor
@@ -294,8 +302,8 @@ public class WSTest  extends TestCase {
         /*
         * Delete
         */
-        System.out.println("Deleteing order " + ret);
-        api.deleteOrder(ret);
+        System.out.println("Deleteing order " + orderId);
+        api.deleteOrder(orderId);
 
         // try to delete from my neightbor
         try {
@@ -306,13 +314,13 @@ public class WSTest  extends TestCase {
 
         // try to get the deleted order
         System.out.println("Getting deleted order ");
-        retOrder = api.getOrder(ret);
-        assertEquals("Order " + ret + " should have been deleted", 1, retOrder.getDeleted());
+        retOrder = api.getOrder(orderId);
+        assertEquals("Order " + orderId + " should have been deleted", 1, retOrder.getDeleted());
 
         /*
         * Get by user and period
         */
-        System.out.println("Getting orders by period for invalid user " + ret);
+        System.out.println("Getting orders by period for invalid user " + orderId);
 
         // try to get from my neightbor
         try {
@@ -329,9 +337,8 @@ public class WSTest  extends TestCase {
         /*
         * Create an order with pre-authorization
         */
-        System.out.println("Create an order with pre-authorization" + ret);
-        PaymentAuthorizationDTOEx auth = (PaymentAuthorizationDTOEx)
-                api.createOrderPreAuthorize(newOrder);
+        System.out.println("Create an order with pre-authorization" + orderId);
+        PaymentAuthorizationDTOEx auth = (PaymentAuthorizationDTOEx) api.createOrderPreAuthorize(newOrder);
         assertNotNull("Missing list", auth);
 
         // the test processor should always approve gandalf
@@ -348,12 +355,20 @@ public class WSTest  extends TestCase {
         // delete this order
         System.out.println("Deleteing order " + retOrder.getId());
         api.deleteOrder(retOrder.getId());
+
+        // cleanup
+        api.deleteInvoice(invoiceId_1);
+        api.deleteOrder(orderId_1);
     }
 
     public void testcreateOrderAndInvoiceAutoCreatesAnInvoice() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
         final int USER_ID = GANDALF_USER_ID;
+
         InvoiceWS before = callGetLatestInvoice(USER_ID);
-        assertTrue(before == null || before.getId() != null);
+        assertNotNull(before);
+        assertNotNull(before.getId());
 
         OrderWS order = createMockOrder(USER_ID, 3, new BigDecimal("42.00"));
         System.out.println("Creating order/invoice for order: " + order);
@@ -379,15 +394,21 @@ public class WSTest  extends TestCase {
         } catch (SessionInternalError e) {
             assertTrue("Got expected validation exception", true);
         }
+
+        // cleanup
+        api.deleteInvoice(invoiceId);
+        api.deleteOrder(order.getId());
     }
 
     public void testCreateNotActiveOrderDoesNotCreateInvoices() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
         final int USER_ID = GANDALF_USER_ID;
         InvoiceWS before = callGetLatestInvoice(USER_ID);
 
         OrderWS orderWS = createMockOrder(USER_ID, 2, new BigDecimal("234.00"));
         orderWS.setActiveSince(weeksFromToday(1));
-        JbillingAPI api = JbillingAPIFactory.getAPI();
+
         Integer orderId = api.createOrder(orderWS);
         assertNotNull(orderId);
 
@@ -398,21 +419,26 @@ public class WSTest  extends TestCase {
         } else {
             assertEquals("Not yet active order -- no new invoices expected", before.getId(), after.getId());
         }
+
+        // cleanup
+        api.deleteOrder(orderId);
     }
 
     public void testCreatedOrderIsCorrect() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
         final int USER_ID = GANDALF_USER_ID;
         final int LINES = 2;
 
         OrderWS requestOrder = createMockOrder(USER_ID, LINES, new BigDecimal("567.00"));
         assertEquals(LINES, requestOrder.getOrderLines().length);
-        Integer orderId = callcreateOrderAndInvoice(requestOrder);
-        assertNotNull(orderId);
 
-        JbillingAPI api = JbillingAPIFactory.getAPI();
-        OrderWS resultOrder = api.getOrder(orderId);
+        Integer invoiceId = callcreateOrderAndInvoice(requestOrder);
+        assertNotNull(invoiceId);
+
+        OrderWS resultOrder = api.getOrder(requestOrder.getId());
         assertNotNull(resultOrder);
-        assertEquals(orderId, resultOrder.getId());
+        assertEquals(requestOrder.getId(), resultOrder.getId());
         assertEquals(LINES, resultOrder.getOrderLines().length);
 
         HashMap<String, OrderLineWS> actualByDescription = new HashMap<String, OrderLineWS>();
@@ -432,9 +458,15 @@ public class WSTest  extends TestCase {
             assertEquals(nextRequested.getQuantityAsDecimal(), nextActual.getQuantityAsDecimal());
             assertEquals(nextRequested.getQuantityAsDecimal(), nextActual.getQuantityAsDecimal());
         }
+
+        // cleanup
+        api.deleteInvoice(invoiceId);
+        api.deleteOrder(requestOrder.getId());
     }
 
     public void testAutoCreatedInvoiceIsCorrect() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
         final int USER_ID = GANDALF_USER_ID;
         final int LINES = 2;
 
@@ -444,10 +476,10 @@ public class WSTest  extends TestCase {
         final BigDecimal PRICE = new BigDecimal("687654.29");
 
         OrderWS orderWS = createMockOrder(USER_ID, LINES, PRICE);
-        Integer orderId = callcreateOrderAndInvoice(orderWS);
+        Integer invoiceId = callcreateOrderAndInvoice(orderWS);
         InvoiceWS invoice = callGetLatestInvoice(USER_ID);
         assertNotNull(invoice.getOrders());
-        assertTrue("Expected: " + orderId + ", actual: " + Arrays.toString(invoice.getOrders()), Arrays.equals(new Integer[] {orderId}, invoice.getOrders()));
+        assertTrue("Expected: " + orderWS.getId() + ", actual: " + Arrays.toString(invoice.getOrders()), Arrays.equals(new Integer[] {orderWS.getId()}, invoice.getOrders()));
 
         assertNotNull(invoice.getInvoiceLines());
         assertEquals(LINES, invoice.getInvoiceLines().length);
@@ -457,14 +489,20 @@ public class WSTest  extends TestCase {
 
         assertNotNull(invoice.getBalance());
         assertEquals(PRICE.multiply(new BigDecimal(LINES)), invoice.getBalanceAsDecimal());
+
+        // cleanup
+        api.deleteInvoice(invoiceId);
+        api.deleteOrder(orderWS.getId());
     }
 
     public void testAutoCreatedInvoiceIsPayable() throws Exception {
-        final int USER_ID = GANDALF_USER_ID;
-
         JbillingAPI api = JbillingAPIFactory.getAPI();
 
-        callcreateOrderAndInvoice(createMockOrder(USER_ID, 1, new BigDecimal("789.00")));
+        final int USER_ID = GANDALF_USER_ID;
+
+        OrderWS order = createMockOrder(USER_ID, 1, new BigDecimal("789.00"));
+        Integer invoiceId = callcreateOrderAndInvoice(order);
+
         InvoiceWS invoice = callGetLatestInvoice(USER_ID);
         assertNotNull(invoice);
         assertNotNull(invoice.getId());
@@ -486,6 +524,9 @@ public class WSTest  extends TestCase {
         assertEquals("new invoice is now paid", 0, invoice.getToProcess().intValue());
         assertTrue("new invoice without a balance", BigDecimal.ZERO.compareTo(invoice.getBalanceAsDecimal()) == 0);
 
+        // cleanup
+        api.deleteInvoice(invoiceId);
+        api.deleteOrder(order.getId());
     }
 
     public void testUpdateLines() throws Exception {
@@ -913,7 +954,6 @@ public class WSTest  extends TestCase {
         assertEquals("Order line price", new BigDecimal("5.00"), createdLine.getPriceAsDecimal());
         assertEquals("Order line price", new BigDecimal("25"), createdLine.getAmountAsDecimal()); // not priced
 
-
         //
         // Events that go into an order already invoiced, should update the
         // current order for the next cycle
@@ -926,9 +966,10 @@ public class WSTest  extends TestCase {
         assertEquals("now current order has to be finished", 2, api.getOrder(currentOrderAfter.getId()).getStatusId().intValue());
 
         // make that current order an invoice
-       Integer invoiceId = api.createInvoice(USER_ID, false)[0];
-       System.out.println("current order generated invoice " + invoiceId);
-
+        /*
+        Integer invoiceId = api.createInvoice(USER_ID, false)[0];
+        System.out.println("current order generated invoice " + invoiceId);
+        */
 
         // now send again that last event
         System.out.println("Sending event again");
@@ -943,15 +984,9 @@ public class WSTest  extends TestCase {
         assertFalse("Current order for next cycle can't be the same as the previous one",
                     currentOrderNext.getId().equals(currentOrderAfter.getId()));
 
-        System.out.println("Date1: " + currentOrderAfter.getActiveSince());
-        DateMidnight date1 = new DateMidnight(currentOrderAfter.getActiveSince().getTime());
-        System.out.println("Date1: " + date1);
-        date1 = date1.plusMonths(1);
-        System.out.println("Date1: " + date1);
-        DateMidnight date2 = new DateMidnight(currentOrderNext.getActiveSince().getTime());
-        System.out.println("Date2: " + date2);
-        assertEquals("Active since of new order should be one month later than previous one for the same event",
-                date1,date2);
+        assertEquals("Active since of new order should be one mothe later than previous one for the same event",
+                     new DateMidnight(currentOrderAfter.getActiveSince().getTime()).plusMonths(1),
+                     new DateMidnight(currentOrderNext.getActiveSince().getTime()));
 
         //
         // No main subscription order tests.
@@ -994,6 +1029,7 @@ public class WSTest  extends TestCase {
         } catch (Exception e) { }
 
         // cleanup
+//        api.deleteInvoice(invoiceId);
         api.deleteOrder(currentOrderAfter.getId());
         api.deleteOrder(currentOrderNext.getId());
     }
@@ -1380,10 +1416,24 @@ public class WSTest  extends TestCase {
         return api.getLatestInvoice(userId);
     }
 
+    /**
+     * Creates an order and invoices it, returning the ID of the new invoice and populating
+     * the given order with the ID of the new order.
+     *
+     * @param order order to create and set ID
+     * @return invoice id
+     * @throws Exception possible API exception
+     */
     private Integer callcreateOrderAndInvoice(OrderWS order) throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();
-        InvoiceWS invoice = api.getInvoiceWS(api.createOrderAndInvoice(order));
-        return invoice.getOrders()[0];
+
+        Integer invoiceId = api.createOrderAndInvoice(order);
+        InvoiceWS invoice = api.getInvoiceWS(invoiceId);
+        order.setId(invoice.getOrders()[0]);
+
+        System.out.println("Created order " + order.getId() + " and invoice " + invoice.getId());
+
+        return invoice.getId();
     }
 
     public static OrderWS createMockOrder(int userId, int orderLinesCount, BigDecimal linePrice) {

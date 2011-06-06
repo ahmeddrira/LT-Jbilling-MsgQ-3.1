@@ -3164,6 +3164,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 10780	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:38:54.133	\N	\N	mediation-batch-test-14	0	1
 10781	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:39:09.731	\N	\N	mediation-batch-test-15	0	1
 1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2010-05-25 12:27:12.217	admin	0	18
+10790	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2011-06-01 10:36:25.441	\N	\N	ageing-test-01	0	1
 \.
 
 
@@ -3206,6 +3207,13 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version, description) FROM stdin;
+8	1	customer	edit	create	\N	0	\N
+9	1	customer	list	\N	10790	0	ageing-test-01
+10	1	config	index	\N	\N	0	\N
+11	1	plugin	listCategories	\N	\N	0	\N
+12	1	plugin	plugins	\N	18	0	\N
+13	1	plugin	show	\N	530	0	\N
+14	1	plugin	edit	\N	530	0	\N
 \.
 
 
@@ -4272,6 +4280,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 113009	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-13@test.com	2009-12-17 13:38:25.725	0	1	10779	1
 113010	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-14@test.com	2009-12-17 13:38:54.151	0	1	10780	1
 113011	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-15@test.com	2009-12-17 13:39:09.738	0	1	10781	1
+113100							CA			\N	\N	\N	\N		\N	\N	\N	test@test.com	2011-06-01 10:36:25.546	0	0	10790	1
 \.
 
 
@@ -6312,6 +6321,9 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 202506	3	112902		0
 202507	2	112902		0
 202508	1	112902		0
+202600	3	113100		0
+202601	2	113100		0
+202602	1	113100		0
 \.
 
 
@@ -7374,6 +7386,7 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 790909	113009	2	10	10779	1
 790910	113010	2	10	10780	1
 790911	113011	2	10	10781	1
+791000	113100	2	10	10790	1
 \.
 
 
@@ -9734,6 +9747,7 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 62	73	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
 63	74	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
 64	75	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+107000	10790	\N	\N	1		\N	\N	\N	\N	\N	0	0	\N	\N	1	1	0.0000000000	0.0000000000	0.0000000000
 \.
 
 
@@ -10443,6 +10457,9 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 466024	1	\N	21	107811	2009-12-21 13:21:44.518	2	7	25	\N	\N	\N	0	10781
 467000	1	1	25	6060	2011-05-20 15:11:00.037	2	11	25	\N	\N	\N	0	\N
 467001	1	1	25	6061	2011-05-20 15:11:24.625	2	11	25	\N	\N	\N	0	\N
+468000	1	\N	10	10790	2011-06-01 10:36:25.494	2	2	25	\N	\N	\N	0	10790
+468001	\N	\N	27	113100	2011-06-01 10:36:25.665	2	2	25	\N	\N	\N	0	\N
+469000	1	1	25	530	2011-06-01 17:15:48.842	2	11	9	\N	\N	\N	0	\N
 \.
 
 
@@ -11724,7 +11741,6 @@ role	1
 country	3
 permission	2
 currency_exchange	3
-pluggable_task_parameter	8313
 billing_process_configuration	1
 order_period	1
 report	1
@@ -11732,7 +11748,6 @@ partner_range	2
 partner	2
 entity	1
 contact_type	1
-contact_map	7910
 payment_info_cheque	17
 billing_process	2
 process_run	1
@@ -11750,10 +11765,6 @@ invoice	86
 invoice_line	87
 order_process	86
 payment	19
-base_user	1079
-customer	1070
-contact	1131
-contact_field	2026
 credit_card	1015
 language	1
 payment_invoice	1
@@ -11774,12 +11785,18 @@ balance_type	1
 mediation_record	1
 filter	1
 filter_set	1
-recent_item	1
 shortcut	1
 report_parameter	1
 pluggable_task	607
-event_log	468
-breadcrumb	7
+base_user	1080
+customer	1071
+contact_map	7911
+contact	1132
+contact_field	2027
+breadcrumb	15
+recent_item	2
+pluggable_task_parameter	8314
+event_log	470
 \.
 
 
@@ -13743,6 +13760,8 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 1659	856	2	1	1200.0000000000	60.0000000000	20.0000000000	\N	2007-09-12 12:13:54.489	0	Second line	\N	\N	1
 1660	857	1	1	480.0000000000	48.0000000000	10.0000000000	\N	2007-09-12 12:13:54.731	0	First line	\N	\N	1
 1661	857	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:13:54.733	0	Second line	\N	\N	1
+1662	858	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:13:54.982	0	First line	\N	\N	1
+1663	858	2	1	1460.0000000000	73.0000000000	20.0000000000	\N	2007-09-12 12:13:54.994	0	Second line	\N	\N	1
 1664	859	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:13:55.228	0	First line	\N	\N	1
 1665	859	2	1	1000.0000000000	50.0000000000	20.0000000000	\N	2007-09-12 12:13:55.23	0	Second line	\N	\N	1
 1666	860	1	1	440.0000000000	44.0000000000	10.0000000000	\N	2007-09-12 12:13:55.673	0	First line	\N	\N	1
@@ -14924,7 +14943,6 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 520	1	49	3	1	\N
 20	1	21	4	1	\N
 22	1	21	5	1	\N
-530	1	50	3	1	\N
 540	1	53	1	2	\N
 541	1	54	1	1	\N
 550	1	55	1	1	\N
@@ -14944,6 +14962,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 6050	1	82	2	7	\N
 6060	1	87	1	1	
 6061	1	88	3	1	
+530	1	50	3	2	
 \.
 
 
@@ -15029,6 +15048,10 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 830801	6040	output_filename	\N	InternalEventsRulesTask520.pkg	\N	1
 830802	6040	template_filename	\N	rules-generator-template-integration-test.vm	\N	1
 831200	6050	start_time	\N	20100728-0000	\N	1
+831300	530	msisdn	\N	1	\N	0
+831301	530	subscriptionType	\N	1	\N	0
+831302	530	mmsCapability	\N	1	\N	0
+831303	530	methodName	\N	test	\N	0
 \.
 
 
@@ -16375,6 +16398,7 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 --
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
+1	PLUGIN	530	1	0
 \.
 
 
@@ -18503,6 +18527,7 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 10779	5
 10780	5
 10781	5
+10790	5
 \.
 
 

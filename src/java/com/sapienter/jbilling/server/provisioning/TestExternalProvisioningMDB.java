@@ -234,16 +234,15 @@ public class TestExternalProvisioningMDB implements MessageListener {
             boolean success = true;
 
             String value = message.getStringProperty("out_result");
-            if (!value.equals("success")) {
+            if (value == null || !value.equals("success")) {
                 success = false;
-                LOG.error("Expected a result of 'success', but got '" + value
-                        + "'");
+                LOG.error("Expected a result of 'success', but got '" + value + "'");
             } else {
                 LOG.debug("Got 'success' result");
             }
 
             value = message.getStringProperty("out_statusCode");
-            if (!value.equals("0")) {
+            if (value == null || !value.equals("0")) {
                 success = false;
                 LOG.error("Expected a statusCode of '0', but got '" + value + "'");
             } else {
@@ -251,20 +250,18 @@ public class TestExternalProvisioningMDB implements MessageListener {
             }
 
             value = message.getStringProperty("out_transactionId");
-            if (value.length() != 36) {
+            if (value == null || value.length() != 36) {
                 success = false;
-                LOG.error("Expected a transactionId length of 36. Got: '" + value
-                        + "'");
+                LOG.error("Expected a transactionId length of 36. Got: '" + value + "'");
             } else {
                 LOG.debug("Got transactionId with a length of 36");
             }
-            
+
             value = message.getStringProperty("out_statusMessage");
-            
-            if (!value.equals("Operation Performed Successfully")) {
+            if (value == null || !value.equals("Operation Performed Successfully")) {
                 success = false;
                 LOG.error("Expected a statusMessage of 'Operation Performed Successfully'. But Got: '" + value
-                        + "'");
+                          + "'");
             } else {
                 LOG.debug("Got statusMessage of 'Operation Performed Successfully' ");
             }

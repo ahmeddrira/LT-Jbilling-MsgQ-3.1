@@ -105,6 +105,7 @@ public class MMSCProvisioningTask extends PluggableTask implements
     public static final String ADD_CUSTOMER = "addCustomer";
     public static final String MODIFY_CUSTOMER = "modifyCustomer";
     public static final String DELETE_CUSTOMER = "deleteCustomer";
+
     // MMSC Service-level error codes
     public static final String STATUS_CODE = "statusCode";
     public static final String STATUS_MESSAGE = "statusMessage";
@@ -218,9 +219,9 @@ public class MMSCProvisioningTask extends PluggableTask implements
         request.setChannelId((String) params.get(CHANNEL_ID.getName()));
         request.setReferenceId((String) params.get(REFERENCE_ID.getName()));
         request.setTag((String) params.get(TAG.getName()));
-        request.setUserId((String) params.get(USER_ID));
+        request.setUserId((String) params.get(USER_ID.getName()));
 
-        String msisdn = (String) params.get(MSISDN);
+        String msisdn = (String) params.get(MSISDN.getName());
         if (msisdn == null) {
             throw new TaskException("parameter '" + MSISDN + "' is Mandatory ");
         }
@@ -275,7 +276,7 @@ public class MMSCProvisioningTask extends PluggableTask implements
         Map<String, String> params = new LinkedHashMap<String, String>();
 
         // collect plugin parameters
-        String username = (String) parameters.get(PARAM_LOGIN_USER);
+        String username = (String) parameters.get(PARAM_LOGIN_USER.getName());
         if (username == null) {
             throw new TaskException("No '" + PARAM_LOGIN_USER + "' plug-in "
                     + "parameter found.");

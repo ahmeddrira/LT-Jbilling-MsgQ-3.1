@@ -20,23 +20,18 @@
 
 package com.sapienter.jbilling.server.provisioning;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
-import junit.framework.TestCase;
-
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.RemoteContext;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
-import com.sapienter.jbilling.server.util.api.JbillingAPIException;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
+import junit.framework.TestCase;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class ProvisioningTest extends TestCase {
     private static final int           ORDER_LINES_COUNT  = 6;
@@ -76,8 +71,6 @@ public class ProvisioningTest extends TestCase {
             provisioningStatus[5] = null;
 
             OrderWS newOrder = createMockOrder(USER_ID, ORDER_LINES_COUNT, new BigDecimal("77"));
-
-            newOrder.setActiveSince(null);
 
             // create order through api
             Integer ret = api.createOrder(newOrder);
@@ -224,6 +217,9 @@ public class ProvisioningTest extends TestCase {
             cal.set(2008, 9, 29, 0, 0, 0);
             newOrder.setActiveUntil(cal.getTime());
 
+            cal.add(Calendar.MONTH, -1);
+            newOrder.setActiveSince(cal.getTime());
+
             // create order through api
             Integer ret = api.createOrder(newOrder);
 
@@ -285,6 +281,7 @@ public class ProvisioningTest extends TestCase {
         order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
         order.setPeriod(1);    // once
         order.setCurrencyId(1);
+        order.setActiveSince(new Date());
 
         ArrayList<OrderLineWS> lines = new ArrayList<OrderLineWS>(orderLinesCount);
 
@@ -323,6 +320,7 @@ public class ProvisioningTest extends TestCase {
             order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
             order.setPeriod(1);
             order.setCurrencyId(1);
+            order.setActiveSince(new Date());
 
             OrderLineWS line = new OrderLineWS();
             line.setItemId(251);
@@ -363,6 +361,7 @@ public class ProvisioningTest extends TestCase {
             order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
             order.setPeriod(1);
             order.setCurrencyId(1);
+            order.setActiveSince(new Date());
 
             OrderLineWS line = new OrderLineWS();
             line.setItemId(251);
@@ -402,6 +401,7 @@ public class ProvisioningTest extends TestCase {
             order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
             order.setPeriod(1);
             order.setCurrencyId(1);
+            order.setActiveSince(new Date());
 
             OrderLineWS line = new OrderLineWS();
             line.setItemId(251);

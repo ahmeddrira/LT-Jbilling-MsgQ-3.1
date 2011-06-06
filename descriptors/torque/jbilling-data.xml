@@ -1946,6 +1946,7 @@
     <JbillingSeqs Name="currency_entity_map" NextId="10"/>
     <JbillingSeqs Name="user_credit_card_map" NextId="5"/>
     <JbillingSeqs Name="permission_role_map" NextId="279"/>
+    <JbillingSeqs Name="permission_user" NextId="1"/>
     <JbillingSeqs Name="contact_map" NextId="6780"/>
     <JbillingSeqs Name="permission_type" NextId="9"/>
     <JbillingSeqs Name="period_unit" NextId="5"/>

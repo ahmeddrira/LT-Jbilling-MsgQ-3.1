@@ -56,6 +56,7 @@ import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 import com.sapienter.jbilling.server.util.csv.Exportable;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import org.hibernate.annotations.Cascade;
 
 @Entity
 @TableGenerator(
@@ -347,6 +348,7 @@ public class UserDTO implements Serializable, Exportable {
         this.roles = roles;
     }
 
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "baseUser")
     public Set<PermissionUserDTO> getPermissions() {
         return this.permissions;

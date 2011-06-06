@@ -33,7 +33,7 @@
 
 <content tag="column2">
     <g:if test="${selected}">
-        <!-- show selected user -->
+        <!-- show selected role -->
         <g:render template="show" model="[ selected: selected ]"/>
     </g:if>
 </content>

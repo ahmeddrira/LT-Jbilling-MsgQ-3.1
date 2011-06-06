@@ -11115,6 +11115,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	28	title	1	Standard Item Manager
 24	28	description	1	It adds items to an order. If the item is already in the order, it only updates the quantity.
 24	29	title	1	Rules Item Manager
+24	58	description	1	Saves the credit card information in the payment gateway, rather than the jBilling DB.
+24	59	title	1	Rules Item Manager 2
 24	29	description	1	This is a rules-based plug-in. It will do what the basic item manager does (actually calling it), but then it will execute external rules as well. These external rules have full control on changing the order that is getting new items.
 24	30	title	1	Rules Line Total
 24	30	description	1	This is a rules-based plug-in. It calculates the total for an order line (typically this is the price multiplied by the quantity), allowing for the execution of external rules.
@@ -11173,8 +11175,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	57	title	1	Payment processor for Payments Gateway.
 24	57	description	1	Integration with the Payments Gateway payment processor.
 24	58	title	1	Credit cards are stored externally.
-24	58	description	1	Saves the credit card information in the payment gateway, rather than the jBilling DB.
-24	59	title	1	Rules Item Manager 2
 50	25	description	1	Use overdue penalties (interest).
 50	27	description	1	Use order anticipation.
 24	59	description	1	This is a rules-based plug-in compatible with the mediation module of jBilling 2.2.x. It will do what the basic item manager does (actually calling it), but then it will execute external rules as well. These external rules have full control on changing the order that is getting new items.
@@ -11565,6 +11565,7 @@ breadcrumb	15
 recent_item	2
 pluggable_task_parameter	8314
 event_log	470
+permission_user	1
 \.
 
 

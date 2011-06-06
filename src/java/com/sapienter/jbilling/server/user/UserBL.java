@@ -530,6 +530,42 @@ public class UserBL extends ResultList implements UserSQL {
          return ret;
      }
 
+    /**
+     * Sets the permissions for this user. Permissions that differ from the user's
+     * role will be saved as user specific permissions that override the defaults.
+     *
+     * @param grantedPermissions a set of all permissions granted to this user
+     */
+    public void setPermissions(Set<PermissionDTO> grantedPermissions) {
+        Set<PermissionDTO> rolePermissions = new HashSet<PermissionDTO>();
+        for (RoleDTO role : user.getRoles()) {
+            rolePermissions.addAll(role.getPermissions());
+        }
+
+        Set<PermissionUserDTO> userPermissions = new HashSet<PermissionUserDTO>();
+
+        // add granted permissions
+        for (PermissionDTO permission : grantedPermissions) {
+            if (!rolePermissions.contains(permission)) {
+                userPermissions.add(new PermissionUserDTO(user, permission, (short) 1));
+            }
+        }
+
+        // add revoked permissions
+        for (PermissionDTO permission : rolePermissions) {
+            if (!grantedPermissions.contains(permission)) {
+                userPermissions.add(new PermissionUserDTO(user, permission, (short) 0));
+            }
+        }
+
+        LOG.debug("Saving " + userPermissions.size() + " overridden permissions for user " + user.getId());
+
+        user.getPermissions().clear();
+        user.getPermissions().addAll(userPermissions);
+
+        this.user = das.save(user);
+    }
+
     public UserWS getUserWS() throws SessionInternalError {
         UserDTOEx dto = DTOFactory.getUserDTOEx(user);
         UserWS retValue = new UserWS(dto);

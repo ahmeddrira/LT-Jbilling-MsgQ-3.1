@@ -994,6 +994,9 @@ update pluggable_task set processing_order=3 where id=480;
 -- Redmine Issue: #576
 -- Description: User permissions and role screens
 
+-- editable user permissions
+insert into jbilling_seqs (name, next_id) values ('permission_user', (select round(max(id)/10) + 1 from permission_user));
+
 -- fix typos in permission type names
 update permission_type set description = 'Menu' where id = 1;
 update permission_type set description = 'User Create' where id = 2;

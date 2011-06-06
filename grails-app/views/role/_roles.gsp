@@ -31,7 +31,7 @@
     <table id="roles" cellspacing="0" cellpadding="0">
         <thead>
             <tr>
-                <th>Role Name</th>
+                <th><g:message code="role.th.name"/></th>
             </tr>
         </thead>
 

@@ -33,6 +33,10 @@ import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.client.user.UserHelper
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO
+import com.sapienter.jbilling.server.user.UserBL
+import com.sapienter.jbilling.server.user.permisson.db.RoleDTO
+import com.sapienter.jbilling.server.user.permisson.db.PermissionTypeDTO
+import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO
 
 @Secured(['isAuthenticated()'])
 class UserController {
@@ -168,5 +172,49 @@ class UserController {
         }
 
         chain action: 'list', params: [ id: user.userId ]
+    }
+
+    def permissions = {
+        def user
+
+        try {
+            user = params.id ? webServicesSession.getUserWS(params.int('id')) : new UserWS()
+
+        } catch (SessionInternalError e) {
+            log.error("Could not fetch WS object", e)
+
+            flash.error = 'user.not.found'
+            flash.args = [ params.id ]
+
+            redirect controller: 'user', action: 'list'
+            return
+        }
+
+        // combined user and role permissions
+        def permissions = new UserBL(user.userId).getPermissions()
+
+        // user's main role
+        def role = RoleDTO.get(user.mainRoleId)
+
+        // permission types
+        def permissionTypes = PermissionTypeDTO.list(order: 'asc')
+
+        [ user: user, permissions: permissions, role: role, permissionTypes: permissionTypes ]
+    }
+
+    def savePermissions = {
+        Set<PermissionDTO> userPermissions = new HashSet<PermissionDTO>()
+        List<PermissionDTO> allPermissions = PermissionDTO.list()
+        params.permission.each { id, granted ->
+            if (granted) {
+                userPermissions.add(allPermissions.find{ it.id == id as Integer })
+            }
+        }
+
+        // save
+        UserBL userService = new UserBL(params.int('id'))
+        userService.setPermissions(userPermissions)
+
+        chain action: 'list', params: [ id: params.id ]
     }
 }

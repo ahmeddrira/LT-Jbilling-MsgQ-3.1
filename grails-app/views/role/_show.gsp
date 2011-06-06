@@ -43,15 +43,15 @@
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>
             <tr>
-                <td>Id</td>
+                <td><g:message code="role.label.id"/></td>
                 <td class="value">${selected.id}</td>
             </tr>
             <tr>
-                <td>Authority Name</td>
+                <td><g:message code="role.label.authority"/></td>
                 <td class="value">${selected.getAuthority()}</td>
             </tr>
             <tr>
-                <td>Description</td>
+                <td><g:message code="role.label.description"/></td>
                 <td class="value">${selected.getDescription(session['language_id'])}</td>
             </tr>
             </tbody>

@@ -105,6 +105,7 @@ public class RoleBL {
             role.getPermissions().addAll(grantedPermissions);
 
             this.role = roleDas.save(role);
+            roleDas.flush();
 
         } else {
             LOG.error("Cannot update, RoleDTO not found or not set!");
@@ -117,6 +118,8 @@ public class RoleBL {
     public void delete() {
         if (role != null) {
             roleDas.delete(role);
+            roleDas.flush();
+
         } else {
             LOG.error("Cannot delete, RoleDTO not found or not set!");
         }

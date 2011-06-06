@@ -51,7 +51,6 @@ import java.io.Serializable;
         pkColumnValue="user_permission",
         allocationSize = 10
         )
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE) // doesn't change often
 public class PermissionUserDTO implements Serializable {
 
     private int id;

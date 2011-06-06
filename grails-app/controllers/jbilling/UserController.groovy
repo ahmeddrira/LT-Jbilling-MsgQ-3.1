@@ -174,6 +174,20 @@ class UserController {
         chain action: 'list', params: [ id: user.userId ]
     }
 
+    def delete = {
+        if (params.id) {
+            webServicesSession.deleteUser(params.int('id'))
+            log.debug("Deleted user ${params.id}.")
+        }
+
+        flash.message = 'user.deleted'
+        flash.args = [ params.id ]
+
+        // render the partial user list
+        params.applyFilter = true
+        list()
+    }
+
     def permissions = {
         def user
 
@@ -214,6 +228,9 @@ class UserController {
         // save
         UserBL userService = new UserBL(params.int('id'))
         userService.setPermissions(userPermissions)
+
+        flash.message = 'permissions.updated'
+        flash.args = [ params.id ]
 
         chain action: 'list', params: [ id: params.id ]
     }

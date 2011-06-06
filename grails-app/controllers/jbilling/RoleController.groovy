@@ -96,13 +96,19 @@ class RoleController {
         // save or update
         if (!role.id || role.id == 0) {
             log.debug("saving new role ${role}")
-            roleService.create(role)
+            role.id = roleService.create(role)
+
+            flash.message = 'role.created'
+            flash.args = [ role.id ]
 
         } else {
             log.debug("updating role ${role.id}")
 
             roleService.set(role.id)
             roleService.update(role)
+
+            flash.message = 'role.updated'
+            flash.args = [ role.id ]
         }
 
         // set/update international descriptions
@@ -110,5 +116,19 @@ class RoleController {
         roleService.setDescription(session['language_id'], params.role.description)
 
         chain action: 'list', params: [ id: role.id ]
+    }
+
+    def delete = {
+        if (params.id) {
+            new RoleBL(params.int('id')).delete()
+            log.debug("Deleted role ${params.id}.")
+        }
+
+        flash.message = 'role.deleted'
+        flash.args = [ params.id ]
+
+        // render the partial role list
+        params.applyFilter = true
+        list()
     }
 }

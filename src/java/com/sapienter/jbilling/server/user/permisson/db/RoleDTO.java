@@ -58,7 +58,6 @@ import org.springframework.security.core.GrantedAuthority;
         pkColumnValue="role",
         allocationSize = 10
         )
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE) // doesn't change often
 public class RoleDTO extends AbstractDescription implements Serializable, InitializingGrantedAuthority {
 
     public static final String ROLE_AUTHORITY_PREFIX = "ROLE_";

@@ -307,7 +307,7 @@
                     </tr>
                     <tr>
                         <td><g:message code="payment.ach.routing.number"/></td>
-                        <td class="value">${ach.adbRouting}</td>
+                        <td class="value">${ach.abaRouting}</td>
                     </tr>
                     <tr>
                         <td><g:message code="payment.ach.account.number"/></td>

@@ -65,18 +65,33 @@
             <g:applyLayout name="form/date">
                 <content tag="label"><g:message code="order.label.active.since"/></content>
                 <content tag="label.for">activeSince</content>
+                <content tag="onClose">
+                    function() {
+                        $('#order-details-form').submit();
+                    }
+                </content>
                 <g:textField class="field" name="activeSince" value="${formatDate(date: order?.activeSince, formatName: 'datepicker.format')}"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/date">
                 <content tag="label"><g:message code="order.label.active.until"/></content>
                 <content tag="label.for">activeUntil</content>
+                <content tag="onClose">
+                    function() {
+                        $('#order-details-form').submit();
+                    }
+                </content>
                 <g:textField class="field" name="activeUntil" value="${formatDate(date: order?.activeUntil, formatName: 'datepicker.format')}"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/date">
                 <content tag="label"><g:message code="order.label.cycle.start"/></content>
                 <content tag="label.for">cycleStarts</content>
+                <content tag="onClose">
+                    function() {
+                        $('#order-details-form').submit();
+                    }
+                </content>
                 <g:textField class="field" name="cycleStarts" value="${formatDate(date: order?.cycleStarts, formatName: 'datepicker.format')}"/>
             </g:applyLayout>
 

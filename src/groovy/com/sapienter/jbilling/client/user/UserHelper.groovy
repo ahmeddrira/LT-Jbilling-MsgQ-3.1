@@ -72,6 +72,10 @@ class UserHelper {
                 user.setCreditCard(creditCard)
 
             log.debug("Credit card ${creditCard}")
+
+            // set automatic payment type
+            if (params.creditCardAutoPayment)
+                user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_CC)
         }
 
         // bind ach object if parameters present
@@ -81,11 +85,11 @@ class UserHelper {
             user.setAch(ach)
 
             log.debug("Ach ${ach}")
-        }
 
-        // set automatic payment type
-        if (params.creditCardAutoPayment && user.creditCard) user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_CC)
-        if (params.achAutoPayment && user.ach) user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
+            // set automatic payment type
+            if (params.achAutoPayment)
+                user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
+        }
 
         return user
     }

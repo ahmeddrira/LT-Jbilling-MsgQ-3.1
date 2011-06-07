@@ -123,6 +123,9 @@
 
     <div class="btn-box">
         <div class="row">
+            <g:link action="permissions" id="${selected.id}" class="submit edit"><span><g:message code="button.edit.permissions"/></span></g:link>
+        </div>
+        <div class="row">
             <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
             <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
         </div>

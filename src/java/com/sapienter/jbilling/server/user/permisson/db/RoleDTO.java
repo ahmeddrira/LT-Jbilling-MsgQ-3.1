@@ -28,11 +28,14 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 
 import com.sapienter.jbilling.client.authentication.InitializingGrantedAuthority;
@@ -47,7 +50,14 @@ import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "role")
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@TableGenerator(
+        name="role_GEN",
+        table="jbilling_seqs",
+        pkColumnName = "name",
+        valueColumnName = "next_id",
+        pkColumnValue="role",
+        allocationSize = 10
+        )
 public class RoleDTO extends AbstractDescription implements Serializable, InitializingGrantedAuthority {
 
     public static final String ROLE_AUTHORITY_PREFIX = "ROLE_";
@@ -73,6 +83,7 @@ public class RoleDTO extends AbstractDescription implements Serializable, Initia
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "role_GEN")
     @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return this.id;

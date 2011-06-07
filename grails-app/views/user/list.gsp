@@ -1,14 +1,4 @@
-<html>
-<head>
-    <meta name="layout" content="configuration" />
-</head>
-<body>
-
-<!-- selected configuration menu item -->
-<content tag="menu.item">users</content>
-
-<content tag="column1">
-    %{--
+%{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
@@ -28,7 +18,17 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<g:render template="users" />
+<html>
+<head>
+    <meta name="layout" content="configuration" />
+</head>
+<body>
+
+<!-- selected configuration menu item -->
+<content tag="menu.item">users</content>
+
+<content tag="column1">
+    <g:render template="users" />
 </content>
 
 <content tag="column2">

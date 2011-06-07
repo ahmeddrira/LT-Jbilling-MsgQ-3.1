@@ -23,10 +23,13 @@ package com.sapienter.jbilling.server.user.permisson.db;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 
 import com.sapienter.jbilling.client.authentication.InitializingGrantedAuthority;
@@ -40,7 +43,14 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "permission_user")
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@TableGenerator(
+        name="user_permission_GEN",
+        table="jbilling_seqs",
+        pkColumnName = "name",
+        valueColumnName = "next_id",
+        pkColumnValue="user_permission",
+        allocationSize = 10
+        )
 public class PermissionUserDTO implements Serializable {
 
     private int id;
@@ -53,19 +63,14 @@ public class PermissionUserDTO implements Serializable {
     public PermissionUserDTO() {
     }
 
-    public PermissionUserDTO(int id, short isGrant) {
-        this.id = id;
-        this.isGrant = isGrant;
-    }
-
-    public PermissionUserDTO(int id, UserDTO baseUser, PermissionDTO permission, short isGrant) {
-        this.id = id;
+    public PermissionUserDTO(UserDTO baseUser, PermissionDTO permission, short isGrant) {
         this.baseUser = baseUser;
         this.permission = permission;
         this.isGrant = isGrant;
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "user_permission_GEN")
     @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return this.id;

@@ -20,7 +20,7 @@
 
 import grails.plugins.springsecurity.Secured
 import jbilling.Breadcrumb
-import com.sapienter.jbilling.common.SessionInternalError
+
 /**
  * Shows the user's home page after login.
  *
@@ -43,11 +43,7 @@ class HomeController {
             redirect(controller: breadcrumb.controller, action: breadcrumb.action, id: breadcrumb.objectId)
         } else {
             // show default page
-            redirect(controller: "customer")
+            redirect(controller: 'customer')
         }
-    }
-
-    def exception = {
-        throw new SessionInternalError("Some exception...")
     }
 }

@@ -18,25 +18,25 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%--
-  Layout for labeled and styled checkbox input elements.
+<html>
+<head>
+    <meta name="layout" content="configuration" />
+</head>
+<body>
 
-  Usage:
+<!-- selected configuration menu item -->
+<content tag="menu.item">roles</content>
 
-    <g:applyLayout name="form/checkbox">
-        <content tag="label">Checkbox Label</content>
-        <content tag="label.for">element_name</content>
-        
-        <g:checkBox name="element_name" class="cb check" ... />
-    </g:applyLayout>
+<content tag="column1">
+    <g:render template="roles" />
+</content>
 
+<content tag="column2">
+    <g:if test="${selected}">
+        <!-- show selected role -->
+        <g:render template="show" model="[ selected: selected ]"/>
+    </g:if>
+</content>
 
-  @author Brian Cowdery
-  @since  25-11-2010
---%>
-
-<div class="row">
-    <label>${pageProperty(name: 'page.group.label') ?: '&nbsp;'}</label>
-    <g:layoutBody/>
-    <label for="<g:pageProperty name="page.label.for"/>" class="lb"><g:pageProperty name="page.label"/></label>
-</div>
+</body>
+</html>

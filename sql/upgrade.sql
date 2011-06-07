@@ -988,3 +988,32 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 -- Description: Fixed reference data for error in processing order of Mediation Reader plugins
 update pluggable_task set processing_order=2 where id=6020;
 update pluggable_task set processing_order=3 where id=480;
+
+
+-- Date: 03-Jun-2011
+-- Redmine Issue: #576
+-- Description: User permissions and role screens
+
+-- editable user permissions
+insert into jbilling_seqs (name, next_id) values ('permission_user', (select round(max(id)/10) + 1 from permission_user));
+
+-- fix typos in permission type names
+update permission_type set description = 'Menu' where id = 1;
+update permission_type set description = 'User Create' where id = 2;
+update permission_type set description = 'User Edit' where id = 3;
+update permission_type set description = 'Items' where id = 4;
+update permission_type set description = 'Reports' where id = 5;
+update permission_type set description = 'Orders' where id = 6;
+update permission_type set description = 'Invoices' where id = 7;
+update permission_type set description = 'Web Services' where id = 8;
+update permission_type set description = 'Server Access' where id = 9;
+
+-- delete obsolete permissions
+
+-- new permission descriptions
+delete from international_description where table_id = 59 and language_id = 1;
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 34, 'description', 1, 'Edit product');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 113, 'description', 1, 'Delete invoice');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 120, 'description', 1, 'Web Service API access');
+

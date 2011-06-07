@@ -251,11 +251,13 @@
     </g:if>
 
     <div class="btn-box">
-        <g:if test="${selected.id}">
-            <a onclick="showConfirm('delete-'+${selected.id});" class="submit delete">
-                <span><g:message code="button.delete.invoice"/></span>
-            </a>
-        </g:if>
+        <sec:access url="/invoice/delete">
+            <g:if test="${selected.id}">
+                <a onclick="showConfirm('delete-'+${selected.id});" class="submit delete">
+                    <span><g:message code="button.delete.invoice"/></span>
+                </a>
+            </g:if>
+        </sec:access>
 
         <g:link class="submit show" controller="mediation" action="invoice" id="${selected.id}">
             <span><g:message code="button.view.events" /></span>

@@ -44,11 +44,11 @@ import java.io.Serializable;
 @Entity
 @Table(name = "permission_user")
 @TableGenerator(
-        name="user_permission_GEN",
+        name="permission_user_GEN",
         table="jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
-        pkColumnValue="user_permission",
+        pkColumnValue="permission_user",
         allocationSize = 10
         )
 public class PermissionUserDTO implements Serializable {
@@ -70,7 +70,7 @@ public class PermissionUserDTO implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "user_permission_GEN")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "permission_user_GEN")
     @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return this.id;

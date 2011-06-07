@@ -1,4 +1,4 @@
-<select name="%{--
+%{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-${name}" id="${name}" class="${cssClass}">
+<select name="${name}" id="${name}" class="${cssClass}">
 	<g:each var="sarr" in="${list}" status="idx">
 		<g:if test="${value == sarr[0]}">
 			<option selected value="${sarr[0]}">${sarr[1]}</option>
@@ -28,5 +28,3 @@ ${name}" id="${name}" class="${cssClass}">
 		</g:else>
 	</g:each>
 </select>
-<!--  Created select tag with name ${name } and selected value ${value }  -->
-<!-- <option selected value="id">description</option> -->

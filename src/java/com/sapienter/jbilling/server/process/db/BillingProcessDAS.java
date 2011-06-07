@@ -137,19 +137,23 @@ public class BillingProcessDAS extends AbstractDAS<BillingProcessDTO> {
         query.setParameter("processId", processId);
         return query.iterate();
     }
-    
-    public ScrollableResults findBillableUsersToProcess(int entityId, Date processDate) {
-        String findOrdersDue =
-            "SELECT a.id " +
-            " FROM UserDTO a, OrderDTO o" +
-            " WHERE a.id = o.baseUserByUserId.id" +
-            " AND date(o.nextBillableDay) <= :dueDate" +
-            " AND o.deleted = 0" +
-            " AND a.company.id = :entity ";
 
-        Query query = getSession().createQuery(findOrdersDue);
+    private static final String BILLABLE_USERS_TO_PROCESS =
+            "SELECT a.id "
+            + " FROM UserDTO a, OrderDTO o"
+            + " WHERE a.id = o.baseUserByUserId.id"
+            + " AND ( "
+            + "     o.nextBillableDay is null "
+            + "     or cast(o.nextBillableDay as date) <= :dueDate "
+            + " ) "
+            + " AND o.deleted = 0 "
+            + " AND a.company.id = :entity ";
+
+    public ScrollableResults findBillableUsersToProcess(int entityId, Date processDate) {
+        Query query = getSession().createQuery(BILLABLE_USERS_TO_PROCESS);
         query.setParameter("dueDate", processDate);
         query.setParameter("entity", entityId);
+
         return query.scroll();
     }
 
@@ -163,7 +167,7 @@ public class BillingProcessDAS extends AbstractDAS<BillingProcessDTO> {
             + "     and purchaseOrder.orderStatus.id = :active_status_id "
             + "     and ( "
             + "         purchaseOrder.nextBillableDay is null"
-            + "         or date(purchaseOrder.nextBillableDay) <= :process_date "
+            + "         or cast(purchaseOrder.nextBillableDay as date) <= :process_date "
             + "     )";
 
     /**

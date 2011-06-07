@@ -648,4 +648,10 @@ public class SpringAPI implements JbillingAPI {
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
         return session.getCustomerPrice(userId, itemId);
     }
+    
+    public boolean validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, 
+           ContactWS contact, int level) {
+        return session.validateCreditCard(creditCard, contact, level);
+    }
+    
 }

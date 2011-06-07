@@ -303,4 +303,7 @@ public interface JbillingAPI {
 
     public PlanItemWS[] getCustomerPrices(Integer userId);
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId);
+    
+    public boolean validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, 
+           ContactWS contact, int level);
 }

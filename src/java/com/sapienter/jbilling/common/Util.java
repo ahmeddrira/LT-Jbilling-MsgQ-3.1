@@ -248,5 +248,65 @@ public class Util {
 
         return true; // default if not found
     }
+    
+    /**
+     * Credit Card Validate
+     * Reference: http://www.ling.nwu.edu/~sburke/pub/luhn_lib.pl
+     */
+    public static boolean luhnCheck(String cardNumber) throws SessionInternalError {
+        //just in case the card number is formated and may contain spaces
+        cardNumber=getDigitsOnly(cardNumber);
+        //mod 10 validation
+        if (isLuhnNum(cardNumber)) {
+            int no_digit = cardNumber.length();
+            int oddoeven = no_digit & 1;
+            
+            int sum = 0;
+            int digit = 0;
+            int addend = 0;
+            boolean timesTwo = false;
+            for (int i = cardNumber.length() - 1; i >= 0; i--) {
+                digit = Integer.parseInt(cardNumber.substring(i, i + 1));
+                if (timesTwo) {
+                    addend = digit * 2;
+                    if (addend > 9) {
+                        addend -= 9;
+                    }
+                } else {
+                    addend = digit;
+                }
+                sum += addend;
+                timesTwo = !timesTwo;
+            }
+            if (sum == 0) return false;
+            if (sum % 10 == 0) return true;
+        };
+        return false;
+    }
+    
+    private static String getDigitsOnly(String s) {
+        StringBuffer digitsOnly = new StringBuffer();
+        char c;
+        for (int i = 0; i < s.length(); i++) {
+            c = s.charAt(i);
+            if (Character.isDigit(c)) {
+                digitsOnly.append(c);
+            }
+        }
+        return digitsOnly.toString();
+    }
+    
+    private static boolean isLuhnNum(String argvalue) {
+        if (argvalue.length() == 0) {
+            return false;
+        }
+        for (int n = 0; n < argvalue.length(); n++) {
+            char c = argvalue.charAt(n);
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }

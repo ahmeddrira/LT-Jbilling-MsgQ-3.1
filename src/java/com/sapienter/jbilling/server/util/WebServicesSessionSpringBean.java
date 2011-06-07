@@ -2875,4 +2875,66 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         CustomerPriceBL bl = new CustomerPriceBL(userId);
         return PlanItemBL.getWS(bl.getPrice(itemId));
     }
+    
+    /*
+     * Validate credit card information 
+     * using pre-Auth call to the Payment plugin for level 3
+     * (non-Javadoc)
+     * 
+     * Level 1 - Simple checks on Credit Card Number, name, and mod10
+     * Level 2 - Address and Security Code validation
+     * Level 3 - Check number against a payment gateway using pre-auth transaction 
+     * 
+     * @see com.sapienter.jbilling.server.util.IWebServicesSessionBean#validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level)
+     */
+    public boolean validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level) 
+        throws SessionInternalError {
+        boolean retVal= true;
+        try {
+            
+            //simple level 1 validations
+            if (creditCard.getNumber().trim().length()==0) {
+                throw new Exception("Credit Card number is missing.");
+            }
+            
+            if (creditCard.getName().trim().length()==0) {
+                throw new Exception("Credit Card name is missing.");
+            }
+            
+            
+            //Luhn check - mod10 validation
+            if (!com.sapienter.jbilling.common.Util.luhnCheck(creditCard.getNumber())) {
+                throw new Exception("Credit Card Mod10 validation failed.");
+            }
+
+            //level 2 and level 3 validations
+            if (level > 1) {
+                //address validation
+                if (contact.getAddress1().trim().length()==0) {
+                    throw new Exception("Credit Card address is missing.");
+                }
+                //security code validation
+                if (creditCard.getSecurityCode().length()==0 || Integer.parseInt(creditCard.getSecurityCode()) <= 0 ) {
+                    throw new Exception("Credit Card Security Code validation failed.");
+                }
+                //payment gateway pre-authorize validation
+                if (level > 2) {
+                    CreditCardDTO cc= new CreditCardDTO();
+                    cc.setName(creditCard.getName());
+                    cc.setNumber(creditCard.getNumber());
+                    cc.setSecurityCode(creditCard.getSecurityCode());
+                    cc.setExpiry(new Date());
+                    Object auth= new CreditCardBL().validatePreAuthorization(getCallerCompanyId(), getCallerId(), 
+                            cc, new BigDecimal("0.01"), new Integer(1));
+                    if (null == auth) {
+                        retVal=false;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            retVal=false;
+            LOG.debug("validateCreditCard Failed: " + e.getMessage());
+        }
+        return retVal;
+    }
 }

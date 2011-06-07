@@ -697,4 +697,9 @@ class ApiService implements IWebServicesSessionBean {
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
         return webServicesSession.getCustomerPrice(userId, itemId);
     }
+    
+    public boolean validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO
+                           creditCard, ContactWS contact, int level) {
+           return webServicesSession.validateCreditCard(creditCard, contact, level);
+    }
 }

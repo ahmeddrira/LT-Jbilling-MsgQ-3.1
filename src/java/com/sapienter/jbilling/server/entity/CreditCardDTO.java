@@ -23,8 +23,8 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlType;
 
+import com.sapienter.jbilling.server.user.validator.CreditCardNumber;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.hibernate.validator.constraints.CreditCardNumber;
 
 import java.io.Serializable;
 
@@ -39,7 +39,6 @@ public class CreditCardDTO implements Serializable {
 
     @CreditCardNumber(message = "validation.error.invalid.card.number")
     @NotEmpty(message="validation.error.notnull")
-    @Digits(integer=16, fraction=0, message="validation.error.not.a.number")
     private java.lang.String number;
     private boolean numberHasBeenSet = false;
     @NotNull(message="validation.error.notnull")

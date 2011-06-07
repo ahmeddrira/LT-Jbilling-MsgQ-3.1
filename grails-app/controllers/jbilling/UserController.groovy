@@ -190,7 +190,6 @@ class UserController {
 
     def permissions = {
         def user
-
         try {
             user = params.id ? webServicesSession.getUserWS(params.int('id')) : new UserWS()
 
@@ -204,6 +203,9 @@ class UserController {
             return
         }
 
+        def contact = user ? ContactDTO.findByUserId(user.userId) : null
+        breadcrumbService.addBreadcrumb(controllerName, 'permissions', null, user.userId, UserHelper.getDisplayName(user, contact))
+
         // combined user and role permissions
         def permissions = new UserBL(user.userId).getPermissions()
 
@@ -213,7 +215,7 @@ class UserController {
         // permission types
         def permissionTypes = PermissionTypeDTO.list(order: 'asc')
 
-        [ user: user, permissions: permissions, role: role, permissionTypes: permissionTypes ]
+        [ user: user, contact: contact, permissions: permissions, role: role, permissionTypes: permissionTypes ]
     }
 
     def savePermissions = {

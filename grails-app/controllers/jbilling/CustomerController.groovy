@@ -70,13 +70,9 @@ class CustomerController {
 
         return UserDTO.createCriteria().list(
                 max:    params.max,
-                offset: params.offset,
+                offset: params.offset
         ) {
             and {
-                // apply sorting
-                SortableCriteria.sort(params, owner)
-
-                // filter restrictions
                 filters.each { filter ->
                     if (filter.value) {
                         // handle user status separately from the other constraints
@@ -95,6 +91,9 @@ class CustomerController {
                 eq('company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
             }
+
+            // apply sorting
+            SortableCriteria.sort(params, delegate)
         }
     }
 

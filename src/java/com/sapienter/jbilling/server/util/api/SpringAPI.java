@@ -20,6 +20,10 @@
 
 package com.sapienter.jbilling.server.util.api;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -33,29 +37,30 @@ import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.RecordCountWS;
+import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.order.OrderPeriodWS;
 import com.sapienter.jbilling.server.order.OrderProcessWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
+import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
+import com.sapienter.jbilling.server.user.CompanyWS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.util.CurrencyWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.util.PreferenceWS;
 import com.sapienter.jbilling.server.util.RemoteContext;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 public class SpringAPI implements JbillingAPI {
 
@@ -652,6 +657,75 @@ public class SpringAPI implements JbillingAPI {
     public boolean validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, 
            ContactWS contact, int level) {
         return session.validateCreditCard(creditCard, contact, level);
+    }
+
+    public AgeingWS[] getAgeingConfiguration(Integer languageId) {
+        return session.getAgeingConfiguration(languageId);
+    }
+
+    public BigDecimal getTotalRevenueByUser(Integer userId) {
+        return session.getTotalRevenueByUser(userId);
+    }
+
+    public CompanyWS getCompany() {
+        return session.getCompany();
+    }
+
+    public Integer getCallerCompanyId() {
+        return session.getCallerCompanyId();
+    }
+
+    public Integer getCallerId() {
+        return session.getCallerId();
+    }
+
+    public Integer getCallerLanguageId() {
+        return session.getCallerLanguageId();
+    }
+
+    public InvoiceWS[] getAllInvoicesForUser(Integer userId) {
+        return session.getAllInvoicesForUser(userId);
+    }
+
+    public OrderWS[] getUserSubscriptions(Integer userId) {
+        return session.getUserSubscriptions(userId);
+    }
+
+    public boolean deleteOrderPeriod(Integer periodId) {
+        return session.deleteOrderPeriod(periodId);
+    }
+
+    public boolean isBillingRunning() {
+        return session.isBillingRunning();
+    }
+
+    public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods) {
+        return session.updateOrderPeriods(orderPeriods);
+    }
+
+    public void createUpdateNofications(Integer messageId, MessageDTO dto) {
+        session.createUpdateNofications(messageId, dto);
+    }
+
+    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod,
+            Integer languageId) {
+        session.saveAgeingConfiguration(steps, gracePeriod, languageId);
+    }
+
+    public void saveCustomContactFields(ContactFieldTypeWS[] fields) {
+        session.saveCustomContactFields(fields);
+    }
+
+    public void saveCustomerNotes(Integer userId, String notes) {
+        session.saveCustomerNotes(userId, notes);
+    }
+
+    public void triggerBillingAsync(Date runDate) {
+        session.triggerBillingAsync(runDate);
+    }
+
+    public void updateCompany(CompanyWS companyWS) {
+        session.updateCompany(companyWS);
     }
     
 }

@@ -32,11 +32,27 @@
     <table id="users" cellspacing="0" cellpadding="0">
         <thead>
             <tr>
-                <th><g:message code="customer.table.th.name"/></th>
-                <th class="small"><g:message code="customer.table.th.user.id"/></th>
-                <th class="tiny"><g:message code="customer.table.th.status"/></th>
-                <th class="small"><g:message code="customer.table.th.balance"/></th>
-                <th class="small"><g:message code="customer.table.th.hierarchy"/></th>
+                <th>
+                    <g:remoteSort action="list" sort="contact.firstName, contact.lastName, contact.organizationName, userName" update="column1">
+                        <g:message code="customer.table.th.name"/>
+                    </g:remoteSort>
+                </th>
+                <th class="small">
+                    <g:remoteSort action="list" sort="id" update="column1">
+                        <g:message code="customer.table.th.user.id"/>
+                    </g:remoteSort>
+                </th>
+                <th class="tiny2">
+                    <g:remoteSort action="list" sort="userStatus.id" update="column1">
+                        <g:message code="customer.table.th.status"/>
+                    </g:remoteSort>
+                </th>
+                <th class="small">
+                    <g:message code="customer.table.th.balance"/>
+                </th>
+                <th class="tiny3">
+                    <g:message code="customer.table.th.hierarchy"/>
+                </th>
             </tr>
         </thead>
 
@@ -59,12 +75,12 @@
                         <em>${contact?.organizationName}</em>
                     </g:remoteLink>
                 </td>
-                <td class="small">
+                <td>
                     <g:remoteLink class="cell" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                         <span>${user.id}</span>
                     </g:remoteLink>
                 </td>
-                <td class="tiny center">
+                <td class="center">
                     <g:remoteLink class="cell" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                         <span>
                             <g:if test="${user.userStatus.id > 1 && user.userStatus.id < 5}">
@@ -76,12 +92,12 @@
                         </span>
                     </g:remoteLink>
                 </td>
-                <td class="small">
+                <td>
                     <g:remoteLink class="cell" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                         <span><g:formatNumber number="${new UserBL().getBalance(user.id)}" type="currency"  currencySymbol="${user.currency.symbol}"/></span>
                     </g:remoteLink>
                 </td>
-                <td class="small center">
+                <td class="center">
                     <g:if test="${customer}">
                         <g:if test="${customer.isParent == 1 && customer.parent}">
                             <%-- is a parent, but also a child of another account --%>
@@ -126,7 +142,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="customer" action="list" params="[partial: true]" total="${users?.totalCount ?: 0}" update="${updateColumn}"/>
+        <util:remotePaginate controller="customer" action="list" params="[partial: true, sort: params.sort, order: params.order]" total="${users?.totalCount ?: 0}" update="${updateColumn}"/>
     </div>
 </div>
 

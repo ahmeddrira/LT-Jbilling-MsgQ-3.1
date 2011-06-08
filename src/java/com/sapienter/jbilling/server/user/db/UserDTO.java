@@ -94,6 +94,7 @@ public class UserDTO implements Serializable, Exportable {
     private UserStatusDTO userStatus;
     private LanguageDTO language;
     private CustomerDTO customer;
+    private ContactDTO contact;
     private Partner partnersForUserId;
     private int versionNum;
 
@@ -469,6 +470,21 @@ public class UserDTO implements Serializable, Exportable {
 
     public void setCustomer(CustomerDTO customer) {
         this.customer = customer;
+    }
+
+    /**
+     * Convenience mapping for the users primary contact. This association is read-only and
+     * will not persist or update the users stored contact. use {@link ContactBL} instead.
+     *
+     * @return users primary contact
+     */
+    @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "baseUser")
+    public ContactDTO getContact() {
+        return contact;
+    }
+
+    public void setContact(ContactDTO contact) {
+        this.contact = contact;
     }
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "baseUser")

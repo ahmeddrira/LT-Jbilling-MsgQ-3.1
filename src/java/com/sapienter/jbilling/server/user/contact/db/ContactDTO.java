@@ -30,6 +30,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -38,6 +39,7 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -78,6 +80,7 @@ public class ContactDTO  implements java.io.Serializable {
      private int deleted;
      private Integer include;
      private Integer userId;
+     private UserDTO baseUser;
      private ContactMapDTO contactMap = null;
      private Set<ContactFieldDTO> fields = new HashSet<ContactFieldDTO>(0);
      private int versionNum;
@@ -377,8 +380,25 @@ public class ContactDTO  implements java.io.Serializable {
     public void setInclude(Integer notificationInclude) {
         this.include = notificationInclude;
     }
-    
-    @Column(name="user_id", unique=true)
+
+    /**
+     * Convenience back-reference to the user (if this is a primary contact). This association
+     * is read-only and will not persist or update the user. Use {@link #setUserId(Integer)}
+     * instead.
+     *
+     * @return base user
+     */
+    @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "user_id", unique = true, insertable = false, updatable = false)
+    public UserDTO getBaseUser() {
+        return baseUser;
+    }
+
+    public void setBaseUser(UserDTO baseUser) {
+        this.baseUser = baseUser;
+    }
+
+    @Column(name = "user_id", unique = true)
     public Integer getUserId() {
         return this.userId;
     }

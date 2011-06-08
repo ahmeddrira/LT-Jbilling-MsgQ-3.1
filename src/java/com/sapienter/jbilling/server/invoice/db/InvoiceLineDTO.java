@@ -65,6 +65,8 @@ public class InvoiceLineDTO implements Serializable {
     private Integer sourceUserId;
     private Integer isPercentage;
     private int versionNum;
+    
+    private int orderId;
 
     public InvoiceLineDTO() {
     }
@@ -269,5 +271,14 @@ public class InvoiceLineDTO implements Serializable {
     @Transient
     public int getTypeId() {
         return getInvoiceLineType().getId();
+    }
+    
+    @Transient
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
     }
 }

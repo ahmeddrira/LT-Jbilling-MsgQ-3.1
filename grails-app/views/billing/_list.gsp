@@ -26,11 +26,26 @@
     	<table id="processes" cellspacing="0" cellpadding="0">
 			<thead>
 				<tr>
-					<th class="small"><g:message code="label.billing.cycle.id" /></th>
-					<th class="medium"><g:message code="label.billing.cycle.date" /></th>
-					<th class="small"><g:message code="label.billing.invoice.count" /></th>
-					<th class="medium"><g:message code="label.billing.total.invoiced" /></th>
-					<th class="small"><g:message code="label.billing.currency.code" /></th>
+					<th class="small">
+                        <g:remoteSort action="list" sort="id" update="column1">
+                            <g:message code="label.billing.cycle.id" />
+                        </g:remoteSort>
+                    </th>
+					<th class="medium">
+                        <g:remoteSort action="list" sort="billingDate" update="column1">
+                            <g:message code="label.billing.cycle.date" />
+                        </g:remoteSort>
+                    </th>
+					<th class="small">
+
+                        <g:message code="label.billing.invoice.count" />
+                    </th>
+					<th class="medium">
+                        <g:message code="label.billing.total.invoiced" />
+                    </th>
+					<th class="small">
+                        <g:message code="label.billing.currency.code" />
+                    </th>
 				</tr>
 			</thead>
 	
@@ -77,7 +92,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="mediation" action="list" params="[partial: true]" total="${orders?.totalCount ?: 0}" update="column1"/>
+        <util:remotePaginate controller="mediation" action="list" params="[partial: true, sort: params.sort, order: params.order]" total="${orders?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 

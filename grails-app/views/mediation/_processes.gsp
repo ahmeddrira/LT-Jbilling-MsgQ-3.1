@@ -23,11 +23,29 @@
     	<table id="processes" cellspacing="0" cellpadding="0">
 			<thead>
 				<tr>
-					<th class="large"><g:message code="mediation.th.id" /></th>
-					<th class="small2"><g:message code="mediation.th.start.date" /></th>
-					<th class="small2"><g:message code="mediation.th.end.date" /></th>
-					<th class="small"><g:message code="mediation.th.total.records" /></th>
-                    <th class="small"><g:message code="mediation.th.orders.affected"/></th>
+					<th class="large">
+                        <g:remoteSort action="list" sort="id" update="column1">
+                            <g:message code="mediation.th.id" />
+                        </g:remoteSort>
+                    </th>
+					<th class="small2">
+                        <g:remoteSort action="list" sort="startDatetime" update="column1">
+                            <g:message code="mediation.th.start.date" />
+                        </g:remoteSort>
+                    </th>
+					<th class="small2">
+                        <g:remoteSort action="list" sort="endDatetime" update="column1">
+                            <g:message code="mediation.th.end.date" />
+                        </g:remoteSort>
+                    </th>
+					<th class="small">
+                        <g:message code="mediation.th.total.records" />
+                    </th>
+                    <th class="small">
+                        <g:remoteSort action="list" sort="ordersAffected" update="column1">
+                            <g:message code="mediation.th.orders.affected"/>
+                        </g:remoteSort>
+                    </th>
 				</tr>
 			</thead>
 	
@@ -78,7 +96,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="mediation" action="index" params="[partial: true]" total="${processes?.totalCount ?: 0}" update="column1"/>
+        <util:remotePaginate controller="mediation" action="index" params="[partial: true, sort: params.sort, order: params.order]" total="${processes?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 

@@ -32,7 +32,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 class SortableCriteria {
 
     static def sort(GrailsParameterMap params, builder) {
-        def sort = params.sort.tokenize(',').collect { it.trim() }
+        def sort = params.sort?.tokenize(',')?.collect { it.trim() }
         def order = params.order?.equals('null') ? 'desc' : params.order
 
         // add aliases for sorted associations

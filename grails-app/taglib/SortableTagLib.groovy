@@ -33,6 +33,7 @@ class SortableTagLib {
 
         def action = assertAttribute('action', attrs, 'remoteSort') as String
         def controller = params.controller ?: controllerName
+        def id = params.id
 
         def update = assertAttribute('update', attrs, 'remoteSort') as String
 
@@ -43,6 +44,7 @@ class SortableTagLib {
                               order: order,
                               action: action,
                               controller: controller,
+                              id: id,
                               update: update,
                               body: body()
                       ]

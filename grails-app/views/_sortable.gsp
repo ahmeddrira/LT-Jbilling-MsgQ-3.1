@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<g:remoteLink controller="${controller}" action="${action}"
+<g:remoteLink controller="${controller}" action="${action}" id="${id}"
               params="[partial: true, max: params.max, offset: params.offset, sort: sort, order: order]"
               update="${update}">
     ${body}

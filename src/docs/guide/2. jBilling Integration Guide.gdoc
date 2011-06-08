@@ -17,15 +17,18 @@ glue code that explains how many of these integration tasks can be accomplished.
 
 h2. Requirements
 
-*j*Billing provides its _integration_ services in three distinct flavors: 
+*j*Billing provides its 'integration' services in three distinct flavors: 
 
 # SOAP (Simple-Object Access Protocol)
 # Hessian/Burlap (lightweight web service protocols) 
 # Spring HTTP Invoker
 
 In order to fully acquire, and take advantage of, the information contained herein, you may
-need to have at least a basic grasp of what [SOAP|http://www.w3schools.com/soap/soap_intro.asp] is and how it works. To learn about
-[Hessian|http://hessian.caucho.com] and Burlap, visit their homepage. 
+need to have at least a basic grasp of what [SOAP|http://www.w3schools.com/soap/soap_intro.asp] is and how it works. 
+
+{note}
+To learn about Hessian and Burlap, visit their homepage at [http://hessian.caucho.com|http://hessian.caucho.com] 
+{note}
 
 SOAP is a XML-based 'programming language independent' protocol for exchanging information over HTTP. Therefore, it enables diverse 
 platforms to communicate without bias. Since *j*Billing implements its services through SOAP, even business applications running on 
@@ -93,6 +96,26 @@ available in jBilling out-of-the-box. Thus, *j*Billing comes pre-configured with
 protocol. Therefore, in this case, we must configure an alternate authentication filter that sets the credentials to be 
 used when making non-authenticated API calls. 
 
+{code}
+<xml ...>
+<beans ....>
+	
+	<!-- Hessian Remote WS Bean -->
+	<bean id="apiClient" ... >
+		<property .../>
+	</bean>
+	
+	<!-- SOAP WS Bean -->
+	<jaxws:client id="apiClient2" ... />
+	
+	<!-- Spring HTTPInvoker Remote WS Bean -->
+	<bean id="apiClient3" ... >
+		<property .../>
+	</bean>
+	
+</beans>
+{code}
+
 See the section *Enabling/Disabling authentication for jBilling web services* section below for information regarding this.
 
 If other remoting methods are not being used, their definition beans may be commented out from this file to give a small 
@@ -102,7 +125,7 @@ improvement in *j*Billing startup time and memory footprint. This can be done by
 Additionally:
 
 * For disabling *Hessian/Burlap*, delete the appropriate Web Services mapping from @descriptors\web\jbilling-servlet.xml@. 
-* For disabling *SOAP*, search for and delete any sections of XML that reference *'cxf'* in @WEB-INF\web.xml@.
+* For disabling *SOAP*, search for and delete any sections of XML that reference *'cxf'* in @descriptors\web\web.xml@.
 
 h3. Securing Integration Access
 
@@ -149,7 +172,7 @@ it maybe preferable to disable authentication to give a slight increase in perfo
 If SOAP or Hessian/Burlap are being used, this can be done as follows:
 
 * Extract the *j*Billing web archive @jbilling\webapps\billing.war@
-* Open the file @WEB-INF\web.xml@ for editing
+* Open the file @descriptors\web\web.xml@ for editing
 * Comment out or delete the XML that refers to *Web Services Authentication Filter*. This includes one <filter> tag and two <filter-mapping> tags. Save the file and recreate (zip) the web archive.
 
 h4. Enabling/Disabling company security checks
@@ -172,7 +195,7 @@ Once you can use your standard web client over SSL, you can immediately start do
 services communication through HTTPS, effectively securing your web services. A further step is to force all 
 the web services communication over SSL. To achieve that extract the billing web archive:
 
-@jbilling\webapps\billing.war@ and edit the file: @WEB-INF\web.xml@
+@jbilling\webapps\billing.war@ and edit the file: @descriptors\web\web.xml@
 
 Notice that there is already a section at the bottom to force HTTPS, but it is commented.
 Uncomment the XML tag *<security-constraint>* and its contents to force HTTPS.
@@ -250,6 +273,34 @@ To query the WSDL file, you'll need to append the ?wsdl parameter to the call, f
 example:
 
 @http://localhost:8080/jbilling/services/api?wsdl@
+
+Below is a snapshot of the WSDL showing operation *getLatestInvoice*:
+
+{code}
+<?xml version="1.0" encoding="UTF-8"?>
+	<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+		xmlns:tns="http://jbilling/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/wsdl/soap/http" 
+		xmlns:ns1="http://util.server.jbilling.sapienter.com/" targetNamespace="http://jbilling/" name="ApiServiceService">
+		
+		<wsdl:import namespace="http://util.server.jbilling.sapienter.com/" 
+			location="http://localhost:9090/jbilling/services/api?wsdl=IWebServicesSessionBean.wsdl">
+		</wsdl:import> 
+
+		<wsdl:binding type="ns1:IWebServicesSessionBean" name="ApiServiceServiceSoapBinding">
+			<soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/> 
+			...
+			<wsdl:operation name="getLatestInvoice"> <soap:operation style="document" soapAction=""/> 	
+				<wsdl:input name="getLatestInvoice"> <soap:body use="literal"/></wsdl:input>
+				<wsdl:output name="getLatestInvoiceResponse"> <soap:body use="literal"/></wsdl:output>
+				<wsdl:fault name="SessionInternalError">
+					<soap:fault name="SessionInternalError" use="literal"/> 
+				</wsdl:fault> 
+			</wsdl:operation>
+			...
+		</wsdl:binding>
+	</wsdl>
+</xml>
+{code}
 
 h3. Hessian/Burlap
 
@@ -482,14 +533,14 @@ and can be found in the @WEBINF\lib\@ directory of the @jbilling\webapps\billing
 
 h4. Properties
 
-* _serviceUrl_ - This is the Hessian Service Url that *j*Billing exposes (as discussed in *Connecting to *j*Billing* section of the *Preparing *j*Billing for Integration*
+* serviceUrl - This is the Hessian Service Url that *j*Billing exposes (as discussed in *Connecting to *j*Billing* section of the *Preparing *j*Billing for Integration*
  chapter of this document)
 
 {code}
 <property name="serviceUrl" value="http://localhost:8080/jbilling/hessian/ApiService"/>
 {code}
 
-* _serviceInterface_ - This is the business interface that exposes the business functionality
+* serviceInterface - This is the business interface that exposes the business functionality
 
 {code}
 <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
@@ -510,7 +561,7 @@ This is pre-configured in *j*Billing to use [IWebServicesSessionBean|api:com.sap
 
 h4. Properties
 
-* _serviceUrl_ - The service URL RMI should connect to (as defined in the *Connecting to *j*Billing* section of the *Preparing *j*Billing for Integration* 
+* serviceUrl - The service URL RMI should connect to (as defined in the *Connecting to *j*Billing* section of the *Preparing *j*Billing for Integration* 
 chapter of this document)
 
 For example:
@@ -519,7 +570,7 @@ For example:
 <property name="serviceUrl" value="rmi://localhost:1199/RmiService"/>
 {code}
 
-* _serviceInterface_ - This is the business interface that exposes the business functionality
+* serviceInterface - This is the business interface that exposes the business functionality
 
 {code}
 <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
@@ -548,7 +599,7 @@ The difficult part in implementing SOAP on C# is to map the input and output par
 quickly gets difficult to create all the necessary classes.
 
 {note}
-Therefore, a handy utility, distributed as part of the Visual Studio® distribution, is the @wsdl.exe@. This utility takes care of 
+Therefore, a handy utility, distributed as part of the Visual Studio&reg; distribution, is the @wsdl.exe@. This utility takes care of 
 converting a WSDL file into appropriate data structures and creates an output file that contains a class that performs all web service
 calls. You can find this command line tool in the *Visual Studio 8\SDK\v2.0\Bin* directory of your Visual Studio installation. 
 Consult your Visual Studio documentation or just call *wsdl.exe* with no parameters to obtain some information on how to invoke this
@@ -787,7 +838,7 @@ information as well. These can be added as parameters to the user creation proce
 
 Once the new user is created, we can add an order to that user with the *Active Since* date set to TODAY + 15, and *Active Until* date 
 set to _null_, which indicates the Order is permanently active and will continue to invoice until it is canceled. We are assuming the
-Item has been created as indicated in the Getting Started Guide, so that we have a 'Banners' category and a 'Front Page Banner – Monthly Fee'
+Item has been created as indicated in the Getting Started Guide, so that we have a 'Banners' category and a 'Front Page Banner Monthly Fee'
 item created under this category. In the example, we assume the Item ID code is '1', in a more realistic situation you could have several 
 item types to choose from, or you would otherwise need to determine what the Item ID is from the *j*Billing user interface.
 
@@ -1309,19 +1360,597 @@ and production environments that *j*Billing can integrate with.
 
 h1. Client API Reference
 
-All service calls provided by the API are covered in the Web Services API Reference docs. 
+h2. Data Structures/Object Classes
 
-The APIs are grouped according to functional area or data entities in jBilling, for example: User Management APIs, Orders, Items, etc. 
-All data contained in the Client API data structures can be accessed by means of the "getter" and "setter" methods of each property 
-(i.e., @getFaxNumber()@ and @setFaxNumber()@ provide access to the _faxNumber_ property). When describing data 
-structures, this guide always provides the property name. This reference is equally useful for those planning to use the web services 
-directly, or for those that will be using the jBilling Client API. For non-Java languages, the data 
-structures will look slightly different: they are described in the WSDL descriptor and how 
-that is translated to each language varies. For those using the jBilling Client API from a 
-Java application, the data structures can be used directly as classes.
+h3. User Management
 
+h4. UserWS
+
+{table}
+ *Property name*|*Type*|*Description*
+ ach | AchDTO | ACH Payment details saved for the User. If available, the ACH info can be used during Automatic Payment processing. 
+ autoRecharge | String | Amount by which the customer's account will be auto-recharged when depleted (the amount can be handled as a BigDecimal Java type via the "setAutoRechargeAsDecimal()" and "getAutoRechargeAsDecimal()" methods. The system should be configured to use Auto-Recharge feature. 
+ automaticPaymentType | Integer | Integer value to determine which of the three payment methods does the customer want to apply for automatic payment processing. Refer to Appendix A for acceptable values. 
+ balanceType | Integer | The type of dynamic balance for this user. Refer to Appendix A for acceptable values. 
+ blacklistMatches |  String[] | Lists any blacklist matches for this user. See the "jBilling User Guide" for more information on blacklists. 
+ childIds |  Integer[] | The identifiers of any sub-accounts for this user. 
+ companyName | String | User's company name. 
+ contact | ContactWS | The primary contact information for this user. 
+ createDatetime | Date | Creation date of this data record. 
+ creditCard | CreditCardDTO | Credit card information for this user. Not required for the user creation process. 
+ creditLimit | Double | The credit limit. Only valid if balanceType is of credit limit type. 
+ currencyId | Integer | Contains the currency code for this user. Refer to Appendix A for acceptable values. 
+ customerId | Integer | Reference to the Customer information for this user. 
+ deleted | Integer | If the record has been deleted, this field contains '1', otherwise it contains '0'. Note that deletion cannot be carried out by simply setting a "1" in this field. 
+ dueDateUnitId | Integer | Period Unit of this Customer's Invoice due date. Refer to Appendix A for Period Unit acceptable values. 
+ dueDateValue | Integer | Customer specific Invoice Due date value 
+ dynamicBalance | String | String representation of this Customer's dynamic balance. The dynamic balance. If balanceType is credit limit, this represents the amount of credit used on the account. If balanceType is pre paid, this represents the pre paid balance remaining. 
+ excludeAgeing | Boolean | Boolean value to indicate excluding this User/Customer from the Ageing process 
+ failedAttempts | Integer | Number of login attempts that have been failed by this user (i.e., the user has entered the wrong password). 
+ invoiceChild | Boolean | "true" if this is a sub-account (child of a parent account), but this user will still receive invoices. 
+ invoiceDeliveryMethodId | Integer | Reference ID for one of the Invoice Delivery Methods. See appendix for acceptable values. 
+ isParent | Boolean | "true" if this record is a "parent" user. A parent user can have sub-accounts (children). 
+ language | String | Name of the language (i.e. "English"). 
+ languageId | Integer | Contains the preferred language code for this user. Refer to Appendix A for acceptable values. 
+ lastLogin | Date | Date of the last login performed by this user.  
+ lastStatusChange | Date | Date of the last status change incurred by this user. 
+ mainOrderId | Integer | The id of the main order for this customer. This is the order that sets the customer's billing cycle for the management of 'current' orders'. Current orders gather usage. See section: The user's "main" order for a description and examples of use of main orders. You can set this value to an order and call 'updateUser' to set a new order as the main order. 
+ mainRoleId | Integer | The level of privilege granted to the user when logged into the system. See Appendix A for acceptable values. 
+ nextInvoiceDate | Date | The earliest next billable date for this user's Orders. 
+ notes | String | CRM notes for this user. 
+ owingBalance | BigDecimal | A real-time calculated owing balance. (All Invoices - All Payments) 
+ parentId | Integer | If the user belongs to a parent record, this field contains the identifier of the parent record. 
+ partnerId | Integer | Identifier of the partner this user belongs to. 
+ password | String | Authenticates the user's identity during login. This could be meaningless if the password is encrypted. 
+ role | String | The name of the User's role (i.e. "Clerk" or "Customer"). 
+ status | String | Name of the User's current status (i.e. "Suspended" or "Active"). 
+ statusId | Integer | Current status identifier of the user. See Appendix A for acceptable values. 
+ subscriberStatusId | Integer | Subscriber status for this user. See Appendix A for acceptable values. 
+ userIdBlacklisted | Boolean | *true* if the user id is blacklisted. See the *jBilling User Guide* for more information on blacklists. 
+ userName | String | Identifies the user during login. 
+{table}
+
+h4. CreditCardDTO
+
+{table}
+ *Property name*|*Type*|*Description*
+ deleted | Integer | If the record has been deleted, this field contains "1", otherwise it contains "0". Note that deletion cannot be carried out by simply setting a "1" in this field. 
+ expiry|Date| Expiration date of the credit card. Usually, card expiration dates are expressed in month/year form, such as "05/11" or "May 2011". This field contains the last day the card is valid, in this example, "05/31/2011". 
+ id|Integer|Unique identifier for this record. 
+ name|String|Credit card owner's name. This is the name that appears physically on the credit card. 
+ number|String|Credit card number. Usually, a 16 digit number. 
+ securityCode|Integer|CCV (Credit Card Verification) code of the credit card. 
+ type|Integer|Credit Card type. See Appendix A for acceptable values. 
+{table}
+
+h4. ContactWS
+
+{table}
+ *Property name*|*Type*|*Description*
+ address1|String|First line for the address. 
+ address2|String|Second line for the address. 
+ city|String|City of this contact. 
+ contactTypeDescr|String|Description of the contact type of this contact namely 'Primary' 
+ contactTypeId|Integer|Identifier for the type id of the Contact i.e. id of contact_type table. A contact has atleast one 'Primary' contact type and may have more Contact Types. 
+ countryCode|String|Country code for this contact (Appendix A contains a list of acceptable country codes). 
+ createDate|Date|Date this contact record was first created. 
+ deleted|Integer|If the record has been deleted, this field contains "1", otherwise it contains "0". Note that deletion cannot be carried out by simply setting a "1" in this field. 
+ email|String|Email address of this contact. 
+ faxAreaCode|Integer|Area Code for the fax number, if any. 
+ faxCountryCode|Integer|Country Code for the fax number, if any. 
+ faxNumber|String|Fax number. 
+ fieldIDs|Integer[]|Database table primary keys or ids of contact_field_type table. Used to identify Custom Contact Field types 
+ fieldNames|String[]|The name of each of the customized contact fields contained in this contact record. 
+ fieldValues|String[]|The values for each of the customized contact fields contained in this contact record. 
+ firstName|String|First name of this contact. 
+ id|Integer|Unique identifier of this contact. 
+ include|Integer|*1* if this contact is marked as included in notifications. 
+ initial|String|Middle name initials, if any. 
+ lastName|String|Last name of this Contact. 
+ organizationName|String|Name of the organization the contact belongs to. 
+ phoneAreaCode|Integer|Phone number Area Code. 
+ phoneCountryCode|Integer|Phone number Country Code. 
+ phoneNumber|String|Phone number. 
+ postalCode|String|ZIP Code for the contact's address. 
+ stateProvince|String|State or Province of the contact's address. 
+ title|String|Title for the contact, such as "Mr." or "Dr.". 
+{table}
+
+h4. UserTransitionResponseWS
+
+{table}
+ *Property name*|*Type*|*Description*
+ fromStatusId| Integer |Status of the subscription before the transition took place. See Appendix A for acceptable values. 
+ id|Integer|Unique identifier for the transition record. 
+ toStatusId|Integer|Status of the subscription after the transition took place. 
+ transitionDate|Date|Date and time the transition took place. 
+ userId|Integer|Identifies the user account that suffered the subscription status change. 
+{table}
+
+h3. Order Management Calls
+
+Useful for entering Orders and querying information about Orders.
+
+h4. OrderWS
+
+{table}
+ *Property name*|*Type*|*Description*
+ activeSince|Date|The point in time when this order will start being active, reflecting when the customer will be invoiced for the items included. A null value indicates that the order was active at creation time (see field createDate). 
+ activeUntil|Date|The point in time when this order stops being active. After this date, the order will stop generating new invoices, indicating that the services included in this order should stop being delivered to the customer. A null value would specify an open-ended order. Such order never expires; it is considered on-going and will require explicit cancellation for it to stop generating invoices. 
+ anticipatePeriods|Integer|How many periods in advance the order should invoice for. Leave with a '0' unless you have configured the system to work with anticipated periods. 
+ billingTypeId|Integer|Indicates if this order is to be paid for before or after the service is provided. Pre-paid orders are invoiced in advance to the customer, while post-paid are only invoiced once the goods or services included in the order have been delivered. "1" means "pre-paid", while "2" means "post-paid". 
+ billingTypeStr|String|(Read only). The word that represents the billing type. It is ignored when you submit the object. 
+ createDate|Date|(Read only). A time stamp with the date and time when this order was originally created. 
+ createdBy|Integer|The id of the user that has created this order. 
+ currencyId|Integer|Currency code. Refer to Appendix A for a list of acceptable values. 
+ cycleStarts|Date|The date at which the billable cycle starts. A recurring order will generate invoices at the day of the month specified in this field. The date provided in this field must comply with the following condition:		cycleStarts = createDate  For example, for an order created on 01/13/2009, setting this field to 01/28/2009 will make the system generate the invoices the 28th of each month (for orders with monthly periodicity). If set to null, the system will calculate the appropriate billing date based on the date of creation of the order and its activity period. 
+ deleted|Integer|A flag that indicates if this record is logically deleted in the database. This allows for 'undo' of deletions. Valid values are 0 – the record is not deleted 1 – the record is considered deleted. 
+ dfFm|Integer|Only used for specific Italian business rules. 
+ dueDateUnitId|Integer|If this order has a specified due date, this will the the units (days, months, years). See Appendix A for valid values. 
+ dueDateValue|Integer|How many units will be used for the due date. 
+ generatedInvoices|InvoiceWS[]|An array of InvoiceWS objects for all the invoices generated till the time for this Order. 
+ id|Integer|A unique number that identifies this record. 
+ isCurrent|Integer|A flag that indicates whether this order is the current main subscription. See section: The user's "main" order for a description and examples of usage of this field.  <p>Acceptable values are:</P><p>0 – The order is not the current main order.</p><p>1 – The order is the current main order. 
+ lastNotified|Date|When the order has expiration notification, this field tells when the last one was sent. 
+ nextBillableDay|Date|The date when this order should generate a new invoice. Meaning that until that date (and excluding that date), the customer has been invoiced for the service included in this order. 
+ notes|String|A free text field for any notes for this Order. 
+ notesInInvoice|Integer|"1" if this order's notes will be included in the invoice, or "0" if not. 
+ notificationStep|Integer|What step has been completed in the order notifications. 
+ notify|Integer|A flag to indicate if this order will generate notification as the 'active since' date approaches. 
+ orderLines|OrderLineWS[]|The order lines belonging to this order. These objects will specify the items included in this order with their prices and quantities. See the OrderLineWS specification for more information. 
+ ownInvoice|Integer|A flag to indicate if this order should generate an invoice on its own. The default behavior is that many orders can generate one invoice. 
+ period|Integer|Indicates the periodicity of this order. In other words, how often this order will generate an invoice. Examples of periods are: one time, monthly, weekly, etc. Period codes can be seen in jBilling's User Interface under "Orders -> Periods". 
+ periodStr|String|(read only). The description of the order period. 
+ pricingFields|String|An array of pricing fields encoded as a String. To encode, use the PricingField.setPricingFieldsValue() static method, which takes as parameter an array of PricingField structures and returns the encoded string. To decode, use the PricingField.getPricingFieldsValue() static method, which takes as parameter an encoded string and returns an array of PricingField structures. Pricing fields are descriptors that provide further information to the pricing engine and aid in forming the price for the order itself. See section "A word on pricing" for a more detailed explanation of the use of pricing fields. 
+ statusId|Integer|An order has to be on status 'Active' in order to generate invoices. An order usually starts in active status, and only goes to suspended or finished when the customer fails to make the required payments. The steps and actions taken due to late payments are part of the ageing process. See Appendix A for a list of acceptable order status codes. 
+ statusStr|String|(Read only) The description of the current order status. 
+ timeUnitStr|String|(Read only) The description of the time unit used for billable periods. 
+ total|String|(Read only) A string representation of the BigDecimal value of sum-total of all the order lines of this order, in other words, total order amount. 
+ userId|Integer|An identifier for the User to whome thiis order belongs. 
+{table}
+
+h4. OrderLineWS
+
+{table}
+ *Property name*|*Type*|*Description*
+ amount|BigDecimal|The total amount of this line. Usually, this field should equal to the product of price * quantity. This amount will be the one added to calculate the purchase order total. The currency of this field is the one specified in its parent order. The amount can be also set and obtained as a Java BigDecimal, using the "getAmountAsDecimal()" and "setAmountAsDecimal()" methods. 
+ createDatetime|Date|A time stamp applied when this record is created. 
+ deleted|Integer|A flag that indicates if this record is logically deleted in the database. This allows for 'undo' of deletions. Valid values are 0 – the record is not deleted 1 – the record is considered deleted. 
+ description|String|A descriptive text for the services being included. This usually copies the description of the item related to this line. 
+ editable|Boolean|Indicates whether this order line is editable or not (i.e., it cannot be submitted for update). 
+ id|Integer|A unique number that identifies this record. 
+ itemDto|ItemDTOEx|Contains information of the item this order line refers to. 
+ itemId|Integer|The id of the item associated with this line, or null if this line is not directly related to an item. It is consider a good practice to have all order lines related to an item. This allows for better reporting. 
+ orderId|Integer|Identifier of the order that contains this order line. 
+ price|String|The price of one item, or null if there is no related item. Can also be manipulated as a Java BigDecimal using the "getPriceAsDecimal()" and "setPriceAsDecimal()" methods. 
+ priceStr|String|The price of the item as a string. 
+ provisioningRequestId|String|The provisioning request UUID for this order line, if it exists. 
+ provisioningStatusId|Integer|The provisioning status id for this order line. See Appendix A for valid values. 
+ quantity|String|The quantity of the items included in the line, or null, if a quantity doesn't apply. It can also be handled using the "getQuantityAsDecimal()" and "setQuantityAsDecimal()" methods. 
+ typeId|Integer|An order line usually has items. However, some lines are used for additional charges, like taxes. See Appendix A for a list of acceptable order line type codes. 
+ useItem|Boolean|If true, when submitted, this line will take the price and description from the item. This means that you would not need to give a price and description for the line. Instead, you only provide the id of the item. See the createOrder section for details. 
+{table}
+
+h4. CreateResponseWS
+
+{table}
+ *Property name*|*Type*|*Description*
+ invoiceId |Integer  |  Identifier of the invoice that was generated. 
+ orderId|Integer|Identifier of the order that was created. 
+ paymentId|Integer|Identifier of the payment that was generated to pay the invoice. 
+ paymentResult|PaymentAuthorizationDTOEx|Payment Result data structure with the outcome details of the payment operation. 
+ userId|Integer|Identifier of the new user created and for which the order, invoice and payment were created. 
+{table}
+
+h4. PricingField
+
+This data structure describes heterogeneous data that will be passed to the rules engine
+in order to calculate prices and/or flag specific conditions that affect pricing:
+
+{table}
+ *Property name*|*Type*|*Description*
+ name|String|Identifier of the pricing field. 
+ position|Integer|(optional) 
+ strValue|String|A multipurpose String value of the pricing field, which can be used  as deemed fit within the rules (for example, use the string value as a description for the Item). 
+ dateValue|Date|Optional date value of the pricing field, which can be used as necessary by the rules (for example, to set the activeUntil date of the order). 
+ intValue|Integer|Optional integer value of the pricing field, which can be used as necessary by the rules. 
+ decimalValue|BigDecimal|Optional decimal value of the pricing field, which can be used as necessary by the rules (for example, to set a different price or apply as discount). 
+ booleanValue|Boolean|Optional boolean value of the pricing field, which can be used as necessary by the rules. 
+{table}
+
+h3. Item Management Calls
+
+Items are the building blocks of purchase orders. Items are usually managed from the GUI Web App since they don't have the 
+level of activity of orders or payments. Use this service for integration with other applications (for example, an inventory system)
+or when handling high volumes to get better throughput as compared to the Web Application. An item can have a simple price or a percentage price. 
+Items with a simple price will simply add that price to the total of a purchase order. A percentage price will impact that
+total by a percentage. Examples of items with percentage prices are taxes and interests.
+
+h4. ItemDTOEx
+
+{table}
+ *Property name*|*Type*|*Description*
+ currencyId|Integer|Identifier for the currency in which the item's price is expressed. See Appendix A for a list of acceptable values. 
+ deleted|Integer|A flag that indicates if this record is logically deleted in the database. This allows for 'undo' of deletions. Valid values are: 0 – the record is not deleted 1 – the record is considered deleted. 
+ entityId|Integer|Identifier for the entity to which this item belongs. 
+ hasDecimals|Integer|An internal flag indicating whether the item accepts decimal quantities. Can have the following values: 0 – No decimals, quantities are expressed as an integer, 1 – Decimals allowed in quantity values. 
+ id|Integer|A unique number that identifies this Item record. 
+ orderLineTypeId|Integer|The order line type that this item will generate, such a 'taxes', or 'items'. 
+ types|Integer[]|A list of type identifiers that indicates to which types (categories) this item belongs. An item must belong to at least one type. 
+ defaultPrice|PriceModelWS|A default pricing model this Item follows. See PriceModelWS 
+ description|String|Item description 
+ glCode|String|General Ledger code for integration with Other systems like Accounting Systems. 
+ number|String|This can be used to identify this item following an external coding system. For example, books can be identified by their ISBN codes. 
+ percentage|BigDecimal|If this Item has percentage rate, that rate is specified using this field 
+ price|BigDecimal|The price of this item or null if this is a percentage item. 
+ promoCode|String|If this item is related to a promotion, this is the code that identifies the promotion. 
+{table}
+
+h4. PriceModelWS
+
+{table}
+ *Property name*|*Type*|*Description*
+ a|b|c
+{table}
+
+h4. ItemTypeWS
+
+{table}
+ *Property name*|*Type*|*Description*
+ description |String  |  Description for this item type. 
+ id|Integer|Identifier of this item type. 
+ orderLineTypeId|Integer|Type of order line for this item. See "Order Line Type Codes" in "Appendix A" for valid values for this field. 
+{table}
+
+h4. ValidatePurchaseWS
+
+{table}
+ *Property name*|*Type*|*Description*
+ authorized|Boolean  |"true" if the validation has been authorized, "false" otherwise. 
+ message|String[]|An array of messages detailing the result of the validation operation. 
+ quantity|String|Quantity of the item that can be applied without exceeding the user's remaining credit limit or prepaid balance. 
+ success|Boolean|"true" if the validation was successful, "false" otherwise. 
+{table}
+
+h3. Invoice Management Calls
+
+The invoice management calls allow your application to query the system about
+invoices, and to attempt to pay an invoice through a payment gateway. Invoices in
+jBilling are, for the most part, read-only and are created based on purchase orders.
+Invoices can be generated, however, for orders that have yet to be invoiced.
+
+h4. InvoiceWS
+
+{table}
+ *Property name*|*Type*|*Description* 
+ createDateTime|Date|This is the invoice date, which is assigned to it by the billing process when it is generated. 
+ createTimeStamp|Date|A time stamp of when this invoice record was created. 
+ dueDate|Date|The due date of this invoice. After this date, the invoice should have been paid. 
+ lastReminder|Date|Date and time of when the latest reminder was issued for this invoice. 
+ currencyId|Integer|Identifier of the currency in which the invoice's amounts are being expressed. See Appendix A for a list of all acceptable values. 
+ delegatedInvoiceId|Integer|If this invoice has been included in another invoice (usually for lack of payment), this field will indicate to which invoice it has been delegated. 
+ deleted|Integer|A flag that indicates if this record is logically deleted in the database. This allows for 'undo' of deletions. Valid values are: 0 – the record is not deleted 1 – the record is considered deleted. 
+ id|Integer|A unique number that identifies this record. 
+ inProcessPayment|Integer|A flag indicating if this invoice will be paid using automated payment (through a payment processor), or if it will be paid externally (for example, with a paper check). 
+ isReview|Integer|This is an internal value that indicates if this invoice is not a 'real' invoice, but one that belongs to a review process. If '1', it means that it is not a real Invoice. 
+ orders|Integer[]|A list of the ids of the purchase orders which have been included in this invoice. 
+ overdueStep|Integer|This marks which step is this invoice in for the penalties (interests) process. 
+ paymentAttempts|Integer|How many payment attempts have been done by the automated payment process to get this invoice paid. 
+ payments|Integer[]|A list of ids of the payments that have been applied to this invoice. 
+ statusId|Integer|A flag that indicates the status of this invoice. See section *Invoice Status Codes* on Annexure A for valid values for this field. 
+ toProcess|Integer|This is '1' if the invoice will be considered by the billing process as unpaid. Otherwise it is '0' and the invoices is either paid or carried over to another invoice. 
+ userId|Integer|The customer to whom this invoice belongs. 
+ invoiceLines|InvoiceLineDTO[]|A list of objects representing each of this invoice's lines. 
+ balance|String|The amount of this invoice that is yet to be paid. Can also be handled as a Java BigDecimal via the "getBalanceAsDecimal()" and "setBalanceAsDecimal()" methods. 
+ carriedBalance|String|How much of the total belonging to previous unpaid invoices that have been delegated to this one. It can also be handled via the "getCarriedBalanceAsDecimal()" and "setCarriedBalanceAsDecimal()" methods. 
+ customerNotes|String|Notes that are entered in a purchase order can be applied to an invoice. If that is the case, this field will have those user notes. 
+ number|String|The invoice number, which is assigned to it from a 'preference' field (see the user guide for more information).  This is not the ID, which is guaranteed to be unique. 
+ statusDescr|String|The status name of the Invoice status as determined from the field statusId 
+ total|String|The total amount of this invoice. It can also be handled as a Java BigDecimal via the "getTotalAsDecimal()" and "setTotalAsDecimal()" methods. 
+{table}
+
+h4. InvoiceLineDTO
+
+This data structure contains data relative to a single line of an invoice.
+
+{table}
+ *Property name*|*Type*|*Description* 
+ amount|BigDecimal|The total amount for this line. Usually would follow the formula price * quantity.|	
+ deleted|Integer|A flag that indicates if this record is logically deleted in the database. This allows for 'undo' of deletions.  Valid values are: 0 – the record is not deleted 1 – the record is considered deleted. 
+ description|String|This description will be displayed in the invoice delivered to the customer. 
+ id|Integer|A unique number that identifies this record. 
+ isPercentage|Integer|Indicates whether the item referenced by this invoice line is a percentage item or not. This is used to aid how the order line is displayed to the customer. 
+ itemId|Integer|Identifier of the item referenced by this invoice line. 
+ price|BigDecimal|The pricing of a single unit of this item. 
+ quantity|BigDecimal|The number of units of the item being invoiced. 
+ sourceUserId|Integer|This field is useful only when many sub-accounts is invoiced together. This field would have the ID of the user that originally purchase an item. 
+{table}
+
+h3. Payment Management Calls
+
+Payments play a crucial role in determining the status of a customer. For the system to
+properly trace payments, they have to be linked to the invoices they are paying.
+Payments not related to an invoice should be avoided; they are intended for initial
+imports from legacy billing systems and exceptional circumstances. Arbitrary credit card
+payment processing not linked to any invoice is possible, however.
+There are three basic payment methods: Cheques, ACH and Credit Cards. Different objects are
+used as fields of PaymentWS for each for these types. 
+There are two different actions related to payments. One is to apply a payment. This
+means that the payment has already been processed and accepted by the company.
+Applying the payment will let the system know that a new payment has to be registered.
+A common example is when the company has received and successfully deposited a
+cheque. In this case, the system only has to apply the payment to the customer's
+account.
+A more comprehensive action is to process a payment. Processing a payment means
+the company will submit the payment information to the system, then the system will
+submit the payment to a payment process for its authorization in real-time, storing the
+result of this operation. The caller will get the results of this authorization. The most
+common example for this operation is a credit card payment.
+In summary, the system can both request authorization of a payment and apply the
+payment to the customer's account, or it can do only this last step.
+The payment management calls will let you query the system for payments, and also
+apply and submit a payment to get an invoice payed.
+
+h3. PaymentWS
+
+{table}
+ *Property name*|*Type*|*Description* 
+ ach|AchDTO|If this is a payment done with Automatic Clearing House (ACH), 
+ this property contains the banking information needed. 
+ amount|String|The amount of the payment operation. Can also be handled as a Java BigDecimal via the "getAmountAsDecimal()" and "setAmountAsDecimal()" methods. 
+ authorization|PaymentAuthorizationDTO|Refund specific field. Contains the identifier of the authorization details for the refund. 
+ balance|String|Balance of this payment. If greater than 0, this payment could pay part of another invoice. If 0, this payment has already been applied to an invoice, lowering the invoice's balance. It can also be handled as a Java BigDecimal via the "getBalanceAsDecimal()" and "setBalanceAsDecimal()" methods. 
+ cheque|PaymentInfoChequeDTO|If this payment is done via check, this property contains information about the cheque, otherwise it contains "null". 
+ createDatetime|Date|Date in which this payment record was created. 
+ creditCard|CreditCardDTO|If this is a credit card payment, this property contains information about the credit card, otherwise it contains "null". 
+ currencyId|Integer|Identifier of the currency in which the payment is being made. See Appendix A for a list of acceptable values. 
+ deleted|Integer|Delete flag. "1" if this record has been deleted, "0" otherwise. 
+ attempt|Integer|Number of the attempt to process this payment. 
+ id|Integer|Unique identifier of the payment record. 
+ invoiceIds|Integer[]|Contains the list of invoices this payment is paying. 
+ isPreauth|Integer|"1" if this payment is a preauthorization, "0" otherwise. 
+ isRefund|Integer|"1" if this payment constitutes a refund operation, "0" otherwise. 
+ method|String|Name of the payment method used. 
+ paymentDate|Date|Date of the payment. 
+ paymentId|Integer|Refund specific field. When a refund is to be issued, this field holds the identifier of the payment that is to be refunded. 
+ paymentMethodId|Integer|Identifier of the payment method. Refer to Appendix A for a list of acceptable values. 
+ paymentNotes|String|Any notes related to this payment for e.g. relevant invoiceId can be added to notes or any relevant information. 
+ paymentPeriod|Integer|Optional Payment period identifier 
+ resultId|Integer|Identifier of the result of the payment attempt. Refer to Appendix A for a list of acceptable values. 
+ updateDatetime|Date|Date in which this payment record was last updated. 
+ userId|Integer|Identifier of the user this payment record belongs to. 
+{table}
+
+h3. PaymentInfoChequeDTO
+
+{table}
+ *Property name*|*Type*|*Description* 
+ id|Integer|The unique identifier of this record.|	
+ bank|String|The name of the bank this cheque's account belongs to. 
+ number|String|The cheque's number. 
+ date|Date|The cheque's date. 
+{table}
+
+h3. AchDTO
+
+{table}
+ *Property name*|*Type*|*Description* 
+ abcRouting|String|ABA routing number|	
+ accountName|String|The account name 
+ accountType|Integer|If this is chequings or a savings account. 
+ bankAccount|String|The account number. 
+ bankName|String|The bank name. 
+ id|Integer|The unique identifier of this record. 
+{table}
+
+h3. PaymentAuthorizationDTO
+
+{table}
+ *Property name*|*Type*|*Description* 
+ id|Integer|Unique identifier of the payment authorization. 
+ processor|String|Name of the payment processor. 
+ code1|String|Request code number 1. 
+ code2|String|Request code number 2. 
+ code3|String|Request code number 3. 
+ approvalCode|String|Approval code provided by the processor. 
+ AVS|String|A code with the results of address verification. 
+ transactionId|String|Identifier of the processor transaction. 
+ MD5|String|Hash for the transaction. 
+ cardCode |String |Payment card code. 
+ createDate |Date |The creation date for this payment authorization record. 
+ responseMessage |String |The response provided by the processor. 
+{table}
+
+h3. PaymentAuthorizationDTOEx
+
+This data structure contains data about a payment authorization process. It extends the PaymentAuthorizationDTO structure (see above). 
+Thus, it shares all the same fields plus the following:
+
+{table}
+ *Property name*|*Type*|*Description* 
+ result |Boolean |"true" if the authorization succeeded, "false" otherwise. 
+{table}
+
+
+
+h2. API Service Calls
+
+The Service APIs/Calls are grouped according to functional area or data entities in jBilling, for example: 
+User Management APIs, Orders, Items, etc. All data contained in the Client API data structures can be accessed by means 
+of the "getter" and "setter" methods of each property (i.e., @getFaxNumber()@ and @setFaxNumber()@ provide access to the _faxNumber_ property). 
+When describing data structures, this guide always provides the property name. This reference is equally useful for those 
+planning to use the web services directly, or for those that will be using the jBilling Client API. For non-Java languages, the data 
+structures will look slightly different: they are described in the WSDL descriptor and how that is translated to each language varies. 
+For those using the jBilling Client API from a Java application, the data structures can be used directly as classes.
+
+{note}
 For a finer coverage of the SOAP support, refer to the WSDL file or use a SOAP
 introspection tool (such as SoapUI). All the SOAP methods, however, share the same
 name, parameters and functionality as their API counterparts.
+{note}
 
-Please refer to the client/Web Services API from here: [WebServices|API Reference].
+All service calls provided by the API are covered in the Web Services API Reference docs. 
+
+Please refer to the client/Web Services API from here: [WebServices|API Reference.html].
+
+
+
+
+h1. Appendix A
+
+h2. Constants Reference
+
+h3. Language Codes
+{(wiki-table)table}
+ *Code*|*Name*
+  1|English 
+  2|Portuguese 
+{table}
+
+h3. Currency Codes
+{table}
+ *Currency name* |*Currency code*| *ISO Code* |*Symbol Country*
+ 1 |United States Dollar |USD |US$| USA 
+ 2 |Canadian Dollar |CAD |C$ |Canada 
+ 3 |Euro| EUR| <pre>&euro;</pre> | Europe 
+ 4 |Yen| JPY | ¥ |Japan 
+ 5 |Pound Sterling |GBP | £ | United Kingdom 
+ 6 |South Korean Won| KRW |South Korea 
+ 7 |Swiss Franc| CHF |Sf |Switzerland 
+ 8 |Swedish Krona| SEK |SeK |Sweden 
+ 9 |Singapore Dollar |SGD |S$ |Singapore 
+ 10|Ringgit |MYR |M$ |Malaysia 
+ 11|Australian Dollar |AUD| $ |Australia 
+{table}
+
+h3. Role Codes
+{table}
+ *Code* | *Meaning* 
+ 1 | Internal 
+ 2 | Super User 
+ 3 | Clerk 
+ 4 | Partner 
+ 5 | Customer 
+{table}
+
+h3. User Status Codes
+{table}
+ *Code* | *Meaning*
+ 1 | Active 
+ 2 | Overdue 
+ 3 | Overdue 2 
+ 4 | Overdue 3 
+ 5 | Suspended 
+ 6 | Suspended 2 
+ 7 | Suspended 3 
+ 8 | Deleted 
+{table}
+
+h3. Subscriber Status Codes
+{table}
+ *Code* | *Meaning* 
+ 1 | Active 
+ 2 | Pending Subscription 
+ 3 | Unsubscribed 
+ 4 | Pending Expiration 
+ 5 | Expired 
+ 6 | Nonsubscriber 
+{table}
+
+h3. Payment Method Codes
+{table}
+ *Code* | *Meaning* 
+ 1 | Cheque 
+ 2 | Visa 
+ 3 | MasterCard 
+ 4 | AMEX 
+ 5 | ACH 
+ 6 | Discovery 
+ 7 | Diners 
+ 8 | PayPal 
+{table}
+
+h3. Order Status Codes
+{table}
+ *Code* | *Meaning* 
+ 1 | Active 
+ 2 | Finished 
+ 3 | Suspended 
+ 4 | Suspended (auto) 
+{table}
+
+h3. Order Billing Type Codes
+{table}
+ *Code* | *Meaning* 
+ 1 | Pre-paid 
+ 2 | Post-paid 
+{table}
+
+h3. Order Line Type Codes
+{table}
+ *Code* | *Meaning* 
+ 1 | Item 
+ 2 | Tax 
+ 3 | Penalty 
+{table}
+
+h3. Invoice Status Codes
+{table}
+ *Code* | *Meaning* 
+ 1 | Paid 
+ 2 | Unpaid 
+ 3 | Unpaid, balance carried to a new invoice. 
+{table}
+
+h3. Period units (units of time)
+{table}
+ *Unit* | *Meaning* 
+ 1 | Month 
+ 2 | Week 
+ 3 | Day 
+ 4 | Year 
+{table}
+
+h3. Payment results
+{table}
+ *Result* | *Meaning* 
+ 1 | Successful 
+ 2 | Failed 
+ 3 | Payment gateway not available 
+ 4 | Manually entered (payment gateway not involved, such as a cheque). 
+{table}
+
+h3. Dynamic Balance Codes
+{table}
+ *Code* | *Meaning* 
+ 1 | No dynamic balance 
+ 2 | Pre paid 
+ 3 | Credit limit 
+{table}
+
+h3. Provisioning Status Codes
+{table}
+ *Code*| *Meaning* 
+ 1 | Active 
+ 2 | Inactive 
+ 3 | Pending Active 
+ 4 | Pending Inactive 
+ 5 | Failed 
+ 6 | Unavailable 
+{table}
+
+h3. Automatic Payment Type
+{table}
+ *Code* |  *Meaning* 
+ 1 | Credit Card 
+ 2 | ACH 
+ 3 | Cheque 
+{table}
+
+h3. Invoice Delivery Method
+{table}
+ *Code* |  *Meaning* 
+ 1 | Email 
+ 2 | Paper 
+ 3 | Both Email & Paper 
+{table}

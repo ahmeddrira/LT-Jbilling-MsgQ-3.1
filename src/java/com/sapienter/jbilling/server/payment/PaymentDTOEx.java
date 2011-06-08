@@ -136,7 +136,10 @@ public class PaymentDTOEx extends PaymentDTO {
             achDTO.setBankAccount(dto.getAch().getBankAccount());
             achDTO.setBankName(dto.getAch().getBankName());
             achDTO.setGatewayKey(dto.getAch().getGatewayKey());
-            achDTO.setId(dto.getAch().getId());
+            //id may be null if the ACH is not saved yet
+            if ( null != dto.getAch().getId()) {
+                achDTO.setId(dto.getAch().getId());
+            }
             this.ach = achDTO;
         } else {
             this.ach = null;

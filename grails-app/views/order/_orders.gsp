@@ -38,7 +38,9 @@
                         </g:remoteSort>
                     </th>
                     <th class="large">
-                        <g:message code="order.label.customer"/>
+                        <g:remoteSort action="list" sort="contact.firstName, contact.lastName, contact.organizationName, u.userName" alias="[contact: 'baseUserByUserId.contact']" update="column1">
+                            <g:message code="order.label.customer"/>
+                        </g:remoteSort>
                     </th>
                     <th class="small">
                         <g:remoteSort action="list" sort="createDate" update="column1">

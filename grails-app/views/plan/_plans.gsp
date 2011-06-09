@@ -81,7 +81,7 @@
             <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], update: 'column1']"/>
         </div>
         <div class="row">
-            <util:remotePaginate controller="plan" action="list" params="[partial: true, sort: params.sort, order: params.order]" total="${plans.totalCount}" update="column1"/>
+            <util:remotePaginate controller="plan" action="list" params="${sortableParams(params: [partial: true])}" total="${plans.totalCount}" update="column1"/>
         </div>
     </div>
 </g:if>

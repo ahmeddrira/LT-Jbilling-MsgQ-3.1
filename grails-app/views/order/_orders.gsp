@@ -102,7 +102,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="order" action="list" params="[partial: true, sort: params.sort, order: params.order]" total="${orders?.totalCount ?: 0}" update="column1"/>
+        <util:remotePaginate controller="order" action="list" params="${sortableParams(params: [partial: true])}" total="${orders?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 

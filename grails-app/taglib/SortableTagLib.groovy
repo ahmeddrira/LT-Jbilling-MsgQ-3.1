@@ -30,6 +30,7 @@ class SortableTagLib {
     def remoteSort = { attrs, body ->
         def sort = assertAttribute('sort', attrs, 'remoteSort') as String
         def order = params.sort == sort ? params.order == 'desc' ? 'asc' : 'desc' : null
+        def alias = attrs.containsKey('alias') ? attrs.remove('alias') : null
 
         def action = assertAttribute('action', attrs, 'remoteSort') as String
         def controller = params.controller ?: controllerName
@@ -42,6 +43,7 @@ class SortableTagLib {
                       model: [
                               sort: sort,
                               order: order,
+                              alias: alias,
                               action: action,
                               controller: controller,
                               id: id,

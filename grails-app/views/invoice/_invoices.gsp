@@ -39,7 +39,9 @@
                         </g:remoteSort>
                     </th>
                     <th class="large">
-                        <g:message code="invoice.label.customer"/>
+                        <g:remoteSort action="list" sort="contact.firstName, contact.lastName, contact.organizationName" alias="baseUser.contact" update="column1">
+                            <g:message code="invoice.label.customer"/>
+                        </g:remoteSort>
                     </th>
                     <th class="medium">
                         <g:remoteSort action="list" sort="createDatetime" update="column1">
@@ -130,7 +132,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="invoice" action="list" params="[partial: true, sort: params.sort, order: params.order]" total="${invoices?.totalCount ?: 0}" update="column1"/>
+        <util:remotePaginate controller="invoice" action="list" params="[partial: true, sort: params.sort, order: params.order, alias: params.alias]" total="${invoices?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 

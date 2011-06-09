@@ -33,6 +33,6 @@
         <span>${max}</span>
     </g:if>
     <g:else>
-        <g:remoteLink action="${action ?: 'list'}" params="[partial: true, max: max, sort: params.sort, order: params.order]" update="${update}">${max}</g:remoteLink>
+        <g:remoteLink action="${action ?: 'list'}" params="[partial: true, max: max, sort: params.sort, order: params.order, alias: params.alias]" update="${update}">${max}</g:remoteLink>
     </g:else>
 </g:each>

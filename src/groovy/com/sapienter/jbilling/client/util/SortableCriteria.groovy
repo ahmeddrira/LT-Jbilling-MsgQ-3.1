@@ -33,11 +33,11 @@ class SortableCriteria {
 
     static def sort(GrailsParameterMap params, builder) {
         def sort = params.sort?.tokenize(',')?.collect { it.trim() }
-        def order = params.order?.equals('null') ? 'desc' : params.order
+        def alias = params.alias?.equals('null') ? null : params.alias
 
         // add aliases for sorted associations
         sort.findAll{ it.contains('.') }.collect{ it.substring(0, it.indexOf('.')) }.unique().each {
-            builder.createAlias(it, it)
+            builder.createAlias(alias ?: it, it)
         }
 
         // add order by clauses

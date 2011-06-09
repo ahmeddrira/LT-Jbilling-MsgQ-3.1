@@ -103,9 +103,6 @@ class InvoiceController {
         params.sort = params?.sort ?: pagination.sort
         params.order = params?.order ?: pagination.order
 
-        log.debug("sort ${params.sort}")
-        log.debug("alias ${params.alias}")
-
         // hide review invoices by default
         def reviewFilter = filters.find{ it.field == 'isReview' }
         if (reviewFilter && reviewFilter.value == null) reviewFilter.integerValue = 0
@@ -122,9 +119,8 @@ class InvoiceController {
                     }
                 }
 
-                baseUser {
-                    eq('company', new CompanyDTO(session['company_id']))
-                }
+                createAlias('baseUser', 'baseUser')
+                eq('baseUser.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
             }
 

@@ -18,14 +18,6 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%--
-  Created by IntelliJ IDEA.
-  User: brian
-  Date: 26/01/11
-  Time: 4:14 PM
-  To change this template use File | Settings | File Templates.
---%>
-
 <g:message code="pager.show.max.results"/>
 
 <g:each var="max" in="${steps}">
@@ -33,6 +25,6 @@
         <span>${max}</span>
     </g:if>
     <g:else>
-        <g:remoteLink action="${action ?: 'list'}" params="[partial: true, max: max, sort: params.sort, order: params.order, alias: params.alias]" update="${update}">${max}</g:remoteLink>
+        <g:remoteLink action="${action ?: 'list'}" params="${sortableParams(params: [partial: true, max: max])}" update="${update}">${max}</g:remoteLink>
     </g:else>
 </g:each>

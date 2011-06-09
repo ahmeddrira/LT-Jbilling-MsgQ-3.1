@@ -39,7 +39,7 @@
                         </g:remoteSort>
                     </th>
                     <th class="large">
-                        <g:remoteSort action="list" sort="contact.firstName, contact.lastName, contact.organizationName" alias="baseUser.contact" update="column1">
+                        <g:remoteSort action="list" sort="contact.firstName, contact.lastName, contact.organizationName, baseUser.userName" alias="[contact: 'baseUser.contact']" update="column1">
                             <g:message code="invoice.label.customer"/>
                         </g:remoteSort>
                     </th>
@@ -86,7 +86,7 @@
                                     ${contact.firstName} &nbsp;${contact.lastName}
                                 </g:if>
                                 <g:else>
-                                    ${ordr?.baseUserByUserId?.userName}
+                                    ${inv?.baseUser?.userName}
                                 </g:else>
                             </strong>
                             <em>${contact?.organizationName}</em>
@@ -132,7 +132,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="invoice" action="list" params="[partial: true, sort: params.sort, order: params.order, alias: params.alias]" total="${invoices?.totalCount ?: 0}" update="column1"/>
+        <util:remotePaginate controller="invoice" action="list" params="${sortableParams(params: [partial: true])}" total="${invoices?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 

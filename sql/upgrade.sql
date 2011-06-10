@@ -75,17 +75,16 @@ ALTER TABLE customer_price ADD CONSTRAINT customer_price_user_id_FK FOREIGN KEY 
 insert into jbilling_table (id, name) values (98, 'customer_price');
 
 -- migrate item price to default item price_model
--- change insert sub-query "where currency_id = 1" to your primary currency id
 -- postgresql
 ALTER TABLE item add column price_model_id integer;
 ALTER TABLE price_model add column tmp_item_id integer;
-insert into price_model (id, strategy_type, tmp_item_id, rate, currency_id) (select distinct on (item_id) id, 'METERED', item_id, price, currency_id from item_price where currency_id = 1);
-update item i set i.price_model_id = (select id from price_model where tmp_item_id = i.id);
+insert into price_model (id, strategy_type, tmp_item_id, rate, currency_id) (select distinct on (item_id) id, 'METERED', item_id, price, currency_id from item_price where currency_id = 1); -- change to your primary currency ID
+update item set price_model_id = (select id from price_model where tmp_item_id = item.id);
 ALTER TABLE price_model drop column tmp_item_id;
 -- mysql
 -- ALTER TABLE item add column price_model_id integer;
 -- ALTER TABLE price_model add column tmp_item_id integer;
--- insert into price_model (id, strategy_type, tmp_item_id, rate, currency_id) (select id, 'METERED', item_id, price, currency_id from item_price where currency_id = 1 group by item_id order by id);
+-- insert into price_model (id, strategy_type, tmp_item_id, rate, currency_id) (select id, 'METERED', item_id, price, currency_id from item_price where currency_id = 1 group by item_id order by id); -- change to your primary currency ID
 -- update item, price_model set item.price_model_id = price_model.id where item.id = price_model.tmp_item_id;
 -- ALTER TABLE price_model drop column tmp_item_id;
 
@@ -448,6 +447,7 @@ alter table item_type alter column internal set not null;
 
 -- internal 'plans' category, add for each company
 insert into item_type (id, entity_id, description, internal, order_line_type_id, optlock) values ((select max(id)+1 from item_type), 1, 'plans', true, 1, 0);
+update jbilling_seqs set next_id = (select round(max(id)/100)+1 from item_type) where name = 'item_type';
 
 -- price model chaining
 alter table price_model add column next_model_id int null;

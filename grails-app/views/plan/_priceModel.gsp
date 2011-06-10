@@ -25,7 +25,7 @@
         <td class="value"><g:message code="price.strategy.${next.type.name()}"/></td>
         <td><g:message code="plan.model.rate"/></td>
         <td class="value">
-            <g:if test="${next.rate}">
+            <g:if test="${next.rate || next.rate?.compareTo(BigDecimal.ZERO) == 0}">
                 <g:formatNumber number="${next.rate}" type="currency" currencySymbol="${next.currency?.symbol}"/>
             </g:if>
             <g:else>

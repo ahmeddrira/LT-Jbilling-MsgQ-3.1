@@ -30,6 +30,7 @@ import com.sapienter.jbilling.client.pricing.util.PlanHelper
 import com.sapienter.jbilling.server.item.db.ItemDTO
 import com.sapienter.jbilling.server.pricing.PriceModelWS
 import com.sapienter.jbilling.server.user.CustomerPriceBL
+import com.sapienter.jbilling.client.util.SortableCriteria
 
 /**
  * PlanController
@@ -40,7 +41,7 @@ import com.sapienter.jbilling.server.user.CustomerPriceBL
 @Secured(['isAuthenticated()'])
 class PlanController {
 
-    static pagination = [ max: 10, offset: 0 ]
+    static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
 
     def webServicesSession
     def viewUtils
@@ -58,6 +59,8 @@ class PlanController {
     def list = {
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset
+        params.sort = params?.sort ?: pagination.sort
+        params.order = params?.order ?: pagination.order
 
         def plans = PlanDTO.createCriteria().list(
                 max:    params.max,
@@ -66,7 +69,9 @@ class PlanController {
             item {
                 eq('entity', new CompanyDTO(session['company_id']))
             }
-            order('id', 'desc')
+
+            // apply sorting
+            SortableCriteria.sort(params, delegate)
         }
 
         def selected = params.id ? PlanDTO.get(params.int("id")) : null

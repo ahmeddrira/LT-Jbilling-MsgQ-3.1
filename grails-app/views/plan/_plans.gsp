@@ -31,9 +31,19 @@
         <table id="plans" cellspacing="0" cellpadding="0">
             <thead>
                 <tr>
-                    <th><g:message code="plan.th.name"/></th>
-                    <th class="medium"><g:message code="plan.th.item.number"/></th>
-                    <th class="small"><g:message code="plan.th.products"/></th>
+                    <th>
+                        <g:remoteSort action="list" sort="id" update="column1">
+                            <g:message code="plan.th.name"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="medium">
+                        <g:remoteSort action="list" sort="item.internalNumber" update="column1">
+                            <g:message code="plan.th.item.number"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="small">
+                        <g:message code="plan.th.products"/>
+                    </th>
                 </tr>
             </thead>
 
@@ -71,7 +81,7 @@
             <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], update: 'column1']"/>
         </div>
         <div class="row">
-            <util:remotePaginate controller="plan" action="list" params="[partial: true]" total="${plans.totalCount}" update="column1"/>
+            <util:remotePaginate controller="plan" action="list" params="${sortableParams(params: [partial: true])}" total="${plans.totalCount}" update="column1"/>
         </div>
     </div>
 </g:if>

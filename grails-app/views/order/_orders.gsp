@@ -32,10 +32,24 @@
         <table id="orders" cellspacing="0" cellpadding="0">
             <thead>
                 <tr>
-                    <th class="small"><g:message code="order.label.id"/></th>
-                    <th class="large"><g:message code="order.label.customer"/></th>
-                    <th class="small"><g:message code="order.label.date"/></th>
-                    <th class="small"><g:message code="order.label.amount"/></th>
+                    <th class="small">
+                        <g:remoteSort action="list" sort="id" update="column1">
+                            <g:message code="order.label.id"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="large">
+                        <g:remoteSort action="list" sort="contact.firstName, contact.lastName, contact.organizationName, u.userName" alias="[contact: 'baseUserByUserId.contact']" update="column1">
+                            <g:message code="order.label.customer"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="small">
+                        <g:remoteSort action="list" sort="createDate" update="column1">
+                            <g:message code="order.label.date"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="small">
+                        <g:message code="order.label.amount"/>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -90,7 +104,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="order" action="list" params="[partial: true]" total="${orders?.totalCount ?: 0}" update="column1"/>
+        <util:remotePaginate controller="order" action="list" params="${sortableParams(params: [partial: true])}" total="${orders?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 

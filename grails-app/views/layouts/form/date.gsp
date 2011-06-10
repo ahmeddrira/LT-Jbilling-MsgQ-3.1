@@ -45,6 +45,10 @@
                     options.buttonImage = "${resource(dir:'images', file:'icon04.gif')}";
                     options.buttonImageOnly = true;
 
+                    <g:if test="${pageProperty(name: 'page.onClose')}">
+                    options.onClose = ${pageProperty(name: 'page.onClose')}
+                    </g:if>
+
                     $("${jquerySelector}").datepicker(options);
                 },
                 $('${jquerySelector}').is(":visible") ? 0 : 500

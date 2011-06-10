@@ -33,12 +33,36 @@
 		<table id="invoices" cellspacing="0" cellpadding="0">
 			<thead>
                 <tr>
-                    <th class="small"><g:message code="invoice.label.id"/></th>
-                    <th class="large"><g:message code="invoice.label.customer"/></th>
-                    <th class="medium"><g:message code="label.gui.date"/></th>
-                    <th class="tiny"><g:message code="invoice.label.status"/></th>
-                    <th class="small"><g:message code="invoice.label.amount"/></th>
-                    <th class="small"><g:message code="invoice.label.balance"/></th>
+                    <th class="small">
+                        <g:remoteSort action="list" sort="id" update="column1">
+                            <g:message code="invoice.label.id"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="large">
+                        <g:remoteSort action="list" sort="contact.firstName, contact.lastName, contact.organizationName, baseUser.userName" alias="[contact: 'baseUser.contact']" update="column1">
+                            <g:message code="invoice.label.customer"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="medium">
+                        <g:remoteSort action="list" sort="createDatetime" update="column1">
+                            <g:message code="label.gui.date"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="tiny2">
+                        <g:remoteSort action="list" sort="invoiceStatus.id" update="column1">
+                            <g:message code="invoice.label.status"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="small">
+                        <g:remoteSort action="list" sort="total" update="column1">
+                            <g:message code="invoice.label.amount"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="small">
+                        <g:remoteSort action="list" sort="balance" update="column1">
+                            <g:message code="invoice.label.balance"/>
+                        </g:remoteSort>
+                    </th>
                 </tr>
 	        </thead>
 	        
@@ -62,7 +86,7 @@
                                     ${contact.firstName} &nbsp;${contact.lastName}
                                 </g:if>
                                 <g:else>
-                                    ${ordr?.baseUserByUserId?.userName}
+                                    ${inv?.baseUser?.userName}
                                 </g:else>
                             </strong>
                             <em>${contact?.organizationName}</em>
@@ -108,7 +132,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="invoice" action="list" params="[partial: true]" total="${invoices?.totalCount ?: 0}" update="column1"/>
+        <util:remotePaginate controller="invoice" action="list" params="${sortableParams(params: [partial: true])}" total="${invoices?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 

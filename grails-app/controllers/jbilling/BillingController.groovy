@@ -31,7 +31,8 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS
+import com.sapienter.jbilling.client.util.SortableCriteria;
 
 /**
 * BillingController
@@ -42,7 +43,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 @Secured(['isAuthenticated()'])
 class BillingController {
 
-	static pagination = [ max: 10, offset: 0 ]
+	static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
 
 	def webServicesSession
 	def recentItemService
@@ -92,9 +93,11 @@ class BillingController {
 	 * Filter the process results based on the parameter filter values
 	 */
 	def filterProcesses(filters) {
-		
 		params.max = (params?.max?.toInteger()) ?: pagination.max
 		params.offset = (params?.offset?.toInteger()) ?: pagination.offset
+        params.sort = params?.sort ?: pagination.sort
+        params.order = params?.order ?: pagination.order
+
 		
 		return BillingProcessDTO.createCriteria().list(
 			max:    params.max,
@@ -109,7 +112,9 @@ class BillingController {
 					//eq('isReview', 0)
 					eq('entity', new CompanyDTO(session['company_id']))
 				}
-				order("id", "desc")
+
+                // apply sorting
+                SortableCriteria.sort(params, delegate)
 			}
 	}
 

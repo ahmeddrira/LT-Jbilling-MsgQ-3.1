@@ -46,6 +46,7 @@ import org.hibernate.FetchMode
 import org.hibernate.criterion.Restrictions
 import org.hibernate.criterion.Criterion
 import org.hibernate.Criteria
+import com.sapienter.jbilling.client.util.SortableCriteria
 
 /**
  * 
@@ -57,7 +58,7 @@ import org.hibernate.Criteria
 @Secured(['isAuthenticated()'])
 class OrderController {
 
-	static pagination = [ max: 10, offset: 0 ]
+	static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
 
     def webServicesSession
     def viewUtils
@@ -115,7 +116,9 @@ class OrderController {
 	def getFilteredOrders(filters, GrailsParameterMap params) {
 		params.max = params?.max?.toInteger() ?: pagination.max
 		params.offset = params?.offset?.toInteger() ?: pagination.offset
-		
+        params.sort = params?.sort ?: pagination.sort
+        params.order = params?.order ?: pagination.order
+
 		return OrderDTO.createCriteria().list(
 			max:    params.max,
 			offset: params.offset
@@ -145,7 +148,9 @@ class OrderController {
                 eq('u.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
 			}
-			order("id", "desc")
+
+            // apply sorting
+            SortableCriteria.sort(params, delegate)
 		}
 	}
 

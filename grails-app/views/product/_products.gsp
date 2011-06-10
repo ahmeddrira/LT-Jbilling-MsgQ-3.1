@@ -26,6 +26,8 @@
   @since  16-Dec-2010
 --%>
 
+<g:set var="paginateAction" value="${actionName == 'products' ? 'products' : 'allProducts'}"/>
+
 <%-- list of products --%>
 <g:if test="${products}">
     <div class="table-box">
@@ -33,8 +35,16 @@
             <table id="products" cellspacing="0" cellpadding="0">
                 <thead>
                 <tr>
-                    <th><g:message code="product.th.name"/></th>
-                    <th class="medium"><g:message code="product.th.internal.number"/></th>
+                    <th>
+                        <g:remoteSort action="${paginateAction}" id="${selectedCategoryId}" sort="id" update="column2">
+                            <g:message code="product.th.name"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="medium">
+                        <g:remoteSort action="${paginateAction}" id="${selectedCategoryId}" sort="internalNumber" update="column2">
+                            <g:message code="product.th.internal.number"/>
+                        </g:remoteSort>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -77,8 +87,6 @@
 </g:if>
 
 <div class="pager-box">
-    <g:set var="paginateAction" value="${actionName == 'products' ? 'products' : 'allProducts'}"/>
-
     <div class="row">
         <div class="results">
             <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], action: paginateAction, update: 'column2']"/>
@@ -91,7 +99,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="product" action="${paginateAction}" id="${selectedCategoryId}" params="[partial: true]" total="${products?.totalCount ?: 0}" update="column2"/>
+        <util:remotePaginate controller="product" action="${paginateAction}" id="${selectedCategoryId}" params="${sortableParams(params: [partial: true])}" total="${products?.totalCount ?: 0}" update="column2"/>
     </div>
 </div>
 

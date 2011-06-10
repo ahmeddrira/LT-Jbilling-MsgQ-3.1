@@ -31,12 +31,36 @@
         <table id="payments" cellspacing="0" cellpadding="0">
             <thead>
                 <tr>
-                    <th><g:message code="payment.th.id"/></th>
-                    <th class="medium"><g:message code="payment.th.date"/></th>
-                    <th class="tiny"><g:message code="payment.th.payment.or.refund"/></th>
-                    <th class="small"><g:message code="payment.th.amount"/></th>
-                    <th class="small"><g:message code="payment.th.method"/></th>
-                    <th class="small"><g:message code="payment.th.result"/></th>
+                    <th>
+                        <g:remoteSort action="list" sort="id" update="column1">
+                            <g:message code="payment.th.id"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="medium">
+                        <g:remoteSort action="list" sort="paymentDate" update="column1">
+                            <g:message code="payment.th.date"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="tiny">
+                        <g:remoteSort action="list" sort="isRefund" update="column1">
+                            <g:message code="payment.th.payment.or.refund"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="small">
+                        <g:remoteSort action="list" sort="amount" update="column1">
+                            <g:message code="payment.th.amount"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="small">
+                        <g:remoteSort action="list" sort="paymentMethod.id" update="column1">
+                            <g:message code="payment.th.method"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="small">
+                        <g:remoteSort action="list" sort="paymentResult.id" update="column1">
+                            <g:message code="payment.th.result"/>
+                        </g:remoteSort>
+                    </th>
                 </tr>
             </thead>
 
@@ -100,7 +124,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="payment" action="list" params="[partial: true]" total="${payments?.totalCount ?: 0}" update="column1"/>
+        <util:remotePaginate controller="payment" action="list" params="${sortableParams(params: [partial: true])}" total="${payments?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 

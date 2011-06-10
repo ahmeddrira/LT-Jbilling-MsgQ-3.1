@@ -27,8 +27,6 @@
   @since  04-Apr-2011
 --%>
 
-<g:set var="customer" value="${selected.customer}"/>
-
 <div class="column-hold">
     <div class="heading">
         <strong>

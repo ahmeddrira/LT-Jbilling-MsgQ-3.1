@@ -40,7 +40,7 @@
         $(document).ready(function() {
             // populate payment amount with selected invoice balance
             $('#invoices input[name=invoiceId]').change(function() {
-                $('#payment\\.amount').val($('#invoice-' + $(this).val() + '-balance').val());
+                $('#payment\\.amountAsDecimal').val($('#invoice-' + $(this).val() + '-balance').val());
             });
         });
     </script>

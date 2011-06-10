@@ -39,6 +39,7 @@ import com.sapienter.jbilling.common.Constants
 import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.server.util.csv.Exporter
 import com.sapienter.jbilling.client.util.DownloadHelper
+import com.sapienter.jbilling.client.util.SortableCriteria
 
 /**
  * PaymentController 
@@ -49,7 +50,7 @@ import com.sapienter.jbilling.client.util.DownloadHelper
 @Secured(['isAuthenticated()'])
 class PaymentController {
 
-    static pagination = [ max: 10, offset: 0 ]
+    static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
 
     def webServicesSession
     def webServicesValidationAdvice
@@ -65,6 +66,8 @@ class PaymentController {
     def getList(filters, GrailsParameterMap params) {
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset
+        params.sort = params?.sort ?: pagination.sort
+        params.order = params?.order ?: pagination.order
 
         return PaymentDTO.createCriteria().list(
                 max:    params.max,
@@ -86,7 +89,9 @@ class PaymentController {
                 eq('u.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
             }
-            order('id', 'desc')
+
+            // apply sorting
+            SortableCriteria.sort(params, delegate)
         }
     }
 

@@ -35,7 +35,8 @@ import com.sapienter.jbilling.server.util.csv.Exporter
 import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.client.util.DownloadHelper
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import com.sapienter.jbilling.server.item.CurrencyBL;
+import com.sapienter.jbilling.server.item.CurrencyBL
+import com.sapienter.jbilling.client.util.SortableCriteria;
 
 /**
  * BillingController
@@ -46,7 +47,7 @@ import com.sapienter.jbilling.server.item.CurrencyBL;
 @Secured(['isAuthenticated()'])
 class InvoiceController {
 
-    static pagination = [max: 10, offset: 0]
+    static pagination = [max: 10, offset: 0, sort: 'id', order: 'desc']
 
     def webServicesSession
     def viewUtils
@@ -99,6 +100,8 @@ class InvoiceController {
     def getInvoices(filters, GrailsParameterMap params) {
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset
+        params.sort = params?.sort ?: pagination.sort
+        params.order = params?.order ?: pagination.order
 
         // hide review invoices by default
         def reviewFilter = filters.find{ it.field == 'isReview' }
@@ -116,12 +119,13 @@ class InvoiceController {
                     }
                 }
 
-                baseUser {
-                    eq('company', new CompanyDTO(session['company_id']))
-                }
+                createAlias('baseUser', 'baseUser')
+                eq('baseUser.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
             }
-            order("id", "desc")
+
+            // apply sorting
+            SortableCriteria.sort(params, delegate)
         }
     }
 

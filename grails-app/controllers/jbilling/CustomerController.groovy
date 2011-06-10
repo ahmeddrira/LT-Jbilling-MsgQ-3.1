@@ -23,10 +23,9 @@ package jbilling
 import com.sapienter.jbilling.client.ViewUtils
 import com.sapienter.jbilling.common.Constants
 import com.sapienter.jbilling.common.SessionInternalError
-import com.sapienter.jbilling.server.entity.AchDTO
-import com.sapienter.jbilling.server.entity.CreditCardDTO
+
 import com.sapienter.jbilling.server.item.CurrencyBL
-import com.sapienter.jbilling.server.user.ContactWS
+
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.user.db.UserDTO
@@ -40,17 +39,16 @@ import org.springframework.security.authentication.encoding.PasswordEncoder
 import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.server.util.csv.Exporter
 import com.sapienter.jbilling.client.util.DownloadHelper
-import org.springframework.web.servlet.support.RequestContextUtils
-import org.springframework.web.servlet.LocaleResolver
-import org.springframework.web.servlet.i18n.SessionLocaleResolver
+
 import com.sapienter.jbilling.client.user.UserHelper
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO
-import org.hibernate.criterion.Restrictions
+
+import com.sapienter.jbilling.client.util.SortableCriteria
 
 @Secured(['isAuthenticated()'])
 class CustomerController {
 
-    static pagination = [ max: 10, offset: 0 ]
+    static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
 
     IWebServicesSessionBean webServicesSession
     ViewUtils viewUtils
@@ -67,6 +65,8 @@ class CustomerController {
     def getList(filters, statuses, GrailsParameterMap params) {
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset
+        params.sort = params?.sort ?: pagination.sort
+        params.order = params?.order ?: pagination.order
 
         return UserDTO.createCriteria().list(
                 max:    params.max,
@@ -91,7 +91,9 @@ class CustomerController {
                 eq('company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
             }
-            order('id', 'desc')
+
+            // apply sorting
+            SortableCriteria.sort(params, delegate)
         }
     }
 

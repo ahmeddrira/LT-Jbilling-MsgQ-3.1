@@ -48,12 +48,23 @@
                             <content tag="label"><g:message code="prompt.login.name"/></content>
                             ${user?.userName}
                         </g:applyLayout>
-                    </div>
 
-                    <div class="column">
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="prompt.user.role"/></content>
                             ${role.getTitle(session['language_id'])}
+                        </g:applyLayout>
+                    </div>
+
+                    <div class="column">
+
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="prompt.organization.name"/></content>
+                            ${contact?.organizationName}
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="prompt.user.name"/></content>
+                            ${contact?.firstName} ${contact?.lastName}
                         </g:applyLayout>
                     </div>
                 </div>

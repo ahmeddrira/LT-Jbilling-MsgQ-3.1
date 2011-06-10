@@ -18,13 +18,9 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<g:message code="pager.show.max.results"/>
-
-<g:each var="max" in="${steps}">
-    <g:if test="${params.max == max}">
-        <span>${max}</span>
-    </g:if>
-    <g:else>
-        <g:remoteLink action="${action ?: 'list'}" params="${sortableParams(params: [partial: true, max: max])}" update="${update}">${max}</g:remoteLink>
-    </g:else>
-</g:each>
+<g:remoteLink controller="${controller}" action="${action}" id="${id}"
+        params="${sortableParams(params: [partial: true, max: params.max, offset: params.offset], sort: sort, order: order, alias: alias)}"
+        update="${update}">
+    ${body}
+    <img src="${resource(dir: 'images', file: order ? 'arrows-' + order + '.gif' : 'arrows.gif')}" alt="sort"/>
+</g:remoteLink>

@@ -124,21 +124,17 @@
 
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="payment.amount"/></content>
-                            <content tag="label.for">payment.amount</content>
                             <span><g:formatNumber number="${payment.amount}" formatName="money.format"/></span>
                             <g:hiddenField class="field" name="payment.amountAsDecimal" value="${formatNumber(number: payment?.amount)}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="payment.date"/></content>
-                            <content tag="label.for">payment.paymentDate</content>
                             <g:set var="paymentDate" value="${payment?.paymentDate ?: new Date()}"/>
                             <span><g:formatDate date="${paymentDate}"/></span>
                             <g:hiddenField class="field" name="payment.paymentDate" value="${formatDate(date: paymentDate)}"/>
                         </g:applyLayout>
 
-                        <g:hiddenField name="isRefund" value="${payment?.isRefund}"/>
-                        <g:hiddenField name="processNow" value="${processNow}"/>
                     </div>
 
                     <div class="column">
@@ -166,6 +162,19 @@
                                 <em>${user.contact.organizationName}</em>
                             </g:applyLayout>
                         </g:if>
+
+
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="payment.is.refund"/></content>
+                            <g:formatBoolean boolean="${payment?.isRefund > 0}"/>
+                            <g:hiddenField name="isRefund" value="${payment?.isRefund}"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="payment.label.process.realtime"/></content>
+                            <g:formatBoolean boolean="${processNow}"/>
+                            <g:hiddenField name="processNow" value="${processNow}"/>
+                        </g:applyLayout>
                     </div>
                 </div>
 
@@ -188,7 +197,6 @@
                                 <div class="column">
                                     <g:applyLayout name="form/text">
                                         <content tag="label"><g:message code="prompt.name.on.card"/></content>
-                                        <content tag="label.for">creditCard.name</content>
                                         <span>${creditCard?.name}</span>
                                         <g:hiddenField name="creditCard.name" value="${creditCard?.name}" />
                                     </g:applyLayout>
@@ -196,7 +204,6 @@
 
                                     <g:applyLayout name="form/text">
                                         <content tag="label"><g:message code="prompt.credit.card.number"/></content>
-                                        <content tag="label.for">creditCard.number</content>
 
                                         %{-- obscure credit card by default, or if the preference is explicitly set --}%
                                         <g:if test="${preferenceIsNullOrEquals(preferenceId: Constants.PREFERENCE_HIDE_CC_NUMBERS, value: 1, true)}">
@@ -211,7 +218,6 @@
 
                                     <g:applyLayout name="form/text">
                                         <content tag="label"><g:message code="prompt.expiry.date"/></content>
-                                        <content tag="label.for">expiryMonth</content>
                                         <span>
                                             <g:formatDate date="${creditCard?.expiry}" format="MM"/>
                                             /

@@ -32,6 +32,7 @@ import org.hibernate.criterion.Restrictions
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.hibernate.FetchMode
 import org.hibernate.Criteria
+import com.sapienter.jbilling.client.util.SortableCriteria
 
 /**
 * MediationController
@@ -42,7 +43,7 @@ import org.hibernate.Criteria
 @Secured(['isAuthenticated()'])
 class MediationController {
 
-    static pagination = [ max: 10, offset: 0 ]
+    static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc']
 
 	def webServicesSession
 	def recentItemService
@@ -69,6 +70,8 @@ class MediationController {
 	def getFilteredProcesses (filters, GrailsParameterMap params) {
 		params.max = (params?.max?.toInteger()) ?: pagination.max
 		params.offset = (params?.offset?.toInteger()) ?: pagination.offset
+        params.sort = params?.sort ?: pagination.sort
+        params.order = params?.order ?: pagination.order
 
 		def processes = new HashMap<MediationProcess, Integer>()
 
@@ -88,7 +91,8 @@ class MediationController {
                 eq("entityId", session['company_id'])
             }
 
-			order("id", "desc")
+            // apply sorting
+            SortableCriteria.sort(params, delegate)
 
         }.each { process ->
             processes.put(process, getRecordCount(process))

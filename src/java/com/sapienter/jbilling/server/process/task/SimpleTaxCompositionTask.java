@@ -106,7 +106,7 @@ public class SimpleTaxCompositionTask extends PluggableTask
 
             //remove carried balance from tax calculation 
             //to avoid double taxation
-            LOG.debug("Carried balance is " + invoice.getCarriedBalance());
+            LOG.debug("Percentage Price. Carried balance is " + invoice.getCarriedBalance());
             if ( null != invoice.getCarriedBalance() ){
                 invoiceAmountSum = invoiceAmountSum.subtract(invoice.getCarriedBalance());
             }
@@ -143,6 +143,7 @@ public class SimpleTaxCompositionTask extends PluggableTask
             invoice.addResultLine(invoiceLine);
             //}
         } else {
+            LOG.debug("Flat Price."); 
             ItemBL itemBL = new ItemBL(taxItem);
             BigDecimal price = itemBL.getPriceByCurrency(taxItem, userId, invoice.getCurrency().getId());
 

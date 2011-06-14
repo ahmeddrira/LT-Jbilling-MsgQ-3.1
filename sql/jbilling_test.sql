@@ -11322,6 +11322,37 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	88	description	1	A scheduled task to execute the Ageing Process.
 24	89	title	1	Business day ageing
 24	89	description	1	Ages a user based on the number of business days (excluding holidays) that the account is overdue.
+59	1	description	1	Create customer
+59	2	description	1	Edit customer
+59	3	description	1	Delete customer
+59	4	description	1	Create order
+59	5	description	1	Edit order
+59	6	description	1	Delete order
+59	7	description	1	Create payment
+59	8	description	1	Edit payment
+59	9	description	1	Delete payment
+59	10	description	1	Link payment to invoice
+59	11	description	1	Create product
+59	12	description	1	Edit product
+59	13	description	1	Delete product
+59	14	description	1	Create product category
+59	15	description	1	Edit product category
+59	16	description	1	Delete product category
+59	17	description	1	Create plan
+59	18	description	1	Edit plan
+59	19	description	1	Delete plan
+59	20	description	1	Delete invoice
+59	21	description	1	Approve / Disapprove review
+59	22	description	1	Show customer menu
+59	23	description	1	Show invoices menu
+59	24	description	1	Show payments and refunds menu
+59	25	description	1	Show billing menu
+59	26	description	1	Show mediation menu
+59	27	description	1	Show reports menu
+59	28	description	1	Show products menu
+59	29	description	1	Show plans menu
+59	30	description	1	Show configuration menu
+59	120	description	1	Web Service API access
 \.
 
 
@@ -11566,6 +11597,9 @@ recent_item	2
 pluggable_task_parameter	8314
 event_log	470
 permission_user	10
+permission_user	1
+permission_user	1
+permission_user	1
 \.
 
 
@@ -14123,147 +14157,37 @@ COPY period_unit (id) FROM stdin;
 --
 
 COPY permission (id, type_id, foreign_id) FROM stdin;
-1	1	1
-2	1	2
-3	1	3
-4	1	4
-5	1	5
-6	1	6
-7	2	\N
-8	2	\N
-9	2	\N
-10	2	\N
-11	2	\N
-12	3	\N
-13	3	\N
-14	3	\N
-15	3	\N
-16	3	\N
-17	3	\N
-18	3	\N
-19	1	7
-20	3	\N
-21	3	\N
-22	1	8
-23	1	9
-24	1	10
-25	1	11
-26	1	12
-27	1	13
-28	1	14
-29	1	15
-30	1	16
-31	1	17
-32	1	18
-33	1	19
-34	4	\N
-35	1	20
-36	1	21
-37	1	22
-38	1	23
-39	1	24
-40	1	25
-41	1	26
-42	1	27
-43	1	28
-44	1	29
-45	1	30
-46	1	31
-47	1	32
-48	1	33
-49	1	34
-50	1	35
-51	1	36
-52	1	37
-53	1	38
-54	1	39
-55	1	40
-56	1	41
-57	1	42
-58	1	43
-59	1	44
-60	1	45
-61	1	46
-62	1	47
-63	1	48
-64	1	49
-65	1	50
-66	1	51
-67	5	1
-68	5	2
-69	5	3
-70	5	4
-71	5	5
-72	5	6
-73	5	7
-74	5	8
-75	5	9
-76	5	10
-77	1	52
-78	1	53
-79	1	54
-80	1	55
-81	3	\N
-82	3	\N
-83	1	56
-84	5	11
-85	1	57
-86	1	6
-87	1	59
-88	1	60
-89	1	61
-90	1	62
-91	1	63
-92	1	64
-93	1	65
-94	1	66
-95	1	67
-96	1	68
-97	1	69
-98	1	70
-99	5	12
-100	5	13
-101	5	14
-102	5	15
-103	5	16
-104	1	71
-105	1	72
-106	1	73
-107	1	74
-108	6	\N
-109	1	75
-110	1	76
-111	5	17
-112	5	18
-113	7	\N
-114	3	\N
-115	2	\N
-116	1	77
-117	1	78
-118	1	79
-119	1	80
-120	8	\N
-122	5	19
-123	1	82
-124	1	81
-125	1	83
-126	1	85
-127	1	84
-128	1	86
-129	1	87
-130	1	88
-131	1	89
-132	1	90
-133	1	91
-134	3	\N
-135	1	92
-136	1	93
-137	9	\N
-138	1	94
-139	1	95
-140	1	96
-145	3	\N
-146	1	97
+1	1	\N
+2	1	\N
+3	1	\N
+4	2	\N
+5	2	\N
+6	2	\N
+7	3	\N
+8	3	\N
+9	3	\N
+10	3	\N
+11	4	\N
+12	4	\N
+13	4	\N
+14	5	\N
+15	5	\N
+16	5	\N
+17	6	\N
+18	6	\N
+19	6	\N
+20	7	\N
+21	8	\N
+22	9	\N
+23	9	\N
+24	9	\N
+25	9	\N
+26	9	\N
+27	9	\N
+28	9	\N
+29	9	\N
+30	9	\N
+120	10	\N
 \.
 
 
@@ -14272,348 +14196,57 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 --
 
 COPY permission_role_map (permission_id, role_id) FROM stdin;
-1	1
-2	1
-3	1
-4	1
-80	1
-83	1
-85	1
-5	1
-87	1
-89	1
-90	1
-91	1
-92	1
-105	1
-88	1
-93	1
-94	1
-95	1
-6	1
-86	1
-19	1
-22	1
-23	1
-24	1
-29	1
-30	1
-31	1
-32	1
-33	1
-35	1
-36	1
-37	1
-38	1
-39	1
-40	1
-41	1
-42	1
-43	1
-44	1
-46	1
-47	1
-48	1
-49	1
-50	1
-51	1
-52	1
-53	1
-54	1
-55	1
-56	1
-57	1
-58	1
-59	1
-60	1
-62	1
-63	1
-64	1
-65	1
-78	1
-67	1
-68	1
-69	1
-70	1
-71	1
-72	1
-73	1
-74	1
-75	1
-76	1
-84	1
-99	1
-100	1
-101	1
-102	1
-103	1
-7	1
-8	1
-9	1
-10	1
-11	1
-12	1
-13	1
-15	1
-16	1
-17	1
-20	1
-81	1
-34	1
 1	2
 2	2
 3	2
 4	2
-15	2
-80	2
-83	2
-85	2
 5	2
-87	2
-89	2
-90	2
-91	2
-92	2
-105	2
-88	2
-93	2
-94	2
-95	2
 6	2
-86	2
-19	2
-22	2
-23	2
-24	2
-29	2
-30	2
-31	2
-32	2
-33	2
-35	2
-36	2
-37	2
-38	2
-39	2
-40	2
-41	2
-42	2
-43	2
-44	2
-46	2
-47	2
-48	2
-49	2
-50	2
-51	2
-52	2
-53	2
-54	2
-55	2
-56	2
-57	2
-58	2
-59	2
-60	2
-62	2
-63	2
-64	2
-65	2
-67	2
-68	2
-69	2
-70	2
-71	2
-72	2
-73	2
-74	2
-75	2
-76	2
-84	2
-99	2
-100	2
-101	2
-102	2
-103	2
-78	2
 7	2
+8	2
 9	2
 10	2
 11	2
+12	2
 13	2
-47	3
+14	2
+15	2
 16	2
 17	2
+18	2
+19	2
 20	2
-81	2
-34	2
+21	2
+22	2
+23	2
+24	2
+25	2
+26	2
+27	2
+28	2
+29	2
+30	2
+120	2
 1	3
 2	3
 3	3
 4	3
 5	3
-87	3
-89	3
-90	3
-91	3
-92	3
-105	3
-88	3
-93	3
-94	3
-95	3
 6	3
-86	3
-19	3
-22	3
-23	3
-24	3
-29	3
-32	3
-39	3
-40	3
-41	3
-42	3
-43	3
-44	3
-46	3
-109	1
-48	3
-49	3
-50	3
-51	3
-52	3
-53	3
-55	3
-56	3
-62	3
-63	3
-64	3
-65	3
-67	3
-68	3
-69	3
-71	3
-73	3
-74	3
-75	3
-76	3
-84	3
-78	3
 7	3
+8	3
+9	3
 10	3
 11	3
+12	3
+13	3
 14	3
+15	3
 16	3
 17	3
+18	3
+19	3
 20	3
-82	3
-1	4
-2	4
-104	4
-106	4
-4	4
-96	4
-97	4
-98	4
-22	4
-23	4
-24	4
-40	4
-41	4
-43	4
-44	4
-46	4
-50	4
-51	4
-7	4
-11	4
-18	4
-21	4
-82	4
-61	4
-77	4
-79	4
-99	4
-100	4
-101	4
-1	5
-2	5
-109	2
-109	3
-25	5
-26	5
-27	5
-40	5
-41	5
-43	5
-45	5
-46	5
-50	5
-51	5
-107	1
-107	2
-108	1
-108	2
-108	3
-108	4
-109	4
-109	5
-110	1
-110	2
-111	1
-112	1
-111	2
-112	2
-111	3
-112	3
-113	1
-113	2
-113	3
-114	1
-114	2
-114	3
-115	1
-115	2
-115	3
-70	3
-72	3
-114	4
-99	3
-100	3
-101	3
-102	3
-103	3
-116	5
-42	4
-117	5
-118	2
-119	2
-122	2
-123	2
-124	2
-125	2
-125	2
-126	2
-127	2
-128	2
-129	2
-130	2
-131	2
-132	5
-133	2
-134	2
-134	3
-138	2
-135	2
-136	2
-137	2
-139	2
-140	2
-145	2
-145	3
-146	2
-146	3
 \.
 
 
@@ -14622,15 +14255,16 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 --
 
 COPY permission_type (id, description) FROM stdin;
-1	Menu
-2	User Create
-3	User Edit
-4	Items
-5	Reports
-6	Orders
+1	Customers
+2	Orders
+3	Payments
+4	Products
+5	Product Category
+6	Plans
 7	Invoices
-8	Web Services
-9	Server Access
+8	Billing
+9	Menu
+10	API
 \.
 
 
@@ -14639,9 +14273,6 @@ COPY permission_type (id, description) FROM stdin;
 --
 
 COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
-120	1	1	1
-137	1	1	2
-120	12	1	3
 \.
 
 
@@ -16227,10 +15858,8 @@ COPY report_type (id, name, optlock) FROM stdin;
 --
 
 COPY role (id) FROM stdin;
-1
 2
 3
-4
 5
 \.
 
@@ -18272,9 +17901,6 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 1072	5
 10730	5
 10731	5
-10740	4
-10741	4
-10742	4
 10743	5
 10744	5
 10746	5
@@ -18297,6 +17923,9 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 10780	5
 10781	5
 10790	5
+10740	3
+10741	3
+10742	3
 \.
 
 

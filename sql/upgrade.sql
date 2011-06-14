@@ -993,27 +993,140 @@ update pluggable_task set processing_order=3 where id=480;
 -- Date: 03-Jun-2011
 -- Redmine Issue: #576
 -- Description: User permissions and role screens
-
 -- editable user permissions
-insert into jbilling_seqs (name, next_id) values ('permission_user', (select round(max(id)/10) + 1 from permission_user));
+insert into jbilling_seqs (name, next_id) values ('permission_user', 1);
 
--- fix typos in permission type names
-update permission_type set description = 'Menu' where id = 1;
-update permission_type set description = 'User Create' where id = 2;
-update permission_type set description = 'User Edit' where id = 3;
-update permission_type set description = 'Items' where id = 4;
-update permission_type set description = 'Reports' where id = 5;
-update permission_type set description = 'Orders' where id = 6;
-update permission_type set description = 'Invoices' where id = 7;
-update permission_type set description = 'Web Services' where id = 8;
-update permission_type set description = 'Server Access' where id = 9;
+-- delete all old permissions and permission types
+delete from international_description where table_id = 59;
+delete from permission_role_map;
+delete from permission_user;
+delete from permission;
+delete from permission_type;
 
--- delete obsolete permissions
+-- delete obsolete roles
+update user_role_map set role_id = 3 where role_id = 1; -- move internal to clerk
+delete from role where id = 1;
 
--- new permission descriptions
-delete from international_description where table_id = 59 and language_id = 1;
+update user_role_map set role_id = 3 where role_id = 4; -- move partner to customer
+delete from role where id = 4;
 
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 34, 'description', 1, 'Edit product');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 113, 'description', 1, 'Delete invoice');
+-- new permissions
+insert into permission_type (id, description) values (1, 'Customers');
+insert into permission_type (id, description) values (2, 'Orders');
+insert into permission_type (id, description) values (3, 'Payments');
+insert into permission_type (id, description) values (4, 'Products');
+insert into permission_type (id, description) values (5, 'Product Category');
+insert into permission_type (id, description) values (6, 'Plans');
+insert into permission_type (id, description) values (7, 'Invoices');
+insert into permission_type (id, description) values (8, 'Billing');
+insert into permission_type (id, description) values (9, 'Menu');
+insert into permission_type (id, description) values (10, 'API');
+
+-- customer
+insert into permission (id, type_id) values (1, 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 1, 'description', 1, 'Create customer');
+
+insert into permission (id, type_id) values (2, 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 2, 'description', 1, 'Edit customer');
+
+insert into permission (id, type_id) values (3, 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 3, 'description', 1, 'Delete customer');
+
+-- orders
+insert into permission (id, type_id) values (4, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 4, 'description', 1, 'Create order');
+
+insert into permission (id, type_id) values (5, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 5, 'description', 1, 'Edit order');
+
+insert into permission (id, type_id) values (6, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 6, 'description', 1, 'Delete order');
+
+-- payments
+insert into permission (id, type_id) values (7, 3);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 7, 'description', 1, 'Create payment');
+
+insert into permission (id, type_id) values (8, 3);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 8, 'description', 1, 'Edit payment');
+
+insert into permission (id, type_id) values (9, 3);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 9, 'description', 1, 'Delete payment');
+
+insert into permission (id, type_id) values (10, 3);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 10, 'description', 1, 'Link payment to invoice');
+
+-- products
+insert into permission (id, type_id) values (11, 4);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 11, 'description', 1, 'Create product');
+
+insert into permission (id, type_id) values (12, 4);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 12, 'description', 1, 'Edit product');
+
+insert into permission (id, type_id) values (13, 4);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 13, 'description', 1, 'Delete product');
+
+-- product category
+insert into permission (id, type_id) values (14, 5);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 14, 'description', 1, 'Create product category');
+
+insert into permission (id, type_id) values (15, 5);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 15, 'description', 1, 'Edit product category');
+
+insert into permission (id, type_id) values (16, 5);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 16, 'description', 1, 'Delete product category');
+
+-- plans
+insert into permission (id, type_id) values (17, 6);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 17, 'description', 1, 'Create plan');
+
+insert into permission (id, type_id) values (18, 6);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 18, 'description', 1, 'Edit plan');
+
+insert into permission (id, type_id) values (19, 6);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 19, 'description', 1, 'Delete plan');
+
+-- invoices
+insert into permission (id, type_id) values (20, 7);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 20, 'description', 1, 'Delete invoice');
+
+-- billing
+insert into permission (id, type_id) values (21, 8);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 21, 'description', 1, 'Approve / Disapprove review');
+
+-- menu
+insert into permission (id, type_id) values (22, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 22, 'description', 1, 'Show customer menu');
+
+insert into permission (id, type_id) values (23, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 23, 'description', 1, 'Show invoices menu');
+
+insert into permission (id, type_id) values (24, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 24, 'description', 1, 'Show payments and refunds menu');
+
+insert into permission (id, type_id) values (25, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 25, 'description', 1, 'Show billing menu');
+
+insert into permission (id, type_id) values (26, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 26, 'description', 1, 'Show mediation menu');
+
+insert into permission (id, type_id) values (27, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 27, 'description', 1, 'Show reports menu');
+
+insert into permission (id, type_id) values (28, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 28, 'description', 1, 'Show products menu');
+
+insert into permission (id, type_id) values (29, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 29, 'description', 1, 'Show plans menu');
+
+insert into permission (id, type_id) values (30, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 30, 'description', 1, 'Show configuration menu');
+
+-- api
+insert into permission (id, type_id) values(120, 10);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 120, 'description', 1, 'Web Service API access');
 
+-- default permissions for super users
+insert into permission_role_map (role_id, permission_id) select 2, id from permission; -- all
+
+-- default permissions for clerks
+insert into permission_role_map (role_id, permission_id) select 3, id from permission where type_id in (1, 2, 3, 4, 5, 6, 7); -- everything but configuration/billing/api

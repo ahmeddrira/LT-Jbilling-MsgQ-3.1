@@ -178,6 +178,7 @@
             <test name="com.sapienter.jbilling.server.invoice.WSTest" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.pricing.WSTest" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.pricing.strategy.WSTest" todir="${build.test-results.dir}/ws/xml"/>
+            <test name="com.sapienter.jbilling.server.integration.APITest" todir="${build.test-results.dir}/ws/xml"/>
         </junit>
 
         <!-- generate testing reports -->
@@ -238,7 +239,8 @@
             <test name="com.sapienter.jbilling.server.process.BillingProcessTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.mediation.MediationTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.provisioning.ProvisioningTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
-            <test name="com.sapienter.jbilling.server.process.AgeingTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>  <!-- must be last -->
+            <test name="com.sapienter.jbilling.server.process.AgeingTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>  <!-- must be last -->            
+            <test name="com.sapienter.jbilling.server.task.SimpleTaxCompositionTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
 
             <!-- explicitly run a single test case if 'test.class' was set -->
             <test name="${test.class}" if="test.class" todir="${build.test-results.dir}/org-integration/xml"/>

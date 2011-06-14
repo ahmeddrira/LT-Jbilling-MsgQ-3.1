@@ -1,3 +1,4 @@
+<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 %{--
   jBilling - The Enterprise Open Source Billing System
@@ -31,9 +32,14 @@
         <table id="payments" cellspacing="0" cellpadding="0">
             <thead>
                 <tr>
-                    <th>
+                    <th class="small">
                         <g:remoteSort action="list" sort="id" update="column1">
                             <g:message code="payment.th.id"/>
+                        </g:remoteSort>
+                    </th>
+                    <th class="large">
+                        <g:remoteSort action="list" sort="contact.firstName, contact.lastName, contact.organizationName, baseUser.userName" alias="[contact: 'baseUser.contact']" update="column1">
+                            <g:message code="invoice.label.customer"/>
                         </g:remoteSort>
                     </th>
                     <th class="medium">
@@ -66,11 +72,27 @@
 
             <tbody>
             <g:each var="payment" in="${payments}">
+                
+                <g:set var="contact" value="${ContactDTO.findByUserId(payment?.baseUser?.id)}"/>
+                
                 <tr id="payment-${payment.id}" class="${selected?.id == payment.id ? 'active' : ''}">
 
                     <td>
                         <g:remoteLink class="cell" action="show" id="${payment.id}" before="register(this);" onSuccess="render(data, next);">
                             <span>${payment.id}</span>
+                        </g:remoteLink>
+                    </td>
+                    <td>
+                        <g:remoteLink breadcrumb="id" class="cell double" action="show" id="${payment.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                            <strong>
+                                <g:if test="${contact?.firstName || contact?.lastName}">
+                                    ${contact.firstName} &nbsp;${contact.lastName}
+                                </g:if>
+                                <g:else>
+                                    ${payment?.baseUser?.userName}
+                                </g:else>
+                            </strong>
+                            <em>${contact?.organizationName}</em>
                         </g:remoteLink>
                     </td>
                     <td class="medium">

@@ -1522,7 +1522,7 @@
     <JbillingSeqs Name="order_billing_type" NextId="3"/>
     <JbillingSeqs Name="order_status" NextId="5"/>
     <JbillingSeqs Name="pluggable_task_type_category" NextId="22"/>
-    <JbillingSeqs Name="pluggable_task_type" NextId="70"/>
+    <JbillingSeqs Name="pluggable_task_type" NextId="91"/>
     <JbillingSeqs Name="invoice_line_type" NextId="6"/>
     <JbillingSeqs Name="currency" NextId="11"/>
     <JbillingSeqs Name="payment_method" NextId="9"/>
@@ -1837,6 +1837,7 @@
     <PluggableTaskType Id="87" CategoryId="24" ClassName="com.sapienter.jbilling.server.process.task.BasicAgeingTask" MinParameters="0"/>
     <PluggableTaskType Id="88" CategoryId="22" ClassName="com.sapienter.jbilling.server.process.task.AgeingProcessTask" MinParameters="0"/>
     <PluggableTaskType Id="89" CategoryId="24" ClassName="com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask" MinParameters="0"/>
+    <PluggableTaskType Id="90" CategoryId="4" ClassName="com.sapienter.jbilling.server.process.task.SimpleTaxCompositionTask" MinParameters="1"/>
 
     <PluggableTaskTypeCategory Id="1" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>

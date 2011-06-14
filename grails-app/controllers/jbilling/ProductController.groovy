@@ -39,6 +39,7 @@ import com.sapienter.jbilling.client.util.DownloadHelper
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
 import org.hibernate.Criteria
 import com.sapienter.jbilling.client.util.SortableCriteria
+import org.hibernate.criterion.MatchMode
 
 @Secured(['isAuthenticated()'])
 class ProductController {
@@ -142,7 +143,7 @@ class ProductController {
         ) {
             and {
                 createAlias('defaultPrice', 'price', Criteria.LEFT_JOIN)
-
+                def description= null
                 filters.each { filter ->
                     if (filter.value != null) {
 
@@ -150,12 +151,23 @@ class ProductController {
                         if (filter.field == 'price.type') {
                             eq(filter.field, PriceModelStrategy.valueOf(filter.stringValue))
 
+                        } else if (filter.field == 'description') {
+                            description= filter.stringValue?.toLowerCase()
+                            def languageId= session['language_id']?.toInteger()
+                            sqlRestriction(" exists (select a.foreign_id from international_description a where a.foreign_id = "
+                                + " {alias}.id and a.language_id = $languageId and lower(a.content) like '%$description%')")
                         } else {
                             addToCriteria(filter.getRestrictions());
                         }
                     }
                 }
-
+                
+//                if (description) {
+//                    def languageId= session['language_id']?.toInteger()
+//                    createAlias("description", "description")
+//                    addToCriteria(Restrictions.ilike("description.content", description, MatchMode.ANYWHERE))
+//                }
+                
                 if (id != null) {
                     itemTypes {
                         eq('id', id)

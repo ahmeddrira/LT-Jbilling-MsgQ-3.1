@@ -1,6 +1,8 @@
 h1. Introduction
 
-Thank you for your interest in *j*Billing!
+!logo.gif!
+
+Thank you for your interest in *j*Billing! 
 
 In this document, we will explore in detail the integration features of jBilling that help external applications to 
 to connect with the billing infrastructure provided by *j*Billing and perform seamless interaction.
@@ -57,7 +59,11 @@ h2. The Need for Integration
 
 Applications need to interface with other applications. More so, for a billing application that contains significant information 
 about things like Customer Status, Payments Overdue, Subscriptions for Customer etc. This information is likely to be important inputs for 
-decision making in other business applications and processes. A self-contained billing application, on the other hand, has another big drawback: 
+decision making in other business applications and processes. 
+
+!need_for_integration.png!
+
+A self-contained billing application, on the other hand, has another big drawback: 
 to keep it updated, you would need a separate data-entry process that feeds the billing data from your system into the billing application. 
 This is both time and resource consuming. For example:
 
@@ -117,6 +123,8 @@ used when making non-authenticated API calls.
 {code}
 
 See the section *Enabling/Disabling authentication for jBilling web services* section below for information regarding this.
+
+!integration.png!
 
 If other remoting methods are not being used, their definition beans may be commented out from this file to give a small 
 improvement in *j*Billing startup time and memory footprint. This can be done by commenting the appropriate bean definitions in the file

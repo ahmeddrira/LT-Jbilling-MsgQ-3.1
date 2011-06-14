@@ -37,6 +37,7 @@ import com.sapienter.jbilling.client.util.DownloadHelper
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.client.util.SortableCriteria;
+import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS
 
 /**
  * BillingController
@@ -114,8 +115,14 @@ class InvoiceController {
         ) {
             and {
                 filters.each { filter ->
-                    if (filter.value != null) {
-                        addToCriteria(filter.getRestrictions());
+                    if (filter.value) {
+                        //handle invoiceStatus
+                        if (filter.field == 'invoiceStatus') {
+                            def statuses = new InvoiceStatusDAS().findAll()
+                            eq("invoiceStatus", statuses.find{ it.id?.equals(filter.integerValue) })
+                        } else {
+                            addToCriteria(filter.getRestrictions());
+                        }
                     }
                 }
 

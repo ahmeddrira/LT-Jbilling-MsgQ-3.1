@@ -130,6 +130,8 @@ public class BasicCompositionTask extends PluggableTask
                         invoiceLine = new InvoiceLineDTO(null, desc, periodAmount, orderLine.getPrice(),
                                                          orderLine.getQuantity(), type, 0,
                                                          orderLine.getItemId(), order.getUser().getId(), null);
+                        //Useful for linking Invoice Line with the order that caused it to be added
+                        invoiceLine.setOrderId(order.getId().intValue());
                         orderContribution = orderContribution.add(periodAmount);
 
                     } else if (orderLine.getOrderLineType().getId() ==

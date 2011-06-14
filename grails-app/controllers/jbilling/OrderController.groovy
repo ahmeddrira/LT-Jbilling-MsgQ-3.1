@@ -126,25 +126,21 @@ class OrderController {
 			createAlias('baseUserByUserId', 'u', Criteria.LEFT_JOIN)
 			and {
 				filters.each { filter ->
-					if (filter.value != null) {
-
+					if (filter.value) {
 						//handle orderStatus & orderPeriod separately
 						if (filter.constraintType == FilterConstraint.STATUS) {
-							if (filter.getField().equals('orderStatus')) {
+							if (filter.field == 'orderStatus') {
 								def statuses = new OrderStatusDAS().findAll()
-								eq("orderStatus", statuses.find{ it.id?.equals(filter.integerValue) })
-
-							} else if (filter.getField().equals('orderPeriod')) {
+								eq("orderStatus", statuses.find{ it.id == filter.integerValue })
+							} else if (filter.field == 'orderPeriod') {
 								def periods = new OrderPeriodDAS().findAll()
-								eq("orderPeriod", periods.find{ it.id?.equals(filter.integerValue) })
+								eq("orderPeriod", periods.find{ it.id == filter.integerValue })
 							}
-
 						} else {
 							addToCriteria(filter.getRestrictions());
 						}
 					}
 				}
-
                 eq('u.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
 			}

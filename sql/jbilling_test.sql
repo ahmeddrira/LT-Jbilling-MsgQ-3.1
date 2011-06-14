@@ -14540,6 +14540,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 80	14	com.sapienter.jbilling.server.pricing.tasks.TieredPriceModelPricingTask	0
 84	17	com.sapienter.jbilling.server.payment.tasks.SaveACHExternallyTask	1
 85	20	com.sapienter.jbilling.server.process.task.BillableUserOrdersBillingProcessFilterTask	0
+86	4	com.sapienter.jbilling.server.process.task.SimpleTaxCompositionTask	1
 87	24	com.sapienter.jbilling.server.process.task.BasicAgeingTask	0
 88	22	com.sapienter.jbilling.server.process.task.AgeingProcessTask	0
 89	24	com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask	0

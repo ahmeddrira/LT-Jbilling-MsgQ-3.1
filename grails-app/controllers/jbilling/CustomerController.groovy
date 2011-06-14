@@ -45,6 +45,13 @@ import com.sapienter.jbilling.server.user.contact.db.ContactDTO
 
 import com.sapienter.jbilling.client.util.SortableCriteria
 
+import org.hibernate.FetchMode
+import org.hibernate.criterion.MatchMode
+import org.hibernate.criterion.DetachedCriteria
+import org.hibernate.criterion.Subqueries
+import org.hibernate.criterion.Restrictions
+import org.hibernate.criterion.Criterion
+
 @Secured(['isAuthenticated()'])
 class CustomerController {
 
@@ -72,19 +79,33 @@ class CustomerController {
                 max:    params.max,
                 offset: params.offset
         ) {
+            createAlias("contact", "contact")
             and {
+                String typeId= null
+                String ccfValue= null
                 filters.each { filter ->
+                    //log.debug "Filter value: '${filter.field}'"
                     if (filter.value) {
                         // handle user status separately from the other constraints
                         // we need to find the UserStatusDTO to compare to
                         if (filter.constraintType == FilterConstraint.STATUS) {
                             eq("userStatus", statuses.find{ it.id == filter.integerValue })
+                        } else if (filter.field == 'contact.fields') {
+                            typeId = params['contactFieldTypes']
+                            ccfValue= filter.stringValue
+                            log.debug "Contact Field Type ID: ${typeId}, CCF Value: ${ccfValue}"
                         } else {
                             addToCriteria(filter.getRestrictions());
                         }
                     }
                 }
-
+                if (typeId && ccfValue) {
+                    createAlias("contact.fields", "field")
+                    createAlias("field.type", "type")
+                    setFetchMode("type", FetchMode.JOIN)
+                    eq("type.id", typeId.toInteger())
+                    addToCriteria(Restrictions.ilike("field.content", ccfValue, MatchMode.ANYWHERE))
+                }
                 roles {
                     eq('id', Constants.TYPE_CUSTOMER)
                 }

@@ -109,6 +109,7 @@ environments {
  */
 grails.doc.authors="Emiliano Conde, Brian Cowdery"
 grails.doc.license="AGPL v3"
+grails.doc.images = new File("src/docs/images")
 
 /*
  * document aliases for use in document links

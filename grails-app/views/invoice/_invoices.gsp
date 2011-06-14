@@ -73,7 +73,7 @@
                 <g:set var="contact" value="${ContactDTO.findByUserId(inv?.baseUser?.id)}"/>
                 
 				<tr id="invoice-${inv.id}" class="${invoice?.id == inv.id ? 'active' : ''}">
-					<td class="small">
+					<td class="medium">
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
                             <strong>${inv.publicNumber}</strong>
                             <em><g:message code="table.id.format" args="[inv.id]"/></em>

@@ -18,13 +18,13 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.order.db.OrderStatusDAS" %>
+<%@ page import="com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS" %>
 
 <%--
   _status
 
   @author Vikas Bodani
-  @since  31-1-2011
+  @since  14-06-2011
 --%>
 
 <div id="${filter.name}">
@@ -37,7 +37,7 @@
                 <div class="select-bg">
                     <g:select name="filters.${filter.name}.integerValue"
                             value="${filter.integerValue}"
-                            from="${new OrderStatusDAS().findAll()}"
+                            from="${new InvoiceStatusDAS().findAll()}"
                             optionKey="statusValue" optionValue="description"
                             noSelection="['': message(code: 'filters.status.empty')]" />
 
@@ -47,4 +47,3 @@
         </fieldset>
     </div>
 </div>
-

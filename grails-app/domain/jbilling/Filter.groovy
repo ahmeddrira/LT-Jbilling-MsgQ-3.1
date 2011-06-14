@@ -22,6 +22,7 @@ package jbilling
 
 import org.hibernate.criterion.Restrictions
 import org.hibernate.criterion.Criterion
+import org.hibernate.criterion.MatchMode
 import org.apache.log4j.Logger;
 
 /**
@@ -164,7 +165,7 @@ class Filter implements Serializable {
                 break
 
             case FilterConstraint.LIKE:
-                return (Restrictions.ilike(field, stringValue))
+                return (Restrictions.ilike(field, stringValue, MatchMode.ANYWHERE))
                 break
 
             case FilterConstraint.DATE_BETWEEN:

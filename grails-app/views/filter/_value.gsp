@@ -18,12 +18,8 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO" %>
-<%@ page import="com.sapienter.jbilling.server.user.db.CompanyDTO" %>
-<%@ page import="com.sapienter.jbilling.server.util.Constants" %>
-
 <%--
-  _status
+  _login
 
   @author Vikas Bodani
   @since  14-06-2011
@@ -36,14 +32,6 @@
     <div class="slide">
         <fieldset>
             <div class="input-row">
-                <div class="select-bg" style="float:left;">
-                    <g:set var="company" value="${CompanyDTO.get(session['company_id'])}"/>
-                    <g:select style="float:left;"  
-                            name="contactFieldTypes" 
-                            from="${(company.contactFieldTypes << new ContactFieldTypeDTO()).sort{it.id}}" 
-                            optionKey="id" optionValue="description"
-                            noSelection="['': message(code: 'filters.contactFieldTypes.empty')]" />
-                </div>
                 <div class="input-bg">
                     <g:textField name="filters.${filter.name}.stringValue" value="${filter.stringValue}"/>
                 </div>
@@ -52,4 +40,3 @@
         </fieldset>
     </div>
 </div>
-

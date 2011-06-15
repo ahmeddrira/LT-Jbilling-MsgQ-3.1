@@ -104,8 +104,13 @@
     </div>
 
     <div class="btn-box">
-        <g:link action="editProduct" id="${selectedProduct.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
-        <a onclick="showConfirm('deleteProduct-${selectedProduct.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
+        <sec:ifAllGranted roles="PRODUCT_41">
+            <g:link action="editProduct" id="${selectedProduct.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+        </sec:ifAllGranted>
+
+        <sec:ifAllGranted roles="PRODUCT_42">
+            <a onclick="showConfirm('deleteProduct-${selectedProduct.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
+        </sec:ifAllGranted>
     </div>
 
     <g:render template="/confirm"

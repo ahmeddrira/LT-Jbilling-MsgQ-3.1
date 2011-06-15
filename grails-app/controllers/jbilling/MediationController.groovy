@@ -40,7 +40,7 @@ import com.sapienter.jbilling.client.util.SortableCriteria
 * @author Vikas Bodani
 * @since 17/02/2011
 */
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()"])
 class MediationController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc']
@@ -50,10 +50,12 @@ class MediationController {
 	def breadcrumbService
 	def filterService
 
+    @Secured(["MENU_95"])
 	def index = {
 		redirect action: list, params: params
 	}
-	
+
+    @Secured(["MENU_95"])
 	def list = {
 		def filters = filterService.getFilters(FilterType.MEDIATIONPROCESS, params)
 		def processes = getFilteredProcesses(filters, params)

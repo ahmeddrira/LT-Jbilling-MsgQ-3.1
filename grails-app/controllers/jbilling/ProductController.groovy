@@ -41,7 +41,7 @@ import org.hibernate.Criteria
 import com.sapienter.jbilling.client.util.SortableCriteria
 import org.hibernate.criterion.MatchMode
 
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()"])
 class ProductController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -52,6 +52,7 @@ class ProductController {
     def recentItemService
     def breadcrumbService
 
+    @Secured(["MENU_97"])
     def index = {
         redirect action: list, params: params
     }
@@ -60,6 +61,7 @@ class ProductController {
      * Get a list of categories and render the "_categories.gsp" template. If a category ID is given as the
      * "id" parameter, the corresponding list of products will also be rendered.
      */
+    @Secured(["MENU_97"])
     def list = {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
         def categories = getCategories()

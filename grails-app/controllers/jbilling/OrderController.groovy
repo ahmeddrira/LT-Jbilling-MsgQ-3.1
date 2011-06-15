@@ -55,7 +55,7 @@ import com.sapienter.jbilling.client.util.SortableCriteria
  *
  */
 
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()"])
 class OrderController {
 
 	static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -66,10 +66,12 @@ class OrderController {
     def recentItemService
 	def breadcrumbService
 
+    @Secured(["MENU_92"])
     def index = {
         redirect action: list, params: params
     }
 
+    @Secured(["MENU_92"])
 	def list = {
 		if (params.id) {
 			redirect (action: 'showListAndOrder', params: [id: params.id as Integer])

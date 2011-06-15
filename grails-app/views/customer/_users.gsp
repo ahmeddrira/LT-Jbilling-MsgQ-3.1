@@ -147,7 +147,7 @@
 </div>
 
 <div class="btn-box">
-    <sec:ifAllGranted roles="CUSTOMER_1">
+    <sec:ifAllGranted roles="CUSTOMER_10">
         <g:if test="${parent?.customer?.isParent > 0}">
             <g:link action="edit" params="[parentId: parent.id]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
         </g:if>

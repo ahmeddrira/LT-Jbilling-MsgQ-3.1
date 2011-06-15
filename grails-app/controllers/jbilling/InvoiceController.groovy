@@ -45,7 +45,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS
  * @author Vikas Bodani
  * @since
  */
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()"])
 class InvoiceController {
 
     static pagination = [max: 10, offset: 0, sort: 'id', order: 'desc']
@@ -56,10 +56,12 @@ class InvoiceController {
     def recentItemService
     def breadcrumbService
 
+    @Secured(["MENU_91"])
     def index = {
         redirect action: 'list', params: params
     }
 
+    @Secured(["MENU_91"])
     def list = {
         def filters = filterService.getFilters(FilterType.INVOICE, params)
         def invoices = getInvoices(filters, params)

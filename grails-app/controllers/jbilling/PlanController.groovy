@@ -38,7 +38,7 @@ import com.sapienter.jbilling.client.util.SortableCriteria
  * @author Brian Cowdery
  * @since 01-Feb-2011
  */
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()"])
 class PlanController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -48,6 +48,7 @@ class PlanController {
     def filterService
     def breadcrumbService
 
+    @Secured(["MENU_98"])
     def index = {
         redirect action: list, params: params
     }
@@ -56,6 +57,7 @@ class PlanController {
      * Get a list of plans and render the list page. If the "applyFilters" parameter is given, the
      * partial "_plans.gsp" template will be rendered instead of the complete list.
      */
+    @Secured(["MENU_98"])
     def list = {
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset

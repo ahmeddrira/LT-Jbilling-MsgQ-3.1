@@ -1004,10 +1004,10 @@ delete from permission;
 delete from permission_type;
 
 -- delete obsolete roles
-update user_role_map set role_id = 3 where role_id = 1; -- move internal to clerk
+update user_role_map set role_id = 3 where role_id = 1; -- move internal users to clerk
 delete from role where id = 1;
 
-update user_role_map set role_id = 3 where role_id = 4; -- move partner to customer
+update user_role_map set role_id = 3 where role_id = 4; -- move partner users to customer
 delete from role where id = 4;
 
 -- new permissions
@@ -1023,103 +1023,106 @@ insert into permission_type (id, description) values (9, 'Menu');
 insert into permission_type (id, description) values (10, 'API');
 
 -- customer
-insert into permission (id, type_id) values (1, 1);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 1, 'description', 1, 'Create customer');
+insert into permission (id, type_id) values (10, 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 10, 'description', 1, 'Create customer');
 
-insert into permission (id, type_id) values (2, 1);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 2, 'description', 1, 'Edit customer');
+insert into permission (id, type_id) values (11, 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 11, 'description', 1, 'Edit customer');
 
-insert into permission (id, type_id) values (3, 1);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 3, 'description', 1, 'Delete customer');
+insert into permission (id, type_id) values (12, 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 12, 'description', 1, 'Delete customer');
 
 -- orders
-insert into permission (id, type_id) values (4, 2);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 4, 'description', 1, 'Create order');
+insert into permission (id, type_id) values (20, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 20, 'description', 1, 'Create order');
 
-insert into permission (id, type_id) values (5, 2);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 5, 'description', 1, 'Edit order');
+insert into permission (id, type_id) values (21, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 21, 'description', 1, 'Edit order');
 
-insert into permission (id, type_id) values (6, 2);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 6, 'description', 1, 'Delete order');
+insert into permission (id, type_id) values (22, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 22, 'description', 1, 'Delete order');
 
 -- payments
-insert into permission (id, type_id) values (7, 3);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 7, 'description', 1, 'Create payment');
+insert into permission (id, type_id) values (30, 3);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 30, 'description', 1, 'Create payment');
 
-insert into permission (id, type_id) values (8, 3);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 8, 'description', 1, 'Edit payment');
+insert into permission (id, type_id) values (31, 3);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 31, 'description', 1, 'Edit payment');
 
-insert into permission (id, type_id) values (9, 3);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 9, 'description', 1, 'Delete payment');
+insert into permission (id, type_id) values (32, 3);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 32, 'description', 1, 'Delete payment');
 
-insert into permission (id, type_id) values (10, 3);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 10, 'description', 1, 'Link payment to invoice');
+insert into permission (id, type_id) values (33, 3);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 33, 'description', 1, 'Link payment to invoice');
 
 -- products
-insert into permission (id, type_id) values (11, 4);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 11, 'description', 1, 'Create product');
+insert into permission (id, type_id) values (40, 4);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 40, 'description', 1, 'Create product');
 
-insert into permission (id, type_id) values (12, 4);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 12, 'description', 1, 'Edit product');
+insert into permission (id, type_id) values (41, 4);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 41, 'description', 1, 'Edit product');
 
-insert into permission (id, type_id) values (13, 4);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 13, 'description', 1, 'Delete product');
+insert into permission (id, type_id) values (42, 4);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 42, 'description', 1, 'Delete product');
 
 -- product category
-insert into permission (id, type_id) values (14, 5);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 14, 'description', 1, 'Create product category');
+insert into permission (id, type_id) values (50, 5);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 50, 'description', 1, 'Create product category');
 
-insert into permission (id, type_id) values (15, 5);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 15, 'description', 1, 'Edit product category');
+insert into permission (id, type_id) values (51, 5);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 51, 'description', 1, 'Edit product category');
 
-insert into permission (id, type_id) values (16, 5);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 16, 'description', 1, 'Delete product category');
+insert into permission (id, type_id) values (52, 5);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 52, 'description', 1, 'Delete product category');
 
 -- plans
-insert into permission (id, type_id) values (17, 6);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 17, 'description', 1, 'Create plan');
+insert into permission (id, type_id) values (60, 6);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 60, 'description', 1, 'Create plan');
 
-insert into permission (id, type_id) values (18, 6);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 18, 'description', 1, 'Edit plan');
+insert into permission (id, type_id) values (61, 6);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 61, 'description', 1, 'Edit plan');
 
-insert into permission (id, type_id) values (19, 6);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 19, 'description', 1, 'Delete plan');
+insert into permission (id, type_id) values (62, 6);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 62, 'description', 1, 'Delete plan');
 
 -- invoices
-insert into permission (id, type_id) values (20, 7);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 20, 'description', 1, 'Delete invoice');
+insert into permission (id, type_id) values (70, 7);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 70, 'description', 1, 'Delete invoice');
 
 -- billing
-insert into permission (id, type_id) values (21, 8);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 21, 'description', 1, 'Approve / Disapprove review');
+insert into permission (id, type_id) values (80, 8);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 80, 'description', 1, 'Approve / Disapprove review');
 
 -- menu
-insert into permission (id, type_id) values (22, 9);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 22, 'description', 1, 'Show customer menu');
+insert into permission (id, type_id) values (90, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 90, 'description', 1, 'Show customer menu');
 
-insert into permission (id, type_id) values (23, 9);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 23, 'description', 1, 'Show invoices menu');
+insert into permission (id, type_id) values (91, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 91, 'description', 1, 'Show invoices menu');
 
-insert into permission (id, type_id) values (24, 9);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 24, 'description', 1, 'Show payments and refunds menu');
+insert into permission (id, type_id) values (92, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 92, 'description', 1, 'Show order menu');
 
-insert into permission (id, type_id) values (25, 9);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 25, 'description', 1, 'Show billing menu');
+insert into permission (id, type_id) values (93, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 93, 'description', 1, 'Show payments and refunds menu');
 
-insert into permission (id, type_id) values (26, 9);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 26, 'description', 1, 'Show mediation menu');
+insert into permission (id, type_id) values (94, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 94, 'description', 1, 'Show billing menu');
 
-insert into permission (id, type_id) values (27, 9);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 27, 'description', 1, 'Show reports menu');
+insert into permission (id, type_id) values (95, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 95, 'description', 1, 'Show mediation menu');
 
-insert into permission (id, type_id) values (28, 9);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 28, 'description', 1, 'Show products menu');
+insert into permission (id, type_id) values (96, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 96, 'description', 1, 'Show reports menu');
 
-insert into permission (id, type_id) values (29, 9);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 29, 'description', 1, 'Show plans menu');
+insert into permission (id, type_id) values (97, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 97, 'description', 1, 'Show products menu');
 
-insert into permission (id, type_id) values (30, 9);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 30, 'description', 1, 'Show configuration menu');
+insert into permission (id, type_id) values (98, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 98, 'description', 1, 'Show plans menu');
+
+insert into permission (id, type_id) values (99, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 99, 'description', 1, 'Show configuration menu');
 
 -- api
 insert into permission (id, type_id) values(120, 10);
@@ -1130,3 +1133,15 @@ insert into permission_role_map (role_id, permission_id) select 2, id from permi
 
 -- default permissions for clerks
 insert into permission_role_map (role_id, permission_id) select 3, id from permission where type_id in (1, 2, 3, 4, 5, 6, 7); -- everything but configuration/billing/api
+insert into permission_role_map (role_id, permission_id) values (3, 90);
+insert into permission_role_map (role_id, permission_id) values (3, 91);
+insert into permission_role_map (role_id, permission_id) values (3, 92);
+insert into permission_role_map (role_id, permission_id) values (3, 93);
+insert into permission_role_map (role_id, permission_id) values (3, 94);
+insert into permission_role_map (role_id, permission_id) values (3, 95);
+insert into permission_role_map (role_id, permission_id) values (3, 96);
+insert into permission_role_map (role_id, permission_id) values (3, 97);
+insert into permission_role_map (role_id, permission_id) values (3, 98);
+
+
+

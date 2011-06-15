@@ -104,50 +104,69 @@
     <div id="navigation">
         <%-- select the current menu item based on the controller name --%>
         <ul>
-            <li class="${controllerName == 'customer' ? 'active' : ''}">
-                <g:link controller="customer"><span><g:message code="menu.link.customers"/></span><em></em></g:link>
-            </li>
-            <li class="${controllerName == 'invoice' ? 'active' : ''}">
-                <g:link controller="invoice"><span><g:message code="menu.link.invoices"/></span><em></em></g:link>
-            </li>
-            <li class="${controllerName == 'payment' ? 'active' : ''}">
-                <g:link controller="payment"><span><g:message code="menu.link.payments.refunds"/></span><em></em></g:link>
-            </li>
-            <li class="${controllerName == 'order' ? 'active' : ''}">
-                <g:link controller="order"><span><g:message code="menu.link.orders"/></span><em></em></g:link>
-            </li>
-            <li class="${controllerName == 'billing' ? 'active' : ''}">
-                <g:link controller="billing"><span><g:message code="menu.link.billing"/></span><em></em></g:link>
-            </li>
-            <li class="${controllerName == 'mediation' ? 'active' : ''}">
-                <g:link controller="mediation"><span><g:message code="menu.link.mediation"/></span><em></em></g:link>
-            </li>
-            <li class="${controllerName == 'report' ? 'active' : ''}">
-                <g:link controller="report"><span><g:message code="menu.link.reports"/></span><em></em></g:link>
-            </li>
-            <li class="${controllerName == 'product' ? 'active' : ''}">
-                <g:link controller="product"><span><g:message code="menu.link.products"/></span><em></em></g:link>
-            </li>
-            <li class="${controllerName == 'plan' ? 'active' : ''}">
-                <g:link controller="plan"><span><g:message code="menu.link.plans"/></span><em></em></g:link>
-            </li>
+            <sec:access url="/customer/list">
+                <li class="${controllerName == 'customer' ? 'active' : ''}">
+                    <g:link controller="customer"><span><g:message code="menu.link.customers"/></span><em></em></g:link>
+                </li>
+            </sec:access>
+            <sec:access url="/invoice/list">
+                <li class="${controllerName == 'invoice' ? 'active' : ''}">
+                    <g:link controller="invoice"><span><g:message code="menu.link.invoices"/></span><em></em></g:link>
+                </li>
+            </sec:access>
+            <sec:access url="/payment/list">
+                <li class="${controllerName == 'payment' ? 'active' : ''}">
+                    <g:link controller="payment"><span><g:message code="menu.link.payments.refunds"/></span><em></em></g:link>
+                </li>
+            </sec:access>
+            <sec:access url="/order/list">
+                <li class="${controllerName == 'order' ? 'active' : ''}">
+                    <g:link controller="order"><span><g:message code="menu.link.orders"/></span><em></em></g:link>
+                </li>
+            </sec:access>
+            <sec:access url="/billing/list">
+                <li class="${controllerName == 'billing' ? 'active' : ''}">
+                    <g:link controller="billing"><span><g:message code="menu.link.billing"/></span><em></em></g:link>
+                </li>
+            </sec:access>
+            <sec:access url="/mediation/list">
+                <li class="${controllerName == 'mediation' ? 'active' : ''}">
+                    <g:link controller="mediation"><span><g:message code="menu.link.mediation"/></span><em></em></g:link>
+                </li>
+            </sec:access>
+            <sec:access url="/report/list">
+                <li class="${controllerName == 'report' ? 'active' : ''}">
+                    <g:link controller="report"><span><g:message code="menu.link.reports"/></span><em></em></g:link>
+                </li>
+            </sec:access>
+            <sec:access url="/product/list">
+                <li class="${controllerName == 'product' ? 'active' : ''}">
+                    <g:link controller="product"><span><g:message code="menu.link.products"/></span><em></em></g:link>
+                </li>
+            </sec:access>
+            <sec:access url="/plan/list">
+                <li class="${controllerName == 'plan' ? 'active' : ''}">
+                    <g:link controller="plan"><span><g:message code="menu.link.plans"/></span><em></em></g:link>
+                </li>
+            </sec:access>
+            <sec:ifAllGranted roles="MENU_99">
+                %{
+                    def isConfiguration = controllerName == 'config' ||
+                                          controllerName == 'contactFieldConfig' ||
+                                          controllerName == 'contactTypeConfig' ||
+                                          controllerName == 'billingconfiguration' ||
+                                          controllerName == 'blacklist' ||
+                                          controllerName == 'mediationConfig' ||
+                                          controllerName == 'notifications' ||
+                                          controllerName == 'orderPeriod' ||
+                                          controllerName == 'plugin' ||
+                                          controllerName == 'user'
+                }%
 
-            %{
-                def isConfiguration = controllerName == 'config' ||
-                                      controllerName == 'contactFieldConfig' ||
-                                      controllerName == 'contactTypeConfig' ||
-                                      controllerName == 'billingconfiguration' ||
-                                      controllerName == 'blacklist' ||
-                                      controllerName == 'mediationConfig' ||
-                                      controllerName == 'notifications' ||
-                                      controllerName == 'orderPeriod' ||
-                                      controllerName == 'plugin' ||
-                                      controllerName == 'user'
-            }%
-
-            <li class="${isConfiguration ? 'active' : ''}">
-                <g:link controller="config"><span><g:message code="menu.link.configuration"/></span><em></em></g:link>
-            </li>
+                <li class="${isConfiguration ? 'active' : ''}">
+                    <g:link controller="config"><span><g:message code="menu.link.configuration"/></span><em></em></g:link>
+                </li>
+            </sec:ifAllGranted>
         </ul>
     </div>
 </div>

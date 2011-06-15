@@ -47,7 +47,7 @@ import com.sapienter.jbilling.client.util.SortableCriteria
  * @author Brian Cowdery
  * @since 04/01/11
  */
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()"])
 class PaymentController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -59,6 +59,7 @@ class PaymentController {
     def recentItemService
     def breadcrumbService
 
+    @Secured(["MENU_93"])
     def index = {
         redirect action: list, params: params
     }
@@ -99,6 +100,7 @@ class PaymentController {
      * Gets a list of payments and renders the the list page. If the "applyFilters" parameter is given,
      * the partial "_payments.gsp" template will be rendered instead of the complete payments list page.
      */
+    @Secured(["MENU_93"])
     def list = {
         def filters = filterService.getFilters(FilterType.PAYMENT, params)
         def payments = getList(filters, params)

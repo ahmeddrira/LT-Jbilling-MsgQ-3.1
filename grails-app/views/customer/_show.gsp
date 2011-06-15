@@ -281,7 +281,10 @@
             <sec:ifAllGranted roles="ORDER_20">
                 <g:link controller="orderBuilder" action="edit" params="[userId: selected.id]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>
             </sec:ifAllGranted>
-            <g:link controller="payment" action="edit" params="[userId: selected.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
+
+            <sec:ifAllGranted roles="PAYMENT_30">
+                <g:link controller="payment" action="edit" params="[userId: selected.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
+            </sec:ifAllGranted>
         </div>
         <div class="row">
             <sec:ifAllGranted roles="CUSTOMER_11">

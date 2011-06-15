@@ -40,6 +40,7 @@ import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.server.util.csv.Exporter
 import com.sapienter.jbilling.client.util.DownloadHelper
 import com.sapienter.jbilling.client.util.SortableCriteria
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 /**
  * PaymentController 
@@ -47,7 +48,7 @@ import com.sapienter.jbilling.client.util.SortableCriteria
  * @author Brian Cowdery
  * @since 04/01/11
  */
-@Secured(["isAuthenticated()"])
+@Secured(["isAuthenticated()", "hasAnyRole('MENU_90', 'PAYMENT_30', 'PAYMENT_31', 'PAYMENT_32', 'PAYMENT_33')"])
 class PaymentController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -151,6 +152,7 @@ class PaymentController {
     /**
      * Convenience shortcut, this action shows all payments for the given user id.
      */
+    @Secured(["MENU_93"])
     def user = {
         def filter =  new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.EQ, field: 'u.id', template: 'id', visible: true, integerValue: params.id)
         filterService.setFilter(FilterType.PAYMENT, filter)
@@ -161,6 +163,7 @@ class PaymentController {
     /**
      * Delete the given payment id
      */
+    @Secured(["PAYMENT_32"])
     def delete = {
         if (params.id) {
             webServicesSession.deletePayment(params.int('id'))
@@ -180,6 +183,7 @@ class PaymentController {
      * Shows the payment link screen for the given payment ID showing a list of un-paid invoices
      * that the payment can be applied to.
      */
+    @Secured(["PAYMENT_33"])
     def link = {
         def payment = webServicesSession.getPayment(params.int('id'))
         def user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
@@ -191,6 +195,7 @@ class PaymentController {
     /**
      * Applies a given payment ID to the given invoice ID.
      */
+    @Secured(["PAYMENT_33"])
     def applyPayment = {
         def payment = webServicesSession.getPayment(params.int('id'))
 
@@ -220,6 +225,7 @@ class PaymentController {
      * Un-links the given payment ID from the given invoice ID and re-renders
      * the "show payment" view panel.
      */
+    @Secured(["PAYMENT_33"])
     def unlink = {
 		try {
 			webServicesSession.removePaymentLink(params.int('invoiceId'), params.int('id'))
@@ -235,6 +241,7 @@ class PaymentController {
     /**
      * Redirects to the user list and sets a flash message.
      */
+    @Secured(["PAYMENT_30"])
     def create = {
         flash.info = 'payment.select.customer'
         redirect controller: 'customer', action: 'list'
@@ -244,6 +251,7 @@ class PaymentController {
      * Gets the payment to be edited and shows the "edit.gsp" view. This edit action cannot be used
      * to create a new payment, as creation requires a wizard style flow where the user is selected first.
      */
+    @Secured(["hasAnyRole('PAYMENT_30', 'PAYMENT_31')"])
     def edit = {
         def payment
         def user
@@ -289,6 +297,7 @@ class PaymentController {
     /**
      * Shows a summary of the created/edited payment to be confirmed before saving.
      */
+    @Secured(["hasAnyRole('PAYMENT_30', 'PAYMENT_31')"])
     def confirm = {
         def payment = new PaymentWS()
         bindPayment(payment, params)
@@ -328,6 +337,7 @@ class PaymentController {
     /**
      * Validate and save payment.
      */
+    @Secured(["hasAnyRole('PAYMENT_30', 'PAYMENT_31')"])
     def save = {
         def payment = new PaymentWS()
         bindPayment(payment, params)
@@ -335,39 +345,49 @@ class PaymentController {
         // save or update
         try {
             if (!payment.id || payment.id == 0) {
-                def invoiceId = params.int('invoiceId')
-                log.debug("creating payment ${payment} for invoice ${invoiceId}")
+                if (SpringSecurityUtils.ifAllGranted("PAYMENT_30")) {
+                    def invoiceId = params.int('invoiceId')
+                    log.debug("creating payment ${payment} for invoice ${invoiceId}")
 
-                if (params.boolean('processNow')) {
-                    log.debug("processing payment in real time")
+                    if (params.boolean('processNow')) {
+                        log.debug("processing payment in real time")
 
-                    def authorization = webServicesSession.processPayment(payment, invoiceId)
-                    payment.id = authorization.paymentId
+                        def authorization = webServicesSession.processPayment(payment, invoiceId)
+                        payment.id = authorization.paymentId
 
-                    if (authorization.result) {
-                        flash.message = 'payment.successful'
-                        flash.args = [ payment.id ]
+                        if (authorization.result) {
+                            flash.message = 'payment.successful'
+                            flash.args = [ payment.id ]
+
+                        } else {
+                            flash.error = 'payment.failed'
+                            flash.args = [ payment.id, authorization.responseMessage ]
+                        }
 
                     } else {
-                        flash.error = 'payment.failed'
-                        flash.args = [ payment.id, authorization.responseMessage ]
+                        log.debug("entering payment")
+                        payment.id = webServicesSession.applyPayment(payment, invoiceId)
+
+                        flash.info = 'payment.entered'
+                        flash.args = [ payment.id ]
                     }
 
-
                 } else {
-                    log.debug("entering payment")
-                    payment.id = webServicesSession.applyPayment(payment, invoiceId)
-
-                    flash.info = 'payment.entered'
-                    flash.args = [ payment.id ]
+                    render view: '/login/denied'
+                    return
                 }
 
             } else {
-                log.debug("saving changes to payment ${payment.id}")
-                webServicesSession.updatePayment(payment)
+                if (SpringSecurityUtils.ifAllGranted("PAYMENT_31")) {
+                    log.debug("saving changes to payment ${payment.id}")
+                    webServicesSession.updatePayment(payment)
 
-                flash.message = 'payment.updated'
-                flash.args = [ payment.id ]
+                    flash.message = 'payment.updated'
+                    flash.args = [ payment.id ]
+
+                } else {
+                    render view: '/login/denied'
+                }
             }
 
         } catch (SessionInternalError e) {

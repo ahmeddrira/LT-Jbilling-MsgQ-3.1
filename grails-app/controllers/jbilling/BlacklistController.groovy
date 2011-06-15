@@ -26,7 +26,9 @@ import com.sapienter.jbilling.server.util.Context
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.user.UserBL
+import grails.plugins.springsecurity.Secured
 
+@Secured(["isAuthenticated()", "hasAnyRole('CUSTOMER_14')"])
 class BlacklistController {
 
     def index = {
@@ -91,6 +93,7 @@ class BlacklistController {
         redirect view: 'list'
     }
 
+    @Secured(["CUSTOMER_14"])
     def user = {
         if (params.id) {
             def bl = new UserBL(params.int('id'))

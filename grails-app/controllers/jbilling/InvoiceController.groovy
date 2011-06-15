@@ -162,6 +162,7 @@ class InvoiceController {
     /**
      * Convenience shortcut, this action shows all invoices for the given user id.
      */
+    @Secured(["MENU_91"])
     def user = {
         def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUser.id', template: 'id', visible: true, integerValue: params.int('id'))
         filterService.setFilter(FilterType.INVOICE, filter)

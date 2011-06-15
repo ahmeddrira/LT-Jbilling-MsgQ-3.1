@@ -61,7 +61,14 @@
             <tbody>
                 <tr>
                     <td><g:message code="customer.detail.user.user.id"/></td>
-                    <td class="value"><g:link controller="customerInspector" action="inspect" id="${selected.id}" title="${message(code: 'customer.inspect.link')}">${selected.id}</g:link></td>
+                    <td class="value">
+                        <sec:access url="/customerInspector/inspect">
+                            <g:link controller="customerInspector" action="inspect" id="${selected.id}" title="${message(code: 'customer.inspect.link')}">${selected.id}</g:link>
+                        </sec:access>
+                        <sec:noAccess url="/customerInspector/inspect">
+                            ${selected.id}
+                        </sec:noAccess>
+                    </td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.user.username"/></td>

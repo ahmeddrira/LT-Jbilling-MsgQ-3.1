@@ -177,11 +177,12 @@ class OrderController {
 	/**
 	* Convenience shortcut, this action shows all invoices for the given user id.
 	*/
-   def user = {
-	   def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUserByUserId.id', template: 'id', visible: true, integerValue: params.int('id'))
-	   filterService.setFilter(FilterType.ORDER, filter)
-	   redirect action: 'list'
-   }
+    @Secured(["MENU_92"])
+    def user = {
+        def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUserByUserId.id', template: 'id', visible: true, integerValue: params.int('id'))
+        filterService.setFilter(FilterType.ORDER, filter)
+        redirect action: 'list'
+    }
 
     @Secured(["ORDER_23"])
 	def generateInvoice = {

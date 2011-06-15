@@ -1372,7 +1372,9 @@
     <InternationalDescription TableId="90" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Carried"/>
     <InternationalDescription TableId="59" ForeignId="10" PsudoColumn="description" LanguageId="1" Content="Create customer"/>
     <InternationalDescription TableId="59" ForeignId="11" PsudoColumn="description" LanguageId="1" Content="Edit customer"/>
-    <InternationalDescription TableId="59" ForeignId="12" PsudoColumn="description" LanguageId="1" Content="Delete customer"/>    
+    <InternationalDescription TableId="59" ForeignId="12" PsudoColumn="description" LanguageId="1" Content="Delete customer"/>
+    <InternationalDescription TableId="59" ForeignId="13" PsudoColumn="description" LanguageId="1" Content="Inspect customer"/>
+    <InternationalDescription TableId="59" ForeignId="14" PsudoColumn="description" LanguageId="1" Content="Blacklist customer"/>
     <InternationalDescription TableId="59" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="Create order"/>
     <InternationalDescription TableId="59" ForeignId="21" PsudoColumn="description" LanguageId="1" Content="Edit order"/>
     <InternationalDescription TableId="59" ForeignId="22" PsudoColumn="description" LanguageId="1" Content="Delete order"/>
@@ -1672,6 +1674,8 @@
     <Permission Id="10" TypeId="1"/>
     <Permission Id="11" TypeId="1"/>
     <Permission Id="12" TypeId="1"/>
+    <Permission Id="13" TypeId="1"/>
+    <Permission Id="14" TypeId="1"/>
     <Permission Id="20" TypeId="2"/>
     <Permission Id="21" TypeId="2"/>
     <Permission Id="22" TypeId="2"/>
@@ -1707,6 +1711,8 @@
     <PermissionRoleMap PermissionId="10" RoleId="2"/>
     <PermissionRoleMap PermissionId="11" RoleId="2"/>
     <PermissionRoleMap PermissionId="12" RoleId="2"/>
+    <PermissionRoleMap PermissionId="13" RoleId="2"/>
+    <PermissionRoleMap PermissionId="14" RoleId="2"/>
     <PermissionRoleMap PermissionId="20" RoleId="2"/>
     <PermissionRoleMap PermissionId="21" RoleId="2"/>
     <PermissionRoleMap PermissionId="22" RoleId="2"/>
@@ -1741,6 +1747,8 @@
     <PermissionRoleMap PermissionId="10" RoleId="3"/>
     <PermissionRoleMap PermissionId="11" RoleId="3"/>
     <PermissionRoleMap PermissionId="12" RoleId="3"/>
+    <PermissionRoleMap PermissionId="13" RoleId="3"/>
+    <PermissionRoleMap PermissionId="14" RoleId="3"/>
     <PermissionRoleMap PermissionId="20" RoleId="3"/>
     <PermissionRoleMap PermissionId="21" RoleId="3"/>
     <PermissionRoleMap PermissionId="22" RoleId="3"/>

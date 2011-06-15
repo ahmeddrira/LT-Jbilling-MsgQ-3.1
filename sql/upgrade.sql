@@ -1032,6 +1032,12 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 insert into permission (id, type_id) values (12, 1);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 12, 'description', 1, 'Delete customer');
 
+insert into permission (id, type_id) values (13, 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 13, 'description', 1, 'Inspect customer');
+
+insert into permission (id, type_id) values (14, 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 14, 'description', 1, 'Blacklist customer');
+
 -- orders
 insert into permission (id, type_id) values (20, 2);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 20, 'description', 1, 'Create order');

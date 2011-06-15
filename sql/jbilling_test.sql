@@ -11356,6 +11356,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	120	description	1	Web Service API access
 59	23	description	1	Generate invoice for order
 59	71	description	1	Send invoice notification
+59	13	description	1	Inspect customer
+59	14	description	1	Blacklist customer
 \.
 
 
@@ -14194,6 +14196,8 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 120	10	\N
 23	2	\N
 71	7	\N
+13	1	\N
+14	1	\N
 \.
 
 
@@ -14267,6 +14271,10 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 23	3
 71	2
 71	3
+13	2
+13	3
+14	2
+14	3
 \.
 
 

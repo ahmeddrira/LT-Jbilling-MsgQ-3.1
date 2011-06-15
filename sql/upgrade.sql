@@ -1092,6 +1092,9 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 insert into permission (id, type_id) values (70, 7);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 70, 'description', 1, 'Delete invoice');
 
+insert into permission (id, type_id) values (71, 7);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 71, 'description', 1, 'Send invoice notification');
+
 -- billing
 insert into permission (id, type_id) values (80, 8);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 80, 'description', 1, 'Approve / Disapprove review');

@@ -45,7 +45,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS
  * @author Vikas Bodani
  * @since
  */
-@Secured(["isAuthenticated()"])
+@Secured(["isAuthenticated()", "hasAnyRole('INVOICE_70', 'INVOICE_71', 'PAYMENT_33')"])
 class InvoiceController {
 
     static pagination = [max: 10, offset: 0, sort: 'id', order: 'desc']
@@ -221,7 +221,7 @@ class InvoiceController {
         }
     }
 
-    @Secured(['INVOICES_113'])
+    @Secured(["INVOICE_70"])
     def delete = {
         int invoiceId = params.int('id')
         int userId = params.int('_userId')
@@ -244,7 +244,8 @@ class InvoiceController {
         redirect action: list, params: [id: userId]
     }
 
-    def notifyInvoiceByEmail = {
+    @Secured(["INVOICE_71"])
+    def email = {
         if (params.id) {
             try {
                 def sent = webServicesSession.notifyInvoiceByEmail(params.int('id'))
@@ -281,12 +282,10 @@ class InvoiceController {
         }
     }
 
-    def removePaymentLink = {
-        Integer invoiceId = params.int('id')
-        Integer paymentId = params.int('paymentId')
-
+    @Secured(["PAYMENT_33"])
+    def unlink = {
         try {
-            webServicesSession.removePaymentLink(invoiceId, paymentId)
+            webServicesSession.removePaymentLink(params.int('id'), params.int('paymentId'))
             flash.message = "payment.unlink.success"
 
         } catch (SessionInternalError e) {
@@ -297,7 +296,7 @@ class InvoiceController {
             flash.error = "error.invoice.unlink.payment"
         }
 
-        redirect action: 'list', params: [ id: invoiceId ]
+        redirect action: 'list', params: [ id: params.id ]
     }
     
     def byProcess = {

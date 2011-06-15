@@ -168,17 +168,23 @@
 
     <div class="btn-box">
         <div class="row">
-            <a href="${createLink (controller: 'payment', action: 'edit', params: [userId: user?.id, invoiceId: selected.id])}" class="submit payment">
-                <span><g:message code="button.invoice.pay"/></span>
+            <sec:ifAllGranted roles="PAYMENT_30">
+                <a href="${createLink (controller: 'payment', action: 'edit', params: [userId: user?.id, invoiceId: selected.id])}" class="submit payment">
+                    <span><g:message code="button.invoice.pay"/></span>
                 </a>
+            </sec:ifAllGranted>
+
             <a href="${createLink (action: 'downloadPdf', id: selected.id)}" class="submit save">
                 <span><g:message code="button.invoice.downloadPdf"/></span>
             </a>
         </div>
+
         <div class="row">
-            <a href="${createLink (action: 'notifyInvoiceByEmail', id: selected.id)}" class="submit emailinvoice">
-                <span><g:message code="button.invoice.sendEmail"/></span>
-            </a>
+            <sec:access url="/invoice/email">
+                <a href="${createLink (action: 'email', id: selected.id)}" class="submit email">
+                    <span><g:message code="button.invoice.sendEmail"/></span>
+                </a>
+            </sec:access>
         </div>
     </div>
 
@@ -226,9 +232,11 @@
                             ${new PaymentResultDTO(payment?.resultId).getDescription(session['language_id'])}
                         </td>
                         <td class="innerContent">
-                            <a href="javascript:void(0);" onclick="setUnlinkPaymentId(${selected.id}, ${payment.id});">
-                                <span><g:message code="invoice.prompt.unlink.payment"/></span>
-                            </a>
+                            <sec:access url="/invoice/unlink">
+                                <a href="javascript:void(0);" onclick="setUnlinkPaymentId(${selected.id}, ${payment.id});">
+                                    <span><g:message code="invoice.prompt.unlink.payment"/></span>
+                                </a>
+                            </sec:access>
                         </td>
                     </tr>
                 </g:each>
@@ -251,13 +259,13 @@
     </g:if>
 
     <div class="btn-box">
-        <sec:access url="/invoice/delete">
+        <sec:ifAllGranted roles="INVOICE_70">
             <g:if test="${selected.id}">
                 <a onclick="showConfirm('delete-'+${selected.id});" class="submit delete">
                     <span><g:message code="button.delete.invoice"/></span>
                 </a>
             </g:if>
-        </sec:access>
+        </sec:ifAllGranted>
 
         <g:link class="submit show" controller="mediation" action="invoice" id="${selected.id}">
             <span><g:message code="button.view.events" /></span>
@@ -279,7 +287,7 @@
 <g:render template="/confirm"
           model="[message: 'invoice.prompt.confirm.remove.payment.link',
                   controller: 'invoice',
-                  action: 'removePaymentLink',
+                  action: 'unlink',
                   id: selected.id,
                   formParams: [ 'paymentId': '-1' ],
                   onYes: 'setPaymentId()',

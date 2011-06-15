@@ -38,7 +38,7 @@ import com.sapienter.jbilling.client.util.SortableCriteria
  * @author Brian Cowdery
  * @since 01-Feb-2011
  */
-@Secured(["isAuthenticated()"])
+@Secured(["isAuthenticated()", "hasAnyRole('MENU_98', 'PLAN_62')"])
 class PlanController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -99,6 +99,7 @@ class PlanController {
     /**
      * Deletes the given plan id and all the plan item prices.
      */
+    @Secured(["PLAN_62"])
     def delete = {
         if (params.id) {
             def plan

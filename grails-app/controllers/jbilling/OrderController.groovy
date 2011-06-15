@@ -55,7 +55,7 @@ import com.sapienter.jbilling.client.util.SortableCriteria
  *
  */
 
-@Secured(["isAuthenticated()", "hasAnyRole('MENU_92', 'ORDER_20', 'ORDER_21', 'ORDER_22')"])
+@Secured(["isAuthenticated()", "hasAnyRole('MENU_92', 'ORDER_22')"])
 class OrderController {
 
 	static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]

@@ -136,8 +136,13 @@
     </g:if>
 
     <div class="btn-box">
-        <g:link controller="planBuilder" action="edit" id="${plan.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
-        <a onclick="showConfirm('delete-${plan.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
+        <sec:ifAllGranted roles="PLAN_61">
+            <g:link controller="planBuilder" action="edit" id="${plan.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+        </sec:ifAllGranted>
+
+        <sec:ifAllGranted roles="PLAN_62">
+            <a onclick="showConfirm('delete-${plan.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
+        </sec:ifAllGranted>
     </div>
 
     <g:render template="/confirm"

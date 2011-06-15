@@ -226,22 +226,30 @@
     
     <div class="btn-box">
         <div class="row">
-            <g:if test="${Constants.ORDER_STATUS_ACTIVE == order.statusId}">
-                <a href="${createLink (action: 'generateInvoice', params: [id: order?.id])}" class="submit order">
-                    <span><g:message code="order.button.generate"/></span>
+            <sec:ifAllGranted roles="ORDER_23">
+                <g:if test="${Constants.ORDER_STATUS_ACTIVE == order.statusId}">
+                    <a href="${createLink (action: 'generateInvoice', params: [id: order?.id])}" class="submit order">
+                        <span><g:message code="order.button.generate"/></span>
+                    </a>
+                    <a href="${createLink (action: 'applyToInvoice', params: [id: order?.id, userId: user?.id])}" class="submit order">
+                        <span><g:message code="order.button.apply.invoice"/></span>
+                    </a>
+                </g:if>
+            </sec:ifAllGranted>
+
+            <sec:ifAllGranted roles="ORDER_21">
+                <a href="${createLink (controller: 'orderBuilder', action: 'edit', params: [id: order?.id])}" class="submit edit">
+                    <span><g:message code="order.button.edit"/></span>
                 </a>
-                <a href="${createLink (action: 'applyToInvoice', params: [id: order?.id, userId: user?.id])}" class="submit order">
-                    <span><g:message code="order.button.apply.invoice"/></span>
-                </a>
-            </g:if>
-            <a href="${createLink (controller: 'orderBuilder', action: 'edit', params: [id: order?.id])}" class="submit edit">
-                <span><g:message code="order.button.edit"/>
-            </span></a>
+            </sec:ifAllGranted>
         </div>
         <div class="row">
-            <a onclick="showConfirm('deleteOrder-' + ${order?.id});" class="submit delete">
-                <span><g:message code="order.button.delete"/></span>
-            </a>
+            <sec:ifAllGranted roles="ORDER_22">
+                <a onclick="showConfirm('deleteOrder-' + ${order?.id});" class="submit delete">
+                    <span><g:message code="order.button.delete"/></span>
+                </a>
+            </sec:ifAllGranted>
+
             <g:link class="submit show" controller="mediation" action="order" id="${order.id}">
                 <span><g:message code="button.view.events" /></span>
             </g:link>

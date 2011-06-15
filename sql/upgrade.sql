@@ -1042,6 +1042,9 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 insert into permission (id, type_id) values (22, 2);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 22, 'description', 1, 'Delete order');
 
+insert into permission (id, type_id) values (23, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 23, 'description', 1, 'Generate invoice for order');
+
 -- payments
 insert into permission (id, type_id) values (30, 3);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 30, 'description', 1, 'Create payment');

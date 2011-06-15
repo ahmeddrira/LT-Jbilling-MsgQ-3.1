@@ -1375,7 +1375,8 @@
     <InternationalDescription TableId="59" ForeignId="12" PsudoColumn="description" LanguageId="1" Content="Delete customer"/>    
     <InternationalDescription TableId="59" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="Create order"/>
     <InternationalDescription TableId="59" ForeignId="21" PsudoColumn="description" LanguageId="1" Content="Edit order"/>
-    <InternationalDescription TableId="59" ForeignId="22" PsudoColumn="description" LanguageId="1" Content="Delete order"/>                            
+    <InternationalDescription TableId="59" ForeignId="22" PsudoColumn="description" LanguageId="1" Content="Delete order"/>
+    <InternationalDescription TableId="59" ForeignId="23" PsudoColumn="description" LanguageId="1" Content="Generate invoice for order"/>
     <InternationalDescription TableId="59" ForeignId="30" PsudoColumn="description" LanguageId="1" Content="Create payment"/>    
     <InternationalDescription TableId="59" ForeignId="31" PsudoColumn="description" LanguageId="1" Content="Edit payment"/>
     <InternationalDescription TableId="59" ForeignId="32" PsudoColumn="description" LanguageId="1" Content="Delete payment"/>
@@ -1673,6 +1674,7 @@
     <Permission Id="20" TypeId="2"/>
     <Permission Id="21" TypeId="2"/>
     <Permission Id="22" TypeId="2"/>
+    <Permission Id="23" TypeId="2"/>
     <Permission Id="30" TypeId="3"/>
     <Permission Id="31" TypeId="3"/>
     <Permission Id="32" TypeId="3"/>
@@ -1706,6 +1708,7 @@
     <PermissionRoleMap PermissionId="20" RoleId="2"/>
     <PermissionRoleMap PermissionId="21" RoleId="2"/>
     <PermissionRoleMap PermissionId="22" RoleId="2"/>
+    <PermissionRoleMap PermissionId="23" RoleId="2"/>
     <PermissionRoleMap PermissionId="30" RoleId="2"/>
     <PermissionRoleMap PermissionId="31" RoleId="2"/>
     <PermissionRoleMap PermissionId="32" RoleId="2"/>
@@ -1738,6 +1741,7 @@
     <PermissionRoleMap PermissionId="20" RoleId="3"/>
     <PermissionRoleMap PermissionId="21" RoleId="3"/>
     <PermissionRoleMap PermissionId="22" RoleId="3"/>
+    <PermissionRoleMap PermissionId="23" RoleId="3"/>
     <PermissionRoleMap PermissionId="30" RoleId="3"/>
     <PermissionRoleMap PermissionId="31" RoleId="3"/>
     <PermissionRoleMap PermissionId="32" RoleId="3"/>

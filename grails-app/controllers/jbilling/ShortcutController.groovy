@@ -20,6 +20,9 @@
 
 package jbilling
 
+import grails.plugins.springsecurity.Secured
+
+@Secured(["isAuthenticated()"])
 class ShortcutController {
 
 	def breadcrumbService

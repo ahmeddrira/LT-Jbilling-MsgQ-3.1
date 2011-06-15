@@ -29,7 +29,7 @@ import jbilling.Breadcrumb
  * @author Brian Cowdery
  * @since  22-11-2010
  */
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()"])
 class HomeController {
 
     def recentItemService

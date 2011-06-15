@@ -36,7 +36,7 @@ import com.sapienter.jbilling.common.SessionInternalError
  * @author Brian Cowdery
  * @since 27-Jan-2011
  */
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()", "MENU_99"])
 class ContactTypeConfigController {
 
     static pagination = [ max: 10, offset: 0 ]

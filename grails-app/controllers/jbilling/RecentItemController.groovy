@@ -20,12 +20,15 @@
 
 package jbilling
 
+import grails.plugins.springsecurity.Secured
+
 /**
  * RecentItemController
  
  * @author Brian Cowdery
  * @since  09-12-2010
  */
+@Secured(["isAuthenticated()"])
 class RecentItemController {
 
     def index = {

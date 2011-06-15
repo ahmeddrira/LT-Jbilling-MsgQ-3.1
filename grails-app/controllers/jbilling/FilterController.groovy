@@ -20,12 +20,15 @@
 
 package jbilling
 
+import grails.plugins.springsecurity.Secured
+
 /**
  * FilterController
  *
  * @author Brian Cowdery
  * @since  03-12-2010
  */
+@Secured(["isAuthenticated()"])
 class FilterController {
 
     def filterService

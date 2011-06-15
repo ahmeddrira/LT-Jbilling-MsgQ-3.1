@@ -20,6 +20,8 @@
 
 package jbilling
 
+import grails.plugins.springsecurity.Secured
+
 /**
  * Created by IntelliJ IDEA.
  * User: brian
@@ -27,6 +29,7 @@ package jbilling
  * Time: 10:25:22 AM
  * To change this template use File | Settings | File Templates.
  */
+@Secured(["isAuthenticated()"])
 class BreadcrumbController {
 
     def breadcrumbService

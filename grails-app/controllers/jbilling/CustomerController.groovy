@@ -53,7 +53,7 @@ import org.hibernate.criterion.Restrictions
 import org.hibernate.criterion.Criterion
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
-@Secured(["isAuthenticated()", "hasAnyRole(['CUSTOMER_1', 'CUSTOMER_2', 'CUSTOMER_3'])"])
+@Secured(["isAuthenticated()", "hasAnyRole('MENU_22', 'CUSTOMER_1', 'CUSTOMER_2', 'CUSTOMER_3')"])
 class CustomerController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -67,7 +67,7 @@ class CustomerController {
     def breadcrumbService
     def springSecurityService
 
-    @Secured(['MENU_22'])
+    @Secured(["MENU_22"])
     def index = {
         redirect action: list, params: params
     }
@@ -125,7 +125,7 @@ class CustomerController {
      * Get a list of users and render the list page. If the "applyFilters" parameter is given, the
      * partial "_users.gsp" template will be rendered instead of the complete user list.
      */
-    @Secured(['MENU_22'])
+    @Secured(["MENU_22"])
     def list = {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()
@@ -244,7 +244,7 @@ class CustomerController {
      * Get the user to be edited and show the "edit.gsp" view. If no ID is given this view
      * will allow creation of a new user.
      */
-    @Secured(["hasAnyRole(['CUSTOMER_1', 'CUSTOMER_2'])"])
+    @Secured(["hasAnyRole('CUSTOMER_1', 'CUSTOMER_2')"])
     def edit = {
         def user
         def contacts
@@ -276,7 +276,7 @@ class CustomerController {
     /**
      * Validate and save a user.
      */
-    @Secured(["hasAnyRole(['CUSTOMER_1', 'CUSTOMER_2'])"])
+    @Secured(["hasAnyRole('CUSTOMER_1', 'CUSTOMER_2')"])
     def save = {
         def user = new UserWS()
         UserHelper.bindUser(user, params)

@@ -61,14 +61,19 @@
     </p>
 </div>
 <div class="table-info">
-    &nbsp;<br>
-    <a onclick="showConfirm('approve-'+${process?.id});" class="submit">
-        <span><g:message code="billing.details.approve"/></span>
-    </a>&nbsp;
-    <a onclick="showConfirm('disapprove-'+${process?.id});" class="submit">
-        <span><g:message code="billing.details.disapprove"/></span>
-    </a><br>&nbsp;
-    
+    <sec:access url="/billing/approve">
+        &nbsp;<br>
+        <a onclick="showConfirm('approve-'+${process?.id});" class="submit">
+            <span><g:message code="billing.details.approve"/></span>
+        </a>
+    </sec:access>
+
+    <sec:access url="/billing/disapprove">
+        &nbsp;
+        <a onclick="showConfirm('disapprove-'+${process?.id});" class="submit">
+            <span><g:message code="billing.details.disapprove"/></span>
+        </a><br>&nbsp;
+    </sec:access>
 </div>
 </g:if>
 <div class="table-info"></div>

@@ -84,8 +84,6 @@ class CustomerController {
         ) {
             createAlias("contact", "contact")
             and {
-                String typeId= null
-                String ccfValue= null
                 filters.each { filter ->
                     //log.debug "Filter value: '${filter.field}'"
                     if (filter.value) {
@@ -94,20 +92,20 @@ class CustomerController {
                         if (filter.constraintType == FilterConstraint.STATUS) {
                             eq("userStatus", statuses.find{ it.id == filter.integerValue })
                         } else if (filter.field == 'contact.fields') {
-                            typeId = params['contactFieldTypes']
-                            ccfValue= filter.stringValue
+                            String typeId = params['contactFieldTypes']
+                            String ccfValue= filter.stringValue
                             log.debug "Contact Field Type ID: ${typeId}, CCF Value: ${ccfValue}"
+                            if (typeId && ccfValue) {
+                                createAlias("contact.fields", "field")
+                                createAlias("field.type", "type")
+                                setFetchMode("type", FetchMode.JOIN)
+                                eq("type.id", typeId.toInteger())
+                                addToCriteria(Restrictions.ilike("field.content", ccfValue, MatchMode.ANYWHERE))
+                            }
                         } else {
                             addToCriteria(filter.getRestrictions());
                         }
                     }
-                }
-                if (typeId && ccfValue) {
-                    createAlias("contact.fields", "field")
-                    createAlias("field.type", "type")
-                    setFetchMode("type", FetchMode.JOIN)
-                    eq("type.id", typeId.toInteger())
-                    addToCriteria(Restrictions.ilike("field.content", ccfValue, MatchMode.ANYWHERE))
                 }
                 roles {
                     eq('id', Constants.TYPE_CUSTOMER)

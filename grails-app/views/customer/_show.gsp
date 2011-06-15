@@ -282,11 +282,19 @@
             <g:link controller="payment" action="edit" params="[userId: selected.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
         </div>
         <div class="row">
-            <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
-            <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
-            <g:if test="${customer?.isParent > 0}">
-                <g:link action="edit" params="[parentId: selected.id]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
-            </g:if>
+            <sec:ifAllGranted roles="CUSTOMER_2">
+                <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+            </sec:ifAllGranted>
+
+            <sec:ifAllGranted roles="CUSTOMER_3">
+                <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
+            </sec:ifAllGranted>
+
+            <sec:ifAllGranted roles="CUSTOMER_1">
+                <g:if test="${customer?.isParent > 0}">
+                    <g:link action="edit" params="[parentId: selected.id]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
+                </g:if>
+            </sec:ifAllGranted>
         </div>
     </div>
 

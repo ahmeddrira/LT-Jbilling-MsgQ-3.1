@@ -1656,13 +1656,13 @@
     <PeriodUnit Id="3"/>
     <PeriodUnit Id="4"/>
 
-    <PermissionType Id="1" Description="Customers"/>
-    <PermissionType Id="2" Description="Orders"/>
-    <PermissionType Id="3" Description="Payments"/>
-    <PermissionType Id="4" Description="Products"/>
+    <PermissionType Id="1" Description="Customer"/>
+    <PermissionType Id="2" Description="Order"/>
+    <PermissionType Id="3" Description="Payment"/>
+    <PermissionType Id="4" Description="Product"/>
     <PermissionType Id="5" Description="Product Category"/>
-    <PermissionType Id="6" Description="Plans"/>
-    <PermissionType Id="7" Description="Invoices"/>
+    <PermissionType Id="6" Description="Plan"/>
+    <PermissionType Id="7" Description="Invoice"/>
     <PermissionType Id="8" Description="Billing"/>
     <PermissionType Id="9" Description="Menu"/>
     <PermissionType Id="10" Description="API"/>

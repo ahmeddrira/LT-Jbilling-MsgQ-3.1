@@ -1011,13 +1011,13 @@ update user_role_map set role_id = 3 where role_id = 4; -- move partner to custo
 delete from role where id = 4;
 
 -- new permissions
-insert into permission_type (id, description) values (1, 'Customers');
-insert into permission_type (id, description) values (2, 'Orders');
-insert into permission_type (id, description) values (3, 'Payments');
-insert into permission_type (id, description) values (4, 'Products');
+insert into permission_type (id, description) values (1, 'Customer');
+insert into permission_type (id, description) values (2, 'Order');
+insert into permission_type (id, description) values (3, 'Payment');
+insert into permission_type (id, description) values (4, 'Product');
 insert into permission_type (id, description) values (5, 'Product Category');
-insert into permission_type (id, description) values (6, 'Plans');
-insert into permission_type (id, description) values (7, 'Invoices');
+insert into permission_type (id, description) values (6, 'Plan');
+insert into permission_type (id, description) values (7, 'Invoice');
 insert into permission_type (id, description) values (8, 'Billing');
 insert into permission_type (id, description) values (9, 'Menu');
 insert into permission_type (id, description) values (10, 'API');

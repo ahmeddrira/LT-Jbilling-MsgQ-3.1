@@ -14255,13 +14255,13 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 --
 
 COPY permission_type (id, description) FROM stdin;
-1	Customers
-2	Orders
-3	Payments
-4	Products
+1	Customer
+2	Order
+3	Payment
+4	Product
 5	Product Category
-6	Plans
-7	Invoices
+6	Plan
+7	Invoice
 8	Billing
 9	Menu
 10	API

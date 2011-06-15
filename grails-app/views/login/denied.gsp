@@ -19,12 +19,29 @@
   --}%
 
 <head>
-<meta name='layout' content='main' />
-<title>Denied</title>
+    <meta name='layout' content='main' />
+    <title>Denied</title>
 </head>
 
 <body>
-<div class='body'>
-	<div class='errors'>Sorry, you're not authorized to view this page.</div>
-</div>
+
+    <div class="form-edit">
+        <div class="heading">
+            <strong>Denied</strong>
+        </div>
+
+        <div class="form-hold">
+            <div class="form-columns">
+
+              <p>Sorry, you're not authorized to view this page.</p>
+
+            </div>
+
+            <!-- spacer -->
+            <div>
+                <br/>&nbsp;
+            </div>
+        </div>
+    </div>
+
 </body>

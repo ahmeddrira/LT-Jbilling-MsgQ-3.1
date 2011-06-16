@@ -1065,6 +1065,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         itemSession.update(executorId, dto, languageId);
     }
 
+    /**
+     * Creates the given Order in jBilling, generates an Invoice for the same.
+     * Returns the generated Invoice ID
+     */
     public Integer createOrderAndInvoice(OrderWS order)
             throws SessionInternalError {
 
@@ -1244,8 +1248,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     /**
-     * Returns the current one-time order for this user for the given
-     * date. Returns null for users with no main subscription order.
+     * Returns the current order (order collecting current one-time charges) for the 
+     * period of the given date and the given user. 
+     * Returns null for users with no main subscription order.
      */
     public OrderWS getCurrentOrder(Integer userId, Date date) {
         OrderWS retValue = null;

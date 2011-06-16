@@ -1704,6 +1704,12 @@ div.box-text {
     margin: 15px auto 10px;
     width: 80%;
 }
+.dataTable a img {
+    position: relative;
+    top: 4px;
+    left: 4px;
+    margin-right: 4px;
+}
 /* an inner table */
 .innerTable {
 	margin: 10px auto 0 auto;

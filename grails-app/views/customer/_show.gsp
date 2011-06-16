@@ -63,7 +63,10 @@
                     <td><g:message code="customer.detail.user.user.id"/></td>
                     <td class="value">
                         <sec:access url="/customerInspector/inspect">
-                            <g:link controller="customerInspector" action="inspect" id="${selected.id}" title="${message(code: 'customer.inspect.link')}">${selected.id}</g:link>
+                            <g:link controller="customerInspector" action="inspect" id="${selected.id}" title="${message(code: 'customer.inspect.link')}">
+                                ${selected.id}
+                                <img src="${resource(dir: 'images', file: 'magnifier.png')}" alt="inspect customer"/>
+                            </g:link>
                         </sec:access>
                         <sec:noAccess url="/customerInspector/inspect">
                             ${selected.id}

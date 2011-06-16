@@ -160,9 +160,8 @@
                     <g:remoteLink controller="order" action="show" id="${order?.id}" before="register(this);" onSuccess="render(data, next);">
                         <g:formatDate date="${order?.createDate}" formatName="date.pretty.format"/>
                     </g:remoteLink>
-
-                    <g:if test="${order}"> - </g:if>
-
+                </td>
+                <td class="value">
                     <g:link controller="order" action="user" id="${selected.id}">
                         <g:message code="customer.show.all.orders"/>
                     </g:link>
@@ -175,6 +174,11 @@
                             <g:formatDate date="${invoice?.createDatetime}" formatName="date.pretty.format"/>
                         </g:remoteLink>
                     </td>
+                    <td class="value">
+                        <g:link controller="invoice" action="user" id="${selected.id}">
+                            <g:message code="customer.show.all.invoices"/>
+                        </g:link>
+                    </td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.paid.date"/></td>
@@ -182,7 +186,11 @@
                         <g:remoteLink controller="payment" action="show" id="${payment?.id}" before="register(this);" onSuccess="render(data, next);">
                             <g:formatDate date="${payment?.paymentDate ?: payment?.createDatetime}" formatName="date.pretty.format"/>
                         </g:remoteLink>
-
+                    </td>
+                    <td class="value">
+                        <g:link controller="payment" action="user" id="${selected.id}">
+                            <g:message code="customer.show.all.payments"/>
+                        </g:link>
                     </td>
                 </tr>
                 <tr>

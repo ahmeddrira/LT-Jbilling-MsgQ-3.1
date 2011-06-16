@@ -347,7 +347,7 @@ class PaymentController {
             if (!payment.id || payment.id == 0) {
                 if (SpringSecurityUtils.ifAllGranted("PAYMENT_30")) {
                     def invoiceId = params.int('invoiceId')
-                    def processNow = params.boolean('processNow')
+                    def processNow = params.boolean('processNow') && payment.methodId != Constants.PAYMENT_METHOD_CHEQUE
 
                     log.debug("creating payment ${payment} for invoice ${invoiceId}")
 
@@ -443,6 +443,9 @@ class PaymentController {
             payment.setCheque(cheque)
 
             payment.setMethodId(Constants.PAYMENT_METHOD_CHEQUE)
+
+            // no processing for cheques
+            params.processNow = false
         }
 
         return payment

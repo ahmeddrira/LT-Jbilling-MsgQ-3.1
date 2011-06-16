@@ -26,8 +26,16 @@
     <script type="text/javascript">
         function togglePaymentType(element) {
             $('.box-cards.payment-type').not(element).each(function () {
+                // toggle slide
                 closeSlide(this);
                 $(this).find(':input').attr('disabled','true');
+
+                // toggle "process now" for cheque payments
+                if ($(element).attr('id') == 'cheque') {
+                    $('#processNow').attr('checked','').attr('disabled','true');
+                } else {
+                    $('#processNow').attr('disabled','');
+                }
             });
 
             $(element).find(':input').attr('disabled','');

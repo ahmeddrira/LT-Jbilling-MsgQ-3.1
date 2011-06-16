@@ -40,8 +40,9 @@ import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
 import org.hibernate.Criteria
 import com.sapienter.jbilling.client.util.SortableCriteria
 import org.hibernate.criterion.MatchMode
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()", "hasAnyRole('MENU_97', 'PRODUCT_40', 'PRODUCT_41', 'PRODUCT_42', 'PRODUCT_CATEGORY_51', 'PRODUCT_CATEGORY_52', 'PRODUCT_CATEGORY_53')"])
 class ProductController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -52,6 +53,7 @@ class ProductController {
     def recentItemService
     def breadcrumbService
 
+    @Secured(["MENU_97"])
     def index = {
         redirect action: list, params: params
     }
@@ -60,6 +62,7 @@ class ProductController {
      * Get a list of categories and render the "_categories.gsp" template. If a category ID is given as the
      * "id" parameter, the corresponding list of products will also be rendered.
      */
+    @Secured(["MENU_97"])
     def list = {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
         def categories = getCategories()
@@ -96,6 +99,7 @@ class ProductController {
     /**
      * Get a list of products for the given item type id and render the "_products.gsp" template.
      */
+    @Secured(["MENU_97"])
     def products = {
         if (params.id) {
             def filters = filterService.getFilters(FilterType.PRODUCT, params)
@@ -161,13 +165,13 @@ class ProductController {
                         }
                     }
                 }
-                
+
 //                if (description) {
 //                    def languageId= session['language_id']?.toInteger()
 //                    createAlias("description", "description")
 //                    addToCriteria(Restrictions.ilike("description.content", description, MatchMode.ANYWHERE))
 //                }
-                
+
                 if (id != null) {
                     itemTypes {
                         eq('id', id)
@@ -187,6 +191,7 @@ class ProductController {
     /**
      * Get a list of ALL products regardless of the item type selected, and render the "_products.gsp" template.
      */
+    @Secured(["MENU_97"])
     def allProducts = {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
 
@@ -224,6 +229,7 @@ class ProductController {
     /**
      * Delete the given category id
      */
+    @Secured(["PRODUCT_CATEGORY_52"])
     def deleteCategory = {
         if (params.id) {
             try {
@@ -246,6 +252,7 @@ class ProductController {
     /**
      * Delete the given product id
      */
+    @Secured(["PRODUCT_42"])
     def deleteProduct = {
         if (params.id) {
             webServicesSession.deleteItem(params.int('id'))
@@ -272,6 +279,7 @@ class ProductController {
      * Get the item category to be edited and show the "editCategory.gsp" view. If no ID is given
      * this view will allow creation of a new category.
      */
+    @Secured(["hasAnyRole('PRODUCT_CATEGORY_50', 'PRODUCT_CATEGORY_51')"])
     def editCategory = {
         def category = params.id ? ItemTypeDTO.get(params.id) : null
 
@@ -291,6 +299,7 @@ class ProductController {
     /**
      * Validate and save a category.
      */
+    @Secured(["hasAnyRole('PRODUCT_CATEGORY_50', 'PRODUCT_CATEGORY_51')"])
     def saveCategory = {
         def category = new ItemTypeWS()
 
@@ -302,20 +311,32 @@ class ProductController {
         // save or update
         try {
             if (!category.id || category.id == 0) {
-                log.debug("creating product category ${category}")
+                if (SpringSecurityUtils.ifAllGranted("PRODUCT_CATEGORY_50")) {
+                    log.debug("creating product category ${category}")
 
-                category.id = webServicesSession.createItemCategory(category)
+                    category.id = webServicesSession.createItemCategory(category)
 
-                flash.message = 'product.category.created'
-                flash.args = [ category.id ]
+                    flash.message = 'product.category.created'
+                    flash.args = [ category.id ]
+
+                } else {
+                    render view: '/login/denied'
+                    return
+                }
 
             } else {
-                log.debug("saving changes to product category ${category.id}")
+                if (SpringSecurityUtils.ifAllGranted("PRODUCT_CATEGORY_51")) {
+                    log.debug("saving changes to product category ${category.id}")
 
-                webServicesSession.updateItemCategory(category)
+                    webServicesSession.updateItemCategory(category)
 
-                flash.message = 'product.category.updated'
-                flash.args = [ category.id ]
+                    flash.message = 'product.category.updated'
+                    flash.args = [ category.id ]
+
+                } else {
+                    render view: '/login/denied'
+                    return
+                }
             }
 
         } catch (SessionInternalError e) {
@@ -331,6 +352,7 @@ class ProductController {
      * Get the item to be edited and show the "editProduct.gsp" view. If no ID is given
      * this screen will allow creation of a new item.
      */
+    @Secured(["hasAnyRole('PRODUCT_40', 'PRODUCT_41')"])
     def editProduct = {
         def product
 
@@ -426,6 +448,7 @@ class ProductController {
     /**
      * Validate and save a product.
      */
+    @Secured(["hasAnyRole('PRODUCT_40', 'PRODUCT_41')"])
     def saveProduct = {
         def product = new ItemDTOEx()
         bindProduct(product, params)
@@ -433,20 +456,32 @@ class ProductController {
         try{
             // save or update
             if (!product.id || product.id == 0) {
-                log.debug("creating product ${product}")
+                if (SpringSecurityUtils.ifAllGranted("PRODUCT_40")) {
+                    log.debug("creating product ${product}")
 
-                product.id = webServicesSession.createItem(product)
+                    product.id = webServicesSession.createItem(product)
 
-                flash.message = 'product.created'
-                flash.args = [ product.id ]
+                    flash.message = 'product.created'
+                    flash.args = [ product.id ]
+
+                } else {
+                    render view: '/login/denied'
+                    return;
+                }
 
             } else {
-                log.debug("saving changes to product ${product.id}")
+                if (SpringSecurityUtils.ifAllGranted("PRODUCT_41")) {
+                    log.debug("saving changes to product ${product.id}")
 
-                webServicesSession.updateItem(product)
+                    webServicesSession.updateItem(product)
 
-                flash.message = 'product.updated'
-                flash.args = [ product.id ]
+                    flash.message = 'product.updated'
+                    flash.args = [ product.id ]
+
+                } else {
+                    render view: '/login/denied'
+                    return;
+                }
             }
 
         } catch (SessionInternalError e) {

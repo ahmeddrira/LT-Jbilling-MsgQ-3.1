@@ -61,7 +61,14 @@
             <tbody>
                 <tr>
                     <td><g:message code="customer.detail.user.user.id"/></td>
-                    <td class="value"><g:link controller="customerInspector" action="inspect" id="${selected.id}" title="${message(code: 'customer.inspect.link')}">${selected.id}</g:link></td>
+                    <td class="value">
+                        <sec:access url="/customerInspector/inspect">
+                            <g:link controller="customerInspector" action="inspect" id="${selected.id}" title="${message(code: 'customer.inspect.link')}">${selected.id}</g:link>
+                        </sec:access>
+                        <sec:noAccess url="/customerInspector/inspect">
+                            ${selected.id}
+                        </sec:noAccess>
+                    </td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.user.username"/></td>
@@ -278,15 +285,28 @@
 
     <div class="btn-box">
         <div class="row">
-            <g:link controller="orderBuilder" action="edit" params="[userId: selected.id]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>
-            <g:link controller="payment" action="edit" params="[userId: selected.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
+            <sec:ifAllGranted roles="ORDER_20">
+                <g:link controller="orderBuilder" action="edit" params="[userId: selected.id]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>
+            </sec:ifAllGranted>
+
+            <sec:ifAllGranted roles="PAYMENT_30">
+                <g:link controller="payment" action="edit" params="[userId: selected.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
+            </sec:ifAllGranted>
         </div>
         <div class="row">
-            <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
-            <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
-            <g:if test="${customer?.isParent > 0}">
-                <g:link action="edit" params="[parentId: selected.id]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
-            </g:if>
+            <sec:ifAllGranted roles="CUSTOMER_11">
+                <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+            </sec:ifAllGranted>
+
+            <sec:ifAllGranted roles="CUSTOMER_12">
+                <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
+            </sec:ifAllGranted>
+
+            <sec:ifAllGranted roles="CUSTOMER_10">
+                <g:if test="${customer?.isParent > 0}">
+                    <g:link action="edit" params="[parentId: selected.id]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
+                </g:if>
+            </sec:ifAllGranted>
         </div>
     </div>
 

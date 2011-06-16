@@ -106,13 +106,15 @@
                     <td><g:message code="payment.balance"/></td>
                     <td class="value">
                         <g:formatNumber number="${selected.balance}" type="currency" currencySymbol="${selected.currencyDTO.symbol}"/>
-                        <g:if test="${selected.balance.compareTo(BigDecimal.ZERO) > 0}">
-                            &nbsp; - &nbsp;
-                            <g:link controller="payment" action="link" id="${selected.id}">
-                                <g:message code="payment.link.invoice.pay" />
-                            </g:link>
-                        </g:if>
 
+                        <sec:access url="/payment/link">
+                            <g:if test="${selected.balance.compareTo(BigDecimal.ZERO) > 0}">
+                                &nbsp; - &nbsp;
+                                <g:link controller="payment" action="link" id="${selected.id}">
+                                    <g:message code="payment.link.invoice.pay" />
+                                </g:link>
+                            </g:if>
+                        </sec:access>
                     </td>
                 </tr>
                 <tr>
@@ -152,9 +154,11 @@
                             <g:formatDate date="${invoicePayment.createDatetime}"/>
                         </td>
                         <td class="innerContent">
-                            <g:remoteLink action="unlink" id="${selected.id}" params="[invoiceId: invoicePayment.invoiceEntity.id]" before="register(this);" onSuccess="render(data, second);">
-                                <g:message code="payment.link.unlink"/>
-                            </g:remoteLink>
+                            <sec:access url="/payment/unlink">
+                                <g:remoteLink action="unlink" id="${selected.id}" params="[invoiceId: invoicePayment.invoiceEntity.id]" before="register(this);" onSuccess="render(data, second);">
+                                    <g:message code="payment.link.unlink"/>
+                                </g:remoteLink>
+                            </sec:access>
                         </td>
                     </tr>
                     </g:each>
@@ -360,10 +364,15 @@
         <!-- edit or delete unlinked payments -->
         <div class="row">
             <g:if test="${!selected.invoicesMap}">
-                <g:if test="${selected.paymentResult.id == Constants.RESULT_ENTERED}">
-                    <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
-                </g:if>
-                <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
+                <sec:ifAllGranted roles="PAYMENT_31">
+                    <g:if test="${selected.paymentResult.id == Constants.RESULT_ENTERED}">
+                        <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+                    </g:if>
+                </sec:ifAllGranted>
+
+                <sec:ifAllGranted roles="PAYMENT_32">
+                    <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
+                </sec:ifAllGranted>
             </g:if>
             <g:else>
                 <em><g:message code="payment.cant.edit.linked"/></em>

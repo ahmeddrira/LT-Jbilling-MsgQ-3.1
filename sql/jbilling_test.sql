@@ -11322,37 +11322,42 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	88	description	1	A scheduled task to execute the Ageing Process.
 24	89	title	1	Business day ageing
 24	89	description	1	Ages a user based on the number of business days (excluding holidays) that the account is overdue.
-59	1	description	1	Create customer
-59	2	description	1	Edit customer
-59	3	description	1	Delete customer
-59	4	description	1	Create order
-59	5	description	1	Edit order
-59	6	description	1	Delete order
-59	7	description	1	Create payment
-59	8	description	1	Edit payment
-59	9	description	1	Delete payment
-59	10	description	1	Link payment to invoice
-59	11	description	1	Create product
-59	12	description	1	Edit product
-59	13	description	1	Delete product
-59	14	description	1	Create product category
-59	15	description	1	Edit product category
-59	16	description	1	Delete product category
-59	17	description	1	Create plan
-59	18	description	1	Edit plan
-59	19	description	1	Delete plan
-59	20	description	1	Delete invoice
-59	21	description	1	Approve / Disapprove review
-59	22	description	1	Show customer menu
-59	23	description	1	Show invoices menu
-59	24	description	1	Show payments and refunds menu
-59	25	description	1	Show billing menu
-59	26	description	1	Show mediation menu
-59	27	description	1	Show reports menu
-59	28	description	1	Show products menu
-59	29	description	1	Show plans menu
-59	30	description	1	Show configuration menu
+59	10	description	1	Create customer
+59	11	description	1	Edit customer
+59	12	description	1	Delete customer
+59	20	description	1	Create order
+59	21	description	1	Edit order
+59	22	description	1	Delete order
+59	30	description	1	Create payment
+59	31	description	1	Edit payment
+59	32	description	1	Delete payment
+59	33	description	1	Link payment to invoice
+59	40	description	1	Create product
+59	41	description	1	Edit product
+59	42	description	1	Delete product
+59	50	description	1	Create product category
+59	51	description	1	Edit product category
+59	52	description	1	Delete product category
+59	60	description	1	Create plan
+59	61	description	1	Edit plan
+59	62	description	1	Delete plan
+59	70	description	1	Delete invoice
+59	80	description	1	Approve / Disapprove review
+59	90	description	1	Show customer menu
+59	91	description	1	Show invoices menu
+59	92	description	1	Show order menu
+59	93	description	1	Show payments and refunds menu
+59	94	description	1	Show billing menu
+59	95	description	1	Show mediation menu
+59	96	description	1	Show reports menu
+59	97	description	1	Show products menu
+59	98	description	1	Show plans menu
+59	99	description	1	Show configuration menu
 59	120	description	1	Web Service API access
+59	23	description	1	Generate invoice for order
+59	71	description	1	Send invoice notification
+59	13	description	1	Inspect customer
+59	14	description	1	Blacklist customer
 \.
 
 
@@ -14157,37 +14162,42 @@ COPY period_unit (id) FROM stdin;
 --
 
 COPY permission (id, type_id, foreign_id) FROM stdin;
-1	1	\N
-2	1	\N
-3	1	\N
-4	2	\N
-5	2	\N
-6	2	\N
-7	3	\N
-8	3	\N
-9	3	\N
-10	3	\N
-11	4	\N
-12	4	\N
-13	4	\N
-14	5	\N
-15	5	\N
-16	5	\N
-17	6	\N
-18	6	\N
-19	6	\N
-20	7	\N
-21	8	\N
-22	9	\N
-23	9	\N
-24	9	\N
-25	9	\N
-26	9	\N
-27	9	\N
-28	9	\N
-29	9	\N
-30	9	\N
+10	1	\N
+11	1	\N
+12	1	\N
+20	2	\N
+21	2	\N
+22	2	\N
+30	3	\N
+31	3	\N
+32	3	\N
+33	3	\N
+40	4	\N
+41	4	\N
+42	4	\N
+50	5	\N
+51	5	\N
+52	5	\N
+60	6	\N
+61	6	\N
+62	6	\N
+70	7	\N
+80	8	\N
+90	9	\N
+91	9	\N
+92	9	\N
+93	9	\N
+94	9	\N
+95	9	\N
+96	9	\N
+97	9	\N
+98	9	\N
+99	9	\N
 120	10	\N
+23	2	\N
+71	7	\N
+13	1	\N
+14	1	\N
 \.
 
 
@@ -14196,57 +14206,75 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 --
 
 COPY permission_role_map (permission_id, role_id) FROM stdin;
-1	2
-2	2
-3	2
-4	2
-5	2
-6	2
-7	2
-8	2
-9	2
 10	2
 11	2
 12	2
-13	2
-14	2
-15	2
-16	2
-17	2
-18	2
-19	2
 20	2
 21	2
 22	2
-23	2
-24	2
-25	2
-26	2
-27	2
-28	2
-29	2
 30	2
+31	2
+32	2
+33	2
+40	2
+41	2
+42	2
+50	2
+51	2
+52	2
+60	2
+61	2
+62	2
+70	2
+80	2
+90	2
+91	2
+92	2
+93	2
+94	2
+95	2
+96	2
+97	2
+98	2
+99	2
 120	2
-1	3
-2	3
-3	3
-4	3
-5	3
-6	3
-7	3
-8	3
-9	3
 10	3
 11	3
 12	3
-13	3
-14	3
-15	3
-16	3
-17	3
-18	3
-19	3
 20	3
+21	3
+22	3
+30	3
+31	3
+32	3
+33	3
+40	3
+41	3
+42	3
+50	3
+51	3
+52	3
+60	3
+61	3
+62	3
+70	3
+90	3
+91	3
+92	3
+93	3
+94	3
+95	3
+96	3
+97	3
+98	3
+23	2
+23	3
+71	2
+71	3
+13	2
+13	3
+14	2
+14	3
 \.
 
 
@@ -14255,13 +14283,13 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 --
 
 COPY permission_type (id, description) FROM stdin;
-1	Customers
-2	Orders
-3	Payments
-4	Products
+1	Customer
+2	Order
+3	Payment
+4	Product
 5	Product Category
-6	Plans
-7	Invoices
+6	Plan
+7	Invoice
 8	Billing
 9	Menu
 10	API

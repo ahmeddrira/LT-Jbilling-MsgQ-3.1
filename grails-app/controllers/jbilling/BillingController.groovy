@@ -40,7 +40,7 @@ import com.sapienter.jbilling.client.util.SortableCriteria;
 * @author Vikas Bodani
 * @since 07/01/11
 */
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()", "hasAnyRole('MENU_94', 'BILLING_80')"])
 class BillingController {
 
 	static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -50,6 +50,7 @@ class BillingController {
 	def breadcrumbService
 	def filterService
 
+    @Secured(["MENU_94"])
 	def index = {
 		redirect action: list, params: params
 	}
@@ -58,6 +59,7 @@ class BillingController {
 	 * Renders/display list of Billing Processes Ordered by Process Id descending
 	 * so that the lastest process shows first.
 	 */
+    @Secured(["MENU_94"])
 	def list = {
 
 		Map dataHashMap = new HashMap()
@@ -193,7 +195,8 @@ class BillingController {
 		log.debug "redirect to order controller for processId $_processId"
 		redirect controller: 'order', action: 'byProcess', id:_processId
 	}
-	
+
+    @Secured(["BILLING_80"])
 	def approve = {
 		try {
 			webServicesSession.setReviewApproval(Boolean.TRUE)
@@ -203,6 +206,8 @@ class BillingController {
 		flash.message = 'billing.review.approve.success'
 		redirect action: 'list'
 	}
+
+    @Secured(["BILLING_80"])
 	def disapprove = {
 		try {
 			webServicesSession.setReviewApproval(Boolean.FALSE)

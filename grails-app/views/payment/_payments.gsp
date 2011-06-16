@@ -151,5 +151,7 @@
 </div>
 
 <div class="btn-box">
-    <g:link action="create" class="submit payment"><span><g:message code="button.create.payment"/></span></g:link>
+    <sec:access url="/payment/create">
+        <g:link action="create" class="submit payment"><span><g:message code="button.create.payment"/></span></g:link>
+    </sec:access>
 </div>

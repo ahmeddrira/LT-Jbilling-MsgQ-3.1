@@ -163,12 +163,13 @@
                 <p class="description">${customer?.notes}</p>
             </div>
 
-            <div style="margin: 20px 0;">
-                <div class="btn-row">
-                    <g:link controller="blacklist" action="user" id="${user.id}" class="submit add"><span><g:message code="customer.blacklist.button"/></span></g:link>
-
+            <sec:access url="/blacklist/user">
+                <div style="margin: 20px 0;">
+                    <div class="btn-row">
+                        <g:link controller="blacklist" action="user" id="${user.id}" class="submit add"><span><g:message code="customer.blacklist.button"/></span></g:link>
+                    </div>
                 </div>
-            </div>
+            </sec:access>
 
             <!-- separator -->
             <div class="form-columns">
@@ -273,14 +274,31 @@
             <div style="margin: 20px 0;">
                 <div class="btn-row">
                     <g:link controller="auditLog" action="user" id="${user.id}" class="submit show"><span><g:message code="customer.view.audit.log.button"/></span></g:link>
-                    <g:link controller="invoice" action="user" id="${user.id}" class="submit show"><span><g:message code="customer.view.invoices.button"/></span></g:link>
-                    <g:link controller="payment" action="user" id="${user.id}" class="submit payment"><span><g:message code="customer.view.payments.button"/></span></g:link>
-                    <g:link controller="order" action="user" id="${user.id}" class="submit order"><span><g:message code="customer.view.orders.button"/></span></g:link>
+
+                    <sec:access url="/invoice/user">
+                        <g:link controller="invoice" action="user" id="${user.id}" class="submit show"><span><g:message code="customer.view.invoices.button"/></span></g:link>
+                    </sec:access>
+
+                    <sec:access url="/payment/user">
+                        <g:link controller="payment" action="user" id="${user.id}" class="submit payment"><span><g:message code="customer.view.payments.button"/></span></g:link>
+                    </sec:access>
+
+                    <sec:access url="/order/user">
+                        <g:link controller="order" action="user" id="${user.id}" class="submit order"><span><g:message code="customer.view.orders.button"/></span></g:link>
+                    </sec:access>
                 </div>
                 <div class="btn-row">
-                    <g:link controller="customer" action="edit" id="${user.id}" class="submit edit"><span><g:message code="customer.edit.customer.button"/></span></g:link>
-                    <g:link controller="payment" action="edit" params="[userId: user.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
-                    <g:link controller="orderBuilder" action="edit" params="[userId: user.id]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>
+                    <sec:ifAllGranted roles="CUSTOMER_11">
+                        <g:link controller="customer" action="edit" id="${user.id}" class="submit edit"><span><g:message code="customer.edit.customer.button"/></span></g:link>
+                    </sec:ifAllGranted>
+
+                    <sec:ifAllGranted roles="PAYMENT_30">
+                        <g:link controller="payment" action="edit" params="[userId: user.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
+                    </sec:ifAllGranted>
+
+                    <sec:ifAllGranted roles="ORDER_20">
+                        <g:link controller="orderBuilder" action="edit" params="[userId: user.id]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>
+                    </sec:ifAllGranted>
                 </div>
             </div>
 

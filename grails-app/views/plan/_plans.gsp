@@ -87,5 +87,7 @@
 </g:if>
 
 <div class="btn-box">
-    <g:link controller="planBuilder" action="edit" class="submit add"><span><g:message code="button.create"/></span></g:link>
+    <sec:ifAllGranted roles="PLAN_60">
+        <g:link controller="planBuilder" action="edit" class="submit add"><span><g:message code="button.create"/></span></g:link>
+    </sec:ifAllGranted>
 </div>

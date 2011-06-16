@@ -37,6 +37,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.order.db.OrderStatusDTO
 import java.math.RoundingMode
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 /**
  * OrderController
@@ -44,7 +45,7 @@ import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
  * @author Brian Cowdery
  * @since 20-Jan-2011
  */
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()", "hasAnyRole('ORDER_20', 'ORDER_21')"])
 class OrderBuilderController {
 
     def webServicesSession
@@ -82,6 +83,18 @@ class OrderBuilderController {
          */
         initialize {
             action {
+                if (!params.id && !SpringSecurityUtils.ifAllGranted("ORDER_20")) {
+                    // not allowed to create
+                    redirect controller: 'login', action: 'denied'
+                    return
+                }
+
+                if (params.id && !SpringSecurityUtils.ifAllGranted("ORDER_21")) {
+                    // not allowed to edit
+                    redirect controller: 'login', action: 'denied'
+                    return
+                }
+
                 def order = params.id ? webServicesSession.getOrder(params.int('id')) : new OrderWS()
 
                 if (!order) {
@@ -425,20 +438,32 @@ class OrderBuilderController {
                     def order = conversation.order
 
                     if (!order.id || order.id == 0) {
-                        log.debug("creating order ${order}")
-                        order.id = webServicesSession.createOrder(order)
+                        if (SpringSecurityUtils.ifAllGranted("ORDER_20")) {
 
-                        // set success message in session, contents of the flash scope doesn't survive
-                        // the redirect to the order list when the web-flow finishes
-                        session.message = 'order.created'
-                        session.args = [ order.id, order.userId ]
+                            log.debug("creating order ${order}")
+                            order.id = webServicesSession.createOrder(order)
+
+                            // set success message in session, contents of the flash scope doesn't survive
+                            // the redirect to the order list when the web-flow finishes
+                            session.message = 'order.created'
+                            session.args = [ order.id, order.userId ]
+
+                        } else {
+                            redirect controller: 'login', action: 'denied'
+                        }
 
                     } else {
-                        log.debug("saving changes to order ${order.id}")
-                        webServicesSession.updateOrder(order)
+                        if (SpringSecurityUtils.ifAllGranted("ORDER_21")) {
 
-                        session.message = 'order.updated'
-                        session.args = [ order.id, order.userId ]
+                            log.debug("saving changes to order ${order.id}")
+                            webServicesSession.updateOrder(order)
+
+                            session.message = 'order.updated'
+                            session.args = [ order.id, order.userId ]
+
+                        } else {
+                            redirect controller: 'login', action: 'denied'
+                        }
                     }
 
                 } catch (SessionInternalError e) {

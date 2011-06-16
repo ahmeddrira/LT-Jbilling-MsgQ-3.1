@@ -40,6 +40,7 @@ import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.client.pricing.util.PlanHelper
 import com.sapienter.jbilling.server.item.PlanItemBundleWS
 import com.sapienter.jbilling.server.item.db.PlanItemBundleDTO
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 /**
  * Plan builder controller
@@ -47,7 +48,7 @@ import com.sapienter.jbilling.server.item.db.PlanItemBundleDTO
  * @author Brian Cowdery
  * @since 01-Feb-2011
  */
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()", "hasAnyRole('PLAN_60', 'PLAN_61')"])
 class PlanBuilderController {
 
     def webServicesSession
@@ -80,6 +81,19 @@ class PlanBuilderController {
          */
         initialize {
             action {
+                if (!params.id && !SpringSecurityUtils.ifAllGranted("PLAN_60")) {
+                    // not allowed to create
+                    redirect controller: 'login', action: 'denied'
+                    return
+                }
+
+                if (params.id && !SpringSecurityUtils.ifAllGranted("PLAN_61")) {
+                    // not allowed to edit
+                    redirect controller: 'login', action: 'denied'
+                    return
+                }
+
+
                 def plan
                 def product
 
@@ -421,26 +435,40 @@ class PlanBuilderController {
                     def product = conversation.product
 
                     if (!plan.id || plan.id == 0) {
-                        log.debug("creating plan subscription item ${product}")
-                        product.id = plan.itemId = webServicesSession.createItem(product)
+                        if (SpringSecurityUtils.ifAllGranted("PLAN_60")) {
 
-                        log.debug("creating plan ${plan}")
-                        plan.id = webServicesSession.createPlan(plan)
+                            log.debug("creating plan subscription item ${product}")
+                            product.id = plan.itemId = webServicesSession.createItem(product)
 
-                        // set success message in session, contents of the flash scope doesn't survive
-                        // the redirect to the order list when the web-flow finishes
-                        session.message = 'plan.created'
-                        session.args = [ plan.id ]
+                            log.debug("creating plan ${plan}")
+                            plan.id = webServicesSession.createPlan(plan)
+
+                            // set success message in session, contents of the flash scope doesn't survive
+                            // the redirect to the order list when the web-flow finishes
+                            session.message = 'plan.created'
+                            session.args = [ plan.id ]
+
+                        } else {
+                            redirect controller: 'login', action: 'denied'
+                            return
+                        }
 
                     } else {
-                        log.debug("saving changes to plan subscription item ${product.id}")
-                        webServicesSession.updateItem(product)
+                        if (SpringSecurityUtils.ifAllGranted("PLAN_61")) {
 
-                        log.debug("saving changes to plan ${plan.id}")
-                        webServicesSession.updatePlan(plan)
+                            log.debug("saving changes to plan subscription item ${product.id}")
+                            webServicesSession.updateItem(product)
 
-                        session.message = 'plan.updated'
-                        session.args = [ plan.id ]
+                            log.debug("saving changes to plan ${plan.id}")
+                            webServicesSession.updatePlan(plan)
+
+                            session.message = 'plan.updated'
+                            session.args = [ plan.id ]
+
+                        } else {
+                            redirect controller: 'login', action: 'denied'
+                            return
+                        }
                     }
 
                 } catch (SessionInternalError e) {

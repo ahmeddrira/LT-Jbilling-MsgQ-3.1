@@ -39,7 +39,7 @@ import com.sapienter.jbilling.server.order.OrderPeriodWS
  */
 
 
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()", "MENU_99"])
 class OrderPeriodController {
 
 	static pagination = [ max: 10, offset: 0 ]

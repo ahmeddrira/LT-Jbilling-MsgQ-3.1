@@ -148,7 +148,7 @@ public class PermissionDTO extends AbstractDescription implements Serializable, 
      *
      * Authority strings are in uppercase with all spaces replaced with underscores.
      *
-     * e.g., "SERVER_ACCESS_137", "WEB_SERVICES_120"
+     * e.g., "SERVER_ACCESS_137", "WEB_SERVICES_120", "ORDER_66" (kill all the jedi)
      *
      * @return authority string
      */

@@ -51,8 +51,9 @@ import org.hibernate.criterion.DetachedCriteria
 import org.hibernate.criterion.Subqueries
 import org.hibernate.criterion.Restrictions
 import org.hibernate.criterion.Criterion
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()", "hasAnyRole('MENU_90', 'CUSTOMER_10', 'CUSTOMER_11', 'CUSTOMER_12')"])
 class CustomerController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -64,7 +65,9 @@ class CustomerController {
     def filterService
     def recentItemService
     def breadcrumbService
+    def springSecurityService
 
+    @Secured(["MENU_90"])
     def index = {
         redirect action: list, params: params
     }
@@ -120,6 +123,7 @@ class CustomerController {
      * Get a list of users and render the list page. If the "applyFilters" parameter is given, the
      * partial "_users.gsp" template will be rendered instead of the complete user list.
      */
+    @Secured(["MENU_90"])
     def list = {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()
@@ -202,6 +206,7 @@ class CustomerController {
     /**
      * Updates the notes for the given user id.
      */
+    @Secured(["CUSTOMER_11"])
     def saveNotes = {
         if (params.id) {
             webServicesSession.saveCustomerNotes(params.int('id'), params.notes)
@@ -219,6 +224,7 @@ class CustomerController {
     /**
      * Delete the given user id.
      */
+    @Secured(["CUSTOMER_12"])
     def delete = {
         if (params.id) {
             webServicesSession.deleteUser(params.int('id'))
@@ -228,7 +234,7 @@ class CustomerController {
         }
 
         // render the partial user list
-        params.applyFilter = true
+        params.partial = true
         list()
     }
 
@@ -236,6 +242,7 @@ class CustomerController {
      * Get the user to be edited and show the "edit.gsp" view. If no ID is given this view
      * will allow creation of a new user.
      */
+    @Secured(["hasAnyRole('CUSTOMER_10', 'CUSTOMER_11')"])
     def edit = {
         def user
         def contacts
@@ -267,6 +274,7 @@ class CustomerController {
     /**
      * Validate and save a user.
      */
+    @Secured(["hasAnyRole('CUSTOMER_10', 'CUSTOMER_11')"])
     def save = {
         def user = new UserWS()
         UserHelper.bindUser(user, params)
@@ -286,24 +294,34 @@ class CustomerController {
         try {
             // save or update
             if (!oldUser) {
-                log.debug("creating user ${user}")
+                if (SpringSecurityUtils.ifAllGranted("CUSTOMER_10")) {
 
-                user.userId = webServicesSession.createUser(user)
+                    user.userId = webServicesSession.createUser(user)
 
-                flash.message = 'customer.created'
-                flash.args = [ user.userId ]
+                    flash.message = 'customer.created'
+                    flash.args = [ user.userId ]
 
-            } else {
-                log.debug("saving changes to user ${user.userId}")
-
-                webServicesSession.updateUser(user)
-
-                if (user.ach) {
-                    webServicesSession.updateAch(user.userId, user.ach)
+                } else {
+                    render view: '/login/denied'
+                    return
                 }
 
-                flash.message = 'customer.updated'
-                flash.args = [ user.userId ]
+            } else {
+                if (SpringSecurityUtils.ifAllGranted("CUSTOMER_11")) {
+
+                    webServicesSession.updateUser(user)
+
+                    if (user.ach) {
+                        webServicesSession.updateAch(user.userId, user.ach)
+                    }
+
+                    flash.message = 'customer.updated'
+                    flash.args = [ user.userId ]
+
+                } else {
+                    render view: '/login/denied'
+                    return
+                }
             }
 
             // save secondary contacts

@@ -45,7 +45,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS
  * @author Vikas Bodani
  * @since
  */
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()", "hasAnyRole('INVOICE_70', 'INVOICE_71', 'PAYMENT_33')"])
 class InvoiceController {
 
     static pagination = [max: 10, offset: 0, sort: 'id', order: 'desc']
@@ -56,10 +56,12 @@ class InvoiceController {
     def recentItemService
     def breadcrumbService
 
+    @Secured(["MENU_91"])
     def index = {
         redirect action: 'list', params: params
     }
 
+    @Secured(["MENU_91"])
     def list = {
         def filters = filterService.getFilters(FilterType.INVOICE, params)
         def invoices = getInvoices(filters, params)
@@ -160,6 +162,7 @@ class InvoiceController {
     /**
      * Convenience shortcut, this action shows all invoices for the given user id.
      */
+    @Secured(["MENU_91"])
     def user = {
         def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUser.id', template: 'id', visible: true, integerValue: params.int('id'))
         filterService.setFilter(FilterType.INVOICE, filter)
@@ -219,7 +222,7 @@ class InvoiceController {
         }
     }
 
-    @Secured(['INVOICES_113'])
+    @Secured(["INVOICE_70"])
     def delete = {
         int invoiceId = params.int('id')
         int userId = params.int('_userId')
@@ -242,7 +245,8 @@ class InvoiceController {
         redirect action: list, params: [id: userId]
     }
 
-    def notifyInvoiceByEmail = {
+    @Secured(["INVOICE_71"])
+    def email = {
         if (params.id) {
             try {
                 def sent = webServicesSession.notifyInvoiceByEmail(params.int('id'))
@@ -279,12 +283,10 @@ class InvoiceController {
         }
     }
 
-    def removePaymentLink = {
-        Integer invoiceId = params.int('id')
-        Integer paymentId = params.int('paymentId')
-
+    @Secured(["PAYMENT_33"])
+    def unlink = {
         try {
-            webServicesSession.removePaymentLink(invoiceId, paymentId)
+            webServicesSession.removePaymentLink(params.int('id'), params.int('paymentId'))
             flash.message = "payment.unlink.success"
 
         } catch (SessionInternalError e) {
@@ -295,7 +297,7 @@ class InvoiceController {
             flash.error = "error.invoice.unlink.payment"
         }
 
-        redirect action: 'list', params: [ id: invoiceId ]
+        redirect action: 'list', params: [ id: params.id ]
     }
     
     def byProcess = {

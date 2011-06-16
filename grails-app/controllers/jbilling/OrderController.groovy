@@ -55,7 +55,7 @@ import com.sapienter.jbilling.client.util.SortableCriteria
  *
  */
 
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()", "hasAnyRole('MENU_92', 'ORDER_22')"])
 class OrderController {
 
 	static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -66,10 +66,12 @@ class OrderController {
     def recentItemService
 	def breadcrumbService
 
+    @Secured(["MENU_92"])
     def index = {
         redirect action: list, params: params
     }
 
+    @Secured(["MENU_92"])
 	def list = {
 		if (params.id) {
 			redirect (action: 'showListAndOrder', params: [id: params.id as Integer])
@@ -98,7 +100,8 @@ class OrderController {
 
 		render template:'order', model: [order: order, user: user, currencies: currencies]
 	}
-	
+
+    @Secured(["MENU_92"])
 	def showListAndOrder = {
 		
 		def filters = filterService.getFilters(FilterType.ORDER, params)
@@ -174,12 +177,14 @@ class OrderController {
 	/**
 	* Convenience shortcut, this action shows all invoices for the given user id.
 	*/
-   def user = {
-	   def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUserByUserId.id', template: 'id', visible: true, integerValue: params.int('id'))
-	   filterService.setFilter(FilterType.ORDER, filter)
-	   redirect action: 'list'
-   }
-	
+    @Secured(["MENU_92"])
+    def user = {
+        def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUserByUserId.id', template: 'id', visible: true, integerValue: params.int('id'))
+        filterService.setFilter(FilterType.ORDER, filter)
+        redirect action: 'list'
+    }
+
+    @Secured(["ORDER_23"])
 	def generateInvoice = {
 		log.debug "generateInvoice for order ${params.id}"
 		
@@ -202,6 +207,7 @@ class OrderController {
         }
 	}
 
+    @Secured(["ORDER_23"])
 	def applyToInvoice = {
 
 		def invoices= getApplicableInvoices(params.int('userId'))
@@ -216,6 +222,7 @@ class OrderController {
 		[invoices:invoices, currencies: currencies, orderId: params.id]
 	}
 
+    @Secured(["ORDER_23"])
 	def apply = {
 		log.debug "apply: for order ${params.id}"
 		Integer invoiceID= params.int('invoiceId')
@@ -271,7 +278,8 @@ class OrderController {
 		def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
 		return currencies.findAll{ it.inUse }
 	}
-	
+
+    @Secured(["MENU_92"])
 	def byProcess = { 
 		OrderBL bl= new OrderBL();
 		List<Integer> orderIds= bl.getOrdersByProcess(params.id.toInteger())
@@ -295,7 +303,8 @@ class OrderController {
 		log.debug("Found ${orders.size()} orders.")
 		render view: 'list', model: [orders:orders, filters:filters]
 	}
-	
+
+    @Secured(["ORDER_22"])
 	def deleteOrder = {
 		try {
 			webServicesSession.deleteOrder(params.int('id'))

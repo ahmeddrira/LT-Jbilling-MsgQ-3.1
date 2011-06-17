@@ -79,7 +79,7 @@ h2. Payment API Methods
 @getPayment(Integer paymentId)@ | Payment ID | @PaymentWS@ | Returns the payment for the given ID.
 @getLatestPayment(Integer userId)@ | User ID | @PaymentWS@ | Returns the most recent payment for the given user.
 @getLastPayments(Integer userId, Integer number)@ | User ID, number of payments | @Integer []@ | Returns the last _n_ payment IDs for the given user.
-@getTotalRevenueByUser(Integer userId)@ | User ID | @BigDecimal@ | Returns the total revenue (payments recieved) for the given user.
+@getTotalRevenueByUser(Integer userId)@ | User ID | @BigDecimal@ | Returns the total revenue (payments recieved minus all refunds) for the given user.
 @getUserPaymentInstrument(Integer userId)@ | User ID | @PaymentWS@ | Returns the selected "automatic payment" details for the given user.
 @createPayment(PaymentWS payment)@ | @PaymentWS@ | @Integer@ | Saves the given payment and applies it to the user's account (as per configured entity preferences). Does not process the payment, only creates it as 'Entered'.
 @updatePayment(PaymentWS payment)@ | @PaymentWS@ | - | Updates the stored payment to match the details in the given payment. Given payment must have an ID.
@@ -100,9 +100,9 @@ h2. User API Methods
 @createUser(UserWS newUser)@ | @UserWS | @Integer@ | Save the given item and returns the new ID.
 @updateUser(UserWS user)@ | @UserWS @ | - | Updates the stored user details to match the given user object. Given user must have an ID.
 @deleteUser(Integer userId)@ | User ID | - | Deletes the given user.
-@getUserContactsWS(Integer userId)@ | User ID | @ContactWS []@ | Returns all contact details for the given user.
-@updateUserContact(Integer userId, Integer typeId, ContactWS contact)@ | User ID, Contact Type ID, @ContactWS@ | - | Updates the contact details of the given user.
-@getContactTypeWS(Integer contactTypeId)@ | Contact Type ID | @ContactTypeWS@ | Returns the contact type for the given ID.
+@getUserContactsWS(Integer userId)@ | User ID | @ContactWS []@ | Returns all contact details for the given user. The user may have more than one contact details.
+@updateUserContact(Integer userId, Integer typeId, ContactWS contact)@ | User ID, Contact Type ID, @ContactWS@ | - | Updates the given contact details of the given user to match those passed.
+@getContactTypeWS(Integer contactTypeId)@ | Contact Type ID | @ContactTypeWS@ | Returns the contact type  detailsfor the given  Contact Type ID.
 @createContactTypeWS(ContactTypeWS contactType)@ | @ContactTypeWS@ | @Integer@ | Saves the given contact type and returns the new ID.
 @updateCreditCard(Integer userId, CreditCardDTO creditCard)@ | User ID, Credit Card | - | Updates the given users credit card data.
 @updateAch(Integer userId, AchDTO ach)@ | User ID, ACH | - | Updates the given users ACH (automatic clearing house) data.

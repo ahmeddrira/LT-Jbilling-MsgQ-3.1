@@ -35,7 +35,7 @@ import com.sapienter.jbilling.server.util.Constants
 * @since 15-Feb-2011
 */
 
-@Secured(["isAuthenticated()", "MENU_99"])
+@Secured(["MENU_99"])
 class MediationConfigController {
 
     static pagination = [ max: 10, offset: 0 ]

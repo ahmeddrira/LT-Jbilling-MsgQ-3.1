@@ -53,7 +53,7 @@ import org.hibernate.criterion.Restrictions
 import org.hibernate.criterion.Criterion
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
-@Secured(["isAuthenticated()", "hasAnyRole('MENU_90', 'CUSTOMER_10', 'CUSTOMER_11', 'CUSTOMER_12')"])
+@Secured(["MENU_90"])
 class CustomerController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -67,7 +67,6 @@ class CustomerController {
     def breadcrumbService
     def springSecurityService
 
-    @Secured(["MENU_90"])
     def index = {
         redirect action: list, params: params
     }
@@ -123,7 +122,6 @@ class CustomerController {
      * Get a list of users and render the list page. If the "applyFilters" parameter is given, the
      * partial "_users.gsp" template will be rendered instead of the complete user list.
      */
-    @Secured(["MENU_90"])
     def list = {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()

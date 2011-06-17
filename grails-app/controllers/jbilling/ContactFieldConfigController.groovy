@@ -37,7 +37,7 @@ import com.sapienter.jbilling.common.SessionInternalError
  */
 
 
-@Secured(["isAuthenticated()", "MENU_99"])
+@Secured(["MENU_99"])
 class ContactFieldConfigController {
 	
 	static pagination = [ max: 10, offset: 0 ]

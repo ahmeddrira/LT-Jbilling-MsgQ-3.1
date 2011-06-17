@@ -40,7 +40,7 @@ import com.sapienter.jbilling.client.util.SortableCriteria;
 * @author Vikas Bodani
 * @since 07/01/11
 */
-@Secured(["isAuthenticated()", "hasAnyRole('MENU_94', 'BILLING_80')"])
+@Secured(["MENU_94"])
 class BillingController {
 
 	static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -50,7 +50,6 @@ class BillingController {
 	def breadcrumbService
 	def filterService
 
-    @Secured(["MENU_94"])
 	def index = {
 		redirect action: list, params: params
 	}
@@ -59,7 +58,6 @@ class BillingController {
 	 * Renders/display list of Billing Processes Ordered by Process Id descending
 	 * so that the lastest process shows first.
 	 */
-    @Secured(["MENU_94"])
 	def list = {
 
 		Map dataHashMap = new HashMap()

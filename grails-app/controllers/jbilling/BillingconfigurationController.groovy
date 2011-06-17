@@ -32,7 +32,7 @@ import java.util.Date;
 * @author Vikas Bodani
 * @since 11/01/11
 */
-@Secured(["isAuthenticated()", "MENU_99"])
+@Secured(["MENU_99"])
 class BillingconfigurationController {
 
 	def webServicesSession

@@ -45,7 +45,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
  * @author Brian Cowdery
  * @since 20-Jan-2011
  */
-@Secured(["isAuthenticated()", "hasAnyRole('ORDER_20', 'ORDER_21')"])
+@Secured(["hasAnyRole('ORDER_20', 'ORDER_21')"])
 class OrderBuilderController {
 
     def webServicesSession

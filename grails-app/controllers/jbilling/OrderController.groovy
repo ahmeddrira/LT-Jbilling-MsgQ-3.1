@@ -55,7 +55,7 @@ import com.sapienter.jbilling.client.util.SortableCriteria
  *
  */
 
-@Secured(["isAuthenticated()", "hasAnyRole('MENU_92', 'ORDER_22')"])
+@Secured(["MENU_92"])
 class OrderController {
 
 	static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -66,12 +66,10 @@ class OrderController {
     def recentItemService
 	def breadcrumbService
 
-    @Secured(["MENU_92"])
     def index = {
         redirect action: list, params: params
     }
 
-    @Secured(["MENU_92"])
 	def list = {
 		if (params.id) {
 			redirect (action: 'showListAndOrder', params: [id: params.id as Integer])
@@ -101,9 +99,7 @@ class OrderController {
 		render template:'order', model: [order: order, user: user, currencies: currencies]
 	}
 
-    @Secured(["MENU_92"])
 	def showListAndOrder = {
-		
 		def filters = filterService.getFilters(FilterType.ORDER, params)
 		def orders = getFilteredOrders (filters, params)
 		Integer _orderId= params.id as Integer
@@ -177,7 +173,6 @@ class OrderController {
 	/**
 	* Convenience shortcut, this action shows all invoices for the given user id.
 	*/
-    @Secured(["MENU_92"])
     def user = {
         def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUserByUserId.id', template: 'id', visible: true, integerValue: params.int('id'))
         filterService.setFilter(FilterType.ORDER, filter)
@@ -279,7 +274,6 @@ class OrderController {
 		return currencies.findAll{ it.inUse }
 	}
 
-    @Secured(["MENU_92"])
 	def byProcess = { 
 		OrderBL bl= new OrderBL();
 		List<Integer> orderIds= bl.getOrdersByProcess(params.id.toInteger())

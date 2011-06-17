@@ -37,7 +37,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.payment.blacklist.BlacklistBL
 import grails.plugins.springsecurity.Secured
 
-@Secured(["isAuthenticated()", "hasAnyRole('CUSTOMER_13')"])
+@Secured(["CUSTOMER_13"])
 class CustomerInspectorController {
 	
 	def webServicesSession
@@ -46,12 +46,10 @@ class CustomerInspectorController {
     def breadcrumbService
     def productService
 
-    @Secured(["CUSTOMER_13"])
 	def index = { 
 		redirect action: 'inspect', params: params
 	}
 
-    @Secured(["CUSTOMER_13"])
 	def inspect = {
 		def user = params.id ? UserDTO.get(params.int('id')) : null
 

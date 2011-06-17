@@ -42,7 +42,7 @@ import com.sapienter.jbilling.client.util.SortableCriteria
 import org.hibernate.criterion.MatchMode
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
-@Secured(["isAuthenticated()", "hasAnyRole('MENU_97', 'PRODUCT_40', 'PRODUCT_41', 'PRODUCT_42', 'PRODUCT_CATEGORY_51', 'PRODUCT_CATEGORY_52', 'PRODUCT_CATEGORY_53')"])
+@Secured(["MENU_97"])
 class ProductController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -53,7 +53,6 @@ class ProductController {
     def recentItemService
     def breadcrumbService
 
-    @Secured(["MENU_97"])
     def index = {
         redirect action: list, params: params
     }
@@ -62,7 +61,6 @@ class ProductController {
      * Get a list of categories and render the "_categories.gsp" template. If a category ID is given as the
      * "id" parameter, the corresponding list of products will also be rendered.
      */
-    @Secured(["MENU_97"])
     def list = {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
         def categories = getCategories()
@@ -99,7 +97,6 @@ class ProductController {
     /**
      * Get a list of products for the given item type id and render the "_products.gsp" template.
      */
-    @Secured(["MENU_97"])
     def products = {
         if (params.id) {
             def filters = filterService.getFilters(FilterType.PRODUCT, params)
@@ -191,7 +188,6 @@ class ProductController {
     /**
      * Get a list of ALL products regardless of the item type selected, and render the "_products.gsp" template.
      */
-    @Secured(["MENU_97"])
     def allProducts = {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
 

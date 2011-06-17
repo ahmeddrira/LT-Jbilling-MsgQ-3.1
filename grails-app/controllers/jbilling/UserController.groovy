@@ -38,7 +38,7 @@ import com.sapienter.jbilling.server.user.permisson.db.RoleDTO
 import com.sapienter.jbilling.server.user.permisson.db.PermissionTypeDTO
 import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO
 
-@Secured(["isAuthenticated()", "MENU_99"])
+@Secured(["MENU_99"])
 class UserController {
 
     static pagination = [ max: 10, offset: 0 ]

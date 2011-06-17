@@ -90,6 +90,22 @@
             overflowToDisk="false"
      />                       
 
+    <cache name="com.sapienter.jbilling.server.user.permisson.db.RoleDTO"
+           maxElementsInMemory="10"
+           eternal="false"
+           timeToIdleSeconds="600"
+           timeToLiveSeconds="600"
+           overflowToDisk="false"
+    />
+
+    <cache name="com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO"
+           maxElementsInMemory="100"
+           eternal="false"
+           timeToIdleSeconds="600"
+           timeToLiveSeconds="600"
+           overflowToDisk="false"
+    />
+
      <!-- Level 3: objects that do not change at all: purely static data -->
      <cache name="com.sapienter.jbilling.server.util.audit.db.EventLogMessageDTO"
             maxElementsInMemory="100"
@@ -110,24 +126,6 @@
      <!-- Level 3: objects that do not change at all: purely static data -->
      <cache name="com.sapienter.jbilling.server.user.db.CompanyDTO"
             maxElementsInMemory="10"
-            eternal="true"
-            timeToIdleSeconds="1800"
-            timeToLiveSeconds="100000"
-            overflowToDisk="false"
-     />                       
-
-     <!-- Level 3: objects that do not change at all: purely static data -->
-     <cache name="com.sapienter.jbilling.server.user.permisson.db.RoleDTO"
-            maxElementsInMemory="10"
-            eternal="true"
-            timeToIdleSeconds="1800"
-            timeToLiveSeconds="100000"
-            overflowToDisk="false"
-     />                       
-
-     <!-- Level 3: objects that do not change at all: purely static data -->
-     <cache name="com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO"
-            maxElementsInMemory="100"
             eternal="true"
             timeToIdleSeconds="1800"
             timeToLiveSeconds="100000"

@@ -338,9 +338,9 @@ public class UserDTO implements Serializable, Exportable {
     }
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "user_role_map", joinColumns = {
-            @JoinColumn(name = "user_id", updatable = false)}, inverseJoinColumns = {
-            @JoinColumn(name = "role_id", updatable = false)})
+    @JoinTable(name = "user_role_map",
+               joinColumns = {@JoinColumn(name = "user_id", updatable = false)},
+               inverseJoinColumns = {@JoinColumn(name = "role_id", updatable = false)})
     public Set<RoleDTO> getRoles() {
         return this.roles;
     }

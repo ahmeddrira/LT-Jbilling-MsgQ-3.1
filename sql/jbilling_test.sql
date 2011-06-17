@@ -11346,7 +11346,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	90	description	1	Show customer menu
 59	91	description	1	Show invoices menu
 59	92	description	1	Show order menu
-59	93	description	1	Show payments and refunds menu
+59	93	description	1	Show payments &amp; refunds menu
 59	94	description	1	Show billing menu
 59	95	description	1	Show mediation menu
 59	96	description	1	Show reports menu

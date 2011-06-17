@@ -1398,7 +1398,7 @@
     <InternationalDescription TableId="59" ForeignId="90" PsudoColumn="description" LanguageId="1" Content="Show customer menu"/>   
     <InternationalDescription TableId="59" ForeignId="91" PsudoColumn="description" LanguageId="1" Content="Show invoices menu"/>                
     <InternationalDescription TableId="59" ForeignId="92" PsudoColumn="description" LanguageId="1" Content="Show order menu"/>
-    <InternationalDescription TableId="59" ForeignId="93" PsudoColumn="description" LanguageId="1" Content="Show payments and refunds menu"/>
+    <InternationalDescription TableId="59" ForeignId="93" PsudoColumn="description" LanguageId="1" Content="Show payments &amp; refunds menu"/>
     <InternationalDescription TableId="59" ForeignId="94" PsudoColumn="description" LanguageId="1" Content="Show billing menu"/>       
     <InternationalDescription TableId="59" ForeignId="95" PsudoColumn="description" LanguageId="1" Content="Show mediation menu"/>   
     <InternationalDescription TableId="59" ForeignId="96" PsudoColumn="description" LanguageId="1" Content="Show reports menu"/>                

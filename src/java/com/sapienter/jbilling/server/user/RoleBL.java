@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.user;
 
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDAS;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
@@ -114,9 +115,16 @@ public class RoleBL {
 
     /**
      * Deletes this role.
+     *
+     * Any users that use this role as their primary will be left without a role. It's best to move user
+     * out of this role before deleting to ensure that the user doesn't experience an interruption in
+     * service (by having no role).
      */
     public void delete() {
         if (role != null) {
+            role.getPermissions().clear();
+            role.getBaseUsers().clear();
+
             roleDas.delete(role);
             roleDas.flush();
 

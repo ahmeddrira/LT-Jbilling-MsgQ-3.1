@@ -1116,7 +1116,7 @@ insert into permission (id, type_id) values (92, 9);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 92, 'description', 1, 'Show order menu');
 
 insert into permission (id, type_id) values (93, 9);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 93, 'description', 1, 'Show payments and refunds menu');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 93, 'description', 1, 'Show payments &amp; refunds menu');
 
 insert into permission (id, type_id) values (94, 9);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 94, 'description', 1, 'Show billing menu');

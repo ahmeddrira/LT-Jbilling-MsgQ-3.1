@@ -20,23 +20,21 @@
 
 package jbilling
 
-import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.client.ViewUtils
-import com.sapienter.jbilling.server.util.IWebServicesSessionBean
-import com.sapienter.jbilling.server.user.db.UserStatusDAS
-import com.sapienter.jbilling.server.user.db.UserDTO
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import com.sapienter.jbilling.server.util.Constants
-import com.sapienter.jbilling.server.user.db.CompanyDTO
-import com.sapienter.jbilling.server.user.UserWS
-import com.sapienter.jbilling.common.SessionInternalError
-import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.client.user.UserHelper
-import com.sapienter.jbilling.server.user.contact.db.ContactDTO
+import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.user.UserBL
-import com.sapienter.jbilling.server.user.permisson.db.RoleDTO
-import com.sapienter.jbilling.server.user.permisson.db.PermissionTypeDTO
+import com.sapienter.jbilling.server.user.UserWS
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO
+import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO
+import com.sapienter.jbilling.server.user.permisson.db.PermissionTypeDTO
+import com.sapienter.jbilling.server.user.permisson.db.RoleDTO
+import com.sapienter.jbilling.server.util.Constants
+import com.sapienter.jbilling.server.util.IWebServicesSessionBean
+import grails.plugins.springsecurity.Secured
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 @Secured(["MENU_99"])
 class UserController {
@@ -61,10 +59,16 @@ class UserController {
                 max:    params.max,
                 offset: params.offset
         ) {
+
+
             and {
-				roles {
-					ne('id', Constants.TYPE_CUSTOMER)
-				}
+                or {
+                    isEmpty('roles')
+                    roles {
+                        ne('id', Constants.TYPE_CUSTOMER)
+                    }
+                }
+
                 eq('company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
             }

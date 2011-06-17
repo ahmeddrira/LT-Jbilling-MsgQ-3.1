@@ -33,6 +33,8 @@ target(cleanPackages: "Remove old packages from the target directory.") {
 target(packageSource: "Packages the source code.") {
     zip(filesonly: false, update: false, destfile: sourcePackageName) {
         zipfileset(dir: basedir, prefix: releaseName) {
+            exclude(name: "src/php/")
+
             exclude(name: "activemq-data/")
             exclude(name: "logs/")
             exclude(name: "tmp/")
@@ -42,6 +44,7 @@ target(packageSource: "Packages the source code.") {
             exclude(name: "classes/")
             exclude(name: "target/")
             exclude(name: "out/")
+            exclude(name: "**/*.jasper")
 
             exclude(name: ".ant-targets*.xml")
             exclude(name: "**/TEST*.xml")

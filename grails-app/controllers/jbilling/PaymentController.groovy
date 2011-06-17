@@ -347,16 +347,18 @@ class PaymentController {
             if (!payment.id || payment.id == 0) {
                 if (SpringSecurityUtils.ifAllGranted("PAYMENT_30")) {
                     def invoiceId = params.int('invoiceId')
+                    def processNow = params.boolean('processNow') && payment.methodId != Constants.PAYMENT_METHOD_CHEQUE
+
                     log.debug("creating payment ${payment} for invoice ${invoiceId}")
 
-                    if (params.boolean('processNow')) {
+                    if (processNow) {
                         log.debug("processing payment in real time")
 
                         def authorization = webServicesSession.processPayment(payment, invoiceId)
                         payment.id = authorization.paymentId
 
                         if (authorization.result) {
-                            flash.message = 'payment.successful'
+                            flash.message = getSuccessMessageKey(payment, processNow)
                             flash.args = [ payment.id ]
 
                         } else {
@@ -368,8 +370,14 @@ class PaymentController {
                         log.debug("entering payment")
                         payment.id = webServicesSession.applyPayment(payment, invoiceId)
 
-                        flash.info = 'payment.entered'
-                        flash.args = [ payment.id ]
+                        if (payment.id) {
+                            flash.info = getSuccessMessageKey(payment, processNow)
+                            flash.args = [ payment.id ]
+
+                        } else {
+                            flash.info = 'payment.entered.failed'
+                            flash.args = [ payment.id ]
+                        }
                     }
 
                 } else {
@@ -435,6 +443,9 @@ class PaymentController {
             payment.setCheque(cheque)
 
             payment.setMethodId(Constants.PAYMENT_METHOD_CHEQUE)
+
+            // no processing for cheques
+            params.processNow = false
         }
 
         return payment
@@ -452,6 +463,22 @@ class PaymentController {
 
             creditCard.expiry = calendar.getTime()
         }
+    }
+
+    def getSuccessMessageKey(PaymentWS payment, processRealTime) {
+        if (payment.getCreditCard()) {
+            return processRealTime ? 'payment.credit.card.processed' : 'payment.credit.card.entered'
+        }
+
+        if (payment.getAch()) {
+            return processRealTime ? 'payment.ach.processed' : 'payment.ach.entered'
+        }
+
+        if (payment.getCheque()) {
+            return processRealTime ? 'payment.cheque.processed' : 'payment.cheque.entered'
+        }
+
+        return 'payment.successful'
     }
 
     def getCurrencies() {

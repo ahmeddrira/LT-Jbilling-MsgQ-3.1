@@ -97,6 +97,14 @@
                 </g:applyLayout>
             </g:preferenceEquals>
 
+            <g:preferenceEquals preferenceId="${Constants.PREFERENCE_USE_ORDER_ANTICIPATION}" value="1">
+                <g:applyLayout name="form/input">
+                    <content tag="label"><g:message code="order.label.anticipate.period"/></content>
+                    <content tag="label.for">anticipatePeriods</content>
+                    <g:textField class="field" name="anticipatePeriods" value="${order?.anticipatePeriods}"/>
+                </g:applyLayout>
+            </g:preferenceEquals>
+
             <g:applyLayout name="form/text">
                 <content tag="label"><g:message code="prompt.due.date.override"/></content>
                 <content tag="label.for">dueDateValue</content>
@@ -165,11 +173,11 @@
                 }
             });
 
-            $('#order-details-form').find(':text.hasDatepicker, select, :checkbox').change(function() {
+            $('#order-details-form').find('input:text.hasDatepicker, select, input:checkbox').change(function() {
                 $('#order-details-form').submit();
             });
 
-            $('#order-details-form').find('textarea, :text').blur(function() {
+            $('#order-details-form').find('input:text, textarea').blur(function() {
                 $('#order-details-form').submit();
             });
 

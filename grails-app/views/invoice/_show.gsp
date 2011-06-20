@@ -19,7 +19,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.payment.db.PaymentResultDTO" %>
+<%@ page import="com.sapienter.jbilling.server.util.Constants; com.sapienter.jbilling.server.payment.db.PaymentResultDTO" %>
 <%@ page import="com.sapienter.jbilling.server.payment.db.PaymentMethodDTO" %>
 
 <g:set var="currency" value="${currencies.find{ it.id == selected?.currencyId}}"/>
@@ -260,11 +260,13 @@
 
     <div class="btn-box">
         <sec:ifAllGranted roles="INVOICE_70">
-            <g:if test="${selected.id}">
-                <a onclick="showConfirm('delete-'+${selected.id});" class="submit delete">
-                    <span><g:message code="button.delete.invoice"/></span>
-                </a>
-            </g:if>
+            <g:preferenceEquals preferenceId="${Constants.PREFERENCE_INVOICE_DELETE}" value="1">
+                <g:if test="${selected.id}">
+                    <a onclick="showConfirm('delete-'+${selected.id});" class="submit delete">
+                        <span><g:message code="button.delete.invoice"/></span>
+                    </a>
+                </g:if>
+            </g:preferenceEquals>
         </sec:ifAllGranted>
 
         <g:link class="submit show" controller="mediation" action="invoice" id="${selected.id}">

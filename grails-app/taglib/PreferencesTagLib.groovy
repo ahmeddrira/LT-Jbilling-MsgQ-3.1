@@ -72,7 +72,7 @@ class PreferencesTagLib {
     }
 
     /**
-     * Prints the tag body if the preference value equals the given value.
+     * Prints the tag body if the preference value or preference type default equals the given value.
      *
      * @param preferenceId ID of the preference to check
      * @param value to compare
@@ -84,20 +84,22 @@ class PreferencesTagLib {
 
         try {
             PreferenceBL preference = new PreferenceBL(session['company_id'], preferenceId)
-            log.debug("preference ${preferenceId} value is '${preference.getValueAsString()}'")
             if (preference.getValueAsString().equals(value))
                 out << body()
 
         } catch (EmptyResultDataAccessException e) {
             /* ignore */
+            log.debug("empty result data access exception")
+
         } catch (ObjectNotFoundException e) {
             /* ignore */
+            log.debug("object not found exception")
         }
     }
 
     /**
-     * Prints the tag body if the preference value is equal, or if the preference is not set. Useful
-     * for "default if not set" style preferences.
+     * Prints the tag body if the preference value is equal, or if the preference is not set and has no
+     * default value for the preference type. Useful for "default if not set" style preferences.
      *
      * @param preferenceId ID of the preference to check
      * @param value to compare

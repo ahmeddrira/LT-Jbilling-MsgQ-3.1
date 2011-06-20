@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.util.db.PreferenceDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -65,9 +66,14 @@ public class PreferenceBL {
 
         preference = preferenceDas.findByType_Row( typeId, entityId, Constants.TABLE_ENTITY);
 
+        // throw exception if there is no preference, or if the type does not have a
+        // default value that can be returned.
         if (preference == null) {
             type = typeDas.find(typeId);
-            throw new EmptyResultDataAccessException("Could not find preference " + typeId, 1);
+
+            if (type == null || type.getDefaultValue() == null) {
+                throw new EmptyResultDataAccessException("Could not find preference " + typeId, 1);
+            }
         }
     }
 
@@ -99,7 +105,9 @@ public class PreferenceBL {
 
 
     public String getString() {
-        return preference != null ? preference.getValue() : type.getDefaultValue();
+        return preference == null || StringUtils.isBlank(preference.getValue())
+               ? type.getDefaultValue()
+               : preference.getValue();
     }
 
     public Integer getInt() {

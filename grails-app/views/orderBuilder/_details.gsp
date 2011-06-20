@@ -84,16 +84,18 @@
                 <g:textField class="field" name="activeUntil" value="${formatDate(date: order?.activeUntil, formatName: 'datepicker.format')}"/>
             </g:applyLayout>
 
-            <g:applyLayout name="form/date">
-                <content tag="label"><g:message code="order.label.cycle.start"/></content>
-                <content tag="label.for">cycleStarts</content>
-                <content tag="onClose">
-                    function() {
-                        $('#order-details-form').submit();
-                    }
-                </content>
-                <g:textField class="field" name="cycleStarts" value="${formatDate(date: order?.cycleStarts, formatName: 'datepicker.format')}"/>
-            </g:applyLayout>
+            <g:preferenceEquals preferenceId="${Constants.PREFERENCE_USE_PRO_RATING}" value="1">
+                <g:applyLayout name="form/date">
+                    <content tag="label"><g:message code="order.label.cycle.start"/></content>
+                    <content tag="label.for">cycleStarts</content>
+                    <content tag="onClose">
+                        function() {
+                            $('#order-details-form').submit();
+                        }
+                    </content>
+                    <g:textField class="field" name="cycleStarts" value="${formatDate(date: order?.cycleStarts, formatName: 'datepicker.format')}"/>
+                </g:applyLayout>
+            </g:preferenceEquals>
 
             <g:applyLayout name="form/text">
                 <content tag="label"><g:message code="prompt.due.date.override"/></content>
@@ -111,11 +113,13 @@
                 </div>
             </g:applyLayout>
 
-            <g:applyLayout name="form/checkbox">
-                <content tag="label"><g:message code="order.label.main.subscription"/></content>
-                <content tag="label.for">mainSubscription</content>
-                <g:checkBox class="cb checkbox" name="isCurrent" value="${order?.isCurrent > 0}"/>
-            </g:applyLayout>
+            <g:preferenceEquals preferenceId="${Constants.PREFERENCE_USE_CURRENT_ORDER}" value="1">
+                <g:applyLayout name="form/checkbox">
+                    <content tag="label"><g:message code="order.label.main.subscription"/></content>
+                    <content tag="label.for">mainSubscription</content>
+                    <g:checkBox class="cb checkbox" name="isCurrent" value="${order?.isCurrent > 0}"/>
+                </g:applyLayout>
+            </g:preferenceEquals>
 
             <g:applyLayout name="form/checkbox">
                 <content tag="label"><g:message code="order.label.notify.on.expire"/></content>

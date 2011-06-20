@@ -39,7 +39,7 @@ class PreferencesTagLib {
         def preferenceId = assertAttribute('preferenceId', attrs, 'hasPreference') as Integer
 
         try {
-            PreferenceBL preference = new PreferenceBL(preferenceId);
+            PreferenceBL preference = new PreferenceBL(session['company_id'], preferenceId);
             if (!preference.isNull())
                 out << preference.getValueAsString()
 
@@ -60,7 +60,7 @@ class PreferencesTagLib {
         def preferenceId = assertAttribute('preferenceId', attrs, 'hasPreference') as Integer
 
         try {
-            PreferenceBL preference = new PreferenceBL(preferenceId);
+            PreferenceBL preference = new PreferenceBL(session['company_id'], preferenceId);
             if (!preference.isNull())
                 out << body()
 
@@ -83,7 +83,8 @@ class PreferencesTagLib {
         def value = assertAttribute('value', attrs, 'preferenceEquals') as String
 
         try {
-            PreferenceBL preference = new PreferenceBL(preferenceId)
+            PreferenceBL preference = new PreferenceBL(session['company_id'], preferenceId)
+            log.debug("preference ${preferenceId} value is '${preference.getValueAsString()}'")
             if (preference.getValueAsString().equals(value))
                 out << body()
 
@@ -107,7 +108,7 @@ class PreferencesTagLib {
         def value = assertAttribute('value', attrs, 'preferenceEquals') as String
 
         try {
-            PreferenceBL preference = new PreferenceBL(preferenceId)
+            PreferenceBL preference = new PreferenceBL(session['company_id'], preferenceId)
             if (!preference.isNull() && !preference.getValueAsString().equals(value))
                 return
 

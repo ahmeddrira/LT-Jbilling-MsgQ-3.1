@@ -59,29 +59,23 @@ class BillingController {
 	 * so that the lastest process shows first.
 	 */
 	def list = {
-
 		Map dataHashMap = new HashMap()
-		Iterator iter= null
 
 		def filters = filterService.getFilters(FilterType.BILLINGPROCESS, params)
-		
 		def filteredList= filterProcesses(filters)
 
-		//def filteredList= BillingProcessDTO.findAllByEntityAndIsReview(new CompanyDTO(session['company_id']), 0)
+        for (BillingProcessDTO dto : filteredList) {
+            Iterator countIterator = new BillingProcessDAS().getCountAndSum(dto.getId())
+            if (countIterator != null) {
+                while (countIterator.hasNext()) {
+                    Object[] row = (Object[]) countIterator.next();
+                    row[2] = new CurrencyDAS().find(row[2] as Integer)
+                    dataHashMap.put (dto.getId(), row)
+                }
+            }
+        }
 
-		for (BillingProcessDTO dto: filteredList) { 
-			Integer _processId= dto.getId()?.toInteger()
-			log.debug "billing_process id: ${_processId}"
-			iter= new BillingProcessDAS().getCountAndSum(_processId)
-			Object[] row= null;
-			if (null != iter || iter.hasNext()){
-				row = (Object[]) iter.next();
-				row[2]= new CurrencyDAS().find ((Integer)row[2])
-			}
-			dataHashMap.put (_processId, row)
-		}
-		
-		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 		if (params.applyFilter || params.partial) {
 			render template: 'list', model: [lstBillingProcesses: filteredList, dataHashMap:dataHashMap, filters:filters]
 		} else {
@@ -128,12 +122,13 @@ class BillingController {
 		BillingProcessDTO process = new BillingProcessDAS().find(processId);
 		
 		def genInvoices= new InvoiceDAS().findByProcess(process)
-		def invoicesGenerated= genInvoices?.size()?:0
+		def invoicesGenerated= genInvoices?.size() ?: 0
+
 		log.debug "process.orderProcesses: ${process.orderProcesses?.size()}"
 		
 		def das= new BillingProcessDAS() 
 		def countAndSumByCurrency= new ArrayList()
-		Iterator iter= das.getCountAndSum(processId)
+		Iterator iter = das.getCountAndSum(processId)
 		log.debug "*******Records found - getCountAndSum${processId}*******"
 		while (iter.hasNext()) {
 			Object[] row = (Object[]) iter.next();

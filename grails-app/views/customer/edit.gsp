@@ -192,7 +192,7 @@
                                           from="${contactTypes}"
                                           optionKey="id"
                                           optionValue="${{it.getDescription(session['language_id'])}}"
-                                          value="${contact?.type}"  />
+                                          value="${contactTypes.find{ it.isPrimary > 0 }.id}" />
                             </g:applyLayout>
                         </g:if>
                         <g:else>

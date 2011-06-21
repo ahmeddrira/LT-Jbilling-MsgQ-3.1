@@ -104,6 +104,12 @@ public class PreferenceBL {
     }
 
 
+    /**
+     * Returns the preference value if set. If the preference is null or has no
+     * set value (is blank), the preference type default value will be returned.
+     *
+     * @return preference value as a string
+     */
     public String getString() {
         return preference == null || StringUtils.isBlank(preference.getValue())
                ? type.getDefaultValue()
@@ -128,6 +134,7 @@ public class PreferenceBL {
     /**
      * Returns the preference value as a string.
      *
+     * @see #getString()
      * @return string value of preference
      */
     public String getValueAsString() {
@@ -148,10 +155,14 @@ public class PreferenceBL {
     /**
      * Returns true if the preference value is null, false if value is set.
      *
+     * This method ignores the preference type default value, unlike {@link #getString()}
+     * and {@link #getValueAsString()} which will return the type default value if the
+     * preference itself is unset.
+     *
      * @return true if preference value is null, false if value is set.
      */
     public boolean isNull() {
-        return preference.getValue() == null;
+        return preference == null || preference.getValue() == null;
     }
     
     public PreferenceDTO getEntity() {

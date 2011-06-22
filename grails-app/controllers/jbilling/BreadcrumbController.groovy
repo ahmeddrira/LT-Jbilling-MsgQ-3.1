@@ -23,11 +23,10 @@ package jbilling
 import grails.plugins.springsecurity.Secured
 
 /**
- * Created by IntelliJ IDEA.
- * User: brian
- * Date: 14-Dec-2010
- * Time: 10:25:22 AM
- * To change this template use File | Settings | File Templates.
+ * BreadcrumbController
+ *
+ * @author Brian Cowdery
+ * @since  14-12-2010
  */
 @Secured(["isAuthenticated()"])
 class BreadcrumbController {

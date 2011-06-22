@@ -88,17 +88,24 @@ class BreadcrumbService implements InitializingBean, Serializable {
         def crumbs = getBreadcrumbs()
         def lastItem = !crumbs.isEmpty() ? crumbs.getAt(-1) : null
 
-        // add breadcrumb only if it is different from the last crumb added        
-        if (!lastItem || !lastItem.equals(crumb)) {
-            crumb.userId = session['user_id']
-            crumb.save()
+        // add breadcrumb only if it is different from the last crumb added
+        try {
+            if (!lastItem || !lastItem.equals(crumb)) {
+                crumb.userId = session['user_id']
+                crumb.save()
 
-            crumbs << crumb
-            if (crumbs.size() > MAX_ITEMS)
-                crumbs.remove(0).delete()
+                crumbs << crumb
+                if (crumbs.size() > MAX_ITEMS)
+                    crumbs.remove(0).delete()
 
-            session[SESSION_BREADCRUMBS] = crumbs
+                session[SESSION_BREADCRUMBS] = crumbs
+            }
+
+        } catch (Throwable t) {
+            log.error("Exception caught adding breadcrumb", t)
+            session.error = 'breadcrumb.failed'
         }
+
     }
 
     /**
@@ -109,5 +116,5 @@ class BreadcrumbService implements InitializingBean, Serializable {
     def HttpSession getSession() {
         return RequestContextHolder.currentRequestAttributes().getSession()
     }
-    
+
 }

@@ -46,4 +46,7 @@ class HomeController {
             redirect(controller: 'customer')
         }
     }
+
+    def version = {
+    }
 }

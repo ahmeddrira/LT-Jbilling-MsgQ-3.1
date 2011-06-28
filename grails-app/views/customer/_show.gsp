@@ -157,40 +157,61 @@
                 <td>Last Order Date</td>
 
                 <td class="value">
-                    <g:remoteLink controller="order" action="show" id="${order?.id}" before="register(this);" onSuccess="render(data, next);">
+                    <sec:access url="/order/show">
+                        <g:remoteLink controller="order" action="show" id="${order?.id}" before="register(this);" onSuccess="render(data, next);">
+                            <g:formatDate date="${order?.createDate}" formatName="date.pretty.format"/>
+                        </g:remoteLink>
+                    </sec:access>
+                    <sec:noAccess url="/order/show">
                         <g:formatDate date="${order?.createDate}" formatName="date.pretty.format"/>
-                    </g:remoteLink>
+                    </sec:noAccess>
                 </td>
                 <td class="value">
-                    <g:link controller="order" action="user" id="${selected.id}">
-                        <g:message code="customer.show.all.orders"/>
-                    </g:link>
+                    <sec:access url="/order/list">
+                        <g:link controller="order" action="user" id="${selected.id}">
+                            <g:message code="customer.show.all.orders"/>
+                        </g:link>
+                    </sec:access>
                 </td>
             </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.invoiced.date"/></td>
                     <td class="value">
-                        <g:remoteLink controller="invoice" action="show" id="${invoice?.id}" before="register(this);" onSuccess="render(data, next);">
+                        <sec:access url="/invoice/show">
+                            <g:remoteLink controller="invoice" action="show" id="${invoice?.id}" before="register(this);" onSuccess="render(data, next);">
+                                <g:formatDate date="${invoice?.createDatetime}" formatName="date.pretty.format"/>
+                            </g:remoteLink>
+                        </sec:access>
+                        <sec:noAccess url="/invoice/show">
                             <g:formatDate date="${invoice?.createDatetime}" formatName="date.pretty.format"/>
-                        </g:remoteLink>
+                        </sec:noAccess>
                     </td>
                     <td class="value">
-                        <g:link controller="invoice" action="user" id="${selected.id}">
-                            <g:message code="customer.show.all.invoices"/>
-                        </g:link>
+                        <sec:access url="/invoice/list">
+                            <g:link controller="invoice" action="user" id="${selected.id}">
+                                <g:message code="customer.show.all.invoices"/>
+                            </g:link>
+                        </sec:access>
                     </td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.paid.date"/></td>
                     <td class="value">
-                        <g:remoteLink controller="payment" action="show" id="${payment?.id}" before="register(this);" onSuccess="render(data, next);">
+                        <sec:access url="/payment/show">
+                            <g:remoteLink controller="payment" action="show" id="${payment?.id}" before="register(this);" onSuccess="render(data, next);">
+                                <g:formatDate date="${payment?.paymentDate ?: payment?.createDatetime}" formatName="date.pretty.format"/>
+                            </g:remoteLink>
+                        </sec:access>
+                        <sec:noAccess url="/payment/show">
                             <g:formatDate date="${payment?.paymentDate ?: payment?.createDatetime}" formatName="date.pretty.format"/>
-                        </g:remoteLink>
+                        </sec:noAccess>
                     </td>
                     <td class="value">
-                        <g:link controller="payment" action="user" id="${selected.id}">
-                            <g:message code="customer.show.all.payments"/>
-                        </g:link>
+                        <sec:access url="/payment/list">
+                            <g:link controller="payment" action="user" id="${selected.id}">
+                                <g:message code="customer.show.all.payments"/>
+                            </g:link>
+                        </sec:access>
                     </td>
                 </tr>
                 <tr>

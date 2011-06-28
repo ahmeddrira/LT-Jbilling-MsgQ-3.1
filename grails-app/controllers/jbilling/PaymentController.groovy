@@ -118,6 +118,7 @@ class PaymentController {
     /**
      * Applies the set filters to the payment list, and exports it as a CSV for download.
      */
+    @Secured(["PAYMENT_34"])
     def csv = {
         def filters = filterService.getFilters(FilterType.PAYMENT, params)
 
@@ -139,6 +140,7 @@ class PaymentController {
     /**
      * Show details of the selected payment.
      */
+    @Secured(["PAYMENT_35"])
     def show = {
         PaymentDTO payment = PaymentDTO.get(params.int('id'))
         recentItemService.addRecentItem(params.int('id'), RecentItemType.PAYMENT)

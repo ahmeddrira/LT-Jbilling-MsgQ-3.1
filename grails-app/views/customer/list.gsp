@@ -26,7 +26,7 @@
 <body>
 
 <content tag="column1">
-    <g:render template="users" model="[users: users]"/>
+    <g:render template="customers" model="[users: users]"/>
 </content>
 
 <content tag="column2">

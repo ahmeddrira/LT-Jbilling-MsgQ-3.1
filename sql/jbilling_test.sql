@@ -11358,6 +11358,17 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	71	description	1	Send invoice notification
 59	13	description	1	Inspect customer
 59	14	description	1	Blacklist customer
+59	15	description	1	View customer details
+59	16	description	1	Download customer CSV
+59	24	description	1	View order details
+59	25	description	1	Download order CSV
+59	34	description	1	View payment details
+59	35	description	1	Download payment CSV
+59	43	description	1	View product details
+59	44	description	1	Download product CSV
+59	63	description	1	View plan details
+59	72	description	1	View invoice details
+59	73	description	1	Download invoice CSV
 \.
 
 
@@ -14198,6 +14209,17 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 71	7	\N
 13	1	\N
 14	1	\N
+15	1	\N
+16	1	\N
+24	2	\N
+25	2	\N
+34	3	\N
+35	3	\N
+43	4	\N
+44	4	\N
+63	6	\N
+72	7	\N
+73	7	\N
 \.
 
 
@@ -14275,6 +14297,23 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 13	3
 14	2
 14	3
+15	2
+16	2
+24	2
+25	2
+34	2
+35	2
+43	2
+44	2
+63	2
+72	2
+73	2
+15	3
+24	3
+34	3
+43	3
+63	3
+72	3
 \.
 
 

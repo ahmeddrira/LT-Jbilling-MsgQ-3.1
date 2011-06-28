@@ -63,9 +63,14 @@
                 <tr>
                     <td><g:message code="payment.user.id"/></td>
                     <td class="value">
-                        <g:remoteLink controller="customer" action="show" id="${selected?.baseUser?.id}" before="register(this);" onSuccess="render(data, next);">
+                        <sec:access url="/customer/show">
+                            <g:remoteLink controller="customer" action="show" id="${selected?.baseUser?.id}" before="register(this);" onSuccess="render(data, next);">
+                                ${selected.baseUser.id}
+                            </g:remoteLink>
+                        </sec:access>
+                        <sec:noAccess url="/customer/show">
                             ${selected.baseUser.id}
-                        </g:remoteLink>
+                        </sec:noAccess>
                     </td>
                 </tr>
                 <tr>
@@ -143,9 +148,14 @@
                     <g:each var="invoicePayment" in="${selected.invoicesMap}">
                     <tr>
                         <td class="innerContent">
-                            <g:remoteLink controller="invoice" action="show" id="${invoicePayment.invoiceEntity.id}" before="register(this);" onSuccess="render(data, next);">
+                            <sec:access url="/invoice/show">
+                                <g:remoteLink controller="invoice" action="show" id="${invoicePayment.invoiceEntity.id}" before="register(this);" onSuccess="render(data, next);">
+                                    <g:message code="payment.link.invoice" args="[invoicePayment.invoiceEntity.number]"/>
+                                </g:remoteLink>
+                            </sec:access>
+                            <sec:noAccess url="/invoice/show">
                                 <g:message code="payment.link.invoice" args="[invoicePayment.invoiceEntity.number]"/>
-                            </g:remoteLink>
+                            </sec:noAccess>
                         </td>
                         <td class="innerContent">
                             <g:formatNumber number="${invoicePayment.amount}" type="currency" currencySymbol="${selected.currencyDTO.symbol}"/>
@@ -381,13 +391,13 @@
     </div>
 
     <g:render template="/confirm"
-              model="['message': 'payment.delete.confirm',
-                      'controller': 'payment',
-                      'action': 'delete',
-                      'id': selected.id,
-                      'ajax': true,
-                      'update': 'column1',
-                      'onYes': 'closePanel(\'#column2\')'
+              model="[message: 'payment.delete.confirm',
+                      controller: 'payment',
+                      action: 'delete',
+                      id: selected.id,
+                      ajax: true,
+                      update: 'column1',
+                      onYes: 'closePanel(\'#column2\')'
                      ]"/>
 
 </div>

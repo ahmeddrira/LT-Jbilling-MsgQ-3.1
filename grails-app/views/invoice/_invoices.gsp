@@ -125,9 +125,11 @@
             <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], update: 'column1']"/>
         </div>
         <div class="download">
-            <g:link action="csv" id="${invoice?.id}">
-                <g:message code="download.csv.link"/>
-            </g:link>
+            <sec:access url="/invoice/csv">
+                <g:link action="csv" id="${invoice?.id}">
+                    <g:message code="download.csv.link"/>
+                </g:link>
+            </sec:access>
         </div>
     </div>
 

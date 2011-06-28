@@ -134,7 +134,7 @@ class CustomerController {
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, selected?.id, crumbDescription)
 
         if (params.applyFilter || params.partial) {
-            render template: 'users', model: [users: users, selected: selected, contact: contact, statuses: statuses, filters: filters ]
+            render template: 'customers', model: [users: users, selected: selected, contact: contact, statuses: statuses, filters: filters ]
         } else {
             render view: 'list', model: [ users: users, selected: selected, contact: contact, statuses: statuses, filters: filters ]
         }
@@ -143,6 +143,7 @@ class CustomerController {
     /**
      * Applies the set filters to the user list, and exports it as a CSV for download.
      */
+    @Secured(["CUSTOMER_16"])
     def csv = {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()
@@ -166,6 +167,7 @@ class CustomerController {
      * Show details of the selected user. By default, this action renders the "_show.gsp" template.
      * When rendering for an AJAX request the template defined by the "template" parameter will be rendered.
      */
+    @Secured(["CUSTOMER_15"])
     def show = {
         def user = UserDTO.get(params.int('id'))
         def contact = ContactDTO.findByUserId(user.userId)
@@ -198,7 +200,7 @@ class CustomerController {
         def parent = UserDTO.get(params.int('id'))
         System.out.println("Parent id: " + params.id + "  = " + parent)
 
-        render template: 'users', model: [ users: children, parent: parent ]
+        render template: 'customers', model: [ users: children, parent: parent ]
     }
 
     /**

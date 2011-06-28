@@ -112,6 +112,7 @@ class ProductController {
     /**
      * Applies the set filters to the product list, and exports it as a CSV for download.
      */
+    @Secured(["PRODUCT_44"])
     def csv = {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
 
@@ -201,6 +202,7 @@ class ProductController {
      * with the product category list, product list, and product details rendered. When rendering
      * for an AJAX request the template defined by the "template" parameter will be rendered.
      */
+    @Secured(["PRODUCT_43"])
     def show = {
         ItemDTO product = ItemDTO.get(params.int('id'))
         recentItemService.addRecentItem(product?.id, RecentItemType.PRODUCT)

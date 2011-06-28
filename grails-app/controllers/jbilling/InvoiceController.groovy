@@ -139,6 +139,7 @@ class InvoiceController {
     /**
      * Applies the set filters to the order list, and exports it as a CSV for download.
      */
+    @Secured(["INVOICE_73"])
     def csv = {
         def filters = filterService.getFilters(FilterType.INVOICE, params)
 
@@ -167,6 +168,7 @@ class InvoiceController {
         redirect action: 'list'
     }
 
+    @Secured(["INVOICE_72"])
     def show = {
         InvoiceWS invoice
         UserWS user

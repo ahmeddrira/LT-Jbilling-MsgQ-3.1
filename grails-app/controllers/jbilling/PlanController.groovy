@@ -87,6 +87,7 @@ class PlanController {
     /**
      * Shows details of the selected plan.
      */
+    @Secured(["PLAN_63"])
     def show = {
         PlanDTO plan = PlanDTO.get(params.int('id'))
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'), plan.item.internalNumber)

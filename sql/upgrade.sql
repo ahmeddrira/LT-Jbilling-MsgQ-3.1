@@ -89,7 +89,7 @@ ALTER TABLE price_model drop column tmp_item_id;
 -- ALTER TABLE price_model drop column tmp_item_id;
 
 -- reset jbilling_seqs for price_model after inserting default item price_model
-update jbilling_seqs set next_id = (select round(max(id)/100)+1 from price_model) where name = 'price_model';
+update jbilling_seqs set next_id = coalesce((select round(max(id)/100)+1 from price_model), 1) where name = 'price_model';
 
 -- drop legacy item_price table
 DROP TABLE IF EXISTS item_price;

@@ -300,6 +300,7 @@ public class CreditCardBL extends ResultList
         dto.setNumber(creditCard.getNumber());
         dto.setCcType(creditCard.getCcType());
         dto.setSecurityCode(creditCard.getSecurityCode());
+        dto.setGatewayKey(creditCard.getGatewayKey());
 
         return dto;
     }

@@ -1213,3 +1213,18 @@ insert into permission_role_map (role_id, permission_id) values (3, 34);
 insert into permission_role_map (role_id, permission_id) values (3, 43);
 insert into permission_role_map (role_id, permission_id) values (3, 63);
 insert into permission_role_map (role_id, permission_id) values (3, 72);
+
+
+-- Date: 04-Jul-2011
+-- Redmine Issue: #1083
+-- Description: Order builder: make line description and price editable
+
+insert into permission (id, type_id) values (26, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 26, 'description', 1, 'Edit line price');
+
+insert into permission (id, type_id) values (27, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 27, 'description', 1, 'Edit line description');
+
+-- permissions for super users
+insert into permission_role_map (role_id, permission_id) values (2, 26);
+insert into permission_role_map (role_id, permission_id) values (2, 27);

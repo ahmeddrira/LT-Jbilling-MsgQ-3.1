@@ -60,6 +60,23 @@
     <li id="line-${index}-editor" class="editor ${editable ? 'open' : ''}">
         <div class="box">
             <div class="form-columns">
+
+                <sec:ifAllGranted roles="ORDER_26">
+                    <g:applyLayout name="form/input">
+                        <content tag="label"><g:message code="order.label.line.price"/></content>
+                        <content tag="label.for">line-${index}.priceAsDecimal</content>
+                        <g:textField name="line-${index}.priceAsDecimal" class="field" value="${formatNumber(number: line.getPriceAsDecimal() ?: BigDecimal.ZERO, formatName: 'money.format')}"/>
+                    </g:applyLayout>
+                </sec:ifAllGranted>
+
+                <sec:ifAllGranted roles="ORDER_27">
+                    <g:applyLayout name="form/input">
+                        <content tag="label"><g:message code="order.label.line.descr"/></content>
+                        <content tag="label.for">line-${index}.description</content>
+                        <g:textField name="line-${index}.description" class="field" value="${line.description}"/>
+                    </g:applyLayout>
+                </sec:ifAllGranted>
+
                 <g:applyLayout name="form/input">
                     <content tag="label"><g:message code="order.label.quantity"/></content>
                     <content tag="label.for">line-${index}.quantityAsDecimal</content>

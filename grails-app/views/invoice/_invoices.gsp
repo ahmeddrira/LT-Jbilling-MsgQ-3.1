@@ -45,7 +45,7 @@
                     </th>
                     <th class="medium">
                         <g:remoteSort action="list" sort="createDatetime" update="column1">
-                            <g:message code="label.gui.date"/>
+                            <g:message code="invoice.label.duedate"/>
                         </g:remoteSort>
                     </th>
                     <th class="tiny2">
@@ -94,7 +94,7 @@
                     </td>
 	            	<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
-                            <g:formatDate date="${inv?.getCreateDatetime()}" formatName="date.pretty.format"/>
+                            <g:formatDate date="${inv?.dueDate}" formatName="date.pretty.format"/>
 						</g:remoteLink>
 					</td>
 					<td>

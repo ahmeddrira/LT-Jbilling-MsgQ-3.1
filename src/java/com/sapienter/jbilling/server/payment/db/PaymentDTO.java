@@ -495,6 +495,7 @@ public class PaymentDTO implements Serializable, Exportable {
         return new String[] {
                 "id",
                 "userId",
+                "userName",
                 "linkedInvoices",
                 "paymentMethod",
                 "currency",
@@ -552,6 +553,7 @@ public class PaymentDTO implements Serializable, Exportable {
             {
                 id,
                 (baseUser != null ? baseUser.getId() : null),
+                (baseUser != null ? baseUser.getUserName() : null),
                 invoiceIds.toString(),
                 (paymentMethod != null ? paymentMethod.getDescription() : null),
                 (currencyDTO != null ? currencyDTO.getDescription() : null),

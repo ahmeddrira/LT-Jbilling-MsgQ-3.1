@@ -36,7 +36,7 @@ import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.common.SessionInternalError;
 
 
-@Secured(["isAuthenticated()", "MENU_99"])
+@Secured(["MENU_99"])
 class NotificationsController {
     
     def webServicesSession

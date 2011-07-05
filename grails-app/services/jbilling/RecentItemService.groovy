@@ -80,16 +80,22 @@ class RecentItemService implements InitializingBean, Serializable {
         def items = getRecentItems()
         def lastItem = !items.isEmpty() ? items.getAt(-1) : null
         
-        // add item only if it is different from the last item added        
-        if (!lastItem || lastItem.type != item.type || lastItem.objectId != item.objectId) {
-            item.userId = session['user_id']
-            item.save(flush: true)
+        // add item only if it is different from the last item added
+        try {
+            if (!lastItem || !lastItem.equals(item)) {
+                item.userId = session['user_id']
+                item.save()
 
-            items << item
-            if (items.size() > MAX_ITEMS)
-                items.remove(0).delete(flush: true)
+                items << item
+                if (items.size() > MAX_ITEMS)
+                    items.remove(0).delete(flush: true)
 
-            session[SESSION_RECENT_ITEMS] = items
+                session[SESSION_RECENT_ITEMS] = items
+            }
+
+        } catch (Throwable t) {
+            log.error("Exception caught adding recent item", t)
+            session.error = 'recent.item.failed'
         }
     }
 

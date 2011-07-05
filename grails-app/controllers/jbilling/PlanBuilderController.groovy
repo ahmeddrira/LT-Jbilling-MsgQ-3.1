@@ -48,7 +48,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
  * @author Brian Cowdery
  * @since 01-Feb-2011
  */
-@Secured(["isAuthenticated()", "hasAnyRole('PLAN_60', 'PLAN_61')"])
+@Secured(["hasAnyRole('PLAN_60', 'PLAN_61')"])
 class PlanBuilderController {
 
     def webServicesSession
@@ -134,6 +134,10 @@ class PlanBuilderController {
                     product.defaultPrice = priceModel
                 }
 
+                // subscription product uses a METERED price model
+                // don't use the legacy compatibility pricing fields
+                product.percentage = null
+                product.price = null
 
                 log.debug("plan subscription product ${product}")
 

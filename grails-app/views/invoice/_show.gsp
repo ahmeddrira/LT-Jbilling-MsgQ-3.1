@@ -19,7 +19,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.payment.db.PaymentResultDTO" %>
+<%@ page import="com.sapienter.jbilling.server.util.Constants; com.sapienter.jbilling.server.payment.db.PaymentResultDTO" %>
 <%@ page import="com.sapienter.jbilling.server.payment.db.PaymentMethodDTO" %>
 
 <g:set var="currency" value="${currencies.find{ it.id == selected?.currencyId}}"/>
@@ -50,9 +50,14 @@
             <tr>
                 <td><g:message code="invoice.label.user.id"/></td>
                 <td class="value">
-                    <g:remoteLink controller="customer" action="show" id="${user?.id}" before="register(this);" onSuccess="render(data, next);">
+                    <sec:access url="/customer/show">
+                        <g:remoteLink controller="customer" action="show" id="${user?.id}" before="register(this);" onSuccess="render(data, next);">
+                            ${user?.id}
+                        </g:remoteLink>
+                    </sec:access>
+                    <sec:noAccess url="/customer/show">
                         ${user?.id}
-                    </g:remoteLink>
+                    </sec:noAccess>
                 </td>
             </tr>
             <tr>
@@ -117,9 +122,14 @@
                 <td><g:message code="invoice.label.orders"/></td>
                 <td class="value">
                     <g:each var="order" in="${selected.orders}">
+                        <sec:access url="/order/show">
                         <g:remoteLink breadcrumb="id" controller="order" action="show" id="${order}" params="['template': 'order']" before="register(this);" onSuccess="render(data, next);">
                             ${order.toString()}
                         </g:remoteLink>
+                        </sec:access>
+                        <sec:noAccess url="/order/show">
+                            ${order.toString()}
+                        </sec:noAccess>
                     </g:each>
             </td>
             </tr>
@@ -212,9 +222,14 @@
                 <g:each var="payment" in="${payments}" status="idx">
                     <tr>
                         <td class="innerContent">
-                            <g:remoteLink breadcrumb="id" controller="payment" action="show" id="${payment.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                            <sec:access url="/payment/show">
+                                <g:remoteLink breadcrumb="id" controller="payment" action="show" id="${payment.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                                    ${payment.id}
+                                </g:remoteLink>
+                            </sec:access>
+                            <sec:noAccess url="/payment/show">
                                 ${payment.id}
-                            </g:remoteLink>
+                            </sec:noAccess>
                         </td>
                         <td class="innerContent">
                             <g:formatDate date="${payment.paymentDate}" formatName="date.pretty.format"/>
@@ -260,11 +275,13 @@
 
     <div class="btn-box">
         <sec:ifAllGranted roles="INVOICE_70">
-            <g:if test="${selected.id}">
-                <a onclick="showConfirm('delete-'+${selected.id});" class="submit delete">
-                    <span><g:message code="button.delete.invoice"/></span>
-                </a>
-            </g:if>
+            <g:preferenceEquals preferenceId="${Constants.PREFERENCE_INVOICE_DELETE}" value="1">
+                <g:if test="${selected.id}">
+                    <a onclick="showConfirm('delete-'+${selected.id});" class="submit delete">
+                        <span><g:message code="button.delete.invoice"/></span>
+                    </a>
+                </g:if>
+            </g:preferenceEquals>
         </sec:ifAllGranted>
 
         <g:link class="submit show" controller="mediation" action="invoice" id="${selected.id}">

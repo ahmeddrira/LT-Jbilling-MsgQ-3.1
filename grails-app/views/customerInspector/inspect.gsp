@@ -480,7 +480,7 @@
                                 <div class="box-card-hold">
 
                                     <g:each var="invoicePayment" in="${invoice.paymentMap}" status="i">
-                                        <g:render template="payment" model="[payment: invoicePayment.payment"/>
+                                        <g:render template="payment" model="[payment: invoicePayment.payment]"/>
                                         <g:if test="${i < invoice.paymentMap.size()-1}"><hr/></g:if>
                                     </g:each>
                                 </div>

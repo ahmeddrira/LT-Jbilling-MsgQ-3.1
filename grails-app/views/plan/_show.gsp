@@ -83,9 +83,14 @@
                 <tr>
                     <td><g:message code="product.internal.number"/></td>
                     <td class="value" colspan="3">
-                        <g:remoteLink controller="product" action="show" id="${planItem.item.id}" params="[template: 'show']" before="register(this);" onSuccess="render(data, next);">
+                        <sec:access url="/product/show">
+                            <g:remoteLink controller="product" action="show" id="${planItem.item.id}" params="[template: 'show']" before="register(this);" onSuccess="render(data, next);">
+                                ${planItem.item.internalNumber}
+                            </g:remoteLink>
+                        </sec:access>
+                        <sec:noAccess url="/product/show">
                             ${planItem.item.internalNumber}
-                        </g:remoteLink>
+                        </sec:noAccess>
                     </td>
                 </tr>
                 <tr>

@@ -84,16 +84,26 @@
                 <g:textField class="field" name="activeUntil" value="${formatDate(date: order?.activeUntil, formatName: 'datepicker.format')}"/>
             </g:applyLayout>
 
-            <g:applyLayout name="form/date">
-                <content tag="label"><g:message code="order.label.cycle.start"/></content>
-                <content tag="label.for">cycleStarts</content>
-                <content tag="onClose">
-                    function() {
-                        $('#order-details-form').submit();
-                    }
-                </content>
-                <g:textField class="field" name="cycleStarts" value="${formatDate(date: order?.cycleStarts, formatName: 'datepicker.format')}"/>
-            </g:applyLayout>
+            <g:preferenceEquals preferenceId="${Constants.PREFERENCE_USE_PRO_RATING}" value="1">
+                <g:applyLayout name="form/date">
+                    <content tag="label"><g:message code="order.label.cycle.start"/></content>
+                    <content tag="label.for">cycleStarts</content>
+                    <content tag="onClose">
+                        function() {
+                            $('#order-details-form').submit();
+                        }
+                    </content>
+                    <g:textField class="field" name="cycleStarts" value="${formatDate(date: order?.cycleStarts, formatName: 'datepicker.format')}"/>
+                </g:applyLayout>
+            </g:preferenceEquals>
+
+            <g:preferenceEquals preferenceId="${Constants.PREFERENCE_USE_ORDER_ANTICIPATION}" value="1">
+                <g:applyLayout name="form/input">
+                    <content tag="label"><g:message code="order.label.anticipate.period"/></content>
+                    <content tag="label.for">anticipatePeriods</content>
+                    <g:textField class="field" name="anticipatePeriods" value="${order?.anticipatePeriods}"/>
+                </g:applyLayout>
+            </g:preferenceEquals>
 
             <g:applyLayout name="form/text">
                 <content tag="label"><g:message code="prompt.due.date.override"/></content>
@@ -111,11 +121,13 @@
                 </div>
             </g:applyLayout>
 
-            <g:applyLayout name="form/checkbox">
-                <content tag="label"><g:message code="order.label.main.subscription"/></content>
-                <content tag="label.for">mainSubscription</content>
-                <g:checkBox class="cb checkbox" name="isCurrent" value="${order?.isCurrent > 0}"/>
-            </g:applyLayout>
+            <g:preferenceEquals preferenceId="${Constants.PREFERENCE_USE_CURRENT_ORDER}" value="1">
+                <g:applyLayout name="form/checkbox">
+                    <content tag="label"><g:message code="order.label.main.subscription"/></content>
+                    <content tag="label.for">mainSubscription</content>
+                    <g:checkBox class="cb checkbox" name="isCurrent" value="${order?.isCurrent > 0}"/>
+                </g:applyLayout>
+            </g:preferenceEquals>
 
             <g:applyLayout name="form/checkbox">
                 <content tag="label"><g:message code="order.label.notify.on.expire"/></content>
@@ -161,11 +173,11 @@
                 }
             });
 
-            $('#order-details-form').find(':text.hasDatepicker, select, :checkbox').change(function() {
+            $('#order-details-form').find('input:text.hasDatepicker, select, input:checkbox').change(function() {
                 $('#order-details-form').submit();
             });
 
-            $('#order-details-form').find('textarea, :text').blur(function() {
+            $('#order-details-form').find('input:text, textarea').blur(function() {
                 $('#order-details-form').submit();
             });
 

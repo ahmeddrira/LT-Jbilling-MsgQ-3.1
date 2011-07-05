@@ -36,10 +36,10 @@
     </tr>
     <tr>
         <td><g:message code="payment.amount"/></td>
-        <td class="value"><g:formatNumber number="${payment?.amount}" type="currency" currencySymbol="${payment?.currencyDTO?.symbol}"/> &nbsp;</td>
+        <td class="value"><g:formatNumber number="${payment?.amount}" type="currency" currencySymbol="${payment?.currency?.symbol}"/> &nbsp;</td>
 
         <td><g:message code="payment.balance"/></td>
-        <td class="value"><g:formatNumber number="${payment?.balance}" type="currency" currencySymbol="${payment?.currencyDTO?.symbol}"/> &nbsp;</td>
+        <td class="value"><g:formatNumber number="${payment?.balance}" type="currency" currencySymbol="${payment?.currency?.symbol}"/> &nbsp;</td>
     </tr>
     <tr>
         <td><g:message code="payment.result"/></td>

@@ -51,7 +51,12 @@
 
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="prompt.user.role"/></content>
-                            ${role.getTitle(session['language_id'])}
+                            <g:if test="${role}">
+                                ${role.getTitle(session['language_id'])}
+                            </g:if>
+                            <g:else>
+                                 -
+                            </g:else>
                         </g:applyLayout>
                     </div>
 
@@ -78,7 +83,7 @@
                         <div class="column">
                             <g:each var="permission" status="i" in="${permissionType.permissions}">
                                 <g:set var="userPermission" value="${permissions.find{ it.id == permission.id }}"/>
-                                <g:set var="rolePermission" value="${role.permissions.find{ it.id == permission.id }}"/>
+                                <g:set var="rolePermission" value="${role?.permissions?.find{ it.id == permission.id }}"/>
 
                                 <g:if test="${i % 2 == 0}">
 
@@ -113,7 +118,7 @@
                         <div class="column">
                             <g:each var="permission" status="i" in="${permissionType.permissions}">
                                 <g:set var="userPermission" value="${permissions.find{ it.id == permission.id }}"/>
-                                <g:set var="rolePermission" value="${role.permissions.find{ it.id == permission.id }}"/>
+                                <g:set var="rolePermission" value="${role?.permissions?.find{ it.id == permission.id }}"/>
 
                                 <g:if test="${i % 2 == 1}">
 

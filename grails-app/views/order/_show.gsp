@@ -52,9 +52,14 @@
             <tr>
                 <td><g:message code="order.label.user.id"/>:</td>
                 <td class="value">
-                    <g:remoteLink controller="customer" action="show" id="${user?.id}" before="register(this);" onSuccess="render(data, next);">
+                    <sec:access url="/customer/show">
+                        <g:remoteLink controller="customer" action="show" id="${user?.id}" before="register(this);" onSuccess="render(data, next);">
+                            ${user?.id}
+                        </g:remoteLink>
+                    </sec:access>
+                    <sec:noAccess url="/customer/show">
                         ${user?.id}
-                    </g:remoteLink>
+                    </sec:noAccess>
                 </td>
             </tr>
             <tr>
@@ -151,17 +156,25 @@
                             <td class="innerContent">
                                 <g:set var="itemDto" value="${new ItemDAS().find(line?.itemId)}"/>
                                 <g:if test="${itemDto?.plans?.size() == 0}">
-                                   <g:remoteLink controller="product" action="show" id="${line?.itemId}" params="['template': 'show']"
-                                        before="register(this);" onSuccess="render(data, next);">
+                                    <sec:access url="/product/show">
+                                       <g:remoteLink controller="product" action="show" id="${line?.itemId}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                                            ${line?.itemId}
+                                       </g:remoteLink>
+                                    </sec:access>
+                                    <sec:noAccess url="/product/show">
                                         ${line?.itemId}
-                                   </g:remoteLink>
+                                    </sec:noAccess>
                                 </g:if>
                                 <g:else>
-                                    <g:set var="planId" value="${itemDto?.plans?.iterator().next()?.id}" />
-                                    <g:remoteLink controller="plan" action="show" id="${planId}" params="['template': 'show']"
-                                        before="register(this);" onSuccess="render(data, next);">
+                                    <sec:access url="/plan/show">
+                                        <g:set var="planId" value="${itemDto?.plans?.iterator().next()?.id}" />
+                                        <g:remoteLink controller="plan" action="show" id="${planId}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                                            ${planId}
+                                        </g:remoteLink>
+                                    </sec:access>
+                                    <sec:noAccess url="/plan/show">
                                         ${planId}
-                                   </g:remoteLink>
+                                    </sec:noAccess>
                                 </g:else>
                             </td>
                             <td class="innerContent">
@@ -207,9 +220,14 @@
 
                          <tr>
                             <td class="innerContent">
-                                <g:remoteLink controller="invoice" action="show" id="${invoice.id}" before="register(this);" onSuccess="render(data, next);">
+                                <sec:access url="/invoice/show">
+                                    <g:remoteLink controller="invoice" action="show" id="${invoice.id}" before="register(this);" onSuccess="render(data, next);">
+                                        ${invoice.id}
+                                    </g:remoteLink>
+                                </sec:access>
+                                <sec:noAccess url="/invoice/show">
                                     ${invoice.id}
-                                </g:remoteLink>
+                                </sec:noAccess>
                             </td>
                             <td class="innerContent">
                                 <g:formatDate format="dd-MMM-yyyy HH:mm:ss a" date="${invoice?.createDateTime}"/>

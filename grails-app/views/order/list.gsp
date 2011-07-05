@@ -1,14 +1,4 @@
-<html>
-<head>
-<meta name="layout" content="panels" />
-</head>
-
-<body>
-<content tag="filters">
-</content>
-
-<content tag="column1">
-    %{--
+%{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
@@ -27,18 +17,20 @@
   You should have received a copy of the GNU Affero General Public License
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
+<html>
+<head>
+    <meta name="layout" content="panels" />
+</head>
 
-<g:render template="orders" model="['orders': orders"/>
-</content>
+<body>
+    <content tag="column1">
+        <g:render template="orders" model="[orders: orders"/>
+    </content>
 
-<content tag="column2">
-    <g:if test="${order}">
-        <g:render template="show" model="['order': order]"/>
-        <!-- display third panel -->
-        <script type="text/javascript">
-            $(function() { third.animate(); });
-        </script>
-    </g:if>
-</content>
+    <content tag="column2">
+        <g:if test="${order}">
+            <g:render template="show" model="[order: order]"/>
+        </g:if>
+    </content>
 </body>
 </html>

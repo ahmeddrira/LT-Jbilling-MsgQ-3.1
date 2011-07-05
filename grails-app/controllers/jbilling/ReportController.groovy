@@ -37,7 +37,7 @@ import com.sapienter.jbilling.server.report.db.ReportParameterDTO
  * @author Brian Cowdery
  * @since 07/03/11
  */
-@Secured(["isAuthenticated()"])
+@Secured(["MENU_96"])
 class ReportController {
 
     static pagination = [ max: 10, offset: 0 ]
@@ -47,7 +47,6 @@ class ReportController {
     def recentItemService
     def breadcrumbService
 
-    @Secured(["MENU_96"])
     def index = {
         redirect action: list, params: params
     }
@@ -77,7 +76,6 @@ class ReportController {
         }
     }
 
-    @Secured(["MENU_96"])
     def list = {
         def types = getReportTypes()
         def reports = params.id ? getReports(params.int('id')) : null

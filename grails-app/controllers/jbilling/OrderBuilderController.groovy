@@ -38,6 +38,7 @@ import com.sapienter.jbilling.server.order.db.OrderStatusDTO
 import java.math.RoundingMode
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import org.apache.commons.lang.StringUtils
 
 /**
  * OrderController
@@ -45,7 +46,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
  * @author Brian Cowdery
  * @since 20-Jan-2011
  */
-@Secured(["isAuthenticated()", "hasAnyRole('ORDER_20', 'ORDER_21')"])
+@Secured(["hasAnyRole('ORDER_20', 'ORDER_21')"])
 class OrderBuilderController {
 
     def webServicesSession
@@ -266,11 +267,28 @@ class OrderBuilderController {
             action {
                 def order = conversation.order
 
-                // update line
+                // get existing line
                 def index = params.int('index')
                 def line = order.orderLines[index]
+
+                // useItem only if price and description not set by user
+                def price = params["line-${index}.priceAsDecimal"]
+                def description = params["line-${index}.description"]
+
+                if (StringUtils.isNotBlank(price) && line.getPriceAsDecimal().compareTo(price as BigDecimal) != 0) {
+                    log.debug("Line price updated by the user, use item = false")
+                    line.useItem = false
+
+                } else if (StringUtils.isNotBlank(description) && line.description != description) {
+                    log.debug("Line description updated by the user, use item = false")
+                    line.useItem = false
+
+                } else {
+                    line.useItem = true
+                }
+
+                // update line
                 bindData(line, params["line-${index}"])
-                line.useItem = true
 
                 // must have a quantity
                 if (!line.quantity) {

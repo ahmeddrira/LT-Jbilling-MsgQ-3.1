@@ -29,7 +29,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO
 import jbilling.FilterType
 
-@Secured(['isAuthenticated()'])
+@Secured(["isAuthenticated()"])
 class AuditLogController {
 
     static pagination = [ max: 10, offset: 0 ]

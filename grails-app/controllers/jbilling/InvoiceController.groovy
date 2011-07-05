@@ -38,6 +38,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.client.util.SortableCriteria;
 import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 /**
  * BillingController
@@ -45,7 +46,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS
  * @author Vikas Bodani
  * @since
  */
-@Secured(["isAuthenticated()", "hasAnyRole('INVOICE_70', 'INVOICE_71', 'PAYMENT_33')"])
+@Secured(["MENU_91"])
 class InvoiceController {
 
     static pagination = [max: 10, offset: 0, sort: 'id', order: 'desc']
@@ -56,12 +57,10 @@ class InvoiceController {
     def recentItemService
     def breadcrumbService
 
-    @Secured(["MENU_91"])
     def index = {
         redirect action: 'list', params: params
     }
 
-    @Secured(["MENU_91"])
     def list = {
         def filters = filterService.getFilters(FilterType.INVOICE, params)
         def invoices = getInvoices(filters, params)
@@ -131,6 +130,11 @@ class InvoiceController {
                 createAlias('baseUser', 'baseUser')
                 eq('baseUser.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
+
+                // limit list to only this customer's invoices
+                if (SpringSecurityUtils.ifNotGranted("INVOICE_74")) {
+                    eq('baseUser.id', session['user_id'])
+                }
             }
 
             // apply sorting
@@ -141,6 +145,7 @@ class InvoiceController {
     /**
      * Applies the set filters to the order list, and exports it as a CSV for download.
      */
+    @Secured(["INVOICE_73"])
     def csv = {
         def filters = filterService.getFilters(FilterType.INVOICE, params)
 
@@ -162,7 +167,6 @@ class InvoiceController {
     /**
      * Convenience shortcut, this action shows all invoices for the given user id.
      */
-    @Secured(["MENU_91"])
     def user = {
         def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUser.id', template: 'id', visible: true, integerValue: params.int('id'))
         filterService.setFilter(FilterType.INVOICE, filter)
@@ -170,6 +174,7 @@ class InvoiceController {
         redirect action: 'list'
     }
 
+    @Secured(["INVOICE_72"])
     def show = {
         InvoiceWS invoice
         UserWS user

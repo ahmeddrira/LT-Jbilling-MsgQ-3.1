@@ -64,7 +64,12 @@
 
                     <td class="small">
                         <g:remoteLink class="cell" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
-                            ${user.roles?.asList()?.first()?.getTitle(session['language_id'])}
+                            <g:if test="${user.roles}">
+                                ${user.roles.asList().first()?.getTitle(session['language_id'])}
+                            </g:if>
+                            <g:else>
+                                -
+                            </g:else>
                         </g:remoteLink>
                     </td>
                 </tr>

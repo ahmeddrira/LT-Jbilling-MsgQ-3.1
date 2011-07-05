@@ -769,6 +769,7 @@ public class OrderDTO implements Serializable, Exportable {
         return new String[] {
                 "id",
                 "userId",
+                "userName",
                 "status",
                 "period",
                 "billingType",
@@ -801,6 +802,7 @@ public class OrderDTO implements Serializable, Exportable {
             new Object[] {
                 id,
                 (baseUserByUserId != null ? baseUserByUserId.getId() : null),
+                (baseUserByUserId != null ? baseUserByUserId.getUserName() : null),
                 (orderStatusDTO != null ? orderStatusDTO.getDescription() : null),
                 (orderPeriodDTO != null ? orderPeriodDTO.getDescription() : null),
                 (orderBillingTypeDTO != null ? orderBillingTypeDTO.getDescription() : null),
@@ -822,6 +824,7 @@ public class OrderDTO implements Serializable, Exportable {
                 values.add(
                     new Object[] {
                         // padding for the main invoice columns
+                        null,
                         null,
                         null,
                         null,

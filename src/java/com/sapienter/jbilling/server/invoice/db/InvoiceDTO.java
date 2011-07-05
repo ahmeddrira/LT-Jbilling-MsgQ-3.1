@@ -510,6 +510,7 @@ public class InvoiceDTO implements Serializable, Exportable {
                 "id",
                 "publicNumber",
                 "userId",
+                "userName",
                 "status",
                 "currency",
                 "delegatedInvoices",
@@ -555,6 +556,7 @@ public class InvoiceDTO implements Serializable, Exportable {
                 id,
                 publicNumber,
                 (baseUser != null ? baseUser.getId() : null),
+                (baseUser != null ? baseUser.getUserName() : null),
                 (invoiceStatus != null ? invoiceStatus.getDescription() : null),
                 (currencyDTO != null ? currencyDTO.getDescription() : null),
                 delegatedInvoiceIds.toString(),
@@ -576,6 +578,7 @@ public class InvoiceDTO implements Serializable, Exportable {
                 values.add(
                     new Object[] {
                         // padding for the main invoice columns
+                        null,
                         null,
                         null,
                         null,

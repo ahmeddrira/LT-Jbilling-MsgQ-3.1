@@ -45,7 +45,7 @@
                     </th>
                     <th class="medium">
                         <g:remoteSort action="list" sort="createDatetime" update="column1">
-                            <g:message code="label.gui.date"/>
+                            <g:message code="invoice.label.duedate"/>
                         </g:remoteSort>
                     </th>
                     <th class="tiny2">
@@ -94,7 +94,7 @@
                     </td>
 	            	<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
-                            <g:formatDate date="${inv?.getCreateDatetime()}" formatName="date.pretty.format"/>
+                            <g:formatDate date="${inv?.dueDate}" formatName="date.pretty.format"/>
 						</g:remoteLink>
 					</td>
 					<td>
@@ -125,9 +125,11 @@
             <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], update: 'column1']"/>
         </div>
         <div class="download">
-            <g:link action="csv" id="${invoice?.id}">
-                <g:message code="download.csv.link"/>
-            </g:link>
+            <sec:access url="/invoice/csv">
+                <g:link action="csv" id="${invoice?.id}">
+                    <g:message code="download.csv.link"/>
+                </g:link>
+            </sec:access>
         </div>
     </div>
 

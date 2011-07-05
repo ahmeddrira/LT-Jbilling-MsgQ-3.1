@@ -38,7 +38,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource 
 import org.springframework.security.access.annotation.Secured 
 
-@Secured(["isAuthenticated()", "MENU_99"])
+@Secured(["MENU_99"])
 class PluginController {
     
     // all automatically injected by Grails. Thanks.

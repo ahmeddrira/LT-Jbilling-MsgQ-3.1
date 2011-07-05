@@ -89,7 +89,7 @@ ALTER TABLE price_model drop column tmp_item_id;
 -- ALTER TABLE price_model drop column tmp_item_id;
 
 -- reset jbilling_seqs for price_model after inserting default item price_model
-update jbilling_seqs set next_id = (select round(max(id)/100)+1 from price_model) where name = 'price_model';
+update jbilling_seqs set next_id = coalesce((select round(max(id)/100)+1 from price_model), 1) where name = 'price_model';
 
 -- drop legacy item_price table
 DROP TABLE IF EXISTS item_price;
@@ -1116,7 +1116,7 @@ insert into permission (id, type_id) values (92, 9);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 92, 'description', 1, 'Show order menu');
 
 insert into permission (id, type_id) values (93, 9);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 93, 'description', 1, 'Show payments and refunds menu');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 93, 'description', 1, 'Show payments &amp; refunds menu');
 
 insert into permission (id, type_id) values (94, 9);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 94, 'description', 1, 'Show billing menu');
@@ -1156,4 +1156,108 @@ insert into permission_role_map (role_id, permission_id) values (3, 97);
 insert into permission_role_map (role_id, permission_id) values (3, 98);
 
 
+-- Date: 28-Jun-2011
+-- Redmine Issue: #1063
+-- Description: Implement Permissions (second pass)
 
+insert into permission (id, type_id) values (15, 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 15, 'description', 1, 'View customer details');
+
+insert into permission (id, type_id) values (16, 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 16, 'description', 1, 'Download customer CSV');
+
+insert into permission (id, type_id) values (24, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 24, 'description', 1, 'View order details');
+
+insert into permission (id, type_id) values (25, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 25, 'description', 1, 'Download order CSV');
+
+insert into permission (id, type_id) values (34, 3);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 34, 'description', 1, 'View payment details');
+
+insert into permission (id, type_id) values (35, 3);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 35, 'description', 1, 'Download payment CSV');
+
+insert into permission (id, type_id) values (43, 4);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 43, 'description', 1, 'View product details');
+
+insert into permission (id, type_id) values (44, 4);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 44, 'description', 1, 'Download product CSV');
+
+insert into permission (id, type_id) values (63, 6);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 63, 'description', 1, 'View plan details');
+
+insert into permission (id, type_id) values (72, 7);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 72, 'description', 1, 'View invoice details');
+
+insert into permission (id, type_id) values (73, 7);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 73, 'description', 1, 'Download invoice CSV');
+
+-- permissions for super users
+insert into permission_role_map (role_id, permission_id) values (2, 15);
+insert into permission_role_map (role_id, permission_id) values (2, 16);
+insert into permission_role_map (role_id, permission_id) values (2, 24);
+insert into permission_role_map (role_id, permission_id) values (2, 25);
+insert into permission_role_map (role_id, permission_id) values (2, 34);
+insert into permission_role_map (role_id, permission_id) values (2, 35);
+insert into permission_role_map (role_id, permission_id) values (2, 43);
+insert into permission_role_map (role_id, permission_id) values (2, 44);
+insert into permission_role_map (role_id, permission_id) values (2, 63);
+insert into permission_role_map (role_id, permission_id) values (2, 72);
+insert into permission_role_map (role_id, permission_id) values (2, 73);
+
+-- permissions for clerks
+insert into permission_role_map (role_id, permission_id) values (3, 15);
+insert into permission_role_map (role_id, permission_id) values (3, 24);
+insert into permission_role_map (role_id, permission_id) values (3, 34);
+insert into permission_role_map (role_id, permission_id) values (3, 43);
+insert into permission_role_map (role_id, permission_id) values (3, 63);
+insert into permission_role_map (role_id, permission_id) values (3, 72);
+
+
+-- Date: 04-Jul-2011
+-- Redmine Issue: #1083
+-- Description: Order builder: make line description and price editable
+
+insert into permission (id, type_id) values (26, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 26, 'description', 1, 'Edit line price');
+
+insert into permission (id, type_id) values (27, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 27, 'description', 1, 'Edit line description');
+
+-- permissions for super users
+insert into permission_role_map (role_id, permission_id) values (2, 26);
+insert into permission_role_map (role_id, permission_id) values (2, 27);
+
+
+-- Date: 05-Jul-2011
+-- Redmine Issue: #1092
+-- Description: Customer list permissions
+
+insert into permission (id, type_id) values (28, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 28, 'description', 1, 'View all customers');
+
+insert into permission (id, type_id) values (36, 3);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 36, 'description', 1, 'View all customers');
+
+insert into permission (id, type_id) values (74, 7);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 74, 'description', 1, 'View all customers');
+
+-- permissions for super users
+insert into permission_role_map (role_id, permission_id) values (2, 28);
+insert into permission_role_map (role_id, permission_id) values (2, 36);
+insert into permission_role_map (role_id, permission_id) values (2, 74);
+
+-- permissions for clerks
+insert into permission_role_map (role_id, permission_id) values (3, 28);
+insert into permission_role_map (role_id, permission_id) values (3, 36);
+insert into permission_role_map (role_id, permission_id) values (3, 74);
+
+-- permissions for customers
+insert into permission_role_map (role_id, permission_id) values (5, 24);
+insert into permission_role_map (role_id, permission_id) values (5, 30);
+insert into permission_role_map (role_id, permission_id) values (5, 34);
+insert into permission_role_map (role_id, permission_id) values (5, 72);
+insert into permission_role_map (role_id, permission_id) values (5, 91);
+insert into permission_role_map (role_id, permission_id) values (5, 92);
+insert into permission_role_map (role_id, permission_id) values (5, 93);

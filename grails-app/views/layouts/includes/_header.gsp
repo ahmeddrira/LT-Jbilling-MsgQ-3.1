@@ -42,22 +42,30 @@
                     <div class="popup">
                         <div class="top-bg">
                             <div class="btm-bg">
-                                <div class="input-row">
-                                    <g:radio id="customers" name="type" value="CUSTOMERS" checked="${!cmd || cmd?.type?.toString() == 'CUSTOMERS'}"/>
-                                    <label for="customers"><g:message code="search.option.customers"/></label>
-                                </div>
-                                <div class="input-row">
-                                    <g:radio id="orders" name="type" value="ORDERS" checked="${cmd?.type?.toString() == 'ORDERS'}"/>
-                                    <label for="orders"><g:message code="search.option.orders"/></label>
-                                </div>
-                                <div class="input-row">
-                                    <g:radio id="invoices" name="type" value="INVOICES" checked="${cmd?.type?.toString() == 'INVOICES'}"/>
-                                    <label for="invoices"><g:message code="search.option.invoices"/></label>
-                                </div>
-                                <div class="input-row">
-                                    <g:radio id="payments" name="type" value="PAYMENTS" checked="${cmd?.type?.toString() == 'PAYMENTS'}"/>
-                                    <label for="payments"><g:message code="search.option.payments"/></label>
-                                </div>
+                                <sec:access url="/customer/list">
+                                    <div class="input-row">
+                                        <g:radio id="customers" name="type" value="CUSTOMERS" checked="${!cmd || cmd?.type?.toString() == 'CUSTOMERS'}"/>
+                                        <label for="customers"><g:message code="search.option.customers"/></label>
+                                    </div>
+                                </sec:access>
+                                <sec:access url="/order/list">
+                                    <div class="input-row">
+                                        <g:radio id="orders" name="type" value="ORDERS" checked="${cmd?.type?.toString() == 'ORDERS'}"/>
+                                        <label for="orders"><g:message code="search.option.orders"/></label>
+                                    </div>
+                                </sec:access>
+                                <sec:access url="/invoice/list">
+                                    <div class="input-row">
+                                        <g:radio id="invoices" name="type" value="INVOICES" checked="${cmd?.type?.toString() == 'INVOICES'}"/>
+                                        <label for="invoices"><g:message code="search.option.invoices"/></label>
+                                    </div>
+                                </sec:access>
+                                <sec:access url="/payment/list">
+                                    <div class="input-row">
+                                        <g:radio id="payments" name="type" value="PAYMENTS" checked="${cmd?.type?.toString() == 'PAYMENTS'}"/>
+                                        <label for="payments"><g:message code="search.option.payments"/></label>
+                                    </div>
+                                </sec:access>
                             </div>
                         </div>
                     </div>

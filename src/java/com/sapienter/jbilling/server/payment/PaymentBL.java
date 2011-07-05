@@ -403,6 +403,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             ccDto.setCcExpiry(payment.getCreditCard().getCcExpiry());
             ccDto.setName(payment.getCreditCard().getName());
             ccDto.setCcType(payment.getCreditCard().getCcType());
+            ccDto.setGatewayKey(payment.getCreditCard().getGatewayKey());
         }
         dto.setCreditCard(ccDto);
 

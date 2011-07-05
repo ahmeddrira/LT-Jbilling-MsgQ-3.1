@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.util.db.PreferenceDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -65,9 +66,14 @@ public class PreferenceBL {
 
         preference = preferenceDas.findByType_Row( typeId, entityId, Constants.TABLE_ENTITY);
 
+        // throw exception if there is no preference, or if the type does not have a
+        // default value that can be returned.
         if (preference == null) {
             type = typeDas.find(typeId);
-            throw new EmptyResultDataAccessException("Could not find preference " + typeId, 1);
+
+            if (type == null || type.getDefaultValue() == null) {
+                throw new EmptyResultDataAccessException("Could not find preference " + typeId, 1);
+            }
         }
     }
 
@@ -80,14 +86,14 @@ public class PreferenceBL {
     }
 
     public void createUpdateForEntity(Integer entityId, Integer preferenceId, String value) {
-        // lets see first if this exists
-        try {
-            set(entityId, preferenceId);
-            // it does
+        set(entityId, preferenceId);
+
+        if (preference != null) {
+            // update preference
             preference.setValue(value);
 
-        } catch (EmptyResultDataAccessException e) {
-            // we need a new one
+        } else {
+            // create a new preference
             preference = new PreferenceDTO();
             preference.setValue(value);
             preference.setForeignId(entityId);
@@ -98,8 +104,16 @@ public class PreferenceBL {
     }
 
 
+    /**
+     * Returns the preference value if set. If the preference is null or has no
+     * set value (is blank), the preference type default value will be returned.
+     *
+     * @return preference value as a string
+     */
     public String getString() {
-        return preference != null ? preference.getValue() : type.getDefaultValue();
+        return preference == null || StringUtils.isBlank(preference.getValue())
+               ? type.getDefaultValue()
+               : preference.getValue();
     }
 
     public Integer getInt() {
@@ -120,6 +134,7 @@ public class PreferenceBL {
     /**
      * Returns the preference value as a string.
      *
+     * @see #getString()
      * @return string value of preference
      */
     public String getValueAsString() {
@@ -140,10 +155,14 @@ public class PreferenceBL {
     /**
      * Returns true if the preference value is null, false if value is set.
      *
+     * This method ignores the preference type default value, unlike {@link #getString()}
+     * and {@link #getValueAsString()} which will return the type default value if the
+     * preference itself is unset.
+     *
      * @return true if preference value is null, false if value is set.
      */
     public boolean isNull() {
-        return preference.getValue() == null;
+        return preference == null || preference.getValue() == null;
     }
     
     public PreferenceDTO getEntity() {

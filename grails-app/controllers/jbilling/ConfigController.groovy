@@ -44,7 +44,7 @@ import com.sapienter.jbilling.server.user.CompanyWS
  * @author Brian Cowdery
  * @since 03-Jan-2011
  */
-@Secured(["isAuthenticated()", "MENU_99"])
+@Secured(["MENU_99"])
 class ConfigController {
 
     def breadcrumbService

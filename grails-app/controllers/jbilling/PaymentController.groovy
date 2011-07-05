@@ -48,7 +48,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
  * @author Brian Cowdery
  * @since 04/01/11
  */
-@Secured(["isAuthenticated()", "hasAnyRole('MENU_90', 'PAYMENT_30', 'PAYMENT_31', 'PAYMENT_32', 'PAYMENT_33')"])
+@Secured(["MENU_90"])
 class PaymentController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -60,7 +60,6 @@ class PaymentController {
     def recentItemService
     def breadcrumbService
 
-    @Secured(["MENU_93"])
     def index = {
         redirect action: list, params: params
     }
@@ -90,6 +89,11 @@ class PaymentController {
 
                 eq('u.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
+
+                // limit list to only this customer's payments
+                if (SpringSecurityUtils.ifNotGranted("PAYMENT_36")) {
+                    eq('u.id', session['user_id'])
+                }
             }
 
             // apply sorting
@@ -101,7 +105,6 @@ class PaymentController {
      * Gets a list of payments and renders the the list page. If the "applyFilters" parameter is given,
      * the partial "_payments.gsp" template will be rendered instead of the complete payments list page.
      */
-    @Secured(["MENU_93"])
     def list = {
         def filters = filterService.getFilters(FilterType.PAYMENT, params)
         def payments = getList(filters, params)
@@ -120,6 +123,7 @@ class PaymentController {
     /**
      * Applies the set filters to the payment list, and exports it as a CSV for download.
      */
+    @Secured(["PAYMENT_34"])
     def csv = {
         def filters = filterService.getFilters(FilterType.PAYMENT, params)
 
@@ -141,6 +145,7 @@ class PaymentController {
     /**
      * Show details of the selected payment.
      */
+    @Secured(["PAYMENT_35"])
     def show = {
         PaymentDTO payment = PaymentDTO.get(params.int('id'))
         recentItemService.addRecentItem(params.int('id'), RecentItemType.PAYMENT)
@@ -152,7 +157,6 @@ class PaymentController {
     /**
      * Convenience shortcut, this action shows all payments for the given user id.
      */
-    @Secured(["MENU_93"])
     def user = {
         def filter =  new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.EQ, field: 'u.id', template: 'id', visible: true, integerValue: params.id)
         filterService.setFilter(FilterType.PAYMENT, filter)

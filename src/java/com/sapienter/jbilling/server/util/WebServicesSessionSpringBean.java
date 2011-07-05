@@ -2646,18 +2646,22 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public PreferenceWS getPreference(Integer preferenceTypeId) {
-        // return preference if set
+        PreferenceDTO preference = null;
         try {
-            PreferenceDTO preference = new PreferenceBL(getCallerCompanyId(), preferenceTypeId).getEntity();
-            return new PreferenceWS(preference);
-
+            preference = new PreferenceBL(getCallerCompanyId(), preferenceTypeId).getEntity();
         } catch (DataAccessException e) {
             /* ignore */
         }
 
-        // preference is not set, return empty
-        PreferenceTypeDTO preferenceType = new PreferenceTypeDAS().find(preferenceTypeId);
-        return new PreferenceWS(preferenceType);
+        if (preference != null) {
+            // return preference if set
+            return new PreferenceWS(preference);
+
+        } else {
+            // preference is not set, return empty
+            PreferenceTypeDTO preferenceType = new PreferenceTypeDAS().find(preferenceTypeId);
+            return preferenceType != null ? new PreferenceWS(preferenceType) : null;
+        }
     }
 
 

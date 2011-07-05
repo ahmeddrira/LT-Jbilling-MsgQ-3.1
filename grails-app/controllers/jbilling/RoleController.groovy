@@ -33,7 +33,7 @@ import grails.plugins.springsecurity.Secured
  * @author Brian Cowdery
  * @since 02/06/11
  */
-@Secured(["isAuthenticated()", "MENU_99"])
+@Secured(["MENU_99"])
 class RoleController {
 
     def breadcrumbService

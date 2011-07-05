@@ -11346,7 +11346,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	90	description	1	Show customer menu
 59	91	description	1	Show invoices menu
 59	92	description	1	Show order menu
-59	93	description	1	Show payments and refunds menu
+59	93	description	1	Show payments &amp; refunds menu
 59	94	description	1	Show billing menu
 59	95	description	1	Show mediation menu
 59	96	description	1	Show reports menu
@@ -11358,6 +11358,22 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	71	description	1	Send invoice notification
 59	13	description	1	Inspect customer
 59	14	description	1	Blacklist customer
+59	15	description	1	View customer details
+59	16	description	1	Download customer CSV
+59	24	description	1	View order details
+59	25	description	1	Download order CSV
+59	34	description	1	View payment details
+59	35	description	1	Download payment CSV
+59	43	description	1	View product details
+59	44	description	1	Download product CSV
+59	63	description	1	View plan details
+59	72	description	1	View invoice details
+59	73	description	1	Download invoice CSV
+59	26	description	1	Edit line price
+59	27	description	1	Edit line description
+59	28	description	1	View all customers
+59	36	description	1	View all customers
+59	74	description	1	View all customers
 \.
 
 
@@ -14198,6 +14214,22 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 71	7	\N
 13	1	\N
 14	1	\N
+15	1	\N
+16	1	\N
+24	2	\N
+25	2	\N
+34	3	\N
+35	3	\N
+43	4	\N
+44	4	\N
+63	6	\N
+72	7	\N
+73	7	\N
+26	2	\N
+27	2	\N
+28	2	\N
+36	3	\N
+74	7	\N
 \.
 
 
@@ -14238,6 +14270,21 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 98	2
 99	2
 120	2
+23	2
+71	2
+13	2
+14	2
+15	2
+16	2
+24	2
+25	2
+34	2
+35	2
+43	2
+44	2
+63	2
+72	2
+73	2
 10	3
 11	3
 12	3
@@ -14258,6 +14305,21 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 61	3
 62	3
 70	3
+23	3
+71	3
+13	3
+14	3
+15	3
+16	3
+24	3
+25	3
+34	3
+35	3
+43	3
+44	3
+63	3
+72	3
+73	3
 90	3
 91	3
 92	3
@@ -14267,14 +14329,31 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 96	3
 97	3
 98	3
-23	2
-23	3
-71	2
-71	3
-13	2
-13	3
-14	2
-14	3
+15	2
+16	2
+24	2
+25	2
+34	2
+35	2
+43	2
+44	2
+63	2
+72	2
+73	2
+15	3
+24	3
+34	3
+43	3
+63	3
+72	3
+26	2
+27	2
+28	2
+36	2
+74	2
+28	3
+36	3
+74	3
 \.
 
 

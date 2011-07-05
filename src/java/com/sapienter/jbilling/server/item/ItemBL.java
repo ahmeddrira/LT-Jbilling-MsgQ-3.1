@@ -152,9 +152,10 @@ public class ItemBL {
         item.setPercentage(dto.getPercentage());
         item.setHasDecimals(dto.getHasDecimals());
 
+        updateTypes(dto);
+
         if (item.getPercentage() == null) {
             updateDefaultPrice(dto);
-            updateTypes(dto);
 
             // validate all pricing attributes
             if (item.getDefaultPrice() != null) {

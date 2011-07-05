@@ -39,7 +39,7 @@ import com.sapienter.jbilling.client.util.DownloadHelper
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
 import org.hibernate.Criteria
 import com.sapienter.jbilling.client.util.SortableCriteria
-import org.hibernate.criterion.MatchMode
+
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 @Secured(["MENU_97"])
@@ -63,10 +63,10 @@ class ProductController {
      */
     def list = {
         def filters = filterService.getFilters(FilterType.PRODUCT, params)
-        def categories = getCategories()
+        def categories = getProductCategories(true)
 
         def categoryId = params.int('id')
-        def category = categoryId ? categories.find { it.id == categoryId } : null
+        def category = categoryId ? ItemTypeDTO.get(categoryId) : null
         def products = category ? getProducts(category.id, filters) : null
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'), category?.description)
@@ -78,13 +78,20 @@ class ProductController {
         }
     }
 
-    def getCategories() {
-        params.max = params?.max?.toInteger() ?: pagination.max
-        params.offset = params?.offset?.toInteger() ?: pagination.offset
+    def categories = {
+        def categories = getProductCategories(true)
+        render template: 'categories', model: [ categories: categories ]
+    }
+
+    def getProductCategories(paged = false) {
+        if (paged) {
+            params.max = params?.max?.toInteger() ?: pagination.max
+            params.offset = params?.offset?.toInteger() ?: pagination.offset
+        }
 
         return ItemTypeDTO.createCriteria().list(
-                max:    params.max,
-                offset: params.offset
+            max: paged ? params.max : null,
+            offset: paged ? params.offset : null
         ) {
             and {
                 eq('internal', false)
@@ -137,15 +144,13 @@ class ProductController {
         params.sort = params?.sort ?: pagination.sort
         params.order = params?.order ?: pagination.order
 
-        log.debug("sort ${params.sort} ${params.order}")
-
         return ItemDTO.createCriteria().list(
                 max:    params.max,
                 offset: params.offset
         ) {
             and {
                 createAlias('defaultPrice', 'price', Criteria.LEFT_JOIN)
-                def description= null
+
                 filters.each { filter ->
                     if (filter.value != null) {
 
@@ -154,21 +159,22 @@ class ProductController {
                             eq(filter.field, PriceModelStrategy.valueOf(filter.stringValue))
 
                         } else if (filter.field == 'description') {
-                            description= filter.stringValue?.toLowerCase()
-                            def languageId= session['language_id']?.toInteger()
-                            sqlRestriction(" exists (select a.foreign_id from international_description a where a.foreign_id = "
-                                + " {alias}.id and a.language_id = $languageId and lower(a.content) like '%$description%')")
+                            def description = filter.stringValue?.toLowerCase()
+                            sqlRestriction(
+                                    """ exists (
+                                            select a.foreign_id
+                                            from international_description a
+                                            where a.foreign_id = {alias}.id
+                                            and a.language_id = ${session['language_id']}
+                                            and lower(a.content) like '%${description}%'
+                                        )
+                                    """
+                            )
                         } else {
                             addToCriteria(filter.getRestrictions());
                         }
                     }
                 }
-
-//                if (description) {
-//                    def languageId= session['language_id']?.toInteger()
-//                    createAlias("description", "description")
-//                    addToCriteria(Restrictions.ilike("description.content", description, MatchMode.ANYWHERE))
-//                }
 
                 if (id != null) {
                     itemTypes {
@@ -215,7 +221,7 @@ class ProductController {
         } else {
             // render default "list" view - needed so a breadcrumb can link to a product by id
             def filters = filterService.getFilters(FilterType.PRODUCT, params)
-            def categories = getCategories();
+            def categories = getProductCategories();
 
             def productCategoryId = params.category ?: product?.itemTypes?.asList()?.get(0)?.id
             def products = getProducts(productCategoryId, filters);
@@ -244,7 +250,7 @@ class ProductController {
             }
         }
 
-        render template: 'categories', model: [ categories: categories ]
+        render template: 'categories', model: [ categories: getProductCategories() ]
     }
 
     /**
@@ -368,7 +374,7 @@ class ProductController {
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'), product?.number)
 
-        [ product: product, currencies: currencies, categories: categories, categoryId: params.category ]
+        [ product: product, currencies: currencies, categories: getProductCategories(), categoryId: params.category ]
     }
 
     def updateStrategy = {
@@ -484,7 +490,7 @@ class ProductController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
-            render view: 'editProduct', model: [ product: product, categories: categories, currencies: currencies ]
+            render view: 'editProduct', model: [ product: product, categories: getProductCategories(), currencies: currencies ]
             return
         }
 

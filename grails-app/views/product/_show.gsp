@@ -92,7 +92,7 @@
             <div class="box-card-hold">
                 <div class="content">
                     <ul class="cloud">
-                        <g:each var="category" in="${selectedProduct.itemTypes}">
+                        <g:each var="category" in="${selectedProduct.itemTypes.sort{ it.description }}">
                             <li>
                                 <g:link action="list" id="${category.id}">${category.description}</g:link>
                             </li>

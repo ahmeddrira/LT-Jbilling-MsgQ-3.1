@@ -26,7 +26,7 @@
   @since  16-Dec-2010
 --%>
 
-<g:set var="paginateAction" value="${actionName == 'products' ? 'products' : 'allProducts'}"/>
+<g:set var="paginateAction" value="${actionName == 'products' || actionName == 'list' ? 'products' : 'allProducts'}"/>
 
 <%-- list of products --%>
 <g:if test="${products}">

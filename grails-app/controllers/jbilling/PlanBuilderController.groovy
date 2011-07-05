@@ -134,6 +134,10 @@ class PlanBuilderController {
                     product.defaultPrice = priceModel
                 }
 
+                // subscription product uses a METERED price model
+                // don't use the legacy compatibility pricing fields
+                product.percentage = null
+                product.price = null
 
                 log.debug("plan subscription product ${product}")
 

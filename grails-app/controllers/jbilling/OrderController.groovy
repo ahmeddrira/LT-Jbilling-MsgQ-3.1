@@ -47,6 +47,7 @@ import org.hibernate.criterion.Restrictions
 import org.hibernate.criterion.Criterion
 import org.hibernate.Criteria
 import com.sapienter.jbilling.client.util.SortableCriteria
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 /**
  *
@@ -100,6 +101,11 @@ class OrderController {
                 }
                 eq('u.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
+
+                // limit list to only this customer's orders
+                if (SpringSecurityUtils.ifNotGranted("ORDER_28")) {
+                    eq('u.id', session['user_id'])
+                }
             }
 
             // apply sorting

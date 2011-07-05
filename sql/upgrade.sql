@@ -1228,3 +1228,36 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 -- permissions for super users
 insert into permission_role_map (role_id, permission_id) values (2, 26);
 insert into permission_role_map (role_id, permission_id) values (2, 27);
+
+
+-- Date: 05-Jul-2011
+-- Redmine Issue: #1092
+-- Description: Customer list permissions
+
+insert into permission (id, type_id) values (28, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 28, 'description', 1, 'View all customers');
+
+insert into permission (id, type_id) values (36, 3);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 36, 'description', 1, 'View all customers');
+
+insert into permission (id, type_id) values (74, 7);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 74, 'description', 1, 'View all customers');
+
+-- permissions for super users
+insert into permission_role_map (role_id, permission_id) values (2, 28);
+insert into permission_role_map (role_id, permission_id) values (2, 36);
+insert into permission_role_map (role_id, permission_id) values (2, 74);
+
+-- permissions for clerks
+insert into permission_role_map (role_id, permission_id) values (3, 28);
+insert into permission_role_map (role_id, permission_id) values (3, 36);
+insert into permission_role_map (role_id, permission_id) values (3, 74);
+
+-- permissions for customers
+insert into permission_role_map (role_id, permission_id) values (5, 24);
+insert into permission_role_map (role_id, permission_id) values (5, 30);
+insert into permission_role_map (role_id, permission_id) values (5, 34);
+insert into permission_role_map (role_id, permission_id) values (5, 72);
+insert into permission_role_map (role_id, permission_id) values (5, 91);
+insert into permission_role_map (role_id, permission_id) values (5, 92);
+insert into permission_role_map (role_id, permission_id) values (5, 93);

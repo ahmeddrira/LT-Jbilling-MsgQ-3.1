@@ -38,6 +38,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.client.util.SortableCriteria;
 import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 /**
  * BillingController
@@ -129,6 +130,11 @@ class InvoiceController {
                 createAlias('baseUser', 'baseUser')
                 eq('baseUser.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
+
+                // limit list to only this customer's invoices
+                if (SpringSecurityUtils.ifNotGranted("INVOICE_74")) {
+                    eq('baseUser.id', session['user_id'])
+                }
             }
 
             // apply sorting

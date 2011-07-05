@@ -1385,12 +1385,14 @@
     <InternationalDescription TableId="59" ForeignId="25" PsudoColumn="description" LanguageId="1" Content="Download order CSV"/>
     <InternationalDescription TableId="59" ForeignId="26" PsudoColumn="description" LanguageId="1" Content="Edit line price"/>
     <InternationalDescription TableId="59" ForeignId="27" PsudoColumn="description" LanguageId="1" Content="Edit line description"/>
+    <InternationalDescription TableId="59" ForeignId="28" PsudoColumn="description" LanguageId="1" Content="View all customers"/>
     <InternationalDescription TableId="59" ForeignId="30" PsudoColumn="description" LanguageId="1" Content="Create payment"/>    
     <InternationalDescription TableId="59" ForeignId="31" PsudoColumn="description" LanguageId="1" Content="Edit payment"/>
     <InternationalDescription TableId="59" ForeignId="32" PsudoColumn="description" LanguageId="1" Content="Delete payment"/>
     <InternationalDescription TableId="59" ForeignId="33" PsudoColumn="description" LanguageId="1" Content="Link payment to invoice"/>
     <InternationalDescription TableId="59" ForeignId="34" PsudoColumn="description" LanguageId="1" Content="View payment details"/>
     <InternationalDescription TableId="59" ForeignId="35" PsudoColumn="description" LanguageId="1" Content="Download payment CSV"/>
+    <InternationalDescription TableId="59" ForeignId="36" PsudoColumn="description" LanguageId="1" Content="View all customers"/>
     <InternationalDescription TableId="59" ForeignId="40" PsudoColumn="description" LanguageId="1" Content="Create product"/>                
     <InternationalDescription TableId="59" ForeignId="41" PsudoColumn="description" LanguageId="1" Content="Edit product"/>                
     <InternationalDescription TableId="59" ForeignId="42" PsudoColumn="description" LanguageId="1" Content="Delete product"/>
@@ -1407,6 +1409,7 @@
     <InternationalDescription TableId="59" ForeignId="71" PsudoColumn="description" LanguageId="1" Content="Send invoice notification"/>
     <InternationalDescription TableId="59" ForeignId="72" PsudoColumn="description" LanguageId="1" Content="View invoice details"/>
     <InternationalDescription TableId="59" ForeignId="73" PsudoColumn="description" LanguageId="1" Content="Download invoice CSV"/>
+    <InternationalDescription TableId="59" ForeignId="74" PsudoColumn="description" LanguageId="1" Content="View all customers"/>
     <InternationalDescription TableId="59" ForeignId="80" PsudoColumn="description" LanguageId="1" Content="Approve / Disapprove review"/>                   
     <InternationalDescription TableId="59" ForeignId="90" PsudoColumn="description" LanguageId="1" Content="Show customer menu"/>   
     <InternationalDescription TableId="59" ForeignId="91" PsudoColumn="description" LanguageId="1" Content="Show invoices menu"/>                
@@ -1700,12 +1703,14 @@
     <Permission Id="25" TypeId="2"/>
     <Permission Id="26" TypeId="2"/>
     <Permission Id="27" TypeId="2"/>
+    <Permission Id="28" TypeId="2"/>
     <Permission Id="30" TypeId="3"/>
     <Permission Id="31" TypeId="3"/>
     <Permission Id="32" TypeId="3"/>
     <Permission Id="33" TypeId="3"/>
     <Permission Id="34" TypeId="3"/>
     <Permission Id="35" TypeId="3"/>
+    <Permission Id="36" TypeId="3"/>
     <Permission Id="40" TypeId="4"/>
     <Permission Id="41" TypeId="4"/>
     <Permission Id="42" TypeId="4"/>
@@ -1722,6 +1727,7 @@
     <Permission Id="71" TypeId="7"/>
     <Permission Id="72" TypeId="7"/>
     <Permission Id="73" TypeId="7"/>
+    <Permission Id="74" TypeId="7"/>
     <Permission Id="80" TypeId="8"/>
     <Permission Id="90" TypeId="9"/>
     <Permission Id="91" TypeId="9"/>
@@ -1750,12 +1756,14 @@
     <PermissionRoleMap PermissionId="25" RoleId="2"/>
     <PermissionRoleMap PermissionId="26" RoleId="2"/>
     <PermissionRoleMap PermissionId="27" RoleId="2"/>
+    <PermissionRoleMap PermissionId="28" RoleId="2"/>
     <PermissionRoleMap PermissionId="30" RoleId="2"/>
     <PermissionRoleMap PermissionId="31" RoleId="2"/>
     <PermissionRoleMap PermissionId="32" RoleId="2"/>
     <PermissionRoleMap PermissionId="33" RoleId="2"/>
     <PermissionRoleMap PermissionId="34" RoleId="2"/>
     <PermissionRoleMap PermissionId="35" RoleId="2"/>
+    <PermissionRoleMap PermissionId="36" RoleId="2"/>
     <PermissionRoleMap PermissionId="40" RoleId="2"/>
     <PermissionRoleMap PermissionId="41" RoleId="2"/>
     <PermissionRoleMap PermissionId="42" RoleId="2"/>
@@ -1772,6 +1780,7 @@
     <PermissionRoleMap PermissionId="71" RoleId="2"/>
     <PermissionRoleMap PermissionId="72" RoleId="2"/>
     <PermissionRoleMap PermissionId="73" RoleId="2"/>
+    <PermissionRoleMap PermissionId="74" RoleId="2"/>
     <PermissionRoleMap PermissionId="80" RoleId="2"/>
     <PermissionRoleMap PermissionId="90" RoleId="2"/>
     <PermissionRoleMap PermissionId="91" RoleId="2"/>
@@ -1795,11 +1804,13 @@
     <PermissionRoleMap PermissionId="22" RoleId="3"/>
     <PermissionRoleMap PermissionId="23" RoleId="3"/>
     <PermissionRoleMap PermissionId="24" RoleId="3"/>
+    <PermissionRoleMap PermissionId="28" RoleId="3"/>
     <PermissionRoleMap PermissionId="30" RoleId="3"/>
     <PermissionRoleMap PermissionId="31" RoleId="3"/>
     <PermissionRoleMap PermissionId="32" RoleId="3"/>
     <PermissionRoleMap PermissionId="33" RoleId="3"/>
     <PermissionRoleMap PermissionId="34" RoleId="3"/>
+    <PermissionRoleMap PermissionId="36" RoleId="3"/>
     <PermissionRoleMap PermissionId="40" RoleId="3"/>
     <PermissionRoleMap PermissionId="41" RoleId="3"/>
     <PermissionRoleMap PermissionId="42" RoleId="3"/>
@@ -1814,6 +1825,7 @@
     <PermissionRoleMap PermissionId="70" RoleId="3"/>
     <PermissionRoleMap PermissionId="71" RoleId="3"/>
     <PermissionRoleMap PermissionId="72" RoleId="3"/>
+    <PermissionRoleMap PermissionId="74" RoleId="3"/>
     <PermissionRoleMap PermissionId="90" RoleId="3"/>
     <PermissionRoleMap PermissionId="91" RoleId="3"/>
     <PermissionRoleMap PermissionId="92" RoleId="3"/>
@@ -1823,6 +1835,13 @@
     <PermissionRoleMap PermissionId="96" RoleId="3"/>
     <PermissionRoleMap PermissionId="97" RoleId="3"/>
     <PermissionRoleMap PermissionId="98" RoleId="3"/>
+    <PermissionRoleMap PermissionId="24" RoleId="5"/>
+    <PermissionRoleMap PermissionId="30" RoleId="5"/>
+    <PermissionRoleMap PermissionId="34" RoleId="5"/>
+    <PermissionRoleMap PermissionId="72" RoleId="5"/>
+    <PermissionRoleMap PermissionId="91" RoleId="5"/>
+    <PermissionRoleMap PermissionId="92" RoleId="5"/>
+    <PermissionRoleMap PermissionId="93" RoleId="5"/>
 
     <PluggableTaskType Id="1" CategoryId="1" ClassName="com.sapienter.jbilling.server.pluggableTask.BasicLineTotalTask" MinParameters="0"/>
     <PluggableTaskType Id="13" CategoryId="4" ClassName="com.sapienter.jbilling.server.pluggableTask.CalculateDueDateDfFm" MinParameters="0"/>

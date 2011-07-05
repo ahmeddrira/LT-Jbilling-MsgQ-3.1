@@ -11371,6 +11371,9 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	73	description	1	Download invoice CSV
 59	26	description	1	Edit line price
 59	27	description	1	Edit line description
+59	28	description	1	View all customers
+59	36	description	1	View all customers
+59	74	description	1	View all customers
 \.
 
 
@@ -14224,6 +14227,9 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 73	7	\N
 26	2	\N
 27	2	\N
+28	2	\N
+36	3	\N
+74	7	\N
 \.
 
 
@@ -14342,6 +14348,12 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 72	3
 26	2
 27	2
+28	2
+36	2
+74	2
+28	3
+36	3
+74	3
 \.
 
 

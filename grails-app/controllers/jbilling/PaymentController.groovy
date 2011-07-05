@@ -89,6 +89,11 @@ class PaymentController {
 
                 eq('u.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
+
+                // limit list to only this customer's payments
+                if (SpringSecurityUtils.ifNotGranted("PAYMENT_36")) {
+                    eq('u.id', session['user_id'])
+                }
             }
 
             // apply sorting

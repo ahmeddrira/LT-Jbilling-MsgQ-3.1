@@ -125,7 +125,7 @@
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="payment.amount"/></content>
                             <span><g:formatNumber number="${payment.amount}" formatName="money.format"/></span>
-                            <g:hiddenField class="field" name="payment.amountAsDecimal" value="${formatNumber(number: payment?.amount)}"/>
+                            <g:hiddenField class="field" name="payment.amountAsDecimal" value="${formatNumber(number: payment?.amount, formatName: 'money.format')}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/text">

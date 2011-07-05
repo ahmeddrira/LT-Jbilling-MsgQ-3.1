@@ -86,14 +86,14 @@ public class PreferenceBL {
     }
 
     public void createUpdateForEntity(Integer entityId, Integer preferenceId, String value) {
-        // lets see first if this exists
-        try {
-            set(entityId, preferenceId);
-            // it does
+        set(entityId, preferenceId);
+
+        if (preference != null) {
+            // update preference
             preference.setValue(value);
 
-        } catch (EmptyResultDataAccessException e) {
-            // we need a new one
+        } else {
+            // create a new preference
             preference = new PreferenceDTO();
             preference.setValue(value);
             preference.setForeignId(entityId);

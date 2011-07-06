@@ -124,7 +124,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{invoiceNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="300" y="15" width="111" height="30"/>
+				<reportElement positionType="Float" x="291" y="15" width="120" height="30"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="24" isBold="true"/>
 				</textElement>

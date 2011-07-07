@@ -33,14 +33,14 @@
         <fieldset>
             <div class="input-row">
                 <div class="input-bg">
-                    <g:textField name="filters.${filter.name}.decimalValue" value="${filter.decimalValue}"/>
+                    <g:textField name="filters.${filter.name}.decimalValue" value="${filter.decimalValue}" class="{validate:{ number: true }}"/>
                 </div>
                 <label for="filters.${filter.name}.decimalValue"><g:message code="filters.${filter.field}.low.label"/></label>
             </div>
 
             <div class="input-row">
                 <div class="input-bg">
-                    <g:textField name="filters.${filter.name}.decimalHighValue" value="${filter.decimalHighValue}"/>
+                    <g:textField name="filters.${filter.name}.decimalHighValue" value="${filter.decimalHighValue}" class="{validate:{ number: true }}"/>
                 </div>
                 <label for="filters.${filter.name}.decimalHighValue"><g:message code="filters.${filter.field}.high.label"/></label>
             </div>

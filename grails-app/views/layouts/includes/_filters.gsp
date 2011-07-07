@@ -98,31 +98,32 @@
 
         <script type="text/javascript">
             $(function() {
-                initPopups();
-                initScript();
+                // reset popups and validations
+                setTimeout(
+                    function() {
+                        initPopups();
+                        initScript();
+
+                        var validator = $('#filters-form').validate();
+                        validator.init();
+                        validator.hideErrors();
+                    }, 500);
+
+                // highlight active filters
+                $('body').delegate('#filters-form', 'submit', function() {
+                    $(this).find('li').each(function() {
+                        var title = $(this).find('.title');
+
+                        if ($(this).find(':input[value!=""]').not(':checkbox').length > 0) {
+                            title.addClass('active');
+                        } else if ($(this).find(':checkbox:checked').length > 0) {
+                            title.addClass('active');
+                        } else {
+                            title.removeClass('active');
+                        }
+                    });
+                });
             });
         </script>
     </div>
 </div>
-
-<script type="text/javascript">
-    $(function() {
-        $('body').delegate('#filters-form', 'submit', function() {
-            $(this).find('li').each(function() {
-                var title = $(this).find('.title');
-
-                if ($(this).find(':input[value!=""]').not(':checkbox').length > 0) {
-                    title.addClass('active');
-                } else if ($(this).find(':checkbox:checked').length > 0) {
-                    title.addClass('active');
-                } else {
-                    title.removeClass('active');
-                }
-            });
-        });
-
-        $('#filters-form').validate({
-            debug: false
-        });
-    });
-</script>

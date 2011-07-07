@@ -37,8 +37,7 @@
         <fieldset>
             <div class="input-row">
                 <div class="input-bg">
-                    <g:textField name="filters.${filter.name}.integerValue" value="${filter.integerValue}"
-                                 class="{validate:{ digits: true }}"/>
+                    <g:textField name="filters.${filter.name}.integerValue" value="${filter.integerValue}" class="{validate:{ digits: true }}"/>
                 </div>
                 <label for="filters.${filter.name}.integerValue"><g:message code="filters.${filter.field}.label"/></label>
             </div>

@@ -279,7 +279,8 @@ class InvoiceController {
 
         try {
             byte[] pdfBytes = webServicesSession.getPaperInvoicePDF(invoiceId)
-            DownloadHelper.sendFile(response, "invoice-${invoiceId}.pdf", "application/pdf", pdfBytes)
+            def invoice = webServicesSession.getInvoiceWS(invoiceId)
+            DownloadHelper.sendFile(response, "invoice-${invoice?.number}.pdf", "application/pdf", pdfBytes)
 
         } catch (Exception e) {
             log.error("Exception fetching PDF invoice data.", e)

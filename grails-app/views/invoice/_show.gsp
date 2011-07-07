@@ -27,7 +27,7 @@
 <div class="column-hold">
 
     <div class="heading">
-        <strong><g:message code="invoice.label.details"/> <em>${selected?.id}</em>
+        <strong><g:message code="invoice.label.details"/> <em>${selected?.number}</em>
         </strong>
     </div>
 

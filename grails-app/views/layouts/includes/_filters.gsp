@@ -120,5 +120,9 @@
                 }
             });
         });
+
+        $('#filters-form').validate({
+            debug: false
+        });
     });
 </script>

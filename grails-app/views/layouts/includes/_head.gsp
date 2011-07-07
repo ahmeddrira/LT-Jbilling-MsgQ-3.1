@@ -67,7 +67,24 @@
     </script>
 </g:if>
 
+<g:javascript src="jquery-validate/jquery.validate.min.js"/>
+<g:javascript src="jquery-validate/jquery.metadata.js"/>
+<g:javascript src="jquery-validate/additional-methods.min.js"/>
+<g:javascript src="jquery-validate/i18n/messages_${session.locale.language}.js"/>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $.validator.setDefaults({
+            errorContainer: "#error-messages",
+            errorLabelContainer: "#error-messages p",
+            debug: false,
+            meta: "validate"
+        });
+    })
+</script>
+
 <g:javascript library="datatable"/>
 <g:javascript library="clearinput"/>
 <g:javascript library="slideBlock"/>
 <g:javascript library="main"/>
+

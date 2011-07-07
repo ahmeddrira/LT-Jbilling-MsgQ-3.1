@@ -149,7 +149,6 @@ class CustomerInspectorController {
         def userId = params.int('userId')
         def priceId = params.int('id')
 
-
         def product = webServicesSession.getItem(params.int('itemId'), userId, null)
         def user = webServicesSession.getUserWS(userId)
 
@@ -158,7 +157,10 @@ class CustomerInspectorController {
             price = webServicesSession.getCustomerPrices(userId).find{ it.id == priceId }
         } else {
             price = new PlanItemWS()
+
+            // copy default product price model as a starting point
             price.model = product.defaultPrice
+            price.model.id = null
         }
 
         [ price: price, product: product, user: user, currencies: currencies ]

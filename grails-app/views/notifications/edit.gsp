@@ -17,7 +17,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  --}%
-
+<%@page import="com.sapienter.jbilling.server.util.Constants"%>
 <html>
 <head>
     <meta name="layout" content="main" />
@@ -158,6 +158,18 @@
 	</script>
 
 <style type="text/css">
+    <!--
+    div.scroll {
+        height: 400px;
+        width: 350px;
+        overflow: auto;
+        border: 1px solid #666;
+        padding: 1px;
+        position:relative;
+        float:right;
+    }
+    -->
+<%--  
 	#popup {
 		height: 100%;
 		width: 100%;
@@ -180,8 +192,8 @@
 		top: 200px;
 		left: 25%;
 	}
+--%>
 </style>
-
 </head>
 <body>
 
@@ -193,229 +205,203 @@
 	</div>
 
 	<div class="form-hold">
-	<g:form name="notifications" controller="notifications" action="saveNotification">
-
-		<g:hiddenField name="_id" value="${params.id}" />
-		<g:hiddenField id="doNotAskAgain" name="doNotAskAgain" value="${false}"/>
-		<g:hiddenField id="askPreference" name="askPreference" value="${askPreference}"/>
-		<g:hiddenField name="msgDTOId" value="${dto?.getId()}" />
-		<g:hiddenField name="entity.id" value="${entityId}" />
-		<g:hiddenField name="_languageId" value="${languageId}"/>
-
-		<fieldset>
-			<div class="form-columns">
-				<div class="column">
-					<div class="row">
-						<label><g:message code="title.notification.active"/>:</label>
-						<div class="checkboxArea">
-							<g:checkBox onchange="anychange(this)" name="useFlag"
-								checked="${(dto?.getUseFlag() > 0)}" class="cb checkbox"/>
-						</div>
-					</div>
-					<div class="row">
-						<label><g:message code="prompt.edit.notification.language" />:</label>
-						<div style="width: 220px; " class="selectArea">
-							<g:select name="language.id"
-								from="${com.sapienter.jbilling.server.util.db.LanguageDTO.list()}"
-								optionKey="id" optionValue="description" value="${languageId}"
-								onchange="lchange()" />
-						</div>
-					</div>
-					<g:set var="flag" value="${true}" />
-					<div class="row">
-						<label><g:message code="prompt.edit.notification.subject" />:</label>
-						<div class="inp-bg">
-							<g:each in="${dto?.getNotificationMessageSections()}"
-								var="section">
-								<g:if test="${(section.section == 1)}">
-									<g:hiddenField
-										name="messageSections[${section.section}].id"
-										value="${section.id}" />
-									<g:hiddenField
-										name="messageSections[${section.section}].section"
-										value="${section.section}" />
-									<g:set var="tempContent" value="" />
-									<g:each in="${section.getNotificationMessageLines().sort{it.id}}"
-										var="line">
-										<g:set var="tempContent"
-											value="${tempContent=tempContent + line?.getContent()}" />
-									</g:each>
-									<input class="field" type="text" onclick="elementClick(this)" onChange="anychange(this)" size="30"
-										name="messageSections[${section.section}].notificationMessageLines.content"
-										value="${tempContent}" />
-									<g:set var="flag" value="${false}" />
-								</g:if>
-							</g:each> 
-							<g:if test="${flag}">
-								<g:hiddenField
-										name="messageSections[1].id" value="" />
-								<g:hiddenField
-										name="messageSections[1].section" value="1" />
-								<g:textField class="field" onclick="elementClick(this)" onchange="anychange(this)" size="30"
-									name="messageSections[1].notificationMessageLines.content"
-									value="" />
-							</g:if>
-						</div>
-					</div>
-					<g:set var="flag" value="${true}" />
-					<div class="row">
-						<label><g:message code="prompt.edit.notification.bodytext" />:</label>
-						<div class="">
-							<g:each in="${dto?.getNotificationMessageSections()}"
-								var="section">
-								<g:if test="${(section.section == 2)}">
-									<g:hiddenField
-										name="messageSections[${section.section}].id"
-										value="${section.id}" />
-									<g:hiddenField
-										name="messageSections[${section.section}].section"
-										value="${section.section}" />
-									<g:set var="tempContent" value="" />
-									<g:each in="${section.getNotificationMessageLines().sort{it.id}}"
-										var="line">
-										<g:set var="tempContent"
-											value="${tempContent=tempContent + line?.getContent()}" />
-									</g:each>
-									<g:textArea class="field" onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
-										name="messageSections[${section.section}].notificationMessageLines.content"
-										value="${tempContent}" />
-									<g:set var="flag" value="${false}" />
-								</g:if>
-							</g:each> 
-							<g:if test="${flag}">
-								<g:hiddenField
-										name="messageSections[2].id" value="" />
-								<g:hiddenField
-										name="messageSections[2].section" value="2" />
-								<g:textArea onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
-									name="messageSections[2].notificationMessageLines.content"
-									value="" />
-							</g:if>
-						</div>
-					</div>
-					<g:set var="flag" value="${true}" />
-					<div class="row">
-						<label><g:message code="prompt.edit.notification.bodyhtml" />:</label>						
-						<div class="">
-							<g:each in="${dto?.getNotificationMessageSections()}"
-								var="section">
-								<g:if test="${(section?.section == 3)}">
-									<g:hiddenField
-										name="messageSections[${section.section}].id"
-										value="${section?.id}" />
-									<g:hiddenField
-										name="messageSections[${section.section}].section"
-										value="${section?.section}" />
-									<g:set var="tempContent" value="" />
-									<g:each in="${section?.getNotificationMessageLines().sort{it.id}}"
-										var="line">
-										<g:set var="tempContent"
-											value="${tempContent=tempContent + line?.getContent()}" />
-									</g:each>
-									<g:textArea  class="field" onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
-										name="messageSections[${section.section}].notificationMessageLines.content"
-										value="${tempContent}" />
-									<g:set var="flag" value="${false}" />
-								</g:if>
-							</g:each>
-							<g:if test="${flag}">
-								<g:hiddenField
-										name="messageSections[3].id" value="" />
-								<g:hiddenField
-										name="messageSections[3].section" value="3" />
-								<g:textArea onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
-									name="messageSections[3].notificationMessageLines.content"
-									value="" />
-							</g:if>
-						</div>
-					</div>
-				</div>
-				<!-- 
-				<div class="column">
-					<div class="row">
-					</div>
-				</div>
-				 -->
-				<div class="column">
-					<div class="row">
-						<label><g:message code="prompt.tokens"/></label>
-					</div>
-					<div class="row">
-						<div>
-							<a href="javascript:void(0)" onclick="testfunc('$first_name');" class="">
-								<span><g:message code="label.token.first.name"/></span></a>
-						</div>
-					</div>
-					<div class="row">
-						<div >
-							<a href="javascript:void(0)" onclick="testfunc('$last_name');" class="">
-							<span><g:message code="label.token.last.name"/></span></a>
-						</div>
-					</div>
-					<div class="row">
-						<div >
-							<a href="javascript:void(0)" onclick="testfunc('$company_id');" class="">
-							<span><g:message code="label.token.company.id"/></span></a>
-						</div>
-					</div>
-					<div class="row">
-						<div >
-						<a href="javascript:void(0)" onclick="testfunc('$company_name');" class="">
-							<span><g:message code="label.token.company.name"/></span></a>
-						</div>
-					</div>
-                    <div class="row">
-                        <div >
-                        <a href="javascript:void(0)" onclick="testfunc('$days');" class="">
-                            <span><g:message code="label.token.invoice.days"/></span></a>
-                        </div>
+    	<g:form name="notifications" controller="notifications" action="saveNotification">
+    
+    		<g:hiddenField name="_id" value="${params.id}" />
+    		<g:hiddenField id="doNotAskAgain" name="doNotAskAgain" value="${false}"/>
+    		<g:hiddenField id="askPreference" name="askPreference" value="${askPreference}"/>
+    		<g:hiddenField name="msgDTOId" value="${dto?.getId()}" />
+    		<g:hiddenField name="entity.id" value="${entityId}" />
+    		<g:hiddenField name="_languageId" value="${languageId}"/>
+    
+    		<fieldset>
+    			<div class="form-columns">
+    				<div class="column" style="width:50%;">
+    					<div class="row">
+    						<label><g:message code="title.notification.active"/>:</label>
+    						<div class="checkboxArea">
+    							<g:checkBox onchange="anychange(this)" name="useFlag"
+    								checked="${(dto?.getUseFlag() > 0)}" class="cb checkbox"/>
+    						</div>
+    					</div>
+    					<div class="row">
+    						<label><g:message code="prompt.edit.notification.language" />:</label>
+    						<div style="width: 220px; " class="selectArea">
+    							<g:select name="language.id"
+    								from="${com.sapienter.jbilling.server.util.db.LanguageDTO.list()}"
+    								optionKey="id" optionValue="description" value="${languageId}"
+    								onchange="lchange()" />
+    						</div>
+    					</div>
+    					<g:set var="flag" value="${true}" />
+    					<div class="row">
+    						<label><g:message code="prompt.edit.notification.subject" />:</label>
+    						<div class="inp-bg">
+    							<g:each in="${dto?.getNotificationMessageSections()}"
+    								var="section">
+    								<g:if test="${(section.section == 1)}">
+    									<g:hiddenField
+    										name="messageSections[${section.section}].id"
+    										value="${section.id}" />
+    									<g:hiddenField
+    										name="messageSections[${section.section}].section"
+    										value="${section.section}" />
+    									<g:set var="tempContent" value="" />
+    									<g:each in="${section.getNotificationMessageLines().sort{it.id}}"
+    										var="line">
+    										<g:set var="tempContent"
+    											value="${tempContent=tempContent + line?.getContent()}" />
+    									</g:each>
+    									<input class="field" type="text" onclick="elementClick(this)" onChange="anychange(this)" size="30"
+    										name="messageSections[${section.section}].notificationMessageLines.content"
+    										value="${tempContent}" />
+    									<g:set var="flag" value="${false}" />
+    								</g:if>
+    							</g:each> 
+    							<g:if test="${flag}">
+    								<g:hiddenField
+    										name="messageSections[1].id" value="" />
+    								<g:hiddenField
+    										name="messageSections[1].section" value="1" />
+    								<g:textField class="field" onclick="elementClick(this)" onchange="anychange(this)" size="30"
+    									name="messageSections[1].notificationMessageLines.content"
+    									value="" />
+    							</g:if>
+    						</div>
+    					</div>
+    					<g:set var="flag" value="${true}" />
+    					<div class="row">
+    						<label><g:message code="prompt.edit.notification.bodytext" />:</label>
+    						<div>
+    							<g:each in="${dto?.getNotificationMessageSections()}"
+    								var="section">
+    								<g:if test="${(section.section == 2)}">
+    									<g:hiddenField
+    										name="messageSections[${section.section}].id"
+    										value="${section.id}" />
+    									<g:hiddenField
+    										name="messageSections[${section.section}].section"
+    										value="${section.section}" />
+    									<g:set var="tempContent" value="" />
+    									<g:each in="${section.getNotificationMessageLines().sort{it.id}}"
+    										var="line">
+    										<g:set var="tempContent"
+    											value="${tempContent=tempContent + line?.getContent()}" />
+    									</g:each>
+    									<g:textArea class="field" onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
+    										name="messageSections[${section.section}].notificationMessageLines.content"
+    										value="${tempContent}" />
+    									<g:set var="flag" value="${false}" />
+    								</g:if>
+    							</g:each> 
+    							<g:if test="${flag}">
+    								<g:hiddenField
+    										name="messageSections[2].id" value="" />
+    								<g:hiddenField
+    										name="messageSections[2].section" value="2" />
+    								<g:textArea onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
+    									name="messageSections[2].notificationMessageLines.content"
+    									value="" />
+    							</g:if>
+    						</div>
+    					</div>
+    					<g:set var="flag" value="${true}" />
+    					<div class="row">
+    						<label><g:message code="prompt.edit.notification.bodyhtml" />:</label>
+    						<div>
+    							<g:each in="${dto?.getNotificationMessageSections()}"
+    								var="section">
+    								<g:if test="${(section?.section == 3)}">
+    									<g:hiddenField
+    										name="messageSections[${section.section}].id"
+    										value="${section?.id}" />
+    									<g:hiddenField
+    										name="messageSections[${section.section}].section"
+    										value="${section?.section}" />
+    									<g:set var="tempContent" value="" />
+    									<g:each in="${section?.getNotificationMessageLines().sort{it.id}}"
+    										var="line">
+    										<g:set var="tempContent"
+    											value="${tempContent=tempContent + line?.getContent()}" />
+    									</g:each>
+    									<g:textArea  class="field" onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
+    										name="messageSections[${section.section}].notificationMessageLines.content"
+    										value="${tempContent}" />
+    									<g:set var="flag" value="${false}" />
+    								</g:if>
+    							</g:each>
+    							<g:if test="${flag}">
+    								<g:hiddenField
+    										name="messageSections[3].id" value="" />
+    								<g:hiddenField
+    										name="messageSections[3].section" value="3" />
+    								<g:textArea onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
+    									name="messageSections[3].notificationMessageLines.content"
+    									value="" />
+    							</g:if>
+    						</div>
+    					</div>
+    				</div>
+    				<!-- 
                     </div>
-                    <div class="row">
-                        <div >
-                        <a href="javascript:void(0)" onclick="testfunc('$dueDate');" class="">
-                            <span><g:message code="label.token.invoice.dueDate"/></span></a>
-                        </div>
-                    </div>
-					<div class="row">
-						<div >
-							<a href="javascript:void(0)" onclick="testfunc('$number');" class="">
-							<span><g:message code="label.token.invoice.number"/></span></a>
-						</div>
-					</div>
-                    <div class="row">
-                        <div >
-                        <a href="javascript:void(0)" onclick="testfunc('$total');" class="">
-                            <span><g:message code="label.token.invoice.total"/></span></a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div >
-                        <a href="javascript:void(0)" onclick="testfunc('$date');" class="">
-                            <span><g:message code="label.token.invoice.date"/></span></a>
-                        </div>
-                    </div>
-					<div class="row">
-						<div ><a href="javascript:void(0)" onclick="testfunc('$password');" class="">
-							<span><g:message code="label.token.password"/></span></a>
-						</div>
-					</div>
-					<div class="row">
-						<div >
-						<a href="javascript:void(0)" onclick="testfunc('$order_id');" class="">
-							<span><g:message code="label.token.order.id"/></span></a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</fieldset>
-        <div class="row">&nbsp;</div>
-		<div class="btn-box">
-			<a href="javascript:void(0)" onclick="$('#notifications').submit();" class="submit save">
-				<span><g:message code="button.save"/></span></a>
-			<a href="${createLink(action: 'cancelEdit', params: [id: messageTypeId])}" onclick="return cancelAfterChange();" class="submit cancel">
-					<span><g:message code="button.cancel"/></span></a>
-		</div>
-	</g:form>
+                    <div class="form-columns">
+    				<div class="column">
+    					<div class="row">
+    					</div>
+    				</div>
+    				 -->
+                    
+                    <div class="scroll">
+                        <div class="column" style="width:50%;">
+            				<div class="row">
+            					<label><g:message code="prompt.tokens"/> </label>
+            				</div>
+                            <g:render template="tokens/common"/>
+                            
+                            <g:if test="${dto?.notificationMessageType?.id == Constants.NOTIFICATION_TYPE_INVOICE_REMINDER.intValue()}">
+                                <g:render template="tokens/invoiceReminder"/>
+                            </g:if>
+                            
+                            <g:if test="${dto?.notificationMessageType?.id == Constants.NOTIFICATION_TYPE_INVOICE_EMAIL.intValue()}">
+                                <g:render template="tokens/invoiceEmail"/>
+                            </g:if>
+                            
+                            <g:if test="${dto?.notificationMessageType?.id == Constants.NOTIFICATION_TYPE_PARTNER_PAYOUT.intValue()}">
+                                <g:render template="tokens/partnerPayout"/>
+                            </g:if>
+                            
+                            <g:if test="${dto?.notificationMessageType?.id == Constants.NOTIFICATION_TYPE_ORDER_EXPIRE_1.intValue()}">
+                                <g:render template="tokens/orderExpiry"/>
+                            </g:if>
+                            
+                            <g:if test="${dto?.notificationMessageType?.id == Constants.NOTIFICATION_TYPE_ORDER_EXPIRE_2.intValue()}">
+                                <g:render template="tokens/orderExpiry"/>
+                            </g:if>
+                            
+                            <g:if test="${dto?.notificationMessageType?.id == Constants.NOTIFICATION_TYPE_ORDER_EXPIRE_3.intValue()}">
+                                <g:render template="tokens/orderExpiry"/>
+                            </g:if>
+                            
+                            <g:if test="${dto?.notificationMessageType?.id == Constants.NOTIFICATION_TYPE_CREDIT_CARD_UPDATE.intValue()}">
+                                <g:render template="tokens/upgradeCC"/>
+                            </g:if>
+                            
+                            <g:if test="${dto?.notificationMessageType?.id == Constants.NOTIFICATION_TYPE_USER_REACTIVATED.intValue()}">
+                                <g:render template="tokens/ageingMessage"/>
+                            </g:if>
+                            
+                        </div> <!-- column -->
+                    </div> <!-- scroll -->
+    			</div> <!-- form-columns -->
+    		</fieldset>
+            <div class="row">&nbsp;</div>
+    		<div class="btn-box">
+    			<a href="javascript:void(0)" onclick="$('#notifications').submit();" class="submit save">
+    				<span><g:message code="button.save"/></span></a>
+    			<a href="${createLink(action: 'cancelEdit', params: [id: messageTypeId])}" onclick="return cancelAfterChange();" class="submit cancel">
+    					<span><g:message code="button.cancel"/></span></a>
+    		</div>
+    	</g:form>
 	</div>
 </div>
 

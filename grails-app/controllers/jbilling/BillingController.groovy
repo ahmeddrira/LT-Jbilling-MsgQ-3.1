@@ -32,7 +32,8 @@ import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS
-import com.sapienter.jbilling.client.util.SortableCriteria;
+import com.sapienter.jbilling.client.util.SortableCriteria
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 /**
 * BillingController
@@ -115,61 +116,48 @@ class BillingController {
 	/*
 	 * To display the run details of a given Process Id
 	 */
-	def show = { 
-		log.debug "BillingController.show - ID: ${params.id}"
-		
-		Integer processId= params.id.toInteger()
+	def show = {
+		Integer processId = params.int('id')
 		BillingProcessDTO process = new BillingProcessDAS().find(processId);
-		
-		def genInvoices= new InvoiceDAS().findByProcess(process)
-		def invoicesGenerated= genInvoices?.size() ?: 0
 
-		log.debug "process.orderProcesses: ${process.orderProcesses?.size()}"
-		
-		def das= new BillingProcessDAS() 
+        def das = new BillingProcessDAS()
+		def genInvoices = new InvoiceDAS().findByProcess(process)
+		def invoicesGenerated = genInvoices?.size() ?: 0
+
+        log.debug("Fetching count and sum by currency")
+
 		def countAndSumByCurrency= new ArrayList()
-		Iterator iter = das.getCountAndSum(processId)
-		log.debug "*******Records found - getCountAndSum${processId}*******"
-		while (iter.hasNext()) {
-			Object[] row = (Object[]) iter.next();
-			Integer currId= row[2] as Integer
-			row[2]= new CurrencyDAS().find (currId)
-			countAndSumByCurrency.add (row)
-			log.debug "1. ${row[0]}" //count
-			log.debug "2. ${row[1]}" //sum
-			log.debug "3. ${row[2]}" 
-			log.debug "---------------------------------"
+        Iterator countIterator = das.getCountAndSum(processId)
+
+		while (countIterator.hasNext()) {
+			Object[] row = (Object[]) countIterator.next();
+			row[2] = CurrencyDTO.get(row[2] as Integer)
+			countAndSumByCurrency.add(row)
 		}
-		
+
+        log.debug("Fetching payment list by currency")
+
 		def mapOfPaymentListByCurrency= new HashMap()
-		iter= das.getSuccessfulProcessCurrencyMethodAndSum (processId)
-		log.debug "*******Records found - getSuccessfulProcessCurrencyMethodAndSum ${processId}*******"
-		def tempList
-		while (iter.hasNext()) {
-			Object[] row = (Object[]) iter.next();
-			tempList= mapOfPaymentListByCurrency.get( row[0] as Integer)
-			if ( null == tempList) {
-				tempList= new ArrayList()
-				mapOfPaymentListByCurrency.put (row[0] as Integer, tempList)
-			}
-			tempList.add ( [new PaymentMethodDTO(row[1] as int), new BigDecimal(row[2])] as Object[])
-			
-			log.debug "1. ${new CurrencyDAS().find (row[0] as int).getCode()}"
-			log.debug "2. ${new PaymentMethodDTO(row[1] as int).getDescription(session.language_id)}"
-			log.debug "3. ${row[2]}"
-			log.debug "---------------------------------"
+		Iterator currencyIterator = das.getSuccessfulProcessCurrencyMethodAndSum(processId)
+
+		while (currencyIterator.hasNext()) {
+			Object[] row = (Object[]) currencyIterator.next();
+
+			def payments = mapOfPaymentListByCurrency.get(row[0] as Integer) ?: new ArrayList()
+            payments.add([new PaymentMethodDTO(row[1]), new BigDecimal(row[2])] as Object[])
+            mapOfPaymentListByCurrency.put(row[0], payments)
 		}
-		
+
+        log.debug("Fetching failed amounts by currency")
+
 		def failedAmountsByCurrency= new ArrayList()
-		iter= das.getFailedProcessCurrencyAndSum (processId)
-		log.debug "*******Records found - getFailedProcessCurrencyAndSum ${processId}*******"
-		while (iter.hasNext()) {
-			Object[] row = (Object[]) iter.next();
-			failedAmountsByCurrency.add (row[1])
-			log.debug "1. ${new CurrencyDAS().find (row[0] as int).getCode()}"
-			log.debug "2. ${row[1]}"
-			log.debug "---------------------------------"
+		Iterator failedIterator = das.getFailedProcessCurrencyAndSum(processId)
+
+		while (failedIterator.hasNext()) {
+			Object[] row = (Object[]) failedIterator.next();
+			failedAmountsByCurrency.add(row[1])
 		}
+
 		recentItemService.addRecentItem(processId, RecentItemType.BILLINGPROCESS)
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, processId)
 		[process:process, invoicesGenerated:invoicesGenerated, countAndSumByCurrency: countAndSumByCurrency, mapOfPaymentListByCurrency: mapOfPaymentListByCurrency, failedAmountsByCurrency: failedAmountsByCurrency, reviewConfiguration: webServicesSession.getBillingProcessConfiguration()] 

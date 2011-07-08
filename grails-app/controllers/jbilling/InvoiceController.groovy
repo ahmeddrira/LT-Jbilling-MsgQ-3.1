@@ -307,23 +307,16 @@ class InvoiceController {
     }
     
     def byProcess = {
-        def filters = []
-        def _processId= params.int('id')
-        
-        log.debug "Listing invoices by process id ${_processId}" 
-        
-        if (!_processId) {
+        if (!params.id) {
             flash.error  =  'error.invoice.byprocess.missing.id'
             redirect action: 'list'
+            return
         }
-        def filter =  new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: false, integerValue: _processId)
-        
-        filters << filter
-        def invoices = getInvoices(filters, params)
 
-        //breadcrumbService.addBreadcrumb(controllerName, actionName, null, _processId)
+        def filter = new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: true, integerValue: params.int('id'))
+        filterService.setFilter(FilterType.INVOICE, filter)
 
-        render view: 'list', model: [invoices: invoices, filters: filterService.getFilters(FilterType.INVOICE, params)]
+        redirect action: list
     }
 
     def getCurrencies() {

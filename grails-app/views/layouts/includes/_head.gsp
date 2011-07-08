@@ -76,8 +76,8 @@
     $(document).ready(function() {
         $.validator.setDefaults({
             errorContainer: "#error-messages",
-            errorLabelContainer: "#error-messages p",
-            debug: false,
+            errorLabelContainer: "#error-messages ul",
+            wrapper: "li",
             meta: "validate"
         });
     })

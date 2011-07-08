@@ -33,7 +33,7 @@
         <fieldset>
             <div class="input-row">
                 <div class="input-bg" style="float:left;">
-                    <g:textField name="filters.${filter.name}.stringValue" value="${filter.stringValue}"/>
+                    <g:textField name="filters.${filter.name}.stringValue" value="${filter.stringValue}" class="{validate:{ maxlength: 50 }}"/>
                 </div>
             </div>
         </fieldset>

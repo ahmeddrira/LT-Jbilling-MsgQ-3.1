@@ -45,7 +45,7 @@
                             noSelection="['': message(code: 'filters.contactFieldTypes.empty')]" />
                 </div>
                 <div class="input-bg">
-                    <g:textField name="filters.${filter.name}.stringValue" value="${filter.stringValue}"/>
+                    <g:textField name="filters.${filter.name}.stringValue" value="${filter.stringValue}" class="{validate:{ maxlength: 50 }}"/>
                 </div>
                 <label for="filters.${filter.name}.stringValue"><g:message code="filters.value.label"/></label>
             </div>

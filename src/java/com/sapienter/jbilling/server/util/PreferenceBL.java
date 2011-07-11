@@ -65,12 +65,11 @@ public class PreferenceBL {
                   + " and table '" + Constants.TABLE_ENTITY + "'");
 
         preference = preferenceDas.findByType_Row( typeId, entityId, Constants.TABLE_ENTITY);
+        type = typeDas.find(typeId);
 
         // throw exception if there is no preference, or if the type does not have a
         // default value that can be returned.
         if (preference == null) {
-            type = typeDas.find(typeId);
-
             if (type == null || type.getDefaultValue() == null) {
                 throw new EmptyResultDataAccessException("Could not find preference " + typeId, 1);
             }
@@ -111,9 +110,12 @@ public class PreferenceBL {
      * @return preference value as a string
      */
     public String getString() {
-        return preference == null || StringUtils.isBlank(preference.getValue())
-               ? type.getDefaultValue()
-               : preference.getValue();
+        if (preference != null && StringUtils.isNotBlank(preference.getValue())) {
+            return preference.getValue();
+        } else {
+            return type != null ? type.getDefaultValue() : null;
+        }
+
     }
 
     public Integer getInt() {

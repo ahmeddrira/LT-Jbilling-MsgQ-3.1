@@ -4,16 +4,16 @@ h2. Invoice API Methods
 
 {table}
 *API Method* | *Arguments* | *Returns* | *Description*
-@getInvoiceWS(Integer invoiceId)@ | Invoice ID | @InvoiceWS@ | Returns the invoice for the given ID. Will return null if invoice is marked as deleted.
-@createInvoice(Integer userId, boolean onlyRecurring)@ | User ID, Orders to include | @Integer[]@ | Generates invoices for orders not yet invoiced for this user. Optionally, allows inclusion of only recurring orders for generating the invoices. Returns the an array of generated invoice IDs.
-@createInvoiceFromOrder(Integer orderId, Integer invoiceId)@ | Order ID, Invoice ID | @Integer@ | Creates an new Invoice for the given order. If an invoice ID is also provided, the order will be added to the specified invoice.
+@getInvoiceWS(Integer invoiceId)@ | Invoice ID | @InvoiceWS@ | Returns the invoice for the given ID. Will return null if invoice is a review invoice.
+@createInvoice(Integer userId, boolean onlyRecurring)@ | User ID, Orders to include | @Integer []@ | Creates an invoice for the given user, including all orders or only recurring orders. Returns the an array of generated invoice IDs.
+@createInvoiceFromOrder(Integer orderId, Integer invoiceId)@ | Order ID, Invoice ID | @Integer@ | Creates an invoice for the given order. If an invoice ID is given, the order will be added to the selected invoice - Otherwise a new invoice will be created.
 @deleteInvoice(Integer invoiceId)@ | Invoice ID | - | Deletes the given invoice.
-@getAllInvoicesForUser(Integer userId)@ | User ID | @InvoiceWS[]@ | Returns an array of already existing invoices for the given user.
+@getAllInvoicesForUser(Integer userId)@ | User ID | @InvoiceWS []@ | Returns an array of invoices for the given user.
 @getAllInvoices(Integer userId)@ | User ID | @Integer []@ | Returns an array of invoice IDs for the given user.
 @getLatestInvoice(Integer userId)@ | User ID | @InvoiceWS@ | Returns the most recent invoice for the given user.
-@getLastInvoices(Integer userId, Integer number)@ | User ID, number of invoices | @Integer []@ | Returns the last _n_ invoice IDs for the given user.
+@getLastInvoices(Integer userId, Integer number)@ | User ID, number of invoices | @Integer []@ | Returns the last _N_ invoice IDs for the given user.
 @getInvoicesByDate(String since, String until)@ | Date range in the format "yyyy-mm-dd" | @Integer []@ | Returns an array of invoice IDs created between the given dates.
-@getUserInvoicesByDate(Integer userId, String since, String until)@ | User ID, Date range in the format "yyyy-mm-dd" | @Integer []@ | Returns an array of invoice IDs created between the given dates for the given user. May also return Review Invoices.
+@getUserInvoicesByDate(Integer userId, String since, String until)@ | User ID, Date range in the format "yyyy-mm-dd" | @Integer []@ | Returns an array of invoice IDs created between the given dates for the given user.
 @getUnpaidInvoices(Integer userId)@ | User ID | @Integer []@ | Returns an array of un-paid invoice IDs for the given user.
 @notifyInvoiceByEmail(Integer invoiceId)@ | Invoice ID | Boolean success | Sends a notification to the user regarding the given invoice ID.
 @getPaperInvoicePDF(Integer invoiceId)@ | Invoice ID | @byte []@ | Returns the bytes of the generated PDF invoice.
@@ -27,21 +27,21 @@ h2. Order API Methods
 {table}
 *API Method* | *Arguments* | *Returns* | *Description*
 @getOrder(Integer orderId)@ | Order ID | @OrderWS@ | Returns the order for the given ID.
-@createOrder(OrderWS order)@ | @OrderWS@ | @Integer@ | Creates a new jBilling Order and returns the new Order's ID.
+@createOrder(OrderWS order)@ | @OrderWS@ | @Integer@ | Saves the given order and returns the new ID.
 @updateOrder(OrderWS order)@ | @OrderWS@ | - | Updates the stored order details to match the given order. Given order must have an ID.
-@createUpdateOrder(OrderWS order)@ | @OrderWS@ | @Integer@ | Update the given order, or create it if it doesn't already exist.
+@createUpdateOrder(OrderWS order)@ | @OrderWS@ | @Integer@ | Saves the order if it does not already exist, or updates the stored details if it does.
 @deleteOrder(Integer id)@ | Order ID | - | Deletes the given order.
-@createOrderAndInvoice(OrderWS order)@ | @OrderWS@ | @Integer@ | Creates the given Order in jBilling, generates an Invoice for the same. Returns the ID of the new invoice.
-@getCurrentOrder(Integer userId, Date date)@ | User ID, Date | @OrderWS@ | Returns the current order (order collecting current one-time charges) for the period of given date and given user. Returns null for users with no main subscription order.
-@getUserSubscriptions(Integer userId)@ | User ID | @OrderWS[]@ | Returns an array of recurring orders for the given user.
-@getOrderLine(Integer orderLineId)@ | Order Line ID | @OrderLineWS@ | Returns the order line for the given order line ID.
+@createOrderAndInvoice(OrderWS order)@ | @OrderWS@ | @Integer@ | Saves the given order and immediately generates an invoice for the new order. Returns the ID of the new invoice.
+@getCurrentOrder(Integer userId, Date date)@ | User ID, Date | @OrderWS@ | Returns the current order (order collecting current one-time charges) for the period of given date.
+@getUserSubscriptions(Integer userId)@ | User ID | @OrderWS[]@ | Returns an array of recurring order lines for the given user.
+@getOrderLine(Integer orderLineId)@ | Order Line ID | @OrderLineWS@ | Returns the order line for the given ID.
 @updateOrderLine(OrderLineWS line)@ | @OrderLineWS@ | - | Updates the stored order line details to match the given order line. Given order line must have an ID.
 @getOrderByPeriod(Integer userId, Integer periodId)@ | User ID, Period ID | @Integer []@ | Returns an array of order IDs for the given user and period id (One-time period, Monthly period etc.).
 @getLatestOrder(Integer userId)@ | User ID | @OrderWS@ | Returns the most recent order for the given user.
-@getLastOrders(Integer userId, Integer number)@ | User ID, Integer number | @Integer []@ | Returns the last _n_ order IDs for the given user.
+@getLastOrders(Integer userId, Integer number)@ | User ID, Integer number | @Integer []@ | Returns the last _N_ order IDs for the given user.
 @rateOrder(OrderWS order)@ | @OrderWS@ | @OrderWS@ | Processes the given order, calculating prices and running all item management plug-ins. Returns the order as it would have been created.
-@rateOrders(OrderWS orders[])@ | @OrderWS[]@ | @OrderWS[]@ | Similar to rateOrder above, except that it does it for multiple orders at once
-@updateOrderPeriods(OrderPeriodWS[] orderPeriods)@ | Order Periods | boolean success | Updates all order periods to match the given list of order periods.
+@rateOrders(OrderWS orders[])@ | @OrderWS []@ | @OrderWS []@ | Rates a list of orders and returns the result.
+@updateOrderPeriods(OrderPeriodWS[] orderPeriods)@ | Order Periods | boolean success | Updates all order periods to match the given list of periods.
 @deleteOrderPeriod(Integer periodId)@ | Order Period ID | boolean success | Deletes the given order period.
 @createOrderPreAuthorize(OrderWS order)@ | @OrderWS@ | @PaymentAuthorizationDTOEx@ | Creates the given order, and attempts to pre-authorize a payment for the total order amount.
 {table}
@@ -51,24 +51,24 @@ h2. Item API Methods
 
 {table}
 *API Method* | *Arguments* | *Returns* | *Description*
-@getItem(Integer itemId, Integer userId, String pricing)@ | Item ID, User ID, Pricing string | @ItemDTOEx@ | Returns the item for the given Item ID and initialized with true price for the given user. The price is internally calculated using the pricing plug-in; pricing takes into account plans, special prices and the quantity of the item being purchased.
+@getItem(Integer itemId, Integer userId, String pricing)@ | Item ID, User ID, Pricing string | @ItemDTOEx@ | Returns the item for the given ID.
 @getAllItems()@ | - | @ItemDTOEx []@ | Returns an array of all items in the system.
-@createItem(ItemDTOEx item)@ | @ItemDTOEx@ | @Integer@ | Creates the given item in jBilling and returns the new ID.
+@createItem(ItemDTOEx item)@ | @ItemDTOEx@ | @Integer@ | Save the given item and returns the new ID.
 @updateItem(ItemDTOEx item)@ | @ItemDTOEx@ | - | Updates the stored item details to match the given item. Given item must have an ID.
 @deleteItem(Integer itemId)@ | Item ID | - | Deletes the given item.
 @getItemByCategory(Integer itemTypeId)@ | Item Type ID | @ItemDTOEx []@ | Returns an array of items belonging to the given item type.
 @getUserItemsByCategory(Integer userId, Integer categoryId)@ | User ID, Item Type ID | @Integer []@ | Returns all items for the given category that can be found on an active order for the given user.
 @getAllItemCategories()@ | - | @ItemTypeWS []@ | Returns an array of all item types in the system.
-@createItemCategory(ItemTypeWS itemType)@ | @ItemTypeWS@ | @Integer@ | Saves the given item type and returns the  ID of the newly created object.
-@updateItemCategory(ItemTypeWS itemType)@ | @ItemTypeWS@ | - | Updates the stored item type  to match the given details. Given item type must have an ID.
+@createItemCategory(ItemTypeWS itemType)@ | @ItemTypeWS@ | @Integer@ | Saves the given item type and returns the newly created object.
+@updateItemCategory(ItemTypeWS itemType)@ | @ItemTypeWS@ | - | Updates the stored item type and returns the updated object. Given item type must have an ID.
 @deleteItemCategory(Integer itemCategoryId)@ | Item Type ID | - | Deletes the given item type.
 @isUserSubscribedTo(Integer userId, Integer itemId)@ | User ID, Item ID| @String@ | Returns the total quantity of an item found on a users active recurring orders.
 @getLatestInvoiceByItemType(Integer userId, Integer itemTypeId)@ | User ID, Item Type ID | @InvoiceWS@ | Returns the latest invoice for a user containing an item of the given type.
-@getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number)@ | User ID, Item Type ID, Integer number | @Integer []@ | Returns the last _n_ invoice IDs containing an item of the given type for a user.
+@getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number)@ | User ID, Item Type ID, Integer number | @Integer []@ | Returns the last _N_ invoice IDs containing an item of the given type for a user.
 @getLatestOrderByItemType(Integer userId, Integer itemTypeId)@ | User Id, Item Type ID | @OrderWS@ | Returns the latest order for a user containing an item of the given type.
-@getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number)@ | User ID, Item Type ID, Integer number | @Integer []@ | Returns the last _n_ order IDs containing an item of the given type for a user.
-@validatePurchase(Integer userId, Integer itemId, String fields)@ | User ID, Item ID, Pricing string | @ValidatePurchaseWS@ | Runs pricing and item management plug-ins as-if in a mock purchase by the given user and for the given item ID.
-@validateMultiPurchase(Integer userId, Integer[] itemId, String[] fields)@ | User ID, Array of Item ID | @ValidatePurchaseWS[]@ | Same as validatePurchase except it runs multiple mock purchases for many items at once for the given user ID.
+@getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number)@ | User ID, Item Type ID, Integer number | @Integer []@ | Returns the last _N_ order IDs containing an item of the given type for a user.
+@validatePurchase(Integer userId, Integer itemId, String fields)@ | User ID, Item ID, Pricing string | @ValidatePurchaseWS@ | Runs pricing and item management plug-ins in a mock purchase for the given user and item ID.
+@validateMultiPurchase(Integer userId, Integer[] itemId, String[] fields)@ | User ID, Array of Item ID | @ValidatePurchaseWS[]@ | Runs multiple mock purchases.
 {table}
 
 
@@ -78,8 +78,8 @@ h2. Payment API Methods
 *API Method* | *Arguments* | *Returns* | *Description*
 @getPayment(Integer paymentId)@ | Payment ID | @PaymentWS@ | Returns the payment for the given ID.
 @getLatestPayment(Integer userId)@ | User ID | @PaymentWS@ | Returns the most recent payment for the given user.
-@getLastPayments(Integer userId, Integer number)@ | User ID, number of payments | @Integer []@ | Returns the last _n_ payment IDs for the given user.
-@getTotalRevenueByUser(Integer userId)@ | User ID | @BigDecimal@ | Returns the total revenue (payments recieved minus all refunds) for the given user.
+@getLastPayments(Integer userId, Integer number)@ | User ID, number of payments | @Integer []@ | Returns the last _N_ payment IDs for the given user.
+@getTotalRevenueByUser(Integer userId)@ | User ID | @BigDecimal@ | Returns the total revenue (payments recieved) for the given user.
 @getUserPaymentInstrument(Integer userId)@ | User ID | @PaymentWS@ | Returns the selected "automatic payment" details for the given user.
 @createPayment(PaymentWS payment)@ | @PaymentWS@ | @Integer@ | Saves the given payment and applies it to the user's account (as per configured entity preferences). Does not process the payment, only creates it as 'Entered'.
 @updatePayment(PaymentWS payment)@ | @PaymentWS@ | - | Updates the stored payment to match the details in the given payment. Given payment must have an ID.
@@ -100,9 +100,9 @@ h2. User API Methods
 @createUser(UserWS newUser)@ | @UserWS | @Integer@ | Save the given item and returns the new ID.
 @updateUser(UserWS user)@ | @UserWS @ | - | Updates the stored user details to match the given user object. Given user must have an ID.
 @deleteUser(Integer userId)@ | User ID | - | Deletes the given user.
-@getUserContactsWS(Integer userId)@ | User ID | @ContactWS []@ | Returns all contact details for the given user. The user may have more than one contact details.
-@updateUserContact(Integer userId, Integer typeId, ContactWS contact)@ | User ID, Contact Type ID, @ContactWS@ | - | Updates the given contact details of the given user to match those passed.
-@getContactTypeWS(Integer contactTypeId)@ | Contact Type ID | @ContactTypeWS@ | Returns the contact type  detailsfor the given  Contact Type ID.
+@getUserContactsWS(Integer userId)@ | User ID | @ContactWS []@ | Returns all contact details for the given user.
+@updateUserContact(Integer userId, Integer typeId, ContactWS contact)@ | User ID, Contact Type ID, @ContactWS@ | - | Updates the contact details of the given user.
+@getContactTypeWS(Integer contactTypeId)@ | Contact Type ID | @ContactTypeWS@ | Returns the contact type for the given ID.
 @createContactTypeWS(ContactTypeWS contactType)@ | @ContactTypeWS@ | @Integer@ | Saves the given contact type and returns the new ID.
 @updateCreditCard(Integer userId, CreditCardDTO creditCard)@ | User ID, Credit Card | - | Updates the given users credit card data.
 @updateAch(Integer userId, AchDTO ach)@ | User ID, ACH | - | Updates the given users ACH (automatic clearing house) data.

@@ -31,11 +31,6 @@ class UrlMappings {
             controller = "home"
         }
 
-        "/version" {
-            controller = "home"
-            action = "version"
-        }
-        
 		"500"(view:'/error')
 	}
 }

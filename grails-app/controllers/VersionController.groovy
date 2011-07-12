@@ -1,3 +1,4 @@
+
 /*
  jBilling - The Enterprise Open Source Billing System
  Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -18,32 +19,14 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import grails.plugins.springsecurity.Secured
-import jbilling.Breadcrumb
-
 /**
- * Shows the user's home page after login.
- *
- * Mapped to "/", see UrlMappings.groovy
+ * VersionController
  *
  * @author Brian Cowdery
- * @since  22-11-2010
+ * @since 12/07/11
  */
-class HomeController {
+class VersionController {
 
-    def recentItemService
-    def breadcrumbService
-
-    @Secured(["isAuthenticated()"])
-    def index = {        
-        def breadcrumb = Breadcrumb.findByUserId(session['user_id'], [sort:'id', order:'desc'])
-
-        if (breadcrumb) {
-            // show last page viewed
-            redirect(controller: breadcrumb.controller, action: breadcrumb.action, id: breadcrumb.objectId)
-        } else {
-            // show default page
-            redirect(controller: 'customer')
-        }
+    def index = {
     }
 }

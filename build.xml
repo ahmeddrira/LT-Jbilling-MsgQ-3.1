@@ -178,7 +178,6 @@
             <test name="com.sapienter.jbilling.server.invoice.WSTest" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.pricing.WSTest" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.pricing.strategy.WSTest" todir="${build.test-results.dir}/ws/xml"/>
-            <test name="com.sapienter.jbilling.server.integration.APITest" todir="${build.test-results.dir}/ws/xml"/>
         </junit>
 
         <!-- generate testing reports -->

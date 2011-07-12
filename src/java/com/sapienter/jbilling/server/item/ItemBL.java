@@ -46,6 +46,7 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -134,6 +135,7 @@ public class ItemBL {
 
         item.setDescription(dto.getDescription(), languageId);
         updateTypes(dto);
+        updateExcludedTypes(dto);
 
         // trigger internal event
         EventManager.process(new NewItemEvent(item));
@@ -153,6 +155,7 @@ public class ItemBL {
         item.setHasDecimals(dto.getHasDecimals());
 
         updateTypes(dto);
+        updateExcludedTypes(dto);
 
         if (item.getPercentage() == null) {
             updateDefaultPrice(dto);
@@ -235,6 +238,16 @@ public class ItemBL {
         for (int f=0; f < dto.getTypes().length; f++) {
             typeBl.set(dto.getTypes()[f]);
             types.add(typeBl.getEntity());
+        }
+    }
+
+    private void updateExcludedTypes(ItemDTO dto) {
+        item.getExcludedTypes().clear();
+
+        ItemTypeBL itemType = new ItemTypeBL();
+        for (Integer typeId : dto.getExcludedTypeIds()) {
+            itemType.set(typeId);
+            item.getExcludedTypes().add(itemType.getEntity());
         }
     }
     
@@ -426,18 +439,20 @@ public class ItemBL {
 
         // set the types
         Integer types[] = new Integer[item.getItemTypes().size()];
-        int index = 0;
-        for (Iterator it = item.getItemTypes().iterator(); it.hasNext();
-                index++) {
-            ItemTypeDTO type = (ItemTypeDTO) it.next();
-
-            types[index] = type.getId();
-
-            // it is assumed that an item belongs to categories that have
-            // all the same order_line_type_id
+        int n = 0;
+        for (ItemTypeDTO type : item.getItemTypes()) {
+            types[n++] = type.getId();
             dto.setOrderLineTypeId(type.getOrderLineTypeId());
         }
         dto.setTypes(types);
+
+        // set excluded types
+        Integer excludedTypes[] = new Integer[item.getExcludedTypes().size()];
+        int i = 0;
+        for (ItemTypeDTO type : item.getExcludedTypes()) {
+            excludedTypes[i++] = type.getId();
+        }
+        dto.setExcludedTypeIds(excludedTypes);
 
         LOG.debug("Got item: " + dto.getId() + ", price: " + dto.getPrice());
 
@@ -459,6 +474,7 @@ public class ItemBL {
         retValue.setHasDecimals(other.getHasDecimals());
         retValue.setDescription(other.getDescription());
         retValue.setTypes(other.getTypes());
+        retValue.setExcludedTypeIds(other.getExcludedTypes());
         retValue.setPromoCode(other.getPromoCode());
         retValue.setCurrencyId(other.getCurrencyId());
         retValue.setPrice(other.getPriceAsDecimal());
@@ -486,6 +502,7 @@ public class ItemBL {
         retValue.setHasDecimals(other.getHasDecimals());
         retValue.setDescription(other.getDescription());
         retValue.setTypes(other.getTypes());
+        retValue.setExcludedTypes(other.getExcludedTypeIds());
         retValue.setPromoCode(other.getPromoCode());
         retValue.setCurrencyId(other.getCurrencyId());
         retValue.setPrice(other.getPrice());

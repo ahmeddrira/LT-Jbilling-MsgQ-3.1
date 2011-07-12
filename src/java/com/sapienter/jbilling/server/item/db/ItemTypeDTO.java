@@ -66,6 +66,7 @@ public class ItemTypeDTO extends AbstractDescription implements Serializable {
     private int orderLineTypeId;
     private boolean internal;
     private Set<ItemDTO> items = new HashSet<ItemDTO>(0);
+    private Set<ItemDTO> excludedItems = new HashSet<ItemDTO>();
     private int versionNum;
 
     public ItemTypeDTO() {
@@ -152,6 +153,19 @@ public class ItemTypeDTO extends AbstractDescription implements Serializable {
 
     public void setItems(Set<ItemDTO> items) {
         this.items = items;
+    }
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
+    @JoinTable(name = "item_type_exclude_map",
+               joinColumns = {@JoinColumn(name = "type_id", updatable = false)},
+               inverseJoinColumns = {@JoinColumn(name = "item_id", updatable = false)}
+    )
+    public Set<ItemDTO> getExcludedItems() {
+        return excludedItems;
+    }
+
+    public void setExcludedItems(Set<ItemDTO> excludedItems) {
+        this.excludedItems = excludedItems;
     }
 
     @Version

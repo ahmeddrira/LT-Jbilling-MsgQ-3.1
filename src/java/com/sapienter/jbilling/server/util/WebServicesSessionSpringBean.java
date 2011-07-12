@@ -1126,6 +1126,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 if (line.getDescription() == null || line.getDescription().length() == 0) {
                     line.setDescription(item.getDescription());
                 }
+
+                line.setTypeId(item.getOrderLineTypeId());
             }
         }
     }

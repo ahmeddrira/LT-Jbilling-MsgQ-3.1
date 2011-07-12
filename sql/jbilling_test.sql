@@ -89,6 +89,8 @@ ALTER TABLE ONLY public.mediation_cfg DROP CONSTRAINT mediation_cfg_fk_1;
 ALTER TABLE ONLY public.item_type_map DROP CONSTRAINT item_type_map_fk_2;
 ALTER TABLE ONLY public.item_type_map DROP CONSTRAINT item_type_map_fk_1;
 ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_fk_1;
+ALTER TABLE ONLY public.item_type_exclude_map DROP CONSTRAINT item_type_exclude_type_id_fk;
+ALTER TABLE ONLY public.item_type_exclude_map DROP CONSTRAINT item_type_exclude_item_id_fk;
 ALTER TABLE ONLY public.item DROP CONSTRAINT item_fk_1;
 ALTER TABLE ONLY public.invoice_line DROP CONSTRAINT invoice_line_fk_3;
 ALTER TABLE ONLY public.invoice_line DROP CONSTRAINT invoice_line_fk_2;
@@ -258,6 +260,7 @@ ALTER TABLE ONLY public.mediation_cfg DROP CONSTRAINT mediation_cfg_pkey;
 ALTER TABLE ONLY public.language DROP CONSTRAINT language_pkey;
 ALTER TABLE ONLY public.jbilling_table DROP CONSTRAINT jbilling_table_pkey;
 ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_pkey;
+ALTER TABLE ONLY public.item_type_exclude_map DROP CONSTRAINT item_type_exclude_map_pkey;
 ALTER TABLE ONLY public.item DROP CONSTRAINT item_pkey;
 ALTER TABLE ONLY public.invoice DROP CONSTRAINT invoice_pkey;
 ALTER TABLE ONLY public.invoice_line_type DROP CONSTRAINT invoice_line_type_pkey;
@@ -354,6 +357,7 @@ DROP TABLE public.language;
 DROP TABLE public.jbilling_table;
 DROP TABLE public.jbilling_seqs;
 DROP TABLE public.item_type_map;
+DROP TABLE public.item_type_exclude_map;
 DROP TABLE public.item_type;
 DROP TABLE public.item;
 DROP TABLE public.invoice_line_type;
@@ -1113,6 +1117,18 @@ CREATE TABLE item_type (
 
 
 ALTER TABLE public.item_type OWNER TO jbilling;
+
+--
+-- Name: item_type_exclude_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE item_type_exclude_map (
+    item_id integer NOT NULL,
+    type_id integer NOT NULL
+);
+
+
+ALTER TABLE public.item_type_exclude_map OWNER TO jbilling;
 
 --
 -- Name: item_type_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -11494,6 +11510,14 @@ COPY item_type (id, entity_id, description, order_line_type_id, optlock, interna
 
 
 --
+-- Data for Name: item_type_exclude_map; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY item_type_exclude_map (item_id, type_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: item_type_map; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -18302,6 +18326,14 @@ ALTER TABLE ONLY item
 
 
 --
+-- Name: item_type_exclude_map_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY item_type_exclude_map
+    ADD CONSTRAINT item_type_exclude_map_pkey PRIMARY KEY (item_id, type_id);
+
+
+--
 -- Name: item_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -19589,6 +19621,22 @@ ALTER TABLE ONLY invoice_line
 
 ALTER TABLE ONLY item
     ADD CONSTRAINT item_fk_1 FOREIGN KEY (entity_id) REFERENCES entity(id);
+
+
+--
+-- Name: item_type_exclude_item_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY item_type_exclude_map
+    ADD CONSTRAINT item_type_exclude_item_id_fk FOREIGN KEY (item_id) REFERENCES item(id);
+
+
+--
+-- Name: item_type_exclude_type_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY item_type_exclude_map
+    ADD CONSTRAINT item_type_exclude_type_id_fk FOREIGN KEY (type_id) REFERENCES item_type(id);
 
 
 --

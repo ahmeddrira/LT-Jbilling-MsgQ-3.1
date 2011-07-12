@@ -683,6 +683,17 @@
             <reference foreign="id" local="type_id"/>
         </foreign-key>
     </table>
+    <table name="item_type_exclude_map">
+        <column name="item_id" type="INTEGER"/>
+        <column name="type_id" type="INTEGER"/>
+        <foreign-key foreignTable="item">
+            <reference foreign="id" local="item_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="item_type">
+            <reference foreign="id" local="type_id"/>
+        </foreign-key>
+    </table>
+
     <table name="price_model">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="strategy_type" required="true" size="20" type="VARCHAR"/>

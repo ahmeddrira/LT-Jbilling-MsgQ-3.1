@@ -45,6 +45,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private String glCode;
     @Digits(integer=3, fraction=2, message="validation.error.not.a.number")
     private String percentage;
+    private Integer[] excludedTypes = null;
     private Integer hasDecimals;
     private Integer deleted;
     private Integer entityId;
@@ -138,6 +139,14 @@ public class ItemDTOEx implements WSSecured, Serializable {
 
     public void setPercentage(BigDecimal percentage) {
         this.percentage = (percentage != null ? percentage.toString() : null);
+    }
+
+    public Integer[] getExcludedTypes() {
+        return excludedTypes;
+    }
+
+    public void setExcludedTypes(Integer[] excludedTypes) {
+        this.excludedTypes = excludedTypes;
     }
 
     public Integer getHasDecimals() {
@@ -363,6 +372,8 @@ public class ItemDTOEx implements WSSecured, Serializable {
         builder.append(promoCode);
         builder.append(", types=");
         builder.append(Arrays.toString(types));
+        builder.append(", excludedTypes=");
+        builder.append(Arrays.toString(excludedTypes));
         builder.append("]");
         return builder.toString();
     }

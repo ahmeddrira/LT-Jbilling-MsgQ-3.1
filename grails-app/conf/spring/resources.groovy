@@ -123,6 +123,7 @@ beans = {
     // HTTP request handler for remote beans
     httpRequestAdapter org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter
 
+
     /*
         Others
      */

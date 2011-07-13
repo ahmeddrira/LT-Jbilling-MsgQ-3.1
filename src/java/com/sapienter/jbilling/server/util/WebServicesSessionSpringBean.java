@@ -40,6 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.item.PlanBL;
@@ -49,6 +50,7 @@ import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDAS;
+import com.sapienter.jbilling.server.order.OrderHelper;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.CustomerPriceBL;
@@ -1078,57 +1080,42 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return invoice == null ? null : invoice.getId();
     }
 
-    /**
-     * Processes the given array of order lines, executing pricing and item management plug-ins for each line.
-     *
-     * @param order the working order being created or edited.
-     * @param lines lines to process
-     * @param languageId language id
-     * @param entityId entity id
-     * @param userId user id
-     * @param currencyId currency id
-     * @param pricingFields pricing fields
-     * @throws PluggableTaskException pluggable task exception
-     * @throws TaskException pluggable task exception
-     */
-    private void processItemLine(OrderDTO order, OrderLineWS[] lines, Integer languageId, Integer entityId,
-                                 Integer userId, Integer currencyId, String pricingFields)
-            throws SessionInternalError {
+    private void processLines(OrderDTO order, Integer languageId, Integer entityId, Integer userId, Integer currencyId,
+                              String pricingFields) throws SessionInternalError {
 
-        /*
-            Exclude existing order lines from the usage count when updating an order. This prevents us
-            from counting the existing line (read from the database) on top of the line that were editing.
-         */
-        if (order != null && order.getId() != null) {
-            order = new OrderDTO(order);
-            order.setLines(new ArrayList<OrderLineDTO>());
-        }
+        OrderHelper.synchronizeOrderLines(order);
 
-        for (OrderLineWS line : lines) {
-            // get pricing fields if they were set for the order
-            List<PricingField> fields = null;
-            if (pricingFields != null) {
-                fields = Arrays.asList(PricingField.getPricingFieldsValue(pricingFields));
-            }
-
-            // get the item
-            ItemBL itemBL = new ItemBL(line.getItemId());
-            itemBL.setPricingFields(fields);
-            ItemDTO item = itemBL.getDTO(languageId, userId, entityId, currencyId, line.getQuantityAsDecimal(), order);
+        for (OrderLineDTO line : order.getLines()) {
+            LOG.debug("Processing line " + line);
 
             if (line.getUseItem()) {
+                List<PricingField> fields = pricingFields != null
+                                            ? Arrays.asList(PricingField.getPricingFieldsValue(pricingFields))
+                                            : null;
+
+                ItemBL itemBl = new ItemBL(line.getItemId());
+                itemBl.setPricingFields(fields);
+
+                // get item with calculated price
+                ItemDTO item = itemBl.getDTO(languageId, userId, entityId, currencyId, line.getQuantity(), order);
+                LOG.debug("Populating line using item " + item);
+
+                // set price or percentage from item
                 if (item.getPrice() == null) {
                     line.setPrice(item.getPercentage());
                 } else {
                     line.setPrice(item.getPrice());
                 }
 
-                if (line.getDescription() == null || line.getDescription().length() == 0) {
-                    line.setDescription(item.getDescription());
-                }
+                // set description and line type
+                line.setDescription(item.getDescription());
+                line.setTypeId(item.getOrderLineTypeId());
             }
         }
+
+        OrderHelper.desynchronizeOrderLines(order);
     }
+
 
     public void updateOrder(OrderWS order)
             throws SessionInternalError {
@@ -1138,6 +1125,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             OrderBL oldOrder = new OrderBL();
             oldOrder.setForUpdate(order.getId());
 
+            // do some transformation from WS to DTO :(
+            OrderBL orderBL = new OrderBL();
+            OrderDTO dto = orderBL.getDTO(order);
+
             // get the info from the caller
             UserBL bl = new UserBL(getCallerId());
             Integer executorId = bl.getEntity().getUserId();
@@ -1145,21 +1136,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             Integer languageId = bl.getEntity().getLanguageIdField();
 
             // see if the related items should provide info
-            processItemLine(oldOrder.getEntity(), order.getOrderLines(), languageId, entityId,
-                            order.getUserId(), order.getCurrencyId(),
-                            order.getPricingFields());
-
-            // do some transformation from WS to DTO :(
-            OrderBL orderBL = new OrderBL();
-            OrderDTO dto = orderBL.getDTO(order);
+            processLines(dto, languageId, entityId, order.getUserId(), order.getCurrencyId(), order.getPricingFields());
 
             // recalculate
             orderBL.set(dto);
             orderBL.recalculate(entityId);
+
             // update
-            //orderBL.set(order.getId());
             oldOrder.update(executorId, dto);
-        } catch (Exception e) { // checked exceptions force :(
+
+        } catch (Exception e) {
             LOG.error("WS - updateOrder", e);
             throw new SessionInternalError("Error updating order");
         }
@@ -1305,22 +1291,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             OrderBL bl = new OrderBL();
             if (lines != null) {
                 // get the current order
-                bl.set(OrderBL.getOrCreateCurrentOrder(userId, date, currencyId,
-                        true));
+                bl.set(OrderBL.getOrCreateCurrentOrder(userId, date, currencyId, true));
                 List<OrderLineDTO> oldLines = OrderLineBL.copy(bl.getDTO().getLines());
 
-                // convert order lines from WS to DTO
-                processItemLine(bl.getEntity(), lines, languageId, getCallerCompanyId(), userId, currencyId, pricing);
-
+                // add the line to the current order
                 for (OrderLineWS line : lines) {
-                    // add the line to the current order
                     bl.addItem(line.getItemId(), line.getQuantityAsDecimal(), languageId, userId, getCallerCompanyId(), currencyId, records);
                 }
 
+                // process lines to update prices and details from the source items
+                processLines(bl.getEntity(), languageId, getCallerCompanyId(), userId, currencyId, pricing);
                 diffLines = OrderLineBL.diffOrderLines(oldLines, bl.getDTO().getLines());
+
                 // generate NewQuantityEvents
-                bl.checkOrderLineQuantities(oldLines, bl.getDTO().getLines(),
-                        getCallerCompanyId(), bl.getDTO().getId(), true);
+                bl.checkOrderLineQuantities(oldLines, bl.getDTO().getLines(), getCallerCompanyId(), bl.getDTO().getId(), true);
 
             } else if (records != null) {
                 // Since there are no lines, run the mediation process
@@ -1984,26 +1968,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         bl.set(order.getUserId());
         Integer languageId = bl.getEntity().getLanguageIdField();
 
-        // see if the related items should provide info
-        try {
-            if (order.getId() != null) {
-                // rating existing order
-                LOG.debug("Rating existing order ...");
-                OrderDTO oldOrder = new OrderBL(order.getId()).getEntity();
-                processItemLine(oldOrder, order.getOrderLines(), languageId, entityId, order.getUserId(), order.getCurrencyId(), order.getPricingFields());
-            } else {
-                // creating new order
-                LOG.debug("Creating a new order");
-                processItemLine(null, order.getOrderLines(), languageId, entityId, order.getUserId(), order.getCurrencyId(), order.getPricingFields());
-            }
-
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
-        // call the creation
+        // convert to a DTO
         OrderBL orderBL = new OrderBL();
         OrderDTO dto = orderBL.getDTO(order);
-        LOG.debug("Order has " + order.getOrderLines().length + " lines");
+
+        // process the lines and let the items provide the order line details
+        LOG.debug("Processing order lines");
+        processLines(dto, languageId, entityId, order.getUserId(), order.getCurrencyId(), order.getPricingFields());
 
         LOG.info("before cycle start");
         // set a default cycle starts if needed (obtained from the main

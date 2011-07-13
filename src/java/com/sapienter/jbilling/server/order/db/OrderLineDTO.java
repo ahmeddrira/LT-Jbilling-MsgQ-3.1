@@ -79,6 +79,7 @@ public class OrderLineDTO implements Serializable, Comparable {
     private BigDecimal price;
     private Date createDatetime;
     private int deleted;
+    private Boolean useItem = true;
     private String description;
     private Integer versionNum;
     private Boolean editable = null;
@@ -106,6 +107,7 @@ public class OrderLineDTO implements Serializable, Comparable {
         this.price = other.getPrice();
         this.createDatetime = other.getCreateDatetime();
         this.deleted = other.getDeleted();
+        this.useItem = other.getUseItem();
         this.description = other.getDescription();
         this.orderDTO = other.getPurchaseOrder();
         this.versionNum = other.getVersionNum();
@@ -236,13 +238,22 @@ public class OrderLineDTO implements Serializable, Comparable {
     public void setDeleted(int deleted) {
         this.deleted = deleted;
     }
-    
+
+    @Column(name = "use_item", nullable = false)
+    public Boolean getUseItem() {
+        return useItem;
+    }
+
+    public void setUseItem(Boolean useItem) {
+        this.useItem = useItem;
+    }
+
     @Column(name="description", length=1000)
     public String getDescription() {
         return this.description;
     }
     public void setDescription(String description) {
-        if (description.length() > 1000) {
+        if (description != null && description.length() > 1000) {
             description = description.substring(0, 1000);
             LOG.warn("Truncated an order line description to " + description);
         }
@@ -422,11 +433,11 @@ public class OrderLineDTO implements Serializable, Comparable {
         " price=" +  price +
         " createDatetime=" +  createDatetime +
         " deleted=" + deleted  +
+        " useItem=" + useItem +
         " description=" + description + 
         " versionNum=" + versionNum  +
         " provisioningStatus=" + provisioningStatus  +
         " provisionningRequestId=" + provisioningRequestId  +        
         " editable=" + editable + "]";
-
     }    
 }

@@ -131,9 +131,9 @@ grails.plugins.springsecurity.rememberMe.key = "xANgU6Y7lJVhI"
 
 // static security rules 
 grails.plugins.springsecurity.controllerAnnotations.staticRules = [
-        '/services/**': ['IS_AUTHENTICATED_FULLY','WEB_SERVICES_120'],
-        '/hessian/**': ['IS_AUTHENTICATED_FULLY','WEB_SERVICES_120'],
-        '/httpinvoker/**': ['IS_AUTHENTICATED_FULLY','WEB_SERVICES_120']
+        '/services/**': ['IS_AUTHENTICATED_FULLY','API_120'],
+        '/hessian/**': ['IS_AUTHENTICATED_FULLY','API_120'],
+        '/httpinvoker/**': ['IS_AUTHENTICATED_FULLY','API_120']
 ]
 
 // IP address restrictions to limit access to known systems (always use with web-services in production environments!)

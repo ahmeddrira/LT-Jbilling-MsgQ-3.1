@@ -73,6 +73,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
     private String glCode;
     private PriceModelDTO defaultPrice;
     private BigDecimal percentage;
+    private Set<ItemTypeDTO> excludedTypes = new HashSet<ItemTypeDTO>();
     private Integer deleted;
     private Integer hasDecimals;
     private Set<OrderLineDTO> orderLineDTOs = new HashSet<OrderLineDTO>(0);
@@ -84,6 +85,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
 
     // transient
     private Integer[] types = null;
+    private Integer[] excludedTypeIds = null;
     private Collection<String> strTypes = null; // for rules 'contains' operator
     private String promoCode = null;
     private Integer currencyId = null;
@@ -202,6 +204,19 @@ public class ItemDTO extends AbstractDescription implements Exportable {
 
     public void setPercentage(BigDecimal percentage) {
         this.percentage = percentage;
+    }
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "item_type_exclude_map",
+               joinColumns = {@JoinColumn(name = "item_id", updatable = false)},
+               inverseJoinColumns = {@JoinColumn(name = "type_id", updatable = false)}
+    )
+    public Set<ItemTypeDTO> getExcludedTypes() {
+        return excludedTypes;
+    }
+
+    public void setExcludedTypes(Set<ItemTypeDTO> excludedTypes) {
+        this.excludedTypes = excludedTypes;
     }
 
     @Column(name = "deleted", nullable = false)
@@ -334,6 +349,29 @@ public class ItemDTO extends AbstractDescription implements Exportable {
     public boolean hasType(Integer typeId) {
         return Arrays.asList(getTypes()).contains(typeId);
     }
+
+    @Transient
+    public Integer[] getExcludedTypeIds() {
+        if (this.excludedTypeIds == null && excludedTypes != null) {
+            Integer[] types = new Integer[excludedTypes.size()];
+            int i = 0;
+            for (ItemTypeDTO type : excludedTypes) {
+                types[i++] = type.getId();
+            }
+            setExcludedTypeIds(types);
+        }
+        return excludedTypeIds;
+    }
+
+    @Transient
+    public void setExcludedTypeIds(Integer[] types) {
+        this.excludedTypeIds = types;
+    }
+
+    public boolean hasExcludedType(Integer typeId) {
+        return Arrays.asList(getExcludedTypeIds()).contains(typeId);
+    }
+
 
     /**
      * Rules 'contains' operator only works on a collections of strings

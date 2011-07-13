@@ -124,7 +124,7 @@
             <g:preferenceEquals preferenceId="${Constants.PREFERENCE_USE_CURRENT_ORDER}" value="1">
                 <g:applyLayout name="form/checkbox">
                     <content tag="label"><g:message code="order.label.main.subscription"/></content>
-                    <content tag="label.for">mainSubscription</content>
+                    <content tag="label.for">isCurrent</content>
                     <g:checkBox class="cb checkbox" name="isCurrent" value="${order?.isCurrent > 0}"/>
                 </g:applyLayout>
             </g:preferenceEquals>
@@ -173,7 +173,11 @@
                 }
             });
 
-            $('#order-details-form').find('input:text.hasDatepicker, select, input:checkbox').change(function() {
+            $('#order-details-form').find('input:checkbox').change(function() {
+                $('#order-details-form').submit();
+            });
+
+            $('#order-details-form').find('input:text.hasDatepicker, select').change(function() {
                 $('#order-details-form').submit();
             });
 

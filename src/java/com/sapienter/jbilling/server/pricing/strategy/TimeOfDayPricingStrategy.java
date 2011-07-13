@@ -118,9 +118,12 @@ public class TimeOfDayPricingStrategy extends AbstractPricingStrategy {
      */
     protected SortedMap<LocalTime, BigDecimal> getPrices(Map<String, String> attributes) {
         SortedMap<LocalTime, BigDecimal> prices = new TreeMap<LocalTime, BigDecimal>();
-        for (Map.Entry<String, String> entry : attributes.entrySet())
-            if (entry.getKey().contains(":"))
+
+        for (Map.Entry<String, String> entry : attributes.entrySet()) {
+            if (entry.getKey().contains(":")) {
                 prices.put(AttributeUtils.parseTime(entry.getKey()), AttributeUtils.parseDecimal(entry.getValue()));
+            }
+        }
 
         return prices;
     }

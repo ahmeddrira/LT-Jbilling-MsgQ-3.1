@@ -1261,3 +1261,27 @@ insert into permission_role_map (role_id, permission_id) values (5, 72);
 insert into permission_role_map (role_id, permission_id) values (5, 91);
 insert into permission_role_map (role_id, permission_id) values (5, 92);
 insert into permission_role_map (role_id, permission_id) values (5, 93);
+
+
+-- Date: 11-Jul-2011
+-- Description: Categories excluded from percentage line calculations
+
+drop table if exists item_type_exclude_map;
+create table item_type_exclude_map (
+    item_id int NOT NULL,
+    type_id int NOT NULL,
+    PRIMARY KEY (item_id, type_id)
+);
+
+alter table item_type_exclude_map add constraint item_type_exclude_item_id_FK foreign key (item_id) references item (id);
+alter table item_type_exclude_map add constraint item_type_exclude_type_id_FK foreign key (type_id) references item_type (id);
+
+-- Date: 13-Jul-2011
+-- Description: Item selector price model
+
+alter table order_line add column use_item boolean;
+update order_line set use_item = false where use_item is null;
+alter table order_line alter column use_item set not null;
+
+alter table price_model alter column strategy_type type varchar(40); -- postgresql
+-- alter table price_model modify strategy_type varchar(40); -- mysql

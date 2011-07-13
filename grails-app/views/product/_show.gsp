@@ -63,12 +63,30 @@
             </tbody>
         </table>
 
+        <!-- percentage excluded categories -->
+        <g:if test="${selectedProduct.percentage}">
+        <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">
+            <tbody>
+                <tr class="price">
+                    <td><g:message code="product.excludedCategories"/></td>
+                    <td class="value">
+                        <g:each var="category" status="i" in="${selectedProduct.excludedTypes.sort{ it.description }}">
+                            ${category.description}<g:if test="${i < selectedProduct.excludedTypes.size()-1}">, </g:if>
+                        </g:each>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </g:if>
+
         <!-- pricing -->
+        <g:if test="${selectedProduct.defaultPrice}">
         <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">
             <tbody>
                 <g:render template="/plan/priceModel" model="[model: selectedProduct.defaultPrice]"/>
             </tbody>
         </table>
+        </g:if>
 
         <!-- flags -->
         <table class="dataTable" cellspacing="0" cellpadding="0">

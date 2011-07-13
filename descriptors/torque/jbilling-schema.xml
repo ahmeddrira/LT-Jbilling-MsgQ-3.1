@@ -683,9 +683,20 @@
             <reference foreign="id" local="type_id"/>
         </foreign-key>
     </table>
+    <table name="item_type_exclude_map">
+        <column name="item_id" type="INTEGER"/>
+        <column name="type_id" type="INTEGER"/>
+        <foreign-key foreignTable="item">
+            <reference foreign="id" local="item_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="item_type">
+            <reference foreign="id" local="type_id"/>
+        </foreign-key>
+    </table>
+
     <table name="price_model">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="strategy_type" required="true" size="20" type="VARCHAR"/>
+        <column name="strategy_type" required="true" size="40" type="VARCHAR"/>
         <column name="rate" required="false" size="22" scale="10" type="NUMERIC"/>
         <column name="currency_id" required="true" type="INTEGER"/>
         <column name="next_model_id" required="false" type="INTEGER"/>
@@ -851,6 +862,7 @@
         <column name="item_price" type="SMALLINT"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
+        <column name="use_item" required="true" type="BIT"/>
         <column name="description" size="1000" type="VARCHAR"/>
         <column name="provisioning_status" type="INTEGER"/>
         <column name="provisioning_request_id" size="50" type="VARCHAR"/>

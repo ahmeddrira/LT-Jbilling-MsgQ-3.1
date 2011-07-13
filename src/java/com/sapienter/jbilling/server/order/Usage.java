@@ -117,11 +117,11 @@ public class Usage {
     }
 
     public void addQuantity(BigDecimal quantity) {
-        setQuantity(getQuantity().add(quantity));
+        if (quantity != null) setQuantity(getQuantity().add(quantity));
     }
 
     public void subtractQuantity(BigDecimal quantity) {
-        setQuantity(getQuantity().subtract(quantity));
+        if (quantity != null) setQuantity(getQuantity().subtract(quantity));
     }
             
     /**
@@ -137,12 +137,12 @@ public class Usage {
         this.amount = amount;
     }
 
-    public void addAmount(BigDecimal quantity) {
-        setAmount(getAmount().add(quantity));
+    public void addAmount(BigDecimal amount) {
+        if (amount != null) setAmount(getAmount().add(amount));
     }
 
-    public void subractAmount(BigDecimal quantity) {
-        setAmount(getAmount().subtract(quantity));
+    public void subractAmount(BigDecimal amount) {
+        if (amount != null) setAmount(getAmount().subtract(amount));
     }
 
     /**

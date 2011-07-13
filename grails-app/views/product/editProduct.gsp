@@ -29,9 +29,11 @@
             $('#product\\.percentageAsDecimal').blur(function() {
                 if ($(this).val()) {
                     $('#pricing :input').val('').attr('disabled', 'true');
+                    $('#product\\.excludedTypes').attr('disabled', '');
                     closeSlide('#pricing');
                 } else {
                     $('#pricing :input').attr('disabled', '');
+                    $('#product\\.excludedTypes').val('').attr('disabled', 'true');
                     openSlide('#pricing');
                 }
             }).blur();
@@ -109,6 +111,18 @@
                                       optionKey="id"
                                       optionValue="description"
                                       value="${types ?: categoryId}"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/select">
+                            <content tag="label"><g:message code="product.excludedCategories"/></content>
+                            <content tag="label.for">product.excludedTypes</content>
+
+                            <g:set var="types" value="${product?.excludedTypes?.collect{ it as Integer }}"/>
+                            <g:select name="product.excludedTypes" multiple="true"
+                                      from="${categories}"
+                                      optionKey="id"
+                                      optionValue="description"
+                                      value="${types}"/>
                         </g:applyLayout>
                     </div>
                 </div>

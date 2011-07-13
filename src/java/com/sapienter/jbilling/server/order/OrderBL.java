@@ -1399,7 +1399,7 @@ public class OrderBL extends ResultList
         OrderLineWS retValue = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
                                                line.getAmount(), line.getQuantity(), line.getPrice() == null ? null : line.getPrice(), line.getCreateDatetime(),
                                                line.getDeleted(), line.getOrderLineType().getId(), line.getEditable(),
-                                               line.getPurchaseOrder().getId(), null, line.getVersionNum(), line.getProvisioningStatusId(), line.getProvisioningRequestId());
+                                               line.getPurchaseOrder().getId(), line.getUseItem(), line.getVersionNum(), line.getProvisioningStatusId(), line.getProvisioningRequestId());
         return retValue;
     }
 
@@ -1417,22 +1417,19 @@ public class OrderBL extends ResultList
         dto.setAmount(ws.getAmountAsDecimal());
         dto.setCreateDatetime(ws.getCreateDatetime());
         dto.setDeleted(ws.getDeleted());
+        dto.setUseItem(ws.getUseItem());
         dto.setDescription(ws.getDescription());
         dto.setEditable(ws.getEditable());
         dto.setItem(new ItemDAS().find(ws.getItemId()));
-
-        //ItemBL itemBL = new ItemBL();
-        //dto.setItem(itemBL.getDTO(ws.getItemDto()));
-
         dto.setItemId(ws.getItemId());
         dto.setOrderLineType(new OrderLineTypeDAS().find(ws.getTypeId()));
         dto.setPrice(ws.getPriceAsDecimal());
         dto.setPurchaseOrder(orderDas.find(ws.getOrderId()));
         dto.setQuantity(ws.getQuantityAsDecimal());
         dto.setVersionNum(ws.getVersionNum());
-        dto.setProvisioningStatus(provisioningStatusDas.find(
-                ws.getProvisioningStatusId()));
+        dto.setProvisioningStatus(provisioningStatusDas.find(ws.getProvisioningStatusId()));
         dto.setProvisioningRequestId(ws.getProvisioningRequestId());
+
         return dto;
     }
 
@@ -1612,12 +1609,17 @@ public class OrderBL extends ResultList
         retValue.setOwnInvoice(other.getOwnInvoice());
         retValue.setNotes(other.getNotes());
         retValue.setNotesInInvoice(other.getNotesInInvoice());
+
         for (OrderLineWS line : other.getOrderLines()) {
-            retValue.getLines().add(getOrderLine(line));
+            if (line != null) {
+                retValue.getLines().add(getOrderLine(line));
+            }
         }
+
         retValue.setIsCurrent(other.getIsCurrent());
         retValue.setCycleStarts(other.getCycleStarts());
         retValue.setVersionNum(other.getVersionNum());
+
         if (other.getPricingFields() != null) {
             List<PricingField> pf = new ArrayList<PricingField>();
             pf.addAll(Arrays.asList(PricingField.getPricingFieldsValue(other.getPricingFields())));

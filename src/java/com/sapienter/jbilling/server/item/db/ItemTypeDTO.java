@@ -201,6 +201,15 @@ public class ItemTypeDTO extends AbstractDescription implements Serializable {
         result = 31 * result + orderLineTypeId;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "ItemTypeDTO{"
+               + "id=" + id
+               + ", orderLineTypeId=" + orderLineTypeId
+               + ", description='" + description + '\''
+               + '}';
+    }
 }
 
 

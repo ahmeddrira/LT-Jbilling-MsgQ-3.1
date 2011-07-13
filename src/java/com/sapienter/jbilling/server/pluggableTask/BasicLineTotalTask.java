@@ -197,8 +197,10 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
      */
     private boolean isItemExcluded(ItemDTO item, Set<ItemTypeDTO> excludedTypes) {
         for (ItemTypeDTO excludedType : excludedTypes) {
-            if (item.getItemTypes().contains(excludedType)) {
-                return true;
+            for (ItemTypeDTO itemType : item.getItemTypes()) {
+                if (itemType.getId() == excludedType.getId()) {
+                    return true;
+                }
             }
         }
         return false;

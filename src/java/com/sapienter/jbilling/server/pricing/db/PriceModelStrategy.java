@@ -23,6 +23,8 @@ package com.sapienter.jbilling.server.pricing.db;
 import com.sapienter.jbilling.server.pricing.strategy.CappedGraduatedPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.FlatPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.GraduatedPricingStrategy;
+import com.sapienter.jbilling.server.pricing.strategy.ItemPercentageSelectorStrategy;
+import com.sapienter.jbilling.server.pricing.strategy.ItemSelectorStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.MeteredPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PercentageStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PooledPricingStrategy;
@@ -31,7 +33,6 @@ import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPercentageStrateg
 import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TieredPricingStrategy;
 
-import javax.sql.PooledConnection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -48,30 +49,36 @@ import java.util.Set;
 public enum PriceModelStrategy {
 
     /** Flat pricing strategy, always sets price to ZERO */
-    FLAT                    (new FlatPricingStrategy()),
+    FLAT                        (new FlatPricingStrategy()),
 
     /** Metered pricing strategy, sets a configurable $/unit rate */
-    METERED                 (new MeteredPricingStrategy()),
+    METERED                     (new MeteredPricingStrategy()),
 
     /** Graduated pricing strategy, allows a set number of included units before enforcing a $/unit rate */
-    GRADUATED               (new GraduatedPricingStrategy()),
+    GRADUATED                   (new GraduatedPricingStrategy()),
 
     /** Graduated pricing strategy with a maximum total usage $ cap */
-    CAPPED_GRADUATED        (new CappedGraduatedPricingStrategy()),
+    CAPPED_GRADUATED            (new CappedGraduatedPricingStrategy()),
 
     /** Pricing strategy that uses the current time (or time of a mediated event) to determine the price */
-    TIME_OF_DAY             (new TimeOfDayPricingStrategy()),
+    TIME_OF_DAY                 (new TimeOfDayPricingStrategy()),
 
     /** MIDDLE or END of chain pricing strategy that applies a percentage to a previously calculated rate */
-    PERCENTAGE              (new PercentageStrategy()),
+    PERCENTAGE                  (new PercentageStrategy()),
 
     /** MIDDLE or END of chain, time-of-day strategy that applies a percentage to a previously calculated rate */
-    TIME_OF_DAY_PERCENTAGE  (new TimeOfDayPercentageStrategy()),
+    TIME_OF_DAY_PERCENTAGE      (new TimeOfDayPercentageStrategy()),
     
-    TIERED                  (new TieredPricingStrategy()),
+    TIERED                      (new TieredPricingStrategy()),
 
     /** Graduated pricing strategy that counts a users subscription to an item as the "pooled" included quantity */
-    POOLED                  (new PooledPricingStrategy());
+    POOLED                      (new PooledPricingStrategy()),
+
+    /** Strategy that adds another item to the order based on the level of usage within a specific item type */
+    ITEM_SELECTOR               (new ItemSelectorStrategy()),
+
+    /** Strategy that adds another item to the order based on the percentage used of one item type over another */
+    ITEM_PERCENTAGE_SELECTOR    (new ItemPercentageSelectorStrategy());
 
 
     private final PricingStrategy strategy;

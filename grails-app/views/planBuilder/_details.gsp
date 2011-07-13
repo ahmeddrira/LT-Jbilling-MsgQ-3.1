@@ -81,7 +81,11 @@
 
     <script type="text/javascript">
         $(function() {
-            $('#plan-details-form').find('input:text.hasDatepicker, select, input:checkbox').change(function() {
+            $('#plan-details-form').find('input:checkbox').change(function() {
+                $('#plan-details-form').submit();
+            });
+
+            $('#plan-details-form').find('input:text.hasDatepicker, select').change(function() {
                 $('#plan-details-form').submit();
             });
 

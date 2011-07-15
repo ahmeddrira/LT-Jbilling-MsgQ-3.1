@@ -114,7 +114,7 @@
                 <div class="buttons">
                     <ul>
                         <li><a onclick="$('#save-price-form').submit();" class="submit save"><span><g:message code="button.save"/></span></a></li>
-                        <li><g:link action="list" class="submit cancel"><span><g:message code="button.cancel"/></span></g:link></li>
+                        <li><g:link controller="customerInspector" action="inspect" id="${user.userId}" class="submit cancel"><span><g:message code="button.cancel"/></span></g:link></li>
                     </ul>
                 </div>
 

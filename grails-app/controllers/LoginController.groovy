@@ -30,6 +30,9 @@ import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.client.authentication.exception.LicenseMissingException
+import com.sapienter.jbilling.client.authentication.exception.LicenseExpiredException
+import com.sapienter.jbilling.client.authentication.exception.LicenseInvalidException
 
 class LoginController {
 
@@ -118,6 +121,15 @@ class LoginController {
 			else if (exception instanceof LockedException) {
 				msg = SpringSecurityUtils.securityConfig.errors.login.locked
 			}
+            else if (exception instanceof LicenseMissingException) {
+                msg = 'auth.fail.license.missing.exception'
+            }
+            else if (exception instanceof LicenseInvalidException) {
+                msg = 'auth.fail.license.invalid.exception'
+            }
+            else if (exception instanceof LicenseExpiredException) {
+                msg = 'auth.fail.license.expired.exception'
+            }
 			else {
 				msg = SpringSecurityUtils.securityConfig.errors.login.fail
 			}

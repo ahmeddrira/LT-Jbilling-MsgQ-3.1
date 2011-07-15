@@ -40,8 +40,6 @@ import com.sapienter.jbilling.common.SessionInternalError
 @Secured(["MENU_99"])
 class ContactFieldConfigController {
 	
-	static pagination = [ max: 10, offset: 0 ]
-	
 	def webServicesSession
 	def viewUtils
 	def recentItemService
@@ -52,13 +50,7 @@ class ContactFieldConfigController {
     }
 
     def list = {
-        params.max = params?.max?.toInteger() ?: pagination.max
-        params.offset = params?.offset?.toInteger() ?: pagination.offset
-
-        def types = ContactFieldTypeDTO.createCriteria().list(
-                max:    params.max,
-                offset: params.offset
-        ) {
+        def types = ContactFieldTypeDTO.createCriteria().list() {
             eq('entity', new CompanyDTO(session['company_id']))
             order('id', 'asc')
         }

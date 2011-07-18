@@ -115,6 +115,7 @@ grails.doc.api.org.hibernate="http://docs.jboss.org/hibernate/stable/core/javado
 
 //gdoc aliases
 grails.doc.alias.userGuide="1. jBilling User Guide"
+grails.doc.alias.integrationGuide="2. jBilling Integration Guide"
 
 /*
     Spring Security

@@ -32,6 +32,7 @@ import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPercentageStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TieredPricingStrategy;
+import com.sapienter.jbilling.server.pricing.strategy.VolumePricingStrategy;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -70,6 +71,9 @@ public enum PriceModelStrategy {
     TIME_OF_DAY_PERCENTAGE      (new TimeOfDayPercentageStrategy()),
     
     TIERED                      (new TieredPricingStrategy()),
+
+    /** Pricing based on the quantity purchased. */
+    VOLUME_PRICING              (new VolumePricingStrategy()),
 
     /** Graduated pricing strategy that counts a users subscription to an item as the "pooled" included quantity */
     POOLED                      (new PooledPricingStrategy()),

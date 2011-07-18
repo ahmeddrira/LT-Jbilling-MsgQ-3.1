@@ -362,6 +362,7 @@ class OrderBuilderController {
 
                 order.isCurrent = params.isCurrent ? 1 : 0
                 order.notify = params.notify ? 1 : 0
+                order.notesInInvoice = params.notesInInvoice ? 1 : 0
 
                 // update the order to reflect the subscribed plan
                 def subscribedPlan = subscribedPlan(order.orderLines as List, conversation.plans);

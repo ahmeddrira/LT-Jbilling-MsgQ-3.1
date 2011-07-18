@@ -20,7 +20,13 @@
 
 package com.sapienter.jbilling.client.authentication;
 
+import com.sapienter.jbilling.client.authentication.exception.LicenseExpiredException;
+import com.sapienter.jbilling.client.authentication.exception.LicenseInvalidException;
+import com.sapienter.jbilling.client.authentication.exception.LicenseMissingException;
 import com.sapienter.jbilling.client.authentication.util.UsernameHelper;
+import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.license.License;
+import com.sapienter.jbilling.license.LicenseManager;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO;
@@ -28,12 +34,15 @@ import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import grails.plugins.springsecurity.SpringSecurityService;
 import org.codehaus.groovy.grails.plugins.springsecurity.GrailsUserDetailsService;
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils;
+import org.joda.time.DateMidnight;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -80,10 +89,15 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
      *
      * @param s username (principal) to retrieve
      * @return found user details
-     * @throws UsernameNotFoundException
+     * @throws AuthenticationException
      * @throws DataAccessException
      */
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException, DataAccessException {
+    public UserDetails loadUserByUsername(String s) throws AuthenticationException, DataAccessException {
+        // check that jBilling has a valid license
+        String licenseKey = Util.getSysProp("license_key");
+        validateLicense(licenseKey);
+
+
         // get the user for the given name
         // CompanyUserAuthenticationFilter concatenates the user name with the entity id
         String[] tokens = s.split(UsernameHelper.VALUE_SEPARATOR);
@@ -99,6 +113,7 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
 
         if (user == null)
             throw new UsernameNotFoundException("User '" + s + "' not found", username);
+
 
         // collect granted permissions and roles
         // this is a bad use of generics, the UserDetails signature should be <? extends GrantedAuthority>
@@ -125,5 +140,32 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
                                       authorities.isEmpty() ? NO_AUTHORITIES : authorities,
                                       user, UserBL.getLocale(user), user.getId(), mainRoleId,
                                       user.getEntity().getId(), user.getCurrency().getId(), user.getLanguage().getId());
+    }
+
+    /**
+     * Returns true if the given encrypted license key represents a valid license.
+     *
+     * @param encrypted encrypted license key
+     * @return true if license key is valid, false if not.
+     */
+    protected void validateLicense(String encrypted) {
+        if (encrypted == null || encrypted.trim().equals(""))
+            throw new LicenseMissingException("No license key set in jbilling.properties");
+
+        License license;
+        try {
+            String decrypted = LicenseManager.decrypt(encrypted);
+            license = LicenseManager.generate(decrypted);
+
+        } catch (InvalidKeyException e) {
+            throw new LicenseInvalidException("License key is invalid and could not be decrypted.");
+        }
+
+        // validate license date
+        DateMidnight endDate = new DateMidnight(license.getStartDate()).plusDays(license.getDaysOfLicense());
+
+        if (endDate.isBeforeNow())
+            throw new LicenseExpiredException("License has expired.");
+
     }
 }

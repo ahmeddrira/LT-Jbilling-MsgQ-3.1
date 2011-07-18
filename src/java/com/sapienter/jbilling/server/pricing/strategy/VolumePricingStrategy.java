@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.INTEGER;
+import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.*;
 
 /**
  * VolumePricingStrategy
@@ -50,7 +50,7 @@ public class VolumePricingStrategy extends AbstractPricingStrategy {
 
     public VolumePricingStrategy() {
         setAttributeDefinitions(
-                new AttributeDefinition("0", INTEGER, false)
+                new AttributeDefinition("0", DECIMAL, false)
         );
 
         setChainPositions(

@@ -107,7 +107,7 @@ environments {
 /*
     Documentation
  */
-grails.doc.authors="Emiliano Conde, Brian Cowdery"
+grails.doc.authors="Emiliano Conde, Brian Cowdery, Emir Calabuch, Lucas Pickstone, Vikas Bodani, Crystal Bourque"
 grails.doc.license="AGPL v3"
 grails.doc.images=new File("src/docs/images")
 grails.doc.api.org.springframework="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/"
@@ -115,6 +115,7 @@ grails.doc.api.org.hibernate="http://docs.jboss.org/hibernate/stable/core/javado
 
 //gdoc aliases
 grails.doc.alias.userGuide="1. jBilling User Guide"
+grails.doc.alias.integrationGuide="2. jBilling Integration Guide"
 
 /*
     Spring Security

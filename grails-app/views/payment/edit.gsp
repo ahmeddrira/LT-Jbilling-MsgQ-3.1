@@ -19,6 +19,9 @@
   --}%
 
 <%@ page import="com.sapienter.jbilling.common.Constants" contentType="text/html;charset=UTF-8" %>
+
+<g:set var="isNew" value="${!payment || !payment?.id || payment?.id == 0}"/>
+
 <html>
 <head>
     <meta name="layout" content="main"/>
@@ -45,6 +48,7 @@
             $(':input[type=radio][name=invoiceId]').attr('checked','');
         }
 
+        <g:if test="${isNew}">
         $(document).ready(function() {
             // populate payment amount with selected invoice balance
             $('#invoices input[name=invoiceId]').change(function() {
@@ -54,12 +58,11 @@
                 $('#payment\\.currencyId option[value='+ currid +']').attr('selected','selected');
             });
         });
+        </g:if>
     </script>
 </head>
 <body>
 <div class="form-edit">
-
-    <g:set var="isNew" value="${!payment || !payment?.id || payment?.id == 0}"/>
 
     <div class="heading">
         <strong>

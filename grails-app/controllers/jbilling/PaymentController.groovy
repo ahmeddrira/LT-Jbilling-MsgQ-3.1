@@ -346,11 +346,13 @@ class PaymentController {
         def payment = new PaymentWS()
         bindPayment(payment, params)
 
+        def invoiceId = params.int('invoiceId')
+
+
         // save or update
         try {
             if (!payment.id || payment.id == 0) {
                 if (SpringSecurityUtils.ifAllGranted("PAYMENT_30")) {
-                    def invoiceId = params.int('invoiceId')
                     def processNow = params.boolean('processNow') && payment.methodId != Constants.PAYMENT_METHOD_CHEQUE
 
                     log.debug("creating payment ${payment} for invoice ${invoiceId}")
@@ -393,6 +395,11 @@ class PaymentController {
                 if (SpringSecurityUtils.ifAllGranted("PAYMENT_31")) {
                     log.debug("saving changes to payment ${payment.id}")
                     webServicesSession.updatePayment(payment)
+
+                    if (invoiceId) {
+                        log.debug("appling payment ${payment} to invoice ${invoiceId}")
+                        webServicesSession.createPaymentLink(invoiceId, payment.id)
+                    }
 
                     flash.message = 'payment.updated'
                     flash.args = [ payment.id ]

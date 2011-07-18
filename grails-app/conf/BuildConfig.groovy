@@ -79,6 +79,7 @@ grails.project.dependency.resolution = {
             excludes 'junit'
         }
         compile 'commons-net:commons-net:2.0'
+        compile 'commons-codec:commons-codec:1.5'
 
         compile 'org.hibernate:hibernate-validator:4.1.0.Final'
         compile 'javax.validation:validation-api:1.0.0.GA'

@@ -30,9 +30,9 @@ import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import com.sapienter.jbilling.server.user.db.CompanyDTO
-import com.sapienter.jbilling.client.authentication.exception.LicenseMissingException
-import com.sapienter.jbilling.client.authentication.exception.LicenseExpiredException
-import com.sapienter.jbilling.client.authentication.exception.LicenseInvalidException
+import com.sapienter.jbilling.license.exception.LicenseMissingException
+import com.sapienter.jbilling.license.exception.LicenseExpiredException
+import com.sapienter.jbilling.license.exception.LicenseInvalidException
 
 class LoginController {
 

@@ -104,8 +104,10 @@ beans = {
         password = "123qwe"
     }
 
+    jbillingUserService(com.sapienter.jbilling.client.authentication.AuthenticationUserService)
+
     userDetailsService(com.sapienter.jbilling.client.authentication.CompanyUserDetailsService) {
-        springSecurityService = ref("springSecurityService")
+        userService = ref("jbillingUserService")
     }
 
     passwordEncoder(com.sapienter.jbilling.client.authentication.JBillingPasswordEncoder)

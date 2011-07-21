@@ -21,11 +21,25 @@
 includeTargets << grailsScript("Init")
 
 target(prepareTestDb: "Import the test postgresql database.") {
-    println "Importing the 'jbilling_test' database."
 
+    // load the client reference DB if it exists
+    def testDb = new File("${basedir}/sql/jbilling_test.sql")
+    def referenceDb = new File("${basedir}/data.sql")
+    def file = referenceDb.exists() ? referenceDb : testDb
+
+    // optionally accept database name and user name arguments
+    args = args?.tokenize("\n")
+    def username = args ? args[0] : "jbilling"
+    def database = args ? args[1] : "jbilling_test"
+
+    println "Importing file '${file.name}' into the ${database} database (user: ${username})"
+
+    // call postgresl to load the database
     exec(executable: "psql", failonerror: false) {
-        arg(line: "-U jbilling -f ${basedir}/sql/jbilling_test.sql jbilling_test")
+        arg(line: "-U ${username} -f ${file.path} ${database}")
     }
+
+    println "Done."
 }
 
 setDefaultTarget(prepareTestDb)

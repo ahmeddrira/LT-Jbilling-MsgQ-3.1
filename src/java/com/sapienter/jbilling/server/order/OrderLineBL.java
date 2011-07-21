@@ -231,7 +231,9 @@ public class OrderLineBL {
         populateWithSimplePrice(language, userId, entityId, currencyId, itemID, myLine, CommonConstants.BIGDECIMAL_SCALE);
         myLine.setDefaults();
 
-        if (line == null) { // not yet there
+        // create a new line if an existing line does not exist
+        // if the line has a different description than the existing, treat it as a new line
+        if (line == null || (myLine.getDescription() != null && !myLine.getDescription().equals(line.getDescription()))) {
             OrderLineDTO newLine = new OrderLineDTO(myLine);
             newOrder.getLines().add(newLine);
             newLine.setPurchaseOrder(newOrder);

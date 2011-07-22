@@ -20,9 +20,6 @@ TEST*.xml
 # external libraries
 libs/
 
-# environment specific config files
-src/java/jbilling.properties
-
 # project files
 .idea/
 *.iml

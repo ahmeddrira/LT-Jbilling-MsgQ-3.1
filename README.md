@@ -5,7 +5,7 @@ jBilling
 
 * Java 6+
 * Grails 1.3.4
-* PostgreSQL 8+ (required for testing, other runtime databases are supported)
+* PostgreSQL 8+ *(required for testing, other runtime databases are supported)*
 
 To run jBilling from source you will need to have Java 6+ and Grails 1.3.4 installed. To install grails, download version 1.3.4 from the [Grails Archive](http://www.grails.org/download/archive/Grails) and follow the installation instructions for your operating system. 
 
@@ -27,7 +27,7 @@ Clone the repository from `git@github.com:emilc/enterprise.git`
 Configuring PostgreSQL
 ----------------------
 
-To run jBilling with the out-of-box reference database, you must have PostgreSQL installed and configured with a "jbilling" user and an empty "jbilling_test" database. The setup scripts also expect that the user will allow local connections without a password. 
+To run jBilling with the out-of-box reference database, you must have PostgreSQL installed and configured with a **'jbilling'** user and an empty **'jbilling_test'** database. The setup scripts also expect that the user will allow local connections without a password.
 
 Edit the PostgreSQL pg_hba.conf file and change the "local" and "IPv4" localhost connection types:
 
@@ -61,11 +61,9 @@ grails prepare-test
 Running from Source
 -------------------
 
-**Windows**
-Run ``run-app.bat``
+**Windows**: ``run-app.bat``
 
-**Linux/Mac**
-Run ``./run-app.sh``
+**Linux/Mac**: ``./run-app.sh``
 
 
 

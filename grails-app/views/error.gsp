@@ -16,12 +16,10 @@
 
   You should have received a copy of the GNU Affero General Public License
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
---}%
+  --}%
 
 <html>
 <head>
-
-
 <sec:ifLoggedIn>
         <meta name="layout" content="main" />
     </sec:ifLoggedIn>

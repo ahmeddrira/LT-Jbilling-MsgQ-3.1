@@ -1,11 +1,4 @@
-<html>
-<head>
-    <meta name="layout" content="panels" />
-</head>
-<body>
-
-<content tag="column1">
-    %{--
+%{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
@@ -25,7 +18,14 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<g:render template="logs" model="['logs': logs]"/>
+<html>
+<head>
+    <meta name="layout" content="panels" />
+</head>
+<body>
+
+<content tag="column1">
+    <g:render template="logs" model="['logs': logs]"/>
 </content>
 
 <content tag="column2">

@@ -16,8 +16,10 @@
 
   You should have received a copy of the GNU Affero General Public License
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
- --}%
+  --}%
+
 <%@page import="com.sapienter.jbilling.server.util.Constants"%>
+
 <html>
 <head>
     <meta name="layout" content="main" />

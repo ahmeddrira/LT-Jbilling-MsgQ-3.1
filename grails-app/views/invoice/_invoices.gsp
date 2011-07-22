@@ -1,6 +1,3 @@
-<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
-
-
 %{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -19,7 +16,9 @@
 
   You should have received a copy of the GNU Affero General Public License
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
-  --}%
+--}%
+
+<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 <%--
 	Invoice list template. 

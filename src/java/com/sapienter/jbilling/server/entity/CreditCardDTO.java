@@ -235,6 +235,7 @@ public class CreditCardDTO implements Serializable {
         return "CreditCardDTO{" +
                "id=" + id +
                ", name='" + name + '\'' +
+               ", expiry=" + expiry +
                ", type=" + type +
                ", deleted=" + deleted +
                ", securityCode='" + securityCode + '\'' +

@@ -267,7 +267,7 @@
 
                 <tr>
                     <td><g:message code="customer.detail.payment.credit.card.expiry"/></td>
-                    <td class="value"><g:formatDate date="${card?.ccExpiry}"/></td>
+                    <td class="value"><g:formatDate date="${card?.ccExpiry}" formatName="credit.card.date.format"/></td>
                 </tr>
             </tbody>
         </table>

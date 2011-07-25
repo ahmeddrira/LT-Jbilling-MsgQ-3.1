@@ -66,10 +66,7 @@ class UserHelper {
             def creditCard = new CreditCardDTO()
             bindData(creditCard, params, 'creditCard')
             bindExpiryDate(creditCard, params)
-
-            // update credit card only if not obscured
-            if (!creditCard.number.startsWith('*'))
-                user.setCreditCard(creditCard)
+            user.setCreditCard(creditCard)
 
             log.debug("Credit card ${creditCard}")
 
@@ -191,7 +188,7 @@ class UserHelper {
         if (expiryMonth && expiryYear)  {
             Calendar calendar = Calendar.getInstance()
             calendar.clear()
-            calendar.set(Calendar.MONTH, expiryMonth)
+            calendar.set(Calendar.MONTH, expiryMonth - 1) // calendar API months start at 0
             calendar.set(Calendar.YEAR, expiryYear)
 
             creditCard.expiry = calendar.getTime()

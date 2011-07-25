@@ -469,7 +469,7 @@ class PaymentController {
         if (expiryMonth && expiryYear)  {
             Calendar calendar = Calendar.getInstance()
             calendar.clear()
-            calendar.set(Calendar.MONTH, expiryMonth)
+            calendar.set(Calendar.MONTH, expiryMonth - 1) // calendar API months start at 0
             calendar.set(Calendar.YEAR, expiryYear)
 
             creditCard.expiry = calendar.getTime()

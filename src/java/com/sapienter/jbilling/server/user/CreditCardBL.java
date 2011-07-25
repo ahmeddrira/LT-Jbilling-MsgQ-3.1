@@ -121,9 +121,10 @@ public class CreditCardBL extends ResultList
         } else {
             UserDTO user = getUser(dto);
             creditCard = new UserBL(user.getId()).getCreditCard();
-            LOG.debug("Credit card obscured, using the stored credit card " + creditCard.getId());
+            LOG.debug("Credit card obscured, using the stored credit card.");
         }
-        return creditCard.getId();
+
+        return (creditCard == null ? null : creditCard.getId());
     }
 
     /**

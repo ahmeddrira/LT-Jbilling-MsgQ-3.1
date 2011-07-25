@@ -83,7 +83,7 @@ class AuditLogController {
 
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
 
-        if (params.applyFilter) {
+        if (params.applyFilter || params.partial) {
             render template: 'logs', model: [ logs: logs, selected: selected, filters: filters ]
         } else {
             [ logs: logs, selected: selected, filters: filters ]
@@ -105,7 +105,8 @@ class AuditLogController {
      */
     def user = {
         Filter filter =  new Filter(type: FilterType.LOGS, constraintType: FilterConstraint.EQ,
-                field: 'affectedUser.id', template: 'id', visible: true, integerValue: params.id)
+                                    field: 'affectedUser.id', template: 'id', visible: true, integerValue: params.id)
+
         filterService.setFilter(FilterType.LOGS, filter)
 
         redirect action: list

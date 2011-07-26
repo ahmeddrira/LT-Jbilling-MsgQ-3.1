@@ -1136,6 +1136,9 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 insert into permission (id, type_id) values (99, 9);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 99, 'description', 1, 'Show configuration menu');
 
+insert into permission (id, type_id) values (100, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 100, 'description', 1, 'Show partner menu');
+
 -- api
 insert into permission (id, type_id) values(120, 10);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 120, 'description', 1, 'Web Service API access');
@@ -1261,3 +1264,8 @@ insert into permission_role_map (role_id, permission_id) values (5, 72);
 insert into permission_role_map (role_id, permission_id) values (5, 91);
 insert into permission_role_map (role_id, permission_id) values (5, 92);
 insert into permission_role_map (role_id, permission_id) values (5, 93);
+
+-- Date 26-Jul-2011
+-- Description: Enabling Partner user
+-- partner upgrades
+insert into role values (4);

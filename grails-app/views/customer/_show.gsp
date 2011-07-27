@@ -215,6 +215,19 @@
                     </td>
                 </tr>
                 <tr>
+                    <td><g:message code="customer.detail.user.next.invoice.date"/></td>
+                    <td class="value">
+                        <g:set var="nextInvoiceDate" value="${new UserBL(selected.id).getNextInvoiceDate()}"/>
+
+                        <g:if test="${nextInvoiceDate}">
+                            <span><g:formatDate date="${nextInvoiceDate}" formatName="date.pretty.format"/></span>
+                        </g:if>
+                        <g:else>
+                            <g:message code="prompt.no.active.orders"/>
+                        </g:else>
+                    </td>
+                </tr>
+                <tr>
                     <td><g:message code="customer.detail.payment.due.date"/></td>
                     <td class="value"><g:formatDate date="${invoice?.dueDate}" formatName="date.pretty.format"/></td>
                 </tr>

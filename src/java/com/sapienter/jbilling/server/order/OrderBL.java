@@ -1282,18 +1282,11 @@ public class OrderBL extends ResultList
     }
 
     public Date getInvoicingDate() {
-        Date retValue;
         if (order.getNextBillableDay() != null) {
-            retValue = order.getNextBillableDay();
+            return order.getNextBillableDay();
         } else {
-            if (order.getActiveSince() != null) {
-                retValue = order.getActiveSince();
-            } else {
-                retValue = order.getCreateDate();
-            }
+            return order.getActiveSince() != null ? order.getActiveSince() : order.getCreateDate();
         }
-
-        return retValue;
     }
 
     public boolean isDateInvoiced(Date date) {

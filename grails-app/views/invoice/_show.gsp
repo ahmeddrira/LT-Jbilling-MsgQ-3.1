@@ -248,7 +248,7 @@
                         </td>
                         <td class="innerContent">
                             <sec:access url="/invoice/unlink">
-                                <a href="javascript:void(0);" onclick="setUnlinkPaymentId(${selected.id}, ${payment.id});">
+                                <a onclick="setUnlinkPaymentId(${selected.id}, ${payment.id});">
                                     <span><g:message code="invoice.prompt.unlink.payment"/></span>
                                 </a>
                             </sec:access>
@@ -293,11 +293,11 @@
 <script type="text/javascript">
     function setUnlinkPaymentId(invId, pymId) {
         $('#unlink_payment_id').val(pymId);
-        showConfirm("removePaymentLink-" + invId);
+        showConfirm("unlink-" + invId);
         return true;
     }
     function setPaymentId() {
-        $('#confirm-command-form-removePaymentLink-${selected.id} [name=paymentId]').val($('#unlink_payment_id').val());
+        $('#confirm-command-form-unlink-${selected.id} [name=paymentId]').val($('#unlink_payment_id').val());
     }
 </script>
 

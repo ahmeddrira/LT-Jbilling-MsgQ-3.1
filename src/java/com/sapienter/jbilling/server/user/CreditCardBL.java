@@ -121,9 +121,10 @@ public class CreditCardBL extends ResultList
         } else {
             UserDTO user = getUser(dto);
             creditCard = new UserBL(user.getId()).getCreditCard();
-            LOG.debug("Credit card obscured, using the stored credit card " + creditCard.getId());
+            LOG.debug("Credit card obscured, using the stored credit card.");
         }
-        return creditCard.getId();
+
+        return (creditCard == null ? null : creditCard.getId());
     }
 
     /**
@@ -169,11 +170,13 @@ public class CreditCardBL extends ResultList
         }
         creditCard.setCcExpiry(dto.getCcExpiry());
         creditCard.setName(dto.getName());
+
         // the number can be null, because calls from the API would do this
-        // to leave the number unchanged (was returned masked)
-        if (dto.getNumber() != null) {
+        // to leave the number unchanged. Ignore masked numbers and leave number as-is.
+        if (dto.getNumber() != null && !dto.getNumber().contains("*")) {
             creditCard.setNumber(dto.getNumber());
         }
+
         creditCard.setDeleted(new Integer(0));
 
         // remove any pre-authorization. Otherwise the next payment won't be

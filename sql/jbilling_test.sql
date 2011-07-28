@@ -11231,6 +11231,10 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	79	description	1	A scheduled task to execute the Mediation Process.
 24	80	title	1	Billing Process Task
 24	80	description	1	A scheduled task to execute the Billing Process.
+24	90	title	1	Country Tax Invoice Composition Task
+24	90	description	1	A pluggable task of the type SimpleTaxCompositionTask to apply tax item to the Invoice if the Partner's country code is matching.
+24	91	title	1	Payment Terms Penalty Task
+24	91	description	1	A pluggable task of the type AbstractChargeTask to apply a Penalty to an Invoice having a due date beyond a configurable days period.
 99	1	description	1	Referral Fee
 99	2	description	1	Payment Processor
 99	3	description	1	IP Address
@@ -14676,6 +14680,8 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 87	24	com.sapienter.jbilling.server.process.task.BasicAgeingTask	0
 88	22	com.sapienter.jbilling.server.process.task.AgeingProcessTask	0
 89	24	com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask	0
+90	4	com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask	2
+91	4	com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask	2
 \.
 
 

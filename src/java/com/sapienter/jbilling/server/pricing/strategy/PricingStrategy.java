@@ -66,6 +66,9 @@ public interface PricingStrategy {
     /**
      * Applies the plan's pricing strategy to the given pricing request.
      *
+     * The usage totals will already include quantity being priced if pricing an order
+     * during a create/update or order rating call.
+     *
      * @param pricingOrder target order for this pricing request (may be null)
      * @param result pricing result to apply pricing to
      * @param fields pricing fields

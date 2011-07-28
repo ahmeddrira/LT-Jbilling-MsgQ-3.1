@@ -1285,3 +1285,8 @@ alter table order_line alter column use_item set not null;
 
 alter table price_model alter column strategy_type type varchar(40); -- postgresql
 -- alter table price_model modify strategy_type varchar(40); -- mysql
+
+-- Date: 28-Jul-2011
+-- Description: user names can not be less than 5 charachters. jB1 and 2 allows for a length of 4 chars
+
+update base_user set user_name = user_name || '1' where id in ( select id from base_user where length(user_name) < 5); -- postgres

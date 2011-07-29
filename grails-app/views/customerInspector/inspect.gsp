@@ -135,9 +135,9 @@
 
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.user.next.invoice.date"/></content>
+                        <g:set var="nextInvoiceDate" value="${new UserBL(user.id).getNextInvoiceDate()}"/>
 
-                        <g:if test="${cycle}">
-                            <g:set var="nextInvoiceDate" value="${cycle?.getNextBillableDay() ?: cycle?.getActiveSince() ?: cycle?.getCreateDate()}"/>
+                        <g:if test="${nextInvoiceDate}">
                             <span><g:formatDate date="${nextInvoiceDate}" formatName="date.pretty.format"/></span>
                         </g:if>
                         <g:else>

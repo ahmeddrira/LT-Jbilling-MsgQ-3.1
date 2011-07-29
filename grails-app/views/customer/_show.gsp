@@ -117,6 +117,12 @@
                             </g:else>
                         </td>
                     </tr>
+                    <tr>
+                        <td><g:message code="prompt.use.parent.pricing"/></td>
+                        <td class="value">
+                            <g:formatBoolean boolean="${customer.useParentPricing}"/>
+                        </td>
+                    </tr>
                 </g:if>
 
                 <g:if test="${customer?.children}">
@@ -212,6 +218,19 @@
                                 <g:message code="customer.show.all.payments"/>
                             </g:link>
                         </sec:access>
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:message code="customer.detail.user.next.invoice.date"/></td>
+                    <td class="value">
+                        <g:set var="nextInvoiceDate" value="${new UserBL(selected.id).getNextInvoiceDate()}"/>
+
+                        <g:if test="${nextInvoiceDate}">
+                            <span><g:formatDate date="${nextInvoiceDate}" formatName="date.pretty.format"/></span>
+                        </g:if>
+                        <g:else>
+                            <g:message code="prompt.no.active.orders"/>
+                        </g:else>
                     </td>
                 </tr>
                 <tr>

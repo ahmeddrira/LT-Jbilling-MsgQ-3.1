@@ -41,6 +41,8 @@ import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.AgeingBL;
+import com.sapienter.jbilling.server.process.ConfigurationBL;
+import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.AchDAS;
@@ -61,6 +63,7 @@ import com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.DTOFactory;
+import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
@@ -80,6 +83,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -204,11 +208,17 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
 
+            user.getCustomer().setNotes(dto.getCustomer().getNotes());
+            user.getCustomer().setAutoPaymentType(dto.getCustomer().getAutoPaymentType());
+
             // set the sub-account fields
             user.getCustomer().setIsParent(dto.getCustomer().getIsParent());
             if (dto.getCustomer().getParent() != null) {
                 // the API accepts the user ID of the parent instead of the customer ID
                 user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
+
+                // use parent pricing flag
+                user.getCustomer().setUseParentPricing(dto.getCustomer().useParentPricing());
 
                 // log invoice if child changes
                 Integer oldInvoiceIfChild = user.getCustomer().getInvoiceChild();
@@ -337,6 +347,7 @@ public class UserBL extends ResultList implements UserSQL {
                 // the API accepts the user ID of the parent instead of the customer ID
                 user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
                 user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
+                user.getCustomer().setUseParentPricing(dto.getCustomer().useParentPricing());
             }
 
             // set dynamic balance fields
@@ -595,7 +606,61 @@ public class UserBL extends ResultList implements UserSQL {
             }
         }
 
+        // next invoice date
+        retValue.setNextInvoiceDate(getNextInvoiceDate());
+
         return retValue;
+    }
+
+    /**
+     * Returns the date that this customer can be expected to receive their next invoice. This method
+     * will return null if the customer does not have any orders, or if the billing process has no
+     * set "next run date".
+     *
+     * @return date of the next invoice for this customer.
+     */
+    public Date getNextInvoiceDate() {
+        // customer has no orders, no invoices will be generated
+        if (this.user.getOrders().isEmpty()) {
+            return null;
+        }
+
+        // get earliest order "next billable" date
+        Date nextBillableDay = null;
+
+        for (OrderDTO order : this.user.getOrders()) {
+            Date date = new OrderBL(order).getInvoicingDate();
+            if (nextBillableDay == null || (date != null && date.before(nextBillableDay))) {
+                nextBillableDay = date;
+            }
+        }
+
+        // find next billing process run date that encompasses the order date
+        BillingProcessConfigurationDTO config = new ConfigurationBL(this.user.getEntity().getId()).getDTO();
+
+        // no next run date for the billing process, no invoices will be generated
+        if (config.getNextRunDate() == null) {
+            return null;
+        }
+
+        // orders to be processed by the next run
+        if (nextBillableDay == null || config.getNextRunDate().after(nextBillableDay)) {
+            return config.getNextRunDate();
+        }
+
+        // orders to be processed by a subsequent run, increment the process run date by the
+        // billing period until we find the earliest possible billing run date
+        Calendar nextBillableDay2 = new GregorianCalendar();
+        nextBillableDay2.setTime(nextBillableDay);
+
+        Calendar nextRunDate = new GregorianCalendar();
+        nextRunDate.setTime(config.getNextRunDate());
+
+        while (nextRunDate.before(nextBillableDay2)) {
+            nextRunDate.add(MapPeriodToCalendar.map(config.getPeriodUnit().getId()), config.getPeriodValue());
+        }
+
+        return nextRunDate.getTime();
     }
 
     public Integer getMainRole() {

@@ -692,10 +692,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         Integer entityId = getCallerCompanyId();
         Integer executorId = getCallerId();
 
-        // convert to a DTO
+        // convert user WS to a DTO that includes customer data
         UserDTOEx dto = new UserDTOEx(user, entityId);
 
-        // update the user info
+        // update the user info and customer data
         bl.update(executorId, dto);
 
         // now update the contact info
@@ -710,15 +710,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     Context.Name.USER_SESSION);
             sess.updateCreditCard(executorId, user.getUserId(),
                     new CreditCardDTO(user.getCreditCard()));
-        }
-
-        //udpate customerdto here - notes, automaticPaymentMethod
-        CustomerDTO cust= UserBL.getUserEntity(user.getUserId()).getCustomer();
-    	if ( null != cust ) {
-    		LOG.debug("This code should save=" + user.getNotes() + " and " + user.getAutomaticPaymentType());
-    		cust.setNotes(user.getNotes());
-    		cust.setAutoPaymentType(user.getAutomaticPaymentType());
-    		new CustomerDAS().save(cust);
         }
     }
 

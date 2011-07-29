@@ -420,23 +420,25 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         // find this user and get the first cc
 
         try {
-
             UserBL userBL = new UserBL();
             userBL.set(user);
-            // if it starts with a *, it is passing a masked cc, which means no update
-            if (dto != null && (dto.getNumber() == null || dto.getNumber().charAt(0) != '*')) { // it is providing a new cc
 
-                if (!userBL.getEntity().getCreditCards().isEmpty()) {
-
-                    CreditCardBL ccBL = new CreditCardBL(((CreditCardDTO)
-                                                                  userBL.getEntity().getCreditCards().iterator().next()).getId());
-                    ccBL.update(executorId, dto, user.getId());
-                } else { // this is really a create
+            if (dto != null) {
+                if (dto.getId() == 0) {
+                    // create a new credit card
                     createCreditCard(user.getUserId(), dto);
+
+                } else {
+                    // update existing credit card
+                    Integer primaryCreditCardId = userBL.getEntity().getCreditCards().iterator().next().getId();
+                    new CreditCardBL(primaryCreditCardId).update(executorId, dto, user.getId());
                 }
-            } else { // no new card, really
+
+            } else {
+                // credit card is set to null, delete existing customer card
                 deleteCreditCard(executorId, user.getUserId());
             }
+
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }

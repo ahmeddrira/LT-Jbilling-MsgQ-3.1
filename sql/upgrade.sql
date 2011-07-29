@@ -1286,6 +1286,21 @@ alter table price_model alter column strategy_type type varchar(40); -- postgres
 -- alter table price_model modify strategy_type varchar(40); -- mysql
 
 
+-- Date: 27-Jul-2011
+-- Redmine Issue: #1108
+-- Description: Subscriber Management - Manage Tax Rates
+
+-- insert new tax plugin to the database
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (90, 4, 'com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask', 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Country Tax Invoice Composition Task');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply tax item to the Invoice if the Partner's country code is matching.');
+
+-- insert new payment term penalty plugin
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (91, 4, 'com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask', 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Payment Terms Penalty Task');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply a Penalty to an Invoice having a due date beyond a configurable days period.');
+
+
 -- Date: 28-Jul-2011
 -- Description: user names can not be less than 5 characters. jB1 and 2 allows for a length of 4 chars
 update base_user set user_name = user_name || '1' where id in ( select id from base_user where length(user_name) < 5); -- postgresql

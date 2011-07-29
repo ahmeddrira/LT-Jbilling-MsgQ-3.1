@@ -279,6 +279,9 @@ class CustomerController {
         def user = new UserWS()
         UserHelper.bindUser(user, params)
 
+        log.debug("parent pricing param: ${params['user.useParentPricing']}")
+        log.debug("user parent pricing flag: ${user.useParentPricing}")
+
         def contacts = []
         def company = CompanyDTO.get(session['company_id'])
         UserHelper.bindContacts(user, contacts, company, params)

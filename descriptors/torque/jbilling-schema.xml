@@ -392,6 +392,7 @@
         <column name="is_parent" type="SMALLINT"/>
         <column name="exclude_aging" default="0" required="true" type="SMALLINT"/>
         <column name="invoice_child" type="SMALLINT"/>
+        <column name="use_parent_pricing" required="true" type="BIT"/>
         <column name="current_order_id" type="INTEGER"/>
         <column name="balance_type" type="INTEGER" default="1" required="true"/>
         <column name="dynamic_balance" type="NUMERIC" size="22" scale="10"/>

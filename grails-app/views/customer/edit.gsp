@@ -176,6 +176,12 @@
                         </g:applyLayout>
 
                         <g:applyLayout name="form/checkbox">
+                            <content tag="label"><g:message code="prompt.use.parent.pricing"/></content>
+                            <content tag="label.for">user.useParentPricing</content>
+                            <g:checkBox class="cb checkbox" name="user.useParentPricing" checked="${user?.useParentPricing}"/>
+                        </g:applyLayout>
+
+                        <g:applyLayout name="form/checkbox">
                             <content tag="label"><g:message code="prompt.exclude.ageing"/></content>
                             <content tag="label.for">user.excludeAgeing</content>
                             <g:checkBox class="cb checkbox" name="user.excludeAgeing" checked="${user?.excludeAgeing}"/>

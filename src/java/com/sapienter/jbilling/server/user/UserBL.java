@@ -208,11 +208,17 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
 
+            user.getCustomer().setNotes(dto.getCustomer().getNotes());
+            user.getCustomer().setAutoPaymentType(dto.getCustomer().getAutoPaymentType());
+
             // set the sub-account fields
             user.getCustomer().setIsParent(dto.getCustomer().getIsParent());
             if (dto.getCustomer().getParent() != null) {
                 // the API accepts the user ID of the parent instead of the customer ID
                 user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
+
+                // use parent pricing flag
+                user.getCustomer().setUseParentPricing(dto.getCustomer().useParentPricing());
 
                 // log invoice if child changes
                 Integer oldInvoiceIfChild = user.getCustomer().getInvoiceChild();

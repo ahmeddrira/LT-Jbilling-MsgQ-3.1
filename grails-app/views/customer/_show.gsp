@@ -117,6 +117,12 @@
                             </g:else>
                         </td>
                     </tr>
+                    <tr>
+                        <td><g:message code="prompt.use.parent.pricing"/></td>
+                        <td class="value">
+                            <g:formatBoolean boolean="${customer.useParentPricing}"/>
+                        </td>
+                    </tr>
                 </g:if>
 
                 <g:if test="${customer?.children}">

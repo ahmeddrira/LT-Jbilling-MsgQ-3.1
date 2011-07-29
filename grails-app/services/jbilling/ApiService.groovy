@@ -84,7 +84,7 @@ class ApiService implements IWebServicesSessionBean {
     }
 
 	public InvoiceWS[] getAllInvoicesForUser(Integer userId) {
-		return WebServicesSession.getAllInvoicesForUser(userId)
+		return webServicesSession.getAllInvoicesForUser(userId)
 	}
 	
 	public boolean notifyInvoiceByEmail(Integer invoiceId) {

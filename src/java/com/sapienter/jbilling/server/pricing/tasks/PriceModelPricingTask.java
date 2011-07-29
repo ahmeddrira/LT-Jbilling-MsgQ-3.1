@@ -115,6 +115,8 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
 
                     LOG.debug("Looking for price from parent user " + customer.getBaseUser().getId());
                     model = getCustomerPriceModel(customer.getBaseUser().getId(), itemId, attributes);
+
+                    if (model != null)  LOG.debug("Found price from parent user: " + model);
                 }
             }
 

@@ -347,6 +347,7 @@ public class UserBL extends ResultList implements UserSQL {
                 // the API accepts the user ID of the parent instead of the customer ID
                 user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
                 user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
+                user.getCustomer().setUseParentPricing(dto.getCustomer().useParentPricing());
             }
 
             // set dynamic balance fields

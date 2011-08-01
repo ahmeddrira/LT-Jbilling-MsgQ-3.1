@@ -85,6 +85,8 @@ class FilterFactory {
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.IS_NOT_EMPTY, field: 'orders', template: 'customer/orders', visible: false),
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.IS_NOT_EMPTY, field: 'invoices', template: 'customer/invoices', visible: false),
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.IS_NOT_EMPTY, field: 'payments', template: 'customer/payments', visible: false),
+            new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.IS_NOT_NULL, field: 'customer.parent', template: 'customer/child', visible: true),
+            new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.EQ, field: 'customer.isParent', template: 'trueOrFalse', visible: true),
         ],
         PAYMENT: [
             new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.EQ, field: 'u.id', template: 'id', visible: true),

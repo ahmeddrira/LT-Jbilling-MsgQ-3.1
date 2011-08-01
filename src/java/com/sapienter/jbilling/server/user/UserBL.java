@@ -45,6 +45,7 @@ import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.db.AchDAS;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
@@ -1231,6 +1232,18 @@ public class UserBL extends ResultList implements UserSQL {
         } catch (Exception e) {
             throw new SessionInternalError("Error getting user by status", UserBL.class, e);
         }
+    }
+
+    /**
+     * returns a list of users with matching custom contact fields. All given custom contact
+     * fields must match for a user to be returned by this method.
+     *
+     * @param entityId entity id
+     * @param fields custom contact fields with content to match
+     * @return list of users with matching contact fields
+     */
+    public List<UserDTO> getByCustomFields(Integer entityId, List<ContactFieldDTO> fields) {
+        return new UserDAS().findByCustomFields(entityId, fields);
     }
 
     public CachedRowSet getByCCNumber(Integer entityId, String number) {

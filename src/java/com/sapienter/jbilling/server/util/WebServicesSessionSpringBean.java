@@ -51,9 +51,11 @@ import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDAS;
 import com.sapienter.jbilling.server.order.OrderHelper;
+import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.CustomerPriceBL;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CustomerPriceDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
@@ -798,6 +800,28 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             LOG.error("WS - getUsersByCustomField", e);
             throw new SessionInternalError("Error getting users by custom field");
         }
+    }
+
+    /**
+     * Returns a list of user ids with matching custom contact fields.
+     *
+     * @param fields fields to match
+     * @return user ids with matching custom contact fields
+     */
+    public Integer[] getUsersByCustomFields(ContactFieldWS[] fields) {
+        List<ContactFieldDTO> dtos = new ArrayList<ContactFieldDTO>(fields.length);
+        for (ContactFieldWS field : fields) {
+            dtos.add(new ContactFieldDTO(field));
+        }
+
+        List<UserDTO> users = new UserBL().getByCustomFields(getCallerCompanyId(), dtos);
+
+        int i = 0;
+        Integer[] userIds = new Integer[users.size()];
+        for (UserDTO user : users) {
+            userIds[i++] = user.getId();
+        }
+        return userIds;
     }
 
     public void saveCustomContactFields(ContactFieldTypeWS[] fields) throws SessionInternalError {

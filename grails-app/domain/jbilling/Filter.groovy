@@ -218,6 +218,17 @@ class Filter implements Serializable {
                     return Restrictions.isNotEmpty(field)
                 }
                 break
+                case FilterConstraint.IS_NULL:
+                if (booleanValue) {
+                    return Restrictions.isNull(field)
+                }
+                break
+
+            case FilterConstraint.IS_NOT_NULL:
+                if (booleanValue) {
+                    return Restrictions.isNotNull(field)
+                }
+                break
         }
 
         return null;

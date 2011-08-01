@@ -119,7 +119,7 @@ target(updateImage: "Updates the jbilling image with the current release artifac
 
     // copy configuration files
     // don't copy DataSource, the reference tomcat install uses HSQLDB
-    copy(file: "${javaDir}/jbilling.properties.sample", tofile: "${jbillingHome}/jbilling.properties", overwrite: true)
+    copy(file: "${javaDir}/jbilling.properties", tofile: "${jbillingHome}/jbilling.properties", overwrite: true)
     copy(file: "${configDir}/Config.groovy", tofile: "${jbillingHome}/${grailsAppName}-Config.groovy", overwrite: true)
 
     // copy log4j configuration

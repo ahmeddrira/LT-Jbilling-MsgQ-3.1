@@ -510,7 +510,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         billingProcess.setRetriesToDo(0);
 
         InvoiceDTO[] newInvoices = processBL.generateInvoice(billingProcess,
-                user, false, onlyRecurring);
+                user, false, onlyRecurring, getCallerId());
 
         if (newInvoices != null) {
             Integer[] invoiceIds = new Integer[newInvoices.length];
@@ -553,7 +553,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         } else {
             LOG.debug("Adding order " + order.getId() + " to invoice " + invoiceId);
             IBillingProcessSessionBean process = (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-            invoice = process.generateInvoice(order.getId(), invoiceId, null);
+            invoice = process.generateInvoice(order.getId(), invoiceId, null, getCallerId());
         }
 
         return invoice == null ? null : invoice.getId();
@@ -589,10 +589,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         ContactBL cBl = new ContactBL();
         UserDTOEx dto = new UserDTOEx(newUser, entityId);
-        Integer userId = bl.create(dto);
+        Integer userId = bl.create(dto, getCallerId());
         if (newUser.getContact() != null) {
             newUser.getContact().setId(0);
-            cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId);
+            cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId, getCallerId());
         }
 
         if (newUser.getCreditCard() != null) {
@@ -674,7 +674,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         // update the contact
         ContactBL cBl = new ContactBL();
-        cBl.updateForUser(new ContactDTOEx(contact), userId, typeId);
+        cBl.updateForUser(new ContactDTOEx(contact), userId, typeId, getCallerId());
     }
 
     /**
@@ -701,7 +701,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         // now update the contact info
         if (user.getContact() != null) {
             ContactDTOEx primaryContact = new ContactDTOEx(user.getContact());
-            new ContactBL().createUpdatePrimaryForUser(primaryContact, user.getUserId(), entityId);
+            new ContactBL().createUpdatePrimaryForUser(primaryContact, user.getUserId(), entityId, getCallerId());
         }
 
         // and the credit card
@@ -993,7 +993,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             OrderDTO dbOrder = das.find(orderId);
 
             try {
-                retValue = ccBl.validatePreAuthorization(entityId, userId, cc, dbOrder.getTotal(), dbOrder.getCurrencyId());
+                retValue = ccBl.validatePreAuthorization(entityId, userId, cc, dbOrder.getTotal(), dbOrder.getCurrencyId(), getCallerId());
             } catch (PluggableTaskException e) {
                 throw new SessionInternalError("doing validation", WebServicesSessionSpringBean.class, e);
             }
@@ -1449,7 +1449,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
-        return session.applyPayment(new PaymentDTOEx(payment), invoiceId);
+        return session.applyPayment(new PaymentDTOEx(payment), invoiceId, getCallerId());
     }
 
     /**
@@ -1508,7 +1508,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         // process payment
         IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
-        Integer result = session.processAndUpdateInvoice(dto, null, entityId);
+        Integer result = session.processAndUpdateInvoice(dto, null, entityId, getCallerId());
         LOG.debug("paymentBean.processAndUpdateInvoice() Id=" + result);
 
         PaymentAuthorizationDTOEx auth = null;
@@ -1881,7 +1881,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     private InvoiceDTO doCreateInvoice(Integer orderId) {
         try {
             BillingProcessBL process = new BillingProcessBL();
-            InvoiceDTO invoice = process.generateInvoice(orderId, null);
+            InvoiceDTO invoice = process.generateInvoice(orderId, null, getCallerId());
             return invoice;
         } catch (Exception e) {
             LOG.error("WS - create invoice:", e);
@@ -1911,7 +1911,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         paymentDto.setPaymentDate(new Date());
 
         // make the call
-        payment.processAndUpdateInvoice(paymentDto, invoice);
+        payment.processAndUpdateInvoice(paymentDto, invoice, getCallerId());
 
         return paymentDto;
     }
@@ -2896,7 +2896,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     cc.setSecurityCode(creditCard.getSecurityCode());
                     cc.setExpiry(new Date());
                     Object auth= new CreditCardBL().validatePreAuthorization(getCallerCompanyId(), getCallerId(), 
-                            cc, new BigDecimal("0.01"), new Integer(1));
+                            cc, new BigDecimal("0.01"), new Integer(1), getCallerId());
                     if (null == auth) {
                         retVal=false;
                     }

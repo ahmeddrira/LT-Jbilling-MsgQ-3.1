@@ -133,7 +133,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
             // it could be that the user doesn't have a payment 
             // instrument (cc) in the db, or that is invalid (expired).
             if (!noInstrument) {
-                Integer result = processAndUpdateInvoice(dto, invoice);
+                Integer result = processAndUpdateInvoice(dto, invoice, null);
                 LOG.debug("After processing. Result=" + result);
                 if (result != null && result.equals(Constants.RESULT_OK)) {
                     retValue = dto.getPaymentMethod().getId();
@@ -190,7 +190,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
      * @throws SessionInternalError
      */
     public Integer processAndUpdateInvoice(PaymentDTOEx dto, 
-            InvoiceDTO invoice) throws SessionInternalError {
+            InvoiceDTO invoice, Integer executorUserId) throws SessionInternalError {
         try {
             PaymentBL bl = new PaymentBL();
             Integer entityId = invoice.getBaseUser().getEntity().getId();
@@ -212,7 +212,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
             // payments (from negative invoices), unless allowed.
             Integer result = null;
             if (dto.getAmount().compareTo(BigDecimal.ZERO) > 0) {
-                result = bl.processPayment(entityId, dto);
+                result = bl.processPayment(entityId, dto, executorUserId);
             } else {
                 // only process if negative payments are allowed
                 PreferenceBL preferenceBL = new PreferenceBL();
@@ -225,7 +225,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                 if (preferenceBL.getInt() == 1) {
                     LOG.warn("Processing payment with negative amount " +
                             dto.getAmount());
-                    result = bl.processPayment(entityId, dto);
+                    result = bl.processPayment(entityId, dto, executorUserId);
                 } else {
                     LOG.warn("Skiping payment processing. Payment with " +
                             "negative amount " + dto.getAmount());
@@ -269,27 +269,27 @@ public class PaymentSessionBean implements IPaymentSessionBean {
      * @throws SessionInternalError
      */
     public Integer processAndUpdateInvoice(PaymentDTOEx dto, 
-            Integer invoiceId, Integer entityId) throws SessionInternalError {
+            Integer invoiceId, Integer entityId, Integer executorUserId) throws SessionInternalError {
         try {
             if (dto.getIsRefund() == 0 && invoiceId != null) {
                 InvoiceBL bl = new InvoiceBL(invoiceId);
                 List inv = new ArrayList();
                 inv.add(invoiceId);
                 dto.setInvoiceIds(inv);
-                return processAndUpdateInvoice(dto, bl.getEntity());
+                return processAndUpdateInvoice(dto, bl.getEntity(), executorUserId);
             } else if (dto.getIsRefund() == 1 && 
                     dto.getPayment() != null && 
                     !dto.getPayment().getInvoiceIds().isEmpty()) {
                 InvoiceBL bl = new InvoiceBL((Integer) dto.
                         getPayment().getInvoiceIds().get(0));
-                return processAndUpdateInvoice(dto, bl.getEntity());
+                return processAndUpdateInvoice(dto, bl.getEntity(), executorUserId);
             } else {
                 // without an invoice, it's just creating the payment row
                 // and calling the processor
                 LOG.info("method called without invoice");
                 
                 PaymentBL bl = new PaymentBL();
-                Integer result = bl.processPayment(entityId, dto);
+                Integer result = bl.processPayment(entityId, dto, executorUserId);
                 if (result != null) {
                     bl.getEntity().setPaymentResult(new PaymentResultDAS().find(result));
                 }
@@ -442,7 +442,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
      * Id does suport invoiceId = null because it is possible to get a payment
      * that is not paying a specific invoice, a deposit for prepaid models.
      */
-    public Integer applyPayment(PaymentDTOEx payment, Integer invoiceId)  
+    public Integer applyPayment(PaymentDTOEx payment, Integer invoiceId, Integer executorUserId)  
             throws SessionInternalError {
         try {
             // create the payment record
@@ -453,7 +453,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
             // a payment that is applied, has always the same result
             payment.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_ENTERED));
             payment.setBalance(payment.getAmount());
-            paymentBl.create(payment);
+            paymentBl.create(payment, executorUserId);
             // this is necessary for the caller to get the Id of the
             // payment just created
             payment.setId(paymentBl.getEntity().getId());
@@ -589,7 +589,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                     payment.setCreateDatetime(Calendar.getInstance().getTime());
                     payment.setPaymentDate(Calendar.getInstance().getTime());
                     payment.setIsRefund(new Integer(0));
-                    applyPayment(payment, invoiceId);
+                    applyPayment(payment, invoiceId, null);
                     ret = true;
                     
                     // notify the customer that the payment was received

@@ -30,14 +30,19 @@ import com.sapienter.jbilling.server.order.UsageBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.user.CustomerPriceBL;
+import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription.Type.*;
 
 /**
  * Pricing plug-in that calculates prices using the customer price map and PriceModelDTO
@@ -48,15 +53,43 @@ import java.util.Map;
  * @since 16-08-2010
  */
 public class PriceModelPricingTask extends PluggableTask implements IPricing {
+
+    /**
+     * Type of usage calculation
+     */
+    private enum UsageType {
+        /** Count usage from the user making the pricing request */
+        USER,
+
+        /** Count usage from the user that holds the price */
+        PRICE_HOLDER;
+
+        public static UsageType valueOfIgnoreCase(String value) {
+            return UsageType.valueOf(value.trim().toUpperCase());
+        }
+    }
+
     private static final Logger LOG = Logger.getLogger(PriceModelPricingTask.class);
 
     private static final Integer MAX_RESULTS = 1;
 
-    private static final String PARAM_USE_ATTRIBUTES = "use_attributes";
-    private static final String PARAM_USE_WILDCARDS = "use_wildcards";
+    private static ParameterDescription USE_ATTRIBUTES = new ParameterDescription("use_attributes", false, BOOLEAN);
+    private static ParameterDescription USE_WILDCARDS = new ParameterDescription("use_wildcards", false, BOOLEAN);
+    private static ParameterDescription USAGE_TYPE = new ParameterDescription("usage_type", false, STR);
+    private static ParameterDescription SUB_ACCOUNT_USAGE = new ParameterDescription("include_sub_account_usage", false, BOOLEAN);
 
     private static final boolean DEFAULT_USE_ATTRIBUTES = false;
     private static final boolean DEFAULT_USE_WILDCARDS = false;
+    private static final String DEFAULT_USAGE_TYPE = UsageType.PRICE_HOLDER.name();
+    private static final boolean DEFAULT_SUB_ACCOUNT_USAGE = false;
+
+    {
+        descriptions.add(USE_ATTRIBUTES);
+        descriptions.add(USE_WILDCARDS);
+        descriptions.add(USAGE_TYPE);
+        descriptions.add(SUB_ACCOUNT_USAGE);
+    }
+
 
     public BigDecimal getPrice(Integer itemId,
                                BigDecimal quantity,
@@ -67,13 +100,25 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
                                OrderDTO pricingOrder) throws TaskException {
 
         LOG.debug("Calling PriceModelPricingTask with pricing order: " + pricingOrder);
-
         LOG.debug("Pricing item " + itemId + ", quantity " + quantity + " - for user " + userId);
 
         if (userId != null) {
             // get customer pricing model, use fields as attributes
             Map<String, String> attributes = getAttributes(fields);
+
+            // iterate through parents until a price is found.
             PriceModelDTO model = getCustomerPriceModel(userId, itemId, attributes);
+            CustomerDTO customer = new UserBL(userId).getEntity().getCustomer();
+            if (customer.useParentPricing()) {
+                while (customer.getParent() != null && model == null) {
+                    customer = customer.getParent();
+
+                    LOG.debug("Looking for price from parent user " + customer.getBaseUser().getId());
+                    model = getCustomerPriceModel(customer.getBaseUser().getId(), itemId, attributes);
+
+                    if (model != null)  LOG.debug("Found price from parent user: " + model);
+                }
+            }
 
             // no customer price, this means the customer has not subscribed to a plan affecting this
             // item, or does not have a customer specific price set. Use the item default price.
@@ -89,7 +134,8 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
                 // fetch current usage of the item if the pricing strategy requires it
                 Usage usage = null;
                 if (model.getStrategy().requiresUsage()) {
-                    usage = new UsageBL(userId, pricingOrder).getItemUsage(itemId);
+                    UsageType type = UsageType.valueOfIgnoreCase(getParameter(USAGE_TYPE.getName(), DEFAULT_USAGE_TYPE));
+                    usage = getUsage(type, itemId, userId, customer.getBaseUser().getId(), pricingOrder);
 
                     LOG.debug("Current usage of item " + itemId + ": " + usage);
                 } else {
@@ -124,11 +170,12 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
     public PriceModelDTO getCustomerPriceModel(Integer userId, Integer itemId, Map<String, String> attributes) {
         CustomerPriceBL customerPriceBl = new CustomerPriceBL(userId);
 
-        if (getParameter(PARAM_USE_ATTRIBUTES, DEFAULT_USE_ATTRIBUTES) && !attributes.isEmpty()) {
-            if (getParameter(PARAM_USE_WILDCARDS, DEFAULT_USE_WILDCARDS)) {
+        if (getParameter(USE_ATTRIBUTES.getName(), DEFAULT_USE_ATTRIBUTES) && !attributes.isEmpty()) {
+            if (getParameter(USE_WILDCARDS.getName(), DEFAULT_USE_WILDCARDS)) {
                 LOG.debug("Fetching customer price using wildcard attributes: " + attributes);
                 List<PlanItemDTO> items = customerPriceBl.getPricesByWildcardAttributes(itemId, attributes, MAX_RESULTS);
                 return !items.isEmpty() ? items.get(0).getModel() : null;
+
             } else {
                 LOG.debug("Fetching customer price using attributes: " + attributes);
                 List<PlanItemDTO> items = customerPriceBl.getPricesByAttributes(itemId, attributes, MAX_RESULTS);
@@ -141,6 +188,38 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
             LOG.debug("Fetching customer price without attributes (no PricingFields given or 'use_attributes' = false)");
             PlanItemDTO item = customerPriceBl.getPrice(itemId);
             return item != null ? item.getModel() : null;
+        }
+    }
+
+    /**
+     * Returns the total usage of the given item for the set UsageType, and optionally include charges
+     * made to sub-accounts in the usage calculation.
+     *
+     * @param type usage type to query, may use either USER or PRICE_HOLDER to determine usage
+     * @param itemId item id to get usage for
+     * @param userId user id making the price request
+     * @param priceUserId user holding the pricing plan
+     * @param pricingOrder working order (order being edited/created)
+     * @return usage for customer and usage type
+     */
+    private Usage getUsage(UsageType type, Integer itemId, Integer userId, Integer priceUserId, OrderDTO pricingOrder) {
+        UsageBL usage;
+        switch (type) {
+            case USER:
+                usage = new UsageBL(userId, pricingOrder);
+                break;
+
+            default:
+            case PRICE_HOLDER:
+                usage = new UsageBL(priceUserId, pricingOrder);
+                break;
+        }
+
+        // include usage from sub account?
+        if (getParameter(SUB_ACCOUNT_USAGE.getName(), DEFAULT_SUB_ACCOUNT_USAGE)) {
+            return usage.getSubAccountItemUsage(itemId);
+        } else {
+            return usage.getItemUsage(itemId);
         }
     }
 

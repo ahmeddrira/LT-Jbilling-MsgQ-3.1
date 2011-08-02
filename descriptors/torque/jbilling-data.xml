@@ -1264,6 +1264,12 @@
     <InternationalDescription TableId="24" ForeignId=" 88" PsudoColumn="description" LanguageId="1" Content="A scheduled task to execute the Ageing Process."/>
     <InternationalDescription TableId="24" ForeignId=" 89" PsudoColumn="title" LanguageId="1" Content="Business day ageing"/>
     <InternationalDescription TableId="24" ForeignId=" 89" PsudoColumn="description" LanguageId="1" Content="Ages a user based on the number of business days (excluding holidays) that the account is overdue."/>
+    <InternationalDescription TableId="24" ForeignId="90" PsudoColumn="title" LanguageId="1" Content="Simple Tax Composition Task"/>
+    <InternationalDescription TableId="24" ForeignId="90" PsudoColumn="description" LanguageId="1" Content="A pluggable task of the type AbstractChargeTask to apply tax item to an Invoice with a facility of exempting an exempt item or an exemp customer."/>
+    <InternationalDescription TableId="24" ForeignId="91" PsudoColumn="title" LanguageId="1" Content="Country Tax Invoice Composition Task"/>
+    <InternationalDescription TableId="24" ForeignId="91" PsudoColumn="description" LanguageId="1" Content="A pluggable task of the type AbstractChargeTask to apply tax item to the Invoice if the Partner's country code is matching."/>
+    <InternationalDescription TableId="24" ForeignId="92" PsudoColumn="title" LanguageId="1" Content="Payment Terms Penalty Task"/>
+    <InternationalDescription TableId="24" ForeignId="92" PsudoColumn="description" LanguageId="1" Content="A pluggable task of the type AbstractChargeTask to apply a Penalty to an Invoice having a due date beyond a configurable days period."/>
 	<InternationalDescription TableId="99" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Referral Fee"/>
     <InternationalDescription TableId="99" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Payment Processor"/>
     <InternationalDescription TableId="99" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="IP Address"/>
@@ -1919,7 +1925,6 @@
     <PluggableTaskType Id="77" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentMethodRouterTask" MinParameters="4"/>
     <PluggableTaskType Id="78" CategoryId="23" ClassName="com.sapienter.jbilling.server.rule.task.VelocityRulesGeneratorTask" MinParameters="2"/>
     <PluggableTaskType Id="79" CategoryId="14" ClassName="com.sapienter.jbilling.server.pricing.tasks.PriceModelPricingTask" MinParameters="0"/>
-    <PluggableTaskType Id="80" CategoryId="14" ClassName="com.sapienter.jbilling.server.pricing.tasks.TieredPriceModelPricingTask" MinParameters="0"/>
     <PluggableTaskType Id="81" CategoryId="22" ClassName="com.sapienter.jbilling.server.mediation.task.MediationProcessTask" MinParameters="0"/>
     <PluggableTaskType Id="82" CategoryId="22" ClassName="com.sapienter.jbilling.server.billing.task.BillingProcessTask" MinParameters="0"/>
     <PluggableTaskType Id="83" CategoryId="22" ClassName="com.sapienter.jbilling.server.process.task.ScpUploadTask" MinParameters="4"/>
@@ -1930,6 +1935,8 @@
     <PluggableTaskType Id="88" CategoryId="22" ClassName="com.sapienter.jbilling.server.process.task.AgeingProcessTask" MinParameters="0"/>
     <PluggableTaskType Id="89" CategoryId="24" ClassName="com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask" MinParameters="0"/>
     <PluggableTaskType Id="90" CategoryId="4" ClassName="com.sapienter.jbilling.server.process.task.SimpleTaxCompositionTask" MinParameters="1"/>
+    <PluggableTaskType Id="91" CategoryId="4" ClassName="com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask" MinParameters="2"/>
+    <PluggableTaskType Id="92" CategoryId="4" ClassName="com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask" MinParameters="2"/>
 
     <PluggableTaskTypeCategory Id="1" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>

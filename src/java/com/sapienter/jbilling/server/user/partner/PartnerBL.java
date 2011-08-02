@@ -296,14 +296,14 @@ public class PartnerBL extends ResultList implements PartnerSQL {
         // process the payment realtime
         Integer result = Constants.RESULT_OK;
         if (process) {
-            result = paymentBL.processPayment(entityId, payment);
+            result = paymentBL.processPayment(entityId, payment, null);
             createdPayment = paymentBL.getEntity();
             if (result == null) { // means no pluggable task config.
                 result = Constants.RESULT_UNAVAILABLE;
             }
         } else {
             // create the payment row
-            paymentBL.create(payment);
+            paymentBL.create(payment, null);
             createdPayment = paymentBL.getEntity();
         }
         // and link it to this payout row

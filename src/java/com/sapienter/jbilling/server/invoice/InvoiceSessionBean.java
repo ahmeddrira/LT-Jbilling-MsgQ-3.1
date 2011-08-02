@@ -76,7 +76,7 @@ public class InvoiceSessionBean implements IInvoiceSessionBean {
             InvoiceBL invoice = new InvoiceBL();
             UserBL user = new UserBL();
             if (user.getEntityId(userId).equals(entityId)) {
-                invoice.create(userId, newInvoice, null);
+                invoice.create(userId, newInvoice, null, null);
                 invoice.createLines(newInvoice);
             } else {
                 throw new SessionInternalError("User " + userId + " doesn't " +

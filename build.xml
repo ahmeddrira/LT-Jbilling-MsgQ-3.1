@@ -15,9 +15,8 @@
         </fileset>
 
         <!-- grails libraries-->
-        <fileset dir="${env.GRAILS_HOME}/lib/">
-            <include name="*.jar"/>
-        </fileset>
+        <fileset dir="${env.GRAILS_HOME}/lib/" includes="*.jar"/>
+        <fileset dir="${env.GRAILS_HOME}/dist/" includes="*.jar"/>
     </path>
         
     <path id="test.classpath">

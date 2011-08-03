@@ -25,6 +25,7 @@ includeTargets << new File("${basedir}/scripts/Jar.groovy")
 
 imageDir = "${basedir}/image"
 sourcePackageName = "${targetDir}/${releaseName}-src.zip"
+packageName = "${targetDir}/${releaseName}.zip"
 
 target(cleanPackages: "Remove old packages from the target directory.") {
     delete(dir: targetDir, includes: "${grailsAppName}-*.zip")

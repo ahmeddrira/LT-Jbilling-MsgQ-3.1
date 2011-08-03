@@ -33,7 +33,7 @@ javaDir = "${basedir}/src/java"
 targetDir = "${basedir}/target"
 
 timestamp = String.format("%tF-%<tH%<tM", new Date())
-releaseName = "${grailsAppName}-${grailsAppVersion}-${timestamp}"
+releaseName = "${grailsAppName}-${grailsAppVersion}"
 packageName = "${targetDir}/${releaseName}.zip"
 
 target(prepareRelease: "Builds the war and all necessary resources.") {
@@ -56,7 +56,8 @@ target(packageRelease: "Builds the war and packages all the necessary config fil
     // zip up resources into a release package
     delete(dir: targetDir, includes: "${grailsAppName}-*.zip")
 
-    zip(filesonly: false, update: false, destfile: packageName) {
+    // zip into a separate timestamped archive for delivery to customers
+    zip(filesonly: false, update: false, destfile: "${packageName}-${timestamp}") {
         zipfileset(dir: resourcesDir, prefix: "jbilling/resources")
         zipfileset(dir: targetDir, includes: "${grailsAppName}.jar", prefix: "jbilling/resources/api")
         zipfileset(dir: javaDir, includes: "jbilling.properties", fullpath: "jbilling/jbilling.properties")
@@ -64,6 +65,7 @@ target(packageRelease: "Builds the war and packages all the necessary config fil
         zipfileset(dir: configDir, includes: "DataSource.groovy", fullpath: "jbilling/${grailsAppName}-DataSource.groovy")
         zipfileset(dir: targetDir, includes: "${grailsAppName}.war")
         zipfileset(file: sqlFile.absolutePath, includes: sqlFile.name)
+        zipfileset(dir: sqlDir, includes: "upgrade.sql")
     }
 
     println "Packaged release to ${packageName}"

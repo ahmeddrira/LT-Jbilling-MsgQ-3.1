@@ -133,8 +133,6 @@ target(updateImage: "Updates the jbilling image with the current release artifac
 
 
 target(packageTomcat: "Builds and packages the binary jbilling tomcat release.") {
-    updateImage()
-
     // clear tomcat logs, temp and work directories
     delete(dir: "${imageDir}/logs")
     mkdir(dir: "${imageDir}/logs")
@@ -168,6 +166,7 @@ target(packagePublicRelease: "Builds the public binary jbilling tomcat release, 
         default:
             println "Building release packages ..."
             cleanPackages()
+            updateImage()
             packageSource()
             packageTomcat()
     }

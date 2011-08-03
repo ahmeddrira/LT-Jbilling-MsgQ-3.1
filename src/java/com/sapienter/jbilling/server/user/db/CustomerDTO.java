@@ -77,6 +77,7 @@ public class CustomerDTO implements java.io.Serializable {
     private Integer isParent;
     private int excludeAging;
     private Integer invoiceChild;
+    private boolean useParentPricing = false;
     private Integer currentOrderId;
     private int balanceType = Constants.BALANCE_NO_DYNAMIC;
     private BigDecimal dynamicBalance;
@@ -136,6 +137,10 @@ public class CustomerDTO implements java.io.Serializable {
             setInvoiceChild(user.getInvoiceChild() ? 1 : 0);
         }
 
+        if (user.getUseParentPricing() != null) {
+            setUseParentPricing(user.useParentPricing());
+        }
+
         if (user.getCreditCard() != null) {
             setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_CC);
         }
@@ -159,6 +164,9 @@ public class CustomerDTO implements java.io.Serializable {
         setDueDateValue(user.getDueDateValue());
 
         setExcludeAging(user.getExcludeAgeing() != null && user.getExcludeAgeing() ? 1 : 0);
+
+        setNotes(user.getNotes());
+        setAutoPaymentType(user.getAutomaticPaymentType());
 
         LOG.debug("Customer created with auto-recharge: " + getAutoRecharge() + " incoming var, " + user.getAutoRecharge());
     }
@@ -301,6 +309,19 @@ public class CustomerDTO implements java.io.Serializable {
 
     public void setInvoiceChild(Integer invoiceChild) {
         this.invoiceChild = invoiceChild;
+    }
+
+    @Column(name = "use_parent_pricing", nullable = false)
+    public boolean getUseParentPricing() {
+        return useParentPricing;
+    }
+
+    public boolean useParentPricing() {
+        return useParentPricing;
+    }
+
+    public void setUseParentPricing(boolean useParentPricing) {
+        this.useParentPricing = useParentPricing;
     }
 
     @Column(name = "current_order_id")

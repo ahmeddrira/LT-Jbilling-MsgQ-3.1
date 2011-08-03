@@ -523,7 +523,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             
             // payment and notification only needed if this user gets a 
             // new invoice.
-            InvoiceDTO newInvoices[] = processBL.generateInvoice(process, user.getEntity(), isReview, onlyRecurring);
+            InvoiceDTO newInvoices[] = processBL.generateInvoice(process, user.getEntity(), isReview, onlyRecurring, null);
             if (newInvoices == null) {
                 if (!isReview) {
                     NoNewInvoiceEvent event = new NoNewInvoiceEvent(
@@ -775,12 +775,12 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
     /**
      * @return the id of the invoice generated
      */
-    public InvoiceDTO generateInvoice(Integer orderId, Integer invoiceId, Integer languageId)
+    public InvoiceDTO generateInvoice(Integer orderId, Integer invoiceId, Integer languageId, Integer executorUserId)
             throws SessionInternalError {
         
         try {
             BillingProcessBL process = new BillingProcessBL();
-            InvoiceDTO invoice = process.generateInvoice(orderId, invoiceId);
+            InvoiceDTO invoice = process.generateInvoice(orderId, invoiceId, executorUserId);
             invoice.touch();
             
             return invoice;

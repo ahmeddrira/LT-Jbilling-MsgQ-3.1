@@ -69,15 +69,14 @@
                                 </td>
                                 <td class="innerContent">
                                     <div class="inp-bg inp4">
-                                        <g:textField name="currencies.${currency.id}.rate" class="field" value="${formatNumber(number: currency.rate, formatName: 'decimal.format')}"/>
+                                        <g:textField name="currencies.${currency.id}.rate" class="field" value="${currency.rate}"/>
                                     </div>
                                 </td>
                                 <td class="innerContent" style="text-align: left;">
-
                                     <g:if test="${currency.id != 1}">
                                         %{-- editable rate --}%
                                         <div class="inp-bg inp4">
-                                            <g:textField name="currencies.${currency.id}.sysRate" class="field" value="${formatNumber(number: currency.sysRate, formatName: 'decimal.format')}"/>
+                                            <g:textField name="currencies.${currency.id}.sysRate" class="field" value="${currency.sysRate}"/>
                                         </div>
                                     </g:if>
                                     <g:else>

@@ -383,10 +383,15 @@ public class OrderBL extends ResultList
             }
 
             // add a log row for convenience
-            eLogger.auditBySystem(entityId, order.getBaseUserByUserId().getId(),
-                                  Constants.TABLE_PUCHASE_ORDER, order.getId(),
-                                  EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
-
+            if (userAgentId != null) {
+                eLogger.audit(userAgentId, order.getBaseUserByUserId().getId(), 
+                        Constants.TABLE_PUCHASE_ORDER, order.getId(), 
+                        EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
+            } else {
+                eLogger.auditBySystem(entityId, order.getBaseUserByUserId().getId(),
+                                      Constants.TABLE_PUCHASE_ORDER, order.getId(),
+                                      EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
+            }
             EventManager.process(new NewOrderEvent(entityId, order));
         } catch (Exception e) {
             throw new SessionInternalError("Create exception creating order entity bean", OrderBL.class, e);

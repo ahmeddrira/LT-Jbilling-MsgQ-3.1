@@ -99,7 +99,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
 
                 ContactBL cBl = new ContactBL();
 
-                Integer userId = bl.create(newUser);
+                Integer userId = bl.create(newUser, null);
                 if (userId != null) {
                     // children inherit the contact of the parent user
                     if (newUser.getCustomer() != null &&
@@ -108,7 +108,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
                         contact = cBl.getDTO();
                         LOG.debug("Using parent's contact " + contact.getId());
                     }
-                    cBl.createPrimaryForUser(contact, userId, newUser.getEntityId());
+                    cBl.createPrimaryForUser(contact, userId, newUser.getEntityId(), null);
                 } else {
                     // means that the partner doens't exist
                     userId = new Integer(-1);
@@ -278,7 +278,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
         try {
             ContactBL cbl = new ContactBL();
 
-            cbl.updateForUser(dto, userId, contactTypeId);
+            cbl.updateForUser(dto, userId, contactTypeId, null);
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }

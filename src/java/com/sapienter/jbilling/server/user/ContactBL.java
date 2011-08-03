@@ -228,14 +228,14 @@ public class ContactBL {
         eLogger = EventLogger.getInstance();
     }
     
-    public Integer createPrimaryForUser(ContactDTOEx dto, Integer userId, Integer entityId) 
+    public Integer createPrimaryForUser(ContactDTOEx dto, Integer userId, Integer entityId, Integer executorUserId) 
             throws SessionInternalError {
         // find which type id is the primary for this entity
         try {
             Integer retValue;
             ContactTypeDTO type = new ContactTypeDAS().findPrimary(entityId);
 
-            retValue =  createForUser(dto, userId, type.getId());
+            retValue =  createForUser(dto, userId, type.getId(), executorUserId);
             // this is the primary contact, the only one with a user_id
             // denormilized for performance
             contact.setUserId(userId); 
@@ -257,7 +257,7 @@ public class ContactBL {
             set(userId, type.getId());
             if (contact == null) {
                 // this one is available
-                createForUser(dto, userId, type.getId());
+                createForUser(dto, userId, type.getId(), null);
                 return true;
             }
         }
@@ -266,9 +266,9 @@ public class ContactBL {
     }
     
     public Integer createForUser(ContactDTOEx dto, Integer userId, 
-            Integer typeId) throws SessionInternalError {
+            Integer typeId, Integer executorUserId) throws SessionInternalError {
         try {
-            return create(dto, Constants.TABLE_BASE_USER, userId, typeId);
+            return create(dto, Constants.TABLE_BASE_USER, userId, typeId, executorUserId);
         } catch (Exception e) {
             LOG.debug("Error creating contact for " +
                     "user " + userId);
@@ -277,7 +277,7 @@ public class ContactBL {
     }
     
     public Integer createForInvoice(ContactDTOEx dto, Integer invoiceId) {
-        return create(dto, Constants.TABLE_INVOICE, invoiceId, new Integer(1));
+        return create(dto, Constants.TABLE_INVOICE, invoiceId, new Integer(1), null);
     }
     
     /**
@@ -290,7 +290,7 @@ public class ContactBL {
      * @throws NamingException
      */
     public Integer create(ContactDTOEx dto, String table,  
-            Integer foreignId, Integer typeId) {
+            Integer foreignId, Integer typeId, Integer executorUserId) {
         // first thing is to create the map to the user
         ContactMapDTO map = new ContactMapDTO();
         map.setJbillingTable(jbDAS.findByName(table));
@@ -318,12 +318,21 @@ public class ContactBL {
             NewContactEvent event = new NewContactEvent(contact, entityId);
             EventManager.process(event);
 
-            eLogger.auditBySystem(entityId,
-                              contact.getUserId(),
-                              Constants.TABLE_CONTACT,
-                              contact.getId(),
-                              EventLogger.MODULE_USER_MAINTENANCE,
-                              EventLogger.ROW_CREATED, null, null, null);
+            if ( null != executorUserId) {
+                eLogger.audit(executorUserId,
+                        contact.getUserId(),
+                        Constants.TABLE_CONTACT,
+                        contact.getId(),
+                        EventLogger.MODULE_USER_MAINTENANCE,
+                        EventLogger.ROW_CREATED, null, null, null);
+            } else {
+                eLogger.auditBySystem(entityId,
+                                  contact.getUserId(),
+                                  Constants.TABLE_CONTACT,
+                                  contact.getId(),
+                                  EventLogger.MODULE_USER_MAINTENANCE,
+                                  EventLogger.ROW_CREATED, null, null, null);
+            }
         }
 
         return contact.getId();
@@ -331,37 +340,37 @@ public class ContactBL {
     
     public void updatePrimaryForUser(ContactDTOEx dto, Integer userId) {
         contact = contactDas.findPrimaryContact(userId);
-        update(dto);
+        update(dto, null);
     }
 
-    public void createUpdatePrimaryForUser(ContactDTOEx dto, Integer userId, Integer entityId) {
+    public void createUpdatePrimaryForUser(ContactDTOEx dto, Integer userId, Integer entityId, Integer executorId) {
         contact = contactDas.findPrimaryContact(userId);
 
         if (contact == null) {
-            createPrimaryForUser(dto, userId, entityId);
+            createPrimaryForUser(dto, userId, entityId, executorId);
         } else {
-            update(dto);
+            update(dto, executorId);
         }
     }
     
     public void updateForUser(ContactDTOEx dto, Integer userId,
-            Integer contactTypeId) throws SessionInternalError {
+            Integer contactTypeId, Integer executorUserId) throws SessionInternalError {
         contact = contactDas.findContact(userId, contactTypeId);
         if (contact != null) {
             if (entityId == null) {
                 setEntityFromUser(userId);
             }
-            update(dto);
+            update(dto, executorUserId);
         } else {
             try {
-                createForUser(dto, userId, contactTypeId);
+                createForUser(dto, userId, contactTypeId, executorUserId);
             } catch (Exception e1) {
                 throw new SessionInternalError(e1);
             }
         } 
     }
     
-    private void update(ContactDTOEx dto) {
+    private void update(ContactDTOEx dto, Integer executorUserId) {
         contact.setAddress1(dto.getAddress1());
         contact.setAddress2(dto.getAddress2());
         contact.setCity(dto.getCity());
@@ -388,13 +397,21 @@ public class ContactBL {
         NewContactEvent event = new NewContactEvent(contact, entityId);
         EventManager.process(event);
 
-        eLogger.auditBySystem(entityId,
-                              contact.getUserId(),
-                              Constants.TABLE_CONTACT,
-                              contact.getId(),
-                              EventLogger.MODULE_USER_MAINTENANCE,
-                              EventLogger.ROW_UPDATED, null, null, null);
-
+        if (null != executorUserId ) {
+            eLogger.audit(executorUserId,
+                    contact.getUserId(),
+                    Constants.TABLE_CONTACT,
+                    contact.getId(),
+                    EventLogger.MODULE_USER_MAINTENANCE,
+                    EventLogger.ROW_UPDATED, null, null, null);
+        } else {
+            eLogger.auditBySystem(entityId,
+                                  contact.getUserId(),
+                                  Constants.TABLE_CONTACT,
+                                  contact.getId(),
+                                  EventLogger.MODULE_USER_MAINTENANCE,
+                                  EventLogger.ROW_UPDATED, null, null, null);
+        }
         updateCreateFields(dto.getFieldsTable(), true);
     }
     

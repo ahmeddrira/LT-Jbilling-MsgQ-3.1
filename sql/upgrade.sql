@@ -1265,7 +1265,6 @@ insert into permission_role_map (role_id, permission_id) values (5, 93);
 
 -- Date: 11-Jul-2011
 -- Description: Categories excluded from percentage line calculations
-
 drop table if exists item_type_exclude_map;
 create table item_type_exclude_map (
     item_id int NOT NULL,
@@ -1276,9 +1275,9 @@ create table item_type_exclude_map (
 alter table item_type_exclude_map add constraint item_type_exclude_item_id_FK foreign key (item_id) references item (id);
 alter table item_type_exclude_map add constraint item_type_exclude_type_id_FK foreign key (type_id) references item_type (id);
 
+
 -- Date: 13-Jul-2011
 -- Description: Item selector price model
-
 alter table order_line add column use_item boolean;
 update order_line set use_item = false where use_item is null;
 alter table order_line alter column use_item set not null;
@@ -1287,6 +1286,30 @@ alter table price_model alter column strategy_type type varchar(40); -- postgres
 -- alter table price_model modify strategy_type varchar(40); -- mysql
 
 -- Date: 28-Jul-2011
--- Description: user names can not be less than 5 charachters. jB1 and 2 allows for a length of 4 chars
+-- Description: user names can not be less than 5 characters. jB1 and 2 allows for a length of 4 chars
+update base_user set user_name = user_name || '1' where id in ( select id from base_user where length(user_name) < 5); -- postgresql
 
-update base_user set user_name = user_name || '1' where id in ( select id from base_user where length(user_name) < 5); -- postgres
+-- Date: 29-Jul-2011
+-- Redmine Issue: #1208
+-- Description: Sub-account pricing
+alter table customer add column use_parent_pricing boolean;
+update customer set use_parent_pricing = false where use_parent_pricing is null;
+alter table customer alter column use_parent_pricing set not null;
+
+-- remove obsolete TieredPriceModelPricingTask plug-in, functionality moved into PriceModelPricingTask
+update pluggable_task set type_id = 79 where type_id = 80;
+delete from pluggable_task_type where id = 80;
+
+-- Date: 27-Jul-2011
+-- Redmine Issue: #1108
+-- Description: Subscriber Management - Manage Tax Rates
+
+-- insert new tax plugin to the database
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (90, 4, 'com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask', 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Country Tax Invoice Composition Task');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply tax item to the Invoice if the Partner's country code is matching.');
+
+-- insert new payment term penalty plugin
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (91, 4, 'com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask', 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Payment Terms Penalty Task');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply a Penalty to an Invoice having a due date beyond a configurable days period.');

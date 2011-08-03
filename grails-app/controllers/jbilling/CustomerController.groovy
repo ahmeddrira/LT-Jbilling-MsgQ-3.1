@@ -82,9 +82,10 @@ class CustomerController {
                 offset: params.offset
         ) {
             createAlias("contact", "contact")
+            createAlias("customer", "customer")
             and {
                 filters.each { filter ->
-                    //log.debug "Filter value: '${filter.field}'"
+                    //log.debug "Filter toString(): " + filter.toString()
                     if (filter.value) {
                         // handle user status separately from the other constraints
                         // we need to find the UserStatusDTO to compare to
@@ -278,6 +279,9 @@ class CustomerController {
     def save = {
         def user = new UserWS()
         UserHelper.bindUser(user, params)
+
+        log.debug("parent pricing param: ${params['user.useParentPricing']}")
+        log.debug("user parent pricing flag: ${user.useParentPricing}")
 
         def contacts = []
         def company = CompanyDTO.get(session['company_id'])

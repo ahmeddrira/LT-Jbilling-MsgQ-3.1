@@ -108,8 +108,9 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
 
             // iterate through parents until a price is found.
             PriceModelDTO model = getCustomerPriceModel(userId, itemId, attributes);
-            CustomerDTO customer = new UserBL(userId).getEntity().getCustomer();
-            if (customer.useParentPricing()) {
+            UserBL user = new UserBL(userId);
+            CustomerDTO customer = user.getEntity() != null ? user.getEntity().getCustomer() : null;
+            if (customer != null && customer.useParentPricing()) {
                 while (customer.getParent() != null && model == null) {
                     customer = customer.getParent();
 

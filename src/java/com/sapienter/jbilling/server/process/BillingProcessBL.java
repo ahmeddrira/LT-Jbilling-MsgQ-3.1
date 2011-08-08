@@ -169,7 +169,7 @@ public class BillingProcessBL extends ResultList
      * @throws SessionInternalError
      */
     public InvoiceDTO generateInvoice(Integer orderId,
-            Integer invoiceId)
+            Integer invoiceId, Integer executorUserId)
             throws PluggableTaskException, SessionInternalError,
             SQLException {
         InvoiceDTO retValue = null;
@@ -224,7 +224,7 @@ public class BillingProcessBL extends ResultList
             if (invoiceId == null) {
                 // it is a new invoice from a singe order
                 retValue = generateDBInvoice(userId, newInvoice, null,
-                        Constants.ORDER_PROCESS_ORIGIN_MANUAL);
+                        Constants.ORDER_PROCESS_ORIGIN_MANUAL, executorUserId);
                 // try to get this new invioce paid by previously unlinked 
                 // payments
                 if (paymentApplication) {
@@ -270,7 +270,7 @@ public class BillingProcessBL extends ResultList
 
     public InvoiceDTO[] generateInvoice(
             BillingProcessDTO process, UserDTO user,
-            boolean isReview, boolean onlyRecurring)
+            boolean isReview, boolean onlyRecurring, Integer executorUserId)
             throws SessionInternalError {
 
         Integer userId = user.getUserId();
@@ -465,7 +465,7 @@ public class BillingProcessBL extends ResultList
                 retValue[index] = generateDBInvoice(user.getUserId(),
                                                     invoice,
                                                     (process.getId() != 0 ? process : null),
-                                                    Constants.ORDER_PROCESS_ORIGIN_PROCESS);
+                                                    Constants.ORDER_PROCESS_ORIGIN_PROCESS, executorUserId);
 
                 // try to get this new invioce paid by previously unlinked 
                 // payments
@@ -650,7 +650,7 @@ public class BillingProcessBL extends ResultList
 
     private InvoiceDTO generateDBInvoice(Integer userId,
             NewInvoiceDTO newInvoice, BillingProcessDTO process,
-            Integer origin)
+            Integer origin, Integer executorUserId)
             throws SessionInternalError {
         // The invoice row is created first
         // all that fits in the DTO goes there
@@ -666,7 +666,7 @@ public class BillingProcessBL extends ResultList
         InvoiceBL invoiceBL = new InvoiceBL();
 
         try {
-            invoiceBL.create(userId, newInvoice, process);
+            invoiceBL.create(userId, newInvoice, process, executorUserId);
             invoiceBL.createLines(newInvoice);
         } catch (Exception e) {
             LOG.fatal("CreateException creating invoice record", e);

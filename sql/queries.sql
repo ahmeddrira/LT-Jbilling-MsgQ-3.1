@@ -414,3 +414,5 @@ where jt.name = gs.dtype
   and gs.dtype = 'process_run_status'
   and id.foreign_id = gs.status_value
 
+-- find plug-ins with wrong order 
+select count(*), type_id, processing_order from pluggable_task where entity_id = 319 group by type_id, processing_order having count(*) > 1;

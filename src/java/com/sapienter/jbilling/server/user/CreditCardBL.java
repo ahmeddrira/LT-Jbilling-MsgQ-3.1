@@ -332,7 +332,7 @@ public class CreditCardBL extends ResultList
      * @throws com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException
      */
     public PaymentAuthorizationDTOEx validatePreAuthorization(Integer entityId, Integer userId, CreditCardDTO cc,
-                                                              BigDecimal amount, Integer currencyId) throws PluggableTaskException {
+                                                              BigDecimal amount, Integer currencyId, Integer executorUserId) throws PluggableTaskException {
 
         // create a new payment record
         PaymentDTOEx paymentDto = new PaymentDTOEx();
@@ -351,7 +351,7 @@ public class CreditCardBL extends ResultList
         paymentDto.setBalance(amount);
 
         PaymentBL payment = new PaymentBL();
-        payment.create(paymentDto); // this updates the id
+        payment.create(paymentDto, executorUserId); // this updates the id
 
         // use the payment processor configured 
         PluggableTaskManager taskManager = new PluggableTaskManager(entityId, Constants.PLUGGABLE_TASK_PAYMENT);

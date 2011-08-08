@@ -121,7 +121,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
      *            It can be null.
      */
     public void create(Integer userId, NewInvoiceDTO newInvoice,
-            BillingProcessDTO process) {
+            BillingProcessDTO process, Integer executorUserId) {
         // find out the entity id
         PreferenceBL pref = new PreferenceBL();
         UserBL user = null;
@@ -241,9 +241,15 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         contact.createForInvoice(contact.getDTO(), invoice.getId());
 
         // add a log row for convenience
-        eLogger.auditBySystem(entityId, userId, Constants.TABLE_INVOICE, 
-                invoice.getId(), EventLogger.MODULE_INVOICE_MAINTENANCE,
-                EventLogger.ROW_CREATED, null, null, null);
+        if ( null != executorUserId ) {
+            eLogger.audit(executorUserId, userId, Constants.TABLE_INVOICE, 
+                    invoice.getId(), EventLogger.MODULE_INVOICE_MAINTENANCE,
+                    EventLogger.ROW_CREATED, null, null, null);
+        } else { 
+            eLogger.auditBySystem(entityId, userId, Constants.TABLE_INVOICE, 
+                    invoice.getId(), EventLogger.MODULE_INVOICE_MAINTENANCE,
+                    EventLogger.ROW_CREATED, null, null, null);
+        }
 
     }
 

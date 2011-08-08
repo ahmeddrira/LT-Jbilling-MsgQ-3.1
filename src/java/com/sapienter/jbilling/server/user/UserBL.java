@@ -183,7 +183,7 @@ public class UserBL extends ResultList implements UserSQL {
             age.setUserStatus(executorId, user.getUserId(), dto.getStatusId(),
                     Calendar.getInstance().getTime());
         }
-        updateSubscriptionStatus(dto.getSubscriptionStatusId());
+        updateSubscriptionStatus(dto.getSubscriptionStatusId(), executorId);
         if (dto.getCurrencyId() != null && !user.getCurrencyId().equals(
                 dto.getCurrencyId())) {
             user.setCurrency(new CurrencyDAS().find(dto.getCurrencyId()));
@@ -287,7 +287,7 @@ public class UserBL extends ResultList implements UserSQL {
         }
     }
 
-    public Integer create(UserDTOEx dto) throws SessionInternalError {
+    public Integer create(UserDTOEx dto, Integer executorUserId) throws SessionInternalError {
 
         Integer newId;
         LOG.debug("Creating user " + dto);
@@ -312,7 +312,7 @@ public class UserBL extends ResultList implements UserSQL {
         if (dto.getPartner() != null) {
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(),
                     dto.getLanguageId(), roles, dto.getCurrencyId(),
-                    dto.getStatusId(), dto.getSubscriptionStatusId());
+                    dto.getStatusId(), dto.getSubscriptionStatusId(), executorUserId);
             PartnerBL partner = new PartnerBL();
             partner.create(dto.getPartner());
             user.setPartner(partner.getEntity());
@@ -332,7 +332,7 @@ public class UserBL extends ResultList implements UserSQL {
             newId = create(dto.getEntityId(), dto.getUserName(),
                     dto.getPassword(), dto.getLanguageId(),
                     roles, dto.getCurrencyId(),
-                    dto.getStatusId(), dto.getSubscriptionStatusId());
+                    dto.getStatusId(), dto.getSubscriptionStatusId(), executorUserId);
 
             user.setCustomer(new CustomerDAS().create());
             user.getCustomer().setBaseUser(user);
@@ -364,7 +364,7 @@ public class UserBL extends ResultList implements UserSQL {
         } else { // all the rest
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(),
                     dto.getLanguageId(), roles, dto.getCurrencyId(),
-                    dto.getStatusId(), dto.getSubscriptionStatusId());
+                    dto.getStatusId(), dto.getSubscriptionStatusId(), executorUserId);
         }
 
         LOG.debug("created user id " + newId);
@@ -374,7 +374,7 @@ public class UserBL extends ResultList implements UserSQL {
 
     private Integer create(Integer entityId, String userName, String password,
             Integer languageId, List<Integer> roles, Integer currencyId,
-            Integer statusId, Integer subscriberStatusId)
+            Integer statusId, Integer subscriberStatusId, Integer executorUserId)
            throws SessionInternalError {
         // Default the language and currency to that one of the entity
         if (languageId == null) {
@@ -413,13 +413,21 @@ public class UserBL extends ResultList implements UserSQL {
         }
         updateRoles(rolesDTO, null);
 
-        eLogger.auditBySystem(entityId,
-                              user.getId(),
-                              Constants.TABLE_BASE_USER,
-                              user.getId(),
-                              EventLogger.MODULE_USER_MAINTENANCE,
-                              EventLogger.ROW_CREATED, null, null, null);
-
+        if ( null != executorUserId) {
+            eLogger.audit(executorUserId,
+                    user.getId(),
+                    Constants.TABLE_BASE_USER,
+                    user.getId(),
+                    EventLogger.MODULE_USER_MAINTENANCE,
+                    EventLogger.ROW_CREATED, null, null, null);
+        } else {
+            eLogger.auditBySystem(entityId,
+                                  user.getId(),
+                                  Constants.TABLE_BASE_USER,
+                                  user.getId(),
+                                  EventLogger.MODULE_USER_MAINTENANCE,
+                                  EventLogger.ROW_CREATED, null, null, null);
+        }
         return user.getUserId();
     }
 
@@ -1021,17 +1029,25 @@ public class UserBL extends ResultList implements UserSQL {
         }
     }
 
-    public void updateSubscriptionStatus(Integer id) {
+    public void updateSubscriptionStatus(Integer id, Integer executorId) {
         if (id == null || user.getSubscriberStatus().getId() == id) {
             // no update ... it's already there
             return;
         }
-        eLogger.auditBySystem(user.getEntity().getId(), user.getId(),
-                Constants.TABLE_BASE_USER, user.getUserId(),
-                EventLogger.MODULE_USER_MAINTENANCE,
-                EventLogger.SUBSCRIPTION_STATUS_CHANGE,
-                user.getSubscriberStatus().getId(), id.toString(), null);
-
+        if ( null != executorId ) {
+            eLogger.audit(executorId, user.getId(),
+                    Constants.TABLE_BASE_USER, user.getUserId(),
+                    EventLogger.MODULE_USER_MAINTENANCE,
+                    EventLogger.SUBSCRIPTION_STATUS_CHANGE,
+                    user.getSubscriberStatus().getId(), id.toString(), null);
+        } else {
+            eLogger.auditBySystem(user.getEntity().getId(), user.getId(),
+                    Constants.TABLE_BASE_USER, user.getUserId(),
+                    EventLogger.MODULE_USER_MAINTENANCE,
+                    EventLogger.SUBSCRIPTION_STATUS_CHANGE,
+                    user.getSubscriberStatus().getId(), id.toString(), null);
+        }
+        
         try {
             user.setSubscriberStatus(new SubscriberStatusDAS().find(id));
         } catch (Exception e) {

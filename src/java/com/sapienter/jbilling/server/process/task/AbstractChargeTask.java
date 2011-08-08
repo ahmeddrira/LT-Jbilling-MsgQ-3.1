@@ -95,19 +95,19 @@ public abstract class AbstractChargeTask extends PluggableTask implements Invoic
     protected void applyCharge(NewInvoiceDTO invoice, Integer userId, BigDecimal taxOrPenaltyBaseAmt, Integer INVOICE_LINE_TYPE) {
         LOG.debug("applyCharge()");
         BigDecimal taxOrPenaltyValue= null;
-        String itemDescription= "";
+        String itemDescription= taxItem.getDescription();
         
         if (taxItem.getPercentage() != null) {
             LOG.debug("Percentage: " + taxItem.getPercentage());
             LOG.debug("Calculating tax on = " + taxOrPenaltyBaseAmt);
             taxOrPenaltyValue = taxOrPenaltyBaseAmt.multiply(taxItem.getPercentage()).divide(
                     BigDecimal.valueOf(100L), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
-            itemDescription= "Tax or Penalty @ %" + new DecimalFormat("#0.##").format(taxItem.getPercentage().doubleValue());
+            //itemDescription= taxItem.getDescription() + " @ %" + new DecimalFormat("#0.##").format(taxItem.getPercentage().doubleValue());
         } else {
             LOG.debug("Flat Price."); 
             ItemBL itemBL = new ItemBL(taxItem);
             taxOrPenaltyValue= itemBL.getPriceByCurrency(taxItem, userId, Integer.valueOf(invoice.getCurrency().getId()));
-            itemDescription= "Tax or Penalty @ flat rate. [" + taxItem.getId() + "]";
+            //itemDescription= taxItem.getDescription();
         }
         LOG.debug("Adding Tax Or Penalty as additional Invoice Line");
         //if (taxOrPenaltyValue != null && taxOrPenaltyValue.compareTo(BigDecimal.ZERO) != 0) {

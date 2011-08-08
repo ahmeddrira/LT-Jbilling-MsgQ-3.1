@@ -136,7 +136,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         payment = paymentDas.find(id);
     }
 
-    public void create(PaymentDTOEx dto) {
+    public void create(PaymentDTOEx dto, Integer executorUserId) {
         // create the record
         payment = paymentDas.create(dto.getAmount(), dto.getPaymentMethod(),
                 dto.getUserId(), dto.getAttempt(), dto.getPaymentResult(), dto.getCurrency());
@@ -202,11 +202,17 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         paymentDas.save(payment);
         // add a log row for convenience
         UserDAS user = new UserDAS();
-        eLogger.auditBySystem(user.find(dto.getUserId()).getCompany().getId(),
-                dto.getUserId(), Constants.TABLE_PAYMENT, dto.getId(),
-                EventLogger.MODULE_PAYMENT_MAINTENANCE,
-                EventLogger.ROW_CREATED, null, null, null);
-
+        
+        if ( null != executorUserId ) {
+            eLogger.audit(executorUserId, dto.getUserId(), Constants.TABLE_PAYMENT, dto.getId(),
+                    EventLogger.MODULE_PAYMENT_MAINTENANCE,
+                    EventLogger.ROW_CREATED, null, null, null);
+        } else {
+            eLogger.auditBySystem(user.find(dto.getUserId()).getCompany().getId(),
+                    dto.getUserId(), Constants.TABLE_PAYMENT, dto.getId(),
+                    EventLogger.MODULE_PAYMENT_MAINTENANCE,
+                    EventLogger.ROW_CREATED, null, null, null);
+        }
 
     }
 
@@ -284,7 +290,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
      * @return the constant of the result allowing for the caller to attempt it
      *         again with different payment information (like another cc number)
      */
-    public Integer processPayment(Integer entityId, PaymentDTOEx info)
+    public Integer processPayment(Integer entityId, PaymentDTOEx info, Integer executorUserId)
             throws SessionInternalError {
         Integer retValue = null;
         try {
@@ -298,7 +304,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
                 return null;
             }
 
-            create(info);
+            create(info, executorUserId);
             boolean processorUnavailable = true;
             while (task != null && processorUnavailable) {
                 // see if this user has pre-auths

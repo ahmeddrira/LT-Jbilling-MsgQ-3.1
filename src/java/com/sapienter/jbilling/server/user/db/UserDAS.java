@@ -19,8 +19,10 @@
  */
 package com.sapienter.jbilling.server.user.db;
 
+import java.util.Iterator;
 import java.util.List;
 
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -137,7 +139,50 @@ public class UserDAS extends AbstractDAS<UserDTO> {
         query.setParameter("content", value);
         return query.list();
     }
-    
+
+    /**
+     * Returns a list of users with matching custom contact fields.
+     *
+     * @param entityId entity id
+     * @param fields list of contact fields with content to match
+     * @return list of customers with matching custom contact fields
+     */
+    @SuppressWarnings("unchecked")
+    public List<UserDTO> findByCustomFields(Integer entityId, List<ContactFieldDTO> fields) {
+        StringBuilder hql = new StringBuilder();
+        hql.append("select user from UserDTO user ");
+
+        // join for each contact field
+        int i = 0;
+        for (ContactFieldDTO field : fields) {
+            hql.append(" join user.contact.fields as field").append(i); // join as field0, field1 etc.
+            i++;
+        }
+
+        // where clause
+        hql.append(" where user.company.id = :entity_id ");
+
+        int j = 0;
+        for (ContactFieldDTO field : fields) {
+            hql.append(" and field").append(j).append(".type.id = :type_id_").append(j); // parameter :type_id_0, :type_id_1 etc.
+            hql.append(" and field").append(j).append(".content = :content_").append(j); // parameter :content_0, :content_0 etc.
+            j++;
+        }
+
+        // create query and bind parameters
+        Query query = getSession().createQuery(hql.toString());
+        query.setParameter("entity_id", entityId);
+
+        int n = 0;
+        for (ContactFieldDTO field : fields) {
+            query.setParameter("type_id_" + n, field.getType().getId());
+            query.setParameter("content_" + n, field.getContent());
+            n++;
+        }
+
+        return query.list();
+    }
+
     public List<UserDTO> findAgeing(Integer entityId) {
         Query query = getSession().createQuery(findAgeingSQL);
         query.setParameter("entity", entityId);

@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -56,6 +57,7 @@ import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.util.CurrencyWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
@@ -252,6 +254,10 @@ public class SpringAPI implements JbillingAPI {
 
     public Integer[] getUsersByCustomField(Integer typeId, String value) {
         return session.getUsersByCustomField(typeId, value);
+    }
+
+    public Integer[] getUsersByCustomFields(ContactFieldWS[] fields) {
+        return session.getUsersByCustomFields(fields);
     }
 
     public Integer[] getUsersByStatus(Integer statusId, boolean in) {

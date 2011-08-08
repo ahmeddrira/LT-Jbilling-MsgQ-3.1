@@ -54,7 +54,8 @@ import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 import com.sapienter.jbilling.server.order.OrderPeriodWS
 import com.sapienter.jbilling.server.util.CurrencyWS;
-import com.sapienter.jbilling.server.user.CompanyWS;
+import com.sapienter.jbilling.server.user.CompanyWS
+import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
  * the WebServicesSessionBean just like the core JbillingAPI.
@@ -180,6 +181,10 @@ class ApiService implements IWebServicesSessionBean {
 
     public Integer[] getUsersByCustomField(Integer typeId, String value) {
         return webServicesSession.getUsersByCustomField(typeId, value)
+    }
+
+    public Integer[] getUsersByCustomFields(ContactFieldWS[] fields) {
+        return webServicesSession.getUsersByCustomFields(fields)
     }
 
     public Integer[] getUsersByCreditCard(String number) {

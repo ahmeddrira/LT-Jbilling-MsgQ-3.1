@@ -113,7 +113,7 @@ public class ContactFieldDTO  implements java.io.Serializable {
         this.contact = contact;
     }
     
-    @Column(name="content", nullable=false, length=100)
+    @Column(name="content", nullable = true, length=100)
     public String getContent() {
         return this.content;
     }

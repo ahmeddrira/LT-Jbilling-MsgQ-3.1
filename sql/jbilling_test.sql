@@ -645,7 +645,7 @@ CREATE TABLE contact_field (
     id integer NOT NULL,
     type_id integer,
     contact_id integer,
-    content character varying(100) NOT NULL,
+    content character varying(100),
     optlock integer NOT NULL
 );
 

@@ -29,6 +29,7 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.OrderBy;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -51,7 +52,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -71,7 +75,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
     private CompanyDTO entity;
     private String internalNumber;
     private String glCode;
-    private PriceModelDTO defaultPrice;
+    private List<PriceModelDTO> defaultPrices;
     private BigDecimal percentage;
     private Set<ItemTypeDTO> excludedTypes = new HashSet<ItemTypeDTO>();
     private Integer deleted;
@@ -187,14 +191,34 @@ public class ItemDTO extends AbstractDescription implements Exportable {
 	}
 
     @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "price_model_id", nullable = true)
-    public PriceModelDTO getDefaultPrice() {
-        return defaultPrice;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "item_price_model_map",
+               joinColumns = {@JoinColumn(name = "item_id", updatable = false)},
+               inverseJoinColumns = {@JoinColumn(name = "price_model_id", updatable = false)}
+    )
+    @OrderBy(clause = "start_date desc")
+    public List<PriceModelDTO> getDefaultPrices() {
+        return defaultPrices;
     }
 
-    public void setDefaultPrice(PriceModelDTO defaultPrice) {
-        this.defaultPrice = defaultPrice;
+    public void setDefaultPrices(List<PriceModelDTO> defaultPrices) {
+        this.defaultPrices = defaultPrices;
+    }
+
+    @Transient
+    public PriceModelDTO getPrice(Date today) {
+        PriceModelDTO currentPrice = null;
+
+        // list of prices in ordered by start date, earliest first
+        // return the model with the closest start date
+        for (PriceModelDTO model : defaultPrices) {
+            if (model.getStart() != null && model.getStart().after(today)) {
+                break;
+            }
+            currentPrice = model;
+        }
+
+        return currentPrice;
     }
 
     @Column(name = "percentage")
@@ -461,6 +485,8 @@ public class ItemDTO extends AbstractDescription implements Exportable {
             itemTypes.append(type.getDescription()).append(" ");
         }
 
+        PriceModelDTO currentPrice = getPrice(new Date());
+
         return new Object[][] {
             {
                 id,
@@ -468,14 +494,12 @@ public class ItemDTO extends AbstractDescription implements Exportable {
                 itemTypes.toString(),
                 hasDecimals,
                 percentage,
-                (defaultPrice != null ? defaultPrice.getType().name() : null),
+                (currentPrice != null ? currentPrice.getType().name() : null),
+                (currentPrice != null && currentPrice.getCurrency() != null ? currentPrice.getCurrency().getDescription()
+                                                                            : null),
 
-                (defaultPrice != null && defaultPrice.getCurrency() != null
-                 ? defaultPrice.getCurrency().getDescription()
-                 : null),
-
-                (defaultPrice != null ? defaultPrice.getRate() : null),
-                (defaultPrice != null ? defaultPrice.getAttributes() : null),
+                (currentPrice != null ? currentPrice.getRate() : null),
+                (currentPrice != null ? currentPrice.getAttributes() : null),
             }
         };
     }

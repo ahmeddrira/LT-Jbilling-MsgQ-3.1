@@ -56,6 +56,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -85,6 +86,7 @@ public class PriceModelDTO implements Serializable {
     private SortedMap<String, String> attributes = new TreeMap<String, String>();
     private BigDecimal rate;
     private CurrencyDTO currency;
+    private Date start;
 
     // price model chaining
     private PriceModelDTO next;
@@ -186,6 +188,15 @@ public class PriceModelDTO implements Serializable {
 
     public void setCurrency(CurrencyDTO currency) {
         this.currency = currency;
+    }
+
+    @Column(name = "start_date", nullable = true)
+    public Date getStart() {
+        return start;
+    }
+
+    public void setStart(Date start) {
+        this.start = start;
     }
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

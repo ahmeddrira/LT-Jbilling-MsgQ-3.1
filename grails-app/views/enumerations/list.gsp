@@ -5,7 +5,7 @@
 <body>
 
 <!-- selected configuration menu item -->
-<content tag="menu.item">contactType</content>
+<content tag="menu.item">enumerations</content>
 
 <content tag="column1">
     %{--
@@ -28,16 +28,15 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<g:render template="contactTypes" />
+<g:render template="enumerations" />
 </content>
-<%--
+
 <content tag="column2">
     <g:if test="${selected}">
         <!-- show selected contact type -->
         <g:render template="show" model="['selected': selected]"/>
     </g:if>
 </content>
- --%>
 
 </body>
 </html>

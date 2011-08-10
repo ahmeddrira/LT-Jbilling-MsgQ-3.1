@@ -168,7 +168,8 @@
                                           controllerName == 'notifications' ||
                                           controllerName == 'orderPeriod' ||
                                           controllerName == 'plugin' ||
-                                          controllerName == 'user'
+                                          controllerName == 'user' ||
+                                          controllerName == 'enumerations'
                 }%
 
                 <li class="${isConfiguration ? 'active' : ''}">

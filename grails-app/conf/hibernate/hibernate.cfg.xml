@@ -129,7 +129,8 @@
         <mapping class="com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO" />
         <mapping class="com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskTypeCategoryDTO" />
         <mapping class="com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskTypeDTO" />
-
-
+        <mapping class="com.sapienter.jbilling.server.util.db.EnumerationDTO"/>
+        <mapping class="com.sapienter.jbilling.server.util.db.EnumerationValueDTO"/>
+        
     </session-factory>
 </hibernate-configuration>

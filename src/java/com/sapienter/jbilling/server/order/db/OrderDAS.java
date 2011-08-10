@@ -260,4 +260,39 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
         }
         return retValue;
     }
+
+    /**
+     * Find orders by user ID and order notes.
+     *
+     * @param userId user id
+     * @param notes order notes to match
+     * @return list of found orders, empty if none
+     */
+    @SuppressWarnings("unchecked")
+    public List<OrderDTO> findByNotes(Integer userId, String notes) {
+        Criteria criteria = getSession().createCriteria(getPersistentClass())
+                .add(Restrictions.eq("notes", notes))
+                .add(Restrictions.eq("deleted", 0))
+                .add(Restrictions.eq("baseUserByUserId.id", userId));
+
+        return criteria.list();
+    }
+
+    /**
+     * Find orders by user ID and where notes are like the given string. This method
+     * can accept wildcard characters '%' for matching.
+     *
+     * @param userId user id
+     * @param like string to match against order notes
+     * @return list of found orders, empty if none
+     */
+    @SuppressWarnings("unchecked")
+    public List<OrderDTO> findByNotesLike(Integer userId, String like) {
+        Criteria criteria = getSession().createCriteria(getPersistentClass())
+                .add(Restrictions.like("notes", like))
+                .add(Restrictions.eq("deleted", 0))
+                .add(Restrictions.eq("baseUserByUserId.id", userId));
+
+        return criteria.list();
+    }
 }

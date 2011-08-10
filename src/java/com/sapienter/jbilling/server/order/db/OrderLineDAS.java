@@ -24,7 +24,10 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import org.apache.log4j.Logger;
+import org.bouncycastle.asn1.isismtt.x509.Restriction;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateMidnight;
 
 import java.util.Collections;
@@ -202,6 +205,53 @@ public class OrderLineDAS extends AbstractDAS<OrderLineDTO> {
         return query.list();
     }
 
+    /**
+     * Find order lines by user ID and description.
+     *
+     * @param userId user id
+     * @param description order line description to match
+     * @return list of found orders lines, empty if none
+     */
+    @SuppressWarnings("unchecked")
+    public List<OrderLineDTO> findByDescription(Integer userId, String description) {
+        final String hql =
+                "select line "
+                + "  from OrderLineDTO line "
+                + "where line.deleted = 0 "
+                + "  and line.purchaseOrder.deleted = 0 "
+                + "  and line.purchaseOrder.baseUserByUserId.id = :userId "
+                + "  and line.description = :description";
 
+        Query query = getSession().createQuery(hql);
+        query.setParameter("userId", userId);
+        query.setParameter("description", description);
+
+        return query.list();
+    }
+
+    /**
+     * Find order lines by user ID and where description is like the given string. This method
+     * can accept wildcard characters '%' for matching.
+     *
+     * @param userId user id
+     * @param like string to match against order line description
+     * @return list of found orders lines, empty if none
+     */
+    @SuppressWarnings("unchecked")
+    public List<OrderLineDTO> findByDescriptionLike(Integer userId, String like) {
+        final String hql =
+                "select line "
+                + "  from OrderLineDTO line "
+                + "where line.deleted = 0 "
+                + "  and line.purchaseOrder.deleted = 0 "
+                + "  and line.purchaseOrder.baseUserByUserId.id = :userId "
+                + "  and line.description like :description";
+
+        Query query = getSession().createQuery(hql);
+        query.setParameter("userId", userId);
+        query.setParameter("description", like);
+
+        return query.list();
+    }
 
 }

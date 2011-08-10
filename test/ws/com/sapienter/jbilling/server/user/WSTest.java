@@ -35,6 +35,7 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIException;
@@ -1786,6 +1787,29 @@ Ch8: no applicable orders
 
         //cleanup
         api.deleteUser(user.getUserId());
+    }
+
+    public void testGetUserByContactFields() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        // user by single contact field
+        ContactFieldWS ip = new ContactFieldWS(3, "255.255.255.2"); // ccf.ip_address
+
+        Integer[] userIds = api.getUsersByCustomFields(new ContactFieldWS[] { ip });
+        assertEquals("Should only find one user", 1, userIds.length);
+        assertEquals("Should find user 53", 53, userIds[0].intValue());
+
+        // user by multiple contact fields
+        ContactFieldWS ip2 = new ContactFieldWS(3, "123.123.123.123"); // ccf.ip_address
+        ContactFieldWS paymentProcessor = new ContactFieldWS(2, "FAKE_2"); // ccf.payment_processor
+
+        userIds = api.getUsersByCustomFields(new ContactFieldWS[] { ip2, paymentProcessor });
+        assertEquals("Should only find one user", 1, userIds.length);
+        assertEquals("Should find user 1005", 1005, userIds[0].intValue());
+
+        // find multiple users
+        userIds = api.getUsersByCustomFields(new ContactFieldWS[] { paymentProcessor });
+        assertEquals("Should find lots of users with 'FAKE_2'", 1003, userIds.length);
     }
 
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {

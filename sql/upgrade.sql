@@ -1337,13 +1337,10 @@ insert into jbilling_seqs VALUES ('enumeration', 1);
 
 CREATE TABLE enumeration (
   id integer NOT NULL,
-  entity_id integer,
-  name character varying(50),
+  entity_id integer NOT NULL,
+  name character varying(50) NOT NULL,
   optlock integer NOT NULL,
-  CONSTRAINT enumeration_pkey PRIMARY KEY (id),
-  CONSTRAINT enumeration_fk_1 FOREIGN KEY (entity_id)
-      REFERENCES entity (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+  CONSTRAINT enumeration_pkey PRIMARY KEY (id)
 );
 
 insert into jbilling_table VALUES (106, 'enumeration_values');
@@ -1352,7 +1349,7 @@ insert into jbilling_seqs VALUES ('enumeration_values', 1);
 CREATE TABLE enumeration_values (
   id integer NOT NULL,
   enumeration_id integer NOT NULL,
-  value character varying(50),
+  value character varying(50) NOT NULL,
   optlock integer NOT NULL,
   CONSTRAINT enumeration_values_pkey PRIMARY KEY (id),
   CONSTRAINT enumeration_values_fk_1 FOREIGN KEY (enumeration_id)

@@ -89,7 +89,8 @@ class EnumerationsController {
            flash.error = 'enumeration.name.empty'
            render view: 'edit', model: [enumeration: enumeration]
            return
-       } else {
+       }
+       if (!enumeration.id || enumeration.id == 0 ) {
            def var= EnumerationDTO.findByName(enumeration.name)
            if (var) {
                log.debug "Validation error: enumeration name already exists."

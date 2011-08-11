@@ -280,6 +280,7 @@
         <column name="prompt_key" required="true" size="50" type="VARCHAR"/>
         <column name="data_type" required="true" size="10" type="VARCHAR"/>
         <column name="customer_readonly" type="SMALLINT"/>
+        <column name="display_in_view" type="SMALLINT"/>
         <column name="optlock" type="INTEGER" required="true"/>
         <index name="ix_cf_type_entity">
             <index-column name="entity_id"/>

@@ -21,7 +21,6 @@
 package com.sapienter.jbilling.server.process.task;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 
 import org.apache.log4j.Logger;
 
@@ -64,6 +63,12 @@ public abstract class AbstractChargeTask extends PluggableTask implements Invoic
      */
     protected ItemDTO taxItem= null;
     
+    /**
+     * The Invoice LIne Type of the Invoice Item added as a result of this charge task
+     * Default initialized to a type Tax.
+     */
+    protected Integer invoiceLineTypeId= Constants.INVOICE_LINE_TYPE_TAX;
+    
     // initializer for pluggable params
     {
         descriptions.add(PARAM_TAX_ITEM_ID);
@@ -80,11 +85,13 @@ public abstract class AbstractChargeTask extends PluggableTask implements Invoic
         LOG.debug("apply()");
         this.setPluginParameters();
     
-        if (!isTaxCalculationNeeded(invoice, userId)) {
+        if (!this.isTaxCalculationNeeded(invoice, userId)) {
             return;
         }
     
-        calculateAndApplyTax(invoice, userId);
+        BigDecimal taxOrPenaltyBaseAmnt= this.calculateAndApplyTax(invoice, userId);
+        
+        this.applyCharge(invoice, userId, taxOrPenaltyBaseAmnt, invoiceLineTypeId);
     }
 
     /**
@@ -152,7 +159,37 @@ public abstract class AbstractChargeTask extends PluggableTask implements Invoic
      * @param invoice
      * @param userId
      */
-    protected abstract void calculateAndApplyTax(NewInvoiceDTO invoice, Integer userId);
+    protected BigDecimal calculateAndApplyTax(NewInvoiceDTO invoice, Integer userId) {
+        
+        //calculate TOTAL to include result lines 
+        invoice.calculateTotal();
+        BigDecimal invoiceAmountSum= invoice.getTotal();
+
+        //For a Flat Rate Charge, below calculation is not required.
+        if (taxItem.getPercentage() != null) {
+            //Remove CARRIED BALANCE from tax calculation to avoid double taxation
+            LOG.debug("Percentage Price. Carried balance is " + invoice.getCarriedBalance());
+            if ( null != invoice.getCarriedBalance() ){
+                invoiceAmountSum = invoiceAmountSum.subtract(invoice.getCarriedBalance());
+            }
+            
+            // Remove TAX ITEMS from Invoice to avoid calculating tax on tax
+            for (int i = 0; i < invoice.getResultLines().size(); i++) {
+                InvoiceLineDTO invoiceLine = (InvoiceLineDTO) invoice
+                        .getResultLines().get(i);
+    
+                if (null != invoiceLine.getInvoiceLineType()
+                        && invoiceLine.getInvoiceLineType().getId() == Constants.INVOICE_LINE_TYPE_TAX
+                                .intValue()) {
+    
+                    invoiceAmountSum = invoiceAmountSum.subtract(invoiceLine
+                            .getAmount());
+                }
+            }
+        }
+        
+        return invoiceAmountSum;
+    }
     
     public BigDecimal calculatePeriodAmount(BigDecimal fullPrice, PeriodOfTime period) {
         LOG.debug("calculatePeriodAmount(). Throwing exception.");

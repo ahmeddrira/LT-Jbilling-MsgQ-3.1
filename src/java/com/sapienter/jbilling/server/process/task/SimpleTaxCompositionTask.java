@@ -73,20 +73,13 @@ public class SimpleTaxCompositionTask extends AbstractChargeTask {
      * @param invoice
      * @param userId
      */
-    protected void calculateAndApplyTax(NewInvoiceDTO invoice, Integer userId) { 
+    protected BigDecimal calculateAndApplyTax(NewInvoiceDTO invoice, Integer userId) { 
+        
         LOG.debug("calculateAndApplyTax");
-        BigDecimal invoiceAmountSum= null;
+        
+        BigDecimal invoiceAmountSum= super.calculateAndApplyTax(invoice, userId);
+        
         if (taxItem.getPercentage() != null) {
-            //calculate total to include result lines 
-            invoice.calculateTotal();
-            invoiceAmountSum = invoice.getTotal();
-    
-            //remove carried balance from tax calculation 
-            //to avoid double taxation
-            LOG.debug("Percentage Price. Carried balance is " + invoice.getCarriedBalance());
-            if ( null != invoice.getCarriedBalance() ){
-                invoiceAmountSum = invoiceAmountSum.subtract(invoice.getCarriedBalance());
-            }
             
             LOG.debug("Exempt Category " + itemExemptCategoryId);
             if (itemExemptCategoryId != null) {
@@ -108,7 +101,10 @@ public class SimpleTaxCompositionTask extends AbstractChargeTask {
                 }
             }
         }
-        super.applyCharge(invoice, userId, invoiceAmountSum, Constants.INVOICE_LINE_TYPE_TAX);
+        
+        this.invoiceLineTypeId= Constants.INVOICE_LINE_TYPE_TAX;
+        
+        return invoiceAmountSum;
     }
     
     /**

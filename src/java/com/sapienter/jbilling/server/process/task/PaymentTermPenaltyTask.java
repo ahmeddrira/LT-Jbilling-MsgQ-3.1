@@ -60,22 +60,15 @@ public class PaymentTermPenaltyTask extends AbstractChargeTask {
     /**
      * 
      */
-    protected void calculateAndApplyTax(NewInvoiceDTO invoice, Integer userId) { 
+    protected BigDecimal calculateAndApplyTax(NewInvoiceDTO invoice, Integer userId) { 
+        
         LOG.debug("calculateAndApplyTax");
-        BigDecimal invoiceAmountSum= null;
-        if (taxItem.getPercentage() != null) {
-            //calculate total to include result lines 
-            invoice.calculateTotal();
-            invoiceAmountSum = invoice.getTotal();
-    
-            //remove carried balance from tax calculation 
-            //to avoid double taxation
-            LOG.debug("Percentage Price. Carried balance is " + invoice.getCarriedBalance());
-            if ( null != invoice.getCarriedBalance() ){
-                invoiceAmountSum = invoiceAmountSum.subtract(invoice.getCarriedBalance());
-            }
-        }
-        super.applyCharge(invoice, userId, invoiceAmountSum, Constants.INVOICE_LINE_TYPE_PENALTY);
+        
+        BigDecimal invoiceAmountSum= super.calculateAndApplyTax(invoice, userId);
+        
+        this.invoiceLineTypeId= Constants.INVOICE_LINE_TYPE_PENALTY;
+        
+        return invoiceAmountSum;
     }
     
     /**

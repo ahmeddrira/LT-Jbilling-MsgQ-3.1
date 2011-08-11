@@ -157,8 +157,8 @@ function removeEnumerationValue(element) {
                             </g:applyLayout>
                         </g:each>
                         <g:if test="${count.toInteger() == Integer.valueOf(-1)}"> 
+                            <g:set var="count" value="${0}"/>
                              <g:applyLayout name="form/text">
-                                <g:set var="count" value="${1}"/>
                                 <content tag="label">${count}</content>
                                 <content tag="label.for">values[${count}].value</content>
                                 <g:textField 

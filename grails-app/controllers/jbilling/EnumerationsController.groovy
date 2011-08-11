@@ -66,8 +66,7 @@ class EnumerationsController {
        flash.args = [ params.id ]
 
        // render the partial list
-       params.applyFilter = true
-       redirect action: 'list'
+       redirect action: 'list', params: [applyFilter:true]
    }
    
    def edit = {
@@ -83,6 +82,7 @@ class EnumerationsController {
        
        def enumeration = new EnumerationDTO(params);
        log.debug "Enumeration: ${enumeration}"
+       log.debug "Enumeration Values: ${enumeration?.values}"
        
        if (!enumeration.name) {
            log.debug "Validation error: enumeration name is missing."
@@ -101,8 +101,20 @@ class EnumerationsController {
        }
        
        log.debug "enumeration values.size = ${enumeration.values.size}"
+       def lst= enumeration.values
+       for (int i=0; i<lst.size;i++) {
+           def obj= lst.get(i)
+           if (obj.id == 0 && obj.value == null )  {
+               lst.remove(i);
+               --i;
+               continue;
+           }
+       }
+       log.debug "enumeration values.size = ${enumeration.values.size}"
+       
        for (def obj: enumeration.values) {
            log.debug "ValueDTO: ${obj}"
+           
            if (!obj.value) {
                log.debug "Validation error: missing Enumeration value."
                flash.error = 'enumeration.value.missing'
@@ -112,9 +124,6 @@ class EnumerationsController {
            obj.enumeration=enumeration
        }
        
-//       enumeration.values.each {
-//       }
-
        enumeration.setEntity(new CompanyDTO(session['company_id']));
        EnumerationBL enumerationService= new EnumerationBL();
        // save or update

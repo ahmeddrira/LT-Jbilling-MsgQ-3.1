@@ -22,7 +22,7 @@
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<div class="form-edit" style="width:450px">
+<div class="form-edit" >
 
     <div class="heading">
         <strong><g:message code="configuration.title.contact.fields"/></strong>
@@ -44,18 +44,21 @@
                     <table cellpadding="0" cellspacing="0" id="custom_fields" class="innerTable" width="100%">
                         <thead class="innerHeader">
                              <tr>
-                                <th><g:message code="contact.field.name"/></th>
+                                <th class="medium"><g:message code="contact.field.name"/></th>
                                 <th class="medium"><g:message code="contact.field.datatype"/></th>
-                                <th class="large"><g:message code="contact.field.isReadOnly"/></th>
+                                <th class="medium"><g:message code="contact.field.isReadOnly"/></th>
+                                <th class="medium"><g:message code="contact.field.displayOnView"/></th>
                              </tr>
                          </thead>
+                         
                          <tbody>
                          
                             <g:each status="iter" var="type" in="${types}">
                                 <tr>
-                                    <td>
+                                    <td class="medium">
                                     
                                         <g:textField 
+                                            class="field"  
                                             class="field" style="float: right;width: 150px" 
                                             name="obj[${iter}].description" 
                                             value="${type.getDescriptionDTO(session['language_id'])?.content}"/>
@@ -64,18 +67,18 @@
                                     
                                     <td class="medium">
                                         <g:select 
-                                            style="float: right; position: relative; width:90px" 
                                             class="field" 
+                                            style="float: right; position: relative; width:120px" 
                                             name="obj[${iter}].dataType" 
                                             from="${dataTypeList}"
                                             value="${type?.dataType}" />
                                     </td>
                                     
-                                    <td class="large">
+                                    <td class="medium">
                                     
                                         <g:select 
-                                            style="float: center; width: 50px;position: relative;" 
                                             class="field" 
+                                            style="float: right; width: 100px;position: relative;" 
                                             name="obj[${iter}].readOnly" 
                                             keys="[1,0]" 
                                             from="['Yes', 'No']" 
@@ -84,17 +87,35 @@
                                         <g:hiddenField name="obj[${iter}].companyId" value="${session['company_id']}"/>
                                         <g:hiddenField name="obj[${iter}].id" value="${type.id}"/>
                                     </td>
+                                    
+                                    <td class="medium">
+                                    
+                                        <g:select 
+                                            class="field" 
+                                            style="float: right; width: 100px;position: relative;" 
+                                            name="obj[${iter}].displayInView" 
+                                            keys="[1,0]" 
+                                            from="['Yes', 'No']" 
+                                            value="${type.displayInView}"/>
+                                            
+                                    </td>
+                                    
                                 </tr>
                             </g:each>
                             
                             <tr>
-                                <td><g:textField class="field" style="float: right;width: 150px" name="description" value=""/>
+                                <td class="medium">
+                                    <g:textField 
+                                        class="field" 
+                                        class="field" style="float: right;width: 150px" 
+                                        name="description" 
+                                        value=""/>
                                 </td>
                                 <td class="medium">
                                 
                                     <g:select 
-                                        style="float: right; position: relative; width:90px" 
                                         class="field" 
+                                        style="float: right; position: relative; width:120px" 
                                         name="dataType" 
                                         from="${dataTypeList}" 
                                         value="" />
@@ -104,8 +125,8 @@
                                 <td class="medium">
                                 
                                     <g:select 
-                                        style="float: center; width: 50px;position: relative;" 
                                         class="field" 
+                                        style="float: right; width: 100px;position: relative;" 
                                         name="readOnly" 
                                         keys="[1,0]" 
                                         from="['Yes', 'No']" 
@@ -113,6 +134,19 @@
                                         
                                     <g:hiddenField name="companyId" value="${session['company_id']}"/>
                                 </td>
+                                
+                                <td class="medium">
+                                    
+                                        <g:select 
+                                            class="field" 
+                                            style="float: right; width: 100px;position: relative;" 
+                                            name="displayInView" 
+                                            keys="[1,0]" 
+                                            from="['Yes', 'No']" 
+                                            value=""/>
+                                            
+                                    </td>
+                                
                             </tr>
                         </tbody>
                         

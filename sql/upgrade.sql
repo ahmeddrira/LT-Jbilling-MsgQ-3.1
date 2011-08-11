@@ -1346,5 +1346,8 @@ CREATE TABLE enumeration_values (
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
-
+-- Date: 11-Aug-2011
+-- Redmine Issue: #1234
+-- Description: CCF Display In View
+ALTER TABLE contact_field_type add column display_in_view smallint;
 

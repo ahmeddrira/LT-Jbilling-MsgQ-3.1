@@ -668,6 +668,7 @@ CREATE TABLE contact_field_type (
     prompt_key character varying(50) NOT NULL,
     data_type character varying(10) NOT NULL,
     customer_readonly smallint,
+    display_in_view smallint,
     optlock integer NOT NULL
 );
 

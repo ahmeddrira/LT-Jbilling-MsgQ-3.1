@@ -1360,5 +1360,6 @@ CREATE TABLE enumeration_values (
 -- Date: 11-Aug-2011
 -- Redmine Issue: #1234
 -- Description: CCF Display In View
-ALTER TABLE contact_field_type add column display_in_view smallint;
+ALTER TABLE contact_field_type add column display_in_view smallint default 0;
+ALTER TABLE contact_field_type ALTER COLUMN data_type TYPE VARCHAR(50);
 

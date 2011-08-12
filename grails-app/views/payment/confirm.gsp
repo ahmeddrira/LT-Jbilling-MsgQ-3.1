@@ -186,8 +186,10 @@
                 <!-- credit card -->
                 <g:if test="${payment?.creditCard}">
                     <g:set var="creditCard" value="${payment?.creditCard}"/>
+                    <%-- 
                     <g:hiddenField name="creditCard.id" value="${creditCard?.id}"/>
-
+                    --%>
+                    
                     <div id="creditCard" class="box-cards ${creditCard ? 'box-cards-open' : ''}">
                         <div class="box-cards-title">
                             <a class="btn-open"><span><g:message code="prompt.credit.card"/></span></a>
@@ -198,7 +200,9 @@
                                     <g:applyLayout name="form/text">
                                         <content tag="label"><g:message code="prompt.name.on.card"/></content>
                                         <span>${creditCard?.name}</span>
+                                        <%-- 
                                         <g:hiddenField name="creditCard.name" value="${creditCard?.name}" />
+                                        --%>
                                     </g:applyLayout>
 
 
@@ -213,7 +217,9 @@
                                         <g:else>
                                             <span>${creditCard?.number}</span>
                                         </g:else>
+                                        <%--
                                         <g:hiddenField name="creditCard.number" value="${creditCard?.number}" />
+                                        --%>
                                     </g:applyLayout>
 
                                     <g:applyLayout name="form/text">
@@ -248,28 +254,36 @@
                                         <content tag="label"><g:message code="prompt.aba.routing.num"/></content>
                                         <content tag="label.for">ach.abaRouting</content>
                                         <span>${ach?.abaRouting}</span>
+                                        <%--
                                         <g:hiddenField name="ach.abaRouting" value="${ach?.abaRouting}" />
+                                        --%>
                                     </g:applyLayout>
 
                                     <g:applyLayout name="form/text">
                                         <content tag="label"><g:message code="prompt.bank.acc.num"/></content>
                                         <content tag="label.for">ach.bankAccount</content>
                                         <span>${ach?.bankAccount}</span>
+                                        <%--
                                         <g:hiddenField name="ach.bankAccount" value="${ach?.bankAccount}" />
+                                        --%>
                                     </g:applyLayout>
 
                                     <g:applyLayout name="form/text">
                                         <content tag="label"><g:message code="prompt.bank.name"/></content>
                                         <content tag="label.for">ach.bankName</content>
                                         <span>${ach?.bankName}</span>
+                                        <%--
                                         <g:hiddenField name="ach.bankName" value="${ach?.bankName}" />
+                                        --%>
                                     </g:applyLayout>
 
                                     <g:applyLayout name="form/text">
                                         <content tag="label"><g:message code="prompt.name.customer.account"/></content>
                                         <content tag="label.for">ach.accountName</content>
                                         <span>${ach?.accountName}</span>
+                                        <%--
                                         <g:hiddenField name="ach.accountName" value="${ach?.accountName}" />
+                                        --%>
                                     </g:applyLayout>
 
                                     <g:applyLayout name="form/text">

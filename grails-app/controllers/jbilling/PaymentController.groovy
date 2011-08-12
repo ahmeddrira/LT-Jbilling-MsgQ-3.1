@@ -349,7 +349,7 @@ class PaymentController {
         
         /* Reuse the same payment that was bound earlier during confirm */
         def payment = session['user_payment'];
-        //def payment = new PaymentWS()
+        //new PaymentWS()
         //bindPayment(payment, params)
 
         def invoiceId = params.int('invoiceId')
@@ -423,9 +423,9 @@ class PaymentController {
 
             render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId') ]
             return
-        } 
-        
-        session.removeAttribute("user_payment")
+        } finally {
+            session.removeAttribute("user_payment")
+        }
 
         chain action: 'list', params: [ id: payment.id ]
     }

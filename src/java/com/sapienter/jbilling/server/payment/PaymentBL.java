@@ -258,7 +258,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             cheque.setDate(dto.getCheque().getDate());
         } else if (dto.getCreditCard() != null) {
             CreditCardBL cc = new CreditCardBL(payment.getCreditCard());
-            cc.update(executorId, dto.getCreditCard(), null);
+            cc.update(executorId, dto.getCreditCard(), dto.getUserId());
         } else if (dto.getAch() != null) {
             AchBL achBl = new AchBL(payment.getAch());
             achBl.update(executorId, dto.getAch());

@@ -32,6 +32,7 @@ import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import java.util.ArrayList;
 
@@ -140,6 +141,9 @@ public class PaymentDTOEx extends PaymentDTO {
             if ( null != dto.getAch().getId()) {
                 achDTO.setId(dto.getAch().getId());
             }
+            
+            achDTO.setBaseUser(new UserDAS().find(dto.getUserId()));
+            
             this.ach = achDTO;
         } else {
             this.ach = null;

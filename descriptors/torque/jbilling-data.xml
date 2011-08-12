@@ -1528,7 +1528,11 @@
     <JbillingTable Id="102" Name="report_parameter"/>
     <JbillingTable Id="103" Name="plan_item_bundle"/>
     <JbillingTable Id="104" Name="notification_category"/>
+    <JbillingTable Id="105" Name="enumeration"/>
+    <JbillingTable Id="106" Name="enumeration_values"/>
 
+    <JbillingSeqs Name="enumeration" NextId="1"/>
+    <JbillingSeqs Name="enumeration_values" NextId="1"/>
     <JbillingSeqs Name="entity_delivery_method_map" NextId="4"/>
     <JbillingSeqs Name="contact_field_type" NextId="10"/>
     <JbillingSeqs Name="user_role_map" NextId="13"/>

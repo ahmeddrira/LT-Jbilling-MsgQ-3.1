@@ -91,9 +91,11 @@
                 </tr>
 
                 <g:if test="${contact?.fields}">
-                    <g:each status="iter" var="ccf" in="${contact.fields}">
+                    <g:set var="useFlag" value="${true}"/>
+                    <g:each var="ccf" in="${contact.fields}">
                         <g:if test="${ccf?.type?.displayInView > 0}">
-                            <g:if test="${iter ==0}">
+                            <g:if test="${useFlag}">
+                                <g:set var="useFlag" value="${false}"/>
                                 <!-- empty spacer row --> 
                                 <tr>
                                     <td colspan="2"><br/></td>

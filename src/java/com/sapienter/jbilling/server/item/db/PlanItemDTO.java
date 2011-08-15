@@ -22,6 +22,8 @@ package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.OrderBy;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,12 +33,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Brian Cowdery
@@ -60,17 +66,17 @@ public class PlanItemDTO implements Serializable {
     private Integer id;
     private PlanDTO plan;
     private ItemDTO item; // affected item
-    private PriceModelDTO model;
+    private List<PriceModelDTO> models = new ArrayList<PriceModelDTO>();
     private PlanItemBundleDTO bundle;
     private Integer precedence = DEFAULT_PRECEDENCE;
 
     public PlanItemDTO() {
     }
 
-    public PlanItemDTO(PlanItemWS ws, ItemDTO item, PriceModelDTO model, PlanItemBundleDTO bundle) {
+    public PlanItemDTO(PlanItemWS ws, ItemDTO item, List<PriceModelDTO> models, PlanItemBundleDTO bundle) {
         this.id = ws.getId();
         this.item = item;
-        this.model = model;
+        this.models = models;
         this.bundle = bundle;
         this.precedence = ws.getPrecedence();                
     }
@@ -121,14 +127,19 @@ public class PlanItemDTO implements Serializable {
         return getItem();
     }
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "price_model_id", nullable = false)
-    public PriceModelDTO getModel() {
-        return model;
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "plan_item_price_model_map",
+               joinColumns = {@JoinColumn(name = "plan_item_id", updatable = false)},
+               inverseJoinColumns = {@JoinColumn(name = "price_model_id", updatable = false)}
+    )
+    @OrderBy(clause = "start_date desc")
+    public List<PriceModelDTO> getModels() {
+        return models;
     }
 
-    public void setModel(PriceModelDTO model) {
-        this.model = model;
+    public void setModels(List<PriceModelDTO> models) {
+        this.models = models;
     }
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -157,10 +168,11 @@ public class PlanItemDTO implements Serializable {
 
         PlanItemDTO that = (PlanItemDTO) o;
 
-        if (!item.equals(that.item)) return false;
-        if (!model.equals(that.model)) return false;
+        if (bundle != null ? !bundle.equals(that.bundle) : that.bundle != null) return false;
+        if (item != null ? !item.equals(that.item) : that.item != null) return false;
+        if (models != null ? !models.equals(that.models) : that.models != null) return false;
         if (plan != null ? !plan.equals(that.plan) : that.plan != null) return false;
-        if (!precedence.equals(that.precedence)) return false;
+        if (precedence != null ? !precedence.equals(that.precedence) : that.precedence != null) return false;
 
         return true;
     }
@@ -168,9 +180,10 @@ public class PlanItemDTO implements Serializable {
     @Override
     public int hashCode() {
         int result = plan != null ? plan.hashCode() : 0;
-        result = 31 * result + item.hashCode();
-        result = 31 * result + model.hashCode();
-        result = 31 * result + precedence.hashCode();
+        result = 31 * result + (item != null ? item.hashCode() : 0);
+        result = 31 * result + (models != null ? models.hashCode() : 0);
+        result = 31 * result + (bundle != null ? bundle.hashCode() : 0);
+        result = 31 * result + (precedence != null ? precedence.hashCode() : 0);
         return result;
     }
 
@@ -180,7 +193,7 @@ public class PlanItemDTO implements Serializable {
                + "id=" + id
                + ", planId=" + (plan != null ? plan.getId() : null)
                + ", itemId=" + (item != null ? item.getId() : null)
-               + ", model=" + model
+               + ", models=" + models
                + ", bundle=" + bundle
                + ", precedence=" + precedence
                + '}';

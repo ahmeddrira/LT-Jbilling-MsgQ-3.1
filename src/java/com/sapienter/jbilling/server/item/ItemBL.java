@@ -49,6 +49,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -110,22 +111,26 @@ public class ItemBL {
             // Backwards compatible with the old ItemDTOEx Web Service API, use the
             // transient price field as the rate for a default pricing model.
             if (dto.getPrice() != null) {
-                dto.setDefaultPrice(getDefaultPrice(dto.getPrice()));
+                dto.getDefaultPrices().add(getDefaultPrice(dto.getPrice()));
             }
 
             // default currency for new prices (if currency is not explicitly set)
-            if (dto.getDefaultPrice() != null && dto.getDefaultPrice().getCurrency() == null) {
-                dto.getDefaultPrice().setCurrency(entity.getEntity().getCurrency());
+            if (dto.getDefaultPrices() != null) {
+                for (PriceModelDTO price : dto.getDefaultPrices()) {
+                    if (price.getCurrency() == null) {
+                        price.setCurrency(entity.getEntity().getCurrency());
+                    }
+                }
             }
 
             // validate all pricing attributes
-            if (dto.getDefaultPrice() != null) {
-                PriceModelBL.validateAttributes(dto.getDefaultPrice());
+            if (dto.getDefaultPrices() != null) {
+                PriceModelBL.validateAttributes(dto.getDefaultPrices());
             }
 
         } else {
             LOG.debug("Percentage items cannot have a default price model.");
-            dto.setDefaultPrice(null);
+            dto.getDefaultPrices().clear();
         }
 
 
@@ -161,13 +166,13 @@ public class ItemBL {
             updateDefaultPrice(dto);
 
             // validate all pricing attributes
-            if (item.getDefaultPrice() != null) {
-                PriceModelBL.validateAttributes(item.getDefaultPrice());
+            if (item.getDefaultPrices() != null && !item.getDefaultPrices().isEmpty()) {
+                PriceModelBL.validateAttributes(item.getDefaultPrices());
             }
 
         } else {
             LOG.debug("Percentage items cannot have a default price model.");
-            item.setDefaultPrice(null);
+            item.getDefaultPrices().clear();
         }
 
         itemDas.save(item);
@@ -204,26 +209,40 @@ public class ItemBL {
      * @param dto item holding the updates to apply to this item
      */
     private void updateDefaultPrice(ItemDTO dto) {
-        if (item.getDefaultPrice() == null) {
+        if (item.getDefaultPrices() == null || item.getDefaultPrices().isEmpty()) {
             // new default price
-            if (dto.getDefaultPrice() != null) {
-                item.setDefaultPrice(dto.getDefaultPrice());
+            if (dto.getDefaultPrices() != null || !dto.getDefaultPrices().isEmpty()) {
+                item.setDefaultPrices(dto.getDefaultPrices());
+
             } else if (dto.getPrice() != null) {
-                item.setDefaultPrice(getDefaultPrice(dto.getPrice()));
+                item.getDefaultPrices().add(getDefaultPrice(dto.getPrice()));
             }
 
         } else {
             // update existing default price
-            if (dto.getDefaultPrice() != null) {
-                item.setDefaultPrice(dto.getDefaultPrice());
+            if (dto.getDefaultPrices() != null || !dto.getDefaultPrices().isEmpty()) {
+                item.getDefaultPrices().clear();
+                item.getDefaultPrices().addAll(dto.getDefaultPrices());
+
             } else if (dto.getPrice() != null) {
-                item.getDefaultPrice().setRate(dto.getPrice());
+                if (dto.getDefaultPrices().size() == 1) {
+                    item.getDefaultPrices().get(0).setRate(dto.getPrice());
+
+                } else {
+                    // cannot use legacy price column, there is more than 1 price that can be updated
+                    // we should be updating the individual price model instead.
+                    throw new SessionInternalError("Item uses multiple dated prices, cannot use WS price.");
+                }
             }
         }
 
         // default price currency should always be the entity currency
-        if (item.getDefaultPrice() != null && item.getDefaultPrice().getCurrency() == null) {
-            item.getDefaultPrice().setCurrency(item.getEntity().getCurrency());
+        if (item.getDefaultPrices() != null) {
+            for (PriceModelDTO price : item.getDefaultPrices()) {
+                if (price.getCurrency() == null) {
+                    price.setCurrency(item.getEntity().getCurrency());
+                }
+            }
         }
     }
 
@@ -279,7 +298,7 @@ public class ItemBL {
      * the users current usage in the pricing calculation.
      *
      * This method does not execute any pricing plug-ins and does not use quantity or usage
-     * values for {@link PriceModelDTO#applyTo(PricingResult, List, BigDecimal, Usage)}
+     * values for {@link PriceModelDTO#applyTo(OrderDTO, PricingResult, List, BigDecimal, Usage)}
      * price calculations.
      *
      * @param item item to price
@@ -287,7 +306,7 @@ public class ItemBL {
      * @return The price in the requested currency
      */
     public BigDecimal getPriceByCurrency(ItemDTO item, Integer userId, Integer currencyId)  {
-        if (item.getDefaultPrice() != null) {
+        if (item.getDefaultPrices() != null && !item.getDefaultPrices().isEmpty()) {
             // empty usage for default pricing
             Usage usage = new Usage();
             usage.setAmount(BigDecimal.ZERO);
@@ -296,8 +315,14 @@ public class ItemBL {
             // calculate default price from strategy
             PricingResult result = new PricingResult(item.getId(), userId, currencyId);
             List<PricingField> fields = Collections.emptyList();
-            item.getDefaultPrice().applyTo(null, result, fields, BigDecimal.ONE, usage);
-            return result.getPrice();
+
+
+            // price for today
+            PriceModelDTO price = item.getPrice(new Date());
+             if (price != null) {
+                 price.applyTo(null, result, fields, BigDecimal.ONE, usage);
+                 return result.getPrice();
+             }
         }
         return BigDecimal.ZERO;
     }
@@ -429,7 +454,7 @@ public class ItemBL {
             null, // to be set right after
             item.getHasDecimals() );
 
-        dto.setDefaultPrice(item.getDefaultPrice());
+        dto.setDefaultPrices(item.getDefaultPrices());
 
         // calculate a true price using the pricing plug-in, pricing takes into
         // account plans, special prices and the quantity of the item being purchased.
@@ -481,7 +506,7 @@ public class ItemBL {
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
 
         // convert PriceModelWS to PriceModelDTO
-        retValue.setDefaultPrice(PriceModelBL.getDTO(other.getDefaultPrice()));
+        retValue.setDefaultPrices(PriceModelBL.getDTO(other.getDefaultPrices()));
 
         return retValue;
     }
@@ -509,7 +534,7 @@ public class ItemBL {
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
 
         // convert PriceModelDTO to PriceModelWS
-        retValue.setDefaultPrice(PriceModelBL.getWS(other.getDefaultPrice()));
+        retValue.setDefaultPrices(PriceModelBL.getWS(other.getDefaultPrices()));
 
         return retValue;
     }

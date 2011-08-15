@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -97,20 +98,38 @@ public class PriceModelBL {
     }
 
     /**
+     * Returns the given list of WS objects as a list of PriceModelDTO entities.
+     *
+     * @param ws list of web service objects to convert
+     * @return list of converted PriceModelDTO entities, or an empty list if source list is empty.
+     */
+    public static List<PriceModelDTO> getDTO(List<PriceModelWS> ws) {
+        if (ws == null)
+            return Collections.emptyList();
+
+        List<PriceModelDTO> dto = new ArrayList<PriceModelDTO>(ws.size());
+        for (PriceModelWS price : ws)
+            dto.add(getDTO(price));
+        return dto;
+    }
+
+    /**
      * Validates that the given pricing model has all the required attributes and that
      * the given attributes are of the correct type.
      *
-     * @param model pricing model to validate
+     * @param models pricing models to validate
      * @throws SessionInternalError if attributes are missing or of an incorrect type
      */
-    public static void validateAttributes(PriceModelDTO model) throws SessionInternalError {
+    public static void validateAttributes(List<PriceModelDTO> models) throws SessionInternalError {
         List<String> errors = new ArrayList<String>();
 
-        for (PriceModelDTO next = model; next != null; next = next.getNext()) {
-            try {
-                AttributeUtils.validateAttributes(next.getAttributes(), next.getStrategy());
-            } catch (SessionInternalError e) {
-                errors.addAll(Arrays.asList(e.getErrorMessages()));
+        for (PriceModelDTO model : models) {
+            for (PriceModelDTO next = model; next != null; next = next.getNext()) {
+                try {
+                    AttributeUtils.validateAttributes(next.getAttributes(), next.getStrategy());
+                } catch (SessionInternalError e) {
+                    errors.addAll(Arrays.asList(e.getErrorMessages()));
+                }
             }
         }
 
@@ -120,23 +139,28 @@ public class PriceModelBL {
         }
     }
 
+    public static void validateAttributes(PriceModelDTO model) throws SessionInternalError {
+        validateAttributes(Arrays.asList(model));
+    }
 
     /**
      * Validates that the given pricing model WS object has all the required attributes and that
      * the given attributes are of the correct type.
      *
-     * @param model pricing model WS object to validate
+     * @param models pricing model WS objects to validate
      * @throws SessionInternalError if attributes are missing or of an incorrect type
      */
-    public static void validateAttributes(PriceModelWS model) throws SessionInternalError {
+    public static void validateWsAttributes(List<PriceModelWS> models) throws SessionInternalError {
         List<String> errors = new ArrayList<String>();
 
-        for (PriceModelWS next = model; next != null; next = next.getNext()) {
-            try {
-                PriceModelStrategy type = PriceModelStrategy.valueOf(next.getType());
-                AttributeUtils.validateAttributes(next.getAttributes(), type.getStrategy());
-            } catch (SessionInternalError e) {
-                errors.addAll(Arrays.asList(e.getErrorMessages()));
+        for (PriceModelWS model : models) {
+            for (PriceModelWS next = model; next != null; next = next.getNext()) {
+                try {
+                    PriceModelStrategy type = PriceModelStrategy.valueOf(next.getType());
+                    AttributeUtils.validateAttributes(next.getAttributes(), type.getStrategy());
+                } catch (SessionInternalError e) {
+                    errors.addAll(Arrays.asList(e.getErrorMessages()));
+                }
             }
         }
 
@@ -145,4 +169,33 @@ public class PriceModelBL {
                                            errors.toArray(new String[errors.size()]));
         }
     }
+
+    public static void validateWsAttributes(PriceModelWS model) {
+        validateWsAttributes(Arrays.asList(model));
+    }
+
+
+    /**
+     * Searches through the list of PriceModelDTO objects for the price that is active
+     * on the given date.
+     *
+     * @param prices price models to search through
+     * @param date date to find price for
+     * @return found price for date, or null if no price found
+     */
+    public static PriceModelDTO getPriceForDate(List<PriceModelDTO> prices, Date date) {
+        PriceModelDTO currentPrice = null;
+
+        // list of prices in ordered by start date, earliest first
+        // return the model with the closest start date
+        for (PriceModelDTO model : prices) {
+            if (model.getStart() != null && model.getStart().after(date)) {
+                break;
+            }
+            currentPrice = model;
+        }
+
+        return currentPrice;
+    }
+
 }

@@ -21,8 +21,10 @@
 package com.sapienter.jbilling.server.order.task;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 //import org.apache.log4j.Logger;
+import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import org.apache.log4j.Logger;
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 
@@ -156,6 +158,8 @@ public class PooledTarrifPlanTask extends PluggableTask implements IInternalEven
     		outer:
     		for (OrderDTO order: user.getOrders()) {
     			LOG.debug("User " + user.getId() + " order " + order.getId());
+                Date pricingDate = order.getActiveSince() != null ? order.getActiveSince() : order.getCreateDate();
+
     			for(OrderLineDTO line: order.getLines()) {
     				LOG.debug("Line Item iD: " + line.getItemId() );
     				ItemDTO lineItem= line.getItem();
@@ -166,15 +170,17 @@ public class PooledTarrifPlanTask extends PluggableTask implements IInternalEven
     							LOG.debug("Plan Items Item ID: " + planItem.getItem().getId());
     							//check if planItems itemid matches the receive product id
     							if (planItem.getItem().getId() == Integer.parseInt(parameters.get(PARAMETER_POOL_RECEIVE_PRODUCT_ID.getName())) ) {
+                                    PriceModelDTO model = PriceModelBL.getPriceForDate(planItem.getModels(), pricingDate);
+
     								LOG.debug("Found matching item id to update included quantity");
-    								LOG.debug("PlanItem has PriceModelDTO. " + planItem.getModel().getType());
+    								LOG.debug("PlanItem has PriceModelDTO. " + model.getType());
+
     								//check if the plan item has graduated pricing
-    								if (planItem.getModel().getType().equals(PriceModelStrategy.GRADUATED)) {
+    								if (model.getType().equals(PriceModelStrategy.GRADUATED)) {
     									LOG.debug("Strategy Graduated");
     									//check if Item Id matches
-    									PriceModelDTO priceModel= planItem.getModel();
     	        						BigDecimal multiPlierQty= new BigDecimal((String) parameters.get(PARAMETER_QUANTITY_MULTIPLIER.getName()));
-    	        						BigDecimal included = AttributeUtils.getDecimal(priceModel.getAttributes(), "included");
+    	        						BigDecimal included = AttributeUtils.getDecimal(model.getAttributes(), "included");
     	        						
     	        						//careful with the call below, the orderLine passed is used to 
     	        						//determine additional quantity added in case of NewOrderEvent
@@ -189,7 +195,7 @@ public class PooledTarrifPlanTask extends PluggableTask implements IInternalEven
     	        						LOG.debug("included is " + included );
     	        						
     	        						//set new included quantity to the existing model
-    	        						priceModel.getAttributes().put("included", included.toPlainString());
+    	        						model.getAttributes().put("included", included.toPlainString());
     	        						break outer;
     								}
     							}
@@ -275,6 +281,8 @@ public class PooledTarrifPlanTask extends PluggableTask implements IInternalEven
     		outer:
     		for (OrderDTO order: user.getOrders()) {
     			LOG.debug("User " + user.getId() + " order " + order.getId());
+                Date pricingDate = order.getActiveSince() != null ? order.getActiveSince() : order.getCreateDate();
+
     			for(OrderLineDTO line: order.getLines()) {
     				LOG.debug("Line Item iD: " + line.getItemId() );
     				ItemDTO lineItem= line.getItem();
@@ -283,12 +291,15 @@ public class PooledTarrifPlanTask extends PluggableTask implements IInternalEven
     					for (PlanDTO plan: lineItem.getPlans()) {
     						for (PlanItemDTO planItem: plan.getPlanItems()) {
     							LOG.debug("Plan Items Item ID: " + planItem.getItem().getId());
+                                PriceModelDTO model = PriceModelBL.getPriceForDate(planItem.getModels(), pricingDate);
+
+
     							//check if planItems itemid matches the receive product id
     							if (planItem.getItem().getId() == Integer.parseInt(parameters.get(PARAMETER_POOL_RECEIVE_PRODUCT_ID.getName())) ) {
     								LOG.debug("Found matching item id to update included quantity");
-    								LOG.debug("PlanItem has PriceModelDTO. " + planItem.getModel().getType());
+    								LOG.debug("PlanItem has PriceModelDTO. " + model.getType());
     								//check if the plan item has graduated pricing
-    								if (planItem.getModel().getType().equals(PriceModelStrategy.GRADUATED)) {
+    								if (model.getType().equals(PriceModelStrategy.GRADUATED)) {
     									return order;
     								}
     							}

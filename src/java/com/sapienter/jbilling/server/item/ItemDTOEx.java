@@ -49,7 +49,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer hasDecimals;
     private Integer deleted;
     private Integer entityId;
-    private PriceModelWS defaultPrice;
+    private List<PriceModelWS> defaultPrices = new ArrayList<PriceModelWS>();
 
     // *** ItemDTOEx ***
     @NotNull @Size (min=1,max=100, message="validation.error.size,1,100")
@@ -248,12 +248,12 @@ public class ItemDTOEx implements WSSecured, Serializable {
         setPrice((price != null ? price.toString() : null));
     }
 
-    public PriceModelWS getDefaultPrice() {
-        return defaultPrice;
+    public List<PriceModelWS> getDefaultPrices() {
+        return defaultPrices;
     }
 
-    public void setDefaultPrice(PriceModelWS defaultPrice) {
-        this.defaultPrice = defaultPrice;
+    public void setDefaultPrices(List<PriceModelWS> defaultPrices) {
+        this.defaultPrices = defaultPrices;
     }
 
     public Integer getOwningEntityId() {

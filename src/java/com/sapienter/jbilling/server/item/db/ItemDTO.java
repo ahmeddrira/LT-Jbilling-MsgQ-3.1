@@ -21,6 +21,7 @@ package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
@@ -75,7 +76,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
     private CompanyDTO entity;
     private String internalNumber;
     private String glCode;
-    private List<PriceModelDTO> defaultPrices;
+    private List<PriceModelDTO> defaultPrices = new ArrayList<PriceModelDTO>();
     private BigDecimal percentage;
     private Set<ItemTypeDTO> excludedTypes = new HashSet<ItemTypeDTO>();
     private Integer deleted;
@@ -207,18 +208,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
 
     @Transient
     public PriceModelDTO getPrice(Date today) {
-        PriceModelDTO currentPrice = null;
-
-        // list of prices in ordered by start date, earliest first
-        // return the model with the closest start date
-        for (PriceModelDTO model : defaultPrices) {
-            if (model.getStart() != null && model.getStart().after(today)) {
-                break;
-            }
-            currentPrice = model;
-        }
-
-        return currentPrice;
+        return PriceModelBL.getPriceForDate(defaultPrices, today);
     }
 
     @Column(name = "percentage")

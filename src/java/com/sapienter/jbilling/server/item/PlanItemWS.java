@@ -26,6 +26,8 @@ import com.sapienter.jbilling.server.pricing.PriceModelWS;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Brian Cowdery
@@ -37,16 +39,16 @@ public class PlanItemWS implements Serializable {
 
     private Integer id;
     private Integer itemId; // affected item
-    private PriceModelWS model;
+    private List<PriceModelWS> models = new ArrayList<PriceModelWS>();
     private PlanItemBundleWS bundle;
     private Integer precedence = DEFAULT_PRECEDENCE;
 
     public PlanItemWS() {
     }
 
-    public PlanItemWS(Integer itemId, PriceModelWS model, PlanItemBundleWS bundle) {
+    public PlanItemWS(Integer itemId, List<PriceModelWS> models, PlanItemBundleWS bundle) {
         this.itemId = itemId;
-        this.model = model;
+        this.models = models;
         this.bundle = bundle;
     }
 
@@ -54,7 +56,7 @@ public class PlanItemWS implements Serializable {
         this.id = dto.getId();
         this.precedence = dto.getPrecedence();
 
-        if (dto.getModel() != null) this.model = new PriceModelWS(dto.getModel());
+        if (dto.getModels() != null) this.models = PriceModelBL.getWS(dto.getModels());
         if (dto.getBundle() != null) this.bundle = new PlanItemBundleWS(dto.getBundle());
         if (dto.getItem() != null) this.itemId = dto.getItem().getId();
     }
@@ -83,12 +85,12 @@ public class PlanItemWS implements Serializable {
         setItemId(affectedItemId);
     }
 
-    public PriceModelWS getModel() {
-        return model;
+    public List<PriceModelWS> getModels() {
+        return models;
     }
 
-    public void setModel(PriceModelWS model) {
-        this.model = model;
+    public void setModels(List<PriceModelWS> models) {
+        this.models = models;
     }
 
     public PlanItemBundleWS getBundle() {
@@ -112,7 +114,7 @@ public class PlanItemWS implements Serializable {
         return "PlanItemWS{"
                + "id=" + id
                + ", itemId=" + itemId
-               + ", model=" + model
+               + ", models=" + models
                + ", bundle=" + bundle
                + ", precedence=" + precedence
                + '}';

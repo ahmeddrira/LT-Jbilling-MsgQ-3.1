@@ -1324,3 +1324,37 @@ alter table contact_field alter column content drop not null; -- postgresql
 -- alter table customer modify content varchar(100) null default null; -- mysql
 
 
+-- Date: 15-Aug-2011
+-- Redmine Issue: #1212
+-- Description: Add date and time dimension to pricing models
+
+alter table price_model add column start_date timestamp default null; -- postgresql
+-- alter table price_mode add column start_date timestamp null default null;
+
+-- list of prices with dates for items
+drop table if exists item_price_model_map;
+create table item_price_model_map (
+    item_id int not null,
+    price_model_id int not null,
+    primary key (item_id, price_model_id)
+);
+alter table item_price_model_map add constraint item_pm_map_price_model_id_FK foreign key (price_model_id) references price_model;
+alter table item_price_model_map add constraint item_pm_map_item_id_FK foreign key (item_id) references item;
+
+insert into item_price_model_map (item_id, price_model_id) select id, price_model_id from item where price_model_id is not null;
+alter table item drop column price_model_id;
+
+
+-- list of prices with dates for plan items
+drop table if exists plan_item_price_model_map;
+create table plan_item_price_model_map (
+  plan_item_id int not null,
+  price_model_id int not null,
+  primary key (plan_item_id, price_model_id)
+);
+alter table plan_item_price_model_map add constraint plan_item_pm_map_price_mode_id_FK foreign key (price_model_id) references price_model;
+alter table plan_item_price_model_map add constraint plan_item_pm_map_plan_item_id_FK foreign key (plan_item_id) references plan_item;
+
+insert into plan_item_price_model_map (plan_item_id, price_model_id) select id, price_model_id from plan_item where price_model_id is not null;
+alter table plan_item drop column price_model_id;
+

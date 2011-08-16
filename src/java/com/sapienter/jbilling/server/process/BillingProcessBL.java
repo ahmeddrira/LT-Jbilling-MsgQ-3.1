@@ -961,8 +961,8 @@ public class BillingProcessBL extends ResultList
     }
 
     private void addRuntimeStatistic(Integer billingProcessId, Integer language,  BillingProcessRunDTOEx runDto) {
-        for (Iterator iter = new BillingProcessDAS().getCountAndSum(billingProcessId); iter.hasNext();) {
-            Object[] row = (Object[]) iter.next();
+        for (Object invoiceTblObj: new BillingProcessDAS().getCountAndSum(billingProcessId)) {
+            Object[] row = (Object[]) invoiceTblObj;
 
             BillingProcessRunTotalDTOEx totalRowDto =
                     new BillingProcessRunTotalDTOEx();
@@ -976,8 +976,9 @@ public class BillingProcessBL extends ResultList
 
             // now go over the totals by payment method
             Hashtable totals = new Hashtable();
-            for (Iterator itt = new BillingProcessDAS().getSuccessfulProcessCurrencyMethodAndSum(billingProcessId); itt.hasNext();) {
-                Object[] payedRow = (Object[]) itt.next();
+            
+            for (Object invoicePymObj: new BillingProcessDAS().getSuccessfulProcessCurrencyMethodAndSum(billingProcessId)) {
+                Object[] payedRow= (Object[]) invoicePymObj;
                 if (payedRow[0].equals(totalRowDto.getCurrency().getId())) {
                     PaymentMethodDTO paymentMethod = new PaymentMethodDAS().find((Integer) payedRow[1]);
                     BigDecimal payed = (BigDecimal) payedRow[2];
@@ -986,8 +987,8 @@ public class BillingProcessBL extends ResultList
                 }
             }
             totalRowDto.setPmTotals(totals);
-            for (Iterator itt = new BillingProcessDAS().getFailedProcessCurrencyAndSum(billingProcessId); itt.hasNext();) {
-                Object[] unpayedRow = (Object[]) itt.next();
+            for (Object unpayedObj: new BillingProcessDAS().getFailedProcessCurrencyAndSum(billingProcessId)) {
+                Object[] unpayedRow = (Object[]) unpayedObj;
                 if (unpayedRow[0].equals(totalRowDto.getCurrency().getId())) {
                     totalRowDto.setTotalNotPaid(totalRowDto.getTotalNotPaid().add((BigDecimal) unpayedRow[1]));
                 }

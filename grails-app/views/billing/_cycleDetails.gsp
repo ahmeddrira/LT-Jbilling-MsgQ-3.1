@@ -97,7 +97,7 @@
     </thead>
     <tbody>
     <g:set var="allTTLFailed" value="${new BigDecimal(0)}"/>
-    <g:set var="allTTLPaid" value="${new BigDecimal(0)}"/>
+    <g:set var="TTL_PAID_AMT_ALLMTHDS" value="${new BigDecimal(0)}"/>
     <g:set var="processRunUserDAS" value="${new ProcessRunUserDAS()}"/>
     <g:set var="SINGLE_CURR" value="${null}"/>
     
@@ -174,7 +174,7 @@
                             type="currency" currencySymbol="${INVOICE_CURNCY?.symbol}"/>
                         </em>
                     </g:each>
-                    <g:set var="allTTLPaid" value="${(allTTLPaid as BigDecimal).add(TTL_PAID_AMT as BigDecimal)}"/>
+                    <g:set var="TTL_PAID_AMT_ALLMTHDS" value="${(TTL_PAID_AMT_ALLMTHDS as BigDecimal).add(TTL_PAID_AMT as BigDecimal)}"/>
                     <em><b>
                         <g:formatNumber number="${(TTL_PAID_AMT ?: 0) as BigDecimal}" 
                             type="currency" currencySymbol="${INVOICE_CURNCY?.symbol}"/>
@@ -189,8 +189,13 @@
                 </td>
                 
                 <td>
+                    <!-- Its unpaid amount against which there has been no payment -->
+                    <g:formatNumber number="${( failedAmountsByCurrency.get(String.valueOf(INVOICE_CURNCY.getId())) ?: 0)}" 
+                            type="currency" currencySymbol="${INVOICE_CURNCY?.symbol}"/>
+                    <%--
                     <g:formatNumber number="${( countAndSumByCurrency.get(INVOICE_CURNCY) ?: 0).subtract(TTL_PAID_AMT)}" 
                             type="currency" currencySymbol="${INVOICE_CURNCY?.symbol}"/>
+                    --%>
                 </td>
                             
                 <td>${INVOICE_CURNCY?.getDescription(session.language_id)}</td>
@@ -200,14 +205,15 @@
             
         </g:each>
         
-        <!-- Compute Total Not Paid (Sum of all failed payments) -->
-        <g:each var="failedAmt" in="${failedAmountsByCurrency}">
-            <g:set var="TTL_UNPAID_AMT" value="${(TTL_UNPAID_AMT as BigDecimal).add(failedAmt as BigDecimal)}"/>
-            <g:set var="allTTLFailed" value="${(allTTLFailed as BigDecimal).add(TTL_UNPAID_AMT as BigDecimal)}"/>
-        </g:each>
     </g:each>
 
     <g:if test="${!diffCurrncy}">
+    
+        <!-- Compute Total Not Paid (Sum of all failed payments) -->
+        <g:each var="failedAmt" in="${failedAmountsByCurrency}">
+            <g:set var="TTL_UNPAID_AMT" value="${(TTL_UNPAID_AMT as BigDecimal).add(failedAmt[1] as BigDecimal)}"/>
+        </g:each>
+        
         <tr class="bg">
             <td class="col02"></td>
             <td></td>
@@ -221,16 +227,16 @@
             </g:if>
             <g:else>
                 <td><strong><!-- Total Invoiced -->
-                        <g:formatNumber number="${((allTTLPaid as BigDecimal).add(allTTLFailed as BigDecimal)?: 0) as BigDecimal}" 
+                        <g:formatNumber number="${((TTL_PAID_AMT_ALLMTHDS as BigDecimal).add(TTL_UNPAID_AMT as BigDecimal)?: 0) as BigDecimal}" 
                             type="currency" currencySymbol="${SINGLE_CURR?.symbol}"/>
                 </strong></td>
                 <td class="col01"><em>
-                        <g:formatNumber number="${ (allTTLPaid?:0) as BigDecimal}" 
+                        <g:formatNumber number="${ (TTL_PAID_AMT_ALLMTHDS?:0) as BigDecimal}" 
                             type="currency" currencySymbol="${SINGLE_CURR?.symbol}"/>
                 </em></td>
                 <td></td>
                 <td><strong>
-                        <g:formatNumber number="${(allTTLFailed?:0) as BigDecimal}" 
+                        <g:formatNumber number="${(TTL_UNPAID_AMT ?: 0) as BigDecimal}" 
                             type="currency" currencySymbol="${SINGLE_CURR?.symbol}"/>
                 </strong></td>
             </g:else>

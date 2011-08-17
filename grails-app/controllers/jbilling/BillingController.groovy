@@ -143,9 +143,11 @@ class BillingController {
 		}
 		log.debug("Fetching payment list by currency. $mapOfPaymentListByCurrency")
 
-		def failedAmountsByCurrency= new ArrayList()
+		def failedAmountsByCurrency= new HashMap()
         for (Object[] row: new BillingProcessDAS().getFailedProcessCurrencyAndSum(processId)) {
-			failedAmountsByCurrency.add(row[1])
+            def AMT = failedAmountsByCurrency.get(String.valueOf(row[0])) ?: BigDecimal.ZERO
+            AMT.add(new BigDecimal(row[1]))
+            //failedAmountsByCurrency.put(String.valueOf(row[0]), AMT)
 		}
 		log.debug("Fetching failed amounts by currency. $failedAmountsByCurrency")
 

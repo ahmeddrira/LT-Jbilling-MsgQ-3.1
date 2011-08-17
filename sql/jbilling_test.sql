@@ -11413,6 +11413,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	97	description	1	Show products menu
 59	98	description	1	Show plans menu
 59	99	description	1	Show configuration menu
+59	100	description	1	Show partner menu
 59	120	description	1	Web Service API access
 59	23	description	1	Generate invoice for order
 59	71	description	1	Send invoice notification
@@ -14281,6 +14282,7 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 97	9	\N
 98	9	\N
 99	9	\N
+100	9	\N
 120	10	\N
 23	2	\N
 71	7	\N
@@ -16041,6 +16043,7 @@ COPY report_type (id, name, optlock) FROM stdin;
 COPY role (id) FROM stdin;
 2
 3
+4
 5
 \.
 

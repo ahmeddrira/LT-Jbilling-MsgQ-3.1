@@ -19,6 +19,9 @@
   --}%
 
 <%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO; com.sapienter.jbilling.server.user.db.CompanyDTO; com.sapienter.jbilling.server.user.permisson.db.RoleDTO; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.util.db.LanguageDTO" %>
+<%@ page import="com.sapienter.jbilling.server.util.db.EnumerationDTO" %>
+<%@ page import="com.sapienter.jbilling.server.process.db.PeriodUnitDTO"  %>
+
 <html>
 <head>
     <meta name="layout" content="main" />
@@ -119,6 +122,16 @@
                                     optionKey="id" optionValue="description" value="${user?.languageId}"  />
                         </g:applyLayout>
 
+                        <g:applyLayout name="form/select">
+                            <content tag="label"><g:message code="prompt.user.currency"/></content>
+                            <content tag="label.for">user.currencyId</content>
+                            <g:select name="user.currencyId"
+                                      from="${currencies}"
+                                      optionKey="id"
+                                      optionValue="${{it.getDescription(session['language_id'])}}"
+                                      value="${user?.currencyId}" />
+                        </g:applyLayout>
+
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="prompt.user.role"/></content>
                             <content tag="label.for">user.mainRoleId</content>
@@ -126,6 +139,88 @@
                             <g:hiddenField name="user.mainRoleId" value="${Constants.TYPE_PARTNER}"/>
                             ${RoleDTO.findById(Constants.TYPE_PARTNER).getTitle(session['language_id'])}
                         </g:applyLayout>
+                        
+                        <!--  Partner DTO specific fields. -->
+                        
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.partner.balance"/></content>
+                            <content tag="label.for">balance</content>
+                            <g:textField class="field" name="balance" value="${partner?.balance}"/>
+                        </g:applyLayout>
+                        
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.partner.percentageRate"/></content>
+                            <content tag="label.for">percentageRate</content>
+                            <g:textField class="field" name="percentageRate" value="${partner?.percentageRate}"/>
+                        </g:applyLayout>
+                        
+                        <g:applyLayout name="form/input">
+                            <content tag="label"><g:message code="prompt.partner.referralFee"/></content>
+                            <content tag="label.for">referralFee</content>
+                            <g:textField class="field" name="referralFee" value="${partner?.referralFee}"/>
+                        </g:applyLayout>
+                        
+                        <g:applyLayout name="form/select">
+                            <content tag="label"><g:message code="prompt.partner.fee.currency"/></content>
+                            <content tag="label.for">feeCurrency</content>
+                            <g:select name="feeCurrency"
+                                      from="${currencies}"
+                                      optionKey="id"
+                                      optionValue="${{it.getDescription(session['language_id'])}}"
+                                      value="${partner?.feeCurrency?.id}" />
+                        </g:applyLayout>
+                        
+                        <g:applyLayout name="form/checkbox">
+                            <content tag="label"><g:message code="prompt.partner.onetimefee"/></content>
+                            <content tag="label.for">oneTime</content>
+                            <g:checkBox class="cb checkbox" name="oneTime" checked="${partner?.oneTime}"/>
+                        </g:applyLayout>
+                        
+                        <g:applyLayout name="form/select">
+                            <content tag="label"><g:message code="prompt.partner.payoutPeriod"/></content>
+                            <content tag="label.for">periodValue</content>
+                            <span>
+                                <g:select class="field" name="periodValue" style="float: left; position: relative; width:50px" 
+                                          from="${1..99}"
+                                          value="${partner?.periodValue}" />
+                                          &nbsp;
+                                <g:select class="field" name="periodUnit" style="float: center; position: justified; top: -20px;width:70px" 
+                                          from="${PeriodUnitDTO.list()}"
+                                          optionKey="id"
+                                          optionValue="${{it.getDescription(session['language_id'])}}"
+                                          value="${partner?.periodUnit?.id}" />
+                                </span>
+                        </g:applyLayout>
+                        
+                        <g:applyLayout name="form/text">
+                            <content tag="label"><g:message code="prompt.partner.nextPayoutDate"/></content>
+                            <content tag="label.for">nextPayoutDate</content>
+                            <span>
+                                <g:textField class="field" name="nextPayoutDate.month" placeholder="mm" value="${}" maxlength="2" size="2"/>
+                                -
+                                <g:textField class="field" name="nextPayoutDate.day" placeholder="dd" value="${}" maxlength="2" size="2"/>
+                                -
+                                <g:textField class="field" name="nextPayoutDate.year" placeholder="yyyy" value="${}" maxlength="8" size="8"/>
+                            </span>
+                        </g:applyLayout>
+                        
+                        <g:applyLayout name="form/checkbox">
+                            <content tag="label"><g:message code="prompt.partner.batchPayout"/></content>
+                            <content tag="label.for">automaticProcess</content>
+                            <g:checkBox class="cb checkbox" name="automaticProcess" checked="${partner?.automaticProcess}"/>
+                        </g:applyLayout>
+                        
+                        <g:applyLayout name="form/select">
+                            <content tag="label"><g:message code="prompt.partner.clerk"/></content>
+                            <content tag="label.for">relatedClerkUserId</content>
+                            <g:select name="relatedClerkUserId"
+                                      from="${clerks}"
+                                      optionKey="id"
+                                      optionValue="${{it.userName}}"
+                                      noSelection="['': message(code: 'default.no.selection')]" 
+                                      value="${partner?.relatedClerkUserId}" />
+                        </g:applyLayout>
+                        
                     </div>
 
                     <!-- contact information column -->
@@ -161,8 +256,45 @@
                                 <g:render template="/customer/contact" model="[contactType: contactType, contact: contact]"/>
                             </g:if>
                         </g:each>
+                        
+                        <!-- custom contact fields -->
+                        <g:each var="ccf" in="${company.contactFieldTypes.sort{ it.id }}">
+                            <g:set var="fieldIndex" value="${user?.contact?.fieldIDs?.findIndexOf{ it == ccf.id }}"/>
+                            <g:set var="fieldValue" value="${user?.contact?.fieldValues?.getAt(fieldIndex)}"/>
+
+                            <g:set var="enumValues" value="${null}"/>
+                            <%
+                                for (EnumerationDTO dto: EnumerationDTO.list()) {
+                                    if (dto.name == ccf.getDataType()) {
+                                        enumValues= ['']
+                                        enumValues.addAll(dto.values.collect {it.value})
+                                    } 
+                                }
+                             %>
+                             
+                            <g:if test="${enumValues}">
+                                <g:applyLayout name="form/select">
+                                    <content tag="label"><g:message code="${ccf.getDescription(session['language_id'])}"/></content>
+                                    <g:select 
+                                        class="field" 
+                                        name="contactField.${ccf.id}" 
+                                        from="${enumValues}"
+                                        value="${fieldValue}" />
+                                </g:applyLayout>
+                            </g:if>
+                            <g:else>
+                                <g:applyLayout name="form/input">
+                                    <content tag="label"><g:message code="${ccf.getDescription(session['language_id'])}"/></content>
+                                    <g:textField class="field" name="contactField.${ccf.id}" value="${fieldValue}"/>
+                                </g:applyLayout>
+                            </g:else>
+                            
+                        </g:each>
+                        
                     </div>
                 </div>
+
+                <div><br/></div>
 
                 <div class="buttons">
                     <ul>

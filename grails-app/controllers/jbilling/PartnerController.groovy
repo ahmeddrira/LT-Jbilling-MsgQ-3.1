@@ -21,6 +21,7 @@ import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.security.authentication.encoding.PasswordEncoder
 
+import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.client.ViewUtils
 import com.sapienter.jbilling.client.user.UserHelper
 import com.sapienter.jbilling.client.util.SortableCriteria
@@ -28,7 +29,9 @@ import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.user.partner.db.Partner
 import com.sapienter.jbilling.server.user.db.UserDTO
+import com.sapienter.jbilling.server.user.db.UserStatusDTO
 import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 
@@ -56,13 +59,27 @@ class PartnerController {
         params.sort = params?.sort ?: pagination.sort
         params.order = params?.order ?: pagination.order
 
-        return UserDTO.createCriteria().list(
-        max:    params.max,
-        offset: params.offset
+        def statuses= UserStatusDTO.findAll()
+        return Partner.createCriteria().list(
+            max:    params.max,
+            offset: params.offset
         ) {
             and {
-                roles {
-                    eq('id', Constants.TYPE_PARTNER)
+                createAlias("baseUser.contact", "contact")
+                filters.each { filter ->
+                    if (filter.value) {
+                        if (filter.constraintType == FilterConstraint.STATUS) {
+                            baseUser {
+                                eq("userStatus", statuses.find{ it.id == filter.integerValue })
+                            }
+                        } else {
+                            addToCriteria(filter.getRestrictions());
+                        }
+                    }
+                }
+                baseUser {
+                    eq('deleted', 0)
+                    eq('company', new CompanyDTO(session['company_id']))
                 }
             }
             // apply sorting
@@ -73,19 +90,19 @@ class PartnerController {
     /**
      */
     def list = {
-        def filters = filterService.getFilters(FilterType.CUSTOMER, params)
-        def users= getList(filters, params)
-        if (users) println "${users.size()}"
-        def selected = params.id ? UserDTO.get(params.int("id")) : null
-        def contact = selected ? ContactDTO.findByUserId(selected.id) : null
+        def filters = filterService.getFilters(FilterType.PARTNER, params)
+        def partners= getList(filters, params)
+        if (partners) println "${partners.size()}"
+        def selected = params.id ? Partner.get(params.int("id")) : null
+        def contact = selected ? ContactDTO.findByUserId(selected?.baseUser.id) : null
 
         def crumbDescription = selected ? UserHelper.getDisplayName(selected, contact) : null
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, selected?.id, crumbDescription)
         
         if (params.applyFilter) {
-            render template: 'partners', model: [ partners: users, selected: selected, contact: contact ]
+            render template: 'partners', model: [ partners: partners, selected: selected, contact: contact, filters:filters ]
         } else {
-            render view: 'list', model: [ partners: users, selected: selected, contact: contact]
+            render view: 'list', model: [ partners: partners, selected: selected, contact: contact, filters:filters]
         }
     }
 
@@ -105,7 +122,7 @@ class PartnerController {
             return
         }
 
-        [ user: user, contacts: contacts, company: company ]
+        [ user: user, contacts: contacts, company: company, currencies: currencies, clerks:clerks ]
     }
 
     def show = {
@@ -122,7 +139,10 @@ class PartnerController {
      */
     def save = {
         def user = new UserWS()
+        def partner= new Partner()
+        bindData(partner, params)
         UserHelper.bindUser(user, params)
+        partner.setBaseUser(user)
 
         def contacts = []
         def company = CompanyDTO.get(session['company_id'])
@@ -185,6 +205,28 @@ class PartnerController {
         list()
     }
 
+    def getClerks() {
+        return UserDTO.createCriteria().list() {
+            and {
+                or {
+                    isEmpty('roles')
+                    roles {
+                        eq('id', Constants.TYPE_CLERK)
+                    }
+                }
+
+                eq('company', new CompanyDTO(session['company_id']))
+                eq('deleted', 0)
+            }
+            order('id', 'desc')
+        }
+    }
+    
+    def getCurrencies() {
+        def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
+        return currencies.findAll { it.inUse }
+    }
+    
     def getCompany() {
         CompanyDTO.get(session['company_id'])
     }

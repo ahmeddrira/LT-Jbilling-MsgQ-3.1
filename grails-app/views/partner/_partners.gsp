@@ -57,8 +57,9 @@
         </thead>
 
         <tbody>
-        <g:each in="${partners}" var="user">
+        <g:each in="${partners}" var="partner">
             
+            <g:set var="user" value="${partner?.baseUser}"/>
             <g:set var="customer" value="${user?.customer}"/>
             <g:set var="contact" value="${ContactDTO.findByUserId(user.id)}"/>
 

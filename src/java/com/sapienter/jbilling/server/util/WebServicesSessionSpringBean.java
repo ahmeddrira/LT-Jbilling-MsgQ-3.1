@@ -822,7 +822,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     			ContactFieldTypeDTO dto= ws.getId() == null ? new ContactFieldTypeDTO() : das.find(ws.getId());
     			dto.setDataType(ws.getDataType());
     			dto.setReadOnly(ws.getReadOnly());
-    			dto.setDisplayInView(ws.getDisplayInView());
+    			dto.setDisplayInView(ws.getDisplayInView() ? 1 : 0);
     			dto.setPromptKey("placeholder_text");
     			dto.setEntity(new CompanyDTO(ws.getCompanyId()));
     			dto.setVersionNum(new Integer(0));

@@ -51,20 +51,58 @@
 	
 			<tbody>
 				<g:each var="dto" in="${lstBillingProcesses}">
-					<tr id="process-${dto.id}" class="${selected?.id == dto.id ? 'active' : ''} ${dto?.isReview > 0 ? 'isReview' : ''}" 
-                        onmouseover="this.style.cursor='hand'" 
-                        onclick="javascript: document.location.href='/jbilling/billing/show/${dto.id}'">
-						<td class="small">${dto.id}</td>
-						<td class="medium">
-                            <g:formatDate date="${dto.billingDate}" formatName="date.pretty.format"/>
-						</td>
-						<g:if test="${dataHashMap[dto.id] != null}">
-                            <td class="small">${dataHashMap[dto.id][0]}</td>
-                            <td class="medium">
-                                <g:formatNumber number="${(dataHashMap[dto.id][1]?: 0) as BigDecimal}"
-                                    type="currency" currencySymbol="${dataHashMap[dto.id][2]?.symbol}"/>
+					<tr id="process-${dto.id}" class="${selected?.id == dto.id ? 'active' : ''} ${dto?.isReview > 0 ? 'isReview' : ''}">
+						<td class="small">
+                            <g:link class="cell" action="show" id="${dto.id}">
+                                ${dto.id}
+                            </g:link>
+                        </td>
+                        <td class="medium">
+                            <g:link class="cell" action="show" id="${dto.id}">
+                                <g:formatDate date="${dto.billingDate}" formatName="date.pretty.format"/>
+                            </g:link>
+                        </td>
+						<g:if test="${dataHashMap[dto.id as Integer]!= null}">
+                            <td class="small">
+                            <g:link class="cell" action="show" id="${dto.id}">
+                                <g:if test="${dataHashMap[dto.id].size <=2}">
+                                    <g:each status="i" var="v" in="${dataHashMap[dto.id]}">
+                                        <g:if test="${i!=0}"><br></g:if>
+                                        ${v[0]}
+                                    </g:each>
+                                </g:if><g:else>
+                                    ${dataHashMap[dto.id][0][0]}<br><g:message code="label.billing.more"/>
+                                </g:else>
+                            </g:link>
                             </td>
-                            <td class="small">${dataHashMap[dto.id][2].code}</td>
+                            <td class="medium">
+                            <g:link class="cell" action="show" id="${dto.id}">
+                                <g:if test="${dataHashMap[dto.id].size <=2}">
+                                    <g:each status="i" var="v" in="${dataHashMap[dto.id]}">
+                                        <g:if test="${i!=0}"><br></g:if>
+                                        <g:formatNumber number="${new BigDecimal(v[1]?: 0)}"
+                                         type="currency" currencySymbol="${v[2]?.symbol}"/>
+                                    </g:each>
+                                </g:if><g:else>
+                                    <g:formatNumber number="${new BigDecimal(dataHashMap[dto.id][0][1]?: 0)}"
+                                         type="currency" currencySymbol="${dataHashMap[dto.id][0][2]?.symbol}"/>
+                                     <br><g:message code="label.billing.more"/>
+                                </g:else>
+                            </g:link>
+                            </td>
+                            <td class="small">
+                            <g:link class="cell" action="show" id="${dto.id}">
+                                <g:if test="${dataHashMap[dto.id].size <=2}">
+                                    <g:each status="i" var="v" in="${dataHashMap[dto.id]}">
+                                        <g:if test="${i!=0}"><br></g:if>
+                                        ${v[2].code}
+                                    </g:each>
+                                </g:if><g:else>
+                                    ${dataHashMap[dto.id][0][2].code}
+                                     <br><g:message code="label.billing.more"/>
+                                </g:else>
+                            </g:link>
+                            </td>
                         </g:if>
                         <g:else>
                             <td class="small"></td>
@@ -92,7 +130,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="mediation" action="list" params="${sortableParams(params: [partial: true])}" total="${orders?.totalCount ?: 0}" update="column1"/>
+        <util:remotePaginate controller="mediation" action="list" params="${sortableParams(params: [partial: true])}" total="${lstBillingProcesses?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 

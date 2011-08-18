@@ -666,9 +666,9 @@ CREATE TABLE contact_field_type (
     id integer NOT NULL,
     entity_id integer,
     prompt_key character varying(50) NOT NULL,
-    data_type character varying(10) NOT NULL,
+    data_type character varying(50) NOT NULL,
     customer_readonly smallint,
-    display_in_view smallint,
+    display_in_view smallint default 0,
     optlock integer NOT NULL
 );
 
@@ -11689,6 +11689,8 @@ permission_user	10
 permission_user	1
 permission_user	1
 permission_user	1
+enumeration	1
+enumeration_values	1
 \.
 
 
@@ -11789,6 +11791,8 @@ COPY jbilling_table (id, name) FROM stdin;
 102	report_parameter
 103	plan_item_bundle
 104	notification_category
+105	enumeration
+106	enumeration_values
 \.
 
 

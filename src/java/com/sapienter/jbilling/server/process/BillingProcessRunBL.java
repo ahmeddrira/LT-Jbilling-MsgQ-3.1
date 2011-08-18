@@ -202,8 +202,8 @@ public class BillingProcessRunBL  extends ResultList implements ProcessSQL {
      */
     public void updateTotals(Integer billingProcessId) {
 
-        for (Iterator it = new BillingProcessDAS().getCountAndSum(billingProcessId); it.hasNext();) {
-            Object[] row = (Object[]) it.next();
+        for (Object listObj: new BillingProcessDAS().getCountAndSum(billingProcessId)) {
+            Object[] row = (Object[]) listObj;
             // add the total to the total invoiced
             ProcessRunTotalDTO totalRow = findOrCreateTotal((Integer) row[2]);
 
@@ -327,13 +327,13 @@ public class BillingProcessRunBL  extends ResultList implements ProcessSQL {
 
     public void updatePaymentsStatistic(Integer runId) {
         BillingProcessRunBL run = new BillingProcessRunBL(runId);
-        for (Iterator it = new BillingProcessDAS().getSuccessfulProcessCurrencyMethodAndSum(run.getEntity().getBillingProcess().getId()); it.hasNext();) {
-            Object[] row = (Object[]) it.next();
+        for (Object invoicePymObj: new BillingProcessDAS().getSuccessfulProcessCurrencyMethodAndSum(run.getEntity().getBillingProcess().getId())) {
+            Object[] row= (Object[]) invoicePymObj;
             run.updateNewPayment((Integer) row[0], (Integer) row[1], (BigDecimal) row[2], true);
         }
 
-        for (Iterator it = new BillingProcessDAS().getFailedProcessCurrencyAndSum(run.getEntity().getBillingProcess().getId()); it.hasNext();) {
-            Object[] row = (Object[]) it.next();
+        for (Object unpayedObj: new BillingProcessDAS().getFailedProcessCurrencyAndSum(run.getEntity().getBillingProcess().getId())) {
+            Object[] row = (Object[]) unpayedObj;
             run.updateNewPayment((Integer) row[0], null, (BigDecimal) row[1], false);
         }
     }

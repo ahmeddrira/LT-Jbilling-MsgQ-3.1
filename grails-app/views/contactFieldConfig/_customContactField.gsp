@@ -90,14 +90,12 @@
                                     
                                     <td class="medium">
                                     
-                                        <g:select 
-                                            class="field" 
+                                        <g:checkBox 
+                                            class="cb checkbox" 
                                             style="float: right; width: 100px;position: relative;" 
                                             name="obj[${iter}].displayInView" 
-                                            keys="[1,0]" 
-                                            from="['Yes', 'No']" 
-                                            value="${type.displayInView}"/>
-                                            
+                                            value="${(type?.displayInView?.intValue() > 0) ? true :false}"/>
+                                    
                                     </td>
                                     
                                 </tr>
@@ -136,15 +134,13 @@
                                 </td>
                                 
                                 <td class="medium">
-                                    
-                                        <g:select 
-                                            class="field" 
+
+                                    <g:checkBox 
+                                            class="cb checkbox" 
                                             style="float: right; width: 100px;position: relative;" 
                                             name="displayInView" 
-                                            keys="[1,0]" 
-                                            from="['Yes', 'No']" 
-                                            value=""/>
-                                            
+                                            value="${false}"/>
+                                    
                                     </td>
                                 
                             </tr>

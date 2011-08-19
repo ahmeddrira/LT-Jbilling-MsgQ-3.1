@@ -24,7 +24,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -90,6 +89,14 @@ public class SpringAPI implements JbillingAPI {
 
     public PartnerWS getPartner(Integer partnerId) {
         return session.getPartner(partnerId);
+    }
+    
+    public Integer createPartner(UserWS newUser, PartnerWS partner) {
+        return session.createPartner(newUser, partner);
+    }
+    
+    public void deletePartner (Integer partnerId){
+        session.deletePartner(partnerId);
     }
 
     public CreateResponseWS create(UserWS user, OrderWS order) {

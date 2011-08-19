@@ -207,6 +207,14 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getPartner(partnerId)
     }
 
+    public Integer createPartner(UserWS newUser, PartnerWS partner) {
+        return webServicesSession.createPartner(newUser, partner)
+    }
+    
+    public void deletePartner (Integer partnerId){
+        webServicesSession.deletePartner(partnerId);
+    }
+    
     public void updateCreditCard(Integer userId, CreditCardDTO creditCard) {
         webServicesSession.updateCreditCard(userId, creditCard)
     }

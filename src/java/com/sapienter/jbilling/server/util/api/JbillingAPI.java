@@ -94,6 +94,8 @@ public interface JbillingAPI {
 
     public void processPartnerPayouts(Date runDate);
     public PartnerWS getPartner(Integer partnerId);
+    public Integer createPartner(UserWS newUser, PartnerWS partner);
+    public void deletePartner (Integer partnerId);
 
     public UserTransitionResponseWS[] getUserTransitions(Date from, Date to);
     public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id);

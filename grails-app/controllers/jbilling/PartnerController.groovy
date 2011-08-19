@@ -29,11 +29,14 @@ import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO
 import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.user.partner.PartnerWS
 import com.sapienter.jbilling.server.user.partner.db.Partner
 import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.user.db.UserStatusDTO
+import com.sapienter.jbilling.server.util.db.CurrencyDTO
 import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
+import com.sapienter.jbilling.server.user.partner.PartnerBL
 
 @Secured(["MENU_100"])
 class PartnerController {
@@ -79,7 +82,7 @@ class PartnerController {
                 }
                 baseUser {
                     eq('deleted', 0)
-                    eq('company', new CompanyDTO(session['company_id']))
+                    eq('company', company)
                 }
             }
             // apply sorting
@@ -90,30 +93,53 @@ class PartnerController {
     /**
      */
     def list = {
+        
         def filters = filterService.getFilters(FilterType.PARTNER, params)
+        
         def partners= getList(filters, params)
-        if (partners) println "${partners.size()}"
+        
+        log.debug "Found ${partners?.size()} partners."
+        
         def selected = params.id ? Partner.get(params.int("id")) : null
-        def contact = selected ? ContactDTO.findByUserId(selected?.baseUser.id) : null
+        
+        def contact = selected ? ContactDTO.findByUserId(selected?.baseUser?.id) : null
 
-        def crumbDescription = selected ? UserHelper.getDisplayName(selected, contact) : null
-        breadcrumbService.addBreadcrumb(controllerName, 'list', null, selected?.id, crumbDescription)
+        //def crumbDescription = selected ? UserHelper.getDisplayName(selected.baseUser, contact) : null
+        
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, null)
         
         if (params.applyFilter) {
             render template: 'partners', model: [ partners: partners, selected: selected, contact: contact, filters:filters ]
-        } else {
-            render view: 'list', model: [ partners: partners, selected: selected, contact: contact, filters:filters]
-        }
+            return 
+        } 
+        render view: 'list', model: [ partners: partners, selected: selected, contact: contact, filters:filters]
+        
     }
 
+    def show = {
+        
+        def partner= Partner.get(params.int('id'))
+        
+        def contact = partner ? ContactDTO.findByUserId(partner?.baseUser.id) : null
+
+        breadcrumbService.addBreadcrumb(controllerName, 'show', null, partner.id, UserHelper.getDisplayName(partner.baseUser, contact))
+
+        render template: 'show', model: [ selected: partner, contact: contact ]
+    }
 
     def edit = {
+        
         def user
+        def partner
         def contacts
 
         try {
-            user = params.id ? webServicesSession.getUserWS(params.int('id')) : new UserWS()
+            
+            partner= params.id ? webServicesSession.getPartner(params.int('id')) : new PartnerWS()
+            log.debug partner?.relatedClerkUserId
+            user= (params.id &&  partner) ? webServicesSession.getUserWS(partner?.userId) : new UserWS()
             contacts = params.id ? webServicesSession.getUserContactsWS(user.userId) : null
+            
         } catch (SessionInternalError e) {
             log.error("Could not fetch WS object", e)
             flash.error = 'partner.not.found'
@@ -122,37 +148,38 @@ class PartnerController {
             return
         }
 
-        [ user: user, contacts: contacts, company: company, currencies: currencies, clerks:clerks ]
-    }
-
-    def show = {
-        def user = UserDTO.get(params.int('id'))
-        def contact = user ? ContactDTO.findByUserId(user.id) : null
-
-        breadcrumbService.addBreadcrumb(controllerName, 'list', null, user.userId, UserHelper.getDisplayName(user, contact))
-
-        render template: 'show', model: [ selected: user, contact: contact ]
+        [ partner: partner, user: user, contacts: contacts, company: company, currencies: currencies, clerks:clerks ]
     }
 
     /**
-     * Validate and save a user.
+     * Validate and Save the Partner User
      */
     def save = {
+        
+        def partner= new PartnerWS()
         def user = new UserWS()
-        def partner= new Partner()
+        
         bindData(partner, params)
         UserHelper.bindUser(user, params)
-        partner.setBaseUser(user)
-
+        
+        if (params.int('nextPayoutYear')) {
+            def nextPayout= Calendar.getInstance();
+            nextPayout.clear()
+            nextPayout.set(params.int('nextPayoutYear'), params.int('nextPayoutMonth'), params.int('nextPayoutDay'))
+            partner.setNextPayoutDate(nextPayout.getTime())
+        } else {
+            log.error "Next payout date is mandatory for partner."
+            //show error
+        }
+        
         def contacts = []
-        def company = CompanyDTO.get(session['company_id'])
         UserHelper.bindContacts(user, contacts, company, params)
 
         def oldUser = (user.userId && user.userId != 0) ? webServicesSession.getUserWS(user.userId) : null
         UserHelper.bindPassword(user, oldUser, params, flash)
 
         if (flash.error) {
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company ]
+            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: company, currencies: currencies, clerks:clerks ]
             return
         }
 
@@ -161,15 +188,20 @@ class PartnerController {
             if (!oldUser) {
                 log.debug("creating user ${user}")
 
-                user.userId = webServicesSession.createUser(user)
-
+                partner.id = webServicesSession.createPartner(user, partner)
+                
                 flash.message = 'partner.created'
                 flash.args = [user.userId]
 
             } else {
-                log.debug("saving changes to user ${user.userId}")
-
+            
+                log.debug("saving changes to user ${user.userId} & ${user.customerId}")
                 webServicesSession.updateUser(user)
+                
+                //save partner
+                def partnerService= new PartnerBL()
+                partner.setBaseUser(UserDTO.get(user.userId))
+                partner.id= partnerService.update(partner)
 
                 flash.message = 'partner.updated'
                 flash.args = [user.userId]
@@ -181,19 +213,19 @@ class PartnerController {
                     webServicesSession.updateUserContact(user.userId, it.type, it);
                 }
             }
-
+            
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company ]
+            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: company, currencies: currencies, clerks:clerks ]
             return
         }
 
-        chain action: 'list', params: [ id: user.userId ]
+        chain action: 'list', params: [ id: partner.id ]
     }
 
     def delete = {
         if (params.id) {
-            webServicesSession.deleteUser(params.int('id'))
+            webServicesSession.deletePartner(params.int('id'))
             log.debug("Deleted partner ${params.id}.")
         }
 
@@ -215,7 +247,7 @@ class PartnerController {
                     }
                 }
 
-                eq('company', new CompanyDTO(session['company_id']))
+                eq('company', company)
                 eq('deleted', 0)
             }
             order('id', 'desc')

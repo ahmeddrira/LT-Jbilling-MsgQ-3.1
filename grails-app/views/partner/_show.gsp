@@ -21,7 +21,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <%--
-  Shows an internal user.
+  Shows a Partner
 
   @author Vikas Bodani
   @since  26-Jul-2011
@@ -34,7 +34,7 @@
                 ${contact.firstName} ${contact.lastName}
             </g:if>
             <g:else>
-                ${selected.userName}
+                ${selected?.baseUser.userName}
             </g:else>
             <em><g:if test="${contact}">${contact.organizationName}</g:if></em>
         </strong>
@@ -50,24 +50,24 @@
             </tr>
             <tr>
                 <td><g:message code="customer.detail.user.username"/></td>
-                <td class="value">${selected.userName}</td>
+                <td class="value">${selected?.baseUser.userName}</td>
             </tr>
             <tr>
                 <td><g:message code="customer.detail.user.status"/></td>
-                <td class="value">${selected.userStatus.description}</td>
+                <td class="value">${selected?.baseUser.userStatus.description}</td>
             </tr>
             <tr>
                 <td><g:message code="user.language"/></td>
-                <td class="value">${selected.language.getDescription()}</td>
+                <td class="value">${selected?.baseUser.language.getDescription()}</td>
             </tr>
 
             <tr>
                 <td><g:message code="customer.detail.user.created.date"/></td>
-                <td class="value"><g:formatDate date="${selected.createDatetime}" formatName="date.pretty.format"/></td>
+                <td class="value"><g:formatDate date="${selected?.baseUser.createDatetime}" formatName="date.pretty.format"/></td>
             </tr>
             <tr>
                 <td><g:message code="user.last.login"/></td>
-                <td class="value"><g:formatDate date="${selected.lastLogin}" formatName="date.pretty.format"/></td>
+                <td class="value"><g:formatDate date="${selected?.baseUser.lastLogin}" formatName="date.pretty.format"/></td>
             </tr>
             </tbody>
         </table>

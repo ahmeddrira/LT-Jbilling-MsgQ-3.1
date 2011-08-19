@@ -107,6 +107,7 @@ public interface IWebServicesSessionBean {
     
     public PartnerWS getPartner(Integer partnerId) throws SessionInternalError;
     public Integer createPartner(UserWS newUser, PartnerWS partner) throws SessionInternalError;
+    public void updatePartner(UserWS newUser, PartnerWS partner) throws SessionInternalError;
     public void deletePartner (Integer partnerId) throws SessionInternalError;
     
     public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) throws SessionInternalError;

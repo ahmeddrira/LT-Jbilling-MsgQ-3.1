@@ -16,6 +16,8 @@
 
 package jbilling
 
+import java.math.BigDecimal;
+
 import grails.plugins.springsecurity.Secured
 
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
@@ -136,7 +138,7 @@ class PartnerController {
         try {
             
             partner= params.id ? webServicesSession.getPartner(params.int('id')) : new PartnerWS()
-            log.debug partner?.relatedClerkUserId
+            log.debug partner?.nextPayoutDate
             user= (params.id &&  partner) ? webServicesSession.getUserWS(partner?.userId) : new UserWS()
             contacts = params.id ? webServicesSession.getUserContactsWS(user.userId) : null
             
@@ -159,18 +161,12 @@ class PartnerController {
         def partner= new PartnerWS()
         def user = new UserWS()
         
-        bindData(partner, params)
-        UserHelper.bindUser(user, params)
         
-        if (params.int('nextPayoutYear')) {
-            def nextPayout= Calendar.getInstance();
-            nextPayout.clear()
-            nextPayout.set(params.int('nextPayoutYear'), params.int('nextPayoutMonth'), params.int('nextPayoutDay'))
-            partner.setNextPayoutDate(nextPayout.getTime())
-        } else {
-            log.error "Next payout date is mandatory for partner."
-            //show error
-        }
+        bindData(partner, params)
+        //partner?.nextPayoutDate= new java.text.SimpleDateFormat("dd-MM-yyyy").parse(params?.nextPayoutDate)
+        log.debug "def save ${partner?.nextPayoutDate}"
+        
+        UserHelper.bindUser(user, params)
         
         def contacts = []
         UserHelper.bindContacts(user, contacts, company, params)
@@ -188,21 +184,24 @@ class PartnerController {
             if (!oldUser) {
                 log.debug("creating user ${user}")
 
+                //create partner with defaults
+                //partner.setTotalPayments(BigDecimal.ZERO);
+                //partner.setTotalPayouts(BigDecimal.ZERO);
+                //partner.setTotalRefunds(BigDecimal.ZERO);
+                //partner.setDuePayout(BigDecimal.ZERO);
+                
                 partner.id = webServicesSession.createPartner(user, partner)
                 
                 flash.message = 'partner.created'
                 flash.args = [user.userId]
 
             } else {
+                
+                partner.setUserId(user.getUserId())
             
                 log.debug("saving changes to user ${user.userId} & ${user.customerId}")
-                webServicesSession.updateUser(user)
+                webServicesSession.updatePartner(user, partner)
                 
-                //save partner
-                def partnerService= new PartnerBL()
-                partner.setBaseUser(UserDTO.get(user.userId))
-                partner.id= partnerService.update(partner)
-
                 flash.message = 'partner.updated'
                 flash.args = [user.userId]
             }

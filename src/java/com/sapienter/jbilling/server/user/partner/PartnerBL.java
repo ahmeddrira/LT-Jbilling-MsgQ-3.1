@@ -133,6 +133,10 @@ public class PartnerBL extends ResultList implements PartnerSQL {
     }
     
     public void update(Integer executorId, Partner dto) {
+        dto.getBaseUser();
+        dto.getBaseUser().getId();
+        partner.getId();
+        dto.getRelatedClerkUserId();
         eLogger.audit(executorId, dto.getBaseUser().getId(), 
                 Constants.TABLE_PARTNER, partner.getId(),
                 EventLogger.MODULE_USER_MAINTENANCE, 

@@ -940,17 +940,36 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throw new SessionInternalError("User already exists with username " + newUser.getUserName(),
                     new String[] { "UserWS,userName,validation.error.user.already.exists" });
         }
-        
+        Partner partnerDto= partner.getPartnerDTO();
         ContactBL cBl = new ContactBL();
         UserDTOEx dto = new UserDTOEx(newUser, entityId);
-        dto.setPartner(partner.getPartnerDTO());
+        dto.setPartner(partnerDto);
         Integer userId = bl.create(dto, getCallerId());
+        
         if (newUser.getContact() != null) {
             newUser.getContact().setId(0);
             cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId, getCallerId());
         }
         
         return bl.getDto().getPartner().getId();
+        
+    }
+    
+    public void updatePartner(UserWS newUser, PartnerWS partner) throws SessionInternalError {
+        
+        Integer entityId = getCallerCompanyId();
+
+        UserDTOEx userDto = new UserDTOEx(newUser, entityId);
+        
+        Partner partnerDto= partner.getPartnerDTO();
+        
+        //dto.setPartner(partnerDto);
+        
+        IUserSessionBean userSession = (IUserSessionBean) Context.getBean(
+                Context.Name.USER_SESSION);
+        
+        userSession.update(getCallerId(), userDto);
+        userSession.updatePartner(getCallerId(), partnerDto);
         
     }
     

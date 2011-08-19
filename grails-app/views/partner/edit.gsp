@@ -50,10 +50,10 @@
     <div class="heading">
         <strong>
             <g:if test="${isNew}">
-                New User
+                New Partner
             </g:if>
             <g:else>
-                Edit User
+                Edit Partner
             </g:else>
         </strong>
     </div>
@@ -69,13 +69,19 @@
                             <content tag="label"><g:message code="prompt.customer.number"/></content>
 
                             <g:if test="${!isNew}">
-                                <span>${user.userId}</span>
+                                <span>${partner.id}</span>
                             </g:if>
                             <g:else>
                                 <em><g:message code="prompt.id.new"/></em>
                             </g:else>
 
-                            <g:hiddenField name="user.userId" value="${user?.userId}"/>
+                            <g:hiddenField name="user.userId" value="${partner?.userId}"/>
+                            
+                            <g:hiddenField name="totalPayments" value="${partner?.totalPayments}"/>
+                            <g:hiddenField name="totalRefunds" value="${partner?.totalRefunds}"/>
+                            <g:hiddenField name="totalPayouts" value="${partner?.totalPayouts}"/>
+                            <g:hiddenField name="duePayout" value="${partner?.duePayout}"/>
+                            
                         </g:applyLayout>
 
                         <g:if test="${isNew}">
@@ -197,17 +203,12 @@
                                 </span>
                         </g:applyLayout>
                         
-                        <g:applyLayout name="form/text">
+                        <g:applyLayout name="form/date">
                             <content tag="label"><g:message code="prompt.partner.nextPayoutDate"/></content>
                             <content tag="label.for">nextPayoutDate</content>
-                            <span>
-                                <g:textField class="field" name="nextPayoutMonth" placeholder="mm" value="" maxlength="2" size="2"/>
-                                -
-                                <g:textField class="field" name="nextPayoutDay" placeholder="dd" value="" maxlength="2" size="2"/>
-                                -
-                                <g:textField class="field" name="nextPayoutYear" placeholder="yyyy" value="" maxlength="8" size="8"/>
-                            </span>
+                            <g:textField class="field" name="nextPayoutDate" value="${formatDate(date: partner?.nextPayoutDate, formatName: 'datepicker.format')}"/>
                         </g:applyLayout>
+                                    
                         
                         <g:applyLayout name="form/checkbox">
                             <content tag="label"><g:message code="prompt.partner.batchPayout"/></content>

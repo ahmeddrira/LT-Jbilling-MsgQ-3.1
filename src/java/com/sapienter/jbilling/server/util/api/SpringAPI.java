@@ -95,6 +95,10 @@ public class SpringAPI implements JbillingAPI {
         return session.createPartner(newUser, partner);
     }
     
+    public void updatePartner(UserWS newUser, PartnerWS partner) {
+        session.updatePartner(newUser, partner);
+    }
+    
     public void deletePartner (Integer partnerId){
         session.deletePartner(partnerId);
     }

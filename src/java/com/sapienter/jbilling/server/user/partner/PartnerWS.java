@@ -33,6 +33,7 @@ import javax.validation.constraints.NotNull;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.security.WSSecured;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
@@ -182,7 +183,7 @@ public class PartnerWS implements WSSecured, Serializable {
     }
 
     public void setTotalPayments(BigDecimal totalPayments) {
-        this.totalPayments = (totalPayments != null ? totalPayments.toString() : null);
+        this.totalPayments = (totalPayments != null ? totalPayments.toPlainString() : null);
     }
 
     public String getTotalRefunds() {
@@ -198,7 +199,7 @@ public class PartnerWS implements WSSecured, Serializable {
     }
 
     public void setTotalRefunds(BigDecimal totalRefunds) {
-        this.totalRefunds = (totalRefunds != null ? totalRefunds.toString() : null);
+        this.totalRefunds = (totalRefunds != null ? totalRefunds.toPlainString() : null);
     }
 
     public String getTotalPayouts() {
@@ -214,7 +215,7 @@ public class PartnerWS implements WSSecured, Serializable {
     }
 
     public void setTotalPayouts(BigDecimal totalPayouts) {
-        this.totalPayouts = (totalPayouts != null ? totalPayouts.toString() : null);
+        this.totalPayouts = (totalPayouts != null ? totalPayouts.toPlainString() : null);
     }
 
     public String getPercentageRate() {
@@ -230,7 +231,7 @@ public class PartnerWS implements WSSecured, Serializable {
     }
 
     public void setPercentageRate(BigDecimal percentageRate) {
-        this.percentageRate = (percentageRate != null ? percentageRate.toString() : null);
+        this.percentageRate = (percentageRate != null ? percentageRate.toPlainString() : null);
     }
 
     public String getReferralFee() {
@@ -246,7 +247,7 @@ public class PartnerWS implements WSSecured, Serializable {
     }
 
     public void setReferralFee(BigDecimal referralFee) {
-        this.referralFee = (referralFee != null ? referralFee.toString() : null);
+        this.referralFee = (referralFee != null ? referralFee.toPlainString() : null);
     }
 
     public Boolean getOneTime() {
@@ -286,7 +287,7 @@ public class PartnerWS implements WSSecured, Serializable {
     }
 
     public void setDuePayout(BigDecimal duePayout) {
-        this.duePayout = (duePayout != null ? duePayout.toString() : null);
+        this.duePayout = (duePayout != null ? duePayout.toPlainString() : null);
     }
 
     public Boolean getAutomaticProcess() {
@@ -335,6 +336,7 @@ public class PartnerWS implements WSSecured, Serializable {
 
     public Partner getPartnerDTO () {
         Partner partner = new Partner();
+        partner.setId(this.getId()!= null ? this.getId() : 0);
         partner.setAutomaticProcess(this.getAutomaticProcess()?1:0);
         partner.setOneTime(this.getOneTime()?1:0);
         partner.setPeriodUnit(new PeriodUnitDTO(this.getPeriodUnitId()));
@@ -345,7 +347,16 @@ public class PartnerWS implements WSSecured, Serializable {
         partner.setReferralFee(this.getReferralFeeAsDecimal());
         partner.setFeeCurrency(new CurrencyDAS().find(this.getFeeCurrencyId()));
         partner.setRelatedClerkUserId(this.getRelatedClerkUserId());
+        if ( null != this.userId && this.userId.intValue() > 0) {
+            partner.setBaseUser(new UserDAS().find(this.userId));
+        }
         //partner.setBaseUserByRelatedClerk(new UserDAS().find(partner.getRelatedClerkUserId()));
+        
+        partner.setTotalPayments(this.getTotalPaymentsAsBigDecimal());
+        partner.setTotalRefunds(this.getTotalRefundsAsDecimal());
+        partner.setTotalPayouts(this.getTotalPayoutsAsDecimal());
+        partner.setDuePayout(this.getDuePayoutAsDecimal());
+        
         return partner;
     }
     

@@ -40,12 +40,12 @@
         </strong>
     </div>
 
-    <!-- user details -->
+    <!-- partner user details -->
     <div class="box">
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>
             <tr>
-                <td><g:message code="customer.detail.user.user.id"/></td>
+                <td><g:message code="partner.detail.id"/></td>
                 <td class="value">${selected.id}</td>
             </tr>
             <tr>
@@ -73,6 +73,44 @@
         </table>
     </div>
 
+    <!-- partner details -->
+    <!-- contact details -->
+    <div class="heading">
+        <strong><g:message code="partner.details.title"/></strong>
+    </div>
+    <g:if test="${selected}">
+    <div class="box">
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+            <tr>
+                <td><g:message code="partner.detail.id"/></td>
+                <td class="value">${selected.id}</td>
+            </tr>
+            <tr>
+                <td><g:message code="customer.detail.user.username"/></td>
+                <td class="value">${selected?.baseUser.userName}</td>
+            </tr>
+            <tr>
+                <td><g:message code="customer.detail.user.status"/></td>
+                <td class="value">${selected?.baseUser.userStatus.description}</td>
+            </tr>
+            <tr>
+                <td><g:message code="user.language"/></td>
+                <td class="value">${selected?.baseUser.language.getDescription()}</td>
+            </tr>
+
+            <tr>
+                <td><g:message code="customer.detail.user.created.date"/></td>
+                <td class="value"><g:formatDate date="${selected?.baseUser.createDatetime}" formatName="date.pretty.format"/></td>
+            </tr>
+            <tr>
+                <td><g:message code="user.last.login"/></td>
+                <td class="value"><g:formatDate date="${selected?.baseUser.lastLogin}" formatName="date.pretty.format"/></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    </g:if>
     <!-- contact details -->
     <div class="heading">
         <strong><g:message code="customer.detail.contact.title"/></strong>

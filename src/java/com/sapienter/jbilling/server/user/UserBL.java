@@ -70,6 +70,7 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import org.apache.log4j.Logger;
+import org.joda.time.DateMidnight;
 import org.springframework.dao.EmptyResultDataAccessException;
 import javax.sql.rowset.CachedRowSet;
 
@@ -635,11 +636,11 @@ public class UserBL extends ResultList implements UserSQL {
         }
 
         // get earliest order "next billable" date
-        Date nextBillableDay = null;
+        DateMidnight nextBillableDay = null;
 
         for (OrderDTO order : this.user.getOrders()) {
-            Date date = new OrderBL(order).getInvoicingDate();
-            if (nextBillableDay == null || (date != null && date.before(nextBillableDay))) {
+            DateMidnight date = new DateMidnight(new OrderBL(order).getInvoicingDate());
+            if (nextBillableDay == null || (date.isBefore(nextBillableDay))) {
                 nextBillableDay = date;
             }
         }
@@ -653,23 +654,24 @@ public class UserBL extends ResultList implements UserSQL {
         }
 
         // orders to be processed by the next run
-        if (nextBillableDay == null || config.getNextRunDate().after(nextBillableDay)) {
-            return config.getNextRunDate();
+        DateMidnight nextRunDate = new DateMidnight(config.getNextRunDate());
+        if (nextBillableDay == null || nextRunDate.isAfter(nextBillableDay)) {
+            return nextRunDate.toDate();
         }
 
         // orders to be processed by a subsequent run, increment the process run date by the
         // billing period until we find the earliest possible billing run date
-        Calendar nextBillableDay2 = new GregorianCalendar();
-        nextBillableDay2.setTime(nextBillableDay);
+        Calendar nextBillableDayCal = new GregorianCalendar();
+        nextBillableDayCal.setTime(nextBillableDay.toDate());
 
-        Calendar nextRunDate = new GregorianCalendar();
-        nextRunDate.setTime(config.getNextRunDate());
+        Calendar nextRunDateCal = new GregorianCalendar();
+        nextRunDateCal.setTime(nextRunDate.toDate());
 
-        while (nextRunDate.before(nextBillableDay2)) {
-            nextRunDate.add(MapPeriodToCalendar.map(config.getPeriodUnit().getId()), config.getPeriodValue());
+        while (nextRunDateCal.before(nextBillableDayCal)) {
+            nextRunDateCal.add(MapPeriodToCalendar.map(config.getPeriodUnit().getId()), config.getPeriodValue());
         }
 
-        return nextRunDate.getTime();
+        return nextRunDateCal.getTime();
     }
 
     public Integer getMainRole() {

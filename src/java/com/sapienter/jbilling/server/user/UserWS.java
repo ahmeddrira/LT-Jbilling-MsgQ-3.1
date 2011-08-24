@@ -170,17 +170,6 @@ public class UserWS implements WSSecured, Serializable {
         }
         
         setOwingBalance(dto.getBalance());
-        
-        OrderDTO orderDto= (OrderDTO) new OrderDAS().findEarliestActiveOrder(dto.getId());
-        if (null != orderDto) {
-        	if ( null != orderDto.getNextBillableDay()) {
-        		this.nextInvoiceDate= orderDto.getNextBillableDay();
-        	} else if ( null != orderDto.getActiveSince()) {
-        		this.nextInvoiceDate= orderDto.getActiveSince();
-        	} else if ( null != orderDto.getCreateDate()) {
-        		this.nextInvoiceDate= orderDto.getCreateDate();
-        	}
-        }        
     }
 
 	public Integer getPartnerId() {

@@ -138,7 +138,7 @@
                         <a class="btn-open" href="#"><span><g:message code="product.prices"/></span></a>
                     </div>
                     <div class="box-card-hold">
-                        <g:render template="/priceModel/model" model="[model: product?.defaultPrice]"/>
+                        <g:render template="/priceModel/model" model="[models: product?.defaultPrices]"/>
                     </div>
                 </div>
 

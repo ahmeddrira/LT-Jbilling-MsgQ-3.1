@@ -198,4 +198,19 @@ public class PriceModelBL {
         return currentPrice;
     }
 
+    public static PriceModelWS getWsPriceForDate(List<PriceModelWS> prices, Date date) {
+        PriceModelWS currentPrice = null;
+
+        // list of prices in ordered by start date, earliest first
+        // return the model with the closest start date
+        for (PriceModelWS model : prices) {
+            if (model.getStart() != null && model.getStart().after(date)) {
+                break;
+            }
+            currentPrice = model;
+        }
+
+        return currentPrice;
+    }
+
 }

@@ -149,13 +149,13 @@ class ProductController {
                 offset: params.offset
         ) {
             and {
-                createAlias('defaultPrice', 'price', Criteria.LEFT_JOIN)
+                createAlias('defaultPrices', 'prices', Criteria.LEFT_JOIN)
 
                 filters.each { filter ->
                     if (filter.value != null) {
 
                         // handle price model filtering exclusively
-                        if (filter.field == 'price.type') {
+                        if (filter.field == 'prices.type') {
                             eq(filter.field, PriceModelStrategy.valueOf(filter.stringValue))
 
                         } else if (filter.field == 'description') {

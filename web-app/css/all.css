@@ -1767,3 +1767,31 @@ table.blacklist tr.odd {
 	height:15px;
 	padding-top:5px;
 }
+
+/* timeline */
+#timeline {
+    margin-bottom: 20px;
+}
+#timeline ul {
+    list-style: none;
+    list-style-position: outside;
+    background: url(../images/timeline-bg.gif) bottom left repeat-x;
+    cursor: move;
+}
+#timeline li {
+    display: inline-block;
+    padding: 0 10px;
+}
+#timeline a {
+    display: block;
+    height: 40px;
+    text-align: center;
+    background: url(../images/timeline-event.png) bottom center no-repeat;
+}
+#timeline li.new a {
+    width: 75px;
+    background: url(../images/add.png) bottom center no-repeat;
+}
+#timeline li.current a {
+    font-weight: bold;
+}

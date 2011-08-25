@@ -66,8 +66,8 @@ class FilterFactory {
             new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.EQ, field: 'hasDecimals', template: 'product/decimals', visible: false),
             new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.LIKE, field: 'glCode', template: 'product/glCode', visible: false),
             new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.NUMBER_BETWEEN, field: 'percentage', template: 'range', visible: false),
-            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.EQ, field: 'price.type', template: 'product/priceStrategy', visible: true),
-            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.NUMBER_BETWEEN, field: 'price.rate', template: 'range', visible: true),
+            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.EQ, field: 'prices.type', template: 'product/priceStrategy', visible: true),
+            new Filter(type: FilterType.PRODUCT, constraintType: FilterConstraint.NUMBER_BETWEEN, field: 'prices.rate', template: 'range', visible: true),
         ],
         CUSTOMER: [
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.LIKE, field: 'contact.firstName', template: 'value', visible: false),

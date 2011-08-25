@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.pricing.db.ChainPosition; org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelBL; com.sapienter.jbilling.server.pricing.db.ChainPosition; org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 <%--
   Editor form for price models.
@@ -27,12 +27,27 @@
   @since  02-Feb-2011
 --%>
 
+<g:set var="model" value="${model ?: PriceModelBL.getWsPriceForDate(models, new Date())}"/>
+
 <g:set var="types" value="${PriceModelStrategy.getStrategyByChainPosition(ChainPosition.START)}"/>
 <g:set var="type" value="${model?.type ? PriceModelStrategy.valueOf(model.type) : types?.asList()?.first()}"/>
 <g:set var="templateName" value="${WordUtils.uncapitalize(WordUtils.capitalizeFully(type.name(), ['_'] as char[]).replaceAll('_',''))}"/>
 <g:set var="modelIndex" value="${0}"/>
 
 <div id="priceModel">
+    <div id="timeline">
+        <div class="form-columns">
+            <ul>
+                <g:each var="model" in="${models}">
+                    <li class="${model.equals(todaysModel) ? 'current' : ''}">
+                        <g:set var="date" value="${model.start ? formatDate(date: model.start) : message(code: 'price.default.date')}"/>
+                        <a href="#${date}">${date}</a>
+                    </li>
+                </g:each>
+            </ul>
+        </div>
+    </div>
+
     <!-- root price model -->
     <div class="form-columns">
         <div class="column">
@@ -77,6 +92,7 @@
         </div>
     </div>
 
+
     <script type="text/javascript">
         /**
          * Re-render the pricing model form when the strategy is changed
@@ -84,32 +100,32 @@
         $(function() {
             $('.model-type').change(function() {
                 $.ajax({
-                   type: 'POST',
-                   url: '${createLink(action: 'updateStrategy')}',
-                   data: $('#priceModel').parents('form').serialize(),
-                   success: function(data) { $('#priceModel').replaceWith(data); }
-                });
+                           type: 'POST',
+                           url: '${createLink(action: 'updateStrategy')}',
+                           data: $('#priceModel').parents('form').serialize(),
+                           success: function(data) { $('#priceModel').replaceWith(data); }
+                       });
             });
         });
 
         function addChainModel() {
             $.ajax({
-               type: 'POST',
-               url: '${createLink(action: 'addChainModel')}',
-               data: $('#priceModel').parents('form').serialize(),
-               success: function(data) { $('#priceModel').replaceWith(data); }
-            });
+                       type: 'POST',
+                       url: '${createLink(action: 'addChainModel')}',
+                       data: $('#priceModel').parents('form').serialize(),
+                       success: function(data) { $('#priceModel').replaceWith(data); }
+                   });
         }
 
         function removeChainModel(element, modelIndex) {
             $('#modelIndex').val(modelIndex);
 
             $.ajax({
-               type: 'POST',
-               url: '${createLink(action: 'removeChainModel')}',
-               data: $('#priceModel').parents('form').serialize(),
-               success: function(data) { $('#priceModel').replaceWith(data); }
-            });
+                       type: 'POST',
+                       url: '${createLink(action: 'removeChainModel')}',
+                       data: $('#priceModel').parents('form').serialize(),
+                       success: function(data) { $('#priceModel').replaceWith(data); }
+                   });
         }
 
         function addModelAttribute(element, modelIndex, attributeIndex) {
@@ -117,11 +133,11 @@
             $('#attributeIndex').val(attributeIndex);
 
             $.ajax({
-               type: 'POST',
-               url: '${createLink(action: 'addAttribute')}',
-               data: $('#priceModel').parents('form').serialize(),
-               success: function(data) { $('#priceModel').replaceWith(data); }
-            });
+                       type: 'POST',
+                       url: '${createLink(action: 'addAttribute')}',
+                       data: $('#priceModel').parents('form').serialize(),
+                       success: function(data) { $('#priceModel').replaceWith(data); }
+                   });
         }
 
         function removeModelAttribute(element, modelIndex, attributeIndex) {
@@ -129,11 +145,11 @@
             $('#attributeIndex').val(attributeIndex);
 
             $.ajax({
-               type: 'POST',
-               url: '${createLink(action: 'removeAttribute')}',
-               data: $('#priceModel').parents('form').serialize(),
-               success: function(data) { $('#priceModel').replaceWith(data); }
-            });
+                       type: 'POST',
+                       url: '${createLink(action: 'removeAttribute')}',
+                       data: $('#priceModel').parents('form').serialize(),
+                       success: function(data) { $('#priceModel').replaceWith(data); }
+                   });
         }
     </script>
 </div>

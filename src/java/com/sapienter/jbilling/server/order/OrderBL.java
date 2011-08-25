@@ -1286,11 +1286,41 @@ public class OrderBL extends ResultList
         return retValue;
     }
 
+    /**
+     * Calculates the target invoicing date for an order. If the order has been billed out to an
+     * invoice before, then the "next billable day" will be returned. If the order has not yet
+     * been billed, then this method will calculate the target invoice date based off of the
+     * billing type (pre-paid or post-paid) and active since dates of the order.
+     *
+     * @return target invoicing date for the order
+     */
     public Date getInvoicingDate() {
         if (order.getNextBillableDay() != null) {
+            // next billable day set by billing process, no need to calculate anything
             return order.getNextBillableDay();
+
         } else {
-            return order.getActiveSince() != null ? order.getActiveSince() : order.getCreateDate();
+            // order hasn't been billed out yet so there is no next billable day
+            // calculate the target invoice date based on the billing type of the order
+            Date start = order.getActiveSince() != null ? order.getActiveSince() : order.getCreateDate();
+
+            // pre-paid, customer pays in advance - invoice immediately
+            if (order.getOrderBillingType().getId() == Constants.ORDER_BILLING_PRE_PAID) {
+                return start;
+            }
+
+            // post-paid, customer pays later - invoice after 1 complete order period
+            if (order.getOrderBillingType().getId() == Constants.ORDER_BILLING_POST_PAID) {
+                Calendar calendar = GregorianCalendar.getInstance();
+                calendar.setTime(start);
+                calendar.add(MapPeriodToCalendar.map(order.getOrderPeriod().getPeriodUnit().getId()),
+                             order.getOrderPeriod().getValue());
+
+                return calendar.getTime();
+            }
+
+            LOG.debug("Order uses unknown billing type " + order.getOrderBillingType().getId());
+            return null;
         }
     }
 

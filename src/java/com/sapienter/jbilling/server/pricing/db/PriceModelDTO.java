@@ -95,6 +95,12 @@ public class PriceModelDTO implements Serializable {
     public PriceModelDTO() {
     }
 
+    public PriceModelDTO(PriceModelStrategy type, BigDecimal rate, CurrencyDTO currency) {
+        this.type = type;
+        this.rate = rate;
+        this.currency = currency;
+    }
+
     public PriceModelDTO(PriceModelWS ws, CurrencyDTO currency) {
         setId(ws.getId());
         setType(PriceModelStrategy.valueOf(ws.getType()));

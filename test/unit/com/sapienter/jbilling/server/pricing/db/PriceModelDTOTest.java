@@ -22,10 +22,13 @@ package com.sapienter.jbilling.server.pricing.db;
 
 import com.sapienter.jbilling.server.BigDecimalTestCase;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
+import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.pricing.strategy.FlatPricingStrategy;
+import org.joda.time.DateMidnight;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
@@ -133,5 +136,28 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         assertNotSame(ws.getAttributes(), dto.getAttributes());
         assertEquals(PriceModelDTO.ATTRIBUTE_WILDCARD, dto.getAttributes().get("null_attr"));
         assertEquals("some value", dto.getAttributes().get("attr"));   
+    }
+
+    public void testGetPriceForDate() {
+        SortedMap<Date, PriceModelDTO> prices = new TreeMap<Date, PriceModelDTO>();
+        prices.put(PriceModelDTO.EPOCH_DATE, new PriceModelDTO(PriceModelStrategy.METERED, new BigDecimal("0.10"), null));
+        prices.put(new DateMidnight(2011, 6, 1).toDate(), new PriceModelDTO(PriceModelStrategy.METERED, new BigDecimal("0.20"), null));
+        prices.put(new DateMidnight(2011, 8, 1).toDate(), new PriceModelDTO(PriceModelStrategy.METERED, new BigDecimal("0.30"), null));
+
+        // a price sometime after 1970-1-1 (epoch)
+        PriceModelDTO model = PriceModelBL.getPriceForDate(prices, new DateMidnight(1985, 2, 4).toDate());
+        assertEquals("should get epoch pricing", new BigDecimal("0.10"), model.getRate());
+
+        // price model the day before the june price takes effect
+        model = PriceModelBL.getPriceForDate(prices, new DateMidnight(2011, 5, 31).toDate());
+        assertEquals("should get epoch pricing", new BigDecimal("0.10"), model.getRate());
+
+        // price model on the day that the june price takes effect (date/times equal)
+        model = PriceModelBL.getPriceForDate(prices, new DateMidnight(2011, 6, 1).toDate());
+        assertEquals("should get june pricing", new BigDecimal("0.20"), model.getRate());
+
+        // price model some day in august
+        model = PriceModelBL.getPriceForDate(prices, new DateMidnight(2011, 8, 15).toDate());
+        assertEquals("should get august pricing", new BigDecimal("0.30"), model.getRate());
     }
 }

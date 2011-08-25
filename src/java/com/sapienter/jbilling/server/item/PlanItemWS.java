@@ -101,6 +101,10 @@ public class PlanItemWS implements Serializable {
         this.models = models;
     }
 
+    public void addModel(Date date, PriceModelWS model) {
+        getModels().put(date, model);
+    }
+
     /**
      * Get the current price model for today.
      *

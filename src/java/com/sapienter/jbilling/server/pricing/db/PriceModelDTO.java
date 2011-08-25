@@ -37,6 +37,7 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.MapKey;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
+import org.joda.time.DateMidnight;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -79,6 +80,7 @@ import java.util.TreeMap;
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class PriceModelDTO implements Serializable {
 
+    public static final Date EPOCH_DATE = new DateMidnight(1970, 1, 1).toDate();
     public static final String ATTRIBUTE_WILDCARD = "*";
 
     private Integer id;
@@ -86,7 +88,6 @@ public class PriceModelDTO implements Serializable {
     private SortedMap<String, String> attributes = new TreeMap<String, String>();
     private BigDecimal rate;
     private CurrencyDTO currency;
-    private Date start;
 
     // price model chaining
     private PriceModelDTO next;
@@ -188,15 +189,6 @@ public class PriceModelDTO implements Serializable {
 
     public void setCurrency(CurrencyDTO currency) {
         this.currency = currency;
-    }
-
-    @Column(name = "start_date", nullable = true)
-    public Date getStart() {
-        return start;
-    }
-
-    public void setStart(Date start) {
-        this.start = start;
     }
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

@@ -111,12 +111,12 @@ public class ItemBL {
             // Backwards compatible with the old ItemDTOEx Web Service API, use the
             // transient price field as the rate for a default pricing model.
             if (dto.getPrice() != null) {
-                dto.getDefaultPrices().add(getDefaultPrice(dto.getPrice()));
+                dto.addDefaultPrice(PriceModelDTO.EPOCH_DATE, getDefaultPrice(dto.getPrice()));
             }
 
             // default currency for new prices (if currency is not explicitly set)
             if (dto.getDefaultPrices() != null) {
-                for (PriceModelDTO price : dto.getDefaultPrices()) {
+                for (PriceModelDTO price : dto.getDefaultPrices().values()) {
                     if (price.getCurrency() == null) {
                         price.setCurrency(entity.getEntity().getCurrency());
                     }
@@ -125,14 +125,13 @@ public class ItemBL {
 
             // validate all pricing attributes
             if (dto.getDefaultPrices() != null) {
-                PriceModelBL.validateAttributes(dto.getDefaultPrices());
+                PriceModelBL.validateAttributes(dto.getDefaultPrices().values());
             }
 
         } else {
             LOG.debug("Percentage items cannot have a default price model.");
             dto.getDefaultPrices().clear();
         }
-
 
         dto.setDeleted(0);
 
@@ -167,7 +166,7 @@ public class ItemBL {
 
             // validate all pricing attributes
             if (item.getDefaultPrices() != null && !item.getDefaultPrices().isEmpty()) {
-                PriceModelBL.validateAttributes(item.getDefaultPrices());
+                PriceModelBL.validateAttributes(item.getDefaultPrices().values());
             }
 
         } else {
@@ -212,17 +211,18 @@ public class ItemBL {
         if (item.getDefaultPrices() == null || item.getDefaultPrices().isEmpty()) {
             // new default price
             if (dto.getDefaultPrices() != null || !dto.getDefaultPrices().isEmpty()) {
-                item.setDefaultPrices(dto.getDefaultPrices());
+                item.getDefaultPrices().clear();
+                item.getDefaultPrices().putAll(dto.getDefaultPrices());
 
             } else if (dto.getPrice() != null) {
-                item.getDefaultPrices().add(getDefaultPrice(dto.getPrice()));
+                item.addDefaultPrice(PriceModelDTO.EPOCH_DATE, getDefaultPrice(dto.getPrice()));
             }
 
         } else {
             // update existing default price
             if (dto.getDefaultPrices() != null || !dto.getDefaultPrices().isEmpty()) {
                 item.getDefaultPrices().clear();
-                item.getDefaultPrices().addAll(dto.getDefaultPrices());
+                item.getDefaultPrices().putAll(dto.getDefaultPrices());
 
             } else if (dto.getPrice() != null) {
                 if (dto.getDefaultPrices().size() == 1) {
@@ -238,7 +238,7 @@ public class ItemBL {
 
         // default price currency should always be the entity currency
         if (item.getDefaultPrices() != null) {
-            for (PriceModelDTO price : item.getDefaultPrices()) {
+            for (PriceModelDTO price : item.getDefaultPrices().values()) {
                 if (price.getCurrency() == null) {
                     price.setCurrency(item.getEntity().getCurrency());
                 }
@@ -535,6 +535,9 @@ public class ItemBL {
 
         // convert PriceModelDTO to PriceModelWS
         retValue.setDefaultPrices(PriceModelBL.getWS(other.getDefaultPrices()));
+
+        // today's price
+        retValue.setDefaultPrice(PriceModelBL.getWsPriceForDate(retValue.getDefaultPrices(), new Date()));
 
         return retValue;
     }

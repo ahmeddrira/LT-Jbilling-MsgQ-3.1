@@ -23,7 +23,9 @@ package com.sapienter.jbilling.server.item.db;
 import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.OrderBy;
+import org.hibernate.annotations.MapKey;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -41,8 +43,9 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Brian Cowdery
@@ -66,14 +69,14 @@ public class PlanItemDTO implements Serializable {
     private Integer id;
     private PlanDTO plan;
     private ItemDTO item; // affected item
-    private List<PriceModelDTO> models = new ArrayList<PriceModelDTO>();
+    private SortedMap<Date, PriceModelDTO> models = new TreeMap<Date, PriceModelDTO>();
     private PlanItemBundleDTO bundle;
     private Integer precedence = DEFAULT_PRECEDENCE;
 
     public PlanItemDTO() {
     }
 
-    public PlanItemDTO(PlanItemWS ws, ItemDTO item, List<PriceModelDTO> models, PlanItemBundleDTO bundle) {
+    public PlanItemDTO(PlanItemWS ws, ItemDTO item, SortedMap<Date, PriceModelDTO> models, PlanItemBundleDTO bundle) {
         this.id = ws.getId();
         this.item = item;
         this.models = models;
@@ -129,17 +132,30 @@ public class PlanItemDTO implements Serializable {
 
     @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "plan_item_price_model_map",
+    @MapKey(columns = @Column(name = "start_date", nullable = true))
+    @JoinTable(name = "plan_item_price_timeline",
                joinColumns = {@JoinColumn(name = "plan_item_id", updatable = false)},
                inverseJoinColumns = {@JoinColumn(name = "price_model_id", updatable = false)}
     )
-    @OrderBy(clause = "start_date desc")
-    public List<PriceModelDTO> getModels() {
+    @Sort(type = SortType.NATURAL)
+    public SortedMap<Date, PriceModelDTO> getModels() {
         return models;
     }
 
-    public void setModels(List<PriceModelDTO> models) {
+    public void setModels(SortedMap<Date, PriceModelDTO> models) {
         this.models = models;
+    }
+
+    /**
+     * Adds a new price to the model list. If no date is given, then the
+     * price it is assumed to be the start of a new time-line and the date will be
+     * forced to 01-Jan-1970 (epoch).
+     *
+     * @param date date for the given price
+     * @param price price
+     */
+    public void addModel(Date date, PriceModelDTO price) {
+        getModels().put(date != null ? date : PriceModelDTO.EPOCH_DATE, price);
     }
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

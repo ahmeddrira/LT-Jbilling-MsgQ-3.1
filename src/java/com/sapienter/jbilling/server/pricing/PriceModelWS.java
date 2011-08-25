@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.pricing;
 
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
+import org.joda.time.DateMidnight;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -35,6 +36,7 @@ import java.util.TreeMap;
 public class PriceModelWS implements Serializable {
 
     // convenience constants for WS, copied from PriceModelDTO
+    public static final Date EPOCH_DATE = new DateMidnight(1970, 1, 1).toDate();
     public static final String ATTRIBUTE_WILDCARD = "*";
     
     private Integer id;
@@ -42,7 +44,6 @@ public class PriceModelWS implements Serializable {
     private SortedMap<String, String> attributes = new TreeMap<String, String>();
     private String rate;
     private Integer currencyId;
-    private Date start;
     private PriceModelWS next;
 
     public PriceModelWS() {
@@ -66,7 +67,6 @@ public class PriceModelWS implements Serializable {
 
         if (model.getType() != null ) this.type = model.getType().name();
         if (model.getCurrency() != null) this.currencyId = model.getCurrency().getId();
-        if (model.getStart() != null) this.start = model.getStart();
         if (model.getNext() != null) this.next = new PriceModelWS(model.getNext());
     }
 
@@ -124,14 +124,6 @@ public class PriceModelWS implements Serializable {
 
     public void setCurrencyId(Integer currencyId) {
         this.currencyId = currencyId;
-    }
-
-    public Date getStart() {
-        return start;
-    }
-
-    public void setStart(Date start) {
-        this.start = start;
     }
 
     public PriceModelWS getNext() {

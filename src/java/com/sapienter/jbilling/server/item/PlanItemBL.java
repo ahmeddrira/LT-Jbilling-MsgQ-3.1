@@ -30,7 +30,9 @@ import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.SortedMap;
 
 /**
  * PlanItemDTO business logic. Currently only contains static factory methods for converting
@@ -63,7 +65,7 @@ public class PlanItemBL {
             ItemDTO item = new ItemBL(ws.getItemId()).getEntity();
 
             // price models
-            List<PriceModelDTO> models = PriceModelBL.getDTO(ws.getModels());
+            SortedMap<Date, PriceModelDTO> models = PriceModelBL.getDTO(ws.getModels());
 
             // bundled items
             PlanItemBundleDTO bundle = PlanItemBundleBL.getDTO(ws.getBundle());

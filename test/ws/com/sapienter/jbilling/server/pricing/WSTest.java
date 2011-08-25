@@ -27,6 +27,7 @@ import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
+import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -329,7 +330,8 @@ public class WSTest extends PricingTestCase {
         // create plan
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
-        callPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
+        callPrice.getModels().put(PriceModelWS.EPOCH_DATE,
+                                  new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         PlanWS plan = new PlanWS();
         plan.setItemId(LONG_DISTANCE_PLAN_ITEM);
@@ -355,7 +357,8 @@ public class WSTest extends PricingTestCase {
         // update the description and add a price for the generic LD item
         PlanItemWS genericPrice = new PlanItemWS();
         genericPrice.setItemId(LONG_DISTANCE_CALL_GENERIC);
-        genericPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.25"), 1));
+        genericPrice.getModels().put(PriceModelWS.EPOCH_DATE,
+                                     new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.25"), 1));
 
         fetchedPlan.setDescription("Updated description.");
         fetchedPlan.addPlanItem(genericPrice);
@@ -400,7 +403,8 @@ public class WSTest extends PricingTestCase {
         // create plan
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
-        callPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
+        callPrice.getModels().put(PriceModelWS.EPOCH_DATE,
+                                  new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         PlanWS plan = new PlanWS();
         plan.setItemId(LONG_DISTANCE_PLAN_ITEM);
@@ -581,7 +585,8 @@ public class WSTest extends PricingTestCase {
         // includes 10 bundled "long distance call" items
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
-        callPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
+        callPrice.getModels().put(PriceModelDTO.EPOCH_DATE,
+                                  new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         PlanItemBundleWS bundle = new PlanItemBundleWS();
         bundle.setPeriodId(Constants.ORDER_PERIOD_ONCE);
@@ -817,7 +822,8 @@ public class WSTest extends PricingTestCase {
         // addPlanPrice
         PlanItemWS addPlanPrice = new PlanItemWS();
         addPlanPrice.setItemId(BAD_ITEM_ID);
-        addPlanPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("1.00"), 1));
+        addPlanPrice.getModels().put(PriceModelDTO.EPOCH_DATE,
+                                     new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("1.00"), 1));
 
         try {
             // cannot add to a plan we don't own

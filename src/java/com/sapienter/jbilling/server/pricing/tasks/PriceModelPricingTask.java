@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 import static com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription.Type.*;
 
@@ -115,7 +116,7 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
             Map<String, String> attributes = getAttributes(fields);
 
             // price for customer making the pricing request
-            List<PriceModelDTO> models = getCustomerPriceModel(userId, itemId, attributes);
+            SortedMap<Date, PriceModelDTO> models = getCustomerPriceModel(userId, itemId, attributes);
 
             // iterate through parents until a price is found.
             UserBL user = new UserBL(userId);
@@ -147,7 +148,8 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
                 Usage usage = null;
                 if (model.getStrategy().requiresUsage()) {
                     UsageType type = UsageType.valueOfIgnoreCase(getParameter(USAGE_TYPE.getName(), DEFAULT_USAGE_TYPE));
-                    usage = getUsage(type, itemId, userId, customer.getBaseUser().getId(), pricingOrder);
+                    Integer priceUserId = customer != null ? customer.getBaseUser().getId() : userId;
+                    usage = getUsage(type, itemId, userId, priceUserId, pricingOrder);
 
                     LOG.debug("Current usage of item " + itemId + ": " + usage);
                 } else {
@@ -179,7 +181,7 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
      * @param attributes attributes from pricing fields
      * @return found list of dated pricing models, or null if none found
      */
-    public List<PriceModelDTO> getCustomerPriceModel(Integer userId, Integer itemId, Map<String, String> attributes) {
+    public SortedMap<Date, PriceModelDTO> getCustomerPriceModel(Integer userId, Integer itemId, Map<String, String> attributes) {
         CustomerPriceBL customerPriceBl = new CustomerPriceBL(userId);
 
         if (getParameter(USE_ATTRIBUTES.getName(), DEFAULT_USE_ATTRIBUTES) && !attributes.isEmpty()) {

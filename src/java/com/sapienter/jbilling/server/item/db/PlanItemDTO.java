@@ -23,6 +23,8 @@ package com.sapienter.jbilling.server.item.db;
 import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.MapKey;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -138,6 +140,7 @@ public class PlanItemDTO implements Serializable {
                inverseJoinColumns = {@JoinColumn(name = "price_model_id", updatable = false)}
     )
     @Sort(type = SortType.NATURAL)
+    @Fetch(FetchMode.SELECT)
     public SortedMap<Date, PriceModelDTO> getModels() {
         return models;
     }

@@ -29,12 +29,6 @@
 
 <g:hiddenField name="model.${modelIndex}.id" value="${model?.id}"/>
 
-<g:applyLayout name="form/date">
-    <content tag="label">Start Date</content>
-    <content tag="label.for">model.${modelIndex}.start</content>
-    <g:textField class="field" name="model.${modelIndex}.start" value="${formatDate(date: model?.start, formatName: 'datepicker.format')}"/>
-</g:applyLayout>
-
 <g:applyLayout name="form/select">
     <content tag="label"><g:message code="plan.model.type"/></content>
     <content tag="label.for">model.${modelIndex}.type</content>

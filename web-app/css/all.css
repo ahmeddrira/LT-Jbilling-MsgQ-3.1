@@ -1485,6 +1485,8 @@ ul#review-lines {
 .box-cards .form-columns label {
 	width:165px;
 }
+.box-cards .buttons {
+}
 .form-columns label.rb {
 	width:auto;
 	margin-right:20px;
@@ -1782,7 +1784,7 @@ table.blacklist tr.odd {
     display: inline-block;
     padding: 0 10px;
 }
-#timeline a {
+#timeline li a {
     display: block;
     height: 40px;
     text-align: center;

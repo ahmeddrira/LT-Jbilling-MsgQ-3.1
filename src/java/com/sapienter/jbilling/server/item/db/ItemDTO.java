@@ -30,6 +30,8 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.MapKey;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -200,6 +202,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
                inverseJoinColumns = {@JoinColumn(name = "price_model_id", updatable = false)}
     )
     @Sort(type = SortType.NATURAL)
+    @Fetch(FetchMode.SELECT)
     public SortedMap<Date, PriceModelDTO> getDefaultPrices() {
         return defaultPrices;
     }

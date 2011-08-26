@@ -41,6 +41,7 @@ import org.hibernate.Criteria
 import com.sapienter.jbilling.client.util.SortableCriteria
 
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import com.sapienter.jbilling.server.pricing.PriceModelBL
 
 @Secured(["MENU_97"])
 class ProductController {
@@ -144,7 +145,7 @@ class ProductController {
         params.sort = params?.sort ?: pagination.sort
         params.order = params?.order ?: pagination.order
 
-        return ItemDTO.createCriteria().list(
+        def products = ItemDTO.createCriteria().list(
                 max:    params.max,
                 offset: params.offset
         ) {
@@ -185,6 +186,41 @@ class ProductController {
             // apply sorting
             SortableCriteria.sort(params, delegate)
         }
+
+
+        params.totalCount = products.totalCount
+
+        /*
+            Can't cleanly join to the price model to filter in the database
+            handle all price filters manually
+         */
+
+        def strategyFilter = filters.find { it.field == 'price.type' }
+        if (strategyFilter.value != null) {
+            products = products.findAll {
+                def price = PriceModelBL.getPriceForDate(it.defaultPrices, new Date())
+                return price?.type?.equals(PriceModelStrategy.valueOf(strategyFilter.value))
+            }
+        }
+
+        def rateFilter = filters.find { it.field == 'price.rate' }
+        if (rateFilter.value != null) {
+            products = products.findAll {
+                def price = PriceModelBL.getPriceForDate(it.defaultPrices, new Date())
+                if (rateFilter.decimalValue && rateFilter.decimalHighValue) {
+                    return price?.rate >= rateFilter.decimalValue && price?.rate <= rateFilter.decimalHighValue
+
+                } else if (rateFilter.decimalValue) {
+                    return price?.rate >= rateFilter.decimalValue
+
+                } else if (rateFilter.decimalHighValue) {
+                    return price?.rate <= rateFilter.decimalHighValue
+                }
+                return false
+            }
+        }
+
+        return products
     }
 
     /**

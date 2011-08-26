@@ -650,7 +650,6 @@
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
         <column default="0" name="has_decimals" required="true" type="SMALLINT"/>
         <column name="gl_code" size="50" type="VARCHAR"/>
-        <column name="price_model_id" required="false" type="INTEGER"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_item_ent">
             <index-column name="entity_id"/>
@@ -658,6 +657,15 @@
         </index>
         <foreign-key foreignTable="entity">
             <reference foreign="id" local="entity_id"/>
+        </foreign-key>
+    </table>
+    <table name="item_price_timeline">
+        <column name="item_id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="start_date" primaryKey="true" required="true" type="TIMESTAMP"/>
+        <column name="price_model_id" required="true" type="INTEGER"/>
+        <unique><unique-column name="price_model_id"/></unique>
+        <foreign-key foreignTable="item">
+            <reference foreign="id" local="item_id"/>
         </foreign-key>
         <foreign-key foreignTable="price_model">
             <reference foreign="id" local="price_model_id"/>
@@ -729,7 +737,6 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="plan_id" required="false" type="INTEGER"/>
         <column name="item_id" required="true" type="INTEGER"/>
-        <column name="price_model_id" required="true" type="INTEGER"/>
         <column name="plan_item_bundle_id" required="false" type="INTEGER"/>
         <column name="precedence"  required="true" type="INTEGER"/>
         <foreign-key foreignTable="plan">
@@ -737,9 +744,6 @@
         </foreign-key>
         <foreign-key foreignTable="item">
             <reference foreign="id" local="item_id"/>
-        </foreign-key>
-        <foreign-key foreignTable="price_model">
-            <reference foreign="id" local="price_model_id"/>
         </foreign-key>
         <foreign-key foreignTable="plan_item_bundle">
             <reference foreign="id" local="plan_item_bundle_id"/>
@@ -750,6 +754,18 @@
         <index name="plan_item_item_id_i">
             <index-column name="item_id"/>
         </index>
+    </table>
+    <table name="item_price_timeline">
+        <column name="plan_item_id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="start_date" primaryKey="true" required="true" type="TIMESTAMP"/>
+        <column name="price_model_id" required="true" type="INTEGER"/>
+        <unique><unique-column name="price_model_id"/></unique>
+        <foreign-key foreignTable="plan_item">
+            <reference foreign="id" local="plan_item_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="price_model">
+            <reference foreign="id" local="price_model_id"/>
+        </foreign-key>
     </table>
     <table name="plan_item_bundle">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>

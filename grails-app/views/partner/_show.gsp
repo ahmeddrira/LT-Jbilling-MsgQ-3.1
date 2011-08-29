@@ -20,6 +20,8 @@
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 
+<%@ page import="com.sapienter.jbilling.server.process.db.PeriodUnitDTO"  %>
+
 <%--
   Shows a Partner
 
@@ -74,7 +76,6 @@
     </div>
 
     <!-- partner details -->
-    <!-- contact details -->
     <div class="heading">
         <strong><g:message code="partner.details.title"/></strong>
     </div>
@@ -83,34 +84,71 @@
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>
             <tr>
-                <td><g:message code="partner.detail.id"/></td>
-                <td class="value">${selected.id}</td>
+                <td><g:message code="partner.detail.balance"/></td>
+                <td class="value">
+                    <g:formatNumber number="${selected?.balance?:0}" formatName="money.format"/>
+                </td>
             </tr>
             <tr>
-                <td><g:message code="customer.detail.user.username"/></td>
-                <td class="value">${selected?.baseUser.userName}</td>
+                <td><g:message code="partner.detail.fees"/></td>
+                <td class="value">
+                    <g:formatNumber number="${selected?.totalPayments}" formatName="money.format"/>
+                </td>
             </tr>
             <tr>
-                <td><g:message code="customer.detail.user.status"/></td>
-                <td class="value">${selected?.baseUser.userStatus.description}</td>
+                <td><g:message code="partner.detail.refunded.fees"/></td>
+                <td class="value">
+                    <g:formatNumber number="${selected?.totalRefunds}" formatName="money.format"/>
+                </td>
             </tr>
             <tr>
-                <td><g:message code="user.language"/></td>
-                <td class="value">${selected?.baseUser.language.getDescription()}</td>
+                <td><g:message code="partner.detail.payouts"/></td>
+                <td class="value">
+                    <g:formatNumber number="${selected?.totalPayouts}" formatName="money.format"/>
+                </td>
             </tr>
 
             <tr>
-                <td><g:message code="customer.detail.user.created.date"/></td>
-                <td class="value"><g:formatDate date="${selected?.baseUser.createDatetime}" formatName="date.pretty.format"/></td>
+                <td><g:message code="partner.detail.rate"/></td>
+                <td class="value">
+                    <g:formatNumber number="${selected?.percentageRate}" formatName="money.format"/>
+                </td>
             </tr>
             <tr>
-                <td><g:message code="user.last.login"/></td>
-                <td class="value"><g:formatDate date="${selected?.baseUser.lastLogin}" formatName="date.pretty.format"/></td>
+                <td><g:message code="partner.detail.ref.fee"/></td>
+                <td class="value">
+                    <g:formatNumber number="${selected?.referralFee}" formatName="money.format"/>
+                </td>
             </tr>
+            <tr>
+                <td><g:message code="partner.detail.payout.period"/></td>
+                <td class="value">
+                    ${selected?.periodValue} ${selected?.periodUnit?.getDescription(session['language_id'])}
+                </td>
+            </tr> 
+            <%--  TODO - User PartnerPayout.java to populate payouts and amount due
+            <tr>
+                <td><g:message code="partner.detail.next.payout"/></td>
+                <td class="value">${selected.id}</td>
+            </tr>
+            <tr>
+                <td><g:message code="partner.detail.amount.due"/></td>
+                <td class="value">${selected.id}</td>
+            </tr>
+            <tr>
+                <td><g:message code="partner.detail.batch"/></td>
+                <td class="value">${selected.id}</td>
+            </tr>
+            <tr>
+                <td><g:message code="partner.detail.related.clerk"/></td>
+                <td class="value">${selected.id}</td>
+            </tr>
+            --%>
             </tbody>
         </table>
     </div>
     </g:if>
+    
     <!-- contact details -->
     <div class="heading">
         <strong><g:message code="customer.detail.contact.title"/></strong>

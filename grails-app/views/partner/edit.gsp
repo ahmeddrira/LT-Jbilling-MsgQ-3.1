@@ -75,7 +75,8 @@
                                 <em><g:message code="prompt.id.new"/></em>
                             </g:else>
 
-                            <g:hiddenField name="user.userId" value="${partner?.userId}"/>
+                            <g:hiddenField name="user.userId" value="${user?.userId}"/>
+                            <g:hiddenField name="id" value="${partner?.id}"/>
                             
                             <g:hiddenField name="totalPayments" value="${partner?.totalPayments?: 0}"/>
                             <g:hiddenField name="totalRefunds" value="${partner?.totalRefunds?: 0}"/>

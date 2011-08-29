@@ -165,7 +165,7 @@ class PartnerController {
         def user = new UserWS()
         
         //log.debug "totalPayments=${params?.totalPayments}"
-        
+
         bindData(partner, params)
         //partner?.nextPayoutDate= new java.text.SimpleDateFormat("dd-MM-yyyy").parse(params?.nextPayoutDate)
         log.debug "def save ${partner?.nextPayoutDate}"
@@ -175,6 +175,8 @@ class PartnerController {
         def contacts = []
         UserHelper.bindContacts(user, contacts, company, params)
 
+        log.debug "user id=${params.user.userId} & partner id=${params.id}"
+        
         def oldUser = (user.userId && user.userId != 0) ? webServicesSession.getUserWS(user.userId) : null
         UserHelper.bindPassword(user, oldUser, params, flash)
 

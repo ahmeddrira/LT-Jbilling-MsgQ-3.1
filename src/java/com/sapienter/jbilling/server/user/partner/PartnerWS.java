@@ -335,8 +335,16 @@ public class PartnerWS implements WSSecured, Serializable {
     }
 
     public Partner getPartnerDTO () {
-        Partner partner = new Partner();
-        partner.setId(this.getId()!= null ? this.getId() : 0);
+        
+        Partner partner = null;
+        if ( this.getId()!= null ) {
+            PartnerBL partnerBl= new PartnerBL(this.getId());
+            partner= partnerBl.getEntity();
+        } else {
+            partner= new Partner();
+            partner.setId(0);
+        }
+        
         partner.setAutomaticProcess(this.getAutomaticProcess()?1:0);
         partner.setOneTime(this.getOneTime()?1:0);
         partner.setPeriodUnit(new PeriodUnitDTO(this.getPeriodUnitId()));

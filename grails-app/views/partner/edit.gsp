@@ -77,10 +77,10 @@
 
                             <g:hiddenField name="user.userId" value="${partner?.userId}"/>
                             
-                            <g:hiddenField name="totalPayments" value="${partner?.totalPayments}"/>
-                            <g:hiddenField name="totalRefunds" value="${partner?.totalRefunds}"/>
-                            <g:hiddenField name="totalPayouts" value="${partner?.totalPayouts}"/>
-                            <g:hiddenField name="duePayout" value="${partner?.duePayout}"/>
+                            <g:hiddenField name="totalPayments" value="${partner?.totalPayments?: 0}"/>
+                            <g:hiddenField name="totalRefunds" value="${partner?.totalRefunds?: 0}"/>
+                            <g:hiddenField name="totalPayouts" value="${partner?.totalPayouts?: 0}"/>
+                            <g:hiddenField name="duePayout" value="${partner?.duePayout?: 0}"/>
                             
                         </g:applyLayout>
 

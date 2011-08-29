@@ -83,6 +83,9 @@ class PartnerController {
                     }
                 }
                 baseUser {
+                    roles {
+                        eq('id', Constants.TYPE_PARTNER)
+                    }
                     eq('deleted', 0)
                     eq('company', company)
                 }
@@ -161,6 +164,7 @@ class PartnerController {
         def partner= new PartnerWS()
         def user = new UserWS()
         
+        //log.debug "totalPayments=${params?.totalPayments}"
         
         bindData(partner, params)
         //partner?.nextPayoutDate= new java.text.SimpleDateFormat("dd-MM-yyyy").parse(params?.nextPayoutDate)

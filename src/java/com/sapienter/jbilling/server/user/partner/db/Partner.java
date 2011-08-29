@@ -48,6 +48,7 @@ import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
+@SuppressWarnings("serial")
 @Entity
 @TableGenerator(
         name = "partner_GEN",

@@ -324,8 +324,7 @@
                     <td><g:message code="customer.detail.contact.telephone"/></td>
                     <td class="value">
                         <g:if test="${contact.phoneCountryCode}">${contact.phoneCountryCode}.</g:if>
-                        <g:if test="${contact.phoneAreaCode}">${contact.phoneAreaCode}.</g:if>
-                        ${contact.phoneNumber}
+                        <g:if test="${contact.phoneAreaCode}">${contact.phoneAreaCode}.</g:if>${contact.phoneNumber}
                     </td>
                 </tr>
                 <tr>

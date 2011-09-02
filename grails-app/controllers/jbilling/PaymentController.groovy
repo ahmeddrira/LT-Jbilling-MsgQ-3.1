@@ -27,6 +27,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO
 import org.hibernate.Criteria
 import com.sapienter.jbilling.server.payment.PaymentWS
 import com.sapienter.jbilling.server.entity.CreditCardDTO
+import com.sapienter.jbilling.server.user.CreditCardBL
 import com.sapienter.jbilling.server.entity.AchDTO
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO
 import com.sapienter.jbilling.common.SessionInternalError
@@ -435,6 +436,10 @@ class PaymentController {
             bindExpiryDate(creditCard, params)
             payment.setCreditCard(creditCard)
 
+            //get the un-obscured credit card number
+            CreditCardBL ccBl= new CreditCardBL(creditCard.id)
+            creditCard.number= ccBl.getEntity().getNumber()
+            
             payment.setMethodId(Util.getPaymentMethod(creditCard.number))
         }
 

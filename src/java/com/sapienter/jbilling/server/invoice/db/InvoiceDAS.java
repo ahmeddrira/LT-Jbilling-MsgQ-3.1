@@ -321,15 +321,19 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 
     public BigDecimal findTotalBalanceByUser(Integer userId) {
         Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
+        
         addUserCriteria(criteria, userId);
-        criteria.createAlias("invoiceStatus", "status");
-        criteria.add(Restrictions.ne("status.id", Constants.INVOICE_STATUS_UNPAID_AND_CARRIED));
         criteria.add(Restrictions.eq("isReview", 0));
-        criteria.add(Restrictions.eq("deleted", 0));
+        
+        criteria.createAlias("invoiceStatus", "s")
+            .add(Restrictions.ne("s.id", Constants.INVOICE_STATUS_PAID));
+        
         criteria.setProjection(Projections.sum("balance")); 
         criteria.setComment("InvoiceDAS.findTotalBalanceByUser");
 
-        return (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
+        Object ttlBal= criteria.uniqueResult();
+        
+        return ( ttlBal == null ? BigDecimal.ZERO : (BigDecimal) ttlBal);
     }
 
     /**

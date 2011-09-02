@@ -24,6 +24,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.user.UserWS
 import org.codehaus.groovy.grails.web.metaclass.BindDynamicMethod
 import com.sapienter.jbilling.server.entity.CreditCardDTO
+import com.sapienter.jbilling.server.user.CreditCardBL
 import com.sapienter.jbilling.common.Constants
 import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.server.user.db.CompanyDTO
@@ -68,8 +69,13 @@ class UserHelper {
             bindExpiryDate(creditCard, params)
 
             // update credit card only if not obscured
-            if (!creditCard.number.startsWith('*'))
+            if (!creditCard.number.startsWith('*')) {
                 user.setCreditCard(creditCard)
+            } else {
+                CreditCardBL ccBl= new CreditCardBL(creditCard.id)
+                creditCard.number= ccBl.getEntity().getNumber()
+                user.setCreditCard(creditCard)
+            }
 
             log.debug("Credit card ${creditCard}")
 
@@ -112,7 +118,6 @@ class UserHelper {
         def contact = new ContactWS()
         bindData(contact, params, "contact-${params.primaryContactTypeId}")
         contact.type = primaryContactTypeId
-		contact.include = params.get("contact-${params.primaryContactTypeId}.include") ? 1 : 0
 
         if (params.contactField) {
             contact.fieldIDs = new Integer[params.contactField.size()]
@@ -135,10 +140,6 @@ class UserHelper {
                 def otherContact = new ContactWS()
                 bindData(otherContact, params, "contact-${it.id}")
                 otherContact.type = it.id
-
-				//checkbox values are not bound automatically since it throws a data conversion error
-				otherContact.include = params.get("contact-${it.id}.include") ? 1 : 0
-
                 contacts << otherContact;
             }
         }

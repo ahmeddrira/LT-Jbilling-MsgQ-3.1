@@ -1285,3 +1285,5 @@ alter table order_line alter column use_item set not null;
 
 alter table price_model alter column strategy_type type varchar(40); -- postgresql
 -- alter table price_model modify strategy_type varchar(40); -- mysql
+
+insert into pluggable_task_type values (90, 7, 'com.sapienter.jbilling.server.notification.task.TestNotificationTask',0);

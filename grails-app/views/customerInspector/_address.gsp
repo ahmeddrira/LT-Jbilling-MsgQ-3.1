@@ -71,7 +71,7 @@
     </tr>
     <tr>
         <td><g:message code="prompt.include.in.notifications"/></td>
-        <td class="value"><g:formatBoolean boolean="${contact?.include}"/></td>
+        <td class="value"><g:formatBoolean boolean="${ (contact?.include instanceof Boolean) ? contact.include : (contact.include > 0) }"/></td>
     </tr>
     </tbody>
 </table>

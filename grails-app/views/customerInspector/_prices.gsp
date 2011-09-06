@@ -50,7 +50,7 @@
 
                 <!-- price model -->
                 <tr><td colspan="4">&nbsp;</td></tr>
-                <g:render template="/plan/priceModel" model="[model: product.defaultPrice]"/>
+                <g:render template="/plan/priceModel" model="[model: product.getPrice(new Date())]"/>
             </tbody>
         </table>
     </div>

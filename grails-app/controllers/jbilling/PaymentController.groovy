@@ -437,9 +437,11 @@ class PaymentController {
             payment.setCreditCard(creditCard)
 
             //get the un-obscured credit card number
-            CreditCardBL ccBl= new CreditCardBL(creditCard.id)
-            creditCard.number= ccBl.getEntity().getNumber()
-            
+            if (creditCard.id) {
+                def existingCard =  new CreditCardBL(creditCard.id).getEntity();
+                if (existingCard) creditCard.number = existingCard.getNumber()
+            }
+
             payment.setMethodId(Util.getPaymentMethod(creditCard.number))
         }
 

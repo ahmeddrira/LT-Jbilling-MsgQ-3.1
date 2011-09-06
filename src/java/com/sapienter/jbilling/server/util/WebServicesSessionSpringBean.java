@@ -1509,11 +1509,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         // populate payment method based on the payment instrument
-        if (dto.getCreditCard() != null)
+        if (dto.getCreditCard() != null) {    
             dto.setPaymentMethod(new PaymentMethodDTO(dto.getCreditCard().getCcType()));
-
-        if (dto.getAch() != null)
+        } else if (dto.getAch() != null) { 
             dto.setPaymentMethod(new PaymentMethodDTO(Constants.PAYMENT_METHOD_ACH));
+        }
 
         // process payment
         IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);

@@ -104,6 +104,6 @@
     <g:applyLayout name="form/checkbox">
         <content tag="label"><g:message code="prompt.include.in.notifications"/></content>
         <content tag="label.for">contact-${contactType?.id}.include</content>
-        <g:checkBox class="cb checkbox" name="contact-${contactType?.id}.include" checked="${contact?.include > 0}"/>
+        <g:checkBox class="cb checkbox" name="contact-${contactType?.id}.include" checked="${contact?.include}"/>
     </g:applyLayout>
 </div>

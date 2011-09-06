@@ -24,6 +24,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.user.UserWS
 import org.codehaus.groovy.grails.web.metaclass.BindDynamicMethod
 import com.sapienter.jbilling.server.entity.CreditCardDTO
+import com.sapienter.jbilling.server.user.CreditCardBL
 import com.sapienter.jbilling.common.Constants
 import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.server.user.db.CompanyDTO
@@ -68,8 +69,13 @@ class UserHelper {
             bindExpiryDate(creditCard, params)
 
             // update credit card only if not obscured
-            if (!creditCard.number.startsWith('*'))
+            if (!creditCard.number.startsWith('*')) {
                 user.setCreditCard(creditCard)
+            } else {
+                CreditCardBL ccBl= new CreditCardBL(creditCard.id)
+                creditCard.number= ccBl.getEntity().getNumber()
+                user.setCreditCard(creditCard)
+            }
 
             log.debug("Credit card ${creditCard}")
 
@@ -193,7 +199,7 @@ class UserHelper {
         if (expiryMonth && expiryYear)  {
             Calendar calendar = Calendar.getInstance()
             calendar.clear()
-            calendar.set(Calendar.MONTH, expiryMonth)
+            calendar.set(Calendar.MONTH, expiryMonth - 1)
             calendar.set(Calendar.YEAR, expiryYear)
 
             creditCard.expiry = calendar.getTime()

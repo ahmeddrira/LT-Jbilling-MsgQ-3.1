@@ -117,30 +117,30 @@ class UserHelper {
      * @param params parameters to bind
      * @return list of bound secondary contact types
      */
-    static def Object[] bindContacts(UserWS user, List contacts, CompanyDTO company, GrailsParameterMap params) {
+    def Object[] bindContacts(UserWS user, List contacts, CompanyDTO company, GrailsParameterMap params) {
         def contactTypes = company.contactTypes
         def primaryContactTypeId = params.int('primaryContactTypeId')
 
         // bind primary user contact and custom contact fields
-        def contact = new ContactWS()
-        bindData(contact, params, "contact-${primaryContactTypeId}")
-        contact.type = primaryContactTypeId
+        def primaryContact = new ContactWS()
+        bindData(primaryContact, params, "contact-${primaryContactTypeId}")
+        primaryContact.type = primaryContactTypeId
 
         // manually bind primary contact "include in notifications" flag
-		contact.include = params."contact-${primaryContactTypeId}".include != null ? 1 : 0
+		primaryContact.include = params."contact-${primaryContactTypeId}".include != null ? 1 : 0
 
         if (params.contactField) {
-            contact.fieldIDs = new Integer[params.contactField.size()]
-            contact.fieldValues = new Integer[params.contactField.size()]
+            primaryContact.fieldIDs = new Integer[params.contactField.size()]
+            primaryContact.fieldValues = new Integer[params.contactField.size()]
             params.contactField.eachWithIndex { id, value, i ->
-                contact.fieldIDs[i] = id.toInteger()
-                contact.fieldValues[i] = value
+                primaryContact.fieldIDs[i] = id.toInteger()
+                primaryContact.fieldValues[i] = value
             }
         }
 
-        user.setContact(contact)
+        user.setContact(primaryContact)
 
-        log.debug("Primary contact (type ${primaryContactTypeId}): ${contact}")
+        log.debug("Primary contact (type ${primaryContactTypeId}): ${primaryContact}")
 
 
         // bind secondary contact types
@@ -151,7 +151,7 @@ class UserHelper {
                 bindData(otherContact, params, "contact-${it.id}")
                 otherContact.type = it.id
 
-				//checkbox values are not bound automatically since it throws a data conversion error
+				// manually bind secondary contact "include in notifications" flag
 				otherContact.include = params."contact-${it.id}".include != null ? 1 : 0
 
                 contacts << otherContact;

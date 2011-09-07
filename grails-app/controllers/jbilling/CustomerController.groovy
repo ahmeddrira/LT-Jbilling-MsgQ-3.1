@@ -52,6 +52,8 @@ import org.hibernate.criterion.Subqueries
 import org.hibernate.criterion.Restrictions
 import org.hibernate.criterion.Criterion
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import com.sapienter.jbilling.server.user.ContactWS
+import com.sapienter.jbilling.server.user.contact.db.ContactDAS
 
 @Secured(["MENU_90"])
 class CustomerController {
@@ -170,7 +172,7 @@ class CustomerController {
     @Secured(["CUSTOMER_15"])
     def show = {
         def user = UserDTO.get(params.int('id'))
-        def contact = ContactDTO.findByUserId(user.userId)
+        def contact = new ContactDAS().findPrimaryContact(user.userId)
         def revenue = webServicesSession.getTotalRevenueByUser(user.userId)
 
         recentItemService.addRecentItem(user.userId, RecentItemType.CUSTOMER)
@@ -322,7 +324,7 @@ class CustomerController {
                 }
             }
 
-            // save secondary contacts
+            // save contacts
             if (user.userId) {
                 contacts.each{
                     webServicesSession.updateUserContact(user.userId, it.type, it);

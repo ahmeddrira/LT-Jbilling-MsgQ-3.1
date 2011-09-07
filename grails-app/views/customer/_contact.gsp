@@ -19,7 +19,7 @@
   --}%
 
 <%@ page import="com.sapienter.jbilling.server.util.db.CountryDTO" %>
-<div id="contact-${contactType.id}" class="contact" style="${contactType.isPrimary > 0 ? '' : 'display: none;'}">
+<div id="contact-${contactType.id}" class="contact" style="${contactType.isPrimary == 0 ? '' : 'display: none;'}">
 
     <g:hiddenField name="contact-${contactType?.id}.id" value="${contact?.id}"/>
 

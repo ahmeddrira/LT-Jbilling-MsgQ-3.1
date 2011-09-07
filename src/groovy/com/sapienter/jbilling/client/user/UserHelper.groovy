@@ -117,7 +117,7 @@ class UserHelper {
      * @param params parameters to bind
      * @return list of bound secondary contact types
      */
-    def Object[] bindContacts(UserWS user, List contacts, CompanyDTO company, GrailsParameterMap params) {
+    static def Object[] bindContacts(UserWS user, List contacts, CompanyDTO company, GrailsParameterMap params) {
         def contactTypes = company.contactTypes
         def primaryContactTypeId = params.int('primaryContactTypeId')
 

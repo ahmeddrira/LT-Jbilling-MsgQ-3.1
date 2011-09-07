@@ -29,6 +29,7 @@ import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -920,6 +921,7 @@ public class WSTest  extends TestCase {
         // A pricing rule. See PricingRules.drl, rule 'PricingField test1'.
         PricingField pf = new PricingField("newPrice", new BigDecimal("5.0"));
         newLine.setQuantity(1);
+        newLine.setUseItem(false);
         currentOrderAfter = api.updateCurrentOrder(USER_ID,
                                                    new OrderLineWS[] { newLine }, // adding a new order line
                                                    new PricingField[] { pf },
@@ -931,7 +933,8 @@ public class WSTest  extends TestCase {
         createdLine = currentOrderAfter.getOrderLines()[0];
         assertEquals("Order line ids", newLine.getItemId(), createdLine.getItemId());
         assertEquals("Order line quantities", new BigDecimal("23.00"), createdLine.getQuantityAsDecimal());
-        assertEquals("Order line price", new BigDecimal("10.00"), createdLine.getPriceAsDecimal());
+        // price was changed by the rule, from 10 to 5
+        assertEquals("Order line price", new BigDecimal("5.00"), createdLine.getPriceAsDecimal());
 
         // Note that because of the rule, the result should be 225.0, not 230.0.
         assertEquals("Order line total", new BigDecimal("225.00"), createdLine.getAmountAsDecimal());
@@ -947,24 +950,25 @@ public class WSTest  extends TestCase {
         PricingField dst = new PricingField("dst", "12345678");
         currentOrderAfter = api.updateCurrentOrder(USER_ID,
                                                    null,
-                                                   new PricingField[] { pf, duration, dst },
+                                                   new PricingField[] {pf, duration, dst },
                                                    new Date(),
                                                    "Event from WS");
 
         // asserts
         assertEquals("2 order line", 2, currentOrderAfter.getOrderLines().length);
 
+        // this is the same line from the previous call
         createdLine = currentOrderAfter.getOrderLines()[0];
         assertEquals("Order line ids", newLine.getItemId(), createdLine.getItemId());
         assertEquals("Order line quantities", new BigDecimal("23.00"), createdLine.getQuantityAsDecimal());
-        assertEquals("Order line price", new BigDecimal("10.00"), createdLine.getPriceAsDecimal());
+        assertEquals("Order line price", new BigDecimal("5.00"), createdLine.getPriceAsDecimal());
         assertEquals("Order line total", new BigDecimal("225.00"), createdLine.getAmountAsDecimal());
 
         // 'newPrice' pricing field, $5 * 5 units = 25
         createdLine = currentOrderAfter.getOrderLines()[1];
         assertEquals("Order line quantities", new BigDecimal("5.00"), createdLine.getQuantityAsDecimal());
         assertEquals("Order line price", new BigDecimal("5.00"), createdLine.getPriceAsDecimal());
-        assertEquals("Order line price", new BigDecimal("25"), createdLine.getAmountAsDecimal()); // not priced
+        assertEquals("Order line amount", new BigDecimal("25"), createdLine.getAmountAsDecimal()); // not priced
 
         //
         // Events that go into an order already invoiced, should update the

@@ -365,7 +365,7 @@ public class ContactWS implements Serializable {
     }
 
     public Boolean getInclude() {
-        return include;
+        return include == null ? new Boolean(false) : include;
     }
 
     public void setInclude(Boolean include) {

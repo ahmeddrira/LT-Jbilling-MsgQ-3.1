@@ -49,6 +49,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
+import com.sapienter.jbilling.server.user.CardValidationWS;
 import com.sapienter.jbilling.server.user.CompanyWS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -82,6 +83,10 @@ public class SpringAPI implements JbillingAPI {
 
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId) {
         return session.processPayment(payment, invoiceId);
+    }
+
+    public CardValidationWS validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level) {
+        return session.validateCreditCard(creditCard, contact, level);
     }
 
     public void processPartnerPayouts(Date runDate) {
@@ -658,11 +663,6 @@ public class SpringAPI implements JbillingAPI {
 
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
         return session.getCustomerPrice(userId, itemId);
-    }
-    
-    public boolean validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, 
-           ContactWS contact, int level) {
-        return session.validateCreditCard(creditCard, contact, level);
     }
 
     public AgeingWS[] getAgeingConfiguration(Integer languageId) {

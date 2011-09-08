@@ -55,7 +55,8 @@ import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 import com.sapienter.jbilling.server.order.OrderPeriodWS
 import com.sapienter.jbilling.server.util.CurrencyWS;
 import com.sapienter.jbilling.server.user.CompanyWS
-import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldWS
+import com.sapienter.jbilling.server.user.CardValidationWS;
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
  * the WebServicesSessionBean just like the core JbillingAPI.
@@ -345,6 +346,11 @@ class ApiService implements IWebServicesSessionBean {
 
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId) {
         return webServicesSession.processPayment(payment, invoiceId)
+    }
+
+    public CardValidationWS validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO
+                           creditCard, ContactWS contact, int level) {
+           return webServicesSession.validateCreditCard(creditCard, contact, level);
     }
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, String fields) {
@@ -701,10 +707,5 @@ class ApiService implements IWebServicesSessionBean {
 
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
         return webServicesSession.getCustomerPrice(userId, itemId);
-    }
-    
-    public boolean validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO
-                           creditCard, ContactWS contact, int level) {
-           return webServicesSession.validateCreditCard(creditCard, contact, level);
     }
 }

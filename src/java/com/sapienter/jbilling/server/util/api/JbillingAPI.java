@@ -47,6 +47,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
+import com.sapienter.jbilling.server.user.CardValidationWS;
 import com.sapienter.jbilling.server.user.CompanyWS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -201,6 +202,8 @@ public interface JbillingAPI {
     public Integer applyPayment(PaymentWS payment, Integer invoiceId);
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId);
 
+    public CardValidationWS validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level);
+
 
     /*
         Billing process
@@ -310,9 +313,7 @@ public interface JbillingAPI {
 
     public PlanItemWS[] getCustomerPrices(Integer userId);
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId);
-    
-    public boolean validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, 
-           ContactWS contact, int level);
+
     
     /*
      * 

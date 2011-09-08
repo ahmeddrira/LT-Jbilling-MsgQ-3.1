@@ -51,6 +51,7 @@ import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDAS;
 import com.sapienter.jbilling.server.order.OrderHelper;
+import com.sapienter.jbilling.server.user.CardValidationWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
@@ -63,6 +64,7 @@ import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -1550,6 +1552,86 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return auth;
     }
 
+    /*
+     * Validate credit card information
+     * using pre-Auth call to the Payment plugin for level 3
+     * (non-Javadoc)
+     *
+     * Level 1 - Simple checks on Credit Card Number, name, and mod10
+     * Level 2 - Address and Security Code validation
+     * Level 3 - Check number against a payment gateway using pre-auth transaction
+     */
+    public CardValidationWS validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level) {
+        CardValidationWS validation = new CardValidationWS(level);
+
+        /*
+           Level 1 validations (default), card has a name & number, number passes mod10 luhn check
+        */
+
+        if (StringUtils.isBlank(creditCard.getName())) {
+            validation.addError("Credit card name is missing.", 1);
+        }
+
+        if (StringUtils.isBlank(creditCard.getNumber())) {
+            validation.addError("Credit card number is missing.", 1);
+
+        } else {
+            if (creditCard.getNumber().matches("^\\D+$")) {
+                validation.addError("Credit card number is not a valid number.", 1);
+            }
+
+            if (!com.sapienter.jbilling.common.Util.luhnCheck(creditCard.getNumber())) {
+                validation.addError("Credit card mod10 validation failed.", 1);
+            }
+        }
+
+
+        /*
+           Level 2 validations, card has an address & a valid CVV security code
+        */
+        if (level > 1) {
+            if (StringUtils.isBlank(contact.getAddress1())) {
+                validation.addError("Customer address is missing.", 2);
+            }
+
+            if (StringUtils.isBlank(creditCard.getSecurityCode())) {
+                validation.addError("Credit card CVV security code is missing.", 2);
+
+            } else {
+                if (creditCard.getSecurityCode().matches("^\\D+$")) {
+                    validation.addError("Credit card CVV security code is not a valid number.", 2);
+                }
+            }
+        }
+
+
+        /*
+           Level 3 validations, attempted live pre-authorization against payment gateway
+        */
+        if (level > 2) {
+            PaymentAuthorizationDTOEx auth = null;
+            try {
+                // entity id, user id, credit card, amount, currency id, executor
+                auth = new CreditCardBL().validatePreAuthorization(getCallerCompanyId(),
+                                                                   getCallerId(),
+                                                                   new CreditCardDTO(creditCard),
+                                                                   new BigDecimal("0.01"),
+                                                                   1,
+                                                                   getCallerId());
+            } catch (PluggableTaskException e) {
+                // log plug-in exception and ignore
+                LOG.error("Exception occurred processing pre-authorization", e);
+            }
+
+            if (auth == null || !auth.getResult()) {
+                validation.addError("Credit card pre-authorization failed.", 3);
+            }
+            validation.setPreAuthorization(auth);
+        }
+
+        return validation;
+    }
+
     public PaymentWS getPayment(Integer paymentId)
             throws SessionInternalError {
         // get the info from the caller
@@ -2870,67 +2952,5 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
         CustomerPriceBL bl = new CustomerPriceBL(userId);
         return PlanItemBL.getWS(bl.getPrice(itemId));
-    }
-    
-    /*
-     * Validate credit card information 
-     * using pre-Auth call to the Payment plugin for level 3
-     * (non-Javadoc)
-     * 
-     * Level 1 - Simple checks on Credit Card Number, name, and mod10
-     * Level 2 - Address and Security Code validation
-     * Level 3 - Check number against a payment gateway using pre-auth transaction 
-     * 
-     * @see com.sapienter.jbilling.server.util.IWebServicesSessionBean#validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level)
-     */
-    public boolean validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level) 
-        throws SessionInternalError {
-        boolean retVal= true;
-        try {
-            
-            //simple level 1 validations
-            if (creditCard.getNumber().trim().length()==0) {
-                throw new Exception("Credit Card number is missing.");
-            }
-            
-            if (creditCard.getName().trim().length()==0) {
-                throw new Exception("Credit Card name is missing.");
-            }
-            
-            
-            //Luhn check - mod10 validation
-            if (!com.sapienter.jbilling.common.Util.luhnCheck(creditCard.getNumber())) {
-                throw new Exception("Credit Card Mod10 validation failed.");
-            }
-
-            //level 2 and level 3 validations
-            if (level > 1) {
-                //address validation
-                if (contact.getAddress1().trim().length()==0) {
-                    throw new Exception("Credit Card address is missing.");
-                }
-                //security code validation
-                if (creditCard.getSecurityCode().length()==0 || Integer.parseInt(creditCard.getSecurityCode()) <= 0 ) {
-                    throw new Exception("Credit Card Security Code validation failed.");
-                }
-                //payment gateway pre-authorize validation
-                if (level > 2) {
-                    CreditCardDTO cc= new CreditCardDTO();
-                    cc.setName(creditCard.getName());
-                    cc.setNumber(creditCard.getNumber());
-                    cc.setSecurityCode(creditCard.getSecurityCode());
-                    cc.setExpiry(new Date());
-                    Object auth= new CreditCardBL().validatePreAuthorization(getCallerCompanyId(), getCallerId(), 
-                            cc, new BigDecimal("0.01"), new Integer(1), getCallerId());
-                    if (null == auth) {
-                        retVal=false;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            retVal=false;
-            LOG.debug("validateCreditCard Failed: " + e.getMessage());
-        }
-        return retVal;
     }
 }

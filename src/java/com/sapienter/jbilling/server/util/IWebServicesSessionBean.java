@@ -232,11 +232,11 @@ public interface IWebServicesSessionBean {
 
     public void triggerBillingAsync(final Date runDate);
     public boolean triggerBilling(Date runDate);
-    public boolean isBillingRunning(); // todo: rename isBillingProcessRunning()
+    public boolean isBillingProcessRunning();
     public ProcessStatusWS getBillingProcessStatus();
 
     public void triggerAgeing(Date runDate);
-    public void isAgeingProcessRunning();
+    public boolean isAgeingProcessRunning();
     public ProcessStatusWS getAgeingProcessStatus();
 
     public BillingProcessConfigurationWS getBillingProcessConfiguration() throws SessionInternalError;
@@ -262,12 +262,11 @@ public interface IWebServicesSessionBean {
      */
 
     public void triggerMediation();
-    public Integer triggerMediationByConfiguration(Integer cfgId); // returns mediation process ID
-    public boolean isMediationProcessing(); // todo: rename isMediationProcessRunning()
+    public Integer triggerMediationByConfiguration(Integer cfgId);
+    public boolean isMediationProcessRunning();
     public ProcessStatusWS getMediationProcessStatus();
 
-
-    public MediationProcessWS getMediationProcess(Integer mediationProcessId); // returns the running process information (start, end, orders touched etc.)
+    public MediationProcessWS getMediationProcess(Integer mediationProcessId);
     public List<MediationProcessWS> getAllMediationProcesses();
     public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId);
     public List<MediationRecordLineWS> getMediationEventsForInvoice(Integer invoiceId);

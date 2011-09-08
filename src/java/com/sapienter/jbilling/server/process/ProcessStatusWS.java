@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.process;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -28,7 +29,7 @@ import java.util.Date;
  * @author Brian Cowdery
  * @since 08/09/11
  */
-public class ProcessStatusWS {
+public class ProcessStatusWS implements Serializable {
 
     public enum State { RUNNING, FINISHED, FAILED }
 

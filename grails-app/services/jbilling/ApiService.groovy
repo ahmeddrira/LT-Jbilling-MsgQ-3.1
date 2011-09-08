@@ -56,7 +56,8 @@ import com.sapienter.jbilling.server.order.OrderPeriodWS
 import com.sapienter.jbilling.server.util.CurrencyWS;
 import com.sapienter.jbilling.server.user.CompanyWS
 import com.sapienter.jbilling.server.user.contact.ContactFieldWS
-import com.sapienter.jbilling.server.user.CardValidationWS;
+import com.sapienter.jbilling.server.user.CardValidationWS
+import com.sapienter.jbilling.server.process.ProcessStatusWS;
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
  * the WebServicesSessionBean just like the core JbillingAPI.
@@ -454,10 +455,6 @@ class ApiService implements IWebServicesSessionBean {
         Billing process
      */
 
-	public boolean isBillingRunning() {
-		return webServicesSession.isBillingProcessRunning()
-	}
-	
 	public void triggerBillingAsync(final Date runDate) {
 		webServicesSession.triggerBillingAsync(runDate)
 	}
@@ -466,8 +463,24 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.triggerBilling(runDate)
     }
 
+	public boolean isBillingProcessRunning() {
+		return webServicesSession.isBillingProcessRunning()
+	}
+
+    public ProcessStatusWS getBillingProcessStatus() {
+        return webServicesSession.getBillingProcessStatus()
+    }
+
     public void triggerAgeing(Date runDate) {
         webServicesSession.triggerAgeing(runDate)
+    }
+
+    public boolean isAgeingProcessRunning() {
+        return webServicesSession.isAgeingProcessRunning()
+    }
+
+    public ProcessStatusWS getAgeingProcessStatus() {
+        return webServicesSession.getAgeingProcessStatus()
     }
 
     public BillingProcessConfigurationWS getBillingProcessConfiguration() {
@@ -511,12 +524,24 @@ class ApiService implements IWebServicesSessionBean {
        Mediation process
     */
 
-    void triggerMediation() {
+    public void triggerMediation() {
         webServicesSession.triggerMediation()
     }
 
-    boolean isMediationProcessing() {
-        return webServicesSession.isMediationProcessing()
+    public Integer triggerMediationByConfiguration(Integer cfgId) {
+        return webServicesSession.triggerMediationByConfiguration(cfgId)
+    }
+
+    public boolean isMediationProcessRunning() {
+        return webServicesSession.isMediationProcessRunning()
+    }
+
+    public MediationProcessWS getMediationProcess(Integer mediationProcessId) {
+        return webServicesSession.getMediationProcess(mediationProcessId)
+    }
+
+    public ProcessStatusWS getMediationProcessStatus() {
+        return webServicesSession.getMediationProcessStatus()
     }
 
     public List<MediationProcessWS> getAllMediationProcesses() {

@@ -23,8 +23,6 @@ package jbilling
 import grails.plugins.springsecurity.Secured;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.common.SessionInternalError;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
 * BillingController
@@ -44,7 +42,7 @@ class BillingconfigurationController {
 		
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 		def configuration= webServicesSession.getBillingProcessConfiguration()
-		boolean isBillingRunning= webServicesSession.isBillingRunning()
+		boolean isBillingRunning= webServicesSession.isBillingProcessRunning()
 		if (isBillingRunning)
 		{
 			flash.info = 'prompt.billing.running'
@@ -85,7 +83,7 @@ class BillingconfigurationController {
 	def runBilling = {
 		
 		try {
-			if (!webServicesSession.isBillingRunning()) {
+			if (!webServicesSession.isBillingProcessRunning()) {
 				webServicesSession.triggerBillingAsync(new Date())
 				flash.message = 'prompt.billing.trigger'
 			} else {

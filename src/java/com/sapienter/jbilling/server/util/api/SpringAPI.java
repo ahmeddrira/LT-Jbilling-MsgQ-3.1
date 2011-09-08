@@ -24,7 +24,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -49,6 +48,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
+import com.sapienter.jbilling.server.process.ProcessStatusWS;
 import com.sapienter.jbilling.server.user.CardValidationWS;
 import com.sapienter.jbilling.server.user.CompanyWS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
@@ -424,12 +424,32 @@ public class SpringAPI implements JbillingAPI {
         Billing process
      */
 
+    public void triggerBillingAsync(Date runDate) {
+        session.triggerBillingAsync(runDate);
+    }
+
     public boolean triggerBilling(Date runDate) {
         return session.triggerBilling(runDate);
     }
 
+    public boolean isBillingProcessRunning() {
+        return session.isBillingProcessRunning();
+    }
+
+    public ProcessStatusWS getBillingProcessStatus() {
+        return session.getBillingProcessStatus();
+    }
+
     public void triggerAgeing(Date runDate) {
         session.triggerAgeing(runDate);
+    }
+
+    public boolean isAgeingProcessRunning() {
+        return session.isAgeingProcessRunning();
+    }
+
+    public ProcessStatusWS getAgeingProcessStatus() {
+        return session.getAgeingProcessStatus();
     }
 
     public BillingProcessConfigurationWS getBillingProcessConfiguration() {
@@ -468,6 +488,15 @@ public class SpringAPI implements JbillingAPI {
         return session.getBillingProcessGeneratedInvoices(processId);
     }
 
+    public AgeingWS[] getAgeingConfiguration(Integer languageId) {
+        return session.getAgeingConfiguration(languageId);
+    }
+
+    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod,
+            Integer languageId) {
+        session.saveAgeingConfiguration(steps, gracePeriod, languageId);
+    }
+
 
     /*
        Mediation process
@@ -477,8 +506,20 @@ public class SpringAPI implements JbillingAPI {
         session.triggerMediation();
     }
 
-    public boolean isMediationProcessing() {
-        return session.isMediationProcessing();
+    public Integer triggerMediationByConfiguration(Integer cfgId) {
+        return session.triggerMediationByConfiguration(cfgId);
+    }
+
+    public boolean isMediationProcessRunning() {
+        return session.isMediationProcessRunning();
+    }
+
+    public ProcessStatusWS getMediationProcessStatus() {
+        return session.getMediationProcessStatus();
+    }
+
+    public MediationProcessWS getMediationProcess(Integer mediationProcessId) {
+        return session.getMediationProcess(mediationProcessId);
     }
 
     public List<MediationProcessWS> getAllMediationProcesses() {
@@ -665,10 +706,6 @@ public class SpringAPI implements JbillingAPI {
         return session.getCustomerPrice(userId, itemId);
     }
 
-    public AgeingWS[] getAgeingConfiguration(Integer languageId) {
-        return session.getAgeingConfiguration(languageId);
-    }
-
     public BigDecimal getTotalRevenueByUser(Integer userId) {
         return session.getTotalRevenueByUser(userId);
     }
@@ -701,10 +738,6 @@ public class SpringAPI implements JbillingAPI {
         return session.deleteOrderPeriod(periodId);
     }
 
-    public boolean isBillingRunning() {
-        return session.isBillingRunning();
-    }
-
     public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods) {
         return session.updateOrderPeriods(orderPeriods);
     }
@@ -713,21 +746,12 @@ public class SpringAPI implements JbillingAPI {
         session.createUpdateNofications(messageId, dto);
     }
 
-    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod,
-            Integer languageId) {
-        session.saveAgeingConfiguration(steps, gracePeriod, languageId);
-    }
-
     public void saveCustomContactFields(ContactFieldTypeWS[] fields) {
         session.saveCustomContactFields(fields);
     }
 
     public void saveCustomerNotes(Integer userId, String notes) {
         session.saveCustomerNotes(userId, notes);
-    }
-
-    public void triggerBillingAsync(Date runDate) {
-        session.triggerBillingAsync(runDate);
     }
 
     public void updateCompany(CompanyWS companyWS) {

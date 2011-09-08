@@ -51,6 +51,7 @@ import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDAS;
 import com.sapienter.jbilling.server.order.OrderHelper;
+import com.sapienter.jbilling.server.process.ProcessStatusWS;
 import com.sapienter.jbilling.server.user.CardValidationWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
@@ -2447,11 +2448,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         Billing process
      */
 
-    public boolean isBillingRunning() {
-    	IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        return processBean.isBillingRunning();
-	}
-    
     public void triggerBillingAsync(final Date runDate) {
     	Thread t =new Thread(new Runnable(){
 	   		IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
@@ -2469,9 +2465,45 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return processBean.trigger(runDate);
     }
 
+    public boolean isBillingProcessRunning() {
+    	IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.isBillingRunning();
+	}
+
+    /**
+     * Returns the status of the last run (or currently running) billing process.
+     *
+     * @return billing process status
+     */
+    public ProcessStatusWS getBillingProcessStatus() {
+        return null; // todo: fill in method stub
+    }
+
     public void triggerAgeing(Date runDate) {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
         processBean.reviewUsersStatus(getCallerCompanyId(), runDate);
+    }
+
+    /**
+     * Returns true if the ageing process is currently running for the caller's
+     * entity, false if not.
+     *
+     * @return true if ageing process is running, false if not
+     */
+    public boolean isAgeingProcessRunning() {
+        return false; // todo: fill in method stub
+    }
+
+    /**
+     * Returns the status of the last run (or currently running) ageing process.
+     *
+     * That the ageing process currently does not report a start date, end date, or process id.
+     * The status returned by this method will only report the RUNNING/FINISHED/FAILED state of the process.
+     *
+     * @return ageing process status
+     */
+    public ProcessStatusWS getAgeingProcessStatus() {
+        return null;  // todo: fill in method stub
     }
 
     public BillingProcessConfigurationWS getBillingProcessConfiguration() throws SessionInternalError {
@@ -2569,9 +2601,39 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         mediationBean.trigger(getCallerCompanyId());
     }
 
-    public boolean isMediationProcessing() throws SessionInternalError {
+    /**
+     * Triggers the mediation process for a specific configuration and returns the mediation
+     * process id of the running process.
+     *
+     * @param cfgId mediation configuration id
+     * @return mediation process id
+     */
+    public Integer triggerMediationByConfiguration(Integer cfgId) {
+        return null; // todo: fill in method stub
+    }
+
+    public boolean isMediationProcessRunning() throws SessionInternalError {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
         return mediationBean.isProcessing(getCallerCompanyId());
+    }
+
+    /**
+     * Returns the status of the last run (or currently running) mediation process.
+     *
+     * @return mediation process status
+     */
+    public ProcessStatusWS getMediationProcessStatus() {
+        return null; // todo: fill in method stub
+    }
+
+    /**
+     * Returns the mediation process for the given process id.
+     *
+     * @param mediationProcessId mediation process id
+     * @return mediation process, or null if not found
+     */
+    public MediationProcessWS getMediationProcess(Integer mediationProcessId) {
+        return null; // todo: fill in method stub
     }
 
     public List<MediationProcessWS> getAllMediationProcesses() {

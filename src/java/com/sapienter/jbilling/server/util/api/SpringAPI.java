@@ -294,8 +294,16 @@ public class SpringAPI implements JbillingAPI {
         session.updateCreditCard(userId, creditCard);
     }
 
+    public void deleteCreditCard(Integer userId) {
+        session.deleteCreditCard(userId);
+    }
+
     public void updateAch(Integer userId, AchDTO ach) {
         session.updateAch(userId, ach);
+    }
+
+    public void deleteAch(Integer userId) {
+        session.deleteAch(userId);
     }
 
     public void updateOrder(OrderWS order) {

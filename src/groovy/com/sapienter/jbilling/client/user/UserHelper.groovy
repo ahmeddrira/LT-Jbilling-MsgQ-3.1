@@ -63,7 +63,7 @@ class UserHelper {
         log.debug("User ${user}")
 
         // bind credit card object if parameters present
-        if (params.creditCard.any { key, value -> value }) {
+        if (!params.deleteCreditCard && params.creditCard.any { key, value -> value }) {
             def creditCard = new CreditCardDTO()
             bindData(creditCard, params, 'creditCard')
             bindExpiryDate(creditCard, params)
@@ -85,23 +85,15 @@ class UserHelper {
             }
 
             log.debug("Credit card ${creditCard}")
-
-            // set automatic payment type
-            if (params.creditCardAutoPayment)
-                user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_CC)
         }
 
         // bind ach object if parameters present
-        if (params.ach.any { key, value -> value }) {
+        if (!params.deleteAch && params.ach.any { key, value -> value }) {
             def ach = new AchDTO()
             bindData(ach, params, 'ach')
             user.setAch(ach)
 
             log.debug("Ach ${ach}")
-
-            // set automatic payment type
-            if (params.achAutoPayment)
-                user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
         }
 
         return user

@@ -77,7 +77,9 @@ public interface JbillingAPI {
     public Integer createContactTypeWS(ContactTypeWS contactType);
 
     public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard);
+    public void deleteCreditCard(Integer userId);
     public void updateAch(Integer userId, AchDTO ach);
+    public void deleteAch(Integer userId);
 
     public void setAutoPaymentType(Integer userId, Integer autoPaymentType, boolean use);
     public Integer getAutoPaymentType(Integer userId);

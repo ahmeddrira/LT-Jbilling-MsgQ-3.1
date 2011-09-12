@@ -200,8 +200,6 @@ class CustomerController {
         }
 
         def parent = UserDTO.get(params.int('id'))
-        System.out.println("Parent id: " + params.id + "  = " + parent)
-
         render template: 'customers', model: [ users: children, parent: parent ]
     }
 
@@ -311,8 +309,21 @@ class CustomerController {
 
                     webServicesSession.updateUser(user)
 
+                    // ACH updates are not handled through updateUser. Make a separate API call
+                    // to update the customers ACH data if it's present
                     if (user.ach) {
                         webServicesSession.updateAch(user.userId, user.ach)
+                    }
+
+                    // payment data deletions
+                    if (params.deleteAch) {
+                        log.debug("deleting ACH for user ${user.userId}")
+                        webServicesSession.deleteAch(user.userId)
+                    }
+
+                    if (params.deleteCreditCard) {
+                        log.debug("deleting Credit Card for user ${user.userId}")
+                        webServicesSession.deleteCreditCard(user.userId)
                     }
 
                     flash.message = 'customer.updated'

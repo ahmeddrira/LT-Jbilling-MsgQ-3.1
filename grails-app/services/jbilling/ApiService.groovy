@@ -202,10 +202,6 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getPartner(partnerId)
     }
 
-    public void updateCreditCard(Integer userId, CreditCardDTO creditCard) {
-        webServicesSession.updateCreditCard(userId, creditCard)
-    }
-
     public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order) {
         return webServicesSession.createOrderPreAuthorize(order)
     }
@@ -414,8 +410,20 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.deleteItemCategory(itemCategoryId)
     }
 
+    public void updateCreditCard(Integer userId, CreditCardDTO creditCard) {
+        webServicesSession.updateCreditCard(userId, creditCard)
+    }
+
+    void deleteCreditCard(Integer userId) {
+        webServicesSession.deleteCreditCard(userId)
+    }
+
     public void updateAch(Integer userId, AchDTO ach) {
         webServicesSession.updateAch(userId, ach)
+    }
+
+    void deleteAch(Integer userId) {
+        webServicesSession.deleteAch(userId)
     }
 
     public void setAuthPaymentType(Integer userId, Integer autoPaymentType, boolean use) {

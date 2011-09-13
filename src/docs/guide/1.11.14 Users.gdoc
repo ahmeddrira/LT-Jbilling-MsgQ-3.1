@@ -1,0 +1,19 @@
+This area of *j*Billing allows you to dictate which of your users have access to *j*Billing, and what kind of access they have. To access this area of the system, click on Configuration, and then on Users, which is located in the sidebar on the left hand side of your screen.
+
+!configurationusers.png!
+
+*Add a User*
+
+To add a user, click on the 'Add New' button. You will be redirected to a form that closely resembles the New Customer screen. Fill in the applicable fields. Some important fields to take note of are: 'Role' and 'Contact Type'. Please see the appropriate sections below for more information. 
+
+!addauser.png!
+
+*View Permissions*
+
+Clicking this button allows you to view the 'Edit Permissions' screen. Basically it allows you to see the areas of the system that the user has access to. 
+
+*Edit and Delete*
+
+To edit an existing User, select the user you wish to make changes to, and then click the 'Edit' button.
+
+To delete an existing User, select the user you wish to delete, and then click the 'Delete' button.

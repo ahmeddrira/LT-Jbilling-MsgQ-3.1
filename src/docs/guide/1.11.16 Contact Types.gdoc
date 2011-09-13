@@ -1,0 +1,37 @@
+This feature allows you to organize the multiple types of contacts you might have for each customer.
+
+For example: you might have the main contact information for a customer, as well as their accounting contact information. If you set up another contact type, you can send all email notifications (invoices, payments, reminders, etc), to both your customer and their accountant.
+
+{note}
+Please Note: one 'type' *must* be the primary contact, which will be used for the address on the printed invoice. The primary contact will always be included in the email notifications, whether the box has been checked or not.
+{note} 
+
+To access this area of the system, click on Configuration and then on Contact Types, which is located in the sidebar on the left hand side of your screen.
+
+!configurationcontacttypes.png!
+
+*Add a New Contact Type*
+
+To add a new contact type, click on the 'Add New' button. Since there is already a primary contact in this example, the 'Primary Contact' field will automatically read: no. 
+
+Enter the title you wish to call your new contact type in the appropriate language field. Click the 'Save Changes' button to save your changes.
+
+!newcontacttype.png! 
+
+This new contact type will now be available to select in the applicable dropdown menu when you create or edit a User.
+
+h3. Custom Contact Fields (CCF)
+
+It is possible to have the fields of the contact information customized to your needs. These fields will show up on the printed invoice. 
+
+For example: you might need a tax number to appear on the printed invoices, for legal or accounting purposes. You might also wish to have home phone and work number for your customers. 
+
+!customcontactfields.png!
+
+For example: 
+
+!facebookccf.png!
+
+This custom contact, when saved, will appear as an editable field in the Customer information screen. 
+
+!editcustomerfacebookccf.png!

@@ -1,0 +1,24 @@
+*j*Billing will send emails to your customers on your behalf for many reasons. Sending them their invoices is one, but there are many more reasons, such as reminders, failure  
+to receive a payment, balance overdue, etc.
+
+Emails need a mail server to be delivered. When the notifications engine of *j*Billing needs to send an email, it will connect to a mail server using the email delivery  
+parameters. You can use a mail server from your ISP provider, or set  
+up your own mail server. It is also possible that you are running *j*Billing from a company that is hosting *j*Billing for you and they will include a default mail server.
+
+The best option is if you run your own mail server. In any case, reviewing and configuring the email delivery parameters will save you and your customers some confusion.
+
+*Why You Shouldn't Use the Default Parameters:*
+
+Each email delivery parameter has a default value. If you do not specify any parameters, the system will still attempt to send emails using those defaults. Depending on the  
+version of *j*Billing you are running, and where it is that  
+*j*Billing is running, these defaults values can vary greatly.
+
+When the system sends an email using just the default parameters, the client who receives it can get quite confused. A typical scenario of default values would be at the top  
+of the email: "From: admin@jBilling.com". And should the  
+customer wish to reply, the reply will be sent back to admin@jBilling.com. Therefore you will not receive that reply.
+
+If you do not configure a mail server, all emails might just fail to be delivered, or the mail server of the hosting company using *j*Billing is going to be used. So, if an  
+email sent to one of your customers bounces back, it will bounce  
+back to the hosting server, *not to you*. If this happens, there is no way for you to find out that a customer has not received your notification. Also, your clients will be  
+able to see in the email's properties that the email they just  
+received was not sent by your company but by the hosting company.

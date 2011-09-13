@@ -1,0 +1,12 @@
+By default, when the billing process generates a new invoice, it will include any previous overdue invoice. In other words, an invoice that remains unpaid when the next invoice is being generated is going to be carried over to the new invoice. This way, your customers can pay their latest invoice and bring their accounts up-to-date, even if they had failed to pay a previous invoice.
+
+When the billing process runs and it is generating a new invoice for a customer, it checks if this customer has any overdue invoice remaining unpaid. If that is the case, it will add a line to the new invoice (for each of the overdue invoices) with the information from the overdue invoice(s) carried over.
+
+When this happen, the following fields will be affected:
+
+* The new invoice will have a 'Carried Total' with the amount that was taken from the overdue invoice.
+* The overdue invoice will be marked as 'Unpaid and Carried', until it is paid.
+
+{note}
+Please Note: for more information, please see Chapter 5: Invoices for more information on the status and balance of an invoice.
+{note}

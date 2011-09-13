@@ -1,0 +1,37 @@
+h2. Invoice Statuses
+
+There are 3 statuses that an invoice can be in:
+
+* Paid - this means that the invoice has been paid. The customer no longer owes anything to your company for that invoice.
+* Unpaid - this status lets the billing administrator know that the customer has not yet provided your company with a payment.
+* Unpaid and Carried - if a customer does not pay their invoice by the designated due date, another invoice will be generated. The balance of the first invoice will be carried over to the second invoice.
+
+For example: a customer recieves their monthly invoice in June, and it's due at the end of the month. The invoice has a status of unpaid. 
+
+The month of June passes, and the customer has not paid their invoice. In July, another invoice is going to be generated. The status of the June invoice is going to change to unpaid and carried, and the amount due (the balance) will be carried over to the new, July invoice. 
+
+h2. Balance of an Invoice
+
+Usually, when an invoice is created, the balance equals the total.
+
+For example: if the balance is: $100, the total is: $100.
+
+For the most part, the balance will change, but the total does not. If the balance equals 0, this means that the invoice has been paid, and therefore, will have a status of paid. If the balance is greater than 0, then the invoice is *not* paid and will have a status of unpaid, or unpaid and carried. 
+
+The total is assigned when the invoice is created, and the balance changes when a payment is made. 
+
+Let's take a look at an example of how the balance and total affect an invoice: jBilling generates invoice A for $100. Both the balance and the total are $100. This invoice is due at the end of June, however payment has not been recieved. Since the billing process runs every 1st of the month, another invoice, (invoice B) is generated July 1st. This invoice is for $50. 
+
+On invoice B: 
+ 
+* The total is going to equal: $150
+* The balance is going to equal: $50. 
+
+Why does the system display the information this way?
+
+Both billing administrator and customer will need to know what the charges are as they apply to each invoice. Invoice B needs to display the amount due for the month of July as a separate amount from invoice A (which include the charges for June). Therefore, invoice B's total is the result of adding both invoice totals together ($100 plus $50). The blanace maintains the current charges for $50, as it *only* applies to invoice B. Invoice A's status will change from Unpaid, to Unpaid and Carried. Invoice B will have a status of Unpaid.
+
+Let's say that the customer recieves invoice B and sends a payment for $150. The system will automatically look for the oldest unpaid invoice first, and will apply the payment to it. In this case, the system will find invoice A and make a payment of $100. The status of the invoice will change to Paid. Since an amount of $50 will be left over, the system will search for the next payable invoice. Since there is one in this example, invoice B will also change to a status of paid as the balance owed is $50.
+
+
+

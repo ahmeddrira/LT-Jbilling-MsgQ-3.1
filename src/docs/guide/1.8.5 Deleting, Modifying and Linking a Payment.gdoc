@@ -1,0 +1,50 @@
+Before you can delete or edit a payment, you need to remove all the links between the payment and any invoices. *A payment cannot be modified as long as it is linked to invoices*. To remove the link between a payment and an invoice, click on 'Unlink'. This will undo the effect of the payment by increasing the invoice balance and also increasing the payment balance.
+
+!unlinkpayment.png!
+
+Once a payment is on its own, without paying any invoices, you will see the 'Delete' button, on the bottom of your screen. By clicking on it, you will be removing the payment from the system.
+
+Another option that is available when the payment is not linked to invoices is 'Edit'. This option also requires that the payment has been entered manually (see 'Types of payments' above). *A payment that was processed by a payment processor cannot be modified*. Payments made with cheques and manual credit cards can be edited to correct errors.
+
+The last action that you can do with an existing payment is to link it to invoices. For this, the payment has to have a balance greater than zero. Linking a payment to an invoice amount allows the user to pay (at least partially) the invoice. This is usually done when the payment is created (either manually or by the billing process), so manually linking a payment to an invoice should be an exception.
+
+To create the link, follow the steps to submit a new payment (see above). Select the radio button beside the invoice you wish to link to the payment.
+
+{note}
+Please Note: all of the payment's balance will be used to towards the invoice, up to the total balance of the invoice. If a payment has a $50 balance, and the invoice is $50, then the payment will cover the $50 and be 'Finished' with balance of zero. If the invoice's balance is smaller than $50, then the invoice will be fully paid, and there will be some balance left over from the payment.
+{note}
+
+h3. Refunds
+
+Refunds represent the return of certain amount of funds to a customer. Refunds can be summarized as payments that have the opposite effect. Instead of reducing an invoice's balance, they increase it. You will issue a refund only when you have received a payment from a customer first. When you create a refund, you will link it to the payment that is being refunded, just like a payment is linked to the invoice that is being paid.
+
+Except for the differences described above, managing refunds is just like managing payments. You select the payment to be refunded. You select the method: cheque, credit card, etc. Then you select the invoice or enter an amount to be refunded. Refunds can be total, returning the total amount of the payment, or partial. 
+
+Refunds also follow the same rules as payments for the processing. They can be simply 'entered', or they can be 'processed' in real-time through your payment processor.
+
+For example: an 'entered refund' would be a cheque that you send to a customer because the customer over paid you or was overcharged for some services. For a 'processed refund', you would be refunding a payment that was processed on-line through a payment processor. In the case of a credit card refund, your customer's credit card will be refunded in real-time, just like a payment is cleared in real-time. 
+
+{note}
+Please Note: that not all payments processors allow you to submit on-line refunds.
+{note}
+
+For refunds involving a payment processor, *j*Billing only submits the refund request and shows you the result that is returned by the payment processor. For the details and ramifications of how this affects your customer's payment instrument (credit card, bank account), or how this affects your merchant account, you would have to contact your payment processor.e between the subsequent reminders, should you wish to have more than one. 
+
+!firstreminder.png!
+
+{note}
+Please note: be aware that if you put a small number in the 'Next reminder' box, your customer might receive too many reminders before the due date of their invoice. They could end up tuning out the messages.
+{note}
+
+For example: 
+
+*Trend* chooses to give to its clients 30 days before their invoice becomes overdue. *Trend* wishes to remind them up to 3 times before the due date that an invoice has been generated and should be paid as soon as possible.
+
+This is what Trend enters:
+
+!remindersexample.png!
+
+This is what will happen:
+
+Let's say that the invoice is generated on the first day of the month. If the client has not paid by the 15th, the previously composed text will be emailed. Should the client still not pay, a message will be sent again 5 days later, on  
+the 20th, and again on the 25th of the month. If by the due date the client has failed to pay, their account will then switch over to the ageing process.

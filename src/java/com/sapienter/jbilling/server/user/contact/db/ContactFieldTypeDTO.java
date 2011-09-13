@@ -62,6 +62,7 @@ public class ContactFieldTypeDTO extends AbstractDescription implements java.io.
 	private String promptKey;
 	private String dataType;
 	private Integer readOnly;
+	private Integer displayInView;
 	private Set<ContactFieldDTO> contactFields = new HashSet<ContactFieldDTO>(0);
 	private Integer versionNum;
 
@@ -136,6 +137,15 @@ public class ContactFieldTypeDTO extends AbstractDescription implements java.io.
         this.readOnly = customerReadonly;
     }
     
+    @Column(name="display_in_view")
+    public Integer getDisplayInView() {
+        return displayInView;
+    }
+
+    public void setDisplayInView(Integer displayInView) {
+        this.displayInView = displayInView;
+    }
+
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="type")
     public Set<ContactFieldDTO> getContactFields() {
         return this.contactFields;

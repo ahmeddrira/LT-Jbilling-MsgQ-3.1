@@ -73,6 +73,7 @@ import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
+import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
@@ -96,6 +97,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -383,10 +385,15 @@ public class OrderBL extends ResultList
             }
 
             // add a log row for convenience
-            eLogger.auditBySystem(entityId, order.getBaseUserByUserId().getId(),
-                                  Constants.TABLE_PUCHASE_ORDER, order.getId(),
-                                  EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
-
+            if (userAgentId != null) {
+                eLogger.audit(userAgentId, order.getBaseUserByUserId().getId(), 
+                        Constants.TABLE_PUCHASE_ORDER, order.getId(), 
+                        EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
+            } else {
+                eLogger.auditBySystem(entityId, order.getBaseUserByUserId().getId(),
+                                      Constants.TABLE_PUCHASE_ORDER, order.getId(),
+                                      EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
+            }
             EventManager.process(new NewOrderEvent(entityId, order));
         } catch (Exception e) {
             throw new SessionInternalError("Create exception creating order entity bean", OrderBL.class, e);
@@ -1281,19 +1288,42 @@ public class OrderBL extends ResultList
         return retValue;
     }
 
+    /**
+     * Calculates the target invoicing date for an order. If the order has been billed out to an
+     * invoice before, then the "next billable day" will be returned. If the order has not yet
+     * been billed, then this method will calculate the target invoice date based off of the
+     * billing type (pre-paid or post-paid) and active since dates of the order.
+     *
+     * @return target invoicing date for the order
+     */
     public Date getInvoicingDate() {
-        Date retValue;
         if (order.getNextBillableDay() != null) {
-            retValue = order.getNextBillableDay();
-        } else {
-            if (order.getActiveSince() != null) {
-                retValue = order.getActiveSince();
-            } else {
-                retValue = order.getCreateDate();
-            }
-        }
+            // next billable day set by billing process, no need to calculate anything
+            return order.getNextBillableDay();
 
-        return retValue;
+        } else {
+            // order hasn't been billed out yet so there is no next billable day
+            // calculate the target invoice date based on the billing type of the order
+            Date start = order.getActiveSince() != null ? order.getActiveSince() : order.getCreateDate();
+
+            // pre-paid, customer pays in advance - invoice immediately
+            if (order.getOrderBillingType().getId() == Constants.ORDER_BILLING_PRE_PAID) {
+                return start;
+            }
+
+            // post-paid, customer pays later - invoice after 1 complete order period
+            if (order.getOrderBillingType().getId() == Constants.ORDER_BILLING_POST_PAID) {
+                Calendar calendar = GregorianCalendar.getInstance();
+                calendar.setTime(start);
+                calendar.add(MapPeriodToCalendar.map(order.getOrderPeriod().getPeriodUnit().getId()),
+                             order.getOrderPeriod().getValue());
+
+                return calendar.getTime();
+            }
+
+            LOG.debug("Order uses unknown billing type " + order.getOrderBillingType().getId());
+            return null;
+        }
     }
 
     public boolean isDateInvoiced(Date date) {

@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.pluggableTask;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
@@ -108,14 +109,47 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
         return result.shouldCallOtherProcessors();
     }
 
-    public boolean preAuth(PaymentDTOEx paymentInfo)
-            throws PluggableTaskException {
-        LOG.debug("preAuth payment " + paymentInfo);
+    /**
+     * Fake pre-authorization of a payment. If using a credit card with a CVV security code, the
+     * pre-authorization result will be "Successful" if CVV is an even number, or "Failed" if the
+     * CVV is an odd number. If the card does not have a CVV security code then the normal
+     * PaymentFakeTask payment result logic applies (result based off of the credit card number).
+     *
+     *
+     * @param paymentInfo payment information to pre-auth
+     * @return pre-authorization result
+     * @throws PluggableTaskException
+     */
+    public boolean preAuth(PaymentDTOEx paymentInfo) throws PluggableTaskException {
+        LOG.debug("Pre-authorization payment: " + paymentInfo);
         String transactionId = generatePreAuthTransactionId();
-        Result result = doFakeAuthorization(paymentInfo, transactionId);
 
-        LOG.debug("result " + result);
-        return result.shouldCallOtherProcessors();
+        if (paymentInfo.getCreditCard() != null && !StringUtils.isBlank(paymentInfo.getCreditCard().getSecurityCode())) {
+            // pre-auth result using credit card CVV
+            LOG.debug("Processing pre-authorization, generating result from card CVV security code.");
+
+            String cvv = paymentInfo.getCreditCard().getSecurityCode();
+            Integer resultId = getProcessResultId(cvv);
+
+            paymentInfo.setPaymentResult(new PaymentResultDAS().find(resultId));
+            PaymentAuthorizationDTO authInfo = createAuthorizationDTO(resultId, transactionId);
+            storeProcessedAuthorization(paymentInfo, authInfo);
+
+            LOG.debug("Pre-authorization result: " + authInfo);
+
+            boolean wasProcessed = (Constants.RESULT_FAIL.equals(resultId) || Constants.RESULT_OK.equals(resultId));
+            return !wasProcessed && !myShouldBlockOtherProcessors;
+
+        } else {
+            // pre-auth result using credit card number
+            LOG.debug("Processing pre-authorization, generating using card number & amount purchased.");
+
+            Result result = doFakeAuthorization(paymentInfo, transactionId);
+
+            LOG.debug("Pre-authorization result: " + result.getAuthorizationData());
+
+            return result.shouldCallOtherProcessors();
+        }
     }
 
     public boolean confirmPreAuth(PaymentAuthorizationDTO auth, PaymentDTOEx paymentInfo)
@@ -151,7 +185,7 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
 
         Integer resultId;
         if (!isAch) {
-            resultId = getProcessResultId(creditCard);
+            resultId = getProcessResultId(creditCard.getNumber());
         } else {
             String val = payment.getAmount().toPlainString();
             resultId = (Integer.parseInt(val.substring(val.length() - 1)) % 2 == 0) ? 
@@ -178,9 +212,16 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
         return transactionId != null && transactionId.startsWith(PREAUTH_TRANSACTION_PREFIX);
     }
 
-    private Integer getProcessResultId(CreditCardDTO card) {
-        String cardNumber = card.getNumber();
-        char last = (cardNumber.length() == 0) ? ' ' : cardNumber.charAt(cardNumber.length() - 1);
+    /**
+     * Returns a result ID based on the last digit of the given number. Even digits will
+     * return RESULT_OK, odd digits will return RESULT_FAIL. A zero or non-numerical digit
+     * will return RESULT_UNAVAILABLE.
+     *
+     * @param number number to parse
+     * @return process result id based off of the last digit of the given number (even = pass, odd = fail)
+     */
+    private Integer getProcessResultId(String number) {
+        char last = (number.length() == 0) ? ' ' : number.charAt(number.length() - 1);
 
         switch (last) {
             case '2':

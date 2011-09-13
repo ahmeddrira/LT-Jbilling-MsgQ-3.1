@@ -128,6 +128,9 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_PROCESS_RUN_STATUS = "process_run_status";
     public static final String TABLE_NOTIFICATION_CATEGORY = "notification_category";
 
+    public static final String TABLE_ENUMERATION = "enumeration";
+    public static final String TABLE_ENUMERATION_VALUES = "enumeration_values";
+    
     // order line types
     public static final Integer ORDER_LINE_TYPE_ITEM = new Integer(1);
     public static final Integer ORDER_LINE_TYPE_TAX = new Integer(2);

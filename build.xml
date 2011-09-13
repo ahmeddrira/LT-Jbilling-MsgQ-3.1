@@ -15,9 +15,8 @@
         </fileset>
 
         <!-- grails libraries-->
-        <fileset dir="${env.GRAILS_HOME}/lib/">
-            <include name="*.jar"/>
-        </fileset>
+        <fileset dir="${env.GRAILS_HOME}/lib/" includes="*.jar"/>
+        <fileset dir="${env.GRAILS_HOME}/dist/" includes="*.jar"/>
     </path>
         
     <path id="test.classpath">
@@ -240,7 +239,9 @@
             <test name="com.sapienter.jbilling.server.provisioning.ProvisioningTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.process.AgeingTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>  <!-- must be last -->            
             <test name="com.sapienter.jbilling.server.task.SimpleTaxCompositionTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
-
+            <test name="com.sapienter.jbilling.server.task.CountryTaxPluginTest" todir="${build.test-results.dir}/org-integration/xml"/>
+            <test name="com.sapienter.jbilling.server.task.PaymentTermPenaltyTaskTest" todir="${build.test-results.dir}/org-integration/xml"/>
+            
             <!-- explicitly run a single test case if 'test.class' was set -->
             <test name="${test.class}" if="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
         </junit>

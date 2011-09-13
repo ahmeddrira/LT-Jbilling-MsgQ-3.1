@@ -51,9 +51,12 @@ import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDAS;
 import com.sapienter.jbilling.server.order.OrderHelper;
+import com.sapienter.jbilling.server.user.CardValidationWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.CustomerPriceBL;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CustomerPriceDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
@@ -61,6 +64,7 @@ import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -510,7 +514,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         billingProcess.setRetriesToDo(0);
 
         InvoiceDTO[] newInvoices = processBL.generateInvoice(billingProcess,
-                user, false, onlyRecurring);
+                user, false, onlyRecurring, getCallerId());
 
         if (newInvoices != null) {
             Integer[] invoiceIds = new Integer[newInvoices.length];
@@ -553,7 +557,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         } else {
             LOG.debug("Adding order " + order.getId() + " to invoice " + invoiceId);
             IBillingProcessSessionBean process = (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-            invoice = process.generateInvoice(order.getId(), invoiceId, null);
+            invoice = process.generateInvoice(order.getId(), invoiceId, null, getCallerId());
         }
 
         return invoice == null ? null : invoice.getId();
@@ -589,10 +593,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         ContactBL cBl = new ContactBL();
         UserDTOEx dto = new UserDTOEx(newUser, entityId);
-        Integer userId = bl.create(dto);
+        Integer userId = bl.create(dto, getCallerId());
         if (newUser.getContact() != null) {
             newUser.getContact().setId(0);
-            cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId);
+            cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId, getCallerId());
         }
 
         if (newUser.getCreditCard() != null) {
@@ -674,7 +678,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         // update the contact
         ContactBL cBl = new ContactBL();
-        cBl.updateForUser(new ContactDTOEx(contact), userId, typeId);
+        cBl.updateForUser(new ContactDTOEx(contact), userId, typeId, getCallerId());
     }
 
     /**
@@ -692,16 +696,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         Integer entityId = getCallerCompanyId();
         Integer executorId = getCallerId();
 
-        // convert to a DTO
+        // convert user WS to a DTO that includes customer data
         UserDTOEx dto = new UserDTOEx(user, entityId);
 
-        // update the user info
+        // update the user info and customer data
         bl.update(executorId, dto);
 
         // now update the contact info
         if (user.getContact() != null) {
             ContactDTOEx primaryContact = new ContactDTOEx(user.getContact());
-            new ContactBL().createUpdatePrimaryForUser(primaryContact, user.getUserId(), entityId);
+            new ContactBL().createUpdatePrimaryForUser(primaryContact, user.getUserId(), entityId, getCallerId());
         }
 
         // and the credit card
@@ -710,15 +714,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     Context.Name.USER_SESSION);
             sess.updateCreditCard(executorId, user.getUserId(),
                     new CreditCardDTO(user.getCreditCard()));
-        }
-
-        //udpate customerdto here - notes, automaticPaymentMethod
-        CustomerDTO cust= UserBL.getUserEntity(user.getUserId()).getCustomer();
-    	if ( null != cust ) {
-    		LOG.debug("This code should save=" + user.getNotes() + " and " + user.getAutomaticPaymentType());
-    		cust.setNotes(user.getNotes());
-    		cust.setAutoPaymentType(user.getAutomaticPaymentType());
-    		new CustomerDAS().save(cust);
         }
     }
 
@@ -800,6 +795,28 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
     }
 
+    /**
+     * Returns a list of user ids with matching custom contact fields.
+     *
+     * @param fields fields to match
+     * @return user ids with matching custom contact fields
+     */
+    public Integer[] getUsersByCustomFields(ContactFieldWS[] fields) {
+        List<ContactFieldDTO> dtos = new ArrayList<ContactFieldDTO>(fields.length);
+        for (ContactFieldWS field : fields) {
+            dtos.add(new ContactFieldDTO(field));
+        }
+
+        List<UserDTO> users = new UserBL().getByCustomFields(getCallerCompanyId(), dtos);
+
+        int i = 0;
+        Integer[] userIds = new Integer[users.size()];
+        for (UserDTO user : users) {
+            userIds[i++] = user.getId();
+        }
+        return userIds;
+    }
+
     public void saveCustomContactFields(ContactFieldTypeWS[] fields) throws SessionInternalError {
     	try {
     		ContactFieldTypeDAS das= new ContactFieldTypeDAS();
@@ -807,6 +824,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     			ContactFieldTypeDTO dto= ws.getId() == null ? new ContactFieldTypeDTO() : das.find(ws.getId());
     			dto.setDataType(ws.getDataType());
     			dto.setReadOnly(ws.getReadOnly());
+    			dto.setDisplayInView(ws.getDisplayInView() ? 1 : 0);
     			dto.setPromptKey("placeholder_text");
     			dto.setEntity(new CompanyDTO(ws.getCompanyId()));
     			dto.setVersionNum(new Integer(0));
@@ -1002,7 +1020,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             OrderDTO dbOrder = das.find(orderId);
 
             try {
-                retValue = ccBl.validatePreAuthorization(entityId, userId, cc, dbOrder.getTotal(), dbOrder.getCurrencyId());
+                retValue = ccBl.validatePreAuthorization(entityId, userId, cc, dbOrder.getTotal(), dbOrder.getCurrencyId(), getCallerId());
             } catch (PluggableTaskException e) {
                 throw new SessionInternalError("doing validation", WebServicesSessionSpringBean.class, e);
             }
@@ -1458,7 +1476,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
-        return session.applyPayment(new PaymentDTOEx(payment), invoiceId);
+        return session.applyPayment(new PaymentDTOEx(payment), invoiceId, getCallerId());
     }
 
     /**
@@ -1509,15 +1527,15 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         // populate payment method based on the payment instrument
-        if (dto.getCreditCard() != null)
+        if (dto.getCreditCard() != null) {    
             dto.setPaymentMethod(new PaymentMethodDTO(dto.getCreditCard().getCcType()));
-
-        if (dto.getAch() != null)
+        } else if (dto.getAch() != null) { 
             dto.setPaymentMethod(new PaymentMethodDTO(Constants.PAYMENT_METHOD_ACH));
+        }
 
         // process payment
         IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
-        Integer result = session.processAndUpdateInvoice(dto, null, entityId);
+        Integer result = session.processAndUpdateInvoice(dto, null, entityId, getCallerId());
         LOG.debug("paymentBean.processAndUpdateInvoice() Id=" + result);
 
         PaymentAuthorizationDTOEx auth = null;
@@ -1532,6 +1550,86 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             auth.setResult(result.equals(Constants.RESULT_FAIL));
         }
         return auth;
+    }
+
+    /*
+     * Validate credit card information
+     * using pre-Auth call to the Payment plugin for level 3
+     * (non-Javadoc)
+     *
+     * Level 1 - Simple checks on Credit Card Number, name, and mod10
+     * Level 2 - Address and Security Code validation
+     * Level 3 - Check number against a payment gateway using pre-auth transaction
+     */
+    public CardValidationWS validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level) {
+        CardValidationWS validation = new CardValidationWS(level);
+
+        /*
+           Level 1 validations (default), card has a name & number, number passes mod10 luhn check
+        */
+
+        if (StringUtils.isBlank(creditCard.getName())) {
+            validation.addError("Credit card name is missing.", 1);
+        }
+
+        if (StringUtils.isBlank(creditCard.getNumber())) {
+            validation.addError("Credit card number is missing.", 1);
+
+        } else {
+            if (creditCard.getNumber().matches("^\\D+$")) {
+                validation.addError("Credit card number is not a valid number.", 1);
+            }
+
+            if (!com.sapienter.jbilling.common.Util.luhnCheck(creditCard.getNumber())) {
+                validation.addError("Credit card mod10 validation failed.", 1);
+            }
+        }
+
+
+        /*
+           Level 2 validations, card has an address & a valid CVV security code
+        */
+        if (level > 1) {
+            if (StringUtils.isBlank(contact.getAddress1())) {
+                validation.addError("Customer address is missing.", 2);
+            }
+
+            if (StringUtils.isBlank(creditCard.getSecurityCode())) {
+                validation.addError("Credit card CVV security code is missing.", 2);
+
+            } else {
+                if (creditCard.getSecurityCode().matches("^\\D+$")) {
+                    validation.addError("Credit card CVV security code is not a valid number.", 2);
+                }
+            }
+        }
+
+
+        /*
+           Level 3 validations, attempted live pre-authorization against payment gateway
+        */
+        if (level > 2) {
+            PaymentAuthorizationDTOEx auth = null;
+            try {
+                // entity id, user id, credit card, amount, currency id, executor
+                auth = new CreditCardBL().validatePreAuthorization(getCallerCompanyId(),
+                                                                   getCallerId(),
+                                                                   new CreditCardDTO(creditCard),
+                                                                   new BigDecimal("0.01"),
+                                                                   1,
+                                                                   getCallerId());
+            } catch (PluggableTaskException e) {
+                // log plug-in exception and ignore
+                LOG.error("Exception occurred processing pre-authorization", e);
+            }
+
+            if (auth == null || !auth.getResult()) {
+                validation.addError("Credit card pre-authorization failed.", 3);
+            }
+            validation.setPreAuthorization(auth);
+        }
+
+        return validation;
     }
 
     public PaymentWS getPayment(Integer paymentId)
@@ -1890,7 +1988,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     private InvoiceDTO doCreateInvoice(Integer orderId) {
         try {
             BillingProcessBL process = new BillingProcessBL();
-            InvoiceDTO invoice = process.generateInvoice(orderId, null);
+            InvoiceDTO invoice = process.generateInvoice(orderId, null, getCallerId());
             return invoice;
         } catch (Exception e) {
             LOG.error("WS - create invoice:", e);
@@ -1920,7 +2018,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         paymentDto.setPaymentDate(new Date());
 
         // make the call
-        payment.processAndUpdateInvoice(paymentDto, invoice);
+        payment.processAndUpdateInvoice(paymentDto, invoice, getCallerId());
 
         return paymentDto;
     }
@@ -2854,67 +2952,5 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
         CustomerPriceBL bl = new CustomerPriceBL(userId);
         return PlanItemBL.getWS(bl.getPrice(itemId));
-    }
-    
-    /*
-     * Validate credit card information 
-     * using pre-Auth call to the Payment plugin for level 3
-     * (non-Javadoc)
-     * 
-     * Level 1 - Simple checks on Credit Card Number, name, and mod10
-     * Level 2 - Address and Security Code validation
-     * Level 3 - Check number against a payment gateway using pre-auth transaction 
-     * 
-     * @see com.sapienter.jbilling.server.util.IWebServicesSessionBean#validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level)
-     */
-    public boolean validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level) 
-        throws SessionInternalError {
-        boolean retVal= true;
-        try {
-            
-            //simple level 1 validations
-            if (creditCard.getNumber().trim().length()==0) {
-                throw new Exception("Credit Card number is missing.");
-            }
-            
-            if (creditCard.getName().trim().length()==0) {
-                throw new Exception("Credit Card name is missing.");
-            }
-            
-            
-            //Luhn check - mod10 validation
-            if (!com.sapienter.jbilling.common.Util.luhnCheck(creditCard.getNumber())) {
-                throw new Exception("Credit Card Mod10 validation failed.");
-            }
-
-            //level 2 and level 3 validations
-            if (level > 1) {
-                //address validation
-                if (contact.getAddress1().trim().length()==0) {
-                    throw new Exception("Credit Card address is missing.");
-                }
-                //security code validation
-                if (creditCard.getSecurityCode().length()==0 || Integer.parseInt(creditCard.getSecurityCode()) <= 0 ) {
-                    throw new Exception("Credit Card Security Code validation failed.");
-                }
-                //payment gateway pre-authorize validation
-                if (level > 2) {
-                    CreditCardDTO cc= new CreditCardDTO();
-                    cc.setName(creditCard.getName());
-                    cc.setNumber(creditCard.getNumber());
-                    cc.setSecurityCode(creditCard.getSecurityCode());
-                    cc.setExpiry(new Date());
-                    Object auth= new CreditCardBL().validatePreAuthorization(getCallerCompanyId(), getCallerId(), 
-                            cc, new BigDecimal("0.01"), new Integer(1));
-                    if (null == auth) {
-                        retVal=false;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            retVal=false;
-            LOG.debug("validateCreditCard Failed: " + e.getMessage());
-        }
-        return retVal;
     }
 }

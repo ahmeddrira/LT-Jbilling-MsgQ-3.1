@@ -25,6 +25,7 @@ includeTargets << new File("${basedir}/scripts/Jar.groovy")
 
 imageDir = "${basedir}/image"
 sourcePackageName = "${targetDir}/${releaseName}-src.zip"
+packageName = "${targetDir}/${releaseName}.zip"
 
 target(cleanPackages: "Remove old packages from the target directory.") {
     delete(dir: targetDir, includes: "${grailsAppName}-*.zip")
@@ -119,7 +120,7 @@ target(updateImage: "Updates the jbilling image with the current release artifac
 
     // copy configuration files
     // don't copy DataSource, the reference tomcat install uses HSQLDB
-    copy(file: "${javaDir}/jbilling.properties.sample", tofile: "${jbillingHome}/jbilling.properties", overwrite: true)
+    copy(file: "${javaDir}/jbilling.properties", tofile: "${jbillingHome}/jbilling.properties", overwrite: true)
     copy(file: "${configDir}/Config.groovy", tofile: "${jbillingHome}/${grailsAppName}-Config.groovy", overwrite: true)
 
     // copy log4j configuration
@@ -133,8 +134,6 @@ target(updateImage: "Updates the jbilling image with the current release artifac
 
 
 target(packageTomcat: "Builds and packages the binary jbilling tomcat release.") {
-    updateImage()
-
     // clear tomcat logs, temp and work directories
     delete(dir: "${imageDir}/logs")
     mkdir(dir: "${imageDir}/logs")
@@ -168,6 +167,7 @@ target(packagePublicRelease: "Builds the public binary jbilling tomcat release, 
         default:
             println "Building release packages ..."
             cleanPackages()
+            updateImage()
             packageSource()
             packageTomcat()
     }

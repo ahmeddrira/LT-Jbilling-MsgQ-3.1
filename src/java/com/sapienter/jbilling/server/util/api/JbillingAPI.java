@@ -47,6 +47,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
+import com.sapienter.jbilling.server.user.CardValidationWS;
 import com.sapienter.jbilling.server.user.CompanyWS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -55,6 +56,7 @@ import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.util.CurrencyWS;
 import com.sapienter.jbilling.server.util.PreferenceWS;
@@ -86,6 +88,7 @@ public interface JbillingAPI {
     public Integer[] getUsersInStatus(Integer statusId);
     public Integer[] getUsersNotInStatus(Integer statusId);
     public Integer[] getUsersByCustomField(Integer typeId, String value);
+    public Integer[] getUsersByCustomFields(ContactFieldWS[] fields);
     public Integer[] getUsersByCreditCard(String number);
 
     public Integer getUserId(String username);
@@ -199,6 +202,8 @@ public interface JbillingAPI {
     public Integer applyPayment(PaymentWS payment, Integer invoiceId);
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId);
 
+    public CardValidationWS validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level);
+
 
     /*
         Billing process
@@ -308,9 +313,7 @@ public interface JbillingAPI {
 
     public PlanItemWS[] getCustomerPrices(Integer userId);
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId);
-    
-    public boolean validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, 
-           ContactWS contact, int level);
+
     
     /*
      * 

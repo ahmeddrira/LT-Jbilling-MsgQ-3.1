@@ -49,12 +49,14 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
+import com.sapienter.jbilling.server.user.CardValidationWS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 import com.sapienter.jbilling.server.order.OrderPeriodWS;
@@ -97,6 +99,7 @@ public interface IWebServicesSessionBean {
     public Integer[] getUsersInStatus(Integer statusId) throws SessionInternalError;
     public Integer[] getUsersNotInStatus(Integer statusId) throws SessionInternalError;
     public Integer[] getUsersByCustomField(Integer typeId, String value) throws SessionInternalError;
+    public Integer[] getUsersByCustomFields(ContactFieldWS[] fields);
     public Integer[] getUsersByCreditCard(String number) throws SessionInternalError;
 
     public Integer getUserId(String username) throws SessionInternalError;
@@ -218,6 +221,8 @@ public interface IWebServicesSessionBean {
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) throws SessionInternalError;
     public Integer applyPayment(PaymentWS payment, Integer invoiceId) throws SessionInternalError;
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId);
+
+    public CardValidationWS validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level);
 
     
     /*
@@ -343,7 +348,5 @@ public interface IWebServicesSessionBean {
 
     public PlanItemWS[] getCustomerPrices(Integer userId);
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId);
-    
-    public boolean validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level) 
-    throws SessionInternalError;
+
 }

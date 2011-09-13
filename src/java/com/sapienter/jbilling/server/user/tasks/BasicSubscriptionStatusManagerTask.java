@@ -68,14 +68,14 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
 
         if (isLastRetry()) {
             if (status.equals(UserDTOEx.SUBSCRIBER_PENDING_EXPIRATION)) {
-                user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_EXPIRED);
+                user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_EXPIRED, null);
             } else {
                 LOG.warn("Last retry, but user not in pending expariation. Status = " + status);
             }
         } else {
             // not paying is not good
             if (status.equals(UserDTOEx.SUBSCRIBER_ACTIVE)) {
-                user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_PENDING_EXPIRATION);
+                user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_PENDING_EXPIRATION, null);
             } else if (!status.equals(UserDTOEx.SUBSCRIBER_PENDING_EXPIRATION)) {
                 LOG.warn("Not clear what to do with a customer in status " + status);
             }
@@ -95,7 +95,7 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
         // currently, any payment get's you to active, regardless of the amount.
         // hence, this is not supporting partial payments ... event a partial 
         // payment will take you to active.
-        user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_ACTIVE);
+        user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_ACTIVE, null);
     }
     
     public void subscriptionEnds(Integer userId, Date newActiveUntil, 
@@ -108,7 +108,7 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
             if (user.getEntity().getSubscriberStatus().getId() ==
                     UserDTOEx.SUBSCRIBER_ACTIVE) {
                 user.updateSubscriptionStatus(
-                        UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION);
+                        UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION, null);
             } else {
                 LOG.info("Should go to pending unsubscription, but is in " + 
                         user.getEntity().getSubscriberStatus().getDescription(1));
@@ -118,7 +118,7 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
             if (user.getEntity().getSubscriberStatus().getId() ==
                     UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION) {
                 user.updateSubscriptionStatus(
-                        UserDTOEx.SUBSCRIBER_ACTIVE);
+                        UserDTOEx.SUBSCRIBER_ACTIVE, null);
             } else {
                 LOG.info("Should go to active, but is in " + 
                         user.getEntity().getSubscriberStatus().getDescription(1));
@@ -129,7 +129,7 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
     public void subscriptionEnds(Integer userId, Date date) {
         UserBL user = getUser(userId);
         if (!user.isCurrentlySubscribed(date)) {
-            user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_UNSUBSCRIBED);
+            user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_UNSUBSCRIBED, null);
         } 
     }
     

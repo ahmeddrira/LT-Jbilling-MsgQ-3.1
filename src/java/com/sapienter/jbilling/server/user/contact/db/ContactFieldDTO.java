@@ -33,6 +33,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -49,7 +50,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Table(name="contact_field")
 public class ContactFieldDTO  implements java.io.Serializable {
 
-
      private int id;
      private ContactFieldTypeDTO type;
      private ContactDTO contact;
@@ -58,19 +58,24 @@ public class ContactFieldDTO  implements java.io.Serializable {
 
     public ContactFieldDTO() {
     }
-    
+
+    public ContactFieldDTO(ContactFieldWS ws) {
+        this.type = new ContactFieldTypeDTO(ws.getTypeId());
+        this.content = ws.getContent();
+    }
+
     public ContactFieldDTO(ContactFieldDTO other) {
         setId(other.getId());
         setType(other.getType());
         setContact(other.getContact());
         setContent(other.getContent());
     }
-
     
     public ContactFieldDTO(int id, String content) {
         this.id = id;
         this.content = content;
     }
+
     public ContactFieldDTO(int id, ContactFieldTypeDTO contactFieldType, ContactDTO contact, String content) {
        this.id = id;
        this.type = contactFieldType;
@@ -108,7 +113,7 @@ public class ContactFieldDTO  implements java.io.Serializable {
         this.contact = contact;
     }
     
-    @Column(name="content", nullable=false, length=100)
+    @Column(name="content", nullable = true, length=100)
     public String getContent() {
         return this.content;
     }

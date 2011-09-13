@@ -132,7 +132,7 @@ public interface IBillingProcessSessionBean {
      * @return the id of the invoice generated
      */
     public InvoiceDTO generateInvoice(Integer orderId, Integer invoiceId,
-            Integer languageId) throws SessionInternalError;
+            Integer languageId, Integer executorUserId) throws SessionInternalError;
     
     public void reviewUsersStatus(Integer entityId, Date today) throws SessionInternalError;
 

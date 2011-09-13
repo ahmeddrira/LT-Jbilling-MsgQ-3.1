@@ -78,7 +78,7 @@ public interface IPaymentSessionBean {
      * @param invoice
      * @throws SessionInternalError
      */
-    public Integer processAndUpdateInvoice(PaymentDTOEx dto, InvoiceDTO invoice)
+    public Integer processAndUpdateInvoice(PaymentDTOEx dto, InvoiceDTO invoice, Integer executorUserId)
             throws SessionInternalError;
     
     /**
@@ -90,7 +90,7 @@ public interface IPaymentSessionBean {
      * @throws SessionInternalError
      */
     public Integer processAndUpdateInvoice(PaymentDTOEx dto, Integer invoiceId,
-            Integer entityId) throws SessionInternalError;
+            Integer entityId, Integer executorUserId) throws SessionInternalError;
 
     /**
      * This is called from the client to apply an existing payment to 
@@ -117,7 +117,7 @@ public interface IPaymentSessionBean {
      * Id does suport invoiceId = null because it is possible to get a payment
      * that is not paying a specific invoice, a deposit for prepaid models.
      */
-    public Integer applyPayment(PaymentDTOEx payment, Integer invoiceId)  
+    public Integer applyPayment(PaymentDTOEx payment, Integer invoiceId, Integer executorUserId)  
             throws SessionInternalError;
     
     public PaymentDTOEx getPayment(Integer id, Integer languageId) 

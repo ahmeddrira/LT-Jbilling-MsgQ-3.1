@@ -21,7 +21,7 @@
             max(i.create_datetime) as last_billing_date,
             max(p.create_datetime) as last_payment_date,
             (
-                (select coalesce(sum(i.balance), 0) from invoice i where i.deleted = 0 and i.status_id != 26 and i.is_review != 1 and i.user_id = u.id)
+                (select coalesce(sum(i.balance), 0) from invoice i where i.deleted = 0 and i.status_id != 28 and i.is_review != 1 and i.user_id = u.id)
                 - (select coalesce(sum(p.balance), 0) from payment p where p.deleted = 0 and p.user_id = u.id)
             ) as current_balance
         from

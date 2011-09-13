@@ -38,6 +38,7 @@ public class ContactFieldTypeWS  implements java.io.Serializable {
 	private String promptKey;
 	private String dataType;
 	private Integer readOnly;
+	private Boolean displayInView;
 	private List<InternationalDescriptionWS> descriptions = new ArrayList<InternationalDescriptionWS>();
 
     public ContactFieldTypeWS() {
@@ -84,7 +85,15 @@ public class ContactFieldTypeWS  implements java.io.Serializable {
 		this.readOnly = readOnly;
 	}
 
-	public List<InternationalDescriptionWS> getDescriptions() {
+	public Boolean getDisplayInView() {
+        return displayInView;
+    }
+
+    public void setDisplayInView(Boolean displayInView) {
+        this.displayInView = displayInView;
+    }
+
+    public List<InternationalDescriptionWS> getDescriptions() {
 		return descriptions;
 	}
 
@@ -103,7 +112,7 @@ public class ContactFieldTypeWS  implements java.io.Serializable {
 	public String toString() {
 		return "ContactFieldTypeWS [id=" + id + ", companyId=" + companyId
 				+ ", promptKey=" + promptKey + ", dataType=" + dataType
-				+ ", readOnly=" + readOnly + ", descriptions=" + descriptions + "]";
+				+ ", readOnly=" + readOnly + ", displayInView=" + displayInView + ", descriptions=" + descriptions + "]";
 	}
 	
 	public ContactFieldTypeDTO getDTO() { 
@@ -113,6 +122,7 @@ public class ContactFieldTypeWS  implements java.io.Serializable {
 			dto.setDataType(this.dataType);
 			dto.setEntity(new CompanyDTO(this.companyId));
 			dto.setReadOnly(this.readOnly);
+			dto.setDisplayInView(this.displayInView ? 1 : 0);
 			dto.setVersionNum(0);
 			//since Prompt key is not null
 			dto.setPromptKey("placeholder_text");

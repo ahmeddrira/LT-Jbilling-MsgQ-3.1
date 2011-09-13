@@ -142,6 +142,11 @@
                             <g:message code="configuration.menu.customContactField"/>
                         </g:link>
                     </li>
+                    <li class="${pageProperty(name: 'page.menu.item') == 'enumerations' ? 'active' : ''}">
+                        <g:link controller="enumerations">
+                            <g:message code="configuration.menu.enumerations"/>
+                        </g:link>
+                    </li>
                 </ul>
             </div>
 

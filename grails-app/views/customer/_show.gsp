@@ -90,6 +90,25 @@
                     <td class="value"><a href="mailto:${contact?.email}">${contact?.email}</a></td>
                 </tr>
 
+                <g:if test="${contact?.fields}">
+                    <g:set var="useFlag" value="${true}"/>
+                    <g:each var="ccf" in="${contact.fields}">
+                        <g:if test="${ccf?.type?.displayInView > 0}">
+                            <g:if test="${useFlag}">
+                                <g:set var="useFlag" value="${false}"/>
+                                <!-- empty spacer row --> 
+                                <tr>
+                                    <td colspan="2"><br/></td>
+                                </tr>
+                            </g:if>
+                            <tr>
+                                <td><g:message code="${ccf.type.getDescription(session['language_id'])}"/></td>
+                                <td class="value">${ccf?.content}</td>
+                            </tr>
+                        </g:if>
+                    </g:each>
+                </g:if>
+
                 <g:if test="${customer?.parent}">
                     <!-- empty spacer row --> 
                     <tr>
@@ -115,6 +134,12 @@
                                     <g:message code="customer.invoice.if.child.false" args="[ parent.baseUser.id ]"/>
                                 </g:remoteLink>
                             </g:else>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><g:message code="prompt.use.parent.pricing"/></td>
+                        <td class="value">
+                            <g:formatBoolean boolean="${customer.useParentPricing}"/>
                         </td>
                     </tr>
                 </g:if>
@@ -215,6 +240,19 @@
                     </td>
                 </tr>
                 <tr>
+                    <td><g:message code="customer.detail.user.next.invoice.date"/></td>
+                    <td class="value">
+                        <g:set var="nextInvoiceDate" value="${new UserBL(selected.id).getNextInvoiceDate()}"/>
+
+                        <g:if test="${nextInvoiceDate}">
+                            <span><g:formatDate date="${nextInvoiceDate}" formatName="date.pretty.format"/></span>
+                        </g:if>
+                        <g:else>
+                            <g:message code="prompt.no.active.orders"/>
+                        </g:else>
+                    </td>
+                </tr>
+                <tr>
                     <td><g:message code="customer.detail.payment.due.date"/></td>
                     <td class="value"><g:formatDate date="${invoice?.dueDate}" formatName="date.pretty.format"/></td>
                 </tr>
@@ -286,8 +324,7 @@
                     <td><g:message code="customer.detail.contact.telephone"/></td>
                     <td class="value">
                         <g:if test="${contact.phoneCountryCode}">${contact.phoneCountryCode}.</g:if>
-                        <g:if test="${contact.phoneAreaCode}">${contact.phoneAreaCode}.</g:if>
-                        ${contact.phoneNumber}
+                        <g:if test="${contact.phoneAreaCode}">${contact.phoneAreaCode}.</g:if>${contact.phoneNumber}
                     </td>
                 </tr>
                 <tr>

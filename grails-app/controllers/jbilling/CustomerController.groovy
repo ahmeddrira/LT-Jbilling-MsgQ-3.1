@@ -82,9 +82,10 @@ class CustomerController {
                 offset: params.offset
         ) {
             createAlias("contact", "contact")
+            createAlias("customer", "customer")
             and {
                 filters.each { filter ->
-                    //log.debug "Filter value: '${filter.field}'"
+                    //log.debug "Filter toString(): " + filter.toString()
                     if (filter.value) {
                         // handle user status separately from the other constraints
                         // we need to find the UserStatusDTO to compare to
@@ -267,7 +268,6 @@ class CustomerController {
         def crumbDescription = params.id ? UserHelper.getDisplayName(user, user.contact) : null
         breadcrumbService.addBreadcrumb(controllerName, actionName, crumbName, params.int('id'), crumbDescription)
 
-        def company = CompanyDTO.get(session['company_id'])
         [ user: user, contacts: contacts, parent: parent, company: company, currencies: currencies ]
     }
 
@@ -280,7 +280,6 @@ class CustomerController {
         UserHelper.bindUser(user, params)
 
         def contacts = []
-        def company = CompanyDTO.get(session['company_id'])
         UserHelper.bindContacts(user, contacts, company, params)
 
         def oldUser = (user.userId && user.userId != 0) ? webServicesSession.getUserWS(user.userId) : null
@@ -333,7 +332,6 @@ class CustomerController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            company = CompanyDTO.get(session['company_id'])
             render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
             return
         }
@@ -344,5 +342,9 @@ class CustomerController {
     def getCurrencies() {
         def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
         return currencies.findAll { it.inUse }
+    }
+    
+    def getCompany() {
+        CompanyDTO.get(session['company_id'])
     }
 }

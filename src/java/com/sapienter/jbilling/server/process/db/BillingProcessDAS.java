@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.process.db;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import com.sapienter.jbilling.server.util.Constants;
 import org.hibernate.Criteria;
@@ -86,7 +87,7 @@ public class BillingProcessDAS extends AbstractDAS<BillingProcessDTO> {
         getSession().clear();
     }
     
-    public Iterator getCountAndSum(Integer processId) {
+    public List getCountAndSum(Integer processId) {
         final String hql =
                 "select count(id), sum(total), currency.id " +
                 "  from InvoiceDTO " +
@@ -95,9 +96,9 @@ public class BillingProcessDAS extends AbstractDAS<BillingProcessDTO> {
 
         Query query = getSession().createQuery(hql);
         query.setParameter("processId", processId);
-        return query.iterate();
+        return query.list();
     }
-
+    
     /**
      * Search succesfull payments in Payment_Invoice map (with quantity > 0)
      * and returns result, groupped by currency
@@ -105,7 +106,7 @@ public class BillingProcessDAS extends AbstractDAS<BillingProcessDTO> {
      * @param processId
      * @return Iterator with currency, method and sum of amount fields of query
      */
-    public Iterator getSuccessfulProcessCurrencyMethodAndSum(Integer processId) {
+    public List getSuccessfulProcessCurrencyMethodAndSum(Integer processId) {
         final String hql =
                 "select invoice.currency.id, method.id, sum(invoice.total) " +
                 "  from InvoiceDTO invoice inner join invoice.paymentMap paymentMap " +
@@ -116,7 +117,7 @@ public class BillingProcessDAS extends AbstractDAS<BillingProcessDTO> {
 
         Query query = getSession().createQuery(hql);
         query.setParameter("processId", processId);
-        return query.iterate();
+        return query.list();
     }
 
     /**
@@ -125,7 +126,7 @@ public class BillingProcessDAS extends AbstractDAS<BillingProcessDTO> {
      * @param processId
      * @return Iterator with currency and amount value
      */
-    public Iterator getFailedProcessCurrencyAndSum(Integer processId) {
+    public List getFailedProcessCurrencyAndSum(Integer processId) {
         final String hql =
                 "select invoice.currency.id, sum(invoice.total) " +
                 "  from InvoiceDTO invoice left join invoice.paymentMap paymentMap" +
@@ -135,7 +136,7 @@ public class BillingProcessDAS extends AbstractDAS<BillingProcessDTO> {
 
         Query query = getSession().createQuery(hql);
         query.setParameter("processId", processId);
-        return query.iterate();
+        return query.list();
     }
 
     private static final String BILLABLE_USERS_TO_PROCESS =

@@ -258,7 +258,7 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="type_id" type="INTEGER"/>
         <column name="contact_id" type="INTEGER"/>
-        <column name="content" required="true" size="100" type="VARCHAR"/>
+        <column name="content" size="100" type="VARCHAR"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         
         <index name="ix_contact_field_cid">
@@ -278,8 +278,9 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="entity_id" type="INTEGER"/>
         <column name="prompt_key" required="true" size="50" type="VARCHAR"/>
-        <column name="data_type" required="true" size="10" type="VARCHAR"/>
+        <column name="data_type" required="true" size="50" type="VARCHAR"/>
         <column name="customer_readonly" type="SMALLINT"/>
+        <column name="display_in_view" type="SMALLINT" default="0"/>
         <column name="optlock" type="INTEGER" required="true"/>
         <index name="ix_cf_type_entity">
             <index-column name="entity_id"/>
@@ -392,6 +393,7 @@
         <column name="is_parent" type="SMALLINT"/>
         <column name="exclude_aging" default="0" required="true" type="SMALLINT"/>
         <column name="invoice_child" type="SMALLINT"/>
+        <column name="use_parent_pricing" required="true" type="BIT"/>
         <column name="current_order_id" type="INTEGER"/>
         <column name="balance_type" type="INTEGER" default="1" required="true"/>
         <column name="dynamic_balance" type="NUMERIC" size="22" scale="10"/>
@@ -1118,6 +1120,23 @@
     <table name="period_unit">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
     </table>
+    <table name="enumeration">
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="name" size="50" type="VARCHAR"/>
+        <column name="value" size="50" type="VARCHAR"/>
+        <column name="entity_id" type="INTEGER"/>
+         <foreign-key foreignTable="entity">
+            <reference foreign="id" local="entity_id"/>
+        </foreign-key>
+    </table>
+    <table name="enumeration_values">
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="enumeration_id" type="INTEGER"/>
+        <column name="value" size="50" type="VARCHAR"/>
+        <foreign-key foreignTable="enumeration">
+            <reference foreign="id" local="enumeration_id"/>
+        </foreign-key>
+    </table>
     <table name="permission">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="type_id" required="true" type="INTEGER"/>
@@ -1411,7 +1430,7 @@
     </table>
     <table name="mediation_record_line">
         <column name="id" primaryKey="true" type="INTEGER" required="true"/>
-        <column name="mediation_record_id" type="VARCHAR" size="100" required="true"/>
+        <column name="mediation_record_id" type="INTEGER" required="true"/>
         <column name="order_line_id" required="true" type="INTEGER"/>
         <column name="event_date" required="true" type="TIMESTAMP"/>
         <column name="amount" required="true" type="NUMERIC" size="22" scale="10"/>

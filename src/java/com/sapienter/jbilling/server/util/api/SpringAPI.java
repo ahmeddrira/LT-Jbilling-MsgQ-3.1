@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -48,6 +49,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
+import com.sapienter.jbilling.server.user.CardValidationWS;
 import com.sapienter.jbilling.server.user.CompanyWS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -56,6 +58,7 @@ import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.util.CurrencyWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
@@ -80,6 +83,10 @@ public class SpringAPI implements JbillingAPI {
 
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId) {
         return session.processPayment(payment, invoiceId);
+    }
+
+    public CardValidationWS validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, ContactWS contact, int level) {
+        return session.validateCreditCard(creditCard, contact, level);
     }
 
     public void processPartnerPayouts(Date runDate) {
@@ -252,6 +259,10 @@ public class SpringAPI implements JbillingAPI {
 
     public Integer[] getUsersByCustomField(Integer typeId, String value) {
         return session.getUsersByCustomField(typeId, value);
+    }
+
+    public Integer[] getUsersByCustomFields(ContactFieldWS[] fields) {
+        return session.getUsersByCustomFields(fields);
     }
 
     public Integer[] getUsersByStatus(Integer statusId, boolean in) {
@@ -652,11 +663,6 @@ public class SpringAPI implements JbillingAPI {
 
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
         return session.getCustomerPrice(userId, itemId);
-    }
-    
-    public boolean validateCreditCard(com.sapienter.jbilling.server.entity.CreditCardDTO creditCard, 
-           ContactWS contact, int level) {
-        return session.validateCreditCard(creditCard, contact, level);
     }
 
     public AgeingWS[] getAgeingConfiguration(Integer languageId) {

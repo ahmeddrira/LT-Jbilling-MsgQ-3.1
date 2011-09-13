@@ -654,6 +654,115 @@ public class WSTest extends PricingTestCase {
     }
 
     /**
+     * Tests that sub-accounts flagged with "use parent pricing" can inherit the price from
+     * a parent if they do not have a plan price for the product.
+     *
+     * @throws Exception possible api exception
+     */
+    public void testSubAccountPricing() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+        enablePricingPlugin(api);
+
+        // create parent user
+        UserWS parentUser = new UserWS();
+        parentUser.setUserName("sub-account-test-01-parent" + new Date().getTime());
+        parentUser.setPassword("password");
+        parentUser.setLanguageId(1);
+        parentUser.setCurrencyId(1);
+        parentUser.setMainRoleId(5);
+        parentUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
+        parentUser.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+        parentUser.setIsParent(true);
+
+        ContactWS parentContact = new ContactWS();
+        parentContact.setEmail("test@test.com");
+        parentContact.setFirstName("Sub-account Pricing Test");
+        parentContact.setLastName("Parent Account");
+        parentUser.setContact(parentContact);
+
+        Integer parentUserId = api.createUser(parentUser); // create user
+        parentUser = api.getUserWS(parentUserId);
+        assertNotNull("parent customer created", parentUser.getUserId());
+
+
+        // create child user
+        UserWS childUser = new UserWS();
+        childUser.setUserName("sub-account-test-01-child" + new Date().getTime());
+        childUser.setPassword("password");
+        childUser.setLanguageId(1);
+        childUser.setCurrencyId(1);
+        childUser.setMainRoleId(5);
+        childUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
+        childUser.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+        childUser.setParentId(parentUser.getUserId()); // sub-account of parent user created above
+        childUser.setUseParentPricing(true);           // inherit pricing from parent
+
+        ContactWS childContact = new ContactWS();
+        childContact.setEmail("test@test.com");
+        childContact.setFirstName("Sub-account Pricing Test");
+        childContact.setLastName("Child Account");
+        childUser.setContact(childContact);
+
+        Integer childUserId = api.createUser(childUser); // create user
+        childUser = api.getUserWS(childUserId);
+        assertNotNull("child customer created", childUser.getUserId());
+        assertTrue("child customer should use parent pricing", childUser.useParentPricing());
+
+
+        // subscribe the parent account to the plan
+        OrderWS parentOrder = new OrderWS();
+    	parentOrder.setUserId(parentUser.getUserId());
+        parentOrder.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
+        parentOrder.setPeriod(MONTHLY_PERIOD);
+        parentOrder.setCurrencyId(1);
+        parentOrder.setActiveSince(new Date());
+
+        OrderLineWS planLine = new OrderLineWS();
+        planLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        planLine.setItemId(PLAN_ITEM_ID);
+        planLine.setUseItem(true);
+        planLine.setQuantity(1);
+        parentOrder.setOrderLines(new OrderLineWS[] { planLine });
+
+        parentOrder.setId(api.createOrder(parentOrder)); // create order
+        parentOrder = api.getOrder(parentOrder.getId());
+        assertNotNull("order created", parentOrder.getId());
+
+
+        // verify parent account is subscribed to plan
+        assertTrue("Parent account should be subscribed to plan.", api.isCustomerSubscribed(PLAN_ID, parentUser.getUserId()));
+
+
+        // check that the parent subscribed plan price applies to the sub-account
+        OrderWS childOrder = new OrderWS();
+    	childOrder.setUserId(childUser.getUserId());
+        childOrder.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
+        childOrder.setPeriod(MONTHLY_PERIOD);
+        childOrder.setCurrencyId(1);
+        childOrder.setActiveSince(new Date());
+
+        OrderLineWS affectedItemLine = new OrderLineWS();
+        affectedItemLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        affectedItemLine.setItemId(PLAN_AFFECTED_ITEM_ID);
+        affectedItemLine.setUseItem(true);
+        affectedItemLine.setQuantity(1);
+        childOrder.setOrderLines(new OrderLineWS[] { affectedItemLine });
+
+        childOrder = api.rateOrder(childOrder);
+
+
+        // verify that price matches the parent accounts plan price
+        assertEquals("Discounted price for lemonade", new BigDecimal("0.50"), childOrder.getOrderLines()[0].getPriceAsDecimal());
+
+
+        // cleanup
+        disablePricingPlugin(api);
+        api.deleteOrder(parentOrder.getId());
+        api.deleteUser(childUser.getUserId());
+        api.deleteUser(parentUser.getUserId());
+    }
+
+    /**
      * Tests that plans and prices can only be accessed by the entity that owns the subscription/affected
      * plan item ids.
      *

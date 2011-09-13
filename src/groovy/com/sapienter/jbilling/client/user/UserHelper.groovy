@@ -107,9 +107,11 @@ class UserHelper {
 
         // bind primary user contact and custom contact fields
         def contact = new ContactWS()
-        bindData(contact, params, "contact-${params.primaryContactTypeId}")
+        bindData(contact, params, "contact-${primaryContactTypeId}")
         contact.type = primaryContactTypeId
-		contact.include = params.get("contact-${params.primaryContactTypeId}.include") ? 1 : 0
+
+        // manually bind primary contact "include in notifications" flag
+		contact.include = params."contact-${primaryContactTypeId}".include != null ? 1 : 0
 
         if (params.contactField) {
             contact.fieldIDs = new Integer[params.contactField.size()]
@@ -122,7 +124,7 @@ class UserHelper {
 
         user.setContact(contact)
 
-        log.debug("Primary contact: ${contact}")
+        log.debug("Primary contact (type ${primaryContactTypeId}): ${contact}")
 
 
         // bind secondary contact types
@@ -134,7 +136,7 @@ class UserHelper {
                 otherContact.type = it.id
 
 				//checkbox values are not bound automatically since it throws a data conversion error
-				otherContact.include = params.get("contact-${it.id}.include") ? 1 : 0
+				otherContact.include = params."contact-${it.id}".include != null ? 1 : 0
 
                 contacts << otherContact;
             }

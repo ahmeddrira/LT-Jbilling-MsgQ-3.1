@@ -61,6 +61,7 @@ Create a user, database, and grant all privileges
 
 Create a dump of the test database:
 pg_dump -U jbilling --clean jbilling_test > jbilling_test.sql
+pg_dump -c -U jbilling jbilling_staging > db-backup-`date +%Y%m%d-%H%M`.sql
 
 When a postgres back end process is running forever you can determine what it is trying to do using
 $ ps auxww | grep ^postgres

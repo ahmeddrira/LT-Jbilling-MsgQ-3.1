@@ -1363,3 +1363,10 @@ CREATE TABLE enumeration_values (
 ALTER TABLE contact_field_type add column display_in_view smallint default 0;
 ALTER TABLE contact_field_type ALTER COLUMN data_type TYPE VARCHAR(50);
 
+-- Date: 14-Aug-2011
+-- Description: Add Simple Tax plug-in to DB
+-- insert new tax plugin to the database
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values 
+(90, 4, 'com.sapienter.jbilling.server.process.task.SimpleTaxCompositionTask', 4);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Simple Tax Invoice Composition Task');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task to automatically add taxes to invoices, with the option of exluding some customers and some items (excemptions).');

@@ -52,6 +52,8 @@ import org.hibernate.criterion.Subqueries
 import org.hibernate.criterion.Restrictions
 import org.hibernate.criterion.Criterion
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import com.sapienter.jbilling.server.user.ContactWS
+import com.sapienter.jbilling.server.user.contact.db.ContactDAS
 
 @Secured(["MENU_90"])
 class CustomerController {
@@ -171,7 +173,7 @@ class CustomerController {
     @Secured(["CUSTOMER_15"])
     def show = {
         def user = UserDTO.get(params.int('id'))
-        def contact = ContactDTO.findByUserId(user.userId)
+        def contact = new ContactDAS().findPrimaryContact(user.userId)
         def revenue = webServicesSession.getTotalRevenueByUser(user.userId)
 
         recentItemService.addRecentItem(user.userId, RecentItemType.CUSTOMER)
@@ -199,8 +201,6 @@ class CustomerController {
         }
 
         def parent = UserDTO.get(params.int('id'))
-        System.out.println("Parent id: " + params.id + "  = " + parent)
-
         render template: 'customers', model: [ users: children, parent: parent ]
     }
 
@@ -310,8 +310,21 @@ class CustomerController {
 
                     webServicesSession.updateUser(user)
 
+                    // ACH updates are not handled through updateUser. Make a separate API call
+                    // to update the customers ACH data if it's present
                     if (user.ach) {
                         webServicesSession.updateAch(user.userId, user.ach)
+                    }
+
+                    // payment data deletions
+                    if (params.deleteAch) {
+                        log.debug("deleting ACH for user ${user.userId}")
+                        webServicesSession.deleteAch(user.userId)
+                    }
+
+                    if (params.deleteCreditCard) {
+                        log.debug("deleting Credit Card for user ${user.userId}")
+                        webServicesSession.deleteCreditCard(user.userId)
                     }
 
                     flash.message = 'customer.updated'
@@ -323,7 +336,7 @@ class CustomerController {
                 }
             }
 
-            // save secondary contacts
+            // save contacts
             if (user.userId) {
                 contacts.each{
                     webServicesSession.updateUserContact(user.userId, it.type, it);

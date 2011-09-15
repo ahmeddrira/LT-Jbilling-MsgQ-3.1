@@ -27,12 +27,6 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $('.auto-payment').change(function() {
-                if ($(this).is(':checked')) {
-                    $('.auto-payment:checked').not(this).attr('checked', '');
-                }
-            });
-
             $('#contactType').change(function() {
                 var selected = $('#contact-' + $(this).val());
                 $(selected).show();
@@ -144,6 +138,15 @@
                                       value="${user?.currencyId}" />
                         </g:applyLayout>
 
+                        <g:applyLayout name="form/select">
+                            <content tag="label"><g:message code="prompt.preferred.auto.payment"/></content>
+                            <content tag="label.for">user.automaticPaymentType</content>
+                            <g:select name="user.automaticPaymentType"
+                                      from="${[Constants.AUTO_PAYMENT_TYPE_CC, Constants.AUTO_PAYMENT_TYPE_ACH]}"
+                                      valueMessagePrefix="auto.payment.type"
+                                      value="${user?.automaticPaymentType}"/>
+                        </g:applyLayout>
+
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.partner.id"/></content>
                             <content tag="label.for">user.partnerId</content>
@@ -191,8 +194,11 @@
                     </div>
 
                     <!-- contact information column -->
+                    <g:set var="contactTypes" value="${company.contactTypes.asList()}"/>
+                    <g:set var="primaryContactType" value="${contactTypes.find{ it.isPrimary == 1 }}"/>
+                    <g:hiddenField name="primaryContactTypeId" value="${primaryContactType.id}"/>
+
                     <div class="column">
-                        <g:set var="contactTypes" value="${company.contactTypes.asList()}"/>
                         <g:if test="${contactTypes.size > 1}">
                             <g:applyLayout name="form/select">
                                 <content tag="label"><g:message code="prompt.contact.type"/></content>
@@ -200,7 +206,7 @@
                                           from="${contactTypes}"
                                           optionKey="id"
                                           optionValue="${{it.getDescription(session['language_id'])}}"
-                                          value="${contactTypes.find{ it.isPrimary > 0 }.id}" />
+                                          value="${primaryContactType.id}"/>
                             </g:applyLayout>
                         </g:if>
                         <g:else>
@@ -210,17 +216,10 @@
                             </g:applyLayout>
                         </g:else>
 
-                        <!-- show the user's primary contact -->
-                        <g:set var="primaryContactType" value="${contactTypes.find{ it.isPrimary > 0 }}"/>
-                        <g:hiddenField name="primaryContactTypeId" value="${primaryContactType.id}"/>
-                        <g:render template="contact" model="[contactType: primaryContactType, contact: user?.contact]"/>
-
-                        <!-- other contact types as hidden blocks so that we can show/hide the selected type -->
+                        <!-- print a hidden block for each contact type, will be toggled by contact type dropdown -->
                         <g:each var="contactType" in="${contactTypes}">
-                            <g:if test="${contactType.isPrimary == 0}">
-                                <g:set var="contact" value="${contacts.find{ it.type == contactType.id }}"/>
-                                <g:render template="contact" model="[contactType: contactType, contact: contact]"/>
-                            </g:if>
+                            <g:set var="contact" value="${contacts.find{ it.type == contactType.id }}"/>
+                            <g:render template="contact" model="[contactType: contactType, contact: contact]"/>
                         </g:each>
 
                         <br/>&nbsp;
@@ -330,7 +329,7 @@
                 <g:set var="creditCard" value="${user?.creditCard}"/>
                 <g:hiddenField name="creditCard.id" value="${creditCard?.id}"/>
 
-                <div class="box-cards ${creditCard ? 'box-cards-open' : ''}">
+                <div id="creditCard" class="box-cards ${creditCard ? 'box-cards-open' : ''}">
                     <div class="box-cards-title">
                         <a class="btn-open"><span><g:message code="prompt.credit.card"/></span></a>
                     </div>
@@ -369,13 +368,17 @@
                                 </g:applyLayout>
                             </div>
 
-                            <div class="column">
-                                <g:applyLayout name="form/checkbox">
-                                    <content tag="label"><g:message code="prompt.preferred.auto.payment"/></content>
-                                    <content tag="label.for">creditCardAutoPayment</content>
-                                    <g:checkBox class="cb checkbox auto-payment" name="creditCardAutoPayment" checked="${user?.automaticPaymentType == Constants.AUTO_PAYMENT_TYPE_CC}"/>
-                                </g:applyLayout>
-                            </div>
+                            <g:if test="${!isNew && creditCard}">
+                                <div class="column">
+                                    <div class="btn-row">
+                                        <a class="submit delete" onclick="$('#creditCard :input').val(''); $('#deleteCreditCard').val('true'); closeSlide('#creditCard');">
+                                            <span><g:message code="button.delete"/></span>
+                                        </a>
+
+                                        <g:hiddenField name="deleteCreditCard" value=""/>
+                                    </div>
+                                </div>
+                            </g:if>
                         </div>
                     </div>
                 </div>
@@ -384,7 +387,7 @@
                 <g:set var="ach" value="${user?.ach}"/>
                 <g:hiddenField name="ach.id" value="${ach?.id}"/>
 
-                <div class="box-cards ${ach ? 'box-cards-open' : ''}">
+                <div id="ach" class="box-cards ${ach ? 'box-cards-open' : ''}">
                     <div class="box-cards-title">
                         <a class="btn-open" href="#"><span><g:message code="prompt.ach"/></span></a>
                     </div>
@@ -426,13 +429,17 @@
                                 </g:applyLayout>
                             </div>
 
-                            <div class="column">
-                                <g:applyLayout name="form/checkbox">
-                                    <content tag="label"><g:message code="prompt.preferred.auto.payment"/></content>
-                                    <content tag="label.for">achAutoPayment</content>
-                                    <g:checkBox class="cb checkbox auto-payment" name="achAutoPayment" checked="${user?.automaticPaymentType == Constants.AUTO_PAYMENT_TYPE_ACH}"/>
-                                </g:applyLayout>
-                            </div>
+                            <g:if test="${!isNew && ach}">
+                                <div class="column">
+                                    <div class="btn-row">
+                                        <a class="submit delete" onclick="$('#ach :input').val(''); $('#deleteAch').val('true'); closeSlide('#ach');">
+                                            <span><g:message code="button.delete"/></span>
+                                        </a>
+
+                                        <g:hiddenField name="deleteAch" value=""/>
+                                    </div>
+                                </div>
+                            </g:if>
                         </div>
                     </div>
                 </div>

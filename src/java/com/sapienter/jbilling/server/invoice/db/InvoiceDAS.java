@@ -1,21 +1,21 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
+    jBilling - The Enterprise Open Source Billing System
+    Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
- This file is part of jbilling.
+    This file is part of jbilling.
 
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+    jbilling is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
+    jbilling is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
 
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Affero General Public License
+    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.sapienter.jbilling.server.invoice.db;
@@ -321,15 +321,20 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 
     public BigDecimal findTotalBalanceByUser(Integer userId) {
         Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
+        
         addUserCriteria(criteria, userId);
-        criteria.createAlias("invoiceStatus", "status");
-        criteria.add(Restrictions.ne("status.id", Constants.INVOICE_STATUS_UNPAID_AND_CARRIED));
         criteria.add(Restrictions.eq("isReview", 0));
         criteria.add(Restrictions.eq("deleted", 0));
+        
+        criteria.createAlias("invoiceStatus", "s")
+            .add(Restrictions.ne("s.id", Constants.INVOICE_STATUS_PAID));
+        
         criteria.setProjection(Projections.sum("balance")); 
         criteria.setComment("InvoiceDAS.findTotalBalanceByUser");
 
-        return (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
+        Object ttlBal= criteria.uniqueResult();
+        
+        return ( ttlBal == null ? BigDecimal.ZERO : (BigDecimal) ttlBal);
     }
 
     /**

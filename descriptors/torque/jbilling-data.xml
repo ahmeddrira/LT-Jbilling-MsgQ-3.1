@@ -1667,6 +1667,7 @@
     <PaymentMethod Id="6"/>
     <PaymentMethod Id="7"/>
     <PaymentMethod Id="8"/>
+    <PaymentMethod Id="9"/>
     <PaymentResult Id="1"/>
     <PaymentResult Id="2"/>
     <PaymentResult Id="3"/>

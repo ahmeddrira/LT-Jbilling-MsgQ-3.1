@@ -30,7 +30,6 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 import junit.framework.TestCase;
-import org.hibernate.ObjectNotFoundException;
 import org.joda.time.DateMidnight;
 
 import java.math.BigDecimal;
@@ -478,12 +477,20 @@ public class BillingProcessTest extends TestCase {
 
         // run trigger on the run date
         api.triggerBillingAsync(runDate);
+        Thread.sleep(1000);
         // should be processing now in common case (correct configuration and usual machine)
         boolean wasRunning = api.isBillingProcessRunning();
-        ProcessStatusWS runningStatus = api.getBillingProcessStatus();
 
         Long start = new Date().getTime();
         Long shouldEndBefore = start + 90 * 60 * 1000L;
+        ProcessStatusWS runningStatus = api.getBillingProcessStatus();
+        // wait for processing other configurations and different checks
+        while (api.isBillingProcessRunning()
+                && runningStatus != null && new Date().getTime() < shouldEndBefore
+                && runningStatus.getProcessId().equals(lastDto.getId()) ) {
+            runningStatus = api.getBillingProcessStatus();
+            Thread.sleep(500);
+        }
         while (api.isBillingProcessRunning() && new Date().getTime() < shouldEndBefore) {
             Thread.sleep(5000);
         }

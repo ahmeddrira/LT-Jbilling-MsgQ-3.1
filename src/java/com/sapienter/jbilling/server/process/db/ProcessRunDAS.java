@@ -62,7 +62,6 @@ public class ProcessRunDAS extends AbstractDAS<ProcessRunDTO> {
                 "select processRun " +
                 "   from ProcessRunDTO processRun " +
                 " where processRun.billingProcess.entity.id = :entityId " +
-                "   and processRun.billingProcess.isReview = 0 " +
                 " order by processRun.started desc";
         Query query = getSession().createQuery(hql);
         query.setParameter("entityId", entityId);

@@ -77,8 +77,6 @@ import org.springframework.util.StopWatch;
 public class MediationSessionBean implements IMediationSessionBean {
     private static final Logger LOG = Logger.getLogger(MediationSessionBean.class);
 
-    private static StopWatch stopWatch = null;
-
     /**
      * Trigger the mediation process. Only one mediation process can be running at any given
      * time, this method will not start an additional mediation process if one is already running.
@@ -175,9 +173,10 @@ public class MediationSessionBean implements IMediationSessionBean {
 
         final Integer processId = process.getId();
         // run in separate thread
-        Thread performMediationThread = new Thread(new Runnable(){
+        Thread performMediationThread = new Thread(new Runnable() {
+            IMediationSessionBean local = (IMediationSessionBean) Context.getBean(Context.Name.MEDIATION_SESSION);
             public void run() {
-                performMediation(processTask, configId, processId, executorId, entityId);
+                local.performMediation(processTask, configId, processId, executorId, entityId);
             }
         });
         performMediationThread.start();
@@ -188,7 +187,7 @@ public class MediationSessionBean implements IMediationSessionBean {
         return processId;
     }
 
-    private void performMediation(IMediationProcess processTask, Integer configurationId, Integer processId, Integer executorId, Integer entityId) {
+    public void performMediation(IMediationProcess processTask, Integer configurationId, Integer processId, Integer executorId, Integer entityId) {
         MediationConfiguration cfg = new MediationConfigurationDAS().find(configurationId);
         MediationProcess process = new MediationProcessDAS().find(processId);
 
@@ -215,7 +214,7 @@ public class MediationSessionBean implements IMediationSessionBean {
                     process can be "completed" by setting the end date.
                  */
                 try {
-                    stopWatch = new StopWatch();
+                    StopWatch stopWatch = new StopWatch();
                     stopWatch.start("Reading records");
                     for (List<Record> thisGroup : reader) {
                         stopWatch.stop();
@@ -225,6 +224,7 @@ public class MediationSessionBean implements IMediationSessionBean {
                         stopWatch = new StopWatch();
                         stopWatch.start("Reading records");
                     }
+                    stopWatch.stop();
                 } catch (TaskException e) {
                     LOG.error("Exception occurred processing mediation records.", e);
                 } catch (Throwable t) {
@@ -441,6 +441,7 @@ public class MediationSessionBean implements IMediationSessionBean {
                                      MediationProcess process, List<Record> thisGroup, Integer entityId,
                                      MediationConfiguration cfg) throws TaskException {
 
+        StopWatch stopWatch = new StopWatch();
         stopWatch.start("Pre-processing");
 
         LOG.debug("Normalizing " + thisGroup.size() + " records ...");

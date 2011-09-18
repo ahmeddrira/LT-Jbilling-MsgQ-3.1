@@ -77,4 +77,6 @@ public interface IMediationSessionBean {
     public List<MediationRecordLineDTO> getEventsForOrder(Integer orderId);
 
     public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId);
+
+    public void performMediation(IMediationProcess processTask, Integer configurationId, Integer processId, Integer executorId, Integer entityId);
 }

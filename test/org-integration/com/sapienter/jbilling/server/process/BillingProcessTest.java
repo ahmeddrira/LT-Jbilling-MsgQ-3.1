@@ -447,6 +447,18 @@ public class BillingProcessTest extends TestCase {
         api.setReviewApproval(true);
     }
 
+    public void testBillingProcessStatus() throws Exception {
+        System.out.println("Test last billing process status");
+        // no active processes now, all calls was sync
+        assertFalse("No active billing processes now!", api.isBillingProcessRunning());
+
+        ProcessStatusWS completedStatus = api.getBillingProcessStatus();
+        assertNotNull("Status should be retrieved", completedStatus);
+        assertNotNull("Start date should be filled", completedStatus.getStart());
+        assertNotNull("End date should be filled", completedStatus.getEnd());
+        assertEquals("Process status should be FINISHED", ProcessStatusWS.State.FINISHED, completedStatus.getState());
+    }
+
 
     public void testProcess() throws Exception {
         System.out.println("Running testProcess()");
@@ -465,7 +477,28 @@ public class BillingProcessTest extends TestCase {
                      config.getNextRunDate());
 
         // run trigger on the run date
-        api.triggerBilling(runDate);
+        api.triggerBillingAsync(runDate);
+        // should be processing now in common case (correct configuration and usual machine)
+        boolean wasRunning = api.isBillingProcessRunning();
+        ProcessStatusWS runningStatus = api.getBillingProcessStatus();
+
+        Long start = new Date().getTime();
+        Long shouldEndBefore = start + 90 * 60 * 1000L;
+        while (api.isBillingProcessRunning() && new Date().getTime() < shouldEndBefore) {
+            Thread.sleep(5000);
+        }
+        // validate status of process
+        assertTrue("Billing process should be running (in common case)", wasRunning);
+        assertNotNull("Status should be retrieved", runningStatus);
+        assertNotNull("Start date should be filled", runningStatus.getStart());
+        assertNull("End date should be empty", runningStatus.getEnd());
+        assertEquals("Process status should be RUNNING", ProcessStatusWS.State.RUNNING, runningStatus.getState());
+
+        ProcessStatusWS completedStatus = api.getBillingProcessStatus();
+        assertNotNull("Status should be retrieved", completedStatus);
+        assertNotNull("Start date should be filled", completedStatus.getStart());
+        assertNotNull("End date should be filled", completedStatus.getEnd());
+        assertEquals("Process status should be FINISHED", ProcessStatusWS.State.FINISHED, completedStatus.getState());
 
         // validate invoice delegation
         InvoiceWS invoice = api.getInvoiceWS(8500);

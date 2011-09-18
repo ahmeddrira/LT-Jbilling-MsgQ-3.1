@@ -116,6 +116,9 @@ public class MediationTest extends TestCase {
                 assertEquals("Process status should be FINISHED", ProcessStatusWS.State.FINISHED, completedStatus.getState());
             }
         }
+        MediationProcessWS processWS = api.getMediationProcess(completedStatus.getProcessId());
+        assertNotNull("Mediation process should be retrieved", processWS);
+        assertEquals("Mediation process should be filled", processWS.getId(), completedStatus.getProcessId());
     }
 
     public void test01Trigger() throws Exception {

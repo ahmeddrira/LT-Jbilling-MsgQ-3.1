@@ -159,5 +159,12 @@ public interface IBillingProcessSessionBean {
      * Returns true if the Billing Process is currently running.
      * @return
      */
-    public boolean isBillingRunning() ;
+    public boolean isBillingProcessRunning();
+
+    /**
+     * Returns status of last billing process for the entity specified
+     * @param entityId entity for status retrieve
+     * @return ProcessStatusWS with current state of execution
+     */
+    public ProcessStatusWS getBillingProcessStatus(Integer entityId);
 }

@@ -29,6 +29,7 @@ import com.sapienter.jbilling.server.mediation.db.*;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.process.ProcessStatusWS;
 
 /**
  * @author emilc
@@ -37,11 +38,15 @@ public interface IMediationSessionBean {
 
     public void trigger(Integer entityId);
 
+    public Integer triggerMediationByConfiguration(Integer configId, Integer entityId);
+
     public MediationProcess createProcessRecord(MediationConfiguration cfg);
 
     public MediationProcess updateProcessRecord(MediationProcess process, Date enddate);
 
-    public boolean isProcessing(Integer entityId);    
+    public boolean isMediationProcessRunning(Integer entityId);
+
+    public ProcessStatusWS getMediationProcessStatus(Integer entityId);
 
     public List<MediationProcess> getAll(Integer entityId);
 

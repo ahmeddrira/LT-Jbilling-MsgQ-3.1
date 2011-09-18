@@ -341,4 +341,26 @@ public class BillingProcessRunBL  extends ResultList implements ProcessSQL {
     public List<Integer> findSuccessfullUsers() {
         return new ProcessRunUserDAS().findSuccessfullUserIds(billingProcessRun.getId());
     }
+
+    public ProcessStatusWS getBillingProcessStatus(Integer entityId) {
+        ProcessRunDTO processRunDTO = new ProcessRunDAS().getLatest(entityId);
+        if (processRunDTO == null) {
+            return null;
+        } else {
+            ProcessStatusWS result = new ProcessStatusWS();
+            result.setStart(processRunDTO.getStarted());
+            result.setEnd(processRunDTO.getFinished());
+            result.setProcessId(processRunDTO.getBillingProcess().getId());
+            if (processRunDTO.getFinished() == null) {
+                result.setState(ProcessStatusWS.State.RUNNING);
+            } else if (processRunDTO.getStatus().getId() == Constants.PROCESS_RUN_STATUS_RINNING) {
+                result.setState(ProcessStatusWS.State.RUNNING);
+            } else if (processRunDTO.getStatus().getId() == Constants.PROCESS_RUN_STATUS_FAILED) {
+                result.setState(ProcessStatusWS.State.FAILED);
+            } else {
+                result.setState(ProcessStatusWS.State.FINISHED);
+            }
+            return result;
+        }
+    }
 }

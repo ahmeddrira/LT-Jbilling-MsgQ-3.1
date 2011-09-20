@@ -27,13 +27,18 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
+import com.sapienter.jbilling.server.util.api.JbillingAPIException;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
+import com.sapienter.jbilling.server.util.api.SpringAPI;
 import junit.framework.TestCase;
 import org.joda.time.DateMidnight;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * AgeingTest
@@ -135,7 +140,20 @@ public class AgeingTest extends TestCase {
         calendar.add(Calendar.DATE, 5); // + 5 days, equal to grace period
         System.out.println("Last day of grace period: " + calendar.getTime());
 
+        AgeingStatusChecker statusChecker = new AgeingStatusChecker();
+        Thread statusCheckingThread = new Thread(statusChecker);
+        statusCheckingThread.start();
+
+        Long start = new Date().getTime();
         api.triggerAgeing(calendar.getTime());
+        Long end = new Date().getTime();
+
+        statusChecker.stopChecking();
+        System.out.println("Ageing process occupy " + (end - start)+ "ms");
+        if (start + 1500 < end) { // we have not time to check status if ageing has been done very quickly
+            assertTrue("Ageing has to been active", statusChecker.wasRunning);
+        }
+
         user = api.getUserWS(AGEING_TEST_USER_ID);
         assertEquals("grace period", UserDTOEx.STATUS_ACTIVE, user.getStatusId());
 
@@ -192,5 +210,46 @@ public class AgeingTest extends TestCase {
         api.triggerAgeing(calendar.getTime());
         user = api.getUserWS(AGEING_TEST_USER_ID);
         assertEquals("deleted", 1, user.getDeleted());
+    }
+
+    public void testAgeingProcessStatus() throws Exception {
+
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        assertFalse("No active ageing processes yet!", api.isAgeingProcessRunning());
+
+        ProcessStatusWS status = api.getAgeingProcessStatus();
+        assertNotNull("Status should be retrieved", status);
+        assertEquals("Process status should be FINISHED", ProcessStatusWS.State.FINISHED, status.getState());
+    }
+
+    private class AgeingStatusChecker implements Runnable {
+        protected Boolean wasRunning = false;
+        protected AtomicBoolean active = new AtomicBoolean(true);
+        private JbillingAPI api = null;
+
+        public void stopChecking() {
+            active.set(false);
+        }
+        public AgeingStatusChecker() {
+            try {
+                this.api = JbillingAPIFactory.getAPI();
+            } catch (JbillingAPIException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        @Override
+        public void run() {
+            while (active.get() && !wasRunning) {
+                wasRunning = api.isAgeingProcessRunning();
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

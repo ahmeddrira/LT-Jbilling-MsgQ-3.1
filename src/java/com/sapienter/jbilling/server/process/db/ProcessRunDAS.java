@@ -56,4 +56,16 @@ public class ProcessRunDAS extends AbstractDAS<ProcessRunDTO> {
         query.setMaxResults(1);
         return (ProcessRunDTO) query.uniqueResult();
     }
+
+    public ProcessRunDTO getLatest(Integer entityId) {
+        final String hql =
+                "select processRun " +
+                "   from ProcessRunDTO processRun " +
+                " where processRun.billingProcess.entity.id = :entityId " +
+                " order by processRun.started desc";
+        Query query = getSession().createQuery(hql);
+        query.setParameter("entityId", entityId);
+        query.setMaxResults(1);
+        return (ProcessRunDTO) query.uniqueResult();
+    }
 }

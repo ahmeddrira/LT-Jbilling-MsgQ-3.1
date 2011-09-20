@@ -217,6 +217,10 @@
             <fileset dir="${source.mediation.descriptor.dir}" includes="jbilling_cdr.*"/>
         </copy>
 
+        <copy todir="${build.resources.dir}/rules">
+            <fileset dir="${source.rules.descriptor.dir}" includes="*.pkg"/>
+        </copy>
+
         <!-- run integration tests -->
         <mkdir dir="${build.test-results.dir}/org-integration/xml"/>
         <junit errorproperty="test.failed" failureproperty="test.failed" haltonfailure="true">
@@ -242,8 +246,8 @@
             <test name="com.sapienter.jbilling.server.provisioning.ProvisioningTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.process.AgeingTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>  <!-- must be last -->            
             <test name="com.sapienter.jbilling.server.task.SimpleTaxCompositionTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
-            <test name="com.sapienter.jbilling.server.task.CountryTaxPluginTest" todir="${build.test-results.dir}/org-integration/xml"/>
-            <test name="com.sapienter.jbilling.server.task.PaymentTermPenaltyTaskTest" todir="${build.test-results.dir}/org-integration/xml"/>
+            <test name="com.sapienter.jbilling.server.task.CountryTaxPluginTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
+            <test name="com.sapienter.jbilling.server.task.PaymentTermPenaltyTaskTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             
             <!-- explicitly run a single test case if 'test.class' was set -->
             <test name="${test.class}" if="test.class" todir="${build.test-results.dir}/org-integration/xml"/>

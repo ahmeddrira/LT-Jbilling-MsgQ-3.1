@@ -47,6 +47,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
+import com.sapienter.jbilling.server.process.ProcessStatusWS;
 import com.sapienter.jbilling.server.user.CardValidationWS;
 import com.sapienter.jbilling.server.user.CompanyWS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
@@ -211,8 +212,14 @@ public interface JbillingAPI {
         Billing process
      */
 
+    public void triggerBillingAsync(final Date runDate);
     public boolean triggerBilling(Date runDate);
+    public boolean isBillingProcessRunning();
+    public ProcessStatusWS getBillingProcessStatus();
+
     public void triggerAgeing(Date runDate);
+    public boolean isAgeingProcessRunning();
+    public ProcessStatusWS getAgeingProcessStatus();
 
     public BillingProcessConfigurationWS getBillingProcessConfiguration();
     public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws);
@@ -228,14 +235,20 @@ public interface JbillingAPI {
 
     public List<Integer> getBillingProcessGeneratedInvoices(Integer processId);
 
+    public AgeingWS[] getAgeingConfiguration(Integer languageId) ;
+    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId);
+
 
     /*
         Mediation process
      */
 
     public void triggerMediation();
-    public boolean isMediationProcessing();
+    public Integer triggerMediationByConfiguration(Integer cfgId);
+    public boolean isMediationProcessRunning();
+    public ProcessStatusWS getMediationProcessStatus();
 
+    public MediationProcessWS getMediationProcess(Integer mediationProcessId);
     public List<MediationProcessWS> getAllMediationProcesses();
     public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId);
     public List<MediationRecordLineWS> getMediationEventsForInvoice(Integer invoiceId);
@@ -320,7 +333,7 @@ public interface JbillingAPI {
     /*
      * 
      */
-    public AgeingWS[] getAgeingConfiguration(Integer languageId) ;
+
     public BigDecimal getTotalRevenueByUser (Integer userId);
     public CompanyWS getCompany();
     public Integer getCallerCompanyId();
@@ -329,13 +342,10 @@ public interface JbillingAPI {
     public InvoiceWS[] getAllInvoicesForUser(Integer userId);
     public OrderWS[] getUserSubscriptions(Integer userId);
     public boolean deleteOrderPeriod(Integer periodId);
-    public boolean isBillingRunning();
     public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods);
     public void createUpdateNofications(Integer messageId, MessageDTO dto);
-    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId);
     public void saveCustomContactFields(ContactFieldTypeWS[] fields);
     public void saveCustomerNotes(Integer userId, String notes);
-    public void triggerBillingAsync(final Date runDate);
     public void updateCompany(CompanyWS companyWS);
     
 }

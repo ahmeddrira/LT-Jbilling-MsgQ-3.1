@@ -1,3 +1,4 @@
+<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelBL" %>
 
 %{--
   jBilling - The Enterprise Open Source Billing System
@@ -107,7 +108,7 @@
 
                 <!-- price model -->
                 <tr><td colspan="4">&nbsp;</td></tr>
-                <g:render template="/plan/priceModel" model="[model: price.model]"/>
+                <g:render template="/plan/priceModel" model="[model: PriceModelBL.getPriceForDate(price.models, new Date())]"/>
 
                 <!-- separator line -->
                 <g:if test="${index < prices.size()-1}">

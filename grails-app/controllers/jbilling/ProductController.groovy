@@ -41,6 +41,7 @@ import org.hibernate.Criteria
 import com.sapienter.jbilling.client.util.SortableCriteria
 
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import com.sapienter.jbilling.server.pricing.PriceModelBL
 
 @Secured(["MENU_97"])
 class ProductController {
@@ -144,21 +145,14 @@ class ProductController {
         params.sort = params?.sort ?: pagination.sort
         params.order = params?.order ?: pagination.order
 
-        return ItemDTO.createCriteria().list(
+        def products = ItemDTO.createCriteria().list(
                 max:    params.max,
                 offset: params.offset
         ) {
             and {
-                createAlias('defaultPrice', 'price', Criteria.LEFT_JOIN)
-
                 filters.each { filter ->
                     if (filter.value != null) {
-
-                        // handle price model filtering exclusively
-                        if (filter.field == 'price.type') {
-                            eq(filter.field, PriceModelStrategy.valueOf(filter.stringValue))
-
-                        } else if (filter.field == 'description') {
+                        if (filter.field == 'description') {
                             def description = filter.stringValue?.toLowerCase()
                             sqlRestriction(
                                     """ exists (
@@ -171,7 +165,9 @@ class ProductController {
                                     """
                             )
                         } else {
-                            addToCriteria(filter.getRestrictions());
+                            if (!filter.field.startsWith('price')) {
+                                addToCriteria(filter.getRestrictions());
+                            }
                         }
                     }
                 }
@@ -190,6 +186,41 @@ class ProductController {
             // apply sorting
             SortableCriteria.sort(params, delegate)
         }
+
+
+        params.totalCount = products.totalCount
+
+        /*
+            Can't cleanly join to the price model to filter in the database
+            handle all price filters manually
+         */
+
+        def strategyFilter = filters.find { it.field == 'price.type' }
+        if (strategyFilter.value != null) {
+            products = products.findAll {
+                def price = PriceModelBL.getPriceForDate(it.defaultPrices, new Date())
+                return price?.type?.equals(PriceModelStrategy.valueOf(strategyFilter.value))
+            }
+        }
+
+        def rateFilter = filters.find { it.field == 'price.rate' }
+        if (rateFilter.value != null) {
+            products = products.findAll {
+                def price = PriceModelBL.getPriceForDate(it.defaultPrices, new Date())
+                if (rateFilter.decimalValue && rateFilter.decimalHighValue) {
+                    return price?.rate >= rateFilter.decimalValue && price?.rate <= rateFilter.decimalHighValue
+
+                } else if (rateFilter.decimalValue) {
+                    return price?.rate >= rateFilter.decimalValue
+
+                } else if (rateFilter.decimalHighValue) {
+                    return price?.rate <= rateFilter.decimalHighValue
+                }
+                return false
+            }
+        }
+
+        return products
     }
 
     /**
@@ -378,12 +409,18 @@ class ProductController {
     }
 
     def updateStrategy = {
+        def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
         def priceModel = PlanHelper.bindPriceModel(params)
-        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
     }
 
     def addChainModel = {
-        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
+        def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
+        def priceModel = PlanHelper.bindPriceModel(params)
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+
 
         // add new price model to end of chain
         def model = priceModel
@@ -392,11 +429,14 @@ class ProductController {
         }
         model.next = new PriceModelWS();
 
-        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
     }
 
     def removeChainModel = {
-        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
+        def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
+        def priceModel = PlanHelper.bindPriceModel(params)
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+
         def modelIndex = params.int('modelIndex')
 
         // remove price model from the chain
@@ -409,11 +449,13 @@ class ProductController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
     }
 
     def addAttribute = {
-        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
+        def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
+        def priceModel = PlanHelper.bindPriceModel(params)
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
         def modelIndex = params.int('modelIndex')
         def attribute = message(code: 'plan.new.attribute.key', args: [ params.attributeIndex ])
@@ -427,11 +469,13 @@ class ProductController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
     }
 
     def removeAttribute = {
-        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
+        def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
+        def priceModel = PlanHelper.bindPriceModel(params)
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
         def modelIndex = params.int('modelIndex')
         def attributeIndex = params.int('attributeIndex')
@@ -446,7 +490,68 @@ class ProductController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
+    }
+
+    def editDate = {
+        def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+
+        render template: '/priceModel/model', model: [ startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
+    }
+
+    def addDate = {
+        def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
+
+        render template: '/priceModel/model', model: [ model: new PriceModelWS(), models: product?.defaultPrices, currencies: currencies ]
+    }
+
+    def removeDate = {
+        def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+
+        product.defaultPrices.remove(startDate)
+
+        if (SpringSecurityUtils.ifAllGranted("PRODUCT_41")) {
+            log.debug("saving changes to product ${product.id}")
+
+            webServicesSession.updateItem(product)
+
+            flash.message = 'product.updated'
+            flash.args = [ product.id ]
+
+        } else {
+            flash.message = 'product.update.access.denied'
+            flash.args = [ product.id ]
+        }
+
+        render template: '/priceModel/model', model: [ models: product?.defaultPrices, currencies: currencies ]
+    }
+
+    def saveDate = {
+        def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
+
+        def price = PlanHelper.bindPriceModel(params)
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+        def originalStartDate = new Date().parse(message(code: 'date.format'), params.originalStartDate)
+
+        product.defaultPrices.remove(originalStartDate)
+        product.defaultPrices.put(startDate, price)
+
+        if (SpringSecurityUtils.ifAllGranted("PRODUCT_41")) {
+            log.debug("saving changes to product ${product.id}")
+
+            webServicesSession.updateItem(product)
+
+            flash.message = 'product.updated'
+            flash.args = [ product.id ]
+
+        } else {
+            flash.message = 'product.update.access.denied'
+            flash.args = [ product.id ]
+        }
+
+        render template: '/priceModel/model', model: [ model: price, startDate: startDate, models: product.defaultPrices, currencies: currencies ]
     }
 
     /**
@@ -454,8 +559,9 @@ class ProductController {
      */
     @Secured(["hasAnyRole('PRODUCT_40', 'PRODUCT_41')"])
     def saveProduct = {
+        def oldProduct = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
         def product = new ItemDTOEx()
-        bindProduct(product, params)
+        bindProduct(product, oldProduct, params)
 
         try{
             // save or update
@@ -497,15 +603,23 @@ class ProductController {
         chain action: 'show', params: [ id: product.id ]
     }
 
-    def bindProduct(ItemDTOEx product, GrailsParameterMap params) {
+    def bindProduct(ItemDTOEx product, ItemDTOEx oldProduct, GrailsParameterMap params) {
         bindData(product, params, 'product')
 
         // bind parameters with odd types (integer booleans, string integers  etc.)
         product.hasDecimals = params.product.hasDecimals ? 1 : 0
 
         // default price model if not a percentage item
+        // only bind the price being shown in the UI, other date/prices will need to be added AFTER the product
+        // has been created by using AJAX calls ("+ Add Date", "Save Changes", "Delete" buttons in UI).
         if (!product.percentage) {
-            product.defaultPrice = PlanHelper.bindPriceModel(params)
+            def price = PlanHelper.bindPriceModel(params)
+            def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+
+            if (oldProduct) {
+                product.defaultPrices = oldProduct.defaultPrices
+            }
+            product.defaultPrices.put(startDate, price)
         }
     }
 

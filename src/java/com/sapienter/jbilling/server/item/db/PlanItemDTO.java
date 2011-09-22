@@ -21,7 +21,14 @@
 package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.MapKey;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,12 +38,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import java.io.Serializable;
+import java.util.Date;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Brian Cowdery
@@ -60,17 +72,17 @@ public class PlanItemDTO implements Serializable {
     private Integer id;
     private PlanDTO plan;
     private ItemDTO item; // affected item
-    private PriceModelDTO model;
+    private SortedMap<Date, PriceModelDTO> models = new TreeMap<Date, PriceModelDTO>();
     private PlanItemBundleDTO bundle;
     private Integer precedence = DEFAULT_PRECEDENCE;
 
     public PlanItemDTO() {
     }
 
-    public PlanItemDTO(PlanItemWS ws, ItemDTO item, PriceModelDTO model, PlanItemBundleDTO bundle) {
+    public PlanItemDTO(PlanItemWS ws, ItemDTO item, SortedMap<Date, PriceModelDTO> models, PlanItemBundleDTO bundle) {
         this.id = ws.getId();
         this.item = item;
-        this.model = model;
+        this.models = models;
         this.bundle = bundle;
         this.precedence = ws.getPrecedence();                
     }
@@ -121,14 +133,38 @@ public class PlanItemDTO implements Serializable {
         return getItem();
     }
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "price_model_id", nullable = false)
-    public PriceModelDTO getModel() {
-        return model;
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @MapKey(columns = @Column(name = "start_date", nullable = true))
+    @JoinTable(name = "plan_item_price_timeline",
+               joinColumns = {@JoinColumn(name = "plan_item_id", updatable = false)},
+               inverseJoinColumns = {@JoinColumn(name = "price_model_id", updatable = false)}
+    )
+    @Sort(type = SortType.NATURAL)
+    @Fetch(FetchMode.SELECT)
+    public SortedMap<Date, PriceModelDTO> getModels() {
+        return models;
     }
 
-    public void setModel(PriceModelDTO model) {
-        this.model = model;
+    public void setModels(SortedMap<Date, PriceModelDTO> models) {
+        this.models = models;
+    }
+
+    /**
+     * Adds a new price to the model list. If no date is given, then the
+     * price it is assumed to be the start of a new time-line and the date will be
+     * forced to 01-Jan-1970 (epoch).
+     *
+     * @param date date for the given price
+     * @param price price
+     */
+    public void addModel(Date date, PriceModelDTO price) {
+        getModels().put(date != null ? date : PriceModelDTO.EPOCH_DATE, price);
+    }
+
+    @Transient
+    public PriceModelDTO getPrice(Date today) {
+        return PriceModelBL.getPriceForDate(models, today);
     }
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -157,10 +193,11 @@ public class PlanItemDTO implements Serializable {
 
         PlanItemDTO that = (PlanItemDTO) o;
 
-        if (!item.equals(that.item)) return false;
-        if (!model.equals(that.model)) return false;
+        if (bundle != null ? !bundle.equals(that.bundle) : that.bundle != null) return false;
+        if (item != null ? !item.equals(that.item) : that.item != null) return false;
+        if (models != null ? !models.equals(that.models) : that.models != null) return false;
         if (plan != null ? !plan.equals(that.plan) : that.plan != null) return false;
-        if (!precedence.equals(that.precedence)) return false;
+        if (precedence != null ? !precedence.equals(that.precedence) : that.precedence != null) return false;
 
         return true;
     }
@@ -168,9 +205,10 @@ public class PlanItemDTO implements Serializable {
     @Override
     public int hashCode() {
         int result = plan != null ? plan.hashCode() : 0;
-        result = 31 * result + item.hashCode();
-        result = 31 * result + model.hashCode();
-        result = 31 * result + precedence.hashCode();
+        result = 31 * result + (item != null ? item.hashCode() : 0);
+        result = 31 * result + (models != null ? models.hashCode() : 0);
+        result = 31 * result + (bundle != null ? bundle.hashCode() : 0);
+        result = 31 * result + (precedence != null ? precedence.hashCode() : 0);
         return result;
     }
 
@@ -180,7 +218,7 @@ public class PlanItemDTO implements Serializable {
                + "id=" + id
                + ", planId=" + (plan != null ? plan.getId() : null)
                + ", itemId=" + (item != null ? item.getId() : null)
-               + ", model=" + model
+               + ", models=" + models
                + ", bundle=" + bundle
                + ", precedence=" + precedence
                + '}';

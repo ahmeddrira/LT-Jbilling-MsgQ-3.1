@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.util.db.CurrencyDTO; com.sapienter.jbilling.server.util.db.LanguageDTO; com.sapienter.jbilling.server.item.db.ItemTypeDTO" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelDTO; com.sapienter.jbilling.server.util.db.CurrencyDTO; com.sapienter.jbilling.server.util.db.LanguageDTO; com.sapienter.jbilling.server.item.db.ItemTypeDTO" %>
 
 <html>
 <head>
@@ -138,9 +138,11 @@
                         <a class="btn-open" href="#"><span><g:message code="product.prices"/></span></a>
                     </div>
                     <div class="box-card-hold">
-                        <g:render template="/priceModel/model" model="[model: product?.defaultPrice]"/>
+                        <g:set var="startDate" value="${product ? new Date() : PriceModelDTO.EPOCH_DATE}"/>
+                        <g:render template="/priceModel/model" model="[models: product?.defaultPrices, startDate: startDate]"/>
                     </div>
                 </div>
+
 
                 <!-- spacer -->
                 <div>

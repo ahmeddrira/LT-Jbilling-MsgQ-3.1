@@ -36,6 +36,8 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.payment.blacklist.BlacklistBL
 import grails.plugins.springsecurity.Secured
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import com.sapienter.jbilling.server.pricing.PriceModelBL
 
 @Secured(["CUSTOMER_13"])
 class CustomerInspectorController {
@@ -112,7 +114,6 @@ class CustomerInspectorController {
 
 
     // Customer specific pricing
-
     def filterProducts = {
         def company = CompanyDTO.get(session['company_id'])
         def itemTypes = company.itemTypes.sort{ it.id }
@@ -152,27 +153,39 @@ class CustomerInspectorController {
         def product = webServicesSession.getItem(params.int('itemId'), userId, null)
         def user = webServicesSession.getUserWS(userId)
 
-        def price
         if (priceId) {
-            price = webServicesSession.getCustomerPrices(userId).find{ it.id == priceId }
+            def price = getCustomerPrice(userId, priceId)
+
+            [ price: price, product: product, models: price?.models, user: user, currencies: currencies ]
+
         } else {
-            price = new PlanItemWS()
-
             // copy default product price model as a starting point
-            price.model = product.defaultPrice
-            price.model.id = null
-        }
+            def priceModel = PriceModelBL.getWsPriceForDate(product.defaultPrices, new Date());
+            priceModel.id = null;
 
-        [ price: price, product: product, user: user, currencies: currencies ]
+            def price = new PlanItemWS()
+            price.addModel(PriceModelWS.EPOCH_DATE, priceModel);
+
+            [ price: price, product: product, user: user, currencies: currencies ]
+        }
+    }
+
+    def PlanItemWS getCustomerPrice(userId, priceId) {
+        return webServiecsSession.getCustomerPrices(userId).find{ it.id == priceId }
     }
 
     def updateStrategy = {
+        def price = params."price.id" ? getCustomerPrice(params.int('userId'), params.int('price.id')) : null
         def priceModel = PlanHelper.bindPriceModel(params)
-        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: currencies ]
     }
 
     def addChainModel = {
-        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
+        def price = params."price.id" ? getCustomerPrice(params.int('userId'), params.int('price.id')) : null
+        def priceModel = PlanHelper.bindPriceModel(params)
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
         // add new price model to end of chain
         def model = priceModel
@@ -181,11 +194,14 @@ class CustomerInspectorController {
         }
         model.next = new PriceModelWS();
 
-        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: currencies ]
     }
 
     def removeChainModel = {
-        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
+        def price = params."price.id" ? getCustomerPrice(params.int('userId'), params.int('price.id')) : null
+        def priceModel = PlanHelper.bindPriceModel(params)
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+
         def modelIndex = params.int('modelIndex')
 
         // remove price model from the chain
@@ -198,11 +214,13 @@ class CustomerInspectorController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: currencies ]
     }
 
     def addAttribute = {
-        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
+        def price = params."price.id" ? getCustomerPrice(params.int('userId'), params.int('price.id')) : null
+        def priceModel = PlanHelper.bindPriceModel(params)
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
         def modelIndex = params.int('modelIndex')
         def attribute = message(code: 'plan.new.attribute.key', args: [ params.attributeIndex ])
@@ -216,11 +234,13 @@ class CustomerInspectorController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: currencies ]
     }
 
     def removeAttribute = {
-        PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
+        def price = params."price.id" ? getCustomerPrice(params.int('userId'), params.int('price.id')) : null
+        def priceModel = PlanHelper.bindPriceModel(params)
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
         def modelIndex = params.int('modelIndex')
         def attributeIndex = params.int('attributeIndex')
@@ -235,7 +255,7 @@ class CustomerInspectorController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: price?.models, currencies: currencies ]
     }
 
     /**
@@ -243,9 +263,17 @@ class CustomerInspectorController {
      */
     def saveCustomerPrice = {
         def user = webServicesSession.getUserWS(params.int('userId'))
+        def oldPrice = params."price.id" ? getCustomerPrice(params.int('userId'), params.int('price.id')) : null
         def price = new PlanItemWS()
         bindData(price, params, 'price')
-        price.model = PlanHelper.bindPriceModel(params)
+
+        if (oldPrice) {
+            price.models = oldPrice.models
+        }
+
+        def priceModel = PlanHelper.bindPriceModel(params)
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+        price.models.put(startDate, priceModel)
 
         try {
             if (!price.id || price.id == 0) {
@@ -265,7 +293,8 @@ class CustomerInspectorController {
             }
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
-            render view: 'editCustomerPrice', model: [ price: price, user: user, products: products, currencies: currencies ]
+            def product = webServicesSession.getItem(params.int('itemId'), user.userId, null)
+            render view: 'editCustomerPrice', model: [ price: price, product: product, user: user, currencies: currencies ]
             return
         }
 

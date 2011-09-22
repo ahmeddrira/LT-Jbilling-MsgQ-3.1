@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.util.db.CurrencyDTO; com.sapienter.jbilling.server.util.db.LanguageDTO; com.sapienter.jbilling.server.item.db.ItemTypeDTO" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelBL; com.sapienter.jbilling.server.pricing.db.PriceModelDTO; com.sapienter.jbilling.server.util.db.CurrencyDTO; com.sapienter.jbilling.server.util.db.LanguageDTO; com.sapienter.jbilling.server.item.db.ItemTypeDTO" %>
 
 <html>
 <head>
@@ -49,6 +49,7 @@
                                 ${product.number}
                             </g:link>
                             <g:hiddenField name="price.itemId" value="${product.id}"/>
+                            <g:hiddenField name="price.id" value="${price.id}"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/text">
@@ -102,7 +103,7 @@
                         <span><g:message code="customer.price.title"/></span>
                     </div>
                     <div class="box-card-hold">
-                        <g:render template="/priceModel/model" model="[model: price.model]"/>
+                        <g:render template="/priceModel/model" model="[model: PriceModelBL.getWsPriceForDate(price.models, new Date())]"/>
                     </div>
                 </div>
 

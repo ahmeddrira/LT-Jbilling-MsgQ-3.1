@@ -31,9 +31,13 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Brian Cowdery
@@ -70,6 +74,21 @@ public class PriceModelBL {
     }
 
     /**
+     * Returns the given pricing time-line sorted map of PriceModelDTO entities as WS objects.
+     *
+     * @param dtos map of PriceModelDTO to convert
+     * @return plan prices as WS objects, or an empty map if source map is empty.
+     */
+    public static SortedMap<Date, PriceModelWS> getWS(SortedMap<Date, PriceModelDTO> dtos) {
+        SortedMap<Date, PriceModelWS> ws = new TreeMap<Date, PriceModelWS>();
+
+        for (Map.Entry<Date, PriceModelDTO> entry : dtos.entrySet())
+            ws.put(entry.getKey(), getWS(entry.getValue()));
+
+        return ws;
+    }
+
+    /**
      * Returns the given WS object as a PriceModelDTO entity. This method
      * does not perform any saves or updates, it only converts between the
      * two data structures.
@@ -97,20 +116,54 @@ public class PriceModelBL {
     }
 
     /**
+     * Returns the given list of WS objects as a list of PriceModelDTO entities.
+     *
+     * @param ws list of web service objects to convert
+     * @return list of converted PriceModelDTO entities, or an empty list if source list is empty.
+     */
+    public static List<PriceModelDTO> getDTO(List<PriceModelWS> ws) {
+        if (ws == null)
+            return Collections.emptyList();
+
+        List<PriceModelDTO> dto = new ArrayList<PriceModelDTO>(ws.size());
+        for (PriceModelWS price : ws)
+            dto.add(getDTO(price));
+        return dto;
+    }
+
+    /**
+     * Returns the given pricing time-line sorted map of WS objects as a list of PriceModelDTO entities.
+     *
+     * @param ws map of web service objects to convert
+     * @return map of converted PriceModelDTO entities, or an empty map if source is empty.
+     */
+    public static SortedMap<Date, PriceModelDTO> getDTO(SortedMap<Date, PriceModelWS> ws) {
+        SortedMap<Date, PriceModelDTO> dto = new TreeMap<Date, PriceModelDTO>();
+
+        for (Map.Entry<Date, PriceModelWS> entry : ws.entrySet())
+            dto.put(entry.getKey(), getDTO(entry.getValue()));
+
+        return dto;
+    }
+
+
+    /**
      * Validates that the given pricing model has all the required attributes and that
      * the given attributes are of the correct type.
      *
-     * @param model pricing model to validate
+     * @param models pricing models to validate
      * @throws SessionInternalError if attributes are missing or of an incorrect type
      */
-    public static void validateAttributes(PriceModelDTO model) throws SessionInternalError {
+    public static void validateAttributes(Collection<PriceModelDTO> models) throws SessionInternalError {
         List<String> errors = new ArrayList<String>();
 
-        for (PriceModelDTO next = model; next != null; next = next.getNext()) {
-            try {
-                AttributeUtils.validateAttributes(next.getAttributes(), next.getStrategy());
-            } catch (SessionInternalError e) {
-                errors.addAll(Arrays.asList(e.getErrorMessages()));
+        for (PriceModelDTO model : models) {
+            for (PriceModelDTO next = model; next != null; next = next.getNext()) {
+                try {
+                    AttributeUtils.validateAttributes(next.getAttributes(), next.getStrategy());
+                } catch (SessionInternalError e) {
+                    errors.addAll(Arrays.asList(e.getErrorMessages()));
+                }
             }
         }
 
@@ -120,23 +173,28 @@ public class PriceModelBL {
         }
     }
 
+    public static void validateAttributes(PriceModelDTO model) throws SessionInternalError {
+        validateAttributes(Arrays.asList(model));
+    }
 
     /**
      * Validates that the given pricing model WS object has all the required attributes and that
      * the given attributes are of the correct type.
      *
-     * @param model pricing model WS object to validate
+     * @param models pricing model WS objects to validate
      * @throws SessionInternalError if attributes are missing or of an incorrect type
      */
-    public static void validateAttributes(PriceModelWS model) throws SessionInternalError {
+    public static void validateWsAttributes(Collection<PriceModelWS> models) throws SessionInternalError {
         List<String> errors = new ArrayList<String>();
 
-        for (PriceModelWS next = model; next != null; next = next.getNext()) {
-            try {
-                PriceModelStrategy type = PriceModelStrategy.valueOf(next.getType());
-                AttributeUtils.validateAttributes(next.getAttributes(), type.getStrategy());
-            } catch (SessionInternalError e) {
-                errors.addAll(Arrays.asList(e.getErrorMessages()));
+        for (PriceModelWS model : models) {
+            for (PriceModelWS next = model; next != null; next = next.getNext()) {
+                try {
+                    PriceModelStrategy type = PriceModelStrategy.valueOf(next.getType());
+                    AttributeUtils.validateAttributes(next.getAttributes(), type.getStrategy());
+                } catch (SessionInternalError e) {
+                    errors.addAll(Arrays.asList(e.getErrorMessages()));
+                }
             }
         }
 
@@ -145,4 +203,74 @@ public class PriceModelBL {
                                            errors.toArray(new String[errors.size()]));
         }
     }
+
+    public static void validateWsAttributes(PriceModelWS model) {
+        validateWsAttributes(Arrays.asList(model));
+    }
+
+
+    /**
+     * Searches through the list of PriceModelDTO objects for the price that is active
+     * on the given date.
+     *
+     * If the given date is null, the first price will be returned.
+     *
+     * @param prices price models to search through
+     * @param date date to find price for
+     * @return found price for date, or null if no price found
+     */
+    public static PriceModelDTO getPriceForDate(SortedMap<Date, PriceModelDTO> prices, Date date) {
+        if (prices == null || prices.isEmpty()) {
+            return null;
+        }
+
+        if (date == null) {
+            return prices.get(prices.firstKey());
+        }
+
+        // list of prices in ordered by start date, earliest first
+        // return the model with the closest start date
+        Date forDate = null;
+        for (Date start : prices.keySet()) {
+            if (start != null && start.after(date))
+                break;
+
+            forDate = start;
+        }
+
+        return prices.get(forDate);
+    }
+
+    /**
+     * Searches through the list of PriceModelWS objects for the price that is active
+     * on the given date.
+     *
+     * If the given date is null, the first price will be returned.
+     *
+     * @param prices price models to search through
+     * @param date date to find price for
+     * @return found price for date, or null if no price found
+     */
+    public static PriceModelWS getWsPriceForDate(SortedMap<Date, PriceModelWS> prices, Date date) {
+        if (prices == null || prices.isEmpty()) {
+            return null;
+        }
+
+        if (date == null) {
+            return prices.get(prices.firstKey());
+        }
+
+        // list of prices in ordered by start date, earliest first
+        // return the model with the closest start date
+        Date forDate = null;
+        for (Date start : prices.keySet()) {
+            if (start != null && start.after(date))
+                break;
+
+            forDate = start;
+        }
+
+        return prices.get(forDate);
+    }
+
 }

@@ -40,7 +40,8 @@ ALTER TABLE ONLY public.pluggable_task_parameter DROP CONSTRAINT pluggable_task_
 ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_fk_2;
 ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_fk_1;
 ALTER TABLE ONLY public.plan DROP CONSTRAINT plan_period_id_fk;
-ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_price_model_id_fk;
+ALTER TABLE ONLY public.plan_item_price_timeline DROP CONSTRAINT plan_item_timeline_price_mode_id_fk;
+ALTER TABLE ONLY public.plan_item_price_timeline DROP CONSTRAINT plan_item_timeline_plan_item_id_fk;
 ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_plan_id_fk;
 ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_item_id_fk;
 ALTER TABLE ONLY public.plan DROP CONSTRAINT plan_item_id_fk;
@@ -91,6 +92,8 @@ ALTER TABLE ONLY public.item_type_map DROP CONSTRAINT item_type_map_fk_1;
 ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_fk_1;
 ALTER TABLE ONLY public.item_type_exclude_map DROP CONSTRAINT item_type_exclude_type_id_fk;
 ALTER TABLE ONLY public.item_type_exclude_map DROP CONSTRAINT item_type_exclude_item_id_fk;
+ALTER TABLE ONLY public.item_price_timeline DROP CONSTRAINT item_pm_map_price_model_id_fk;
+ALTER TABLE ONLY public.item_price_timeline DROP CONSTRAINT item_pm_map_item_id_fk;
 ALTER TABLE ONLY public.item DROP CONSTRAINT item_fk_1;
 ALTER TABLE ONLY public.invoice_line DROP CONSTRAINT invoice_line_fk_3;
 ALTER TABLE ONLY public.invoice_line DROP CONSTRAINT invoice_line_fk_2;
@@ -226,6 +229,8 @@ ALTER TABLE ONLY public.pluggable_task_type_category DROP CONSTRAINT pluggable_t
 ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_pkey;
 ALTER TABLE ONLY public.pluggable_task_parameter DROP CONSTRAINT pluggable_task_parameter_pkey;
 ALTER TABLE ONLY public.plan DROP CONSTRAINT plan_pkey;
+ALTER TABLE ONLY public.plan_item_price_timeline DROP CONSTRAINT plan_item_price_timeline_price_model_id_key;
+ALTER TABLE ONLY public.plan_item_price_timeline DROP CONSTRAINT plan_item_price_timeline_pkey;
 ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_pkey;
 ALTER TABLE ONLY public.plan_item_bundle DROP CONSTRAINT plan_item_bundle_pkey;
 ALTER TABLE ONLY public.permission_user DROP CONSTRAINT permission_user_pkey;
@@ -263,6 +268,8 @@ ALTER TABLE ONLY public.language DROP CONSTRAINT language_pkey;
 ALTER TABLE ONLY public.jbilling_table DROP CONSTRAINT jbilling_table_pkey;
 ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_pkey;
 ALTER TABLE ONLY public.item_type_exclude_map DROP CONSTRAINT item_type_exclude_map_pkey;
+ALTER TABLE ONLY public.item_price_timeline DROP CONSTRAINT item_price_timeline_price_model_id_key;
+ALTER TABLE ONLY public.item_price_timeline DROP CONSTRAINT item_price_timeline_pkey;
 ALTER TABLE ONLY public.item DROP CONSTRAINT item_pkey;
 ALTER TABLE ONLY public.invoice DROP CONSTRAINT invoice_pkey;
 ALTER TABLE ONLY public.invoice_line_type DROP CONSTRAINT invoice_line_type_pkey;
@@ -321,6 +328,7 @@ DROP TABLE public.pluggable_task_type_category;
 DROP TABLE public.pluggable_task_type;
 DROP TABLE public.pluggable_task_parameter;
 DROP TABLE public.pluggable_task;
+DROP TABLE public.plan_item_price_timeline;
 DROP TABLE public.plan_item_bundle;
 DROP TABLE public.plan_item;
 DROP TABLE public.plan;
@@ -363,6 +371,7 @@ DROP TABLE public.jbilling_seqs;
 DROP TABLE public.item_type_map;
 DROP TABLE public.item_type_exclude_map;
 DROP TABLE public.item_type;
+DROP TABLE public.item_price_timeline;
 DROP TABLE public.item;
 DROP TABLE public.invoice_line_type;
 DROP TABLE public.invoice_line;
@@ -1134,12 +1143,24 @@ CREATE TABLE item (
     deleted smallint DEFAULT 0 NOT NULL,
     has_decimals smallint DEFAULT 0 NOT NULL,
     optlock integer NOT NULL,
-    price_model_id integer,
     gl_code character varying(50)
 );
 
 
 ALTER TABLE public.item OWNER TO jbilling;
+
+--
+-- Name: item_price_timeline; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE item_price_timeline (
+    item_id integer NOT NULL,
+    price_model_id integer NOT NULL,
+    start_date timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.item_price_timeline OWNER TO jbilling;
 
 --
 -- Name: item_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -1779,7 +1800,6 @@ CREATE TABLE plan_item (
     id integer NOT NULL,
     plan_id integer,
     item_id integer NOT NULL,
-    price_model_id integer NOT NULL,
     precedence integer NOT NULL,
     plan_item_bundle_id integer
 );
@@ -1801,6 +1821,19 @@ CREATE TABLE plan_item_bundle (
 
 
 ALTER TABLE public.plan_item_bundle OWNER TO jbilling;
+
+--
+-- Name: plan_item_price_timeline; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE plan_item_price_timeline (
+    plan_item_id integer NOT NULL,
+    price_model_id integer NOT NULL,
+    start_date timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.plan_item_price_timeline OWNER TO jbilling;
 
 --
 -- Name: pluggable_task; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -11512,27 +11545,54 @@ COPY invoice_line_type (id, description, order_position) FROM stdin;
 -- Data for Name: item; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, optlock, price_model_id, gl_code) FROM stdin;
-14	J-01	1	-10.0000000000	0	0	1	\N	\N
-1	DP-1	1	\N	0	0	3	1	\N
-2	DP-2	1	\N	0	0	1	2	\N
-3	DP-3	1	\N	0	0	1	3	\N
-4	01	2	\N	0	0	1	4	\N
-24	F-1	1	\N	0	0	1	14	\N
-250	PL-01	1	\N	0	0	2	150	\N
-251	ST-01	1	\N	0	0	2	151	\N
-270	FE-01	1	\N	0	0	2	152	\N
-2600	DR-01	1	\N	0	0	2	1600	\N
-2601	DR--02	1	\N	0	0	2	1601	\N
-2602	DR-03	1	\N	0	0	2	1602	\N
-2700	LD-A	1	\N	0	0	5	1701	\N
-2701	LD-B	1	\N	0	0	4	1703	\N
-2702	LD-1000	1	\N	0	0	4	1705	\N
-2800	CALL-LD	1	\N	0	1	4	1801	\N
-2801	CALL-LD-INCLUDE	1	\N	0	1	4	1803	\N
-2900	CALL-LD-GEN	1	\N	0	0	2	1900	\N
-3000	PL-02	1	\N	0	0	4	2001	\N
-240	DP-4	1	\N	0	0	2	2003	\N
+COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, optlock, gl_code) FROM stdin;
+14	J-01	1	-10.0000000000	0	0	1	\N
+1	DP-1	1	\N	0	0	3	\N
+2	DP-2	1	\N	0	0	1	\N
+3	DP-3	1	\N	0	0	1	\N
+4	01	2	\N	0	0	1	\N
+24	F-1	1	\N	0	0	1	\N
+250	PL-01	1	\N	0	0	2	\N
+251	ST-01	1	\N	0	0	2	\N
+270	FE-01	1	\N	0	0	2	\N
+2600	DR-01	1	\N	0	0	2	\N
+2601	DR--02	1	\N	0	0	2	\N
+2602	DR-03	1	\N	0	0	2	\N
+2700	LD-A	1	\N	0	0	5	\N
+2701	LD-B	1	\N	0	0	4	\N
+2702	LD-1000	1	\N	0	0	4	\N
+2800	CALL-LD	1	\N	0	1	4	\N
+2801	CALL-LD-INCLUDE	1	\N	0	1	4	\N
+2900	CALL-LD-GEN	1	\N	0	0	2	\N
+3000	PL-02	1	\N	0	0	4	\N
+240	DP-4	1	\N	0	0	2	\N
+\.
+
+
+--
+-- Data for Name: item_price_timeline; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY item_price_timeline (item_id, price_model_id, start_date) FROM stdin;
+1	1	1970-01-01 00:00:00
+2	2	1970-01-01 00:00:00
+3	3	1970-01-01 00:00:00
+4	4	1970-01-01 00:00:00
+24	14	1970-01-01 00:00:00
+250	150	1970-01-01 00:00:00
+251	151	1970-01-01 00:00:00
+270	152	1970-01-01 00:00:00
+2600	1600	1970-01-01 00:00:00
+2601	1601	1970-01-01 00:00:00
+2602	1602	1970-01-01 00:00:00
+2700	1701	1970-01-01 00:00:00
+2701	1703	1970-01-01 00:00:00
+2702	1705	1970-01-01 00:00:00
+2800	1801	1970-01-01 00:00:00
+2801	1803	1970-01-01 00:00:00
+2900	1900	1970-01-01 00:00:00
+3000	2001	1970-01-01 00:00:00
+240	2003	1970-01-01 00:00:00
 \.
 
 
@@ -14469,8 +14529,8 @@ COPY plan (id, item_id, description, period_id) FROM stdin;
 -- Data for Name: plan_item; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY plan_item (id, plan_id, item_id, price_model_id, precedence, plan_item_bundle_id) FROM stdin;
-1	1	2602	2004	-1	\N
+COPY plan_item (id, plan_id, item_id, precedence, plan_item_bundle_id) FROM stdin;
+1	1	2602	-1	\N
 \.
 
 
@@ -14479,6 +14539,15 @@ COPY plan_item (id, plan_id, item_id, price_model_id, precedence, plan_item_bund
 --
 
 COPY plan_item_bundle (id, quantity, period_id, target_customer, add_if_exists) FROM stdin;
+\.
+
+
+--
+-- Data for Name: plan_item_price_timeline; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY plan_item_price_timeline (plan_item_id, price_model_id, start_date) FROM stdin;
+1	2004	1970-01-01 00:00:00
 \.
 
 
@@ -18375,6 +18444,22 @@ ALTER TABLE ONLY item
 
 
 --
+-- Name: item_price_timeline_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY item_price_timeline
+    ADD CONSTRAINT item_price_timeline_pkey PRIMARY KEY (item_id, start_date);
+
+
+--
+-- Name: item_price_timeline_price_model_id_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY item_price_timeline
+    ADD CONSTRAINT item_price_timeline_price_model_id_key UNIQUE (price_model_id);
+
+
+--
 -- Name: item_type_exclude_map_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -18668,6 +18753,22 @@ ALTER TABLE ONLY plan_item_bundle
 
 ALTER TABLE ONLY plan_item
     ADD CONSTRAINT plan_item_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: plan_item_price_timeline_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY plan_item_price_timeline
+    ADD CONSTRAINT plan_item_price_timeline_pkey PRIMARY KEY (plan_item_id, start_date);
+
+
+--
+-- Name: plan_item_price_timeline_price_model_id_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY plan_item_price_timeline
+    ADD CONSTRAINT plan_item_price_timeline_price_model_id_key UNIQUE (price_model_id);
 
 
 --
@@ -19673,6 +19774,22 @@ ALTER TABLE ONLY item
 
 
 --
+-- Name: item_pm_map_item_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY item_price_timeline
+    ADD CONSTRAINT item_pm_map_item_id_fk FOREIGN KEY (item_id) REFERENCES item(id);
+
+
+--
+-- Name: item_pm_map_price_model_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY item_price_timeline
+    ADD CONSTRAINT item_pm_map_price_model_id_fk FOREIGN KEY (price_model_id) REFERENCES price_model(id);
+
+
+--
 -- Name: item_type_exclude_item_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
 --
 
@@ -20073,11 +20190,19 @@ ALTER TABLE ONLY plan_item
 
 
 --
--- Name: plan_item_price_model_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+-- Name: plan_item_timeline_plan_item_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
 --
 
-ALTER TABLE ONLY plan_item
-    ADD CONSTRAINT plan_item_price_model_id_fk FOREIGN KEY (price_model_id) REFERENCES price_model(id);
+ALTER TABLE ONLY plan_item_price_timeline
+    ADD CONSTRAINT plan_item_timeline_plan_item_id_fk FOREIGN KEY (plan_item_id) REFERENCES plan_item(id);
+
+
+--
+-- Name: plan_item_timeline_price_mode_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY plan_item_price_timeline
+    ADD CONSTRAINT plan_item_timeline_price_mode_id_fk FOREIGN KEY (price_model_id) REFERENCES price_model(id);
 
 
 --

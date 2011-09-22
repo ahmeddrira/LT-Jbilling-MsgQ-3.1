@@ -26,6 +26,11 @@ import com.sapienter.jbilling.server.pricing.PriceModelWS;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Brian Cowdery
@@ -37,6 +42,7 @@ public class PlanItemWS implements Serializable {
 
     private Integer id;
     private Integer itemId; // affected item
+    private SortedMap<Date, PriceModelWS> models = new TreeMap<Date, PriceModelWS>();
     private PriceModelWS model;
     private PlanItemBundleWS bundle;
     private Integer precedence = DEFAULT_PRECEDENCE;
@@ -46,17 +52,29 @@ public class PlanItemWS implements Serializable {
 
     public PlanItemWS(Integer itemId, PriceModelWS model, PlanItemBundleWS bundle) {
         this.itemId = itemId;
-        this.model = model;
         this.bundle = bundle;
+
+        this.models.put(PriceModelWS.EPOCH_DATE, model);
+        this.model = model;
+    }
+
+    public PlanItemWS(Integer itemId, SortedMap<Date, PriceModelWS> models, PlanItemBundleWS bundle) {
+        this.itemId = itemId;
+        this.models = models;
+        this.bundle = bundle;
+
+        this.model = PriceModelBL.getWsPriceForDate(models, new Date());
     }
 
     public PlanItemWS(PlanItemDTO dto) {
         this.id = dto.getId();
         this.precedence = dto.getPrecedence();
 
-        if (dto.getModel() != null) this.model = new PriceModelWS(dto.getModel());
+        if (dto.getModels() != null) this.models = PriceModelBL.getWS(dto.getModels());
         if (dto.getBundle() != null) this.bundle = new PlanItemBundleWS(dto.getBundle());
         if (dto.getItem() != null) this.itemId = dto.getItem().getId();
+
+        this.model = PriceModelBL.getWsPriceForDate(models, new Date());
     }
 
     public Integer getId() {
@@ -83,12 +101,25 @@ public class PlanItemWS implements Serializable {
         setItemId(affectedItemId);
     }
 
-    public PriceModelWS getModel() {
-        return model;
+    public SortedMap<Date, PriceModelWS> getModels() {
+        return models;
     }
 
-    public void setModel(PriceModelWS model) {
-        this.model = model;
+    public void setModels(SortedMap<Date, PriceModelWS> models) {
+        this.models = models;
+    }
+
+    public void addModel(Date date, PriceModelWS model) {
+        getModels().put(date, model);
+    }
+
+    /**
+     * Get the current price model for today.
+     *
+     * @return today's price
+     */
+    public PriceModelWS getModel() {
+        return model;
     }
 
     public PlanItemBundleWS getBundle() {
@@ -112,7 +143,7 @@ public class PlanItemWS implements Serializable {
         return "PlanItemWS{"
                + "id=" + id
                + ", itemId=" + itemId
-               + ", model=" + model
+               + ", models=" + models
                + ", bundle=" + bundle
                + ", precedence=" + precedence
                + '}';

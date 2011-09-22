@@ -27,6 +27,7 @@ import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
+import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -35,6 +36,7 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 import junit.framework.TestCase;
+import org.joda.time.DateMidnight;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -329,7 +331,8 @@ public class WSTest extends PricingTestCase {
         // create plan
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
-        callPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
+        callPrice.getModels().put(PriceModelWS.EPOCH_DATE,
+                                  new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         PlanWS plan = new PlanWS();
         plan.setItemId(LONG_DISTANCE_PLAN_ITEM);
@@ -355,7 +358,8 @@ public class WSTest extends PricingTestCase {
         // update the description and add a price for the generic LD item
         PlanItemWS genericPrice = new PlanItemWS();
         genericPrice.setItemId(LONG_DISTANCE_CALL_GENERIC);
-        genericPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.25"), 1));
+        genericPrice.getModels().put(PriceModelWS.EPOCH_DATE,
+                                     new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.25"), 1));
 
         fetchedPlan.setDescription("Updated description.");
         fetchedPlan.addPlanItem(genericPrice);
@@ -400,7 +404,8 @@ public class WSTest extends PricingTestCase {
         // create plan
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
-        callPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
+        callPrice.getModels().put(PriceModelWS.EPOCH_DATE,
+                                  new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         PlanWS plan = new PlanWS();
         plan.setItemId(LONG_DISTANCE_PLAN_ITEM);
@@ -581,7 +586,8 @@ public class WSTest extends PricingTestCase {
         // includes 10 bundled "long distance call" items
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
-        callPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
+        callPrice.getModels().put(PriceModelDTO.EPOCH_DATE,
+                                  new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         PlanItemBundleWS bundle = new PlanItemBundleWS();
         bundle.setPeriodId(Constants.ORDER_PERIOD_ONCE);
@@ -763,6 +769,139 @@ public class WSTest extends PricingTestCase {
     }
 
     /**
+     * Tests that a plan can have prices with different start dates, and that a purchase after
+     * that start date will use the appropriate price from the plan.
+     *
+     * @throws Exception possible api exception
+     */
+    public void testPricingTimeLine() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+        enablePricingPlugin(api);
+
+        final Integer LONG_DISTANCE_PLAN_ITEM = 2700;       // long distance plan A - fixed rate
+        final Integer LONG_DISTANCE_CALL = 2800;            // long distance call
+
+
+        // starting price
+        PlanItemWS planItem = new PlanItemWS();
+        planItem.setItemId(LONG_DISTANCE_CALL);
+
+        // price starting at epoch date - used as default when no other prices set in timeline
+        planItem.addModel(PriceModelWS.EPOCH_DATE,
+                          new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
+
+        // price for june
+        planItem.addModel(new DateMidnight(2011, 6, 1).toDate(),
+                          new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.20"), 1));
+
+        // price for august
+        planItem.addModel(new DateMidnight(2011, 8, 1).toDate(),
+                          new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.30"), 1));
+
+
+        // create plan
+        PlanWS plan = new PlanWS();
+        plan.setItemId(LONG_DISTANCE_PLAN_ITEM);
+        plan.setDescription("Discount long distance calls.");
+        plan.setPeriodId(MONTHLY_PERIOD);
+        plan.addPlanItem(planItem);
+
+        plan.setId(api.createPlan(plan)); // create plan
+        assertNotNull("plan created", plan.getId());
+
+
+
+        // create user
+        UserWS user = new UserWS();
+        user.setUserName("plan-test-06-" + new Date().getTime());
+        user.setPassword("password");
+        user.setLanguageId(1);
+        user.setCurrencyId(1);
+        user.setMainRoleId(5);
+        user.setStatusId(UserDTOEx.STATUS_ACTIVE);
+        user.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+
+        ContactWS contact = new ContactWS();
+        contact.setEmail("test@test.com");
+        contact.setFirstName("Plan Test");
+        contact.setLastName("Pricing Time-line");
+        user.setContact(contact);
+
+        user.setUserId(api.createUser(user)); // create user
+        assertNotNull("customer created", user.getUserId());
+
+
+        // subscribe to plan
+        OrderWS order = new OrderWS();
+        order.setUserId(user.getUserId());
+        order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
+        order.setPeriod(MONTHLY_PERIOD);
+        order.setCurrencyId(1);
+        order.setActiveSince(new Date());
+
+        OrderLineWS line = new OrderLineWS();
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setItemId(plan.getItemId());
+        line.setUseItem(true);
+        line.setQuantity(1);
+        order.setOrderLines(new OrderLineWS[] { line });
+
+        order.setId(api.createOrder(order)); // create order
+        assertNotNull("order created", order.getId());
+
+
+        // verify customer price creation with API calls.
+        assertTrue("Customer should be subscribed to plan.", api.isCustomerSubscribed(plan.getId(), user.getUserId()));
+
+        PlanItemWS price = api.getCustomerPrice(user.getUserId(), LONG_DISTANCE_CALL);
+        assertEquals("Price for item should have 3 different dates", 3, price.getModels().size());
+
+
+        // test order using the affected plan item
+        OrderWS testOrder = new OrderWS();
+        testOrder.setUserId(user.getUserId());
+        testOrder.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
+        testOrder.setPeriod(MONTHLY_PERIOD);
+        testOrder.setCurrencyId(1);
+
+
+        OrderLineWS testLine = new OrderLineWS();
+        testLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        testLine.setItemId(LONG_DISTANCE_CALL);
+        testLine.setUseItem(true);
+        testLine.setQuantity(1);
+
+
+        // rate order and verify starting price
+        testOrder.setActiveSince(new DateMidnight(1971, 1, 1).toDate()); // after the epoch date
+        testOrder.setOrderLines(new OrderLineWS[] { testLine });         // should give us the starting price
+
+        testOrder = api.rateOrder(testOrder);
+        assertEquals("Order line should use starting price at $0.10.", new BigDecimal("0.10"), testOrder.getOrderLines()[0].getPriceAsDecimal());
+
+        // update order to june, rate order and verify new price
+        testOrder.setActiveSince(new DateMidnight(2011, 6, 1).toDate()); // 1st day of june, same as june price start date
+        testOrder.setOrderLines(new OrderLineWS[] { testLine });         // should give us the june price
+
+        testOrder = api.rateOrder(testOrder);
+        assertEquals("Order line should use june price at $0.20.", new BigDecimal("0.20"), testOrder.getOrderLines()[0].getPriceAsDecimal());
+
+        // update order to august, rate order and verify new price
+        testOrder.setActiveSince(new DateMidnight(2011, 8, 2).toDate()); // 2nd day of august, after august price start date
+        testOrder.setOrderLines(new OrderLineWS[] { testLine });         // should give us the august price
+
+        testOrder = api.rateOrder(testOrder);
+        assertEquals("Order line should use august price at $0.30.", new BigDecimal("0.30"), testOrder.getOrderLines()[0].getPriceAsDecimal());
+
+
+        // cleanup
+        disablePricingPlugin(api);
+        api.deleteOrder(order.getId());
+        api.deleteUser(user.getUserId());
+        api.deletePlan(plan.getId());
+    }
+
+    /**
      * Tests that plans and prices can only be accessed by the entity that owns the subscription/affected
      * plan item ids.
      *
@@ -817,7 +956,8 @@ public class WSTest extends PricingTestCase {
         // addPlanPrice
         PlanItemWS addPlanPrice = new PlanItemWS();
         addPlanPrice.setItemId(BAD_ITEM_ID);
-        addPlanPrice.setModel(new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("1.00"), 1));
+        addPlanPrice.getModels().put(PriceModelDTO.EPOCH_DATE,
+                                     new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("1.00"), 1));
 
         try {
             // cannot add to a plan we don't own

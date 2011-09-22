@@ -21,6 +21,7 @@ package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
@@ -29,6 +30,11 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.MapKey;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -42,7 +48,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
@@ -51,8 +56,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 @Entity
 @TableGenerator(
@@ -71,7 +79,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
     private CompanyDTO entity;
     private String internalNumber;
     private String glCode;
-    private PriceModelDTO defaultPrice;
+    private SortedMap<Date, PriceModelDTO> defaultPrices = new TreeMap<Date, PriceModelDTO>();
     private BigDecimal percentage;
     private Set<ItemTypeDTO> excludedTypes = new HashSet<ItemTypeDTO>();
     private Integer deleted;
@@ -187,14 +195,37 @@ public class ItemDTO extends AbstractDescription implements Exportable {
 	}
 
     @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "price_model_id", nullable = true)
-    public PriceModelDTO getDefaultPrice() {
-        return defaultPrice;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @MapKey(columns = @Column(name = "start_date", nullable = true))
+    @JoinTable(name = "item_price_timeline",
+               joinColumns = {@JoinColumn(name = "item_id", updatable = false)},
+               inverseJoinColumns = {@JoinColumn(name = "price_model_id", updatable = false)}
+    )
+    @Sort(type = SortType.NATURAL)
+    @Fetch(FetchMode.SELECT)
+    public SortedMap<Date, PriceModelDTO> getDefaultPrices() {
+        return defaultPrices;
     }
 
-    public void setDefaultPrice(PriceModelDTO defaultPrice) {
-        this.defaultPrice = defaultPrice;
+    public void setDefaultPrices(SortedMap<Date, PriceModelDTO> defaultPrices) {
+        this.defaultPrices = defaultPrices;
+    }
+
+    /**
+     * Adds a new price to the default pricing list. If no date is given, then the
+     * price it is assumed to be the start of a new time-line and the date will be
+     * forced to 01-Jan-1970 (epoch).
+     *
+     * @param date date for the given price
+     * @param price price
+     */
+    public void addDefaultPrice(Date date, PriceModelDTO price) {
+        getDefaultPrices().put(date != null ? date : PriceModelDTO.EPOCH_DATE, price);
+    }
+
+    @Transient
+    public PriceModelDTO getPrice(Date today) {
+        return PriceModelBL.getPriceForDate(defaultPrices, today);
     }
 
     @Column(name = "percentage")
@@ -461,6 +492,8 @@ public class ItemDTO extends AbstractDescription implements Exportable {
             itemTypes.append(type.getDescription()).append(" ");
         }
 
+        PriceModelDTO currentPrice = getPrice(new Date());
+
         return new Object[][] {
             {
                 id,
@@ -468,14 +501,12 @@ public class ItemDTO extends AbstractDescription implements Exportable {
                 itemTypes.toString(),
                 hasDecimals,
                 percentage,
-                (defaultPrice != null ? defaultPrice.getType().name() : null),
+                (currentPrice != null ? currentPrice.getType().name() : null),
+                (currentPrice != null && currentPrice.getCurrency() != null ? currentPrice.getCurrency().getDescription()
+                                                                            : null),
 
-                (defaultPrice != null && defaultPrice.getCurrency() != null
-                 ? defaultPrice.getCurrency().getDescription()
-                 : null),
-
-                (defaultPrice != null ? defaultPrice.getRate() : null),
-                (defaultPrice != null ? defaultPrice.getAttributes() : null),
+                (currentPrice != null ? currentPrice.getRate() : null),
+                (currentPrice != null ? currentPrice.getAttributes() : null),
             }
         };
     }

@@ -286,11 +286,14 @@ hr {
 	height:1%;
 	padding:9px 0 54px;
 }
-.breadcrumbs {
+.top-hold {
 	background:#fff;
 	margin-bottom:10px;
 	height:1%;
 	border:1px solid #a4c0db;
+}
+.top-hold .form-columns {
+    width: 90%;
 }
 .breadcrumbs ul {
     height:34px;
@@ -1485,6 +1488,8 @@ ul#review-lines {
 .box-cards .form-columns label {
 	width:165px;
 }
+.box-cards .buttons {
+}
 .form-columns label.rb {
 	width:auto;
 	margin-right:20px;
@@ -1766,4 +1771,32 @@ table.blacklist tr.odd {
     overflow:hidden;
 	height:15px;
 	padding-top:5px;
+}
+
+/* timeline */
+#timeline {
+    margin-bottom: 20px;
+}
+#timeline ul {
+    list-style: none;
+    list-style-position: outside;
+    background: url(../images/timeline-bg.gif) bottom left repeat-x;
+    cursor: move;
+}
+#timeline li {
+    display: inline-block;
+    padding: 0 10px;
+}
+#timeline li a {
+    display: block;
+    height: 40px;
+    text-align: center;
+    background: url(../images/timeline-event.png) bottom center no-repeat;
+}
+#timeline li.new a {
+    width: 75px;
+    background: url(../images/add.png) bottom center no-repeat;
+}
+#timeline li.current a {
+    font-weight: bold;
 }

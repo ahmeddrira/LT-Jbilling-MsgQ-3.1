@@ -80,7 +80,7 @@
     <div class="form-columns">
         <div class="column">
             <g:applyLayout name="form/date">
-                <content tag="label">Start Date</content>
+                <content tag="label"><g:message code="plan.item.start.date"/></content>
                 <content tag="label.for">startDate</content>
                 <g:textField class="field" name="startDate" value="${formatDate(date: startDate, formatName: 'datepicker.format')}"/>
                 <g:hiddenField name="originalStartDate" value="${formatDate(date: startDate, formatName: 'date.format')}"/>

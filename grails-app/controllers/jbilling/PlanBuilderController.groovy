@@ -162,6 +162,10 @@ class PlanBuilderController {
 
                 log.debug("plan ${plan}")
 
+                // pricing timeline
+                def pricingDates = collectPricingDates(plan.planItems)
+                def startDate = (!product.id || product.id == 0) ? PriceModelWS.EPOCH_DATE : pricingDates.asList().last()
+
                 // add breadcrumb
                 def crumbName = params.id ? 'update' : 'create'
                 def crumbDescription = params.id ? product.number : null
@@ -174,8 +178,8 @@ class PlanBuilderController {
                 flow.orderPeriods = orderPeriods
 
                 // conversation scope
-                conversation.pricingDates = collectPricingDates(plan.planItems)
-                conversation.startDate = conversation.pricingDates ? conversation.pricingDates.asList().last() : new Date()
+                conversation.pricingDates = pricingDates
+                conversation.startDate = startDate
                 conversation.plan = plan
                 conversation.product = product
                 conversation.products = productService.getFilteredProducts(company, params)

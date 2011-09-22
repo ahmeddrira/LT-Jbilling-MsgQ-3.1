@@ -18,19 +18,31 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelWS" contentType="text/html;charset=UTF-8" %>
 
 <div id="timeline">
     <div class="form-columns">
         <ul>
-            <g:each var="date" status="i" in="${pricingDates}">
-                <li class="${startDate.equals(date) ? 'current' : ''}">
-                    <g:remoteLink action="edit" params="[_eventId: 'editDate', startDate : formatDate(date: date)]"
+            <g:if test="${pricingDates}">
+                <g:each var="date" status="i" in="${pricingDates}">
+                    <li class="${startDate.equals(date) ? 'current' : ''}">
+                        <g:set var="pricingDate" value="${formatDate(date: date)}"/>
+                        <g:remoteLink action="edit" params="[_eventId: 'editDate', startDate: pricingDate]"
+                                      update="column2" method="GET" onSuccess="timeline.refresh();">
+                            ${pricingDate}
+                        </g:remoteLink>
+                    </li>
+                </g:each>
+            </g:if>
+            <g:else>
+                <li class="current">
+                    <g:set var="pricingDate" value="${formatDate(date: PriceModelWS.EPOCH_DATE)}"/>
+                    <g:remoteLink action="edit" params="[_eventId: 'editDate', startDate : pricingDate]"
                                   update="column2" method="GET" onSuccess="timeline.refresh();">
-                        <g:formatDate date="${date}"/>
+                        ${startpricingDateDate}
                     </g:remoteLink>
                 </li>
-            </g:each>
+            </g:else>
 
             <li class="new">
                 <a onclick="$('#add-date-dialog').dialog('open');">
@@ -50,7 +62,7 @@
                     <fieldset>
                         <div class="form-columns">
                             <g:applyLayout name="form/date">
-                                <content tag="label">Start Date</content>
+                                <content tag="label"><g:message code="plan.item.start.date"/></content>
                                 <content tag="label.for">startDate</content>
                                 <g:textField class="field" name="startDate" value="${formatDate(date: new Date(), formatName: 'datepicker.format')}"/>
                             </g:applyLayout>
@@ -65,7 +77,7 @@
         $(function(){
             $('#add-date-dialog').dialog({
                  autoOpen: false,
-                 height: 300,
+                 height: 400,
                  width: 520,
                  modal: true,
                  buttons: {

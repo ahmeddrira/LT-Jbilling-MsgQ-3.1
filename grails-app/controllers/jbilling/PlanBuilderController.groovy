@@ -75,6 +75,18 @@ class PlanBuilderController {
         }
     }
 
+    def collectPricingDates(planItems) {
+        def dates = new TreeSet<Date>()
+
+        planItems.each{ item->
+            item.models.keySet().each{ date->
+                dates << date
+            }
+        }
+
+        return dates;
+    }
+
     def editFlow = {
 
         /**
@@ -162,7 +174,8 @@ class PlanBuilderController {
                 flow.orderPeriods = orderPeriods
 
                 // conversation scope
-                conversation.startDate = new Date()
+                conversation.pricingDates = collectPricingDates(plan.planItems)
+                conversation.startDate = conversation.pricingDates ? conversation.pricingDates.asList().last() : new Date()
                 conversation.plan = plan
                 conversation.product = product
                 conversation.products = productService.getFilteredProducts(company, params)
@@ -196,7 +209,7 @@ class PlanBuilderController {
         }
 
         /**
-                * Renders the pricing timeline header, allowing navigation and creation of pricing dates.
+                * Renders the pricing timeline top panel, allowing navigation and creation of pricing dates.
                 */
         showTimeline {
             action {
@@ -209,16 +222,22 @@ class PlanBuilderController {
         addDate {
             action {
                 def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
-                conversation.startDate = startDate
 
                 log.debug("adding pricing date ${params.startDate}")
 
                 // find the closet price model to the new date and copy it
                 // to create a new price for the given start date
                 for (PlanItemWS item : conversation.plan.planItems) {
-                    PriceModelWS price = PriceModelBL.getWsPriceForDate(item.getModels(), startDate)
-                    item.addModel(startDate, new PriceModelWS(price));
+                    def itemPriceModel = PriceModelBL.getWsPriceForDate(item.getModels(), startDate)
+                    def priceModel = new PriceModelWS(itemPriceModel);
+                    priceModel.id = null
+
+                    item.addModel(startDate, priceModel);
                 }
+
+                // update pricing dates
+                conversation.pricingDates = collectPricingDates(conversation.plan.planItems)
+                conversation.startDate = startDate
 
                 params.template = 'review'
             }
@@ -245,10 +264,11 @@ class PlanBuilderController {
                 // product being added
                 def productId = params.int('id')
                 def product = conversation.products.find{ it.id == productId }
+                def productPrice = product.getPrice(conversation.startDate)
 
                 // build a new plan item, using the default item price model
                 // as the new objects starting values
-                def priceModel = new PriceModelWS(product.defaultPrice)
+                def priceModel = new PriceModelWS(productPrice)
                 priceModel.id = null
 
                 // empty bundle
@@ -271,19 +291,28 @@ class PlanBuilderController {
                 def index = params.int('index')
                 def planItem = conversation.plan.planItems[index]
 
-                if (!planItem.bundle) planItem.bundle = new PlanItemBundleWS()
+                log.debug("updating price for date ${conversation.startDate}")
 
+                if (!planItem.bundle) planItem.bundle = new PlanItemBundleWS()
 
                 bindData(planItem, params, 'price')
                 bindData(planItem.bundle, params, 'bundle')
-                planItem.model = PlanHelper.bindPriceModel(params)
+
+                def priceModel = PlanHelper.bindPriceModel(params)
+                planItem.models.put(conversation.startDate, priceModel)
+
+                log.debug("updated price: ${priceModel}")
+                log.debug("price from timeline map ${planItem.models.get(conversation.startDate)}")
 
                 try {
                     // validate attributes of updated price
-                    PriceModelBL.validateAttributes(planItem.model)
+                    PriceModelBL.validateWsAttributes(planItem.models.values())
 
                     // re-order plan items by precedence, unless a validation exception is thrown
                     conversation.plan.planItems = sortPlanItems(conversation.plan.planItems)
+
+                    log.debug("Updated conversation plan ${conversation.plan}")
+                    log.debug("Updated conversation item ${conversation.plan.planItems[index]}")
 
                 } catch (SessionInternalError e) {
                     viewUtils.resolveException(flow, session.locale, e)
@@ -315,7 +344,7 @@ class PlanBuilderController {
                 def planItem = conversation.plan.planItems[index]
 
                 bindData(planItem, params, 'price')
-                planItem.model = PlanHelper.bindPriceModel(params)
+                planItem.models.put(conversation.startDate, PlanHelper.bindPriceModel(params))
 
                 params.newLineIndex = index
                 params.template = 'review'
@@ -329,15 +358,18 @@ class PlanBuilderController {
         addChainModel {
             action {
                 def index = params.int('index')
-                def planItem = conversation.plan.planItems[index]
-                planItem.model = PlanHelper.bindPriceModel(params)
+                def rootModel = PlanHelper.bindPriceModel(params)
 
                 // add new price model to end of chain
-                def model = planItem.model
+                def model = rootModel
                 while (model.next) {
                     model = model.next
                 }
                 model.next = new PriceModelWS();
+
+                // add updated model to the plan item
+                def planItem = conversation.plan.planItems[index]
+                planItem.models.put(conversation.startDate, rootModel)
 
                 params.newLineIndex = index
                 params.template = 'review'
@@ -352,11 +384,10 @@ class PlanBuilderController {
             action {
                 def index = params.int('index')
                 def modelIndex = params.int('modelIndex')
-                def planItem = conversation.plan.planItems[index]
-                planItem.model = PlanHelper.bindPriceModel(params)
+                def rootModel = PlanHelper.bindPriceModel(params)
 
                 // remove price model from the chain
-                def model = planItem.model
+                def model = rootModel
                 for (int i = 1; model != null; i++) {
                     if (i == modelIndex) {
                         model.next = model.next?.next
@@ -364,6 +395,10 @@ class PlanBuilderController {
                     }
                     model = model.next
                 }
+
+                // add updated model to the plan item
+                def planItem = conversation.plan.planItems[index]
+                planItem.models.put(conversation.startDate, rootModel)
 
                 params.newLineIndex = index
                 params.template = 'review'
@@ -378,20 +413,23 @@ class PlanBuilderController {
         addAttribute {
             action {
                 def index = params.int('index')
-                def planItem = conversation.plan.planItems[index]
-                planItem.model = PlanHelper.bindPriceModel(params)
+                def rootModel = PlanHelper.bindPriceModel(params)
 
                 def modelIndex = params.int('modelIndex')
                 def attribute = message(code: 'plan.new.attribute.key', args: [ params.attributeIndex ])
 
                 // find the model in the chain, and add a new attribute
-                def model = planItem.model
+                def model = rootModel
                 for (int i = 0; model != null; i++) {
                     if (i == modelIndex) {
                         model.attributes.put(attribute, '')
                     }
                     model = model.next
                 }
+
+                // add updated model to the plan item
+                def planItem = conversation.plan.planItems[index]
+                planItem.models.put(conversation.startDate, rootModel)
 
                 params.newLineIndex = index
                 params.template = 'review'
@@ -406,14 +444,13 @@ class PlanBuilderController {
         removeAttribute {
             action {
                 def index = params.int('index')
-                def planItem = conversation.plan.planItems[index]
-                planItem.model = PlanHelper.bindPriceModel(params)
+                def rootModel = PlanHelper.bindPriceModel(params)
 
                 def modelIndex = params.int('modelIndex')
                 def attributeIndex = params.int('attributeIndex')
 
                 // find the model in the chain, remove the attribute
-                def model = planItem.model
+                def model = rootModel
                 for (int i = 0; model != null; i++) {
                     if (i == modelIndex) {
                         def name = params["model.${modelIndex}.attribute.${attributeIndex}.name"]
@@ -421,6 +458,10 @@ class PlanBuilderController {
                     }
                     model = model.next
                 }
+
+                // add updated model to the plan item
+                def planItem = conversation.plan.planItems[index]
+                planItem.models.put(conversation.startDate, rootModel)
 
                 params.newLineIndex = index
                 params.template = 'review'

@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.item.db.PlanItemBundleDTO; com.sapienter.jbilling.server.item.db.ItemDTO; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelBL; com.sapienter.jbilling.server.item.db.PlanItemBundleDTO; com.sapienter.jbilling.server.item.db.ItemDTO; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 
 <%--
@@ -28,7 +28,9 @@
   @since 24-Jan-2011
 --%>
 <g:set var="product" value="${ItemDTO.get(planItem.itemId)}"/>
-<g:set var="strategy" value="${PriceModelStrategy.valueOf(planItem.model.type)?.getStrategy()}"/>
+<g:set var="model" value="${PriceModelBL.getWsPriceForDate(planItem.models, startDate)}"/>
+
+<g:set var="strategy" value="${PriceModelStrategy.valueOf(model.type)?.getStrategy()}"/>
 <g:set var="editable" value="${index == params.int('newLineIndex')}"/>
 
 <g:formRemote name="price-${index}-update-form" url="[action: 'edit']" update="column2" method="GET">
@@ -38,16 +40,16 @@
 
     <!-- review line ${index} -->
     <li id="line-${index}" class="line ${editable ? 'active' : ''}">
-        <g:set var="currency" value="${currencies.find{ it.id == planItem.model.currencyId}}"/>
+        <g:set var="currency" value="${currencies.find{ it.id == model.currencyId}}"/>
 
         <span class="description">
             ${planItem.precedence} &nbsp; ${product.description}
         </span>
         <span class="rate">
-            <g:formatNumber number="${planItem.model.getRateAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"/>
+            <g:formatNumber number="${model.getRateAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"/>
         </span>
         <span class="strategy">
-            <g:message code="price.strategy.${planItem.model.type}"/>
+            <g:message code="price.strategy.${model.type}"/>
         </span>
         <div style="clear: both;"></div>
     </li>
@@ -96,7 +98,7 @@
 
                 <br/>
 
-                <g:render template="/priceModel/builderModel" model="[model: planItem.model]"/>
+                <g:render template="/priceModel/builderModel" model="[model: model]"/>
             </div>
         </div>
 

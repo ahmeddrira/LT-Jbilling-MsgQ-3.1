@@ -23,12 +23,7 @@
 <div id="timeline">
     <div class="form-columns">
         <ul>
-            <%
-                def dates = []
-                plan.planItems.each{ dates.addAll(it.models.keySet()) }
-            %>
-
-            <g:each var="date" status="i" in="${dates}">
+            <g:each var="date" status="i" in="${pricingDates}">
                 <li class="${startDate.equals(date) ? 'current' : ''}">
                     <g:remoteLink action="edit" params="[_eventId: 'editDate', startDate : formatDate(date: date)]"
                                   update="column2" method="GET" onSuccess="timeline.refresh();">

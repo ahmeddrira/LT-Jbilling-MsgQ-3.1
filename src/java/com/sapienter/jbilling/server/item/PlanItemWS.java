@@ -50,6 +50,14 @@ public class PlanItemWS implements Serializable {
     public PlanItemWS() {
     }
 
+    public PlanItemWS(Integer itemId, PriceModelWS model, PlanItemBundleWS bundle) {
+        this.itemId = itemId;
+        this.bundle = bundle;
+
+        this.models.put(PriceModelWS.EPOCH_DATE, model);
+        this.model = model;
+    }
+
     public PlanItemWS(Integer itemId, SortedMap<Date, PriceModelWS> models, PlanItemBundleWS bundle) {
         this.itemId = itemId;
         this.models = models;

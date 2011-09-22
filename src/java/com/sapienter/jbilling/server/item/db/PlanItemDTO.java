@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Fetch;
@@ -159,6 +160,11 @@ public class PlanItemDTO implements Serializable {
      */
     public void addModel(Date date, PriceModelDTO price) {
         getModels().put(date != null ? date : PriceModelDTO.EPOCH_DATE, price);
+    }
+
+    @Transient
+    public PriceModelDTO getPrice(Date today) {
+        return PriceModelBL.getPriceForDate(models, today);
     }
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

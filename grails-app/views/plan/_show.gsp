@@ -53,11 +53,12 @@
                     <td class="value">${plan.period.getDescription(session['language_id'])}</td>
                 </tr>
 
-                <g:if test="${plan.item.defaultPrice}">
+                <g:if test="${plan.item.defaultPrices}">
+                    <g:set var="price" value="${plan.item.getPrice(new Date())}"/>
                     <tr>
-                        <td>${plan.item.defaultPrice.currency.code}</td>
+                        <td>${price.currency.code}</td>
                         <td class="value">
-                            <g:formatNumber number="${plan.item.defaultPrice.rate}" type="currency" currencySymbol="${plan.item.defaultPrice.currency.symbol}"/>
+                            <g:formatNumber number="${price.rate}" type="currency" currencySymbol="${price.currency.symbol}"/>
                         </td>
                     </tr>
                 </g:if>
@@ -126,7 +127,7 @@
 
                 <!-- price model -->
                 <tr><td colspan="4">&nbsp;</td></tr>
-                <g:render template="/plan/priceModel" model="[model: planItem.model]"/>
+                <g:render template="/plan/priceModel" model="[model: planItem.getPrice(new Date())]"/>
 
 
                 <!-- separator line -->

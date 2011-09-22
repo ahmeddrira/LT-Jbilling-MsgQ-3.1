@@ -41,6 +41,7 @@ import com.sapienter.jbilling.client.pricing.util.PlanHelper
 import com.sapienter.jbilling.server.item.PlanItemBundleWS
 import com.sapienter.jbilling.server.item.db.PlanItemBundleDTO
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import java.util.Map.Entry
 
 /**
  * Plan builder controller
@@ -62,11 +63,11 @@ class PlanBuilderController {
     }
 
     /**
-     * Sorts a list of PlanItemWS objects by precedence and itemId.
-     *
-     * @param planItems plan items
-     * @return sorted list of plan items
-     */
+        * Sorts a list of PlanItemWS objects by precedence and itemId.
+        *
+        * @param planItems plan items
+        * @return sorted list of plan items
+        */
     def sortPlanItems(planItems) {
         // precedence in ascending order, item id in descending
         return planItems.sort { a, b->
@@ -75,10 +76,11 @@ class PlanBuilderController {
     }
 
     def editFlow = {
+
         /**
-         * Initializes the plan builder, putting necessary data into the flow and conversation
-         * contexts so that it can be referenced later.
-         */
+                * Initializes the plan builder, putting necessary data into the flow and conversation
+                * contexts so that it can be referenced later.
+                */
         initialize {
             action {
                 if (!params.id && !SpringSecurityUtils.ifAllGranted("PLAN_60")) {
@@ -160,6 +162,7 @@ class PlanBuilderController {
                 flow.orderPeriods = orderPeriods
 
                 // conversation scope
+                conversation.startDate = new Date()
                 conversation.plan = plan
                 conversation.product = product
                 conversation.products = productService.getFilteredProducts(company, params)
@@ -168,8 +171,8 @@ class PlanBuilderController {
         }
 
         /**
-         * Renders the plan details tab panel.
-         */
+                * Renders the plan details tab panel.
+                */
         showDetails {
             action {
                 params.template = 'details'
@@ -178,8 +181,8 @@ class PlanBuilderController {
         }
 
         /**
-         * Renders the product list tab panel, filtering the product list by the given criteria.
-         */
+                * Renders the product list tab panel, filtering the product list by the given criteria.
+                */
         showProducts {
             action {
                 // filter using the first item type by default
@@ -193,8 +196,50 @@ class PlanBuilderController {
         }
 
         /**
-         * Add a new price for the given product id, and render the review panel.
-         */
+                * Renders the pricing timeline header, allowing navigation and creation of pricing dates.
+                */
+        showTimeline {
+            action {
+                params.template = 'timeline'
+            }
+            on("success").to("build")
+
+        }
+
+        addDate {
+            action {
+                def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+                conversation.startDate = startDate
+
+                log.debug("adding pricing date ${params.startDate}")
+
+                // find the closet price model to the new date and copy it
+                // to create a new price for the given start date
+                for (PlanItemWS item : conversation.plan.planItems) {
+                    PriceModelWS price = PriceModelBL.getWsPriceForDate(item.getModels(), startDate)
+                    item.addModel(startDate, new PriceModelWS(price));
+                }
+
+                params.template = 'review'
+            }
+            on("success").to("build")
+        }
+
+        editDate {
+            action {
+                def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+                conversation.startDate = startDate
+
+                log.debug("editing pricing date ${params.startDate}")
+
+                params.template = 'review'
+            }
+            on("success").to("build")
+        }
+
+        /**
+                * Add a new price for the given product id, and render the review panel.
+                */
         addPrice {
             action {
                 // product being added
@@ -219,8 +264,8 @@ class PlanBuilderController {
         }
 
         /**
-         * Updates a price and renders the review panel.
-         */
+                * Updates a price and renders the review panel.
+                */
         updatePrice {
             action {
                 def index = params.int('index')
@@ -251,8 +296,8 @@ class PlanBuilderController {
         }
 
         /**
-         * Removes a item price from the plan and renders the review panel.
-         */
+                * Removes a item price from the plan and renders the review panel.
+                */
         removePrice {
             action {
                 conversation.plan.planItems.remove(params.int('index'))
@@ -262,8 +307,8 @@ class PlanBuilderController {
         }
 
         /**
-         * Updates a strategy of a model in a pricing chain.
-         */
+                * Updates a strategy of a model in a pricing chain.
+                */
         updateStrategy {
             action {
                 def index = params.int('index')
@@ -279,8 +324,8 @@ class PlanBuilderController {
         }
 
         /**
-         * Adds an additional price model to the chain.
-         */
+                * Adds an additional price model to the chain.
+                */
         addChainModel {
             action {
                 def index = params.int('index')
@@ -300,6 +345,9 @@ class PlanBuilderController {
             on("success").to("build")
         }
 
+        /**
+                * Removes a price model from the chain.
+                */
         removeChainModel {
             action {
                 def index = params.int('index')
@@ -324,9 +372,9 @@ class PlanBuilderController {
         }
 
         /**
-         * Adds a new attribute field to the plan price model, and renders the review panel.
-         * The rendered review panel will have the edited line open for further modification.
-         */
+               * Adds a new attribute field to the plan price model, and renders the review panel.
+               * The rendered review panel will have the edited line open for further modification.
+               */
         addAttribute {
             action {
                 def index = params.int('index')
@@ -352,9 +400,9 @@ class PlanBuilderController {
         }
 
         /**
-         * Removes the given attribute name from a plan price model, and renders the review panel.
-         * The rendered review panel will have the edited line open for further modification.
-         */
+               * Removes the given attribute name from a plan price model, and renders the review panel.
+               * The rendered review panel will have the edited line open for further modification.
+               */
         removeAttribute {
             action {
                 def index = params.int('index')
@@ -382,8 +430,8 @@ class PlanBuilderController {
         }
 
         /**
-         * Updates the plan description and renders the review panel.
-         */
+                * Updates the plan description and renders the review panel.
+                */
         updatePlan {
             action {
                 bindData(conversation.plan, params, 'plan')
@@ -399,19 +447,22 @@ class PlanBuilderController {
         }
 
         /**
-         * Shows the plan builder. This is the "waiting" state that branches out to the rest
-         * of the flow. All AJAX actions and other states that build on the order should
-         * return here when complete.
-         *
-         * If the parameter 'template' is set, then a partial view template will be rendered instead
-         * of the complete 'build.gsp' page view (workaround for the lack of AJAX support in web-flow).
-         */
+                * Shows the plan builder. This is the "waiting" state that branches out to the rest
+                * of the flow. All AJAX actions and other states that build on the order should
+                * return here when complete.
+                *
+                * If the parameter 'template' is set, then a partial view template will be rendered instead
+                * of the complete 'build.gsp' page view (workaround for the lack of AJAX support in web-flow).
+                */
         build {
             // list
             on("details").to("showDetails")
             on("products").to("showProducts")
+            on("timeline").to("showTimeline")
 
             // pricing
+            on("addDate").to("addDate")
+            on("editDate").to("editDate")
             on("addPrice").to("addPrice")
             on("updatePrice").to("updatePrice")
             on("removePrice").to("removePrice")
@@ -430,8 +481,8 @@ class PlanBuilderController {
         }
 
         /**
-         * Saves the plan and exits the builder flow.
-         */
+                * Saves the plan and exits the builder flow.
+                */
         savePlan {
             action {
                 try {

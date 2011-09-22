@@ -64,6 +64,7 @@
                         <g:message code="plan.review.period.price" args="[price, orderPeriod.getDescription(session['language_id'])]"/>
                     </g:else>
                 </h2>
+                <h3 class="right">On date: <g:formatDate date="${startDate}"/></h3>
             </div>
 
             <div style="clear: both;"></div>

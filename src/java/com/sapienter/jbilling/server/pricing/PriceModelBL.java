@@ -220,7 +220,11 @@ public class PriceModelBL {
      * @return found price for date, or null if no price found
      */
     public static PriceModelDTO getPriceForDate(SortedMap<Date, PriceModelDTO> prices, Date date) {
-        if (date == null && !prices.isEmpty()) {
+        if (prices == null || prices.isEmpty()) {
+            return null;
+        }
+
+        if (date == null) {
             return prices.get(prices.firstKey());
         }
 
@@ -248,7 +252,11 @@ public class PriceModelBL {
      * @return found price for date, or null if no price found
      */
     public static PriceModelWS getWsPriceForDate(SortedMap<Date, PriceModelWS> prices, Date date) {
-        if (date == null && !prices.isEmpty()) {
+        if (prices == null || prices.isEmpty()) {
+            return null;
+        }
+
+        if (date == null) {
             return prices.get(prices.firstKey());
         }
 

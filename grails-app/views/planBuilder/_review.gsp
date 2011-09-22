@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.util.Constants" %>
+<%@ page import="com.sapienter.jbilling.server.user.db.CompanyDTO; com.sapienter.jbilling.server.util.Constants" %>
 <%--
   Renders a PlanWS as a quick preview of the plan being built. This view also allows
   individual plan prices to be edited and removed from the order.
@@ -53,8 +53,14 @@
             </div>
             <div class="column">
                 <h2 class="right">
-                    <g:set var="currency" value="${currencies.find{ it.id == product.defaultPrice.currencyId }}"/>
-                    <g:set var="price" value="${formatNumber(number: product.defaultPrice.getRateAsDecimal(), type: 'currency', currencySymbol: currency.symbol)}"/>
+                    <g:if test="${product.defaultPrices}">
+                        <g:set var="currency" value="${currencies.find{ it.id == product.defaultPrice.currencyId }}"/>
+                        <g:set var="price" value="${formatNumber(number: product.defaultPrice.getRateAsDecimal(), type: 'currency', currencySymbol: currency.symbol)}"/>
+                    </g:if>
+                    <g:else>
+                        <g:set var="currency" value="${CompanyDTO.get(session['company_id']).currency}"/>
+                        <g:set var="price" value="${formatNumber(number: BigDecimal.ZERO, type: 'currency', currencySymbol: currency.symbol)}"/>
+                    </g:else>
 
                     <g:if test="${plan.periodId == Constants.ORDER_PERIOD_ONCE}">
                         <g:message code="plan.review.onetime.price" args="[price]"/>

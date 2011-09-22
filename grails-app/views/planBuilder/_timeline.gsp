@@ -39,7 +39,7 @@
                     <g:set var="pricingDate" value="${formatDate(date: PriceModelWS.EPOCH_DATE)}"/>
                     <g:remoteLink action="edit" params="[_eventId: 'editDate', startDate : pricingDate]"
                                   update="column2" method="GET" onSuccess="timeline.refresh();">
-                        ${startpricingDateDate}
+                        ${pricingDate}
                     </g:remoteLink>
                 </li>
             </g:else>

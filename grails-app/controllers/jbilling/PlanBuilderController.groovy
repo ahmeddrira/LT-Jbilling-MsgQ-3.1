@@ -164,7 +164,16 @@ class PlanBuilderController {
 
                 // pricing timeline
                 def pricingDates = collectPricingDates(plan.planItems)
-                def startDate = (!product.id || product.id == 0) ? PriceModelWS.EPOCH_DATE : pricingDates.asList().last()
+                def startDate
+                if (!product.id || product.id == 0) {
+                    startDate = PriceModelWS.EPOCH_DATE
+                } else {
+                    if (pricingDates) {
+                        startDate = pricingDates.asList().last()
+                    } else {
+                        startDate = PriceModelWS.EPOCH_DATE
+                    }
+                }
 
                 // add breadcrumb
                 def crumbName = params.id ? 'update' : 'create'
@@ -274,6 +283,9 @@ class PlanBuilderController {
                 // as the new objects starting values
                 def priceModel = new PriceModelWS(productPrice)
                 priceModel.id = null
+
+                if (!priceModel.type) priceModel.type = PriceModelStrategy.FLAT.name()
+                if (!priceModel.currencyId) priceModel.currencyId = flow.company.currency.id
 
                 // empty bundle
                 def bundle = new PlanItemBundleWS()

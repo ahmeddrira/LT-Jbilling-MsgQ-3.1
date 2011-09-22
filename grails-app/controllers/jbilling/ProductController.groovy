@@ -413,7 +413,7 @@ class ProductController {
         def priceModel = PlanHelper.bindPriceModel(params)
         def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
     }
 
     def addChainModel = {
@@ -429,7 +429,7 @@ class ProductController {
         }
         model.next = new PriceModelWS();
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
     }
 
     def removeChainModel = {
@@ -449,7 +449,7 @@ class ProductController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
     }
 
     def addAttribute = {
@@ -469,7 +469,7 @@ class ProductController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
     }
 
     def removeAttribute = {
@@ -490,20 +490,20 @@ class ProductController {
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
     }
 
     def editDate = {
         def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
         def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
-        render template: '/priceModel/model', model: [ startDate: startDate, models: product.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
     }
 
     def addDate = {
         def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
 
-        render template: '/priceModel/model', model: [ model: new PriceModelWS(), models: product.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ model: new PriceModelWS(), models: product?.defaultPrices, currencies: currencies ]
     }
 
     def removeDate = {
@@ -525,7 +525,7 @@ class ProductController {
             flash.args = [ product.id ]
         }
 
-        render template: '/priceModel/model', model: [ models: product.defaultPrices, currencies: currencies ]
+        render template: '/priceModel/model', model: [ models: product?.defaultPrices, currencies: currencies ]
     }
 
     def saveDate = {
@@ -616,7 +616,9 @@ class ProductController {
             def price = PlanHelper.bindPriceModel(params)
             def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
-            product.defaultPrices = oldProduct.defaultPrices
+            if (oldProduct) {
+                product.defaultPrices = oldProduct.defaultPrices
+            }
             product.defaultPrices.put(startDate, price)
         }
     }

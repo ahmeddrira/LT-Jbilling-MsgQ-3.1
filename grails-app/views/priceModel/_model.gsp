@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelDTO; com.sapienter.jbilling.server.pricing.PriceModelBL; com.sapienter.jbilling.server.pricing.db.ChainPosition; org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelWS; com.sapienter.jbilling.server.pricing.db.PriceModelDTO; com.sapienter.jbilling.server.pricing.PriceModelBL; com.sapienter.jbilling.server.pricing.db.ChainPosition; org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 <%--
   Editor form for price models.
@@ -29,7 +29,7 @@
 
 <!-- model and date to display -->
 <g:set var="startDate" value="${startDate ?: new Date()}"/>
-<g:set var="model" value="${model ?: PriceModelBL.getWsPriceForDate(models, startDate)}"/>
+<g:set var="model" value="${model ?: models ? PriceModelBL.getWsPriceForDate(models, startDate) : null}"/>
 
 <!-- local variables -->
 <g:set var="types" value="${PriceModelStrategy.getStrategyByChainPosition(ChainPosition.START)}"/>
@@ -37,7 +37,10 @@
 <g:set var="templateName" value="${WordUtils.uncapitalize(WordUtils.capitalizeFully(type.name(), ['_'] as char[]).replaceAll('_',''))}"/>
 <g:set var="modelIndex" value="${0}"/>
 
+<g:set var="isNew" value="${model == null || model.id == 0}"/>
+
 <div id="priceModel">
+    <g:if test="${!isNew && models}">
     <div id="timeline">
         <div class="form-columns">
             <ul>
@@ -64,24 +67,14 @@
                     </li>
                 </g:if>
 
+
                 <li class="new">
                     <a onclick="addDate()"><g:message code="button.add.price.date"/></a>
                 </li>
             </ul>
         </div>
-
-        %{-- button for "Add Date" instead of link in timeline --}%
-        %{--
-        <div class="form-columns">
-            <div class="column">
-                <g:applyLayout name="form/text">
-                    <content tag="label">&nbsp;</content>
-                    <a class="submit add" onclick="addDate()"><span><g:message code="button.add.price.date"/></span></a>
-                </g:applyLayout>
-            </div>
-        </div>
-        --}%
     </div>
+    </g:if>
 
     <!-- root price model -->
     <div class="form-columns">
@@ -129,8 +122,11 @@
     <!-- controls -->
     <div class="btn-row">
         <a class="submit add" onclick="addChainModel()"><span><g:message code="button.add.chain"/></span></a>
-        <a class="submit save" onclick="saveDate()"><span><g:message code="button.save"/></span></a>
-        <a class="submit delete" onclick="removeDate()"><span><g:message code="button.delete"/></span></a>
+
+        <g:if test="${!isNew && models}">
+            <a class="submit save" onclick="saveDate()"><span><g:message code="button.save"/></span></a>
+            <a class="submit delete" onclick="removeDate()"><span><g:message code="button.delete"/></span></a>
+        </g:if>
 
         <g:hiddenField name="attributeIndex"/>
         <g:hiddenField name="modelIndex"/>

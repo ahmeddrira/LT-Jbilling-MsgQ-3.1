@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.task.SaveToJDBCMediationErrorHandler;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.process.ProcessStatusWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
@@ -49,6 +50,10 @@ import java.util.List;
 
 public class MediationTest extends TestCase {
 
+    private final static Integer ASTERISK_TEST_CFG_ID = 10;
+    private final static Integer JDBC_READER_HIPERSONIC_CDR_CFG_ID = 20;
+    private final static Integer JDBC_READER_JBILLING_DB_CFG_ID = 30;
+
     private JbillingAPI api;
 
     public MediationTest() {
@@ -65,10 +70,58 @@ public class MediationTest extends TestCase {
         api = JbillingAPIFactory.getAPI();
     }
 
-    public void test01Trigger() throws Exception {
+    public void test00TriggerAndCheckStatus() throws Exception {
         System.out.println("testTrigger");
 
-        api.triggerMediation();
+        Integer processId = api.triggerMediationByConfiguration(ASTERISK_TEST_CFG_ID);
+        boolean isProcessing = api.isMediationProcessRunning();
+        ProcessStatusWS status = api.getMediationProcessStatus();
+        Integer repeatProcessId = api.triggerMediationByConfiguration(ASTERISK_TEST_CFG_ID);
+
+        // check previous calls
+        assertNotNull("Mediation should be triggered at first time!", processId);
+        // todo: possible fail if incorrect mediation configuration or 'quick' machines
+        // in common case 2d-4d calls to api should be parall to processing first call
+        assertTrue("In common case first process should be in running state. Try again on your machine or comment assert statement", isProcessing);
+        assertNotNull("Status should be retrieved!", status);
+        assertNotNull("Start date should be presented", status.getStart());
+        assertNull("End date should be empty in common case", status.getEnd());
+        assertEquals("Status should be RUNNING in common case", ProcessStatusWS.State.RUNNING, status.getState());
+        assertNull("Second mediation process to the same cfg should not be runned (in common case)", repeatProcessId);
+
+        Integer secondProcess = api.triggerMediationByConfiguration(JDBC_READER_HIPERSONIC_CDR_CFG_ID);
+        assertNotNull("Another configuration for same entity should be triggered successfully", secondProcess);
+        Integer thirdProcess = api.triggerMediationByConfiguration(JDBC_READER_JBILLING_DB_CFG_ID);
+        assertNotNull("Another configuration for same entity should be triggered successfully");
+        // now wait until finishing all mediation processes
+        waitForMediationComplete(25 * 60 * 1000);  // todo: possible adjust interval
+
+        ProcessStatusWS completedStatus = api.getMediationProcessStatus();
+        assertNotNull("Status should be retrieved", completedStatus);
+        if (completedStatus.getProcessId().equals(processId)) { // asterisk test
+            assertEquals("Asterisk test has error records, status should be FAILED", ProcessStatusWS.State.FAILED, completedStatus.getState());
+        } else if (completedStatus.getProcessId().equals(secondProcess) || completedStatus.getProcessId().equals(thirdProcess)) {
+            List<MediationRecordWS> processedRecords = api.getMediationRecordsByMediationProcess(completedStatus.getProcessId());
+            boolean hasErrors = false;
+            for (MediationRecordWS record : processedRecords) {
+                if (record.getRecordStatusId().equals(Constants.MEDIATION_RECORD_STATUS_ERROR_DECLARED)
+                        || record.getRecordStatusId().equals(Constants.MEDIATION_RECORD_STATUS_ERROR_DETECTED)) {
+                    hasErrors = true;
+                    break;
+                }
+            }
+            if (hasErrors) {
+                assertEquals("Process status should be FAILED", ProcessStatusWS.State.FAILED, completedStatus.getState());
+            } else {
+                assertEquals("Process status should be FINISHED", ProcessStatusWS.State.FINISHED, completedStatus.getState());
+            }
+        }
+        MediationProcessWS processWS = api.getMediationProcess(completedStatus.getProcessId());
+        assertNotNull("Mediation process should be retrieved", processWS);
+        assertEquals("Mediation process should be filled", processWS.getId(), completedStatus.getProcessId());
+    }
+
+    public void test01Trigger() throws Exception {
 
         // 1 existing process (for duplicate testing), 3 new pricesses from trigger();
         List<MediationProcessWS> all = api.getAllMediationProcesses();
@@ -77,7 +130,7 @@ public class MediationTest extends TestCase {
 
         Collection <MediationRecordWS> processedRecords = null;
         for (MediationProcessWS process : all) {
-            if (process.getConfigurationId() == 10 && process.getOrdersAffected() > 0) {
+            if (process.getConfigurationId().equals(ASTERISK_TEST_CFG_ID) && process.getOrdersAffected() > 0) {
                 // total orders touched should equal the number of records processed minus errors & non billable
                 // 10131 events - 2 errors - 1 non billable = 10128
                 assertEquals("The process touches an order for each event", new Integer(10128), process.getOrdersAffected());
@@ -439,10 +492,10 @@ public class MediationTest extends TestCase {
          Collection <MediationRecordWS> processedRecordsFromJbillingTest = null;
          Collection <MediationRecordWS> processedRecordsFromHipersonic = null;
          for (MediationProcessWS process : all) {
-             if (process.getConfigurationId() == 30) {
+             if (process.getConfigurationId().equals(JDBC_READER_JBILLING_DB_CFG_ID)) {
                  // JDBCReader from jbilliing_test
                  processedRecordsFromJbillingTest = api.getMediationRecordsByMediationProcess(process.getId());
-             } else if (process.getConfigurationId() == 20) {
+             } else if (process.getConfigurationId().equals(JDBC_READER_HIPERSONIC_CDR_CFG_ID)) {
                  // JDBCReader from hipersonic jbilling_cdr DB
                  processedRecordsFromHipersonic = api.getMediationRecordsByMediationProcess(process.getId());
              }
@@ -513,5 +566,19 @@ public class MediationTest extends TestCase {
         assertEquals(message,
                      (Object) (expected == null ? null : expected.setScale(2, RoundingMode.HALF_UP)),
                      (Object) (actual == null ? null : actual.setScale(2, RoundingMode.HALF_UP)));
+    }
+
+    private void waitForMediationComplete(Integer maxTime) {
+        Long start = new Date().getTime();
+        while (api.isMediationProcessRunning() && new Date().getTime() < maxTime + start) {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if (new Date().getTime() > maxTime + start) {
+            fail("Max time for mediation completion is exceeded");
+        }
     }
 }

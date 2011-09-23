@@ -31,6 +31,13 @@
     <div id="main">
         <g:render template="/layouts/includes/breadcrumbs"/>
 
+        <!-- optional top section -->
+        <g:if test="${pageProperty(name: 'page.top')}">
+            <div class="top-hold">
+                <g:pageProperty name="page.top"/>
+            </div>
+        </g:if>
+
         <!-- content columns -->
         <div class="columns-holder">
             <div class="column panel" id="column1">

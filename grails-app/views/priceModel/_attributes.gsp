@@ -84,7 +84,7 @@
     </content>
 
     <a onclick="addModelAttribute(this, ${modelIndex}, ${attributeIndex})">
-        <img src="${resource(dir:'images', file:'add.png')}" alt="remove"/>
+        <img src="${resource(dir:'images', file:'add.png')}" alt="add"/>
     </a>
 </g:applyLayout>
 

@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.pricing.db.ChainPosition; org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelWS; com.sapienter.jbilling.server.pricing.db.PriceModelDTO; com.sapienter.jbilling.server.pricing.PriceModelBL; com.sapienter.jbilling.server.pricing.db.ChainPosition; org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 <%--
   Editor form for price models.
@@ -27,15 +27,65 @@
   @since  02-Feb-2011
 --%>
 
+<!-- model and date to display -->
+<g:set var="startDate" value="${startDate ?: new Date()}"/>
+<g:set var="model" value="${model ?: models ? PriceModelBL.getWsPriceForDate(models, startDate) : null}"/>
+
+<!-- local variables -->
 <g:set var="types" value="${PriceModelStrategy.getStrategyByChainPosition(ChainPosition.START)}"/>
 <g:set var="type" value="${model?.type ? PriceModelStrategy.valueOf(model.type) : types?.asList()?.first()}"/>
 <g:set var="templateName" value="${WordUtils.uncapitalize(WordUtils.capitalizeFully(type.name(), ['_'] as char[]).replaceAll('_',''))}"/>
 <g:set var="modelIndex" value="${0}"/>
 
+<g:set var="isNew" value="${model == null || model.id == 0}"/>
+
 <div id="priceModel">
+    <g:if test="${!isNew && models}">
+    <div id="timeline">
+        <div class="form-columns">
+            <ul>
+                <g:each var="modelEntry" in="${models.entrySet()}">
+                    <g:if test="${model.equals(modelEntry.getValue()) || startDate.equals(modelEntry.getKey())}">
+                        <li class="current">
+                            <g:set var="startDate" value="${modelEntry.getKey()}"/>
+                            <g:set var="date" value="${formatDate(date: startDate)}"/>
+                            <a onclick="editDate('${date}')">${date}</a>
+                        </li>
+                    </g:if>
+                    <g:else>
+                        <li>
+                            <g:set var="date" value="${formatDate(date: modelEntry.getKey())}"/>
+                            <a onclick="editDate('${date}')">${date}</a>
+                        </li>
+                    </g:else>
+                </g:each>
+
+                <g:if test="${!models.containsKey(startDate)}">
+                    <li class="current">
+                        <g:set var="date" value="${formatDate(date: startDate)}"/>
+                        <a onclick="editDate('${date}')">${date}</a>
+                    </li>
+                </g:if>
+
+
+                <li class="new">
+                    <a onclick="addDate()"><g:message code="button.add.price.date"/></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    </g:if>
+
     <!-- root price model -->
     <div class="form-columns">
         <div class="column">
+            <g:applyLayout name="form/date">
+                <content tag="label"><g:message code="plan.item.start.date"/></content>
+                <content tag="label.for">startDate</content>
+                <g:textField class="field" name="startDate" value="${formatDate(date: startDate, formatName: 'datepicker.format')}"/>
+                <g:hiddenField name="originalStartDate" value="${formatDate(date: startDate, formatName: 'date.format')}"/>
+            </g:applyLayout>
+
             <g:render template="/priceModel/strategy/${templateName}" model="[model: model, type: type, modelIndex: modelIndex, types: types, currencies: currencies]"/>
         </div>
         <div class="column">
@@ -64,18 +114,24 @@
         <g:set var="next" value="${next.next}"/>
     </g:while>
 
-    <!-- controls -->
-    <div class="form-columns">
-        <div class="column">
-            <g:applyLayout name="form/text">
-                <content tag="label">&nbsp;</content>
-                <a class="submit add" onclick="addChainModel()"><span><g:message code="button.add.chain"/></span></a>
-            </g:applyLayout>
-
-            <g:hiddenField name="attributeIndex"/>
-            <g:hiddenField name="modelIndex"/>
-        </div>
+    <!-- spacer -->
+    <div>
+        <br/>&nbsp;
     </div>
+
+    <!-- controls -->
+    <div class="btn-row">
+        <a class="submit add" onclick="addChainModel()"><span><g:message code="button.add.chain"/></span></a>
+
+        <g:if test="${!isNew && models}">
+            <a class="submit save" onclick="saveDate()"><span><g:message code="button.save"/></span></a>
+            <a class="submit delete" onclick="removeDate()"><span><g:message code="button.delete"/></span></a>
+        </g:if>
+
+        <g:hiddenField name="attributeIndex"/>
+        <g:hiddenField name="modelIndex"/>
+    </div>
+
 
     <script type="text/javascript">
         /**
@@ -84,32 +140,70 @@
         $(function() {
             $('.model-type').change(function() {
                 $.ajax({
-                   type: 'POST',
-                   url: '${createLink(action: 'updateStrategy')}',
-                   data: $('#priceModel').parents('form').serialize(),
-                   success: function(data) { $('#priceModel').replaceWith(data); }
-                });
+                           type: 'POST',
+                           url: '${createLink(action: 'updateStrategy')}',
+                           data: $('#priceModel').parents('form').serialize(),
+                           success: function(data) { $('#priceModel').replaceWith(data); }
+                       });
             });
         });
 
+        function editDate(date) {
+            $('#startDate').val(date);
+
+            $.ajax({
+                       type: 'POST',
+                       url: '${createLink(action: 'editDate')}',
+                       data: $('#priceModel').parents('form').serialize(),
+                       success: function(data) { $('#priceModel').replaceWith(data); }
+                   });
+        }
+
+        function addDate() {
+            $.ajax({
+                       type: 'POST',
+                       url: '${createLink(action: 'addDate')}',
+                       data: $('#priceModel').parents('form').serialize(),
+                       success: function(data) { $('#priceModel').replaceWith(data); }
+                   });
+        }
+
+        function removeDate() {
+            $.ajax({
+                       type: 'POST',
+                       url: '${createLink(action: 'removeDate')}',
+                       data: $('#priceModel').parents('form').serialize(),
+                       success: function(data) { $('#priceModel').replaceWith(data); }
+                   });
+        }
+
+        function saveDate() {
+            $.ajax({
+                       type: 'POST',
+                       url: '${createLink(action: 'saveDate')}',
+                       data: $('#priceModel').parents('form').serialize(),
+                       success: function(data) { $('#priceModel').replaceWith(data); }
+                   });
+        }
+
         function addChainModel() {
             $.ajax({
-               type: 'POST',
-               url: '${createLink(action: 'addChainModel')}',
-               data: $('#priceModel').parents('form').serialize(),
-               success: function(data) { $('#priceModel').replaceWith(data); }
-            });
+                       type: 'POST',
+                       url: '${createLink(action: 'addChainModel')}',
+                       data: $('#priceModel').parents('form').serialize(),
+                       success: function(data) { $('#priceModel').replaceWith(data); }
+                   });
         }
 
         function removeChainModel(element, modelIndex) {
             $('#modelIndex').val(modelIndex);
 
             $.ajax({
-               type: 'POST',
-               url: '${createLink(action: 'removeChainModel')}',
-               data: $('#priceModel').parents('form').serialize(),
-               success: function(data) { $('#priceModel').replaceWith(data); }
-            });
+                       type: 'POST',
+                       url: '${createLink(action: 'removeChainModel')}',
+                       data: $('#priceModel').parents('form').serialize(),
+                       success: function(data) { $('#priceModel').replaceWith(data); }
+                   });
         }
 
         function addModelAttribute(element, modelIndex, attributeIndex) {
@@ -117,11 +211,11 @@
             $('#attributeIndex').val(attributeIndex);
 
             $.ajax({
-               type: 'POST',
-               url: '${createLink(action: 'addAttribute')}',
-               data: $('#priceModel').parents('form').serialize(),
-               success: function(data) { $('#priceModel').replaceWith(data); }
-            });
+                       type: 'POST',
+                       url: '${createLink(action: 'addAttribute')}',
+                       data: $('#priceModel').parents('form').serialize(),
+                       success: function(data) { $('#priceModel').replaceWith(data); }
+                   });
         }
 
         function removeModelAttribute(element, modelIndex, attributeIndex) {
@@ -129,11 +223,11 @@
             $('#attributeIndex').val(attributeIndex);
 
             $.ajax({
-               type: 'POST',
-               url: '${createLink(action: 'removeAttribute')}',
-               data: $('#priceModel').parents('form').serialize(),
-               success: function(data) { $('#priceModel').replaceWith(data); }
-            });
+                       type: 'POST',
+                       url: '${createLink(action: 'removeAttribute')}',
+                       data: $('#priceModel').parents('form').serialize(),
+                       success: function(data) { $('#priceModel').replaceWith(data); }
+                   });
         }
     </script>
 </div>

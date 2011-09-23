@@ -1285,6 +1285,12 @@ alter table order_line alter column use_item set not null;
 alter table price_model alter column strategy_type type varchar(40); -- postgresql
 -- alter table price_model modify strategy_type varchar(40); -- mysql
 
+
+-- Date: July-2011
+-- Description: Missing test notification plug-in
+insert into pluggable_task_type values (90, 7, 'com.sapienter.jbilling.server.notification.task.TestNotificationTask',0);
+
+
 -- Date: 28-Jul-2011
 -- Description: user names can not be less than 5 characters. jB1 and 2 allows for a length of 4 chars
 update base_user set user_name = user_name || '1' where id in ( select id from base_user where length(user_name) < 5); -- postgresql
@@ -1363,3 +1369,38 @@ CREATE TABLE enumeration_values (
 ALTER TABLE contact_field_type add column display_in_view smallint default 0;
 ALTER TABLE contact_field_type ALTER COLUMN data_type TYPE VARCHAR(50);
 
+
+-- Date: 15-Aug-2011
+-- Redmine Issue: #1212
+-- Description: Add date and time dimension to pricing models
+
+-- map of item prices with start dates
+drop table if exists item_price_timeline;
+create table item_price_timeline (
+    item_id int not null,
+    price_model_id int not null,
+    start_date timestamp,
+    primary key (item_id, start_date),
+    unique (price_model_id)
+);
+alter table item_price_timeline add constraint item_timeline_price_model_id_FK foreign key (price_model_id) references price_model;
+alter table item_price_timeline add constraint item_timeline_item_id_FK foreign key (item_id) references item;
+
+insert into item_price_timeline (item_id, price_model_id, start_date) select id, price_model_id, '1970-01-01 00:00' as start_date from item where price_model_id is not null;
+alter table item drop column price_model_id;
+
+-- map of plan item prices with start dates
+drop table if exists plan_item_price_timeline;
+create table plan_item_price_timeline (
+    plan_item_id int not null,
+    price_model_id int not null,
+    start_date timestamp,
+    primary key (plan_item_id, start_date),
+    unique (price_model_id)
+);
+
+alter table plan_item_price_timeline add constraint plan_item_timeline_price_mode_id_FK foreign key (price_model_id) references price_model;
+alter table plan_item_price_timeline add constraint plan_item_timeline_plan_item_id_FK foreign key (plan_item_id) references plan_item;
+
+insert into plan_item_price_timeline (plan_item_id, price_model_id, start_date) select id, price_model_id, '1970-01-01 00:00' as start_date from plan_item where price_model_id is not null;
+alter table plan_item drop column price_model_id;

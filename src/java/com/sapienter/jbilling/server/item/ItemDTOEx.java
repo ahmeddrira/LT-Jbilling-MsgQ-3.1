@@ -33,7 +33,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class ItemDTOEx implements WSSecured, Serializable {
 
@@ -49,6 +52,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer hasDecimals;
     private Integer deleted;
     private Integer entityId;
+    private SortedMap<Date, PriceModelWS> defaultPrices = new TreeMap<Date, PriceModelWS>();
     private PriceModelWS defaultPrice;
 
     // *** ItemDTOEx ***
@@ -246,6 +250,14 @@ public class ItemDTOEx implements WSSecured, Serializable {
 
     public void setPrice(BigDecimal price) {
         setPrice((price != null ? price.toString() : null));
+    }
+
+    public SortedMap<Date, PriceModelWS> getDefaultPrices() {
+        return defaultPrices;
+    }
+
+    public void setDefaultPrices(SortedMap<Date, PriceModelWS> defaultPrices) {
+        this.defaultPrices = defaultPrices;
     }
 
     public PriceModelWS getDefaultPrice() {

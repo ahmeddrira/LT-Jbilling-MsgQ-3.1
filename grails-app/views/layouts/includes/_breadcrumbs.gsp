@@ -26,7 +26,7 @@
 --%>
 
 <!-- breadcrumbs -->
-<div id="breadcrumbs" class="breadcrumbs">
+<div id="breadcrumbs" class="breadcrumbs top-hold">
     <div id="spinner" style="display: none;">
         <img src="${resource(dir:'images', file:'spinner.gif')}" alt="loading..." />
     </div>

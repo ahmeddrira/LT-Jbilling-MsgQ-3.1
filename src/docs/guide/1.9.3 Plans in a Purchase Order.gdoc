@@ -5,6 +5,7 @@ You will have to create two purchase orders. One purchase order will include the
 !monthlyorderplan.png!
 
 It is a monthly purchase order because you know that the customer has signed up for this plan. The specifics include that they pay a monthly fee of $10.
+
 The other purchase order will include the product, with the Period field set to: one time. Notice when you add the product, the price adjusts to show the plan amount of: $0.50.
 
 !productplanpurchaseorder.png!

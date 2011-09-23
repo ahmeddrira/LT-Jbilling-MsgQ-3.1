@@ -1,18 +1,18 @@
 {note} 
-Please Note: the following example is for demonstration purposes. In reality, an API call or mediation process would probably take care of automatically creating plans for you. 
+Please Note: the following example is for demonstration purposes. In reality, an API call or mediation process might be able take care of automatically creating plans for you. 
 {note}
 
-When creating a plan, the important aspect to remember is that you are creating *one* product, which will have a different price when it is attached to a plan.
+When creating a plan, the important aspect to remember is that you don't need to create the same product with different prices. You only need to create *one*. When a product is attached to a plan, the price can then be modified, and will be reflected on the invoice.
 
-Let's now take a look at the phone company scenario again. Remember, they sell international calls at $1 a minute. If a customer decides to go on their international plan, for $10 a month, they will receive international calls at $0.50 per minute. 
+Let's take a look at the phone company scenario again. Remember, they sell international calls at $1 a minute. If a customer decides to sign up for the international plan, for $10 a month, they will receive international calls at $0.50 per minute. 
 
-To create a plan, you first need a product to put into it. To learn more about creating a Product, please see Chapter 1: Products.
+To create a plan, the product (in this case, international calls at $1) must already be created. To learn more about creating a Product, please see Chapter 1: Products.
 
 !planproduct.png!
 
 As you can see, the International Calls product costs $1 because, as previously stated, international calls outside of the $10 monthly plan are $1 per minute. 
 
-Now that you have your purchase order, you need to add it to a plan.  Click on Plans to access the Plans screen and click on the 'Add New' button.
+The product now needs to be added to a plan.  Click on Plans in the navigation bar to access the Plans screen, and click on the 'Add New' button.
 
 !addnewbutton.png!
 
@@ -24,14 +24,22 @@ In this example, the Plan costs $10 per month. Therefore you would change the Pe
 
 Click on the Products tab, find International Calls and click on it. The product will appear in the pane on the right hand side of your screen. As this product costs $0.50 when it belongs to the International Calls plan, change the rate to 0.50.
 
+{note}
+Please Note: The system will add a product to the plan if you click on it. Meaning, if you click on the product multiple times, it will appear multiple times on the plan. 
+{note}
+
 !planproductchangerate.png! 
 
-When you are finished, click on the update button, and then on the 'Save Changes' button. You will be returned to the Plans screen, and your newly created plan will appear in the list. 
+When you are finished, click on the update button, and then on the 'Save Changes' button. You will be returned to the Plans screen, and your newly created plan will appear in the list.
 
-The following is a brief description of the fields you will find on this screen:
+{note}
+Please Note: Any product can belong to multiple plans. When added to a purchase order, the product will reflect the rate of the plan it belongs to.
+{note}
 
+The following is a brief description of the fields you will find on the new plans screen:
 
 *Precedence*
+
 This field describes the weight of a price on a product. The product with the higher precedence is always applied *first* to all plans that users subscribe to.
 
 For example: a National Calling company has two plans. The first includes 100 minutes for $0.20. The second plan includes 100 minutes for $0.10, as well as text messaging. The National Calling company sets the precedence higher for the second plan; therefore, this product will always be applied first to any subscription. 
@@ -64,9 +72,16 @@ If the account you are creating the plan for belongs to a sub-account, or a chil
 
 !addtocustomer.png!
 
+*Add Bundled Item if Already Exists*
+
+If this field is selected, the system will only add the bundled quantity if it doesn't currently exist for the customer. For example, You have a customer who is subscribed to two plans with the same bundle, plus other products. You do not want that customer to receive the same bundle twice, so you would select the 'Add Bundled Item if Already Exists' to prevent this from occurring. 
+
+!addbundleditemifalreadyexists.png!
+
 *Pricing*
 
 This field allows you to select a pricing model when you have added a product to a plan and are in the process of changing the rate amount.
+
 For more information on pricing models, please refer to Chapter 1: Products. 
 
 !pricing.png!
@@ -80,3 +95,11 @@ This field allows you to enter a new rate, or price for the product now that you
 From the dropdown menu, select the appropriate currency you wish to apply to the product. 
 
 !currencyplan.png!
+
+*Add Chain*
+
+clicking on the 'Add Chain' button allows you to add a percentage after the final rate of the pricing model you have selected. For example, if you have a metered price of $40.00 for a product, but you want add a 5% discount to it, it is possible to do so by adding a chain.
+
+!addchain2.png!
+
+This functionality is rarely used however, as most people find that it is easier to simply work the percentage into the rate.

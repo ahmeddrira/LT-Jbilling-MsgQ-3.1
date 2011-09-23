@@ -96,8 +96,8 @@
         </tr>
     </thead>
     <tbody>
-    <g:set var="allTTLFailed" value="${new BigDecimal(0)}"/>
-    <g:set var="TTL_PAID_AMT_ALLMTHDS" value="${new BigDecimal(0)}"/>
+    <g:set var="allTTLFailed" value="${BigDecimal.ZERO}"/>
+    <g:set var="TTL_PAID_AMT_ALLMTHDS" value="${BigDecimal.ZERO}"/>
     <g:set var="processRunUserDAS" value="${new ProcessRunUserDAS()}"/>
     <g:set var="SINGLE_CURR" value="${null}"/>
     
@@ -113,9 +113,9 @@
                 <g:set var="SINGLE_CURR" value="${INVOICE_CURNCY}"/>
             </g:if>
         
-            <g:set var="TTL_INVOICED" value="${new BigDecimal(0)}"/>
-            <g:set var="TTL_PAID_AMT" value="${new BigDecimal(0)}"/>
-            <g:set var="TTL_UNPAID_AMT" value="${new BigDecimal(0)}"/>
+            <g:set var="TTL_INVOICED" value="${BigDecimal.ZERO}"/>
+            <g:set var="TTL_PAID_AMT" value="${BigDecimal.ZERO}"/>
+            <g:set var="TTL_UNPAID_AMT" value="${BigDecimal.ZERO}"/>
         
             <tr style="background-color: ${idx % 2 == 0 ? '#fff' : '#eee'}">
             
@@ -160,8 +160,7 @@
                 </g:else>
                 
                 <td>
-                    <g:formatNumber number="${( countAndSumByCurrency.get(INVOICE_CURNCY) ?: 0) as BigDecimal}" 
-                            type="currency" currencySymbol="${INVOICE_CURNCY?.symbol}"/>
+                    <g:formatNumber number="${(countAndSumByCurrency.get(INVOICE_CURNCY) ?: 0) as BigDecimal}" type="currency" currencySymbol="${INVOICE_CURNCY?.symbol}"/>
                 </td>
                 <td class="col01">
                     <g:each var="PYM_MTHD_N_AMT" in="${mapOfPaymentListByCurrency?.get( INVOICE_CURNCY?.getId() as Integer )}">
@@ -170,14 +169,12 @@
                         <g:set var="TTL_PAID_AMT" value="${(TTL_PAID_AMT as BigDecimal).add( (PYM_MTHD_N_AMT as Object[])[1] as BigDecimal )}"/>
                         
                         <em>
-                        <g:formatNumber number="${((PYM_MTHD_N_AMT as Object[])[1]?: 0) as BigDecimal}" 
-                            type="currency" currencySymbol="${INVOICE_CURNCY?.symbol}"/>
+                        <g:formatNumber number="${((PYM_MTHD_N_AMT as Object[])[1]?: 0) as BigDecimal}" type="currency" currencySymbol="${INVOICE_CURNCY?.symbol}"/>
                         </em>
                     </g:each>
                     <g:set var="TTL_PAID_AMT_ALLMTHDS" value="${(TTL_PAID_AMT_ALLMTHDS as BigDecimal).add(TTL_PAID_AMT as BigDecimal)}"/>
                     <em><b>
-                        <g:formatNumber number="${(TTL_PAID_AMT ?: 0) as BigDecimal}" 
-                            type="currency" currencySymbol="${INVOICE_CURNCY?.symbol}"/>
+                        <g:formatNumber number="${TTL_PAID_AMT ?: BigDecimal.ZERO}" type="currency" currencySymbol="${INVOICE_CURNCY?.symbol}"/>
                    </b></em>
                 </td>
                 
@@ -190,8 +187,7 @@
                 
                 <td>
                     <!-- Its unpaid amount against which there has been no payment -->
-                    <g:formatNumber number="${( failedAmountsByCurrency.get(String.valueOf(INVOICE_CURNCY.getId())) ?: 0)}" 
-                            type="currency" currencySymbol="${INVOICE_CURNCY?.symbol}"/>
+                    <g:formatNumber number="${(failedAmountsByCurrency.get(String.valueOf(INVOICE_CURNCY.getId())) ?: 0)}" type="currency" currencySymbol="${INVOICE_CURNCY?.symbol}"/>
                     <%--
                     <g:formatNumber number="${( countAndSumByCurrency.get(INVOICE_CURNCY) ?: 0).subtract(TTL_PAID_AMT)}" 
                             type="currency" currencySymbol="${INVOICE_CURNCY?.symbol}"/>
@@ -201,7 +197,7 @@
                 <td>${INVOICE_CURNCY?.getDescription(session.language_id)}</td>
                 
             </tr>
-            <g:set var="TTL_INVOICED" value="${(TTL_INVOICED as BigDecimal).add( countAndSumByCurrency.get(INVOICE_CURNCY) as BigDecimal)}"/>
+            <g:set var="TTL_INVOICED" value="${TTL_INVOICED.add(countAndSumByCurrency.get(INVOICE_CURNCY) as BigDecimal)}"/>
             
         </g:each>
         
@@ -211,7 +207,7 @@
     
         <!-- Compute Total Not Paid (Sum of all failed payments) -->
         <g:each var="failedAmt" in="${failedAmountsByCurrency}">
-            <g:set var="TTL_UNPAID_AMT" value="${(TTL_UNPAID_AMT as BigDecimal).add(failedAmt[1] as BigDecimal)}"/>
+            <g:set var="TTL_UNPAID_AMT" value="${TTL_UNPAID_AMT.add(failedAmt[1] as BigDecimal)}"/>
         </g:each>
         
         <tr class="bg">
@@ -227,17 +223,14 @@
             </g:if>
             <g:else>
                 <td><strong><!-- Total Invoiced -->
-                        <g:formatNumber number="${((TTL_PAID_AMT_ALLMTHDS as BigDecimal).add(TTL_UNPAID_AMT as BigDecimal)?: 0) as BigDecimal}" 
-                            type="currency" currencySymbol="${SINGLE_CURR?.symbol}"/>
+                        <g:formatNumber number="${TTL_PAID_AMT_ALLMTHDS.add(TTL_UNPAID_AMT ?: BigDecimal.ZERO)}" type="currency" currencySymbol="${SINGLE_CURR?.symbol}"/>
                 </strong></td>
                 <td class="col01"><em>
-                        <g:formatNumber number="${ (TTL_PAID_AMT_ALLMTHDS?:0) as BigDecimal}" 
-                            type="currency" currencySymbol="${SINGLE_CURR?.symbol}"/>
+                        <g:formatNumber number="${TTL_PAID_AMT_ALLMTHDS ?: BigDecimal.ZERO}" type="currency" currencySymbol="${SINGLE_CURR?.symbol}"/>
                 </em></td>
                 <td></td>
                 <td><strong>
-                        <g:formatNumber number="${(TTL_UNPAID_AMT ?: 0) as BigDecimal}" 
-                            type="currency" currencySymbol="${SINGLE_CURR?.symbol}"/>
+                        <g:formatNumber number="${TTL_UNPAID_AMT ?: BigDecimal.ZERO}" type="currency" currencySymbol="${SINGLE_CURR?.symbol}"/>
                 </strong></td>
             </g:else>
             <td></td>

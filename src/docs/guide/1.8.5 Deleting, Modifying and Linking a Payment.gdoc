@@ -28,7 +28,7 @@ For example: an 'entered refund' would be a cheque that you send to a customer b
 Please Note: that not all payments processors allow you to submit on-line refunds.
 {note}
 
-For refunds involving a payment processor, *j*Billing only submits the refund request and shows you the result that is returned by the payment processor. For the details and ramifications of how this affects your customer's payment instrument (credit card, bank account), or how this affects your merchant account, you would have to contact your payment processor.e between the subsequent reminders, should you wish to have more than one. 
+For refunds involving a payment processor, *j*Billing only submits the refund request and shows you the result that is returned by the payment processor. For the details and ramifications of how this affects your customer's payment instrument (credit card, bank account), or how this affects your merchant account, you would have to contact your payment processor between the subsequent reminders, should you wish to have more than one. 
 
 !firstreminder.png!
 

@@ -281,4 +281,19 @@ public class AgeingBL {
         dto.setFailedLoginMessage(ws.getFailedLoginMessage());
         return dto;
     }
+
+    public boolean isAgeingProcessRunning(Integer entityId) {
+        Boolean isRunning = running.get(entityId);
+        return isRunning != null && isRunning == true;
+    }
+
+    public ProcessStatusWS getAgeingProcessStatus(Integer entityId) {
+        ProcessStatusWS result = new ProcessStatusWS();
+        if (isAgeingProcessRunning(entityId)) {
+            result.setState(ProcessStatusWS.State.RUNNING);
+        } else {
+            result.setState(ProcessStatusWS.State.FINISHED);
+        }
+        return result;
+    }
 }

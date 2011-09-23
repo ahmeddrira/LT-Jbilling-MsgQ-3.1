@@ -40,7 +40,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.item.PlanBL;
@@ -49,11 +48,11 @@ import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDAS;
+import com.sapienter.jbilling.server.mediation.db.*;
 import com.sapienter.jbilling.server.order.OrderHelper;
+import com.sapienter.jbilling.server.process.ProcessStatusWS;
 import com.sapienter.jbilling.server.user.CardValidationWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
-import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
@@ -75,7 +74,6 @@ import javax.sql.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.client.authentication.CompanyUserDetails;
 import com.sapienter.jbilling.common.InvalidArgumentException;
-import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
@@ -99,13 +97,6 @@ import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.mediation.RecordCountWS;
-import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
-import com.sapienter.jbilling.server.mediation.db.MediationProcess;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDAS;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.MediationResult;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
@@ -121,7 +112,6 @@ import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceDTO;
@@ -168,14 +158,12 @@ import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
-import com.sapienter.jbilling.server.user.db.CustomerDAS;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
-import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 
@@ -970,30 +958,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         return result;
-    }
-
-    /**
-     * Updates a user's credit card.
-     * @param userId
-     * The id of the user updating credit card data.
-     * @param creditCard
-     * The credit card data to be updated.
-     */
-    public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard)
-            throws SessionInternalError {
-        if (creditCard != null && (creditCard.getName() == null ||
-                creditCard.getExpiry() == null)) {
-            LOG.debug("WS - updateCreditCard: " + "credit card validation error.");
-            throw new SessionInternalError("Missing cc data.");
-        }
-
-        Integer executorId = getCallerId();
-        IUserSessionBean sess = (IUserSessionBean) Context.getBean(
-                Context.Name.USER_SESSION);
-        CreditCardDTO cc = creditCard != null ? new CreditCardDTO(creditCard) : null;
-
-        sess.updateCreditCard(executorId, userId, cc);
-
     }
 
     /*
@@ -2377,21 +2341,67 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return ret;
     }
 
+
+    /**
+     * Updates a users stored credit card.
+     *
+     * @param userId user to update
+     * @param creditCard credit card details
+     * @throws SessionInternalError
+     */
+    public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard)
+            throws SessionInternalError {
+
+        if (creditCard == null)
+            return;
+
+        if (creditCard.getName() == null || creditCard.getExpiry() == null)
+            throw new SessionInternalError("Missing credit card name or expiry date");
+
+        IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
+        userSession.updateCreditCard(getCallerId(), userId, new CreditCardDTO(creditCard));
+    }
+
+    /**
+     * Deletes a users stored credit card. Payments that were made using the deleted credit
+     * card will not be affected.
+     *
+     * @param userId user to delete the credit card from
+     */
+    public void deleteCreditCard(Integer userId) {
+        IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
+        userSession.deleteCreditCard(getCallerId(), userId);
+    }
+
+    /**
+     * Updates a users stored ACH details.
+     *
+     * @param userId user to update
+     * @param ach ach details
+     * @throws SessionInternalError
+     */
     public void updateAch(Integer userId, com.sapienter.jbilling.server.entity.AchDTO ach)
             throws SessionInternalError {
 
-        if (ach != null && (ach.getAbaRouting() == null ||
-                ach.getBankAccount() == null)) {
-            LOG.debug("WS - updateAch: " + "ACH validation error.");
-            throw new SessionInternalError("Missing ACH data.");
-        }
+        if (ach == null)
+            return;
 
-        Integer executorId = getCallerId();
-        IUserSessionBean sess = (IUserSessionBean) Context.getBean(
-                Context.Name.USER_SESSION);
-        AchDTO ac = ach != null ? new AchDTO(ach) : null;
+        if (ach.getAbaRouting() == null || ach.getBankAccount() == null)
+            throw new SessionInternalError("Missing ACH routing number of bank account number.");
 
-        sess.updateACH(userId, executorId, ac);
+        IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
+        userSession.updateACH(userId, getCallerId(), new AchDTO(ach));
+    }
+
+    /**
+     * Deletes a users stored ACH details. Payments that were made using the deleted ACH
+     * details will not be affected.
+     *
+     * @param userId user to delete the ACH details from.
+     */
+    public void deleteAch(Integer userId) {
+        IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
+        userSession.removeACH(userId, getCallerId());
     }
 
     public Integer getAuthPaymentType(Integer userId)
@@ -2447,11 +2457,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         Billing process
      */
 
-    public boolean isBillingRunning() {
-    	IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        return processBean.isBillingRunning();
-	}
-    
     public void triggerBillingAsync(final Date runDate) {
     	Thread t =new Thread(new Runnable(){
 	   		IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
@@ -2469,9 +2474,46 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return processBean.trigger(runDate);
     }
 
+    public boolean isBillingProcessRunning() {
+    	IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.isBillingProcessRunning();
+	}
+
+    /**
+     * Returns the status of the last run (or currently running) billing process.
+     *
+     * @return billing process status
+     */
+    public ProcessStatusWS getBillingProcessStatus() {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.getBillingProcessStatus(getCallerCompanyId());
+    }
+
     public void triggerAgeing(Date runDate) {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
         processBean.reviewUsersStatus(getCallerCompanyId(), runDate);
+    }
+
+    /**
+     * Returns true if the ageing process is currently running for the caller's
+     * entity, false if not.
+     *
+     * @return true if ageing process is running, false if not
+     */
+    public boolean isAgeingProcessRunning() {
+        return new AgeingBL().isAgeingProcessRunning(getCallerCompanyId());
+    }
+
+    /**
+     * Returns the status of the last run (or currently running) ageing process.
+     *
+     * That the ageing process currently does not report a start date, end date, or process id.
+     * The status returned by this method will only report the RUNNING/FINISHED/FAILED state of the process.
+     *
+     * @return ageing process status
+     */
+    public ProcessStatusWS getAgeingProcessStatus() {
+        return new AgeingBL().getAgeingProcessStatus(getCallerCompanyId());
     }
 
     public BillingProcessConfigurationWS getBillingProcessConfiguration() throws SessionInternalError {
@@ -2569,9 +2611,47 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         mediationBean.trigger(getCallerCompanyId());
     }
 
-    public boolean isMediationProcessing() throws SessionInternalError {
+    /**
+     * Triggers the mediation process for a specific configuration and returns the mediation
+     * process id of the running process.
+     *
+     * @param cfgId mediation configuration id
+     * @return mediation process id
+     */
+    public Integer triggerMediationByConfiguration(Integer cfgId) {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        return mediationBean.isProcessing(getCallerCompanyId());
+        return mediationBean.triggerMediationByConfiguration(cfgId, getCallerCompanyId());
+    }
+
+    public boolean isMediationProcessRunning() throws SessionInternalError {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.isMediationProcessRunning(getCallerCompanyId());
+    }
+
+    /**
+     * Returns the status of the last run (or currently running) mediation process.
+     *
+     * @return mediation process status
+     */
+    public ProcessStatusWS getMediationProcessStatus() {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.getMediationProcessStatus(getCallerCompanyId());
+    }
+
+    /**
+     * Returns the mediation process for the given process id.
+     *
+     * @param mediationProcessId mediation process id
+     * @return mediation process, or null if not found
+     */
+    public MediationProcessWS getMediationProcess(Integer mediationProcessId) {
+        MediationProcess process = new MediationProcessDAS().find(mediationProcessId);
+        if (process != null && process.getConfiguration() != null
+                && getCallerCompanyId().equals(process.getConfiguration().getEntityId())) {
+            return new MediationProcessWS(process);
+        } else {
+            return null;
+        }
     }
 
     public List<MediationProcessWS> getAllMediationProcesses() {

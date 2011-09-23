@@ -80,10 +80,10 @@
         </g:if>
 
         <!-- pricing -->
-        <g:if test="${selectedProduct.defaultPrice}">
+        <g:if test="${selectedProduct.defaultPrices}">
         <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">
             <tbody>
-                <g:render template="/plan/priceModel" model="[model: selectedProduct.defaultPrice]"/>
+                <g:render template="/plan/priceModel" model="[model: selectedProduct.getPrice(new Date())]"/>
             </tbody>
         </table>
         </g:if>

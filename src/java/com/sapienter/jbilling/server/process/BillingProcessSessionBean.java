@@ -823,7 +823,13 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
     /**
      * Returns true if the Billing Process is running.
      */
-    public boolean isBillingRunning() {
-    	return running.get();
+    public boolean isBillingProcessRunning() {
+        return running.get();
+    }
+
+    @Override
+    public ProcessStatusWS getBillingProcessStatus(Integer entityId) {
+        BillingProcessRunBL runBL = new BillingProcessRunBL();
+        return runBL.getBillingProcessStatus(entityId);
     }
 }

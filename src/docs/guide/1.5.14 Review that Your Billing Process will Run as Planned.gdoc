@@ -9,7 +9,7 @@ In order to make sure that your billing process will run as you expect, there ar
 
 h2. BillingProcessTask
 
-The very first thing you should check for when reviewing your billing process set up is that the 
+The very first thing you should check for when reviewing your billing process set up is that the BillingProcess Task plug-in has been  configured and set up.
 
 h2. Next Run Date
 

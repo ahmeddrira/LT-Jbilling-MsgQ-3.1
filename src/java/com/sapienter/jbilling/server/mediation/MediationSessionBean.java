@@ -32,6 +32,7 @@ import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import com.sapienter.jbilling.server.process.ProcessStatusWS;
 import org.apache.log4j.Logger;
 
 import org.springframework.transaction.annotation.Propagation;
@@ -76,11 +77,11 @@ import org.springframework.util.StopWatch;
 public class MediationSessionBean implements IMediationSessionBean {
     private static final Logger LOG = Logger.getLogger(MediationSessionBean.class);
 
-    private static StopWatch stopWatch = null;
-
     /**
-     * Trigger the mediation process. Only one mediation process can be running at any given
-     * time, this method will not start an additional mediation process if one is already running.
+     * Triggers all the mediation process for all configurations.
+     *
+     * @param entityId entity id
+     * @see MediationSessionBean#triggerMediationByConfiguration(Integer, Integer)
      */
     public void trigger(Integer entityId) {
         LOG.debug("Running mediation trigger for entity " + entityId);
@@ -88,19 +89,69 @@ public class MediationSessionBean implements IMediationSessionBean {
         watch.start();
 
         // local instance of this bean to invoke transactional methods
-        IMediationSessionBean local = (IMediationSessionBean) Context.getBean(Context.Name.MEDIATION_SESSION);
+        IMediationSessionBean local = Context.getBean(Context.Name.MEDIATION_SESSION);
+
+        List<String> errorMessages = new ArrayList<String>();
+
+        // process each mediation configuration for this entity
+        for (MediationConfiguration cfg : local.getAllConfigurations(entityId)) {
+            try {
+                local.triggerMediationByConfiguration(cfg.getId(), entityId);
+            } catch (Exception ex) {
+                LOG.error("Exception occurred triggering mediation configuration " + cfg.getId(), ex);
+                errorMessages.add(ex.getMessage());
+            }
+        }
+
+        // throw a SessionInternalError of errors were returned from the configuration run (possible plugin errors)
+        if (!errorMessages.isEmpty()) {
+            StringBuilder builder = new StringBuilder("Errors during mediation triggering: \n");
+            for (String message : errorMessages) {
+                builder.append(message).append("\n");
+            }
+            throw new SessionInternalError(builder.toString());
+        }
+
+        watch.stop();
+        LOG.debug("Mediation process finished running. Duration (ms):" + watch.getTotalTimeMillis());
+    }
+
+    /**
+     * Triggers the mediation process for a specific configuration.
+     *
+     * Only one mediation process can be run for a configuration at a time. Multiple configurations can be
+     * run, asynchronously but we do not allow the same configuration to overlap.
+     *
+     * @param configId configuration id to run
+     * @param entityId entity id
+     * @return running mediation process id
+     */
+    public Integer triggerMediationByConfiguration(final Integer configId, final Integer entityId) {
+        LOG.debug("Running mediation trigger for entity " + entityId + " and configuration " + configId);
+
+        // get the local bean & DAS early on to prevent delays recording process start
+        IMediationSessionBean local = Context.getBean(Context.Name.MEDIATION_SESSION);
+        MediationProcessDAS mediationDAS = new MediationProcessDAS();
+
+        // get the mediation configuration to run
+        MediationConfiguration cfg = getMediationConfiguration(configId);
+        if (cfg == null || !cfg.getEntityId().equals(entityId)) {
+            LOG.error("Mediation configuration " + configId + " does not exists!");
+            return null;
+        }
+
 
         /*
             There can only be one process running for this entity, check that there is
             no other mediation process running for this entity before continuing.
          */
-        if (local.isProcessing(entityId)) {
-            LOG.debug("Entity " + entityId + " already has a running mediation process, skipping run");
-            return;
+        if (mediationDAS.isConfigurationProcessing(cfg.getId())) {
+            LOG.debug("Entity " + entityId + " already has a running mediation process for configuration " + configId + ", skipping run");
+            return null;
         }
 
         // fetch mediation processing plug in (usually a rules based processor)
-        IMediationProcess processTask;
+        final IMediationProcess processTask;
         try {
             PluggableTaskManager<IMediationProcess> taskManager
                     = new PluggableTaskManager<IMediationProcess>(entityId, Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
@@ -111,39 +162,64 @@ public class MediationSessionBean implements IMediationSessionBean {
 
         if (processTask == null) {
             LOG.debug("Entity " + entityId + " does not have a mediation process plug-in");
-            return;
+            return null;
         }
 
-        // find the root user of this entity, will be used as the executor for order updates
-        Integer executorId = new EntityBL().getRootUser(entityId);
+
+        /*
+            Double check that we're still the only mediation process running for configuration before we create
+            a new MediationProcess record. The mediation processing plug-in may have a long
+            instantiation time which leaves a window for another overlapping process to be created.
+         */
+        if (mediationDAS.isConfigurationProcessing(cfg.getId())) {
+            LOG.debug("Entity " + entityId + " already has an existing mediation process for configuration " + configId + ", skipping run");
+            return null;
+        }
+
+        final Integer processId = local.createProcessRecord(cfg).getId(); // create process record and mark start time
+        final Integer executorId = new EntityBL().getRootUser(entityId); // root user of this entity to be used for order updates
+
+        // run in separate thread
+        Thread mediationThread = new Thread(new Runnable() {
+            IMediationSessionBean local = (IMediationSessionBean) Context.getBean(Context.Name.MEDIATION_SESSION);
+            public void run() {
+                local.performMediation(processTask, configId, processId, executorId, entityId);
+            }
+        });
+        mediationThread.start();
+
+        return processId;
+    }
+
+    /**
+     * Perform the actual mediation by instantiating the reader plug-in for the configuration, reading in the
+     * records and processing them with the given {@link IMediationProcess} task.
+     *
+     * @param processTask process task plug-in to use for processing records
+     * @param configurationId mediation configuration id to run
+     * @param processId process id to attach to
+     * @param executorId user id to use for database updates
+     * @param entityId entity id
+     */
+    public void performMediation(IMediationProcess processTask, Integer configurationId, Integer processId, Integer executorId, Integer entityId) {
+        MediationConfiguration cfg = new MediationConfigurationDAS().find(configurationId);
+        MediationProcess process = new MediationProcessDAS().find(processId);
+
+        // fetch mediation reader plug-in
+        IMediationReader reader;
+        try {
+            PluggableTaskBL<IMediationReader> readerTask = new PluggableTaskBL<IMediationReader>();
+            readerTask.set(cfg.getPluggableTask());
+            reader = readerTask.instantiateTask();
+        } catch (PluggableTaskException e) {
+            throw new SessionInternalError("Could not instantiate mediation reader plug-in.", e);
+        }
+
+        // local instance of this bean to invoke transactional methods
+        IMediationSessionBean local = Context.getBean(Context.Name.MEDIATION_SESSION);
+
         List<String> errorMessages = new ArrayList<String>();
-
-        // process each mediation configuration for this entity
-        for (MediationConfiguration cfg : local.getAllConfigurations(entityId)) {
-            /*
-                Double check that we're still the only mediation process running before we create
-                a new MediationProcess record. The mediation processing plug-in may have a long
-                instantiation time which leaves a window for another overlapping process to be created.
-             */
-            if (local.isProcessing(entityId)) {
-                LOG.debug("Entity " + entityId + " already has an existing mediation process, skipping run");
-                return;
-            }
-
-            // create process record and mark start time
-            LOG.debug("Now using configuration " + cfg);
-            MediationProcess process = local.createProcessRecord(cfg);
-
-            // fetch mediation reader plug-in
-            IMediationReader reader;
-            try {
-                PluggableTaskBL<IMediationReader> readerTask = new PluggableTaskBL<IMediationReader>();
-                readerTask.set(cfg.getPluggableTask());
-                reader = readerTask.instantiateTask();
-            } catch (PluggableTaskException e) {
-                throw new SessionInternalError("Could not instantiate mediation reader plug-in.", e);
-            }
-
+        try {
             // read records and normalize using the MediationProcess plug-in
             if (reader.validate(errorMessages)) {
                 /*
@@ -152,7 +228,7 @@ public class MediationSessionBean implements IMediationSessionBean {
                     process can be "completed" by setting the end date.
                  */
                 try {
-                    stopWatch = new StopWatch();
+                    StopWatch stopWatch = new StopWatch();
                     stopWatch.start("Reading records");
                     for (List<Record> thisGroup : reader) {
                         stopWatch.stop();
@@ -162,13 +238,15 @@ public class MediationSessionBean implements IMediationSessionBean {
                         stopWatch = new StopWatch();
                         stopWatch.start("Reading records");
                     }
+                    stopWatch.stop();
                 } catch (TaskException e) {
                     LOG.error("Exception occurred processing mediation records.", e);
                 } catch (Throwable t) {
                     LOG.error("Unhandled exception occurred during mediation.", t);
                 }
             }
-
+        } finally {
+            // process should be "ended' anyway
             // mark process end date
             local.updateProcessRecord(process, new Date());
             LOG.debug("Configuration '" + cfg.getName() + "' finished at " + process.getEndDatetime());
@@ -176,17 +254,14 @@ public class MediationSessionBean implements IMediationSessionBean {
 
         // throw a SessionInternalError of errors were returned from the reader plug-in
         if (!errorMessages.isEmpty()) {
-            StringBuffer buffer = new StringBuffer("Invalid reader plug-in configuration \n");
+            StringBuilder builder = new StringBuilder("Invalid reader plug-in configuration \n");
             for (String message : errorMessages) {
-                buffer.append("ERROR: ")
+                builder.append("ERROR: ")
                     .append(message)
                     .append("\n");
             }
-            throw new SessionInternalError(buffer.toString());
+            throw new SessionInternalError(builder.toString());
         }
-
-        watch.stop();
-        LOG.debug("Mediation process done. Duration (ms):" + watch.getTotalTimeMillis());
     }
 
 
@@ -233,8 +308,29 @@ public class MediationSessionBean implements IMediationSessionBean {
      * @return true if a process is running for the given entity, false if not
      */
     @Transactional( propagation = Propagation.REQUIRES_NEW )
-    public boolean isProcessing(Integer entityId) {
+    public boolean isMediationProcessRunning(Integer entityId) {
         return new MediationProcessDAS().isProcessing(entityId);
+    }
+
+    public ProcessStatusWS getMediationProcessStatus(Integer entityId) {
+        MediationProcessDAS processDAS = new MediationProcessDAS();
+        MediationProcess process = processDAS.getLatestMediationProcess(entityId);
+        if (process == null) {
+            return null;
+        } else {
+            ProcessStatusWS result = new ProcessStatusWS();
+            result.setStart(process.getStartDatetime());
+            result.setEnd(process.getEndDatetime());
+            result.setProcessId(process.getId());
+            if (process.getEndDatetime() == null) {
+                result.setState(ProcessStatusWS.State.RUNNING);
+            } else if (processDAS.isMediationProcessHasFailedRecords(process.getId())) {
+                result.setState(ProcessStatusWS.State.FAILED);
+            } else {
+                result.setState(ProcessStatusWS.State.FINISHED);
+            }
+            return result;
+        }
     }
 
     public List<MediationProcess> getAll(Integer entityId) {
@@ -254,6 +350,11 @@ public class MediationSessionBean implements IMediationSessionBean {
     public List<MediationConfiguration> getAllConfigurations(Integer entityId) {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
         return cfgDAS.findAllByEntity(entityId);
+    }
+
+    protected MediationConfiguration getMediationConfiguration(Integer configurationId) {
+        MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
+        return cfgDAS.find(configurationId);
     }
 
     public void createConfiguration(MediationConfiguration cfg) {
@@ -354,6 +455,7 @@ public class MediationSessionBean implements IMediationSessionBean {
                                      MediationProcess process, List<Record> thisGroup, Integer entityId,
                                      MediationConfiguration cfg) throws TaskException {
 
+        StopWatch stopWatch = new StopWatch();
         stopWatch.start("Pre-processing");
 
         LOG.debug("Normalizing " + thisGroup.size() + " records ...");

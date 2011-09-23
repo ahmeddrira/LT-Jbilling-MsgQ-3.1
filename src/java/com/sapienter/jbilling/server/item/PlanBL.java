@@ -140,11 +140,13 @@ public class PlanBL {
         List<String> errors = new ArrayList<String>();
 
         for (PlanItemDTO planItem : plan.getPlanItems()) {
-            for (PriceModelDTO next = planItem.getModel(); next != null; next = next.getNext()) {
-                try {
-                    AttributeUtils.validateAttributes(next.getAttributes(), next.getStrategy());
-                } catch (SessionInternalError e) {
-                    errors.addAll(Arrays.asList(e.getErrorMessages()));
+            for (PriceModelDTO model : planItem.getModels().values()) {
+                for (PriceModelDTO next = model; next != null; next = next.getNext()) {
+                    try {
+                        AttributeUtils.validateAttributes(next.getAttributes(), next.getStrategy());
+                    } catch (SessionInternalError e) {
+                        errors.addAll(Arrays.asList(e.getErrorMessages()));
+                    }
                 }
             }
         }
@@ -196,7 +198,7 @@ public class PlanBL {
 
     public void addPrice(PlanItemDTO planItem) {
         if (plan != null) {
-            PriceModelBL.validateAttributes(planItem.getModel());
+            PriceModelBL.validateAttributes(planItem.getModels().values());
 
             plan.addPlanItem(planItem);
             this.plan = planDas.save(plan);

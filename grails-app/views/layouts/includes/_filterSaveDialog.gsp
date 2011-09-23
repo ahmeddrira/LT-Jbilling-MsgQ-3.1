@@ -1,6 +1,4 @@
-
-<div id="filter-save-dialog" title="Save Filters">
-    %{--
+%{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
@@ -20,7 +18,8 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<g:formRemote name="filter-save-form" url="[controller: 'filter', action: 'save']" update="filtersets">
+<div id="filter-save-dialog" title="Save Filters">
+    <g:formRemote name="filter-save-form" url="[controller: 'filter', action: 'save']" update="filtersets">
         <div id="filtersets" class="columns-holder">
 
             <!-- content rendered using ajax -->

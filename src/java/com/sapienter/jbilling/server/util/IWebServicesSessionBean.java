@@ -49,6 +49,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
+import com.sapienter.jbilling.server.process.ProcessStatusWS;
 import com.sapienter.jbilling.server.user.CardValidationWS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -90,7 +91,9 @@ public interface IWebServicesSessionBean {
     public Integer createContactTypeWS(ContactTypeWS contactType) throws SessionInternalError;
 
     public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard) throws SessionInternalError;
+    public void deleteCreditCard(Integer userId);
     public void updateAch(Integer userId, AchDTO ach) throws SessionInternalError;
+    public void deleteAch(Integer userId);
 
     public void setAuthPaymentType(Integer userId, Integer autoPaymentType, boolean use) throws SessionInternalError;
     public Integer getAuthPaymentType(Integer userId) throws SessionInternalError;
@@ -229,10 +232,14 @@ public interface IWebServicesSessionBean {
         Billing process
      */
 
-    public boolean isBillingRunning();
     public void triggerBillingAsync(final Date runDate);
     public boolean triggerBilling(Date runDate);
+    public boolean isBillingProcessRunning();
+    public ProcessStatusWS getBillingProcessStatus();
+
     public void triggerAgeing(Date runDate);
+    public boolean isAgeingProcessRunning();
+    public ProcessStatusWS getAgeingProcessStatus();
 
     public BillingProcessConfigurationWS getBillingProcessConfiguration() throws SessionInternalError;
     public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws) throws SessionInternalError;
@@ -257,8 +264,11 @@ public interface IWebServicesSessionBean {
      */
 
     public void triggerMediation();
-    public boolean isMediationProcessing();
+    public Integer triggerMediationByConfiguration(Integer cfgId);
+    public boolean isMediationProcessRunning();
+    public ProcessStatusWS getMediationProcessStatus();
 
+    public MediationProcessWS getMediationProcess(Integer mediationProcessId);
     public List<MediationProcessWS> getAllMediationProcesses();
     public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId);
     public List<MediationRecordLineWS> getMediationEventsForInvoice(Integer invoiceId);

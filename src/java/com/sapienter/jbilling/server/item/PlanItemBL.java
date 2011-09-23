@@ -30,7 +30,9 @@ import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.SortedMap;
 
 /**
  * PlanItemDTO business logic. Currently only contains static factory methods for converting
@@ -56,19 +58,19 @@ public class PlanItemBL {
             if (ws.getItemId() == null)
                 throw new SessionInternalError("PlanItemWS must have an affected item.");
 
-            if (ws.getModel() == null)
+            if (ws.getModels() == null || ws.getModels().isEmpty())
                 throw new SessionInternalError("PlanItemWS must have a price model.");
 
             // affected item
             ItemDTO item = new ItemBL(ws.getItemId()).getEntity();
 
-            // price model
-            PriceModelDTO model = PriceModelBL.getDTO(ws.getModel());
+            // price models
+            SortedMap<Date, PriceModelDTO> models = PriceModelBL.getDTO(ws.getModels());
 
             // bundled items
             PlanItemBundleDTO bundle = PlanItemBundleBL.getDTO(ws.getBundle());
 
-            return new PlanItemDTO(ws, item, model, bundle);
+            return new PlanItemDTO(ws, item, models, bundle);
         }
         return null;
     }

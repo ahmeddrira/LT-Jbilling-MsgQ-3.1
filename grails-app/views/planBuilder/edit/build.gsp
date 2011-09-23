@@ -45,9 +45,48 @@
             $(document).ready(function() {
                 $('#builder-tabs').tabs();
             });
+
+
+            /*
+                                Controls for refreshing the main components of the view
+                         */
+            var timeline = {
+                refresh: function() {
+                    return $.ajax({
+                                  type: 'GET',
+                                  url: '${createLink(action: 'edit', params:['_eventId': 'timeline'])}',
+                                  success: function(data) { $('#timeline').replaceWith(data); }
+                              });
+                }
+            };
+
+            var details = {
+                refresh: function() {
+                    return $.ajax({
+                                  type: 'GET',
+                                  url: '${createLink(action: 'edit', params:['_eventId': 'details'])}',
+                                  success: function(data) { $('#column1').replaceWith(data); }
+                              });
+                }
+            };
+
+            var review = {
+                refresh: function () {
+                    return $.ajax({
+                                  type: 'GET',
+                                  url: '${createLink(action: 'edit', params:['_eventId': 'review'])}',
+                                  success: function(data) { $('#column2').replaceWith(data); }
+                              });
+                }
+            };
         </script>
     </head>
     <body>
+
+    <content tag="top">
+        <g:render template="timeline"/>
+    </content>
+
     <content tag="builder">
         <div id="builder-tabs">
             <ul>
@@ -60,6 +99,7 @@
     <content tag="review">
         <g:render template="review"/>
     </content>
+
     </body>
     </html>
 </g:else>

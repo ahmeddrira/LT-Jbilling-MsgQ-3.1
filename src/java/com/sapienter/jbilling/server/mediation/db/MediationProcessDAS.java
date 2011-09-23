@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.mediation.db;
 
+import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import org.hibernate.Query;
 
@@ -64,6 +65,67 @@ public class MediationProcessDAS extends AbstractDAS<MediationProcess> {
         query.setParameter("entityId", entityId);
 
         return !query.list().isEmpty();
+    }
+
+    private static final String IS_CONFIGURATION_RUNNING_HQL =
+        "select process.id " +
+            " from MediationProcess process " +
+            " where process.configuration.id = :cfgId " +
+            " and process.endDatetime is null";
+
+    /**
+     * Returns true if there is a current MediationProcess running for specified configuration,
+     * false if no running MediationProcess found.
+     *
+     * @param configurationId configuration id of mediation process
+     * @return true if process running, false if not
+     */
+    public boolean isConfigurationProcessing(Integer configurationId) {
+        Query query = getSession().createQuery(IS_CONFIGURATION_RUNNING_HQL);
+        query.setParameter("cfgId", configurationId);
+
+        return !query.list().isEmpty();
+    }
+
+    private static final String LATEST_MEDIATION_PROCESS_FOR_ENTITY_HQL =
+        "select process " +
+            " from MediationProcess process " +
+            " where process.configuration.entityId = :entityId " +
+            " order by process.startDatetime desc";
+
+    /**
+     * Search latest (by start time) mediation process for entity
+     * @param entityId  company id of mediation process
+     * @return mediation process or null if not found
+     */
+    public MediationProcess getLatestMediationProcess(Integer entityId) {
+        Query query = getSession().createQuery(LATEST_MEDIATION_PROCESS_FOR_ENTITY_HQL);
+        query.setParameter("entityId", entityId);
+        query.setMaxResults(1);
+
+        return (MediationProcess) query.uniqueResult();
+    }
+
+    private static final String IS_MEDIATION_PROCESS_FAILED_HQL =
+        "select count(*) " +
+            " from MediationRecordDTO record " +
+            " where record.process.id = :processId and (" +
+                "record.recordStatus.id = :errorDetected or record.recordStatus.id = :errorDeclared" +
+            ")";
+
+    /**
+     * Checks mediation records failed status for process specified
+     * @param mediationProcessId mediation process id for records to check
+     * @return true if exist at least one failed (not done) mediation record
+     *         false otherwise
+     */
+    public boolean isMediationProcessHasFailedRecords(Integer mediationProcessId) {
+        Query query = getSession().createQuery(IS_MEDIATION_PROCESS_FAILED_HQL);
+        query.setParameter("processId", mediationProcessId);
+        query.setParameter("errorDetected", Constants.MEDIATION_RECORD_STATUS_ERROR_DETECTED);
+        query.setParameter("errorDeclared", Constants.MEDIATION_RECORD_STATUS_ERROR_DECLARED);
+
+        return (Long) query.list().get(0) > 0;
     }
 
     /**

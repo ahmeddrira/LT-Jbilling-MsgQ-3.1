@@ -36,13 +36,13 @@
             <g:applyLayout name="form/input">
                 <content tag="label"><g:message code="product.internal.number"/></content>
                 <content tag="label.for">product.number</content>
-                <g:textField class="field" name="product.number" value="${product?.number}" size="40"/>
+                <g:textField class="field text" name="product.number" value="${product?.number}" size="40"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/input">
                 <content tag="label"><g:message code="product.description"/></content>
                 <content tag="label.for">product.description</content>
-                <g:textField class="field" name="product.description" value="${product?.description}" size="40"/>
+                <g:textField class="field text" name="product.description" value="${product?.description}" size="40"/>
             </g:applyLayout>
 
             <g:applyLayout name="form/select">
@@ -65,7 +65,7 @@
             <g:applyLayout name="form/input">
                 <content tag="label"><g:message code="plan.model.rate"/></content>
                 <content tag="label.for">price.rateAsDecimal</content>
-                <g:textField class="field" name="price.rateAsDecimal" value="${formatNumber(number: product?.defaultPrice?.rate, formatName: 'money.format')}"/>
+                <g:textField class="field text" name="price.rateAsDecimal" value="${formatNumber(number: product?.defaultPrice?.rate, formatName: 'money.format')}"/>
             </g:applyLayout>
         </div>
 
@@ -81,15 +81,20 @@
 
     <script type="text/javascript">
         $(function() {
+
+            $('#plan-details-form').find('select').change(function() {
+                $('#plan-details-form').submit();
+            });
+
             $('#plan-details-form').find('input:checkbox').change(function() {
                 $('#plan-details-form').submit();
             });
 
-            $('#plan-details-form').find('input:text.hasDatepicker, select').change(function() {
+            $('#plan-details-form').find('input.text').blur(function() {
                 $('#plan-details-form').submit();
             });
 
-            $('#plan-details-form').find('input:text, textarea').blur(function() {
+            $('#plan-details-form').find('textarea').blur(function() {
                 $('#plan-details-form').submit();
             });
         });

@@ -146,6 +146,10 @@ public class SpringAPI implements JbillingAPI {
         return session.notifyInvoiceByEmail(invoiceId);
     }
 
+    public boolean notifyPaymentByEmail(Integer paymentId) {
+        return session.notifyPaymentByEmail(paymentId);
+    }
+    
     public Integer[] getLastInvoices(Integer userId, Integer number) {
         return session.getLastInvoices(userId, number);
     }

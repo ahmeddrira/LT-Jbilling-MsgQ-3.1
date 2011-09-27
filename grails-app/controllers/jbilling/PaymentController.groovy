@@ -306,7 +306,8 @@ class PaymentController {
     def confirm = {
         def payment = new PaymentWS()
         bindPayment(payment, params)
-
+        session['user_payment']= payment
+        
         // make sure the user still exists before
         def users
         try {
@@ -344,11 +345,13 @@ class PaymentController {
      */
     @Secured(["hasAnyRole('PAYMENT_30', 'PAYMENT_31')"])
     def save = {
-        def payment = new PaymentWS()
-        bindPayment(payment, params)
+        
+        /* Reuse the same payment that was bound earlier during confirm */
+        def payment = session['user_payment'];
+        //def payment = new PaymentWS()
+        //bindPayment(payment, params)
 
         def invoiceId = params.int('invoiceId')
-
 
         // save or update
         try {
@@ -419,11 +422,34 @@ class PaymentController {
 
             render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId') ]
             return
-        }
+        } 
+        
+        session.removeAttribute("user_payment")
 
         chain action: 'list', params: [ id: payment.id ]
     }
 
+    /**
+     * Notify about this payment.
+     */
+    def emailNotify = {
+        
+        def pymId= params.id.toInteger()
+        try {
+            def result= webServicesSession.notifyPaymentByEmail(pymId)
+            if (result) {
+                flash.info = 'payment.notification.sent'
+                flash.args = [ pymId ]
+            } else {
+                flash.error = 'payment.notification.sent.fail'
+                flash.args = [ pymId ]
+            }
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.local, e)
+        } 
+        chain action: 'list', params: [ id: pymId]
+    }
+    
     def bindPayment(PaymentWS payment, GrailsParameterMap params) {
         bindData(payment, params, 'payment')
 
@@ -476,7 +502,7 @@ class PaymentController {
         if (expiryMonth && expiryYear)  {
             Calendar calendar = Calendar.getInstance()
             calendar.clear()
-            calendar.set(Calendar.MONTH, expiryMonth)
+            calendar.set(Calendar.MONTH, expiryMonth - 1) // calendar API months start at 0
             calendar.set(Calendar.YEAR, expiryYear)
 
             creditCard.expiry = calendar.getTime()

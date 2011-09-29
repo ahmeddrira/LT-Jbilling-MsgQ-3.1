@@ -268,8 +268,21 @@ public class BillingProcessBL extends ResultList
         return retValue;
     }
 
+    /**
+     * Generates an invoice for a user using the given billing process details.
+     *
+     * @param process billing process to generate an invoice for
+     * @param dueDatePeriod optional due date period for this invoice. If null, due date will be calculated based
+     *                      on the order and/or customer due date period.
+     * @param user user to generate an invoice for
+     * @param isReview true if generating a review invoice
+     * @param onlyRecurring true if only recurring orders should be invoiced. if false, all orders will be included.
+     * @param executorUserId user to use for event logging.
+     * @return array of generated invoices
+     * @throws SessionInternalError
+     */
     public InvoiceDTO[] generateInvoice(
-            BillingProcessDTO process, UserDTO user,
+            BillingProcessDTO process, TimePeriod dueDatePeriod, UserDTO user,
             boolean isReview, boolean onlyRecurring, Integer executorUserId)
             throws SessionInternalError {
 
@@ -302,7 +315,7 @@ public class BillingProcessBL extends ResultList
          * This method will recursively call itself to find sub-accounts in any
          * level
          */
-        boolean includedOrders = processOrdersForUser(user, entityId, process,
+        boolean includedOrders = processOrdersForUser(user, entityId, process, dueDatePeriod,
                                                       isReview, onlyRecurring, useProcessDateForInvoice,
                                                       maximumPeriods, newInvoices);
 
@@ -378,12 +391,16 @@ public class BillingProcessBL extends ResultList
                         holder.setCarriedBalance(BigDecimal.ZERO);
                         holder.setInvoiceStatus(new InvoiceStatusDAS().find(Constants.INVOICE_STATUS_UNPAID));
 
-                        // need to set a due date, so use the order default
-                        OrderBL orderBl = new OrderBL();
-                        OrderDTO order = new OrderDTO();
-                        order.setBaseUserByUserId(user);
-                        orderBl.set(order);
-                        TimePeriod dueDatePeriod = orderBl.getDueDate();
+                        // need to set a due date, so use the order default unless
+                        // it has been explicitly set for this invoice generation
+                        if (dueDatePeriod == null) {
+                            OrderDTO order = new OrderDTO();
+                            order.setBaseUserByUserId(user);
+
+                            OrderBL orderBl = new OrderBL();
+                            orderBl.set(order);
+                            dueDatePeriod = orderBl.getDueDate();
+                        }
 
                         holder.setDueDatePeriod(dueDatePeriod);
                         newInvoices.put(dueDatePeriod, holder);
@@ -494,7 +511,7 @@ public class BillingProcessBL extends ResultList
         return retValue;
     }
 
-    private boolean processOrdersForUser(UserDTO user, Integer entityId,BillingProcessDTO process, 
+    private boolean processOrdersForUser(UserDTO user, Integer entityId,BillingProcessDTO process, TimePeriod dueDatePeriod,
             boolean isReview, boolean onlyRecurring, boolean useProcessDateForInvoice,
         int maximumPeriods, Hashtable<TimePeriod, NewInvoiceDTO> newInvoices) {
         
@@ -554,14 +571,16 @@ public class BillingProcessBL extends ResultList
                      * now find if there is already an invoice being
                      * generated for the given due date period
                      */
+
                     // find the due date that applies to this order
                     OrderBL orderBl = new OrderBL();
                     orderBl.set(order);
-                    TimePeriod dueDatePeriod = orderBl.getDueDate();
+                    TimePeriod orderDueDatePeriod = dueDatePeriod != null ? dueDatePeriod : orderBl.getDueDate();
+
                     // look it up in the hashtable
-                    NewInvoiceDTO thisInvoice = (NewInvoiceDTO) newInvoices.get(dueDatePeriod);
+                    NewInvoiceDTO thisInvoice = (NewInvoiceDTO) newInvoices.get(orderDueDatePeriod);
                     if (thisInvoice == null) {
-                        LOG.debug("Adding new invoice for period " + dueDatePeriod + " process date:" + process.getBillingDate());
+                        LOG.debug("Adding new invoice for period " + orderDueDatePeriod + " process date:" + process.getBillingDate());
                         // we need a new one with this period
                         // define the invoice date
                         thisInvoice = new NewInvoiceDTO();
@@ -573,9 +592,10 @@ public class BillingProcessBL extends ResultList
                         }
                         thisInvoice.setIsReview(isReview ? new Integer(1) : new Integer(0));
                         thisInvoice.setCarriedBalance(BigDecimal.ZERO);
-                        thisInvoice.setDueDatePeriod(dueDatePeriod);
+                        thisInvoice.setDueDatePeriod(orderDueDatePeriod);
+
                     } else {
-                        LOG.debug("invoice found for period " + dueDatePeriod);
+                        LOG.debug("invoice found for period " + orderDueDatePeriod);
                         if (!useProcessDateForInvoice) {
                             thisInvoice.setDate(orderBl.getInvoicingDate(),
                                     order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE);
@@ -588,7 +608,7 @@ public class BillingProcessBL extends ResultList
                     if (addOrderToInvoice(entityId, order, thisInvoice,
                             process.getBillingDate(), maximumPeriods)) {
                         // add or replace
-                        newInvoices.put(dueDatePeriod, thisInvoice);
+                        newInvoices.put(orderDueDatePeriod, thisInvoice);
                     }
                     LOG.debug("After putting period there are " + newInvoices.size() + " periods.");
 
@@ -631,7 +651,7 @@ public class BillingProcessBL extends ResultList
                 // if the child does not have any orders to invoice, this should
                 // not affect the current value of includedOrders
                 if (processOrdersForUser(customer.getBaseUser(),
-                        entityId, process, isReview, onlyRecurring,
+                        entityId, process, dueDatePeriod, isReview, onlyRecurring,
                         useProcessDateForInvoice, maximumPeriods,
                         newInvoices)) {
                     // if ANY child has orders to invoice, it is enough for includedOrders to be true

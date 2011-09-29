@@ -45,6 +45,11 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class PeriodUnitDTO extends AbstractDescription implements java.io.Serializable {
 
+    public static final int MONTH = 1;
+    public static final int WEEK = 2;
+    public static final int DAY = 3;
+    public static final int YEAR = 4;
+
     private int id;
     private Set<Partner> partners = new HashSet<Partner>(0);
     private Set<OrderPeriodDTO> orderPeriodDTOs = new HashSet<OrderPeriodDTO>(0);

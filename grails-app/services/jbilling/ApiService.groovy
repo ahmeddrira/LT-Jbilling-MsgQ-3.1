@@ -134,6 +134,10 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.createInvoice(userId, onlyRecurring)
     }
 
+    public Integer[] createInvoice(Integer userId, Date billingDate, Integer dueDatePeriodId, Integer dueDatePeriodValue, boolean onlyRecurring) {
+        return webServicesSession.createInvoice(userId, billingDate, dueDatePeriodId, dueDatePeriodValue, onlyRecurring)
+    }
+
     public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) {
         return webServicesSession.createInvoiceFromOrder(orderId, invoiceId)
     }

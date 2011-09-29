@@ -169,6 +169,7 @@ public interface JbillingAPI {
 
     public InvoiceWS getInvoiceWS(Integer invoiceId);
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring);
+    public Integer[] createInvoice(Integer userId, Date billingDate, Integer dueDatePeriodId, Integer dueDatePeriodValue, boolean onlyRecurring);
     public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId);
     public void deleteInvoice(Integer invoiceId);
 

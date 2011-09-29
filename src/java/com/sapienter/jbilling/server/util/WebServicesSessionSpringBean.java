@@ -50,6 +50,7 @@ import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.mediation.db.*;
 import com.sapienter.jbilling.server.order.OrderHelper;
+import com.sapienter.jbilling.server.order.TimePeriod;
 import com.sapienter.jbilling.server.process.ProcessStatusWS;
 import com.sapienter.jbilling.server.user.CardValidationWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
@@ -63,6 +64,7 @@ import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
+import net.sf.jasperreports.charts.util.TimePeriodDatasetLabelGenerator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
@@ -488,38 +490,62 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * Optionally only allow recurring orders to generate invoices.
      * Returns the ids of the invoices generated.
      */
-    public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
-            throws SessionInternalError {
-        UserDTO user = new UserDAS().find(userId);
-        BillingProcessBL processBL = new BillingProcessBL();
+    public Integer[] createInvoice(Integer userId, boolean onlyRecurring) {
+        return createInvoice(userId, null, null, null, onlyRecurring);
+    }
 
-        BillingProcessConfigurationDTO config =
-                new BillingProcessConfigurationDAS().findByEntity(
-                user.getCompany());
+
+    /**
+     * Generates an invoice for a customer using an explicit billing date & due date period.
+     *
+     * If the billing date is left blank, the invoice will be generated for today.
+     *
+     * If the due date period unit or value is left blank, then the due date will be calculated from the
+     * order period, or from the customer due date period if set.
+     *
+     * @param userId user id to generate an invoice for.
+     * @param billingDate billing date for the invoice generation run
+     * @param dueDatePeriodId due date period unit
+     * @param dueDatePeriodValue due date period value
+     * @param onlyRecurring only include recurring orders? false to include all orders in invoice.
+     * @return array of generated invoice ids.
+     */
+    public Integer[] createInvoice(Integer userId, Date billingDate, Integer dueDatePeriodId,
+                                   Integer dueDatePeriodValue, boolean onlyRecurring) {
+
+        UserDTO user = new UserDAS().find(userId);
+        BillingProcessConfigurationDTO config = new BillingProcessConfigurationDAS().findByEntity(user.getCompany());
 
         // Create a mock billing process object, because the method
         // we are calling was meant to be called by the billing process.
         BillingProcessDTO billingProcess = new BillingProcessDTO();
         billingProcess.setId(0);
         billingProcess.setEntity(user.getCompany());
-        billingProcess.setBillingDate(new Date());
+        billingProcess.setBillingDate(billingDate != null ? billingDate : new Date());
         billingProcess.setPeriodUnit(config.getPeriodUnit());
         billingProcess.setPeriodValue(config.getPeriodValue());
         billingProcess.setIsReview(0);
         billingProcess.setRetriesToDo(0);
 
-        InvoiceDTO[] newInvoices = processBL.generateInvoice(billingProcess,
-                user, false, onlyRecurring, getCallerId());
-
-        if (newInvoices != null) {
-            Integer[] invoiceIds = new Integer[newInvoices.length];
-            for (int i = 0; i < newInvoices.length; i++) {
-                invoiceIds[i] = newInvoices[i].getId();
-            }
-            return invoiceIds;
-        } else {
-            return new Integer[]{};
+        // optional target due date
+        TimePeriod dueDatePeriod = null;
+        if (dueDatePeriodId != null && dueDatePeriodValue != null) {
+            dueDatePeriod = new TimePeriod();
+            dueDatePeriod.setUnitId(dueDatePeriodId);
+            dueDatePeriod.setValue(dueDatePeriodValue);
+            LOG.debug("Using provided due date " + dueDatePeriod);
         }
+
+        // generate invoices
+        InvoiceDTO[] invoices = new BillingProcessBL().generateInvoice(billingProcess, dueDatePeriod,
+                                                                       user, false, onlyRecurring, getCallerId());
+
+        // build the list of generated ID's and return
+        List<Integer> invoiceIds = new ArrayList<Integer>(invoices.length);
+        for (InvoiceDTO invoice : invoices) {
+            invoiceIds.add(invoice.getId());
+        }
+        return invoiceIds.toArray(new Integer[invoiceIds.size()]);
     }
 
     /**

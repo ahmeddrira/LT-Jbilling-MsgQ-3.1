@@ -24,6 +24,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
+import com.sapienter.jbilling.server.user.ContactWS;
+import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.UserWS;
 import junit.framework.TestCase;
 
 import com.sapienter.jbilling.server.order.OrderWS;
@@ -31,6 +35,8 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
+import org.joda.time.DateMidnight;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -486,6 +492,64 @@ public class WSTest extends TestCase {
         byte[] pdf = api.getPaperInvoicePDF(invoiceIds[0]);
         assertTrue("PDF invoice bytes returned", pdf.length > 0);        
     }
+
+    public void testGenerateInvoice() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        UserWS user = new UserWS();
+        user.setUserName("invoice-test-01-" + new Date().getTime());
+        user.setPassword("password");
+        user.setLanguageId(1);
+        user.setCurrencyId(1);
+        user.setMainRoleId(5);
+        user.setStatusId(UserDTOEx.STATUS_ACTIVE);
+        user.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+
+        ContactWS contact = new ContactWS();
+        contact.setEmail("test@test.com");
+        contact.setFirstName("Invoice Test");
+        contact.setLastName("Invoice specific due date");
+        user.setContact(contact);
+
+        user.setUserId(api.createUser(user)); // create user
+        assertNotNull("customer created", user.getUserId());
+
+        OrderWS order = new OrderWS();
+    	order.setUserId(user.getUserId());
+        order.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
+        order.setPeriod(2); // monthly
+        order.setCurrencyId(1);
+        order.setActiveSince(new DateMidnight(2011, 1, 1).toDate()); // active since January 01, 2011
+
+        // create an order to be invoiced
+        OrderLineWS line = new OrderLineWS();
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setItemId(2602); // lemonade
+        line.setUseItem(true);
+        line.setQuantity(1);
+        order.setOrderLines(new OrderLineWS[] { line });
+
+        order.setId(api.createOrder(order)); // create order
+        order = api.getOrder(order.getId());
+        assertNotNull("order created", order.getId());
+
+
+        // generate the invoice with a target billing & due date
+        // invoiced on February 01, 2011
+        // 45 day due date
+        Date billingDate = new DateMidnight(2011, 2, 1).toDate();
+        Integer[] invoiceIds = api.createInvoice(user.getUserId(), billingDate, PeriodUnitDTO.DAY, 45, false);
+        assertEquals("1 invoice generated", 1, invoiceIds.length);
+
+        InvoiceWS invoice = api.getInvoiceWS(invoiceIds[0]);
+        assertEquals("due date 45 days from billing date", new DateMidnight(2011, 3, 18).toDate(), invoice.getDueDate());
+
+        // cleanup
+        api.deleteInvoice(invoice.getId());
+        api.deleteOrder(order.getId());
+        api.deleteUser(user.getUserId());
+    }
+
 
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {
         assertEquals(null, expected, actual);

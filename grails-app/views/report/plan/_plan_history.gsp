@@ -1,3 +1,4 @@
+<%@ page import="com.sapienter.jbilling.server.item.db.PlanDTO; com.sapienter.jbilling.server.user.db.CompanyDTO" %>
 %{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -27,10 +28,42 @@
 
 <div class="form-columns">
 
-    <g:applyLayout name="form/input">
-        <content tag="label">Plan Id</content>
+    <%
+        def plans =  PlanDTO.createCriteria().list() {
+            item {
+                eq('entity', new CompanyDTO(session['company_id']))
+            }
+        }
+    %>
+
+    <script type="text/javascript">
+        var plans = {
+            <g:each var="plan" in="${plans}">
+                ${plan.id}: { plan_code: "${plan.item.internalNumber}", plan_description: "${plan.item.description.replaceAll("\"","'")}" },
+            </g:each>
+        };
+    </script>
+
+    <g:applyLayout name="form/select">
+        <content tag="label"><g:message code="plan_id"/></content>
         <content tag="label.for">plan_id</content>
-        <g:textField class="field" name="plan_id"/>
+        <g:select from="${plans}"
+                  name="plan_id"
+                  optionKey="id"
+                  optionValue="${{it.item.description}}" />
+
+        <g:hiddenField name="plan_code"/>
+        <g:hiddenField name="plan_description"/>
     </g:applyLayout>
+
+    <script type="text/javascript">
+        $(function() {
+            $('#plan_id').change(function() {
+                var plan = plans[$(this).val()];
+                $('#plan_code').val(plan.plan_code);
+                $('#plan_description').val(plan.plan_description);
+            }).change();
+        })
+    </script>
 
 </div>

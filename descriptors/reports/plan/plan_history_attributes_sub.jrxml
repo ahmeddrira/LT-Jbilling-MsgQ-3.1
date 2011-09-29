@@ -24,23 +24,23 @@
 				</graphicElement>
 			</rectangle>
 			<line>
-				<reportElement x="5" y="0" width="240" height="1" forecolor="#909090">
+				<reportElement x="5" y="1" width="240" height="1" forecolor="#909090">
 					<printWhenExpression><![CDATA[Boolean.valueOf($V{COLUMN_COUNT} > 1)]]></printWhenExpression>
 				</reportElement>
 				<graphicElement>
-					<pen lineWidth="0.5" lineStyle="Dotted"/>
+					<pen lineWidth="0.5" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement x="0" y="0" width="150" height="20"/>
+				<reportElement x="0" y="0" width="150" height="20" backcolor="#EEEEEE"/>
 				<box leftPadding="5"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{attribute_name}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{attribute_name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="150" y="0" width="104" height="20"/>
+				<reportElement x="150" y="0" width="104" height="20" backcolor="#EEEEEE"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{attribute_value}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{attribute_value}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

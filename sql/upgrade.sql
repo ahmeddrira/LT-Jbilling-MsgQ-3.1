@@ -1406,8 +1406,23 @@ create table plan_item_price_timeline (
     unique (price_model_id)
 );
 
+
 alter table plan_item_price_timeline add constraint plan_item_timeline_price_mode_id_FK foreign key (price_model_id) references price_model;
 alter table plan_item_price_timeline add constraint plan_item_timeline_plan_item_id_FK foreign key (plan_item_id) references plan_item;
 
 insert into plan_item_price_timeline (plan_item_id, price_model_id, start_date) select id, price_model_id, '1970-01-01 00:00' as start_date from plan_item where price_model_id is not null;
 alter table plan_item drop column price_model_id;
+
+
+-- Date: 29-Sept-2011
+-- Redmine Issue: #1126
+-- Description: Historical plan pricing report
+insert into report_type (id, name, optlock) values (5, 'plan', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (101, 5, 'description', 1, 'Plan');
+
+insert into report (id, type_id, name, file_name, optlock) values (10, 5, 'plan_history', 'plan_history.jasper', 0);
+insert into report_parameter (id, report_id, dtype, name) values (15, 10, 'integer', 'plan_id');
+insert into report_parameter (id, report_id, dtype, name) values (16, 10, 'string', 'plan_code');
+insert into report_parameter (id, report_id, dtype, name) values (17, 10, 'string', 'plan_description');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 10, 'description', 1, 'Plan pricing history for all plan products and start dates.');
+insert into entity_report_map (report_id, entity_id) values (10, 1);

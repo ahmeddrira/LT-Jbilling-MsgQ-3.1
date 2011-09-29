@@ -29,7 +29,7 @@
 			<textField pattern="">
 				<reportElement x="434" y="1" width="120" height="20"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{plan_id}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$P{plan_id}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="324" y="1" width="110" height="20"/>
@@ -52,12 +52,12 @@
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement x="434" y="21" width="120" height="20"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{plan_code}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{plan_code}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement x="434" y="41" width="120" height="20"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{plan_description}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{plan_description}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="324" y="41" width="110" height="20">
@@ -77,7 +77,7 @@
 			<textField>
 				<reportElement x="0" y="0" width="220" height="20"/>
 				<textElement/>
-				<textFieldExpression><![CDATA["Plan " + $P{plan_id} + " Pricing History"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["Plan " + $P{plan_id} + " Pricing History"]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -119,7 +119,7 @@
 					<printWhenExpression><![CDATA[Boolean.valueOf($V{COLUMN_COUNT} > 1)]]></printWhenExpression>
 				</reportElement>
 				<graphicElement>
-					<pen lineWidth="0.75" lineStyle="Dotted"/>
+					<pen lineWidth="1.0" lineStyle="Solid"/>
 				</graphicElement>
 			</line>
 			<subreport>
@@ -131,7 +131,7 @@
 					<subreportParameterExpression><![CDATA[$F{id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "plan_history_item_sub.jasper"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "plan_history_item_sub.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
@@ -140,12 +140,12 @@
 			<textField>
 				<reportElement x="434" y="0" width="80" height="20"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
 				<reportElement x="514" y="0" width="40" height="20"/>
 				<textElement/>
-				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>

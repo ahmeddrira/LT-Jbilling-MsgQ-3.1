@@ -110,6 +110,7 @@ ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_4;
 ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_3;
 ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_2;
 ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_1;
+ALTER TABLE ONLY public.enumeration_values DROP CONSTRAINT enumeration_values_fk_1;
 ALTER TABLE ONLY public.entity_payment_method_map DROP CONSTRAINT entity_payment_method_map_fk_2;
 ALTER TABLE ONLY public.entity_payment_method_map DROP CONSTRAINT entity_payment_method_map_fk_1;
 ALTER TABLE ONLY public.entity DROP CONSTRAINT entity_fk_2;
@@ -144,8 +145,6 @@ ALTER TABLE ONLY public.base_user DROP CONSTRAINT base_user_fk_4;
 ALTER TABLE ONLY public.base_user DROP CONSTRAINT base_user_fk_3;
 ALTER TABLE ONLY public.ageing_entity_step DROP CONSTRAINT ageing_entity_step_fk_2;
 ALTER TABLE ONLY public.ach DROP CONSTRAINT ach_fk_1;
-ALTER TABLE ONLY public.enumeration_values DROP CONSTRAINT enumeration_values_fk_1;
-
 DROP INDEX public.user_role_map_i_role;
 DROP INDEX public.user_role_map_i_2;
 DROP INDEX public.user_credit_card_map_i_2;
@@ -283,6 +282,8 @@ ALTER TABLE ONLY public.filter DROP CONSTRAINT filter_pkey;
 ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_pkey;
 ALTER TABLE ONLY public.event_log_module DROP CONSTRAINT event_log_module_pkey;
 ALTER TABLE ONLY public.event_log_message DROP CONSTRAINT event_log_message_pkey;
+ALTER TABLE ONLY public.enumeration_values DROP CONSTRAINT enumeration_values_pkey;
+ALTER TABLE ONLY public.enumeration DROP CONSTRAINT enumeration_pkey;
 ALTER TABLE ONLY public.entity DROP CONSTRAINT entity_pkey;
 ALTER TABLE ONLY public.customer_price DROP CONSTRAINT customer_price_pkey;
 ALTER TABLE ONLY public.customer DROP CONSTRAINT customer_pkey;
@@ -303,8 +304,6 @@ ALTER TABLE ONLY public.billing_process_configuration DROP CONSTRAINT billing_pr
 ALTER TABLE ONLY public.base_user DROP CONSTRAINT base_user_pkey;
 ALTER TABLE ONLY public.ageing_entity_step DROP CONSTRAINT ageing_entity_step_pkey;
 ALTER TABLE ONLY public.ach DROP CONSTRAINT ach_pkey;
-ALTER TABLE ONLY public.enumeration DROP CONSTRAINT enumeration_pkey;
-ALTER TABLE ONLY public.enumeration_values DROP CONSTRAINT enumeration_values_pkey;
 DROP TABLE public.user_role_map;
 DROP TABLE public.user_credit_card_map;
 DROP TABLE public.shortcut;
@@ -386,6 +385,8 @@ DROP TABLE public.filter;
 DROP TABLE public.event_log_module;
 DROP TABLE public.event_log_message;
 DROP TABLE public.event_log;
+DROP TABLE public.enumeration_values;
+DROP TABLE public.enumeration;
 DROP TABLE public.entity_report_map;
 DROP TABLE public.entity_payment_method_map;
 DROP TABLE public.entity_delivery_method_map;
@@ -410,8 +411,6 @@ DROP TABLE public.billing_process;
 DROP TABLE public.base_user;
 DROP TABLE public.ageing_entity_step;
 DROP TABLE public.ach;
-DROP TABLE public.enumeration;
-DROP TABLE public.enumeration_values;
 DROP PROCEDURAL LANGUAGE plpgsql;
 DROP SCHEMA public;
 --
@@ -677,7 +676,7 @@ CREATE TABLE contact_field_type (
     prompt_key character varying(50) NOT NULL,
     data_type character varying(50) NOT NULL,
     customer_readonly smallint,
-    display_in_view smallint default 0,
+    display_in_view smallint DEFAULT 0,
     optlock integer NOT NULL
 );
 
@@ -885,36 +884,33 @@ CREATE TABLE entity_report_map (
 
 ALTER TABLE public.entity_report_map OWNER TO jbilling;
 
-
 --
 -- Name: enumeration; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
-CREATE TABLE enumeration
-(
-  id integer NOT NULL,
-  entity_id integer NOT NULL,
-  name character varying(50) NOT NULL,
-  optlock integer NOT NULL,
-  CONSTRAINT enumeration_pkey PRIMARY KEY (id)
+CREATE TABLE enumeration (
+    id integer NOT NULL,
+    entity_id integer NOT NULL,
+    name character varying(50) NOT NULL,
+    optlock integer NOT NULL
 );
-ALTER TABLE enumeration OWNER TO jbilling;
+
+
+ALTER TABLE public.enumeration OWNER TO jbilling;
 
 --
 -- Name: enumeration_values; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE enumeration_values (
-  id integer NOT NULL,
-  enumeration_id integer NOT NULL,
-  value character varying(50) NOT NULL,
-  optlock integer NOT NULL,
-  CONSTRAINT enumeration_values_pkey PRIMARY KEY (id),
-  CONSTRAINT enumeration_values_fk_1 FOREIGN KEY (enumeration_id)
-      REFERENCES enumeration (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+    id integer NOT NULL,
+    enumeration_id integer NOT NULL,
+    value character varying(50) NOT NULL,
+    optlock integer NOT NULL
 );
-ALTER TABLE enumeration_values OWNER TO jbilling;
+
+
+ALTER TABLE public.enumeration_values OWNER TO jbilling;
 
 --
 -- Name: event_log; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -6420,10 +6416,10 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 -- Data for Name: contact_field_type; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY contact_field_type (id, entity_id, prompt_key, data_type, customer_readonly, optlock) FROM stdin;
-1	1	partner.prompt.fee	string	1	0
-2	1	ccf.payment_processor	integer	1	0
-3	1	ccf.ip_address	string	1	0
+COPY contact_field_type (id, entity_id, prompt_key, data_type, customer_readonly, display_in_view, optlock) FROM stdin;
+1	1	partner.prompt.fee	string	1	0	0
+2	1	ccf.payment_processor	integer	1	0	0
+3	1	ccf.ip_address	string	1	0	0
 \.
 
 
@@ -9902,6 +9898,23 @@ COPY entity_report_map (report_id, entity_id) FROM stdin;
 7	1
 8	1
 9	1
+10	1
+\.
+
+
+--
+-- Data for Name: enumeration; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY enumeration (id, entity_id, name, optlock) FROM stdin;
+\.
+
+
+--
+-- Data for Name: enumeration_values; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY enumeration_values (id, enumeration_id, value, optlock) FROM stdin;
 \.
 
 
@@ -11467,6 +11480,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	28	description	1	View all customers
 59	36	description	1	View all customers
 59	74	description	1	View all customers
+101	5	description	1	Plan
+100	10	description	1	Plan pricing history for all plan products and start dates.
 \.
 
 
@@ -16066,6 +16081,7 @@ COPY report (id, type_id, name, file_name, optlock) FROM stdin;
 7	1	accounts_receivable	accounts_receivable.jasper	0
 8	1	gl_detail	gl_detail.jasper	0
 9	1	gl_summary	gl_summary.jasper	0
+10	5	plan_history	plan_history.jasper	0
 \.
 
 
@@ -16088,6 +16104,7 @@ COPY report_parameter (id, report_id, dtype, name) FROM stdin;
 12	6	date	end_date
 13	8	date	date
 14	9	date	date
+15	10	integer	plan_id
 \.
 
 
@@ -16100,6 +16117,7 @@ COPY report_type (id, name, optlock) FROM stdin;
 2	order	0
 3	payment	0
 4	user	0
+5	plan	0
 \.
 
 
@@ -18340,6 +18358,22 @@ ALTER TABLE ONLY entity
 
 
 --
+-- Name: enumeration_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY enumeration
+    ADD CONSTRAINT enumeration_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: enumeration_values_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY enumeration_values
+    ADD CONSTRAINT enumeration_values_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: event_log_message_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -19643,6 +19677,14 @@ ALTER TABLE ONLY entity_payment_method_map
 
 ALTER TABLE ONLY entity_payment_method_map
     ADD CONSTRAINT entity_payment_method_map_fk_2 FOREIGN KEY (entity_id) REFERENCES entity(id);
+
+
+--
+-- Name: enumeration_values_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY enumeration_values
+    ADD CONSTRAINT enumeration_values_fk_1 FOREIGN KEY (enumeration_id) REFERENCES enumeration(id);
 
 
 --

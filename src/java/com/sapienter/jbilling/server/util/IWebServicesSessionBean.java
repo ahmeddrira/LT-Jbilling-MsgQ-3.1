@@ -84,6 +84,9 @@ public interface IWebServicesSessionBean {
     public void updateUser(UserWS user) throws SessionInternalError;
     public void deleteUser(Integer userId) throws SessionInternalError;
 
+    public boolean userExistsWithName(String userName);
+    public boolean userExistsWithId(Integer userId);
+
     public ContactWS[] getUserContactsWS(Integer userId) throws SessionInternalError;
     public void updateUserContact(Integer userId, Integer typeId, ContactWS contact) throws SessionInternalError;
 

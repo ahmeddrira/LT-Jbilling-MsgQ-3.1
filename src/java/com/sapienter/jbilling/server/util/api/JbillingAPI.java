@@ -73,6 +73,9 @@ public interface JbillingAPI {
     public void updateUser(UserWS user);
     public void deleteUser(Integer userId);
 
+    public boolean userExistsWithName(String userName);
+    public boolean userExistsWithId(Integer userId);
+
     public ContactWS[] getUserContactsWS(Integer userId);
     public void updateUserContact(Integer userId, Integer typeId, ContactWS contact);
 

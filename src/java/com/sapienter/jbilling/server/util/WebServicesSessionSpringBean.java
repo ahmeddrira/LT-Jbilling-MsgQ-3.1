@@ -650,6 +650,26 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     /**
+     * Returns true if a user exists with the given user name, false if not.
+     *
+     * @param userName user name
+     * @return true if user exists, false if not.
+     */
+    public boolean userExistsWithName(String userName) {
+        return new UserBL().exists(userName, getCallerCompanyId());
+    }
+
+    /**
+     * Returns true if a user with the given ID exists and is accessible by the caller, false if not.
+     *
+     * @param userId user id
+     * @return true if user exists, false if not.
+     */
+    public boolean userExistsWithId(Integer userId) {
+        return new UserBL().exists(userId, getCallerCompanyId());
+    }
+
+    /**
      * Fetches the ContactTypeWS for the given contact type ID. The returned WS object
      * contains a list of international descriptions for all available languages.
      *

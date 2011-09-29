@@ -129,6 +129,14 @@ public class SpringAPI implements JbillingAPI {
         session.deleteUser(userId);
     }
 
+    public boolean userExistsWithName(String userName) {
+        return session.userExistsWithName(userName);
+    }
+
+    public boolean userExistsWithId(Integer userId) {
+        return session.userExistsWithId(userId);
+    }
+
     public void deleteInvoice(Integer invoiceId) {
         session.deleteInvoice(invoiceId);
     }

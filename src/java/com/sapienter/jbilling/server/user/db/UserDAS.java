@@ -19,21 +19,19 @@
  */
 package com.sapienter.jbilling.server.user.db;
 
-import java.util.Iterator;
 import java.util.List;
 
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
-              
-    
 public class UserDAS extends AbstractDAS<UserDTO> {
     private static final Logger LOG = Logger.getLogger(UserDAS.class);
    
@@ -188,6 +186,14 @@ public class UserDAS extends AbstractDAS<UserDTO> {
         query.setParameter("entity", entityId);
         return query.list();
     }
-    
 
+    public boolean exists(Integer userId, Integer entityId) {
+        Criteria criteria = getSession().createCriteria(getPersistentClass())
+                .add(Restrictions.idEq(userId))
+                .createAlias("company", "company")
+                .add(Restrictions.eq("company.id", entityId))
+                .setProjection(Projections.rowCount());
+
+        return (criteria.uniqueResult() != null && ((Integer) criteria.uniqueResult()) > 0);
+    }
 }

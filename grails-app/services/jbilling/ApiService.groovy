@@ -150,6 +150,14 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.deleteUser(userId)
     }
 
+    public boolean userExistsWithName(String userName) {
+        return webServicesSession.userExistsWithName(userName)
+    }
+
+    public boolean userExistsWithId(Integer userId) {
+        return webServicesSession.userExistsWithId(userId)
+    }
+
     public ContactTypeWS getContactTypeWS(Integer contactTypeId) {
         return webServicesSession.getContactTypeWS(contactTypeId);
     }

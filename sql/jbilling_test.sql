@@ -16105,6 +16105,8 @@ COPY report_parameter (id, report_id, dtype, name) FROM stdin;
 13	8	date	date
 14	9	date	date
 15	10	integer	plan_id
+16	10	string	plan_code
+17	10	string	plan_description
 \.
 
 

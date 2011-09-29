@@ -57,13 +57,15 @@
     </g:applyLayout>
 
     <script type="text/javascript">
-        $(function() {
-            $('#plan_id').change(function() {
-                var plan = plans[$(this).val()];
-                $('#plan_code').val(plan.plan_code);
-                $('#plan_description').val(plan.plan_description);
-            }).change();
-        })
+        setTimeout(
+            function() {
+                $('#plan_id').change(function() {
+                    var plan = plans[$(this).val()];
+                    $('#plan_code').val(plan.plan_code);
+                    $('#plan_description').val(plan.plan_description);
+                }).change();
+            }
+        , 500);
     </script>
 
 </div>

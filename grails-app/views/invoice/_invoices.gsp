@@ -43,7 +43,7 @@
                         </g:remoteSort>
                     </th>
                     <th class="medium">
-                        <g:remoteSort action="list" sort="createDatetime" update="column1">
+                        <g:remoteSort action="list" sort="dueDate" update="column1">
                             <g:message code="invoice.label.duedate"/>
                         </g:remoteSort>
                     </th>

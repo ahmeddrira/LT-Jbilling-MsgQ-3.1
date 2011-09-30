@@ -358,6 +358,9 @@ public class UserBL extends ResultList implements UserSQL {
                 user.getCustomer().setUseParentPricing(dto.getCustomer().useParentPricing());
             }
 
+            user.getCustomer().setDueDateUnitId(dto.getCustomer().getDueDateUnitId());
+            user.getCustomer().setDueDateValue(dto.getCustomer().getDueDateValue());
+            
             // set dynamic balance fields
             user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());

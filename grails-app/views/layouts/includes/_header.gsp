@@ -97,7 +97,7 @@
             </a>
         </li>
         <li>
-            <a href="http://www.jbilling.com/product/documentation">
+            <a href="${resource(dir:'manual', file: 'index.html')}">
                 <img src="${resource(dir:'images', file:'icon27.gif')}" alt="help" />
                 <g:message code="topnav.link.help"/>
             </a>

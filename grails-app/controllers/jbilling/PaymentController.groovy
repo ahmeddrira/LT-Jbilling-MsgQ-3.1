@@ -454,7 +454,7 @@ class PaymentController {
     def bindPayment(PaymentWS payment, GrailsParameterMap params) {
         bindData(payment, params, 'payment')
 
-        payment.isRefund = params.boolean('isRefund') ? 1 : 0
+        payment.isRefund = ('on' == params.isRefund) ? 1 : 0
 
         // bind credit card object if parameters present
         if (params.creditCard.any { key, value -> value }) {

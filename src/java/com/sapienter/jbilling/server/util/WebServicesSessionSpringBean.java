@@ -1447,9 +1447,46 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return true;
     }
 
+    public boolean updateOrCreateOrderPeriod(OrderPeriodWS orderPeriod)
+            throws SessionInternalError {
+
+        OrderPeriodDAS periodDas = new OrderPeriodDAS();
+        OrderPeriodDTO periodDto = null;
+        if (null != orderPeriod.getId()) {
+            periodDto = periodDas.find(orderPeriod.getId());
+        }
+
+        if (null == periodDto) {
+            periodDto = new OrderPeriodDTO();
+            periodDto.setCompany(new CompanyDAS().find(getCallerCompanyId()));
+            // periodDto.setVersionNum(new Integer(0));
+        }
+        periodDto.setValue(orderPeriod.getValue());
+        if (null != orderPeriod.getPeriodUnitId()) {
+            periodDto.setUnitId(orderPeriod.getPeriodUnitId().intValue());
+        }
+        periodDto = periodDas.save(periodDto);
+        if (orderPeriod.getDescriptions() != null
+                && orderPeriod.getDescriptions().size() > 0) {
+            periodDto.setDescription(((InternationalDescriptionWS) orderPeriod
+                    .getDescriptions().get(0)).getContent(),
+                    ((InternationalDescriptionWS) orderPeriod.getDescriptions()
+                            .get(0)).getLanguageId());
+        }
+        LOG.debug("Converted to DTO: " + periodDto);
+        periodDas.flush();
+        periodDas.clear();
+        return true;
+    }
+    
     public boolean deleteOrderPeriod(Integer periodId) throws SessionInternalError {
-    	IOrderSessionBean orderSession = Context.getBean(Context.Name.ORDER_SESSION);
-    	return orderSession.deletePeriod(periodId);
+        try {
+            // now get the order
+            OrderBL bl = new OrderBL();
+            return new Boolean(bl.deletePeriod(periodId));
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
     }
     
     /*

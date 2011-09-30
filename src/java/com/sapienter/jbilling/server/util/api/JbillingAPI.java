@@ -347,6 +347,7 @@ public interface JbillingAPI {
     public OrderWS[] getUserSubscriptions(Integer userId);
     public boolean deleteOrderPeriod(Integer periodId);
     public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods);
+    public boolean updateOrCreateOrderPeriod(OrderPeriodWS orderPeriod);
     public void createUpdateNofications(Integer messageId, MessageDTO dto);
     public void saveCustomContactFields(ContactFieldTypeWS[] fields);
     public void saveCustomerNotes(Integer userId, String notes);

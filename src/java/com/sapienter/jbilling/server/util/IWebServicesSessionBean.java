@@ -179,6 +179,7 @@ public interface IWebServicesSessionBean {
     public OrderWS[] rateOrders(OrderWS orders[]) throws SessionInternalError;
 
     public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods) throws SessionInternalError;
+    public boolean updateOrCreateOrderPeriod(OrderPeriodWS orderPeriod) throws SessionInternalError;
     public boolean deleteOrderPeriod(Integer periodId) throws SessionInternalError;
     
     public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order) throws SessionInternalError;

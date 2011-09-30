@@ -306,6 +306,11 @@ class ApiService implements IWebServicesSessionBean {
 		return webServicesSession.updateOrderPeriods(orderPeriods);
 	}
 	
+    public boolean updateOrCreateOrderPeriod(OrderPeriodWS orderPeriod) {
+        return webServicesSession.updateOrCreateOrderPeriod(orderPeriod);
+    }
+    
+    
 	public boolean deleteOrderPeriod(Integer periodId) {
 		return webServicesSession.deleteOrderPeriod(periodId);
 	}

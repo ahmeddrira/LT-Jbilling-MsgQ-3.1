@@ -31,6 +31,9 @@ import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO
 import com.sapienter.jbilling.server.order.OrderPeriodWS
 
+import com.sapienter.jbilling.server.payment.tasks.PaymentSageTask.Params;
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
+
 /**
  * OrderPeriodController 
  *
@@ -59,14 +62,21 @@ class OrderPeriodController {
 		
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 		
-		if (params.template) {
-			flash.message=flash.message
-			render template: params.template, model:[periods: periods]
+		if (params.applyFilter) {
+            render template: 'periods', model: [ periods: periods ]
 		} else {
 			render view: 'list', model:[periods: periods]
 		}
 	}
 	
+    def show = {
+        def period = OrderPeriodDTO.get(params.int('id'))
+
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, period.id, period.getDescription(session['language_id']))
+
+        render template: 'show', model: [ selected: period ]
+    }
+    
 	def getPeriodsForEntity () {
 		return OrderPeriodDTO.createCriteria().list(
 			max:    params.max,
@@ -77,40 +87,34 @@ class OrderPeriodController {
 		}
 	}
 	
+    def edit = {
+        def period = params.id ? OrderPeriodDTO.get(params.int('id')) : null
+
+        def crumbName = params.id ? 'update' : 'create'
+        def crumbDescription = params.id ? period?.getDescription(session['language_id']) : null
+        
+        breadcrumbService.addBreadcrumb(controllerName, actionName, crumbName, params.int('id'), crumbDescription)
+
+        def periodUnits = PeriodUnitDTO.list()
+        
+        render template: 'edit', model: [ period: period, periodUnits: periodUnits ]
+    }
+    
 	def save = {
-		int cnt = params.recCnt as int
-		log.debug "Records Count: ${cnt}"
-		
-		def periods= getPeriodsForEntity()
-		
-		List <OrderPeriodWS> wsList= new ArrayList<OrderPeriodWS>(cnt+1)
-		for (OrderPeriodDTO periodDto: periods) {
-			OrderPeriodWS ws= new OrderPeriodWS(periodDto)
-			bindData(ws, params["obj[${ws.id}]"])
-			log.debug ws
-			InternationalDescriptionWS descr=
-			new InternationalDescriptionWS(session['language_id'] as Integer, params["obj[${ws.id}]"].description)
-			log.debug descr
-			ws.descriptions.add descr
-			log.debug ws
-			wsList.add(ws)
-		}
-		
-		log.debug "New Value: ${params.value} & Description: ${params.description}"
-		if (params.value && params.description) {
-			OrderPeriodWS ws= new OrderPeriodWS()
-			bindData(ws, params);
-			ws.setEntityId(session['company_id'].toInteger())
-			InternationalDescriptionWS descr=
-			new InternationalDescriptionWS(session['language_id'] as Integer, params.description as String)
-			log.debug descr
-			ws.descriptions.add descr
-			wsList.add ws
-			log.debug ws
-		}
-		
+        
+        OrderPeriodWS ws= new OrderPeriodWS()
+        bindData(ws, params)
+        
+		log.debug ws
+		InternationalDescriptionWS descr=
+			new InternationalDescriptionWS(session['language_id'] as Integer, params.description)
+        log.debug descr
+		ws.descriptions.add descr
+		ws.setEntityId(session['company_id'].toInteger())
+        log.debug ws
+        
 		try {
-			boolean retVal= webServicesSession.updateOrderPeriods(wsList.toArray(new OrderPeriodWS[wsList.size()]));
+			boolean retVal= webServicesSession.updateOrCreateOrderPeriod(ws);
 			flash.message= 'config.periods.updated'
 		} catch (SessionInternalError e){
 			viewUtils.resolveException(flash, session.locale, e);
@@ -122,24 +126,31 @@ class OrderPeriodController {
 		
 	}
 	
-	def remove = {
-		log.debug "ID: ${params.id}"
-		if (params.id) {
-			try {
-				boolean retVal= webServicesSession.deleteOrderPeriod(params.id?.toInteger());
-				if (retVal) { 
-					flash.message= 'config.periods.delete.success'
-				} else {
-					flash.info = 'config.periods.delete.failure'
-				}
-			} catch (SessionInternalError e){
-				viewUtils.resolveException(flash, session.locale, e);
-			} catch (Exception e) {
-				log.error e.getMessage()
-				flash.error = 'config.periods.delete.error'
-			}
-		}
-		redirect (action: 'list', params: [template: 'periods'])
+	def delete = {
+		log.debug 'delete called on ' + params.id
+        if (params.id) {
+            def period= OrderPeriodDTO.get(params.int('id'))
+            if (period) {
+                try {
+                    boolean retVal= webServicesSession.deleteOrderPeriod(params.id?.toInteger());
+                    if (retVal) { 
+                        flash.message= 'config.periods.delete.success'
+                        flash.args = [ params.id ]
+                    } else {
+                        flash.info = 'config.periods.delete.failure'
+                    }
+                } catch (SessionInternalError e){
+                    viewUtils.resolveException(flash, session.locale, e);
+                } catch (Exception e) {
+                    log.error e.getMessage()
+                    flash.error = 'config.periods.delete.error'
+                }
+            }
+        }
+
+        // render the period list
+        params.applyFilter = true
+        list()
 	}
 	
 }

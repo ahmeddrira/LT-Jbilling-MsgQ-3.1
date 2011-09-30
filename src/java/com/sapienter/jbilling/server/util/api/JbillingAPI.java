@@ -328,6 +328,7 @@ public interface JbillingAPI {
     public boolean deleteOrderPeriod(Integer periodId);
     public boolean isBillingRunning();
     public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods);
+    public boolean updateOrCreateOrderPeriod(OrderPeriodWS orderPeriod);
     public void createUpdateNofications(Integer messageId, MessageDTO dto);
     public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId);
     public void saveCustomContactFields(ContactFieldTypeWS[] fields);

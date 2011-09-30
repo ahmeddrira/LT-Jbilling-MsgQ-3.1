@@ -1,13 +1,3 @@
-<html>
-<head>
-    <meta name="layout" content="configuration" />
-</head>
-<body>
-
-<!-- selected configuration menu item -->
-<content tag="menu.item">periods</content>
-
-<content tag="column1">
     %{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -27,11 +17,25 @@
   You should have received a copy of the GNU Affero General Public License
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
+<html>
+<head>
+    <meta name="layout" content="configuration" />
+</head>
+<body>
+
+<!-- selected configuration menu item -->
+<content tag="menu.item">periods</content>
+
+<content tag="column1">
 
 <g:render template="periods" />
 </content>
 
 <content tag="column2">
+    <g:if test="${selected}">
+        <!-- show selected role -->
+        <g:render template="show" model="[ selected: selected ]"/>
+    </g:if>
 </content>
 
 </body>

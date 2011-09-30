@@ -277,13 +277,12 @@
                             <div class="inp-bg inp4">
                                 <g:textField class="field" name="user.dueDateValue" value="${user?.dueDateValue}"/>
                             </div>
-
                             <div class="select4">
-                                <g:select from="${company.orderPeriods.collect{ it.periodUnit }}"
-                                        optionKey="id"
-                                        optionValue="${{it.getDescription(session['language_id'])}}"
-                                        name="user.dueDateUnitId"
-                                        value="${user?.dueDateUnitId}"/>
+                                <g:select from="${periodUnits}"
+                                          optionKey="id"
+                                          optionValue="${{it.getDescription(session['language_id'])}}"
+                                          name="user.dueDateUnitId"
+                                          value="${user?.dueDateUnitId ?: com.sapienter.jbilling.server.util.Constants.PERIOD_UNIT_DAY}"/>
                             </div>
                         </g:applyLayout>
                     </div>

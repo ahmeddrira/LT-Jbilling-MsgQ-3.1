@@ -55,6 +55,8 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS
 
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
+
 @Secured(["MENU_90"])
 class CustomerController {
 
@@ -266,8 +268,10 @@ class CustomerController {
         def crumbName = params.id ? 'update' : 'create'
         def crumbDescription = params.id ? UserHelper.getDisplayName(user, user.contact) : null
         breadcrumbService.addBreadcrumb(controllerName, actionName, crumbName, params.int('id'), crumbDescription)
-
-        [ user: user, contacts: contacts, parent: parent, company: company, currencies: currencies ]
+        
+        def periodUnits = PeriodUnitDTO.list()
+        
+        [ user: user, contacts: contacts, parent: parent, company: company, currencies: currencies, periodUnits:periodUnits ]
     }
 
     /**
@@ -277,7 +281,7 @@ class CustomerController {
     def save = {
         def user = new UserWS()
         UserHelper.bindUser(user, params)
-
+        
         def contacts = []
         UserHelper.bindContacts(user, contacts, company, params)
 

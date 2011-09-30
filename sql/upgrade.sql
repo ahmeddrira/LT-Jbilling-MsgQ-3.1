@@ -1414,6 +1414,18 @@ insert into plan_item_price_timeline (plan_item_id, price_model_id, start_date) 
 alter table plan_item drop column price_model_id;
 
 
+-- Sept 10
+-- Redmine issue #1302
+-- Description: Round invoices total and balance to 2 digits
+insert into preference_type values (50, 2);
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 50, 'description', 1, 'Invoice decimal rounding.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 50, 'instruction', 1, 'The number of decimal places to be shown on the invoice. Defaults to 2.');
+
+
 -- Date: 29-Sept-2011
 -- Redmine Issue: #1126
 -- Description: Historical plan pricing report

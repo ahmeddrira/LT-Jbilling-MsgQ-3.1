@@ -157,12 +157,22 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         if (newInvoice.getDueDate().before(newInvoice.getBillingDate())) {
             newInvoice.setDueDate(newInvoice.getBillingDate());
         }
-        // ensure that there are only two decimals in the invoice
+
+        // ensure that there are only so many decimals in the invoice
+        int decimals = Constants.BIGDECIMAL_SCALE;
+        try {
+        	pref.set(entityId, Constants.PREFERENCE_INVOICE_DECIMALS);
+        } catch (EmptyResultDataAccessException e) {
+            // not interested, ignore
+        }
+       	decimals = pref.getInt();
+
+       	LOG.debug("Rounding " + newInvoice.getTotal() + " to " + decimals + " decimals");
         if (newInvoice.getTotal() != null) {
-            newInvoice.setTotal(newInvoice.getTotal().setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
+            newInvoice.setTotal(newInvoice.getTotal().setScale(decimals, Constants.BIGDECIMAL_ROUND));
         }
         if (newInvoice.getBalance() != null) {
-            newInvoice.setBalance(newInvoice.getBalance().setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
+            newInvoice.setBalance(newInvoice.getBalance().setScale(decimals, Constants.BIGDECIMAL_ROUND));
         }
 
         // create the invoice row

@@ -11482,6 +11482,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	74	description	1	View all customers
 101	5	description	1	Plan
 100	10	description	1	Plan pricing history for all plan products and start dates.
+50	50	description	1	Invoice decimal rounding.
+50	50	instruction	1	The number of decimal places to be shown on the invoice. Defaults to 2.
 \.
 
 
@@ -14931,6 +14933,7 @@ COPY preference_type (id, def_value) FROM stdin;
 46	0
 47	0
 48	1
+50	2
 \.
 
 

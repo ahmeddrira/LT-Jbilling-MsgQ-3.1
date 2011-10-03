@@ -120,10 +120,16 @@ class BillingController {
 	 * To display the run details of a given Process Id
 	 */
 	def show = {
-		Integer processId = params.id.toInteger()
+		def processId = params.int('id')
         
-		BillingProcessDTO process = new BillingProcessDAS().find(processId);
-
+        if ( !BillingProcessDTO.exists( processId ) ) {
+            flash.error = 'billing.process.review.doesnotexist'
+            flash.args = [processId]
+            redirect action:'list'
+        }
+        
+        BillingProcessDTO process = BillingProcessDTO.get(processId);
+        
 		def genInvoices = new InvoiceDAS().findByProcess(process)
 		def invoicesGenerated = genInvoices?.size() ?: 0
 

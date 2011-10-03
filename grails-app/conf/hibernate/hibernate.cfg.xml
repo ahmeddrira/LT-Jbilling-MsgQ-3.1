@@ -14,6 +14,14 @@
         <property name="hibernate.use_sql_comments">true</property>
 
         <!-- Mappings, only needed to help GROM, otherwise all the mappings are done with annotations -->
+        <mapping package="com.sapienter.jbilling.server.metafields.db"/>
+        <mapping class="com.sapienter.jbilling.server.metafields.db.MetaField"/>
+        <mapping class="com.sapienter.jbilling.server.metafields.db.MetaFieldValue"/>
+        <mapping class="com.sapienter.jbilling.server.metafields.db.value.BooleanMetaFieldValue"/>
+        <mapping class="com.sapienter.jbilling.server.metafields.db.value.DateMetaFieldValue"/>
+        <mapping class="com.sapienter.jbilling.server.metafields.db.value.DecimalMetaFieldValue"/>
+        <mapping class="com.sapienter.jbilling.server.metafields.db.value.IntegerMetaFieldValue"/>
+        <mapping class="com.sapienter.jbilling.server.metafields.db.value.StringMetaFieldValue"/>
         <mapping package="com.sapienter.jbilling.server.provisioning.db" />
         <mapping class="com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDTO" />
         <mapping package="com.sapienter.jbilling.server.report.db"/>

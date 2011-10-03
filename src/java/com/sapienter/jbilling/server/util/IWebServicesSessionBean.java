@@ -110,7 +110,7 @@ public interface IWebServicesSessionBean {
 
     public Integer getUserId(String username) throws SessionInternalError;
 
-    public void saveCustomContactFields(ContactFieldTypeWS[] fields) throws SessionInternalError;
+    public void saveCustomContactField(ContactFieldTypeWS ws) throws SessionInternalError;
 
     public void processPartnerPayouts(Date runDate);
     public PartnerWS getPartner(Integer partnerId) throws SessionInternalError;

@@ -117,17 +117,17 @@ public class ContactFieldTypeWS  implements java.io.Serializable {
 	
 	public ContactFieldTypeDTO getDTO() { 
 		
-		ContactFieldTypeDTO dto= this.id == null ? new ContactFieldTypeDTO() : new ContactFieldTypeDAS().find(this.id);
+		ContactFieldTypeDTO dto= (this.id == null) ? new ContactFieldTypeDTO() : new ContactFieldTypeDAS().find(this.id);
 		if ( null != dto ) { 
-			dto.setDataType(this.dataType);
 			dto.setEntity(new CompanyDTO(this.companyId));
+			dto.setDataType(this.dataType);
 			dto.setReadOnly(this.readOnly);
 			dto.setDisplayInView(this.displayInView ? 1 : 0);
-			dto.setVersionNum(0);
 			//since Prompt key is not null
-			dto.setPromptKey("placeholder_text");
-			if (this.descriptions != null && this.descriptions.size() > 0 ) {
-				dto.setDescription(((InternationalDescriptionWS)this.descriptions.get(0)).getContent(), ((InternationalDescriptionWS)this.descriptions.get(0)).getLanguageId());
+			dto.setPromptKey(this.getPromptKey() != null? this.getPromptKey(): "placeholder_text");
+			if (this.id == null ) {
+			    dto.setId(0);
+			    dto.setVersionNum(0);
 			}
 		}
 		return dto;

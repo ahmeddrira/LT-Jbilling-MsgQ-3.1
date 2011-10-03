@@ -858,25 +858,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return userIds;
     }
 
-    public void saveCustomContactFields(ContactFieldTypeWS[] fields) throws SessionInternalError {
-    	try {
-    		ContactFieldTypeDAS das= new ContactFieldTypeDAS();
-    		for (ContactFieldTypeWS ws: fields) { 
-    			ContactFieldTypeDTO dto= ws.getId() == null ? new ContactFieldTypeDTO() : das.find(ws.getId());
-    			dto.setDataType(ws.getDataType());
-    			dto.setReadOnly(ws.getReadOnly());
-    			dto.setDisplayInView(ws.getDisplayInView() ? 1 : 0);
-    			dto.setPromptKey("placeholder_text");
-    			dto.setEntity(new CompanyDTO(ws.getCompanyId()));
-    			dto.setVersionNum(new Integer(0));
-    			dto= das.save(dto);
-    			
-				for (InternationalDescriptionWS description : ws.getDescriptions()) {
-				    dto.setDescription(description.getContent(), description.getLanguageId());
-				}
-    			das.flush();
-    			das.clear();
-    		}
+    public void saveCustomContactField(ContactFieldTypeWS ws) throws SessionInternalError {
+        try {
+            
+            ContactFieldTypeDAS das= new ContactFieldTypeDAS(); 
+            ContactFieldTypeDTO dto= ws.getDTO();
+            dto= das.save(dto);
+            
+            if ( ws.getDescriptions().size() > 0 ) {
+                InternationalDescriptionWS descrWs= (InternationalDescriptionWS)ws.getDescriptions().get(0); 
+                dto.setDescription( descrWs.getContent(), descrWs.getLanguageId() );
+            }
+            
+            das.flush();
+            
     	}catch (Exception e) {
     		throw new SessionInternalError(e);
     	}
@@ -885,10 +880,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     @Deprecated
     private Integer[] getByCCNumber(Integer entityId, String number) {
         List<Integer> usersIds = new CreditCardDAS().findByLastDigits(entityId, number);
-
+        
         Integer[] ids = new Integer[usersIds.size()];
         return usersIds.toArray(ids);
-
+        
     }
 
     /**
@@ -896,7 +891,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer[] getUsersByCreditCard(String number) throws SessionInternalError {
         Integer entityId = getCallerCompanyId();
-
+        
         Integer[] ret = getByCCNumber(entityId, number);
         return ret;
     }

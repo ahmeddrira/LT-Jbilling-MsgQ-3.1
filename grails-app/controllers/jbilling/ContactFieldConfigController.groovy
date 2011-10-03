@@ -21,13 +21,13 @@
 package jbilling
 
 import grails.plugins.springsecurity.Secured
-import com.sapienter.jbilling.server.user.db.CompanyDTO
-import com.sapienter.jbilling.server.util.db.LanguageDTO
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO
-import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS
-import com.sapienter.jbilling.server.util.db.InternationalDescription
-import com.sapienter.jbilling.server.util.InternationalDescriptionWS
 import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO
+import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.util.InternationalDescriptionWS
+import com.sapienter.jbilling.server.util.db.EnumerationDTO
+import com.sapienter.jbilling.server.util.db.LanguageDTO
 
 /**
  * ContactFieldConfigController 
@@ -62,39 +62,45 @@ class ContactFieldConfigController {
         [ types: types, selected: selected, languages: languages ]
     }
 	
+    def show = {
+        def type = ContactFieldTypeDTO.get(params.int('id'))
+
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, type.id, type.getDescription(session['language_id']))
+
+        render template: 'show', model: [ selected: type ]
+    }
+    
+    def edit = {
+        def type = params.id ? ContactFieldTypeDTO.get(params.int('id')) : null
+
+        def crumbName = params.id ? 'update' : 'create'
+        def crumbDescription = params.id ? type?.getDescription(session['language_id']) : null
+        
+        breadcrumbService.addBreadcrumb(controllerName, actionName, crumbName, params.int('id'), crumbDescription)
+        
+        def dataTypeList= ['', 'String','Integer', 'Decimal', 'Boolean']
+        dataTypeList.addAll(EnumerationDTO.list().collect{it.name})
+        
+        render template: 'edit', model: [ type: type, dataTypeList: dataTypeList]
+    }
+    
 	def save = {
-		def cnt = params.recCnt.toInteger()
-		log.debug "Records Count: ${cnt}"
+        
+		ContactFieldTypeWS fieldWS= new ContactFieldTypeWS();
+        
+        bindData(fieldWS, params)
+        
+        fieldWS.readOnly= params.readOnly ? 1 : 0 
+        fieldWS.companyId = session['company_id'].toInteger()
+        
+        InternationalDescriptionWS descr= 
+				new InternationalDescriptionWS(session['language_id'], params.description)
+		fieldWS.descriptions.add descr
 		
-		List<ContactFieldTypeWS> fields= new ArrayList<ContactFieldTypeWS>(cnt+1);
-		for (int i=0; i < cnt; i++) {
-			ContactFieldTypeWS ws= new ContactFieldTypeWS()
-			bindData(ws, params["obj["+i+"]"])
-			log.debug "Params: ${params['obj[' + i + '].description']}"
-			InternationalDescriptionWS descr= 
-				new InternationalDescriptionWS(session['language_id'] as Integer, params['obj[' + i + '].description'] as String)
-			ws.descriptions.add descr
-			fields.add (ws)
-		}
-		
-		log.debug "${params.description} And ${params.dataType}"
-		if (params.description && params.dataType) {
-			ContactFieldTypeWS ws= new ContactFieldTypeWS()
-			bindData(ws, params);
-			InternationalDescriptionWS descr=
-			new InternationalDescriptionWS(session['language_id'] as Integer, params.description as String)
-			ws.descriptions.add(descr)
-			fields.add (ws)
-		}
-		
-		log.debug "Fields size= ${fields.size()}"
-		
-		for (ContactFieldTypeWS ws: fields) {
-			log.debug ws.toString()
-		}
+		log.debug "Contact Field WS ${fieldWS}"
 		
 		try {
-			webServicesSession.saveCustomContactFields((ContactFieldTypeWS[])fields.toArray())
+			webServicesSession.saveCustomContactField(fieldWS)
 		} catch (SessionInternalError e) {
 			log.error e
 			viewUtils.resolveException(flash, session.locale, e)

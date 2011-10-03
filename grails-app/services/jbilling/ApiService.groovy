@@ -186,8 +186,8 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getUserId(username)
     }
 
-	public void saveCustomContactFields(ContactFieldTypeWS[] fields) {
-		webServicesSession.saveCustomContactFields(fields)
+	public void saveCustomContactField(ContactFieldTypeWS ws) {
+		webServicesSession.saveCustomContactField(ws)
 	}
 	
     public Integer[] getUsersInStatus(Integer statusId) {

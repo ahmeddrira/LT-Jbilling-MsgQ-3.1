@@ -774,8 +774,8 @@ public class SpringAPI implements JbillingAPI {
         session.createUpdateNofications(messageId, dto);
     }
 
-    public void saveCustomContactFields(ContactFieldTypeWS[] fields) {
-        session.saveCustomContactFields(fields);
+    public void saveCustomContactField(ContactFieldTypeWS ws) {
+        session.saveCustomContactField(ws);
     }
 
     public void saveCustomerNotes(Integer userId, String notes) {

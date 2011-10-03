@@ -349,7 +349,7 @@ public interface JbillingAPI {
     public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods);
     public boolean updateOrCreateOrderPeriod(OrderPeriodWS orderPeriod);
     public void createUpdateNofications(Integer messageId, MessageDTO dto);
-    public void saveCustomContactFields(ContactFieldTypeWS[] fields);
+    public void saveCustomContactField(ContactFieldTypeWS ws);
     public void saveCustomerNotes(Integer userId, String notes);
     public void updateCompany(CompanyWS companyWS);
     

@@ -49,7 +49,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
  * @author Brian Cowdery
  * @since 04/01/11
  */
-@Secured(["MENU_90"])
+@Secured(["MENU_93"])
 class PaymentController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -124,7 +124,7 @@ class PaymentController {
     /**
      * Applies the set filters to the payment list, and exports it as a CSV for download.
      */
-    @Secured(["PAYMENT_34"])
+    @Secured(["PAYMENT_35"])
     def csv = {
         def filters = filterService.getFilters(FilterType.PAYMENT, params)
 
@@ -146,7 +146,7 @@ class PaymentController {
     /**
      * Show details of the selected payment.
      */
-    @Secured(["PAYMENT_35"])
+    @Secured(["PAYMENT_34"])
     def show = {
         PaymentDTO payment = PaymentDTO.get(params.int('id'))
         recentItemService.addRecentItem(params.int('id'), RecentItemType.PAYMENT)

@@ -132,7 +132,9 @@ class BillingController {
 		def invoicesGenerated = genInvoices?.size() ?: 0
 
         log.debug("Fetching count and sum by currency")
-
+        
+        def das = new BillingProcessDAS()
+        
 		def countAndSumByCurrency= new ArrayList()
         Iterator countIterator = das.getCountAndSum(processId)
 

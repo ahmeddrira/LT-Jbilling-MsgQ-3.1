@@ -42,7 +42,7 @@
                     <td>
                         <g:remoteLink class="cell double" action="show" id="${role.id}" before="register(this);" onSuccess="render(data, next);">
                             <strong>${role.getTitle(session['language_id'])}</strong>
-                            <em><g:message code="table.id.format" args="[role.id]"/></em>
+                            <em><g:message code="table.id.format" args="[role.id as String]"/></em>
                         </g:remoteLink>
                     </td>
                 </tr>

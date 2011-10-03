@@ -76,7 +76,7 @@
 					<td class="medium">
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
                             <strong>${inv.publicNumber}</strong>
-                            <em><g:message code="table.id.format" args="[inv.id]"/></em>
+                            <em><g:message code="table.id.format" args="[inv.id as String]"/></em>
 						</g:remoteLink>
 					</td>
                     <td>

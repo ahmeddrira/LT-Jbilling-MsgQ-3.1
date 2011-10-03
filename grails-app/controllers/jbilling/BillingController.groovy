@@ -1,4 +1,3 @@
-
 /*
  jBilling - The Enterprise Open Source Billing System
  Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -120,6 +119,7 @@ class BillingController {
 	 * To display the run details of a given Process Id
 	 */
 	def show = {
+
 		def processId = params.int('id')
         
         if ( !BillingProcessDTO.exists( processId ) ) {

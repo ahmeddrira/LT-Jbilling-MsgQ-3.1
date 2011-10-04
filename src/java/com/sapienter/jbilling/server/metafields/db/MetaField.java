@@ -27,13 +27,17 @@ import com.sapienter.jbilling.server.metafields.db.value.IntegerMetaFieldValue;
 import com.sapienter.jbilling.server.metafields.db.value.JsonMetaFieldValue;
 import com.sapienter.jbilling.server.metafields.db.value.StringMetaFieldValue;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import java.io.Serializable;
@@ -59,8 +63,14 @@ public class MetaField implements Serializable {
 
     private Integer id;
     private String name;
-    private EntityType entityType = EntityType.USER;
-    private DataType dataType = DataType.INTEGER;
+    private EntityType entityType;
+    private DataType dataType;
+
+    private boolean disabled = false;
+    private boolean mandatory = false;
+    private Integer displayOrder = 1;
+    private MetaFieldValue defaultValue = null;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "meta_field_GEN")
@@ -100,6 +110,42 @@ public class MetaField implements Serializable {
 
     public void setDataType(DataType dataType) {
         this.dataType = dataType;
+    }
+
+    @Column(name = "is_disabled", nullable = true)
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    @Column(name = "is_mandatory", nullable = true)
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+
+    @Column(name = "display_order", nullable = true)
+    public Integer getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+
+    // todo: hibernate mapping
+    public MetaFieldValue getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(MetaFieldValue defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     public MetaFieldValue createValue() {

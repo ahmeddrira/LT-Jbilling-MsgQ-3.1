@@ -175,6 +175,14 @@ public class PlanBL {
 
     public void update(PlanDTO dto) {
         if (plan != null) {
+
+            // un-subscribe existing customers before updating
+            List<CustomerDTO> subscribers = getCustomersByPlan(plan.getId());
+            for (CustomerDTO customer : subscribers) {
+                unsubscribe(customer.getBaseUser().getUserId());
+            }
+
+            // do update
             validateAttributes(dto);
 
             plan.setDescription(dto.getDescription());
@@ -183,8 +191,13 @@ public class PlanBL {
             plan.getPlanItems().clear();
             plan.getPlanItems().addAll(dto.getPlanItems());
 
+            LOG.debug("Saving updates to plan " + plan.getId());
             this.plan = planDas.save(plan);
-            refreshCustomerPrices();
+
+            // re-subscribe customers after plan has been saved
+            for (CustomerDTO customer : subscribers) {
+                subscribe(customer.getBaseUser().getUserId());
+            }
 
             // trigger internal event
             EventManager.process(new PlanUpdatedEvent(plan));
@@ -199,7 +212,10 @@ public class PlanBL {
             PriceModelBL.validateAttributes(planItem.getModel());
 
             plan.addPlanItem(planItem);
+
+            LOG.debug("Saving updates to plan " + plan.getId());
             this.plan = planDas.save(plan);
+
             refreshCustomerPrices();
 
             // trigger internal event
@@ -241,7 +257,7 @@ public class PlanBL {
         } else {
             LOG.error("Cannot update customer prices, PlanDTO not found or not set!");
         }
-    }    
+    }
 
     /**
      * Subscribes a customer to all plans held by the given "plan subscription" item, adding all

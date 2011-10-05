@@ -38,6 +38,7 @@ target(createStructure: "Creates the jbilling resources directory structure.") {
         mkdir(dir: "${resourcesDir}/mediation/errors")
         mkdir(dir: "${resourcesDir}/reports")
         mkdir(dir: "${resourcesDir}/rules")
+        mkdir(dir: "${resourcesDir}/spring")
     }
 }
 

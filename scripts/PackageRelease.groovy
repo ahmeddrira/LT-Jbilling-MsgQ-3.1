@@ -27,6 +27,7 @@ includeTargets << new File("${basedir}/scripts/CompileRules.groovy")
 includeTargets << new File("${basedir}/scripts/Jar.groovy")
 
 resourcesDir = "${basedir}/resources"
+descriptorsDir = "${basedir}/descriptors"
 configDir = "${basedir}/grails-app/conf"
 sqlDir = "${basedir}/sql"
 javaDir = "${basedir}/src/java"

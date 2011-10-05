@@ -2814,9 +2814,15 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return ids;
     }
 
-    public void deleteMediationConfiguration(Integer cfgId) {
+    public void deleteMediationConfiguration(Integer cfgId) throws SessionInternalError {
+        
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        mediationBean.delete(getCallerId(), cfgId);
+        try {
+            mediationBean.delete(getCallerId(), cfgId);
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+        
     }
 
 

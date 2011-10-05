@@ -61,7 +61,7 @@
                         <td>
                             <g:remoteLink class="cell double" action="edit" id="${plan.id}" params="[_eventId: 'addPlan']" update="column2" method="GET">
                                 <strong>${plan.getDescription(session['language_id'])}</strong>
-                                <em><g:message code="table.id.format" args="[plan.id]"/></em>
+                                <em><g:message code="table.id.format" args="[plan.id as String]"/></em>
                             </g:remoteLink>
                         </td>
                         <td class="small">

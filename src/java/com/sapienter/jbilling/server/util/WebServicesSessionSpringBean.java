@@ -302,6 +302,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 	            Context.Name.NOTIFICATION_SESSION);
 	    return notificationSession.emailInvoice(invoiceId);
     }
+    
+    public boolean notifyPaymentByEmail(Integer paymentId) {
+        INotificationSessionBean notificationSession =
+                (INotificationSessionBean) Context.getBean(
+                Context.Name.NOTIFICATION_SESSION);
+        return notificationSession.emailPayment(paymentId);
+    }
 
     public Integer[] getAllInvoices(Integer userId) {
         IInvoiceSessionBean invoiceBean = Context.getBean(Context.Name.INVOICE_SESSION);
@@ -1803,7 +1810,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         order.setCurrencyId(zero2null(order.getCurrencyId()));
         order.setNotificationStep(zero2null(order.getNotificationStep()));
         order.setDueDateUnitId(zero2null(order.getDueDateUnitId()));
-        order.setDueDateValue(zero2null(order.getDueDateValue()));
+        //Bug Fix: 1385: Due Date may be zero
+        //order.setDueDateValue(zero2null(order.getDueDateValue()));
         order.setDfFm(zero2null(order.getDfFm()));
         order.setAnticipatePeriods(zero2null(order.getAnticipatePeriods()));
         order.setActiveSince(zero2null(order.getActiveSince()));

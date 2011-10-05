@@ -44,7 +44,7 @@
                         </g:remoteSort>
                     </th>
                     <th class="medium">
-                        <g:remoteSort action="list" sort="createDatetime" update="column1">
+                        <g:remoteSort action="list" sort="dueDate" update="column1">
                             <g:message code="invoice.label.duedate"/>
                         </g:remoteSort>
                     </th>
@@ -76,7 +76,7 @@
 					<td class="medium">
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
                             <strong>${inv.publicNumber}</strong>
-                            <em><g:message code="table.id.format" args="[inv.id]"/></em>
+                            <em><g:message code="table.id.format" args="[inv.id as String]"/></em>
 						</g:remoteLink>
 					</td>
                     <td>

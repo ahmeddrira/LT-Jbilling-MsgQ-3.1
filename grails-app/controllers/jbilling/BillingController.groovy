@@ -117,15 +117,24 @@ class BillingController {
 	 * To display the run details of a given Process Id
 	 */
 	def show = {
-		Integer processId = params.int('id')
-		BillingProcessDTO process = new BillingProcessDAS().find(processId);
 
-        def das = new BillingProcessDAS()
+		def processId = params.int('id')
+        
+        if ( !BillingProcessDTO.exists( processId ) ) {
+            flash.error = 'billing.process.review.doesnotexist'
+            flash.args = [processId]
+            redirect action:'list'
+        }
+        
+        BillingProcessDTO process = BillingProcessDTO.get(processId);
+        
 		def genInvoices = new InvoiceDAS().findByProcess(process)
 		def invoicesGenerated = genInvoices?.size() ?: 0
 
         log.debug("Fetching count and sum by currency")
-
+        
+        def das = new BillingProcessDAS()
+        
 		def countAndSumByCurrency= new ArrayList()
         Iterator countIterator = das.getCountAndSum(processId)
 

@@ -99,6 +99,10 @@ public class CustomerPriceBL {
 
     }
 
+    public void flush() {
+        customerPriceDas.flush();
+    }
+
     public CustomerDTO getCustomer() {
         return customer;
     }

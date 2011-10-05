@@ -179,7 +179,7 @@ public interface JbillingAPI {
 
     public byte[] getPaperInvoicePDF(Integer invoiceId);
     public boolean notifyInvoiceByEmail(Integer invoiceId);
-
+    public boolean notifyPaymentByEmail(Integer paymentId);
 
     /*
         Payments

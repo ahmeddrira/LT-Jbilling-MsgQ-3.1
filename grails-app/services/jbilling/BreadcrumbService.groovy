@@ -97,7 +97,7 @@ class BreadcrumbService implements InitializingBean, Serializable {
                 crumbs << crumb
 
                 if (crumbs.size() > MAX_ITEMS) {
-                    def remove = crumbs.subList(5, crumbs.size())
+                    def remove = crumbs.subList(0, crumbs.size() - MAX_ITEMS)
                     remove.each{ it.delete(flush: true) }
                     remove.clear()
                 }

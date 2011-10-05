@@ -197,7 +197,7 @@
                 $('#order-details-form').submit();
             });
 
-            $('#order-details-form').find('input.text').blur(function() {
+            $('#order-details-form').find('input:text').blur(function() {
                 $('#order-details-form').submit();
             });
 

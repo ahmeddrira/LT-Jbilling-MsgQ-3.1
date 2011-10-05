@@ -55,7 +55,7 @@
                         <td>
                             <g:remoteLink class="cell double" action="show" id="${product.id}" params="['template': 'show', 'category': selectedCategoryId]" before="register(this);" onSuccess="render(data, next);">
                                 <strong>${product.getDescription(session['language_id'])}</strong>
-                                <em><g:message code="table.id.format" args="[product.id]"/></em>
+                                <em><g:message code="table.id.format" args="[product.id as String]"/></em>
                             </g:remoteLink>
                         </td>
                         <td class="medium">

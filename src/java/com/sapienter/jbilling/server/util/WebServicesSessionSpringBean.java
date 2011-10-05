@@ -1973,7 +1973,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         order.setCurrencyId(zero2null(order.getCurrencyId()));
         order.setNotificationStep(zero2null(order.getNotificationStep()));
         order.setDueDateUnitId(zero2null(order.getDueDateUnitId()));
-        order.setDueDateValue(zero2null(order.getDueDateValue()));
+        //Bug Fix: 1385: Due Date may be zero
+        //order.setDueDateValue(zero2null(order.getDueDateValue()));
         order.setDfFm(zero2null(order.getDfFm()));
         order.setAnticipatePeriods(zero2null(order.getAnticipatePeriods()));
         order.setActiveSince(zero2null(order.getActiveSince()));

@@ -173,7 +173,7 @@
     <div class="box">
         <!-- show most recent order, invoice and payment -->
         <g:set var="order" value="${selected.orders ? selected.orders.asList().sort{ it.createDate }.last() : null}"/>
-        <g:set var="invoice" value="${selected.invoices ? selected.invoices.asList().sort{ it.createDatetime }.last() : null}"/>
+        <g:set var="invoice" value="${selected.invoices ? selected.invoices.asList().sort{ it.createDatetime }.reverse().find{ it.isReview == 0 } : null}"/>
         <g:set var="payment" value="${selected.payments ? selected.payments.asList().sort{ it.paymentDate ?: it.createDatetime }.last() : null}"/>
 
         <table class="dataTable" cellspacing="0" cellpadding="0">

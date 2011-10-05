@@ -510,8 +510,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @param onlyRecurring only include recurring orders? false to include all orders in invoice.
      * @return array of generated invoice ids.
      */
-    public Integer[] createInvoice(Integer userId, Date billingDate, Integer dueDatePeriodId,
-                                   Integer dueDatePeriodValue, boolean onlyRecurring) {
+    public Integer[] createInvoiceWithDate(Integer userId, Date billingDate, Integer dueDatePeriodId,
+                                           Integer dueDatePeriodValue, boolean onlyRecurring) {
 
         UserDTO user = new UserDAS().find(userId);
         BillingProcessConfigurationDTO config = new BillingProcessConfigurationDAS().findByEntity(user.getCompany());

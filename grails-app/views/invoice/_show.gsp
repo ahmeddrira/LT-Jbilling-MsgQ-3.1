@@ -19,22 +19,22 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.util.Constants; com.sapienter.jbilling.server.payment.db.PaymentResultDTO" %>
-<%@ page import="com.sapienter.jbilling.server.payment.db.PaymentMethodDTO" %>
+<%@ page import="com.sapienter.jbilling.server.util.Constants" %>
 
-<g:set var="currency" value="${currencies.find{ it.id == selected?.currencyId}}"/>
+<g:set var="currency" value="${selected.currency}"/>
+<g:set var="user" value="${selected.baseUser}"/>
 
 <div class="column-hold">
 
     <div class="heading">
         <strong>
-            <g:if test="${selected?.isReview == 1}">
+            <g:if test="${selected.isReview == 1}">
                 <g:message code="invoice.label.review.details"/>
             </g:if>
             <g:else>
                 <g:message code="invoice.label.details"/>
             </g:else>
-            <em>${selected?.number}</em>
+            <em>${selected.publicNumber}</em>
         </strong>
     </div>
 
@@ -44,32 +44,32 @@
             <tr>
                 <td>
                     <strong>
-                        <g:if test="${user?.contact?.firstName || user?.contact?.lastName}">
-                            ${user?.contact?.firstName}&nbsp;${user?.contact?.lastName}
+                        <g:if test="${user.contact?.firstName || user.contact?.lastName}">
+                            ${user.contact?.firstName}&nbsp;${user.contact?.lastName}
                         </g:if>
                         <g:else>
-                            ${user?.userName}
+                            ${user.userName}
                         </g:else>
                     </strong><br>
-                    <em>${user?.contact?.organizationName}</em>
+                    <em>${user.contact?.organizationName}</em>
                 </td>
             </tr>
             <tr>
                 <td><g:message code="invoice.label.user.id"/></td>
                 <td class="value">
                     <sec:access url="/customer/show">
-                        <g:remoteLink controller="customer" action="show" id="${user?.id}" before="register(this);" onSuccess="render(data, next);">
-                            ${user?.id}
+                        <g:remoteLink controller="customer" action="show" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
+                            ${user.id}
                         </g:remoteLink>
                     </sec:access>
                     <sec:noAccess url="/customer/show">
-                        ${user?.id}
+                        ${user.id}
                     </sec:noAccess>
                 </td>
             </tr>
             <tr>
                 <td><g:message code="invoice.label.user.name"/>:</td>
-                <td class="value">${user?.userName}</td>
+                <td class="value">${user.userName}</td>
             </tr>
         </table>
 
@@ -89,14 +89,14 @@
                         <g:message code="invoice.status.review"/>
                     </g:if>
                     <g:else>
-                        ${selected.statusDescr}
+                        ${selected.invoiceStatus.getDescription(session['language_id'])}
                     </g:else>
                 </td>
             </tr>
             <tr>
                 <td><g:message code="invoice.label.date"/></td>
                 <td class="value">
-                    <g:formatDate date="${selected?.createDateTime}" formatName="date.pretty.format"/>
+                    <g:formatDate date="${selected?.createDatetime}" formatName="date.pretty.format"/>
                 </td>
             </tr>
             <tr>
@@ -108,25 +108,25 @@
             <tr>
                 <td><g:message code="invoice.label.gen.date"/></td>
                 <td class="value">
-                    <g:formatDate date="${selected?.createTimeStamp}" formatName="date.pretty.format"/>
+                    <g:formatDate date="${selected?.createTimestamp}" formatName="date.pretty.format"/>
                 </td>
             </tr>
             <tr>
                 <td><g:message code="invoice.label.amount"/></td>
                 <td class="value">
-                    <g:formatNumber number="${selected?.totalAsDecimal ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency?.symbol}"/>
+                    <g:formatNumber number="${selected?.total ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency?.symbol}"/>
                 </td>
             </tr>
             <tr>
                 <td><g:message code="invoice.label.balance"/></td>
                 <td class="value">
-                    <g:formatNumber number="${selected?.balanceAsDecimal ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency?.symbol}"/>
+                    <g:formatNumber number="${selected?.balance ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency?.symbol}"/>
                 </td>
             </tr>
             <tr>
                 <td><g:message code="invoice.label.carried.bal"/></td>
                 <td class="value">
-                    <g:formatNumber number="${selected?.carriedBalanceAsDecimal ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency?.symbol}"/>
+                    <g:formatNumber number="${selected?.carriedBalance ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency?.symbol}"/>
                 </td>
             </tr>
             <tr>
@@ -135,30 +135,75 @@
             <tr>
                 <td><g:message code="invoice.label.orders"/></td>
                 <td class="value">
-                    <g:each var="order" in="${selected.orders}">
+                    <g:each var="orderProcess" status="i" in="${selected.orderProcesses}">
                         <sec:access url="/order/show">
-                        <g:remoteLink breadcrumb="id" controller="order" action="show" id="${order}" params="['template': 'order']" before="register(this);" onSuccess="render(data, next);">
-                            ${order.toString()}
+                        <g:remoteLink breadcrumb="id" controller="order" action="show" id="${orderProcess.purchaseOrder.id}" params="['template': 'order']" before="register(this);" onSuccess="render(data, next);">
+                            ${orderProcess.purchaseOrder.id}
                         </g:remoteLink>
                         </sec:access>
                         <sec:noAccess url="/order/show">
-                            ${order.toString()}
+                            ${orderProcess.purchaseOrder.id}
                         </sec:noAccess>
+                        <g:if test="${i < selected.orderProcesses.size() -1}">,</g:if>
                     </g:each>
-            </td>
+                </td>
             </tr>
-            <tr>
-                <td><g:message code="invoice.label.delegation"/></td>
-                <td class="value">${delegatedInvoices}</td>
-            </tr>
+            <g:if test="${selected.invoice}">
+                <tr>
+                    <td><g:message code="invoice.label.delegated.to"/></td>
+                    <td class="value">
+                        <g:remoteLink controller="invoice" action="show" id="${selected.invoice.id}" before="register(this);" onSuccess="render(data, next);">
+                            ${selected.invoice.id}
+                        </g:remoteLink>
+                    </td>
+                </tr>
+            </g:if>
         </table>
     </div>
 
-    <!-- Invoice Lines Info -->
+    <!-- delegated invoice -->
+    <g:if test="${selected.invoices}">
+        <div class="heading">
+            <strong><g:message code="invoice.title.delegated"/></strong>
+        </div>
+        <div class="box">
+
+            <g:each var="delegatedInvoice" status="i" in="${selected.invoices}">
+                <table class="dataTable">
+                <tr>
+                    <td><g:message code="invoice.label.id"/></td>
+                    <td class="value">
+                        <g:remoteLink controller="invoice" action="show" id="${delegatedInvoice.id}" before="register(this);" onSuccess="render(data, next);">
+                            ${delegatedInvoice.id}
+                        </g:remoteLink>
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:message code="invoice.label.duedate"/></td>
+                    <td class="value">
+                        <g:formatDate date="${delegatedInvoice.dueDate}" formatName="date.pretty.format"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:message code="invoice.label.balance"/></td>
+                    <td class="value">
+                        <g:formatNumber number="${delegatedInvoice.balance ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency?.symbol}"/>
+                    </td>
+                </tr>
+                </table>
+
+                <g:if test="${i < selected.invoices.size() -1}">
+                    <div><hr/></div>
+                </g:if>
+            </g:each>
+        </div>
+    </g:if>
+
+
+    <!-- invoice lines -->
     <div class="heading">
         <strong><g:message code="invoice.label.lines"/></strong>
     </div>
-
     <div class="box">
         <table class="innerTable" >
             <thead class="innerHeader">
@@ -179,10 +224,10 @@
                         <g:formatNumber number="${line.quantity}" formatName="decimal.format"/>
                     </td>
                     <td class="innerContent">
-                        <g:formatNumber number="${new BigDecimal(line.price ?: 0)}" type="currency" currencySymbol="${currency?.symbol}"/>
+                        <g:formatNumber number="${line.price ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency?.symbol}"/>
                     </td>
                     <td class="innerContent">
-                        <g:formatNumber number="${new BigDecimal(line.amount ?: 0)}" type="currency" currencySymbol="${currency?.symbol}"/>
+                        <g:formatNumber number="${line.amount ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency?.symbol}"/>
                     </td>
                 </tr>
             </g:each>
@@ -212,13 +257,13 @@
         </div>
     </div>
 
-    <!-- Payments & Refunds Info -->
+    <!-- payments -->
     <div class="heading">
         <strong><g:message code="invoice.label.payment.refunds"/></strong>
     </div>
 
     <div class="box">
-        <g:if test="${payments}">
+        <g:if test="${selected.paymentMap}">
             <g:hiddenField name="unlink_payment_id" value="-1"/>
             <table class="innerTable" >
                 <thead class="innerHeader">
@@ -233,36 +278,36 @@
                 </tr>
                 </thead>
                 <tbody>
-                <g:each var="payment" in="${payments}" status="idx">
+                <g:each var="paymentInvoice" in="${selected.paymentMap}" status="idx">
                     <tr>
                         <td class="innerContent">
                             <sec:access url="/payment/show">
-                                <g:remoteLink breadcrumb="id" controller="payment" action="show" id="${payment.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
-                                    ${payment.id}
+                                <g:remoteLink breadcrumb="id" controller="payment" action="show" id="${paymentInvoice.payment.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
+                                    ${paymentInvoice.payment.id}
                                 </g:remoteLink>
                             </sec:access>
                             <sec:noAccess url="/payment/show">
-                                ${payment.id}
+                                ${paymentInvoice.payment.id}
                             </sec:noAccess>
                         </td>
                         <td class="innerContent">
-                            <g:formatDate date="${payment.paymentDate}" formatName="date.pretty.format"/>
+                            <g:formatDate date="${paymentInvoice.payment.paymentDate}" formatName="date.pretty.format"/>
                         </td>
                         <td class="innerContent">
-                            ${payment.isRefund?"R":"P"}
+                            ${paymentInvoice.payment.isRefund? "R":"P"}
                         </td>
                         <td class="innerContent">
-                            <g:formatNumber number="${new BigDecimal(payment.amount ?: 0)}" type="currency" currencySymbol="${currency?.symbol}"/>
+                            <g:formatNumber number="${new BigDecimal(paymentInvoice.payment.amount ?: 0)}" type="currency" currencySymbol="${currency?.symbol}"/>
                         </td>
                         <td class="innerContent">
-                            ${new PaymentMethodDTO(payment?.paymentMethodId).getDescription(session['language_id'])}
+                            ${paymentInvoice.payment.paymentMethod.getDescription(session['language_id'])}
                         </td>
                         <td class="innerContent">
-                            ${new PaymentResultDTO(payment?.resultId).getDescription(session['language_id'])}
+                            ${paymentInvoice.payment.paymentResult.getDescription(session['language_id'])}
                         </td>
                         <td class="innerContent">
                             <sec:access url="/invoice/unlink">
-                                <a href="javascript:void(0);" onclick="setUnlinkPaymentId(${selected.id}, ${payment.id});">
+                                <a onclick="setUnlinkPaymentId(${selected.id}, ${paymentInvoice.payment.id});">
                                     <span><g:message code="invoice.prompt.unlink.payment"/></span>
                                 </a>
                             </sec:access>
@@ -307,11 +352,11 @@
 <script type="text/javascript">
     function setUnlinkPaymentId(invId, pymId) {
         $('#unlink_payment_id').val(pymId);
-        showConfirm("removePaymentLink-" + invId);
+        showConfirm("unlink-" + invId);
         return true;
     }
     function setPaymentId() {
-        $('#confirm-command-form-removePaymentLink-${selected.id} [name=paymentId]').val($('#unlink_payment_id').val());
+        $('#confirm-command-form-unlink-${selected.id} [name=paymentId]').val($('#unlink_payment_id').val());
     }
 </script>
 

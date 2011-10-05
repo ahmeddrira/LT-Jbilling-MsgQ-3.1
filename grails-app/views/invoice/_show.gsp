@@ -27,7 +27,14 @@
 <div class="column-hold">
 
     <div class="heading">
-        <strong><g:message code="invoice.label.details"/> <em>${selected?.number}</em>
+        <strong>
+            <g:if test="${selected?.isReview == 1}">
+                <g:message code="invoice.label.review.details"/>
+            </g:if>
+            <g:else>
+                <g:message code="invoice.label.details"/>
+            </g:else>
+            <em>${selected?.number}</em>
         </strong>
     </div>
 
@@ -77,7 +84,14 @@
             </tr>
             <tr>
                 <td><g:message code="invoice.label.status"/></td>
-                <td class="value">${selected.statusDescr}</td>
+                <td class="value">
+                    <g:if test="${selected.isReview == 1}">
+                        <g:message code="invoice.status.review"/>
+                    </g:if>
+                    <g:else>
+                        ${selected.statusDescr}
+                    </g:else>
+                </td>
             </tr>
             <tr>
                 <td><g:message code="invoice.label.date"/></td>

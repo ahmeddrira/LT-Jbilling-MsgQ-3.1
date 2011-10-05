@@ -242,11 +242,11 @@ class ProductController {
                 log.debug("Deleted item category ${params.id}.");
 
                 flash.message = 'product.category.deleted'
-                flash.args = [ params.id ]
+                flash.args = [ params.id as String]
 
             } catch (SessionInternalError e) {
                 flash.error = 'product.category.delete.error'
-                flash.args = [ params.id ]
+                flash.args = [ params.id as String ]
             }
         }
 
@@ -264,7 +264,7 @@ class ProductController {
             log.debug("Deleted item ${params.id}.");
 
             flash.message = 'product.deleted'
-            flash.args = [ params.id ]
+            flash.args = [ params.id  as String]
         }
 
         // call the rendering action directly instead of using 'chain' or 'redirect' which results
@@ -289,7 +289,7 @@ class ProductController {
 
         if (params.id && !category) {
             flash.error = 'product.category.not.found'
-            flash.args = [ params.id ]
+            flash.args = [ params.id  as String]
 
             redirect controller: 'product', action: 'list'
             return
@@ -321,7 +321,7 @@ class ProductController {
                     category.id = webServicesSession.createItemCategory(category)
 
                     flash.message = 'product.category.created'
-                    flash.args = [ category.id ]
+                    flash.args = [ category.id as String ]
 
                 } else {
                     render view: '/login/denied'
@@ -335,7 +335,7 @@ class ProductController {
                     webServicesSession.updateItemCategory(category)
 
                     flash.message = 'product.category.updated'
-                    flash.args = [ category.id ]
+                    flash.args = [ category.id as String ]
 
                 } else {
                     render view: '/login/denied'
@@ -366,7 +366,7 @@ class ProductController {
             log.error("Could not fetch WS object", e)
 
             flash.error = 'product.not.found'
-            flash.args = [ params.id ]
+            flash.args = [ params.id as String ]
 
             redirect controller: 'product', action: 'list'
             return

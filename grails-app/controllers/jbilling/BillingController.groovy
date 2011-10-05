@@ -122,7 +122,7 @@ class BillingController {
         
         if ( !BillingProcessDTO.exists( processId ) ) {
             flash.error = 'billing.process.review.doesnotexist'
-            flash.args = [processId]
+            flash.args = [processId as String]
             redirect action:'list'
         }
         

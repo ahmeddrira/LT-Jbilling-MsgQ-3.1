@@ -99,7 +99,7 @@ class RoleController {
             role.id = roleService.create(role)
 
             flash.message = 'role.created'
-            flash.args = [ role.id ]
+            flash.args = [ role.id as String ]
 
         } else {
             log.debug("updating role ${role.id}")
@@ -108,7 +108,7 @@ class RoleController {
             roleService.update(role)
 
             flash.message = 'role.updated'
-            flash.args = [ role.id ]
+            flash.args = [ role.id as String ]
         }
 
         // set/update international descriptions

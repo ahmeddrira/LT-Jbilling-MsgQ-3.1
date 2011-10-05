@@ -491,7 +491,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * Returns the ids of the invoices generated.
      */
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring) {
-        return createInvoice(userId, null, null, null, onlyRecurring);
+        return createInvoiceWithDate(userId, null, null, null, onlyRecurring);
     }
 
 

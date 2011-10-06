@@ -213,7 +213,8 @@ public class PriceModelBL {
      * Searches through the list of PriceModelDTO objects for the price that is active
      * on the given date.
      *
-     * If the given date is null, the first price will be returned.
+     * If the given date is null, or if the closest date could not be determined,
+     * the first price will be returned.
      *
      * @param prices price models to search through
      * @param date date to find price for
@@ -230,7 +231,7 @@ public class PriceModelBL {
 
         // list of prices in ordered by start date, earliest first
         // return the model with the closest start date
-        Date forDate = null;
+        Date forDate = PriceModelDTO.EPOCH_DATE;
         for (Date start : prices.keySet()) {
             if (start != null && start.after(date))
                 break;
@@ -238,14 +239,15 @@ public class PriceModelBL {
             forDate = start;
         }
 
-        return prices.get(forDate);
+        return forDate != null ? prices.get(forDate) : prices.get(prices.firstKey());
     }
 
     /**
      * Searches through the list of PriceModelWS objects for the price that is active
      * on the given date.
      *
-     * If the given date is null, the first price will be returned.
+     * If the given date is null, or if the closest date could not be determined,
+     * the first price will be returned.
      *
      * @param prices price models to search through
      * @param date date to find price for
@@ -270,7 +272,6 @@ public class PriceModelBL {
             forDate = start;
         }
 
-        return prices.get(forDate);
+        return forDate != null ? prices.get(forDate) : prices.get(prices.firstKey());
     }
-
 }

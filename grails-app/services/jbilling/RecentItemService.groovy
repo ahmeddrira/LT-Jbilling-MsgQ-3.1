@@ -89,7 +89,7 @@ class RecentItemService implements InitializingBean, Serializable {
                 items << item
 
                 if (items.size() > MAX_ITEMS) {
-                    def remove = items.subList(5, items.size())
+                    def remove = items.subList(0, items.size() - MAX_ITEMS)
                     remove.each{ it.delete(flush: true) }
                     remove.clear()
                 }

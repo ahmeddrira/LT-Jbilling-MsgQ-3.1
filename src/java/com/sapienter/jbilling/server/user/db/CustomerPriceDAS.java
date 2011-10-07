@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -149,6 +150,24 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
         Query query = getSession().getNamedQuery("CustomerPriceDTO.deletePrice");
         query.setParameter("user_id", userId);
         query.setParameter("plan_item_id", planItemId);
+
+        return query.executeUpdate();
+    }
+
+    /**
+     * Deletes ALL customer prices using the given plan items.
+     *
+     * @param planItems plan items to remove from customer pricing
+     * @return number of rows deleted
+     */
+    public int deletePricesByItems(List<PlanItemDTO> planItems) {
+        List<Integer> ids = new ArrayList<Integer>(planItems.size());
+        for (PlanItemDTO planItem : planItems) {
+            ids.add(planItem.getId());
+        }
+
+        Query query = getSession().getNamedQuery("CustomerPriceDTO.deletePricesByItems");
+        query.setParameterList("plan_item_ids", ids);
 
         return query.executeUpdate();
     }

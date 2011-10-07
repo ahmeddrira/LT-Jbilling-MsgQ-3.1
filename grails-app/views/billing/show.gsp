@@ -8,7 +8,7 @@
     <div class="holder">
         <div class="form-box">
             <p>
-                <em>Billing process for <strong><g:formatDate date="${process.billingDate}" formatName="date.pretty.format"/></strong></em>
+                <em><g:message code="billing.details.label.process.for"/> <strong><g:formatDate date="${process.billingDate}" formatName="date.pretty.format"/></strong></em>
             </p>
         </div>
 
@@ -42,14 +42,14 @@
 
     <!-- main billing run -->
     <div class="table-info">
-        <em>Billing Process ID: <strong> ${process?.id}</strong></em>
-        <em>Orders Processed: <strong>${process?.orderProcesses?.size()}</strong></em>
-        <em>Invoices Generated: <strong>${process?.invoices?.size()}</strong></em>
-        <em>Payments Generated: <strong>${generatedPayments.size()}</strong></em>
+        <em><g:message code="billing.details.label.process.id"/> <strong> ${process?.id}</strong></em>
+        <em><g:message code="billing.details.label.orders.processed"/> <strong>${process?.orderProcesses?.size()}</strong></em>
+        <em><g:message code="billing.details.label.invoices.generated"/> <strong>${process?.invoices?.size()}</strong></em>
+        <em><g:message code="billing.details.label.payments.generated"/> <strong>${generatedPayments.size()}</strong></em>
 
         <g:if test="${process?.isReview == 1}">
             <em>
-                Review Status:
+                <g:message code="billing.details.label.review.status"/>
                 <strong>
                     <g:if test="${ CommonConstants.REVIEW_STATUS_GENERATED.intValue() == configuration?.reviewStatus}">
                         <g:message code="billing.details.review.generated"/>
@@ -69,12 +69,12 @@
     <table>
         <thead>
             <tr>
-                <td class="first">Start Date</td>
-                <td>End Date</td>
-                <td>Result</td>
-                <td>Total Invoiced</td>
-                <td>Total Paid</td>
-                <td class="last">Total Unpaid</td>
+                <td class="first"><g:message code="billing.details.label.start.date"/></td>
+                <td><g:message code="billing.details.label.end.date"/></td>
+                <td><g:message code="billing.details.label.process.result"/></td>
+                <td><g:message code="billing.details.label.total.invoiced"/></td>
+                <td><g:message code="billing.details.label.total.paid"/></td>
+                <td class="last"><g:message code="billing.details.label.total.not.paid"/></td>
             </tr>
         </thead>
         <tbody>
@@ -171,15 +171,15 @@
 
     <!-- payments made after the billing process by retries -->
     <div class="table-info">
-        <em>Payments Made After Billing: <strong>${invoicePayments.size()}</strong></em>
+        <em><g:message code="billing.details.payments.after.billing"/> <strong>${invoicePayments.size()}</strong></em>
     </div>
     <div class="table-area">
         <table>
         <thead>
             <tr>
-                <td class="first">Payment Date</td>
-                <td>Number of Payments</td>
-                <td>Total Paid</td>
+                <td class="first"><g:message code="billing.details.payments.payment.date"/></td>
+                <td><g:message code="billing.details.payments.number.of.payments"/></td>
+                <td><g:message code="billing.details.payments.total.paid"/></td>
             </tr>
         </thead>
             <tbody>
@@ -243,5 +243,19 @@
             </tbody>
         </table>
     </div>
+
+    <g:render template="/confirm"
+              model="['message':'billing.details.approve.confirm',
+                 'controller':'billing',
+                 'action':'approve',
+                 'id':process.id,
+                ]"/>
+
+    <g:render template="/confirm"
+              model="['message':'billing.details.disapprove.confirm',
+                 'controller':'billing',
+                 'action':'disapprove',
+                 'id':process.id,
+                ]"/>
 </body>
 </html>

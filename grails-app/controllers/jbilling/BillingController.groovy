@@ -31,7 +31,10 @@ import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS
 import com.sapienter.jbilling.client.util.SortableCriteria
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO
+import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO
+import com.sapienter.jbilling.server.payment.db.PaymentDTO
+import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 
 /**
 * BillingController
@@ -115,65 +118,48 @@ class BillingController {
 			}
 	}
 
+    def date = {
+
+    }
+
 	/*
 	 * To display the run details of a given Process Id
 	 */
 	def show = {
+        Integer processId = params.int('id')
 
-		def processId = params.int('id')
-        
         if ( !BillingProcessDTO.exists( processId ) ) {
             flash.error = 'billing.process.review.doesnotexist'
             flash.args = [processId]
             redirect action:'list'
         }
-        
-        BillingProcessDTO process = BillingProcessDTO.get(processId);
-        
-		def genInvoices = new InvoiceDAS().findByProcess(process)
-		def invoicesGenerated = genInvoices?.size() ?: 0
 
-		def countAndSumByCurrency= new HashMap()
-        List listByCurrency= new BillingProcessDAS().getCountAndSum(processId) 
-        for (Iterator iterator = listByCurrency.iterator(); iterator.hasNext();) {
-            Object[] row= (Object[]) iterator.next();
-			countAndSumByCurrency.put(CurrencyDTO.get(row[2] as Integer),row[1]) 
-		}
-		log.debug("Fetching count and sum by currency. $countAndSumByCurrency")
+        // get billing process record
+        def process = BillingProcessDTO.get(processId)
+        def configuration = BillingProcessConfigurationDTO.findByEntity(new CompanyDTO(session['company_id']))
 
-		def mapOfPaymentListByCurrency= new HashMap()
-        for ( Object[] row: new BillingProcessDAS().getSuccessfulProcessCurrencyMethodAndSum(processId) ) {
-			def payments = mapOfPaymentListByCurrency.get(row[0] as Integer) ?: new ArrayList()
-            payments.add([new PaymentMethodDTO(row[1]), new BigDecimal(row[2])] as Object[])
-            mapOfPaymentListByCurrency.put(row[0], payments)
-		}
-		log.debug("Fetching payment list by currency. $mapOfPaymentListByCurrency")
+        // main billing process run (not a retry!)
+        def processRuns = process?.processRuns?.asList()?.sort{ it.started }
+        def processRun =  processRuns?.first()
 
-		def failedAmountsByCurrency= new HashMap()
-        for (Object[] row: new BillingProcessDAS().getFailedProcessCurrencyAndSum(processId)) {
-            def AMT = failedAmountsByCurrency.get(String.valueOf(row[0])) ?: BigDecimal.ZERO
-            AMT.add(new BigDecimal(row[1]))
-            //failedAmountsByCurrency.put(String.valueOf(row[0]), AMT)
-		}
-		log.debug("Fetching failed amounts by currency. $failedAmountsByCurrency")
+        // all payments made to generated invoices between process start & end
+        def generatedPayments = new PaymentDAS().findBillingProcessGeneratedPayments(processId, processRun.started, processRun.finished)
+
+        // all payments made to generated invoice after the process end
+        def invoicePayments = new PaymentDAS().findBillingProcessPayments(processId, processRun.finished)
 
 		recentItemService.addRecentItem(processId, RecentItemType.BILLINGPROCESS)
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, processId)
-		[process:process, invoicesGenerated:invoicesGenerated, countAndSumByCurrency: countAndSumByCurrency, mapOfPaymentListByCurrency: mapOfPaymentListByCurrency, failedAmountsByCurrency: failedAmountsByCurrency, reviewConfiguration: webServicesSession.getBillingProcessConfiguration()] 
+
+        [ process: process, processRun: processRun, generatedPayments: generatedPayments, invoicePayments: invoicePayments, configuration: configuration ]
 	}
 
 	def showInvoices = {
-		def _processId= params.int('id')
-		log.debug "redirecting to invoice controller for process id=${_processId}"
-		//def filter =  new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: false, integerValue: _processId)
-		//filterService.setFilter(FilterType.INVOICE, filter)
-		redirect controller: 'invoice', action: 'byProcess', id:_processId
+		redirect controller: 'invoice', action: 'byProcess', id: params.id
 	}
 	
 	def showOrders = {
-		def _processId= params.int('id')
-		log.debug "redirect to order controller for processId $_processId"
-		redirect controller: 'order', action: 'byProcess', id:_processId
+		redirect controller: 'order', action: 'byProcess', id: params.id
 	}
 
     @Secured(["BILLING_80"])

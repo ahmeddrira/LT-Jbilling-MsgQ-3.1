@@ -538,7 +538,7 @@ public class WSTest extends TestCase {
         // invoiced on February 01, 2011
         // 45 day due date
         Date billingDate = new DateMidnight(2011, 2, 1).toDate();
-        Integer[] invoiceIds = api.createInvoice(user.getUserId(), billingDate, PeriodUnitDTO.DAY, 45, false);
+        Integer[] invoiceIds = api.createInvoiceWithDate(user.getUserId(), billingDate, PeriodUnitDTO.DAY, 45, false);
         assertEquals("1 invoice generated", 1, invoiceIds.length);
 
         InvoiceWS invoice = api.getInvoiceWS(invoiceIds[0]);

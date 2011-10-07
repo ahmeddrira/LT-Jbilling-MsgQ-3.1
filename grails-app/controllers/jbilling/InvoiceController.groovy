@@ -64,34 +64,11 @@ class InvoiceController {
     def list = {
         def filters = filterService.getFilters(FilterType.INVOICE, params)
         def invoices = getInvoices(filters, params)
-        def selected= params.id ? webServicesSession.getInvoiceWS(params.int('id')) : null
-        if (selected) {
-            def user = webServicesSession.getUserWS(selected?.getUserId())
-            def payments = new ArrayList<PaymentWS>(selected?.payments?.length)
-            
-            for (Integer paymentId : selected?.payments) {
-                PaymentWS payment = webServicesSession.getPayment(paymentId)
-                payments.add(payment)
-            }
-            
-            def totalRevenue = webServicesSession.getTotalRevenueByUser(selected?.getUserId())
-            def delegatedInvoices= ""
-            
-            InvoiceWS delegate = selected;
-            while (delegate?.getDelegatedInvoiceId()) {
-                delegatedInvoices += (" > " + delegate?.getDelegatedInvoiceId())
-                delegate = webServicesSession.getInvoiceWS(delegate?.getDelegatedInvoiceId())
-            }
 
-            if (delegatedInvoices.length() > 0) {
-                delegatedInvoices = delegatedInvoices.substring(3)
-            }
+        def selected = params.id ? InvoiceDTO.get(params.int('id')) : null
 
-            recentItemService.addRecentItem(selected.id, RecentItemType.INVOICE)
-            breadcrumbService.addBreadcrumb(controllerName, actionName, null, selected.id)
-            render view: 'list', model: [invoices: invoices, filters: filters, selected: selected, user: user, totalRevenue: totalRevenue, delegatedInvoices: delegatedInvoices, payments: payments, currencies: currencies]
-        }
-        
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
+
         if (params.applyFilter || params.partial) {
             render template: 'invoices', model: [ invoices: invoices, filters: filters, selected: selected ]
         } else {
@@ -176,47 +153,12 @@ class InvoiceController {
 
     @Secured(["INVOICE_72"])
     def show = {
-        InvoiceWS invoice
-        UserWS user
-        List<PaymentWS> payments
-        BigDecimal totalRevenue
-        String delegatedInvoices = ""
+        def invoice = InvoiceDTO.get(params.int('id'))
 
-        Integer invoiceId = params.int('id')
+        recentItemService.addRecentItem(invoice.id, RecentItemType.INVOICE)
+        breadcrumbService.addBreadcrumb(controllerName, 'list', null, invoice.id, invoice.number)
 
-        if (invoiceId) {
-            try {
-                invoice = webServicesSession.getInvoiceWS(invoiceId)
-                user = webServicesSession.getUserWS(invoice?.getUserId())
-
-                payments = new ArrayList<PaymentWS>(invoice?.payments?.length)
-                for (Integer paymentId : invoice?.payments) {
-                    PaymentWS payment = webServicesSession.getPayment(paymentId)
-                    payments.add(payment)
-                }
-                totalRevenue = webServicesSession.getTotalRevenueByUser(invoice?.getUserId())
-
-                InvoiceWS delegate = invoice;
-                while (delegate?.getDelegatedInvoiceId()) {
-                    delegatedInvoices += (" > " + delegate?.getDelegatedInvoiceId())
-                    delegate = webServicesSession.getInvoiceWS(delegate?.getDelegatedInvoiceId())
-                }
-
-                if (delegatedInvoices.length() > 0) {
-                    delegatedInvoices = delegatedInvoices.substring(3)
-                }
-
-                recentItemService.addRecentItem(invoiceId, RecentItemType.INVOICE)
-                breadcrumbService.addBreadcrumb(controllerName, 'list', null, invoiceId, invoice?.number)
-
-            } catch (Exception e) {
-                log.error("Exception retrieving WS object.", e)
-                flash.error = 'error.invoice.details'
-                flash.args = [ invoiceId ]
-            }
-        }
-
-        render template: params.template ?: 'show', model: [selected: invoice, user: user, totalRevenue: totalRevenue, delegatedInvoices: delegatedInvoices, payments: payments, currencies: currencies]
+        render template: params.template ?: 'show', model: [selected: invoice, currencies: currencies]
     }
 
     def snapshot = {

@@ -99,7 +99,12 @@
 					</td>
 					<td>
 						<g:remoteLink breadcrumb="id" class="cell" action="show" id="${inv.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
-                            ${inv.getInvoiceStatus().getDescription(session['language_id']) }
+                            <g:if test="${inv.isReview == 1}">
+                                <g:message code="invoice.status.review"/>
+                            </g:if>
+                            <g:else>
+                                ${inv.getInvoiceStatus().getDescription(session['language_id']) }
+                            </g:else>
 						</g:remoteLink>
 					</td>
 					<td>

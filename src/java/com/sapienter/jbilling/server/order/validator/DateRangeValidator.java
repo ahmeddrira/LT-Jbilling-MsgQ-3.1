@@ -60,7 +60,7 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
             Date startDate = (Date) getAccessorMethod(klass, startDateFieldName).invoke(object);
             Date endDate = (Date) getAccessorMethod(klass, endDateFieldName).invoke(object);
 
-            return startDate.before(endDate);
+            return startDate == null || endDate == null || startDate.before(endDate);
 
         } catch (IllegalAccessException e) {
             LOG.debug("Illegal access to the date range property fields.");

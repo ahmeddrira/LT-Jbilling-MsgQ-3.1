@@ -110,7 +110,7 @@
                 <content tag="label.for">dueDateValue</content>
 
                 <div class="inp-bg inp4">
-                    <g:textField class="field" name="dueDateValue" value="${order?.dueDateValue}"/>
+                    <g:textField class="field text" name="dueDateValue" value="${order?.dueDateValue}"/>
                 </div>
                 <div class="select4">
                     <g:select from="${periodUnits}"
@@ -197,7 +197,7 @@
                 $('#order-details-form').submit();
             });
 
-            $('#order-details-form').find('input:text').blur(function() {
+            $('#order-details-form').find('input.text').blur(function() {
                 $('#order-details-form').submit();
             });
 

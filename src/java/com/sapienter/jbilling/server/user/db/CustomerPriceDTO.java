@@ -80,6 +80,10 @@ import java.util.Date;
                             + " where id.planItem.id = :plan_item_id "
                             + " and id.baseUser.id = :user_id"),
 
+        @NamedQuery(name = "CustomerPriceDTO.deletePricesByItems",
+                    query = "delete CustomerPriceDTO "
+                            + " where id.planItem.id in (:plan_item_ids)"),
+
         @NamedQuery(name = "CustomerPriceDTO.deletePriceByPlan",
                     query = "delete CustomerPriceDTO "
                             + " where id.baseUser.id = :user_id"

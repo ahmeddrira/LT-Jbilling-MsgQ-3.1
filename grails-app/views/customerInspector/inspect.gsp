@@ -1,4 +1,4 @@
-%{--
+_edit%{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.contact.db.ContactDTO; com.sapienter.jbilling.server.util.Util"%>
+<%@ page import="com.sapienter.jbilling.server.process.db.PeriodUnitDTO; com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.contact.db.ContactDTO; com.sapienter.jbilling.server.util.Util"%>
 
 <html>
 <head>
@@ -262,7 +262,7 @@
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="prompt.due.date.override"/></content>
                         <g:if test="${customer?.dueDateValue}">
-                            <g:set var="periodUnit" value="${company.orderPeriods.find{ it.periodUnit.id == customer?.dueDateUnitId }}"/>
+                            <g:set var="periodUnit" value="${PeriodUnitDTO.get(customer.dueDateUnitId)}"/>
                             <span>${customer?.dueDateValue} ${periodUnit.getDescription(session['language_id'])}</span>
                         </g:if>
                     </g:applyLayout>

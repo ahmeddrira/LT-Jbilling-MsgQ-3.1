@@ -23,17 +23,18 @@ package jbilling
 import grails.plugins.springsecurity.Secured;
 import java.util.Iterator;
 import java.math.BigDecimal;
-import com.sapienter.jbilling.server.process.BillingProcessRunTotalDTOEx;
+
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
-import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS
 import com.sapienter.jbilling.client.util.SortableCriteria
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO
+import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO
+import com.sapienter.jbilling.server.payment.db.PaymentDTO
+import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 
 /**
 * BillingController
@@ -60,39 +61,43 @@ class BillingController {
 	 * so that the lastest process shows first.
 	 */
 	def list = {
-		Map dataHashMap = new HashMap()
 
 		def filters = filterService.getFilters(FilterType.BILLINGPROCESS, params)
-		def filteredList= filterProcesses(filters)
+		def filteredList= getProcesses(filters)
 
+		Map dataHashMap= new HashMap()
+        Iterator cntAndSumIter= null
+        def dataArr= null;
+        def processDas= new BillingProcessDAS()
         for (BillingProcessDTO dto : filteredList) {
-            Iterator countIterator = new BillingProcessDAS().getCountAndSum(dto.getId())
-            if (countIterator != null) {
-                while (countIterator.hasNext()) {
-                    Object[] row = (Object[]) countIterator.next();
-                    row[2] = new CurrencyDAS().find(row[2] as Integer)
-                    dataHashMap.put (dto.getId(), row)
-                }
+            dataHashMap.put(Integer.valueOf(dto.getId()), [])
+            for (Object[] row: new BillingProcessDAS().getCountAndSum(dto.id)) {
+                dataArr= new Object[3]
+                dataArr[0]= row[0]
+                dataArr[1]= row[1]
+                dataArr[2]= CurrencyDTO.get(row[2] as Integer)
+                dataHashMap.get(Integer.valueOf(dto.getId())) << dataArr
             }
         }
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
-		if (params.applyFilter || params.partial) {
-			render template: 'list', model: [lstBillingProcesses: filteredList, dataHashMap:dataHashMap, filters:filters]
-		} else {
-			render view: "index", model: [lstBillingProcesses: filteredList, dataHashMap:dataHashMap, filters:filters]
-		}
+        if (params.applyFilter || params.partial) {
+            render template: 'list', model: [lstBillingProcesses: filteredList, dataHashMap:dataHashMap, filters:filters]
+            return
+        }
+		render view: "index", model: [lstBillingProcesses: filteredList, dataHashMap:dataHashMap, filters:filters]
+	
 	}
 
 	/*
 	 * Filter the process results based on the parameter filter values
 	 */
-	def filterProcesses(filters) {
+	def getProcesses(filters) {
+        
 		params.max = (params?.max?.toInteger()) ?: pagination.max
 		params.offset = (params?.offset?.toInteger()) ?: pagination.offset
         params.sort = params?.sort ?: pagination.sort
         params.order = params?.order ?: pagination.order
-
 		
 		return BillingProcessDTO.createCriteria().list(
 			max:    params.max,
@@ -113,77 +118,48 @@ class BillingController {
 			}
 	}
 
+    def date = {
+
+    }
+
 	/*
 	 * To display the run details of a given Process Id
 	 */
 	def show = {
+        Integer processId = params.int('id')
 
-		def processId = params.int('id')
-        
         if ( !BillingProcessDTO.exists( processId ) ) {
             flash.error = 'billing.process.review.doesnotexist'
-            flash.args = [processId as String]
+            flash.args = [processId]
             redirect action:'list'
         }
-        
-        BillingProcessDTO process = BillingProcessDTO.get(processId);
-        
-		def genInvoices = new InvoiceDAS().findByProcess(process)
-		def invoicesGenerated = genInvoices?.size() ?: 0
 
-        log.debug("Fetching count and sum by currency")
-        
-        def das = new BillingProcessDAS()
-        
-		def countAndSumByCurrency= new ArrayList()
-        Iterator countIterator = das.getCountAndSum(processId)
+        // get billing process record
+        def process = BillingProcessDTO.get(processId)
+        def configuration = BillingProcessConfigurationDTO.findByEntity(new CompanyDTO(session['company_id']))
 
-		while (countIterator.hasNext()) {
-			Object[] row = (Object[]) countIterator.next();
-			row[2] = CurrencyDTO.get(row[2] as Integer)
-			countAndSumByCurrency.add(row)
-		}
+        // main billing process run (not a retry!)
+        def processRuns = process?.processRuns?.asList()?.sort{ it.started }
+        def processRun =  processRuns?.first()
 
-        log.debug("Fetching payment list by currency")
+        // all payments made to generated invoices between process start & end
+        def generatedPayments = new PaymentDAS().findBillingProcessGeneratedPayments(processId, processRun.started, processRun.finished)
 
-		def mapOfPaymentListByCurrency= new HashMap()
-		Iterator currencyIterator = das.getSuccessfulProcessCurrencyMethodAndSum(processId)
-
-		while (currencyIterator.hasNext()) {
-			Object[] row = (Object[]) currencyIterator.next();
-
-			def payments = mapOfPaymentListByCurrency.get(row[0] as Integer) ?: new ArrayList()
-            payments.add([new PaymentMethodDTO(row[1]), new BigDecimal(row[2])] as Object[])
-            mapOfPaymentListByCurrency.put(row[0], payments)
-		}
-
-        log.debug("Fetching failed amounts by currency")
-
-		def failedAmountsByCurrency= new ArrayList()
-		Iterator failedIterator = das.getFailedProcessCurrencyAndSum(processId)
-
-		while (failedIterator.hasNext()) {
-			Object[] row = (Object[]) failedIterator.next();
-			failedAmountsByCurrency.add(row[1])
-		}
+        // all payments made to generated invoice after the process end
+        def invoicePayments = new PaymentDAS().findBillingProcessPayments(processId, processRun.finished)
 
 		recentItemService.addRecentItem(processId, RecentItemType.BILLINGPROCESS)
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, processId)
-		[process:process, invoicesGenerated:invoicesGenerated, countAndSumByCurrency: countAndSumByCurrency, mapOfPaymentListByCurrency: mapOfPaymentListByCurrency, failedAmountsByCurrency: failedAmountsByCurrency, reviewConfiguration: webServicesSession.getBillingProcessConfiguration()] 
+
+        [ process: process, processRun: processRun, generatedPayments: generatedPayments, invoicePayments: invoicePayments, configuration: configuration ]
 	}
 
 	def showInvoices = {
-		def _processId= params.int('id')
-		log.debug "redirecting to invoice controller for process id=${_processId}"
-		//def filter =  new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: false, integerValue: _processId)
-		//filterService.setFilter(FilterType.INVOICE, filter)
-		redirect controller: 'invoice', action: 'byProcess', id:_processId
+		redirect controller: 'invoice', action: 'byProcess', id: params.id
 	}
 	
 	def showOrders = {
-		def _processId= params.int('id')
-		log.debug "redirect to order controller for processId $_processId"
-		redirect controller: 'order', action: 'byProcess', id:_processId
+		redirect controller: 'order', action: 'byProcess', id: params.id
 	}
 
     @Secured(["BILLING_80"])

@@ -936,6 +936,13 @@ td.tiny, th.tiny { width: 50px; }
 	padding:11px 0;
 	margin-right:20px;
 	border-right:1px solid #a4c0db;
+    height: 25px;
+}
+.holder .form-box.last {
+    border-right:  none;
+}
+.holder .form-box p {
+    margin-top: 0.5em;
 }
 .holder .form-box label {
 	width:88px;
@@ -949,7 +956,7 @@ td.tiny, th.tiny { width: 50px; }
 .holder .submit {
 	margin:13px 10px 0 0;
 }
-.holder .form-box .submit {margin:1px 0 0;}
+.holder .form-box .submit {margin:1px 10px 0 0;}
 /* table-area */
 .table-area {
 	border-bottom:1px solid #bbb;
@@ -1010,6 +1017,22 @@ td.tiny, th.tiny { width: 50px; }
 .table-area tbody .bg td strong {
 	text-align:center;
 	display:block;
+}
+.table-area tbody .even {
+    background-color: #f4f4f4;
+}
+.table-area tbody .odd {
+
+}
+.table-area tbody span.small {
+    display: inline-block;
+    width: 120px;
+    text-align: left;
+}
+.table-area tbody span.large {
+    display: inline-block;
+    width: 240px;
+    text-align: left;
 }
 .table-info {
 	overflow:hidden;

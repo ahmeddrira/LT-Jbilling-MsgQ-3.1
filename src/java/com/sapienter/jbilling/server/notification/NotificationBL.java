@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -834,6 +835,15 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             lines.removeAll(linesRemoved); // removed them once out of the loop. Otherwise it will throw
             // remove the last line, that is the total footer
             lines.remove(lines.size() - 1);
+
+            Collections.sort(lines, new Comparator() { 
+                public int compare(Object o1, Object o2) { 
+                    InvoiceLineDTO a = (InvoiceLineDTO)o1; 
+                    InvoiceLineDTO b = (InvoiceLineDTO)o2; 
+                    return Integer.valueOf(a.getId()).compareTo(Integer.valueOf(b.getId())); 
+                } 
+            });
+            
             // now add the tax
             parameters.put("tax", Util.formatMoney(taxTotal, invoice.getUserId(), invoice
                     .getCurrency().getId(), false));

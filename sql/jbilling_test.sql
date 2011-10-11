@@ -11391,6 +11391,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	28	description	1	View all customers
 59	36	description	1	View all customers
 59	74	description	1	View all customers
+50	50	description	1	Invoice decimal rounding.
+50	50	instruction	1	The number of decimal places to be shown on the invoice. Defaults to 2.
 \.
 
 
@@ -14799,6 +14801,7 @@ COPY preference_type (id, def_value) FROM stdin;
 46	0
 47	0
 48	1
+50	2
 \.
 
 

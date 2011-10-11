@@ -1287,3 +1287,16 @@ alter table price_model alter column strategy_type type varchar(40); -- postgres
 -- alter table price_model modify strategy_type varchar(40); -- mysql
 
 insert into pluggable_task_type values (90, 7, 'com.sapienter.jbilling.server.notification.task.TestNotificationTask',0);
+
+-- Sept 10
+-- Redmine issue #1302
+-- Description: Round invoices total and balance to 2 digits
+insert into preference_type values (50, 2);
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 50, 'description', 1, 'Invoice decimal rounding.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 50, 'instruction', 1, 'The number of decimal places to be shown on the invoice. Defaults to 2.');
+
+

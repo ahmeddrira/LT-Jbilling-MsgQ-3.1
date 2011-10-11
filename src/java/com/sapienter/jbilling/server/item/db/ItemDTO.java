@@ -17,6 +17,10 @@ package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
+import com.sapienter.jbilling.server.metafields.MetaContent;
+import com.sapienter.jbilling.server.metafields.MetaFieldHelper;
+import com.sapienter.jbilling.server.metafields.db.EntityType;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
@@ -33,13 +37,30 @@ import org.hibernate.annotations.MapKey;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
+import javax.persistence.Version;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -55,7 +76,7 @@ import java.util.TreeMap;
 )
 @Table(name = "item")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class ItemDTO extends AbstractDescription implements Exportable {
+public class ItemDTO extends AbstractDescription implements MetaContent, Exportable {
 
     private int id;
     private CompanyDTO entity;
@@ -70,6 +91,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
     private Set<ItemTypeDTO> itemTypes = new HashSet<ItemTypeDTO>(0);
     private Set<InvoiceLineDTO> invoiceLines = new HashSet<InvoiceLineDTO>(0);
     private Set<PlanDTO> plans = new HashSet<PlanDTO>(0);
+    private List<MetaFieldValue> metaFields = new LinkedList<MetaFieldValue>();
 
     private int versionNum;
 
@@ -321,6 +343,48 @@ public class ItemDTO extends AbstractDescription implements Exportable {
 
     public void setVersionNum(int versionNum) {
         this.versionNum = versionNum;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    @JoinTable(
+            name = "item_meta_field_map",
+            joinColumns = @JoinColumn(name = "item_id"),
+            inverseJoinColumns = @JoinColumn(name = "meta_field_value_id")
+    )
+    @Sort(type = SortType.COMPARATOR, comparator = MetaFieldHelper.MetaFieldValuesOrderComparator.class)
+    public List<MetaFieldValue> getMetaFields() {
+        return metaFields;
+    }
+
+    @Transient
+    public void setMetaFields(List<MetaFieldValue> fields) {
+        this.metaFields = fields;
+    }
+
+    @Transient
+    public MetaFieldValue getMetaField(String name) {
+        return MetaFieldHelper.getMetaField(this, name);
+    }
+
+    @Transient
+    public void setMetaField(MetaFieldValue field) {
+        MetaFieldHelper.setMetaField(this, field);
+    }
+
+    @Transient
+    public void setMetaField(String name, Object value) throws IllegalArgumentException {
+        MetaFieldHelper.setMetaField(this, name, value);
+    }
+
+    @Transient
+    public void updateMetaFieldsWithValidation(MetaContent dto) {
+        MetaFieldHelper.updateMetaFieldsWithValidation(this, dto);
+    }
+
+    @Transient
+    public EntityType getCustomizedEntityType() {
+        return EntityType.ITEM;
     }
 
     @Transient

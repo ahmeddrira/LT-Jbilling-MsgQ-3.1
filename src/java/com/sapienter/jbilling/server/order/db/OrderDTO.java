@@ -20,6 +20,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.metafields.MetaFieldHelper;
 import com.sapienter.jbilling.server.metafields.db.CustomizedEntity;
 import com.sapienter.jbilling.server.metafields.db.EntityType;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
@@ -471,7 +472,7 @@ public class OrderDTO extends CustomizedEntity implements Serializable, Exportab
             joinColumns = @JoinColumn(name = "order_id"),
             inverseJoinColumns = @JoinColumn(name = "meta_field_value_id")
     )
-    @Sort(type = SortType.COMPARATOR, comparator = MetaFieldValuesOrderComparator.class)
+    @Sort(type = SortType.COMPARATOR, comparator = MetaFieldHelper.MetaFieldValuesOrderComparator.class)
     public List<MetaFieldValue> getMetaFields() {
         return getMetaFieldsList();
     }

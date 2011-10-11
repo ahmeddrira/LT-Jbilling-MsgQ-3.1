@@ -24,8 +24,6 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.list.ResultList;
-import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
-import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -247,7 +245,7 @@ public class UserBL extends ResultList implements UserSQL {
             }
 
             // update custom fields, validation will be inside
-            user.getCustomer().updateMetaFields(dto.getCustomer());
+            user.getCustomer().updateMetaFieldsWithValidation(dto.getCustomer());
         }
 
         eLogger.audit(executorId,
@@ -385,7 +383,7 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setAutoPaymentType(dto.getCustomer().getAutoPaymentType());
 
             //meta fields
-            user.getCustomer().updateMetaFields(dto.getCustomer());
+            user.getCustomer().updateMetaFieldsWithValidation(dto.getCustomer());
 
         } else { // all the rest
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(),

@@ -326,7 +326,7 @@
                                         <g:textField class="field ${validationRules}"
                                                 name="metaField_${metaField.id}.value" value="${fieldValue}"/>
                                     </g:applyLayout>
-                            </g:else>
+                                </g:else>
                             </g:if>
 
                         </g:each>

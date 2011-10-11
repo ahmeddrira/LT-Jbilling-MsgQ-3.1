@@ -18,35 +18,27 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sapienter.jbilling.server.metafields.db;
+package com.sapienter.jbilling.server.metafields;
 
-import com.sapienter.jbilling.server.metafields.MetaContent;
-import com.sapienter.jbilling.server.metafields.MetaFieldHelper;
+import com.sapienter.jbilling.server.metafields.db.EntityType;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 
 import javax.persistence.Transient;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Common class for extending by entities that can contain meta-fields. This class enforces a set
+ * Interface for marking classes that can contain meta-fields. This interface enforces a set
  * of convenience methods for accessing the meta data.
  *
- * @author Alexander Aksenov
- * @since 08.10.11
+ * @author Brian Cowdery
+ * @since 03-Oct-2011
  */
+public interface MetaContent {
 
-public abstract class CustomizedEntity implements MetaContent, java.io.Serializable {
+    // for hibernate mappings
+    public List<MetaFieldValue> getMetaFields();
+    public void setMetaFields(List<MetaFieldValue> fields);
 
-    private List<MetaFieldValue> metaFields = new LinkedList<MetaFieldValue>();
-
-    @Transient
-    protected List<MetaFieldValue> getMetaFieldsList() {
-        return metaFields;
-    }
-
-    public void setMetaFields(List<MetaFieldValue> fields) {
-        this.metaFields = fields;
-    }
 
     /**
      * Returns the meta field by name if it's been defined for this object.
@@ -54,10 +46,7 @@ public abstract class CustomizedEntity implements MetaContent, java.io.Serializa
      * @param name meta field name
      * @return field if found, null if not set.
      */
-    @Transient
-    public MetaFieldValue getMetaField(String name) {
-        return MetaFieldHelper.getMetaField(this, name);
-    }
+    public MetaFieldValue getMetaField(String name);
 
     /**
      * Adds a meta field to this object. If there is already a field associated with
@@ -65,24 +54,18 @@ public abstract class CustomizedEntity implements MetaContent, java.io.Serializa
      *
      * @param field field to update.
      */
-    @Transient
-    public void setMetaField(MetaFieldValue field) {
-        MetaFieldHelper.setMetaField(this, field);
-    }
+    public void setMetaField(MetaFieldValue field);
 
     /**
      * Sets the value of a meta field that is already associated with this object. If
      * the field does not already exist, or if the value class is of an incorrect type
      * then an IllegalArgumentException will be thrown.
      *
-     * @param name  field name
+     * @param name field name
      * @param value field value
      * @throws IllegalArgumentException thrown if field name does not exist, or if value is of an incorrect type.
      */
-    @Transient
-    public void setMetaField(String name, Object value) throws IllegalArgumentException {
-        MetaFieldHelper.setMetaField(this, name, value);
-    }
+    public void setMetaField(String name, Object value) throws IllegalArgumentException;
 
     /**
      * Usefull method for updating meta fields with validation before entity saving
@@ -90,8 +73,12 @@ public abstract class CustomizedEntity implements MetaContent, java.io.Serializa
      * @param dto dto with new data
      */
     @Transient
-    public void updateMetaFieldsWithValidation(MetaContent dto) {
-        MetaFieldHelper.updateMetaFieldsWithValidation(this, dto);
-    }
+    public void updateMetaFieldsWithValidation(MetaContent dto);
 
+    /**
+     * Returns entity type, that defines available custom fields for entity
+     *
+     * @return EntityType
+     */
+    public abstract EntityType getCustomizedEntityType();
 }

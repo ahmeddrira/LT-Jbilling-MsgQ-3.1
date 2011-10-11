@@ -424,6 +424,6 @@ class CustomerController {
     }
 
     def getMetaFields() {
-        return MetaFieldBL.getAvailableFields(EntityType.USER).values();
+        return MetaFieldBL.getAvailableFieldsList(EntityType.USER);
     }
 }

@@ -19,6 +19,8 @@ package com.sapienter.jbilling.server.user.db;
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
+import com.sapienter.jbilling.server.metafields.MetaFieldBL;
+import com.sapienter.jbilling.server.metafields.MetaFieldHelper;
 import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.metafields.db.CustomizedEntity;
 import com.sapienter.jbilling.server.metafields.db.EntityType;
@@ -170,11 +172,7 @@ public class CustomerDTO extends CustomizedEntity implements java.io.Serializabl
 
         setExcludeAging(user.getExcludeAgeing() != null && user.getExcludeAgeing() ? 1 : 0);
 
-        if (user.getMetaFields() != null) {
-            for (MetaFieldValueWS metaField : user.getMetaFields()) {
-                setMetaField(metaField.getFieldName(), metaField.getValue());
-            }
-        }
+        MetaFieldBL.fillMetaFieldsFromWS(this, user.getMetaFields());
 
         LOG.debug("Customer created with auto-recharge: " + getAutoRecharge() + " incoming var, " + user.getAutoRecharge());
     }
@@ -412,7 +410,7 @@ public class CustomerDTO extends CustomizedEntity implements java.io.Serializabl
             joinColumns = @JoinColumn(name = "customer_id"),
             inverseJoinColumns = @JoinColumn(name = "meta_field_value_id")
     )
-    @Sort(type = SortType.COMPARATOR, comparator = MetaFieldValuesOrderComparator.class)
+    @Sort(type = SortType.COMPARATOR, comparator = MetaFieldHelper.MetaFieldValuesOrderComparator.class)
     public List<MetaFieldValue> getMetaFields() {
         return getMetaFieldsList();
     }

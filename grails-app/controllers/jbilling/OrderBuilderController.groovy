@@ -528,13 +528,12 @@ class OrderBuilderController {
     }
 
     def getMetaFields() {
-        return MetaFieldBL.getAvailableFields(EntityType.ORDER).values();
+        return MetaFieldBL.getAvailableFieldsList(EntityType.ORDER);
     }
 
     def bindMetaFields(OrderWS orderWS, GrailsParameterMap params) {
         def fieldsArray = new LinkedList<MetaFieldValueWS>();
         metaFields.each{
-            // bind if contact object if parameters present
             if (params["metaField_${it.id}"].any { key, value -> value }) {
                 def fieldValue = it.createValue();
                 bindData(fieldValue, params, "metaField_${it.id}")

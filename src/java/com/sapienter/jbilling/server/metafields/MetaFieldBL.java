@@ -21,7 +21,10 @@
 package com.sapienter.jbilling.server.metafields;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.metafields.db.*;
+import com.sapienter.jbilling.server.metafields.db.EntityType;
+import com.sapienter.jbilling.server.metafields.db.MetaField;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,8 +59,12 @@ public class MetaFieldBL {
         return result;
     }
 
+    public static List<MetaField> getAvailableFieldsList(EntityType entityType) {
+        return new MetaFieldDAS().getAvailableFields(entityType);
+    }
+
     public static void validateMetaFields(EntityType type, MetaFieldValueWS[] metaFields) {
-        for (MetaField field :  new MetaFieldDAS().getAvailableFields(type)) {
+        for (MetaField field : new MetaFieldDAS().getAvailableFields(type)) {
             MetaFieldValue value = field.createValue();
             for (MetaFieldValueWS valueWS : metaFields) {
                 if (field.getName().equals(valueWS.getFieldName())) {
@@ -66,6 +73,19 @@ public class MetaFieldBL {
                 }
             }
             validateMetaField(field, value);
+        }
+    }
+
+    /**
+     * Validates all meta fields, configured for entity
+     *
+     * @param customizedEntity entity with meta fields for validation
+     */
+    public static void validateMetaFields(MetaContent customizedEntity) {
+        List<MetaField> availableMetaFields = getAvailableFieldsList(customizedEntity.getCustomizedEntityType());
+        for (MetaField field : availableMetaFields) {
+            MetaFieldValue value = customizedEntity.getMetaField(field.getName());
+            MetaFieldBL.validateMetaField(field, value);
         }
     }
 
@@ -78,7 +98,7 @@ public class MetaFieldBL {
         }
     }
 
-    public static MetaFieldValueWS[] convertMetaFieldsToWS(CustomizedEntity entity) {
+    public static MetaFieldValueWS[] convertMetaFieldsToWS(MetaContent entity) {
         List<MetaField> availableMetaFields = new MetaFieldDAS().getAvailableFields(entity.getCustomizedEntityType());
         MetaFieldValueWS[] result = new MetaFieldValueWS[]{};
         if (availableMetaFields != null && !availableMetaFields.isEmpty()) {
@@ -93,5 +113,13 @@ public class MetaFieldBL {
             }
         }
         return result;
+    }
+
+    public static void fillMetaFieldsFromWS(MetaContent entity, MetaFieldValueWS[] metaFields) {
+        if (metaFields != null) {
+            for (MetaFieldValueWS fieldValue : metaFields) {
+                entity.setMetaField(fieldValue.getFieldName(), fieldValue.getValue());
+            }
+        }
     }
 }

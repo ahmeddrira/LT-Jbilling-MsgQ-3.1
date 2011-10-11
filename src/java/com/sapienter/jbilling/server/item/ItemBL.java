@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.item.event.ItemUpdatedEvent;
 import com.sapienter.jbilling.server.item.event.NewItemEvent;
 import com.sapienter.jbilling.server.item.tasks.IPricing;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
+import com.sapienter.jbilling.server.metafields.MetaFieldBL;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
@@ -130,6 +131,8 @@ public class ItemBL {
 
         dto.setDeleted(0);
 
+        dto.updateMetaFieldsWithValidation(dto);
+
         item = itemDas.save(dto);
 
         if (dto.getDescription() != null) {
@@ -172,6 +175,8 @@ public class ItemBL {
             LOG.debug("Percentage items cannot have a default price model.");
             item.getDefaultPrices().clear();
         }
+
+        item.updateMetaFieldsWithValidation(dto);
 
         itemDas.save(item);
 
@@ -297,8 +302,7 @@ public class ItemBL {
      * the users current usage in the pricing calculation.
      *
      * This method does not execute any pricing plug-ins and does not use quantity or usage
-     * values for {@link PriceModelDTO#applyTo(com.sapienter.jbilling.server.order.db.OrderDTO, java.math.BigDecimal,
-     * com.sapienter.jbilling.server.item.tasks.PricingResult, java.util.List}
+     * values for {@link PriceModelDTO#applyTo(com.sapienter.jbilling.server.order.db.OrderDTO, java.math.BigDecimal, com.sapienter.jbilling.server.item.tasks.PricingResult, java.util.List, com.sapienter.jbilling.server.order.Usage, boolean, java.util.Date)}
      * price calculations.
      *
      * @param date
@@ -479,6 +483,8 @@ public class ItemBL {
         }
         dto.setExcludedTypeIds(excludedTypes);
 
+        dto.setMetaFields(item.getMetaFields());
+
         LOG.debug("Got item: " + dto.getId() + ", price: " + dto.getPrice());
 
         return dto;
@@ -504,6 +510,8 @@ public class ItemBL {
         retValue.setCurrencyId(other.getCurrencyId());
         retValue.setPrice(other.getPriceAsDecimal());
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
+
+        MetaFieldBL.fillMetaFieldsFromWS(retValue, other.getMetaFields());
 
         // convert PriceModelWS to PriceModelDTO
         retValue.setDefaultPrices(PriceModelBL.getDTO(other.getDefaultPrices()));
@@ -532,6 +540,7 @@ public class ItemBL {
         retValue.setCurrencyId(other.getCurrencyId());
         retValue.setPrice(other.getPrice());
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
+        retValue.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(other));
 
         // convert PriceModelDTO to PriceModelWS
         retValue.setDefaultPrices(PriceModelBL.getWS(other.getDefaultPrices()));

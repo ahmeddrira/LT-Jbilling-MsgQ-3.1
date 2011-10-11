@@ -17,18 +17,18 @@
 package com.sapienter.jbilling.server.item;
 
 import com.sapienter.jbilling.server.item.validator.ItemTypes;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.security.WSSecured;
 import com.sapienter.jbilling.server.util.InternationalDescriptionWS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.ListUtils;
-import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.NotEmpty;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.validation.constraints.Digits;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -68,6 +68,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer orderLineTypeId = null;
     @NotEmpty(message = "validation.error.notnull")
     private List<InternationalDescriptionWS> descriptions = ListUtils.lazyList(new ArrayList<InternationalDescriptionWS>(), FactoryUtils.instantiateFactory(InternationalDescriptionWS.class));
+    private MetaFieldValueWS[] metaFields;
 
 
     public ItemDTOEx() {
@@ -103,6 +104,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
         this.hasDecimals = otherValue.hasDecimals;
         this.deleted = otherValue.deleted;
         this.entityId = otherValue.entityId;
+        this.metaFields = otherValue.getMetaFields();
     }
 
     public Integer getId() {
@@ -122,14 +124,14 @@ public class ItemDTOEx implements WSSecured, Serializable {
     }
 
     public String getGlCode() {
-		return glCode;
-	}
+        return glCode;
+    }
 
-	public void setGlCode(String glCode) {
-		this.glCode = glCode;
-	}
+    public void setGlCode(String glCode) {
+        this.glCode = glCode;
+    }
 
-	public String getPercentage() {
+    public String getPercentage() {
         return this.percentage;
     }
 
@@ -288,6 +290,14 @@ public class ItemDTOEx implements WSSecured, Serializable {
 
     public void setDefaultPrice(PriceModelWS defaultPrice) {
         this.defaultPrice = defaultPrice;
+    }
+
+    public MetaFieldValueWS[] getMetaFields() {
+        return metaFields;
+    }
+
+    public void setMetaFields(MetaFieldValueWS[] metaFields) {
+        this.metaFields = metaFields;
     }
 
     public Integer getOwningEntityId() {

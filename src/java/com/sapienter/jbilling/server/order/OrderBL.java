@@ -362,7 +362,7 @@ public class OrderBL extends ResultList
                 addBundledItems(orderDto, lines, baseUser);
             }
             // update and validate meta fields
-            orderDto.updateMetaFields(orderDto);
+            orderDto.updateMetaFieldsWithValidation(orderDto);
 
             order = orderDas.save(orderDto);
 
@@ -573,7 +573,7 @@ public class OrderBL extends ResultList
         updateNextBillableDay(executorId, dto.getNextBillableDay());
 
         // update and validate custom fields
-        order.updateMetaFields(dto);
+        order.updateMetaFieldsWithValidation(dto);
 
         /*
          *  now proces the order lines
@@ -1630,11 +1630,7 @@ public class OrderBL extends ResultList
             retValue.setPricingFields(pf);
         }
 
-        if (other.getMetaFields() != null) {
-            for (MetaFieldValueWS fieldValue : other.getMetaFields()) {
-                retValue.setMetaField(fieldValue.getFieldName(), fieldValue.getValue());
-            }
-        }
+        MetaFieldBL.fillMetaFieldsFromWS(retValue, other.getMetaFields());
 
         return retValue;
     }

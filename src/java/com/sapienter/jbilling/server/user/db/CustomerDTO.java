@@ -170,8 +170,10 @@ public class CustomerDTO extends CustomizedEntity implements java.io.Serializabl
 
         setExcludeAging(user.getExcludeAgeing() != null && user.getExcludeAgeing() ? 1 : 0);
 
-        for (MetaFieldValueWS metaField : user.getMetaFields()) {
-            setMetaField(metaField.getFieldName(), metaField.getValue());
+        if (user.getMetaFields() != null) {
+            for (MetaFieldValueWS metaField : user.getMetaFields()) {
+                setMetaField(metaField.getFieldName(), metaField.getValue());
+            }
         }
 
         LOG.debug("Customer created with auto-recharge: " + getAutoRecharge() + " incoming var, " + user.getAutoRecharge());
@@ -416,14 +418,14 @@ public class CustomerDTO extends CustomizedEntity implements java.io.Serializabl
     }
 
     @Transient
-    public Integer getTotalSubAccounts() {
-        LOG.debug("sub acounts = " + getChildren().size());
-        return (getChildren().size() == 0) ? null : new Integer(getChildren().size());
+    public EntityType getCustomizedEntityType() {
+        return EntityType.USER;
     }
 
     @Transient
-    protected EntityType getCustomizedEntityType() {
-        return EntityType.USER;
+    public Integer getTotalSubAccounts() {
+        LOG.debug("sub acounts = " + getChildren().size());
+        return (getChildren().size() == 0) ? null : new Integer(getChildren().size());
     }
 
     @Override

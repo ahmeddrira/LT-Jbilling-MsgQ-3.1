@@ -23,11 +23,13 @@ package com.sapienter.jbilling.server.metafields;
 import com.sapienter.jbilling.server.metafields.db.DataType;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 
+import java.io.Serializable;
+
 /**
  * @author Alexander Aksenov
  * @since 09.10.11
  */
-public class MetaFieldValueWS {
+public class MetaFieldValueWS implements Serializable {
 
     private String fieldName;
     private boolean disabled;
@@ -82,15 +84,31 @@ public class MetaFieldValueWS {
         return disabled;
     }
 
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
     public boolean isMandatory() {
         return mandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
     }
 
     public DataType getDataType() {
         return dataType;
     }
 
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
+    }
+
     public Object getDefaultValue() {
         return defaultValue;
+    }
+
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
     }
 }

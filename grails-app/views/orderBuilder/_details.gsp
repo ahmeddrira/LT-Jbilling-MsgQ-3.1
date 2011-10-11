@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.util.Constants" %>
+<%@ page import="com.sapienter.jbilling.server.util.db.EnumerationDTO; com.sapienter.jbilling.server.util.Constants" %>
 
 <%--
   Order details form. Allows editing of primary order attributes.
@@ -24,6 +24,12 @@
 --%>
 
 <div id="details-box">
+    <!-- hidden div for javascript validation errors -->
+    <br/>
+    <div id="error-messages" class="msg-box error" style="display: none;">
+        <ul></ul>
+    </div>
+
     <g:formRemote name="order-details-form" url="[action: 'edit']" update="column2" method="GET">
         <g:hiddenField name="_eventId" value="update"/>
         <g:hiddenField name="execution" value="${flowExecutionKey}"/>
@@ -130,6 +136,75 @@
                 <content tag="label.for">notify</content>
                 <g:checkBox class="cb checkbox" name="notify" checked="${order?.notify > 0}"/>
             </g:applyLayout>
+
+            <br/>
+
+            <!-- customer meta fields -->
+            <g:each var="metaField" in="${metaFields?.sort{ it.displayOrder }}">
+                <g:if test="${!metaField.disabled}">
+                    <g:set var="orderMetaField" value="${order?.metaFields?.find{ it.fieldName == metaField.name }}"/>
+                    <g:set var="fieldValue" value="${orderMetaField?.getValue()}"/>
+                    <g:if test="${!fieldValue && metaField.getDefaultValue()}">
+                        <g:set var="fieldValue" value="${metaField.getDefaultValue().getValue()}"/>
+                    </g:if>
+
+                    <g:set var="validationRules" value="${metaField.mandatory ? 'required' : ''}"/>
+                    <g:if test="${metaField.dataType.name() == 'DATE'}">
+                        <g:set var="validationRules" value="${validationRules} date"/>
+                    </g:if>
+                    <g:elseif test="${metaField.dataType.name() == 'INTEGER'}">
+                       <g:set var="validationRules" value="${validationRules} number digits"/>
+                    </g:elseif>
+                    <g:elseif test="${metaField.dataType.name() == 'DECIMAL'}">
+                       <g:set var="validationRules" value="${validationRules} number"/>
+                    </g:elseif>
+
+                    <g:if test="${metaField.getDataType().name() == 'ENUMERATION'}">
+                        <g:set var="enumValues" value="${null}"/>
+                        <%
+                            for (EnumerationDTO dto: EnumerationDTO.list()) {
+                                if (dto.name == metaField.getName()) {
+                                    enumValues= []
+                                    enumValues.addAll(dto.values.collect {it.value})
+                                }
+                            }
+                         %>
+                        <g:applyLayout name="form/select">
+                            <content tag="label">${metaField.name}</content>
+                            <g:select
+                                class="field ${validationRules}"
+                                name="metaField_${metaField.id}.value"
+                                from="${enumValues}"
+                                optionKey=""
+                                noSelection="['':'Please select a value']"
+                                value="${fieldValue}" />
+                        </g:applyLayout>
+                    </g:if>
+                    <g:elseif test="${metaField.getDataType().name() == 'BOOLEAN'}">
+                        <g:applyLayout name="form/checkbox">
+                            <content tag="label">${metaField.name}</content>
+                            <content tag="label.for">metaField_${metaField.id}.value</content>
+                            <g:checkBox class="cb checkbox" name="metaField_${metaField.id}.value" checked="${fieldValue}"/>
+                        </g:applyLayout>
+                    </g:elseif>
+                    <g:elseif test="${metaField.getDataType().name() == 'DATE'}">
+                        <g:applyLayout name="form/date">
+                            <content tag="label">${metaField.name}</content>
+                            <content tag="label.for">metaField_${metaField.id}.value</content>
+                            <g:textField class="field ${validationRules}"
+                                    name="metaField_${metaField.id}.value" value="${formatDate(date: fieldValue, formatName: 'datepicker.format')}"/>
+                        </g:applyLayout>
+                    </g:elseif>
+                    <g:else>
+                        <g:applyLayout name="form/input">
+                            <content tag="label">${metaField.name}</content>
+                            <g:textField class="field ${validationRules}"
+                                    name="metaField_${metaField.id}.value" value="${fieldValue}"/>
+                        </g:applyLayout>
+                </g:else>
+                </g:if>
+
+            </g:each>
         </div>
 
         <hr/>
@@ -185,21 +260,30 @@
                  }
              });
 
+            var submitForm = function() {
+                var form = $('#order-details-form');
+                form.submit();
+            };
+
             $('#order-details-form').find('select').change(function() {
-                $('#order-details-form').submit();
+                submitForm();
             });
 
             $('#order-details-form').find('input:checkbox').change(function() {
-                $('#order-details-form').submit();
+                submitForm();
             });
 
             $('#order-details-form').find('input.text').blur(function() {
-                $('#order-details-form').submit();
+                submitForm();
             });
 
             $('#order-details-form').find('textarea').blur(function() {
-                $('#order-details-form').submit();
+                submitForm();
             });
+
+            var validator = $('#order-details-form').validate();
+            validator.init();
+            validator.hideErrors();
         });
     </script>
 

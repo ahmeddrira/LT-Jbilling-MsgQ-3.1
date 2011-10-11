@@ -38,6 +38,7 @@
             </div>
 
             <g:set var="errorMessages" value=""/>
+            <ul></ul>
         </g:if>
     </div>
 

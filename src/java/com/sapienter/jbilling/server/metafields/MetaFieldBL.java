@@ -20,9 +20,8 @@
 
 package com.sapienter.jbilling.server.metafields;
 
-import com.sapienter.jbilling.server.metafields.db.EntityType;
-import com.sapienter.jbilling.server.metafields.db.MetaField;
-import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS;
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.metafields.db.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,6 +52,45 @@ public class MetaFieldBL {
         Map<String, MetaField> result = new LinkedHashMap<String, MetaField>();
         for (MetaField field : entityFields) {
             result.put(field.getName(), field);
+        }
+        return result;
+    }
+
+    public static void validateMetaFields(EntityType type, MetaFieldValueWS[] metaFields) {
+        for (MetaField field :  new MetaFieldDAS().getAvailableFields(type)) {
+            MetaFieldValue value = field.createValue();
+            for (MetaFieldValueWS valueWS : metaFields) {
+                if (field.getName().equals(valueWS.getFieldName())) {
+                    value.setValue(valueWS.getValue());
+                    break;
+                }
+            }
+            validateMetaField(field, value);
+        }
+    }
+
+    public static void validateMetaField(MetaField field, MetaFieldValue value) {
+        if (value != null) {
+            value.validate();
+        }
+        if (field.isMandatory() && value == null) {
+            throw new SessionInternalError("Validation failed.", new String[]{"MetaFieldValue,value,value.cannot.be.null"});
+        }
+    }
+
+    public static MetaFieldValueWS[] convertMetaFieldsToWS(CustomizedEntity entity) {
+        List<MetaField> availableMetaFields = new MetaFieldDAS().getAvailableFields(entity.getCustomizedEntityType());
+        MetaFieldValueWS[] result = new MetaFieldValueWS[]{};
+        if (availableMetaFields != null && !availableMetaFields.isEmpty()) {
+            result = new MetaFieldValueWS[availableMetaFields.size()];
+            int i = 0;
+            for (MetaField field : availableMetaFields) {
+                MetaFieldValue value = entity.getMetaField(field.getName());
+                if (value == null) {
+                    value = field.createValue();
+                }
+                result[i++] = new MetaFieldValueWS(value);
+            }
         }
         return result;
     }

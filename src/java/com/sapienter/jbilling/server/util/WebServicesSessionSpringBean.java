@@ -55,6 +55,8 @@ import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.MediationResult;
+import com.sapienter.jbilling.server.metafields.MetaFieldBL;
+import com.sapienter.jbilling.server.metafields.db.EntityType;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -2139,6 +2141,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throw new SessionInternalError("Null parameter");
         }
 
+        // meta fields validation
+        MetaFieldBL.validateMetaFields(EntityType.ORDER, order.getMetaFields());
+
         order.setUserId(zero2null(order.getUserId()));
         order.setPeriod(zero2null(order.getPeriod()));
         order.setBillingTypeId(zero2null(order.getBillingTypeId()));
@@ -2346,6 +2351,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
         retValue.setTotal(order.getTotal());
+
+        retValue.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(order));
 
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
         for (Iterator<OrderLineDTO> it = order.getLines().iterator(); it.hasNext();) {

@@ -138,13 +138,8 @@ public abstract class CustomizedEntity implements java.io.Serializable {
         Map<String, MetaField> availableMetaFields = getAvailableMetaFields();
         for (String fieldName : availableMetaFields.keySet()) {
             MetaField field = availableMetaFields.get(fieldName);
-            if (field.isMandatory()) {
-                MetaFieldValue value = getMetaField(fieldName);
-                if (value == null) {
-                    throw new SessionInternalError("Validation failed.", new String[]{"MetaFieldValue,value,value.cannot.be.null"});
-                }
-                value.validate();
-            }
+            MetaFieldValue value = getMetaField(fieldName);
+            MetaFieldBL.validateMetaField(field, value);
         }
     }
 
@@ -155,7 +150,7 @@ public abstract class CustomizedEntity implements java.io.Serializable {
     public void validateCurrentMetaFields() {
         if (metaFields == null) return;
         for (MetaFieldValue value : metaFields) {
-            value.validate();
+            MetaFieldBL.validateMetaField(value.getField(), value);
         }
     }
 
@@ -173,7 +168,7 @@ public abstract class CustomizedEntity implements java.io.Serializable {
     }
 
     @Transient
-    protected abstract EntityType getCustomizedEntityType();
+    public abstract EntityType getCustomizedEntityType();
 
     @Transient
     public Map<String, MetaField> getAvailableMetaFields() {

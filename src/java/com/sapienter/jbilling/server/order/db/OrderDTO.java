@@ -16,14 +16,25 @@
 package com.sapienter.jbilling.server.order.db;
 
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.metafields.db.CustomizedEntity;
+import com.sapienter.jbilling.server.metafields.db.EntityType;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Util;
+import com.sapienter.jbilling.server.util.csv.Exportable;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import org.apache.log4j.Logger;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CollectionOfElements;
+import org.hibernate.annotations.OrderBy;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -33,28 +44,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
-
-import com.sapienter.jbilling.server.util.csv.Exportable;
-import org.apache.log4j.Logger;
-import org.hibernate.annotations.CollectionOfElements;
-import org.hibernate.annotations.OrderBy;
-
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.invoice.InvoiceBL;
-import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
-import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.Util;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @TableGenerator(
@@ -64,52 +69,52 @@ import java.util.ArrayList;
         valueColumnName = "next_id",
         pkColumnValue="purchase_order",
         allocationSize = 100
-        )
+)
 @Table(name="purchase_order")
 // No cache, mutable and critical
-public class OrderDTO implements Serializable, Exportable {
+public class OrderDTO extends CustomizedEntity implements Serializable, Exportable {
 
     private static Logger LOG = Logger.getLogger(OrderDTO.class);
 
-     private Integer id;
-     private UserDTO baseUserByUserId;
-     private UserDTO baseUserByCreatedBy;
-     private CurrencyDTO currencyDTO;
-     private OrderStatusDTO orderStatusDTO;
-     private OrderPeriodDTO orderPeriodDTO;
-     private OrderBillingTypeDTO orderBillingTypeDTO;
-     private Date activeSince;
-     private Date activeUntil;
-     private Date cycleStarts;
-     private Date createDate;
-     private Date nextBillableDay;
-     private int deleted;
-     private Integer notify;
-     private Date lastNotified;
-     private Integer notificationStep;
-     private Integer dueDateUnitId;
-     private Integer dueDateValue;
-     private Integer dfFm;
-     private Integer anticipatePeriods;
-     private Integer ownInvoice;
-     private String notes;
-     private Integer notesInInvoice;
-     private Set<OrderProcessDTO> orderProcesses = new HashSet<OrderProcessDTO>(0);
-     private List<OrderLineDTO> lines = new ArrayList<OrderLineDTO>(0);
-     private Integer isCurrent;
-     private Integer versionNum;
-     // other non-persitent fields
-     private Collection<OrderProcessDTO> nonReviewPeriods = new ArrayList<OrderProcessDTO>(0);
-     private Collection<InvoiceDTO> invoices = new ArrayList<InvoiceDTO>(0);
-     private Collection<BillingProcessDTO> billingProcesses = new ArrayList<BillingProcessDTO>(0);
-     private String periodStr = null;
-     private String billingTypeStr = null;
-     private String statusStr = null;
-     private String timeUnitStr = null;
-     private String currencySymbol = null;
-     private String currencyName = null;
-     private BigDecimal total = null;
-     private List<PricingField> pricingFields = null;
+    private Integer id;
+    private UserDTO baseUserByUserId;
+    private UserDTO baseUserByCreatedBy;
+    private CurrencyDTO currencyDTO;
+    private OrderStatusDTO orderStatusDTO;
+    private OrderPeriodDTO orderPeriodDTO;
+    private OrderBillingTypeDTO orderBillingTypeDTO;
+    private Date activeSince;
+    private Date activeUntil;
+    private Date cycleStarts;
+    private Date createDate;
+    private Date nextBillableDay;
+    private int deleted;
+    private Integer notify;
+    private Date lastNotified;
+    private Integer notificationStep;
+    private Integer dueDateUnitId;
+    private Integer dueDateValue;
+    private Integer dfFm;
+    private Integer anticipatePeriods;
+    private Integer ownInvoice;
+    private String notes;
+    private Integer notesInInvoice;
+    private Set<OrderProcessDTO> orderProcesses = new HashSet<OrderProcessDTO>(0);
+    private List<OrderLineDTO> lines = new ArrayList<OrderLineDTO>(0);
+    private Integer isCurrent;
+    private Integer versionNum;
+    // other non-persitent fields
+    private Collection<OrderProcessDTO> nonReviewPeriods = new ArrayList<OrderProcessDTO>(0);
+    private Collection<InvoiceDTO> invoices = new ArrayList<InvoiceDTO>(0);
+    private Collection<BillingProcessDTO> billingProcesses = new ArrayList<BillingProcessDTO>(0);
+    private String periodStr = null;
+    private String billingTypeStr = null;
+    private String statusStr = null;
+    private String timeUnitStr = null;
+    private String currencySymbol = null;
+    private String currencyName = null;
+    private BigDecimal total = null;
+    private List<PricingField> pricingFields = null;
 
     public OrderDTO() {
     }
@@ -142,9 +147,9 @@ public class OrderDTO implements Serializable, Exportable {
         this.notes = other.getNotes();
         this.notesInInvoice = other.getNotesInInvoice();
         this.orderProcesses.addAll(other.getOrderProcesses());
-    for (OrderLineDTO line: other.getLines()) {
-        this.lines.add(new OrderLineDTO(line));
-    }
+        for (OrderLineDTO line: other.getLines()) {
+            this.lines.add(new OrderLineDTO(line));
+        }
         this.isCurrent = other.getIsCurrent();
         this.versionNum = other.getVersionNum();
         this.cycleStarts = other.getCycleStarts();
@@ -161,40 +166,41 @@ public class OrderDTO implements Serializable, Exportable {
         this.deleted = deleted;
     }
     public OrderDTO(int id, UserDTO baseUserByUserId, UserDTO baseUserByCreatedBy, CurrencyDTO currencyDTO,
-            OrderStatusDTO orderStatusDTO, OrderPeriodDTO orderPeriodDTO,
-            OrderBillingTypeDTO orderBillingTypeDTO, Date activeSince, Date activeUntil, Date createDatetime,
-            Date nextBillableDay, Integer deleted, Integer notify, Date lastNotified, Integer notificationStep,
-            Integer dueDateUnitId, Integer dueDateValue, Integer dfFm, Integer anticipatePeriods,
-            Integer ownInvoice, String notes, Integer notesInInvoice, Set<OrderProcessDTO> orderProcesses,
-            List<OrderLineDTO> orderLineDTOs, Integer isCurrent) {
-       this.id = id;
-       this.baseUserByUserId = baseUserByUserId;
-       this.baseUserByCreatedBy = baseUserByCreatedBy;
-       this.currencyDTO = currencyDTO;
-       this.orderStatusDTO = orderStatusDTO;
-       this.orderPeriodDTO = orderPeriodDTO;
-       this.orderBillingTypeDTO = orderBillingTypeDTO;
-       this.activeSince = activeSince;
-       this.activeUntil = activeUntil;
-       this.createDate = createDatetime;
-       this.nextBillableDay = nextBillableDay;
-       this.deleted = deleted;
-       this.notify = notify;
-       this.lastNotified = lastNotified;
-       this.notificationStep = notificationStep;
-       this.dueDateUnitId = dueDateUnitId;
-       this.dueDateValue = dueDateValue;
-       this.dfFm = dfFm;
-       this.anticipatePeriods = anticipatePeriods;
-       this.ownInvoice = ownInvoice;
-       this.notes = notes;
-       this.notesInInvoice = notesInInvoice;
-       this.orderProcesses = orderProcesses;
-       this.lines = orderLineDTOs;
-       this.isCurrent = isCurrent;
+                    OrderStatusDTO orderStatusDTO, OrderPeriodDTO orderPeriodDTO,
+                    OrderBillingTypeDTO orderBillingTypeDTO, Date activeSince, Date activeUntil, Date createDatetime,
+                    Date nextBillableDay, Integer deleted, Integer notify, Date lastNotified, Integer notificationStep,
+                    Integer dueDateUnitId, Integer dueDateValue, Integer dfFm, Integer anticipatePeriods,
+                    Integer ownInvoice, String notes, Integer notesInInvoice, Set<OrderProcessDTO> orderProcesses,
+                    List<OrderLineDTO> orderLineDTOs, Integer isCurrent) {
+        this.id = id;
+        this.baseUserByUserId = baseUserByUserId;
+        this.baseUserByCreatedBy = baseUserByCreatedBy;
+        this.currencyDTO = currencyDTO;
+        this.orderStatusDTO = orderStatusDTO;
+        this.orderPeriodDTO = orderPeriodDTO;
+        this.orderBillingTypeDTO = orderBillingTypeDTO;
+        this.activeSince = activeSince;
+        this.activeUntil = activeUntil;
+        this.createDate = createDatetime;
+        this.nextBillableDay = nextBillableDay;
+        this.deleted = deleted;
+        this.notify = notify;
+        this.lastNotified = lastNotified;
+        this.notificationStep = notificationStep;
+        this.dueDateUnitId = dueDateUnitId;
+        this.dueDateValue = dueDateValue;
+        this.dfFm = dfFm;
+        this.anticipatePeriods = anticipatePeriods;
+        this.ownInvoice = ownInvoice;
+        this.notes = notes;
+        this.notesInInvoice = notesInInvoice;
+        this.orderProcesses = orderProcesses;
+        this.lines = orderLineDTOs;
+        this.isCurrent = isCurrent;
     }
 
-    @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="purchase_order_GEN")
+    @Id
+    @GeneratedValue(strategy= GenerationType.TABLE, generator="purchase_order_GEN")
     @Column(name="id", unique=true, nullable=false)
     public Integer getId() {
         return this.id;
@@ -213,7 +219,7 @@ public class OrderDTO implements Serializable, Exportable {
         this.baseUserByUserId = baseUserByUserId;
     }
 
-@ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="created_by")
     public UserDTO getBaseUserByCreatedBy() {
         return this.baseUserByCreatedBy;
@@ -222,7 +228,7 @@ public class OrderDTO implements Serializable, Exportable {
     public void setBaseUserByCreatedBy(UserDTO baseUserByCreatedBy) {
         this.baseUserByCreatedBy = baseUserByCreatedBy;
     }
-@ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="currency_id", nullable=false)
     public CurrencyDTO getCurrency() {
         return this.currencyDTO;
@@ -231,7 +237,7 @@ public class OrderDTO implements Serializable, Exportable {
     public void setCurrency(CurrencyDTO currencyDTO) {
         this.currencyDTO = currencyDTO;
     }
-@ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="status_id", nullable=false)
     public OrderStatusDTO getOrderStatus() {
         return this.orderStatusDTO;
@@ -421,7 +427,7 @@ public class OrderDTO implements Serializable, Exportable {
     @CollectionOfElements
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="purchaseOrder")
     @OrderBy (
-        clause = "id desc"
+            clause = "id desc"
     )
     public Set<OrderProcessDTO> getOrderProcesses() {
         return this.orderProcesses;
@@ -458,6 +464,22 @@ public class OrderDTO implements Serializable, Exportable {
         this.versionNum = versionNum;
     }
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    @JoinTable(
+            name = "order_meta_field_map",
+            joinColumns = @JoinColumn(name = "order_id"),
+            inverseJoinColumns = @JoinColumn(name = "meta_field_value_id")
+    )
+    @Sort(type = SortType.COMPARATOR, comparator = MetaFieldValuesOrderComparator.class)
+    public List<MetaFieldValue> getMetaFields() {
+        return getMetaFieldsList();
+    }
+
+    @Transient
+    public EntityType getCustomizedEntityType() {
+        return EntityType.ORDER;
+    }
 
 
     /*
@@ -715,32 +737,32 @@ public class OrderDTO implements Serializable, Exportable {
     @Override
     public String toString() {
         StringBuffer str = new StringBuffer("Order = " +
-         "id=" + id + "," +
-         "baseUserByUserId=" + ((baseUserByUserId == null) ? null : baseUserByUserId.getId()) + "," +
-         "baseUserByCreatedBy=" + ((baseUserByCreatedBy== null) ? null : baseUserByCreatedBy.getId()) + "," +
-         "currencyDTO=" + currencyDTO + "," +
-         "orderStatusDTO=" + ((orderStatusDTO == null) ? null : orderStatusDTO) + "," +
-         "orderPeriodDTO=" + ((orderPeriodDTO == null) ? null : orderPeriodDTO) + "," +
-         "orderBillingTypeDTO=" + ((orderBillingTypeDTO == null) ? null : orderBillingTypeDTO) + "," +
-         "activeSince=" + activeSince + "," +
-         "activeUntil=" + activeUntil + "," +
-         "createDate=" + createDate + "," +
-         "nextBillableDay=" + nextBillableDay + "," +
-         "deleted=" + deleted + "," +
-         "notify=" + notify + "," +
-         "lastNotified=" + lastNotified + "," +
-         "notificationStep=" + notificationStep + "," +
-         "dueDateUnitId=" + dueDateUnitId + "," +
-         "dueDateValue=" + dueDateValue + "," +
-         "dfFm=" + dfFm + "," +
-         "anticipatePeriods=" + anticipatePeriods + "," +
-         "ownInvoice=" + ownInvoice + "," +
-         "notes=" + notes + "," +
-         "notesInInvoice=" + notesInInvoice + "," +
-         "orderProcesses=" + orderProcesses + "," +
-         "isCurrent=" + isCurrent + "," +
-         "versionNum=" + versionNum +
-         " lines:[");
+                "id=" + id + "," +
+                "baseUserByUserId=" + ((baseUserByUserId == null) ? null : baseUserByUserId.getId()) + "," +
+                "baseUserByCreatedBy=" + ((baseUserByCreatedBy== null) ? null : baseUserByCreatedBy.getId()) + "," +
+                "currencyDTO=" + currencyDTO + "," +
+                "orderStatusDTO=" + ((orderStatusDTO == null) ? null : orderStatusDTO) + "," +
+                "orderPeriodDTO=" + ((orderPeriodDTO == null) ? null : orderPeriodDTO) + "," +
+                "orderBillingTypeDTO=" + ((orderBillingTypeDTO == null) ? null : orderBillingTypeDTO) + "," +
+                "activeSince=" + activeSince + "," +
+                "activeUntil=" + activeUntil + "," +
+                "createDate=" + createDate + "," +
+                "nextBillableDay=" + nextBillableDay + "," +
+                "deleted=" + deleted + "," +
+                "notify=" + notify + "," +
+                "lastNotified=" + lastNotified + "," +
+                "notificationStep=" + notificationStep + "," +
+                "dueDateUnitId=" + dueDateUnitId + "," +
+                "dueDateValue=" + dueDateValue + "," +
+                "dfFm=" + dfFm + "," +
+                "anticipatePeriods=" + anticipatePeriods + "," +
+                "ownInvoice=" + ownInvoice + "," +
+                "notes=" + notes + "," +
+                "notesInInvoice=" + notesInInvoice + "," +
+                "orderProcesses=" + orderProcesses + "," +
+                "isCurrent=" + isCurrent + "," +
+                "versionNum=" + versionNum +
+                " lines:[");
 
         for (OrderLineDTO line: getLines()) {
             str.append(line.toString() + "-");
@@ -785,55 +807,55 @@ public class OrderDTO implements Serializable, Exportable {
 
         // main invoice row
         values.add(
-            new Object[] {
-                id,
-                (baseUserByUserId != null ? baseUserByUserId.getId() : null),
-                (baseUserByUserId != null ? baseUserByUserId.getUserName() : null),
-                (orderStatusDTO != null ? orderStatusDTO.getDescription() : null),
-                (orderPeriodDTO != null ? orderPeriodDTO.getDescription() : null),
-                (orderBillingTypeDTO != null ? orderBillingTypeDTO.getDescription() : null),
-                (currencyDTO != null ? currencyDTO.getDescription() : null),
-                getTotal(),
-                activeSince,
-                activeUntil,
-                cycleStarts,
-                createDate,
-                nextBillableDay,
-                isCurrent,
-                notes
-            }
+                new Object[] {
+                        id,
+                        (baseUserByUserId != null ? baseUserByUserId.getId() : null),
+                        (baseUserByUserId != null ? baseUserByUserId.getUserName() : null),
+                        (orderStatusDTO != null ? orderStatusDTO.getDescription() : null),
+                        (orderPeriodDTO != null ? orderPeriodDTO.getDescription() : null),
+                        (orderBillingTypeDTO != null ? orderBillingTypeDTO.getDescription() : null),
+                        (currencyDTO != null ? currencyDTO.getDescription() : null),
+                        getTotal(),
+                        activeSince,
+                        activeUntil,
+                        cycleStarts,
+                        createDate,
+                        nextBillableDay,
+                        isCurrent,
+                        notes
+                }
         );
 
         // indented row for each order line
         for (OrderLineDTO line : lines) {
             if (line.getDeleted() == 0) {
                 values.add(
-                    new Object[] {
-                        // padding for the main invoice columns
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
+                        new Object[] {
+                                // padding for the main invoice columns
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
 
-                        // order line
-                        line.getItem().getId(),
-                        line.getItem().getInternalNumber(),
-                        line.getQuantity(),
-                        line.getPrice(),
-                        line.getAmount(),
-                        line.getDescription()
-                    }
+                                // order line
+                                line.getItem().getId(),
+                                line.getItem().getInternalNumber(),
+                                line.getQuantity(),
+                                line.getPrice(),
+                                line.getAmount(),
+                                line.getDescription()
+                        }
                 );
             }
         }

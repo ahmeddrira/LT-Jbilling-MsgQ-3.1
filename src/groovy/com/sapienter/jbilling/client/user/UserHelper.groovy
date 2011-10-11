@@ -184,6 +184,7 @@ class UserHelper {
     }
 
     static def bindMetaFields(UserWS userWS, Collection<MetaField> metaFields, GrailsParameterMap params) {
+        def fieldsArray = new LinkedList<MetaFieldValueWS>();
         metaFields.each{
             // bind if contact object if parameters present
             if (params["metaField_${it.id}"].any { key, value -> value }) {
@@ -193,10 +194,10 @@ class UserHelper {
                 def metaFieldWS = new MetaFieldValueWS(fieldValue)
                  // name of field
                 metaFieldWS.setFieldName(it.name)
-                userWS.metaFields << metaFieldWS;
+                fieldsArray << metaFieldWS;
             }
         }
-
+        userWS.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
     }
 
     private static def bindExpiryDate(CreditCardDTO creditCard, GrailsParameterMap params) {

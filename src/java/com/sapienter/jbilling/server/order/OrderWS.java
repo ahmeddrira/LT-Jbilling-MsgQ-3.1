@@ -17,6 +17,7 @@
 package com.sapienter.jbilling.server.order;
 
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.order.validator.DateBetween;
 import com.sapienter.jbilling.server.order.validator.DateRange;
 import com.sapienter.jbilling.server.order.validator.IsNotEmptyOrDeleted;
@@ -72,6 +73,7 @@ public class OrderWS implements WSSecured, Serializable {
     private OrderLineWS orderLines[] = null;
     private String pricingFields = null;
     private InvoiceWS[] generatedInvoices= null;
+    private MetaFieldValueWS[] metaFields;
 
     // balances
     private String total;
@@ -390,6 +392,14 @@ public class OrderWS implements WSSecured, Serializable {
 
     public void setVersionNum(Integer versionNum) {
         this.versionNum = versionNum;
+    }
+
+    public MetaFieldValueWS[] getMetaFields() {
+        return metaFields;
+    }
+
+    public void setMetaFields(MetaFieldValueWS[] metaFields) {
+        this.metaFields = metaFields;
     }
 
     /**

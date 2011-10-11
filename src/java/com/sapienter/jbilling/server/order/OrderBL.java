@@ -31,6 +31,8 @@ import com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.mediation.Record;
+import com.sapienter.jbilling.server.metafields.MetaFieldBL;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -177,6 +179,7 @@ public class OrderBL extends ResultList
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
         retValue.setStatusStr(order.getOrderStatus().getDescription(languageId));
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
+        retValue.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(order));
 
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
         for (OrderLineDTO line : order.getLines()) {
@@ -358,6 +361,8 @@ public class OrderBL extends ResultList
                 addCustomerPlans(lines, baseUser.getId());
                 addBundledItems(orderDto, lines, baseUser);
             }
+            // update and validate meta fields
+            orderDto.updateMetaFields(orderDto);
 
             order = orderDas.save(orderDto);
 
@@ -566,6 +571,9 @@ public class OrderBL extends ResultList
         }
         // this one needs more to get updated
         updateNextBillableDay(executorId, dto.getNextBillableDay());
+
+        // update and validate custom fields
+        order.updateMetaFields(dto);
 
         /*
          *  now proces the order lines
@@ -1620,6 +1628,12 @@ public class OrderBL extends ResultList
             List<PricingField> pf = new ArrayList<PricingField>();
             pf.addAll(Arrays.asList(PricingField.getPricingFieldsValue(other.getPricingFields())));
             retValue.setPricingFields(pf);
+        }
+
+        if (other.getMetaFields() != null) {
+            for (MetaFieldValueWS fieldValue : other.getMetaFields()) {
+                retValue.setMetaField(fieldValue.getFieldName(), fieldValue.getValue());
+            }
         }
 
         return retValue;

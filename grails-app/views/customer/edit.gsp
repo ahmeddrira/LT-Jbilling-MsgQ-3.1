@@ -312,6 +312,14 @@
                                         <g:checkBox class="cb checkbox" name="metaField_${metaField.id}.value" checked="${fieldValue}"/>
                                     </g:applyLayout>
                                 </g:elseif>
+                                <g:elseif test="${metaField.getDataType().name() == 'DATE'}">
+                                    <g:applyLayout name="form/date">
+                                        <content tag="label">${metaField.name}</content>
+                                        <content tag="label.for">metaField_${metaField.id}.value</content>
+                                        <g:textField class="field ${validationRules}"
+                                                name="metaField_${metaField.id}.value" value="${formatDate(date: fieldValue, formatName: 'datepicker.format')}"/>
+                                    </g:applyLayout>
+                                </g:elseif>
                                 <g:else>
                                     <g:applyLayout name="form/input">
                                         <content tag="label">${metaField.name}</content>

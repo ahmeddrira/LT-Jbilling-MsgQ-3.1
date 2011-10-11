@@ -106,7 +106,7 @@ public class UserWS implements WSSecured, Serializable {
     private Integer dueDateValue;
     private Date nextInvoiceDate;
 
-    private List<MetaFieldValueWS> metaFields = new LinkedList<MetaFieldValueWS>();
+    private MetaFieldValueWS[] metaFields;
     
     public UserWS() {
     }
@@ -161,16 +161,7 @@ public class UserWS implements WSSecured, Serializable {
             dueDateUnitId = dto.getCustomer().getDueDateUnitId();
             dueDateValue = dto.getCustomer().getDueDateValue();
 
-            Map<String, MetaField> availableMetaFields = dto.getCustomer().getAvailableMetaFields();
-            if (availableMetaFields != null && !availableMetaFields.isEmpty()) {
-                for (String fieldName : availableMetaFields.keySet()) {
-                    MetaFieldValue value = dto.getCustomer().getMetaField(fieldName);
-                    if (value == null) {
-                        value = availableMetaFields.get(fieldName).createValue();
-                    }
-                    this.metaFields.add(new MetaFieldValueWS(value));
-                }
-            }
+            this.metaFields = MetaFieldBL.convertMetaFieldsToWS(dto.getCustomer());
         }
 
         blacklistMatches = dto.getBlacklistMatches() != null ? dto.getBlacklistMatches().toArray(new String[dto.getBlacklistMatches().size()]) : null;
@@ -563,11 +554,11 @@ public class UserWS implements WSSecured, Serializable {
 		this.nextInvoiceDate = nextInvoiceDate;
 	}
 
-    public List<MetaFieldValueWS> getMetaFields() {
+    public MetaFieldValueWS[] getMetaFields() {
         return metaFields;
     }
 
-    public void setMetaFields(List<MetaFieldValueWS> metaFields) {
+    public void setMetaFields(MetaFieldValueWS[] metaFields) {
         this.metaFields = metaFields;
     }
 

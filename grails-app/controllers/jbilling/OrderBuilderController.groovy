@@ -36,6 +36,10 @@ import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.apache.commons.lang.StringUtils
 import com.sapienter.jbilling.server.item.CurrencyBL
+import com.sapienter.jbilling.server.metafields.db.EntityType
+import com.sapienter.jbilling.server.metafields.MetaFieldBL
+import com.sapienter.jbilling.server.metafields.db.MetaField
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS
 
 /**
  * OrderController
@@ -155,6 +159,7 @@ class OrderBuilderController {
                 conversation.order = order
                 conversation.products = productService.getFilteredProducts(company, params)
                 conversation.plans = productService.getFilteredPlans(company, params)
+                conversation.metaFields = metaFields
                 conversation.deletedLines = []
                 conversation.pricingDate = order.activeSince ?: order.createDate ?: new Date()
             }
@@ -372,6 +377,8 @@ class OrderBuilderController {
                 def order = conversation.order
                 bindData(order, params)
 
+                bindMetaFields(order, params);
+
                 order.isCurrent = params.isCurrent ? 1 : 0
                 order.notify = params.notify ? 1 : 0
                 order.notesInInvoice = params.notesInInvoice ? 1 : 0
@@ -520,4 +527,24 @@ class OrderBuilderController {
         }
     }
 
+    def getMetaFields() {
+        return MetaFieldBL.getAvailableFields(EntityType.ORDER).values();
+    }
+
+    def bindMetaFields(OrderWS orderWS, GrailsParameterMap params) {
+        def fieldsArray = new LinkedList<MetaFieldValueWS>();
+        metaFields.each{
+            // bind if contact object if parameters present
+            if (params["metaField_${it.id}"].any { key, value -> value }) {
+                def fieldValue = it.createValue();
+                bindData(fieldValue, params, "metaField_${it.id}")
+
+                def metaFieldWS = new MetaFieldValueWS(fieldValue)
+                 // name of field
+                metaFieldWS.setFieldName(it.name)
+                fieldsArray << metaFieldWS;
+            }
+        }
+        orderWS.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
+    }
 }

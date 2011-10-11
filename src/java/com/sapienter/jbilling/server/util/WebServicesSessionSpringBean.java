@@ -540,6 +540,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         InvoiceDTO[] invoices = new BillingProcessBL().generateInvoice(billingProcess, dueDatePeriod,
                                                                        user, false, onlyRecurring, getCallerId());
 
+        // generate invoices should return an empty array instead of null... bad design :(
+        if (invoices == null)
+            return new Integer[0];
+
         // build the list of generated ID's and return
         List<Integer> invoiceIds = new ArrayList<Integer>(invoices.length);
         for (InvoiceDTO invoice : invoices) {

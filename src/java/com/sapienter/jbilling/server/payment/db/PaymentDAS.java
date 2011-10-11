@@ -186,6 +186,7 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
             + " from PaymentDTO payment "
             + " join payment.invoicesMap as invoiceMap "
             + " where invoiceMap.invoiceEntity.billingProcess.id = :billing_process_id "
+            + " and payment.deleted = 0 "
             + " and payment.createDatetime >= :start "
             + " and payment.createDatetime <= :end";
 
@@ -215,6 +216,7 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
             + " from PaymentDTO payment "
             + " join payment.invoicesMap as invoiceMap "
             + " where invoiceMap.invoiceEntity.billingProcess.id = :billing_process_id "
+            + " and payment.deleted = 0 "
             + " and payment.createDatetime > :end";
 
     /**

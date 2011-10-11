@@ -29,7 +29,7 @@ import javax.persistence.Entity;
 import java.util.Date;
 
 @Entity
-@DiscriminatorValue("boolean")
+@DiscriminatorValue("date")
 public class DateMetaFieldValue extends MetaFieldValue<Date> {
 
     private Date value;

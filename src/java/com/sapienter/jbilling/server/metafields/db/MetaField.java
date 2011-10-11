@@ -139,7 +139,8 @@ public class MetaField implements Serializable {
         this.displayOrder = displayOrder;
     }
 
-    // todo: hibernate mapping
+    @OneToOne
+    @JoinColumn(name = "default_value_id", nullable = true)
     public MetaFieldValue getDefaultValue() {
         return defaultValue;
     }
@@ -169,8 +170,7 @@ public class MetaField implements Serializable {
                 return new JsonMetaFieldValue(this);
 
             case ENUMERATION:
-                // todo: should return a new field type that's appropriate for the enumeration.
-                break;
+                return new StringMetaFieldValue(this);
         }
 
         return null;

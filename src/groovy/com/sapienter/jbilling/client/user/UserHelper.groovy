@@ -28,6 +28,8 @@ import com.sapienter.jbilling.server.entity.AchDTO
 import org.apache.log4j.Logger
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import com.sapienter.jbilling.server.util.Context
+import com.sapienter.jbilling.server.metafields.db.MetaField
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS
 
 /**
  * UserHelper 
@@ -179,6 +181,22 @@ class UserHelper {
         } else {
             flash.error = 'passwords.dont.match'
         }
+    }
+
+    static def bindMetaFields(UserWS userWS, Collection<MetaField> metaFields, GrailsParameterMap params) {
+        metaFields.each{
+            // bind if contact object if parameters present
+            if (params["metaField_${it.id}"].any { key, value -> value }) {
+                def fieldValue = it.createValue();
+                bindData(fieldValue, params, "metaField_${it.id}")
+
+                def metaFieldWS = new MetaFieldValueWS(fieldValue)
+                 // name of field
+                metaFieldWS.setFieldName(it.name)
+                userWS.metaFields << metaFieldWS;
+            }
+        }
+
     }
 
     private static def bindExpiryDate(CreditCardDTO creditCard, GrailsParameterMap params) {

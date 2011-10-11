@@ -19,10 +19,17 @@ package com.sapienter.jbilling.server.user.db;
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
+import com.sapienter.jbilling.server.metafields.db.CustomizedEntity;
+import com.sapienter.jbilling.server.metafields.db.EntityType;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerDAS;
 import org.apache.log4j.Logger;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,6 +39,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -41,6 +49,7 @@ import javax.persistence.Transient;
 import javax.persistence.Version;
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -54,7 +63,7 @@ import java.util.Set;
 )
 // No cache, mutable and critical
 @Table(name="customer")
-public class CustomerDTO implements java.io.Serializable {
+public class CustomerDTO extends CustomizedEntity implements java.io.Serializable {
 
     private static final Logger LOG = Logger.getLogger(CustomerDTO.class);
 
@@ -161,8 +170,9 @@ public class CustomerDTO implements java.io.Serializable {
 
         setExcludeAging(user.getExcludeAgeing() != null && user.getExcludeAgeing() ? 1 : 0);
 
-        setNotes(user.getNotes());
-        setAutoPaymentType(user.getAutomaticPaymentType());
+        for (MetaFieldValueWS metaField : user.getMetaFields()) {
+            setMetaField(metaField.getFieldName(), metaField.getValue());
+        }
 
         LOG.debug("Customer created with auto-recharge: " + getAutoRecharge() + " incoming var, " + user.getAutoRecharge());
     }
@@ -393,10 +403,27 @@ public class CustomerDTO implements java.io.Serializable {
         this.versionNum = versionNum;
     }
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    @JoinTable(
+            name = "customer_meta_field_map",
+            joinColumns = @JoinColumn(name = "customer_id"),
+            inverseJoinColumns = @JoinColumn(name = "meta_field_value_id")
+    )
+    @Sort(type = SortType.COMPARATOR, comparator = MetaFieldValuesOrderComparator.class)
+    public List<MetaFieldValue> getMetaFields() {
+        return getMetaFieldsList();
+    }
+
     @Transient
     public Integer getTotalSubAccounts() {
         LOG.debug("sub acounts = " + getChildren().size());
         return (getChildren().size() == 0) ? null : new Integer(getChildren().size());
+    }
+
+    @Transient
+    protected EntityType getCustomizedEntityType() {
+        return EntityType.USER;
     }
 
     @Override

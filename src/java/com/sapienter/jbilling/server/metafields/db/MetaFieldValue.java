@@ -20,6 +20,8 @@
 
 package com.sapienter.jbilling.server.metafields.db;
 
+import com.sapienter.jbilling.common.SessionInternalError;
+
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -75,7 +77,7 @@ public abstract class MetaFieldValue<T> implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "meta_field_name_id", updatable = false, nullable = false)
     public MetaField getField() {
         return field;
@@ -95,6 +97,12 @@ public abstract class MetaFieldValue<T> implements Serializable {
     abstract public T getValue();
     abstract public void setValue(T value);
 
+    @Transient
+    public void validate() {
+        if (this.getField() != null && this.getField().isMandatory() && this.getValue() == null) {
+            throw new SessionInternalError("Validation failed.", new String[]{"MetaFieldValue,value,value.cannot.be.null"});
+        }
+    }
 
     @Override
     public String toString() {

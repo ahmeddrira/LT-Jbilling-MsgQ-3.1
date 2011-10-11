@@ -15,6 +15,7 @@
 
         <!-- Mappings, only needed to help GROM, otherwise all the mappings are done with annotations -->
         <mapping package="com.sapienter.jbilling.server.metafields.db"/>
+        <mapping class="com.sapienter.jbilling.server.metafields.db.CustomizedEntity"/>
         <mapping class="com.sapienter.jbilling.server.metafields.db.MetaField"/>
         <mapping class="com.sapienter.jbilling.server.metafields.db.MetaFieldValue"/>
         <mapping class="com.sapienter.jbilling.server.metafields.db.value.BooleanMetaFieldValue"/>
@@ -139,6 +140,6 @@
         <mapping class="com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskTypeDTO" />
         <mapping class="com.sapienter.jbilling.server.util.db.EnumerationDTO"/>
         <mapping class="com.sapienter.jbilling.server.util.db.EnumerationValueDTO"/>
-        
+
     </session-factory>
 </hibernate-configuration>

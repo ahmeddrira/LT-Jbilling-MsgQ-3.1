@@ -21,6 +21,9 @@
 package com.sapienter.jbilling.server.metafields.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 
 import java.util.List;
 
@@ -30,9 +33,20 @@ import java.util.List;
  */
 public class MetaFieldDAS extends AbstractDAS<MetaField> {
 
+    @SuppressWarnings("unchecked")
     public List<MetaField> getAvailableFields(EntityType entityType) {
-        // todo: get all fields for entity type.
-        return null;
+        DetachedCriteria query = DetachedCriteria.forClass(MetaField.class);
+        query.add(Restrictions.eq("entityType", entityType));
+        query.addOrder(Order.asc("displayOrder"));
+        return getHibernateTemplate().findByCriteria(query);
+    }
+
+    public MetaField getFieldByName(EntityType entityType, String name) {
+        DetachedCriteria query = DetachedCriteria.forClass(MetaField.class);
+        query.add(Restrictions.eq("entityType", entityType));
+        query.add(Restrictions.eq("name", name));
+        List<MetaField> fields = getHibernateTemplate().findByCriteria(query);
+        return !fields.isEmpty() ? fields.get(0) : null;
     }
 
 }

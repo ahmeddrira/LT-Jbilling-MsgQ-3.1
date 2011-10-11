@@ -22,7 +22,10 @@ package com.sapienter.jbilling.server.metafields;
 
 import com.sapienter.jbilling.server.metafields.db.EntityType;
 import com.sapienter.jbilling.server.metafields.db.MetaField;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,8 +36,8 @@ import java.util.Map;
  */
 public class MetaFieldBL {
 
-    public static MetaField getFieldByName(EntityType entityTime, String name) {
-        return null;
+    public static MetaField getFieldByName(EntityType entityType, String name) {
+        return new MetaFieldDAS().getFieldByName(entityType, name);
     }
 
     /**
@@ -43,9 +46,14 @@ public class MetaFieldBL {
      * MetaField object to be used when building new fields.
      *
      * @param entityType entity type to query
-     * @return
+     * @return map with available fields
      */
     public static Map<String, MetaField> getAvailableFields(EntityType entityType) {
-        return null;
+        List<MetaField> entityFields = new MetaFieldDAS().getAvailableFields(entityType);
+        Map<String, MetaField> result = new LinkedHashMap<String, MetaField>();
+        for (MetaField field : entityFields) {
+            result.put(field.getName(), field);
+        }
+        return result;
     }
 }

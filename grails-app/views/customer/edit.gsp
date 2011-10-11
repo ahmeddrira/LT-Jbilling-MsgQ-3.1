@@ -28,6 +28,9 @@
                 $(selected).show();
                 $('div.contact').not(selected).hide();
             }).change();
+            var validator = $('#user-edit-form').validate();
+            validator.init();
+            validator.hideErrors();
         });
     </script>
 </head>
@@ -238,16 +241,16 @@
                                     if (dto.name == ccf.getDataType()) {
                                         enumValues= ['']
                                         enumValues.addAll(dto.values.collect {it.value})
-                                    } 
+                                    }
                                 }
                              %>
-                             
+
                             <g:if test="${enumValues}">
                                 <g:applyLayout name="form/select">
                                     <content tag="label"><g:message code="${ccf.getDescription(session['language_id'])}"/></content>
-                                    <g:select 
-                                        class="field" 
-                                        name="contactField.${ccf.id}" 
+                                    <g:select
+                                        class="field"
+                                        name="contactField.${ccf.id}"
                                         from="${enumValues}"
                                         value="${fieldValue}" />
                                 </g:applyLayout>
@@ -258,7 +261,66 @@
                                     <g:textField class="field" name="contactField.${ccf.id}" value="${fieldValue}"/>
                                 </g:applyLayout>
                             </g:else>
-                            
+
+                        </g:each>
+
+                        <!-- customer meta fields -->
+                        <g:each var="metaField" in="${metaFields?.sort{ it.displayOrder }}">
+                            <g:if test="${!metaField.disabled}">
+                                <g:set var="userMetaField" value="${user?.metaFields?.find{ it.fieldName == metaField.name }}"/>
+                                <g:set var="fieldValue" value="${userMetaField?.getValue()}"/>
+                                <g:if test="${!fieldValue && metaField.getDefaultValue()}">
+                                    <g:set var="fieldValue" value="${metaField.getDefaultValue().getValue()}"/>
+                                </g:if>
+
+                                <g:set var="validationRules" value="${metaField.mandatory ? 'required' : ''}"/>
+                                <g:if test="${metaField.dataType.name() == 'DATE'}">
+                                    <g:set var="validationRules" value="${validationRules} date"/>
+                                </g:if>
+                                <g:elseif test="${metaField.dataType.name() == 'INTEGER'}">
+                                   <g:set var="validationRules" value="${validationRules} number digits"/>
+                                </g:elseif>
+                                <g:elseif test="${metaField.dataType.name() == 'DECIMAL'}">
+                                   <g:set var="validationRules" value="${validationRules} number"/>
+                                </g:elseif>
+
+                                <g:if test="${metaField.getDataType().name() == 'ENUMERATION'}">
+                                    <g:set var="enumValues" value="${null}"/>
+                                    <%
+                                        for (EnumerationDTO dto: EnumerationDTO.list()) {
+                                            if (dto.name == metaField.getName()) {
+                                                enumValues= []
+                                                enumValues.addAll(dto.values.collect {it.value})
+                                            }
+                                        }
+                                     %>
+                                    <g:applyLayout name="form/select">
+                                        <content tag="label">${metaField.name}</content>
+                                        <g:select
+                                            class="field ${validationRules}"
+                                            name="metaField_${metaField.id}.value"
+                                            from="${enumValues}"
+                                            optionKey=""
+                                            noSelection="['':'Please select a value']"
+                                            value="${fieldValue}" />
+                                    </g:applyLayout>
+                                </g:if>
+                                <g:elseif test="${metaField.getDataType().name() == 'BOOLEAN'}">
+                                    <g:applyLayout name="form/checkbox">
+                                        <content tag="label">${metaField.name}</content>
+                                        <content tag="label.for">metaField_${metaField.id}.value</content>
+                                        <g:checkBox class="cb checkbox" name="metaField_${metaField.id}.value" checked="${fieldValue}"/>
+                                    </g:applyLayout>
+                                </g:elseif>
+                                <g:else>
+                                    <g:applyLayout name="form/input">
+                                        <content tag="label">${metaField.name}</content>
+                                        <g:textField class="field ${validationRules}"
+                                                name="metaField_${metaField.id}.value" value="${fieldValue}"/>
+                                    </g:applyLayout>
+                            </g:else>
+                            </g:if>
+
                         </g:each>
                     </div>
                 </div>

@@ -20,10 +20,15 @@
  */
 package com.sapienter.jbilling.server.user;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
+import com.sapienter.jbilling.server.entity.AchDTO;
+import com.sapienter.jbilling.server.entity.CreditCardDTO;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
+import com.sapienter.jbilling.server.metafields.db.MetaField;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
+import com.sapienter.jbilling.server.security.WSSecured;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.util.api.validation.CreateValidationGroup;
+import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -31,15 +36,13 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import com.sapienter.jbilling.server.entity.AchDTO;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.order.db.OrderDAS;
-import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.security.WSSecured;
-import com.sapienter.jbilling.server.user.db.CustomerDTO;
-import com.sapienter.jbilling.server.util.api.validation.CreateValidationGroup;
-import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /** @author Emil */
 public class UserWS implements WSSecured, Serializable {
@@ -102,6 +105,8 @@ public class UserWS implements WSSecured, Serializable {
     private Integer dueDateUnitId;
     private Integer dueDateValue;
     private Date nextInvoiceDate;
+
+    private List<MetaFieldValueWS> metaFields = new LinkedList<MetaFieldValueWS>();
     
     public UserWS() {
     }
@@ -155,6 +160,17 @@ public class UserWS implements WSSecured, Serializable {
 
             dueDateUnitId = dto.getCustomer().getDueDateUnitId();
             dueDateValue = dto.getCustomer().getDueDateValue();
+
+            Map<String, MetaField> availableMetaFields = dto.getCustomer().getAvailableMetaFields();
+            if (availableMetaFields != null && !availableMetaFields.isEmpty()) {
+                for (String fieldName : availableMetaFields.keySet()) {
+                    MetaFieldValue value = dto.getCustomer().getMetaField(fieldName);
+                    if (value == null) {
+                        value = availableMetaFields.get(fieldName).createValue();
+                    }
+                    this.metaFields.add(new MetaFieldValueWS(value));
+                }
+            }
         }
 
         blacklistMatches = dto.getBlacklistMatches() != null ? dto.getBlacklistMatches().toArray(new String[dto.getBlacklistMatches().size()]) : null;
@@ -547,7 +563,15 @@ public class UserWS implements WSSecured, Serializable {
 		this.nextInvoiceDate = nextInvoiceDate;
 	}
 
-	/**
+    public List<MetaFieldValueWS> getMetaFields() {
+        return metaFields;
+    }
+
+    public void setMetaFields(List<MetaFieldValueWS> metaFields) {
+        this.metaFields = metaFields;
+    }
+
+    /**
      * Unsupported, web-service security enforced using {@link #getOwningUserId()}
      *
      * @return null

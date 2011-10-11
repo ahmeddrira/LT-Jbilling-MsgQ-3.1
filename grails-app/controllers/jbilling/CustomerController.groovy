@@ -22,6 +22,9 @@ import com.sapienter.jbilling.client.util.DownloadHelper
 import com.sapienter.jbilling.client.util.SortableCriteria
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.item.CurrencyBL
+import com.sapienter.jbilling.server.metafields.MetaFieldBL
+import com.sapienter.jbilling.server.metafields.db.EntityType
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO
@@ -32,15 +35,13 @@ import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.server.util.csv.Exporter
 import grails.plugins.springsecurity.Secured
+import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.hibernate.FetchMode
 import org.hibernate.criterion.MatchMode
 import org.hibernate.criterion.Restrictions
 import org.springframework.security.authentication.encoding.PasswordEncoder
-
-import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
-import org.apache.commons.lang.StringUtils
 
 @Secured(["MENU_90"])
 class CustomerController {
@@ -316,8 +317,8 @@ class CustomerController {
         breadcrumbService.addBreadcrumb(controllerName, actionName, crumbName, params.int('id'), crumbDescription)
 
         def periodUnits = PeriodUnitDTO.list()
-
-        [ user: user, contacts: contacts, parent: parent, company: company, currencies: currencies, periodUnits:periodUnits ]
+        
+        [ user: user, contacts: contacts, parent: parent, company: company, currencies: currencies, periodUnits: periodUnits, metaFields: metaFields ]
     }
 
     /**
@@ -328,6 +329,8 @@ class CustomerController {
         def user = new UserWS()
         UserHelper.bindUser(user, params)
 
+        UserHelper.bindMetaFields(user, metaFields, params)
+
         def contacts = []
         UserHelper.bindContacts(user, contacts, company, params)
 
@@ -335,7 +338,7 @@ class CustomerController {
         UserHelper.bindPassword(user, oldUser, params, flash)
 
         if (flash.error) {
-            render view: 'edit', model: [user: user, contacts: contacts, company: company]
+            render view: 'edit', model: [ user: user, contacts: contacts, company: company, metaFields: metaFields ]
             return
         }
 
@@ -404,7 +407,7 @@ class CustomerController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            render view: 'edit', model: [user: user, contacts: contacts, company: company, currencies: currencies]
+            render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies, metaFields: metaFields ]
             return
         }
 
@@ -418,5 +421,9 @@ class CustomerController {
 
     def getCompany() {
         CompanyDTO.get(session['company_id'])
+    }
+
+    def getMetaFields() {
+        return MetaFieldBL.getAvailableFields(EntityType.USER).values();
     }
 }

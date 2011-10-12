@@ -16,6 +16,25 @@
 
 package com.sapienter.jbilling.server.invoice;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.List;
+import java.util.Set;
+
+import com.sapienter.jbilling.server.metafields.MetaFieldBL;
+import org.apache.log4j.Logger;
+
+import javax.sql.rowset.CachedRowSet;
+
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
@@ -167,6 +186,9 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         if (newInvoice.getBalance() != null) {
             newInvoice.setBalance(newInvoice.getBalance().setScale(decimals, Constants.BIGDECIMAL_ROUND));
         }
+
+        // update and validate meta fields
+        newInvoice.updateMetaFieldsWithValidation(newInvoice);
 
         // create the invoice row
         invoice = invoiceDas.create(userId, newInvoice, process);
@@ -429,6 +451,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         if (invoice.getBalance().compareTo(BigDecimal.ZERO) == 0) {
             invoice.setToProcess(new Integer(0));
         }
+        invoice.updateMetaFieldsWithValidation(addition);
     }
 
     private BigDecimal calculateTotal() {
@@ -836,6 +859,8 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         retValue.setPayments(payments);
         retValue.setInvoiceLines(invoiceLines);
         retValue.setOrders(orders);
+
+        retValue.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(i));
 
         return retValue;
     }

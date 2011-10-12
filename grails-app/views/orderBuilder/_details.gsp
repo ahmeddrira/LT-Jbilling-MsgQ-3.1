@@ -139,7 +139,7 @@
 
             <br/>
 
-            <!-- customer meta fields -->
+            <!-- meta fields -->
             <g:each var="metaField" in="${metaFields?.sort{ it.displayOrder }}">
                 <g:if test="${!metaField.disabled}">
                     <g:set var="orderMetaField" value="${order?.metaFields?.find{ it.fieldName == metaField.name }}"/>

@@ -23,25 +23,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.*;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
-import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.metafields.MetaFieldHelper;
+import com.sapienter.jbilling.server.metafields.db.CustomizedEntity;
+import com.sapienter.jbilling.server.metafields.db.EntityType;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.util.csv.Exportable;
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.*;
 
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentInvoiceMapDTO;
@@ -50,11 +44,9 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.process.db.PaperInvoiceBatchDTO;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import javax.persistence.Transient;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @TableGenerator(
@@ -66,7 +58,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         allocationSize = 100)
 @Table(name = "invoice")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class InvoiceDTO implements Serializable, Exportable {
+public class InvoiceDTO extends CustomizedEntity implements Serializable, Exportable {
 
     private static final Logger LOG = Logger.getLogger(InvoiceDTO.class);
 
@@ -137,6 +129,7 @@ public class InvoiceDTO implements Serializable, Exportable {
         setInvoices(new HashSet<InvoiceDTO>(invoice.getInvoices()));
         setOrderProcesses(new HashSet<OrderProcessDTO>(invoice.getOrderProcesses()));
         setPaymentMap(new ArrayList<PaymentInvoiceMapDTO>(invoice.getPaymentMap()));
+        setMetaFields(new ArrayList<MetaFieldValue>(invoice.getMetaFields()));
     }
 
     public InvoiceDTO(int id, CurrencyDTO currencyDTO, Date createDatetime,
@@ -463,6 +456,23 @@ public class InvoiceDTO implements Serializable, Exportable {
 
     public void setVersionNum(int versionNum) {
         this.versionNum = versionNum;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    @JoinTable(
+            name = "invoice_meta_field_map",
+            joinColumns = @JoinColumn(name = "invoice_id"),
+            inverseJoinColumns = @JoinColumn(name = "meta_field_value_id")
+    )
+    @Sort(type = SortType.COMPARATOR, comparator = MetaFieldHelper.MetaFieldValuesOrderComparator.class)
+    public List<MetaFieldValue> getMetaFields() {
+        return getMetaFieldsList();
+    }
+
+    @Transient
+    public EntityType getCustomizedEntityType() {
+        return EntityType.INVOICE;
     }
     
     // Helpers, for JPA migration

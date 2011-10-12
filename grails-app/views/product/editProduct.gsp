@@ -176,7 +176,7 @@
                             <g:checkBox class="cb checkbox" name="product.hasDecimals" checked="${product?.hasDecimals > 0}"/>
                         </g:applyLayout>
 
-                        <!-- customer meta fields -->
+                        <!-- meta fields -->
                         <g:each var="metaField" in="${metaFields?.sort{ it.displayOrder }}">
                             <g:if test="${!metaField.disabled}">
                                 <g:set var="productMetaField" value="${product?.metaFields?.find{ it.fieldName == metaField.name }}"/>

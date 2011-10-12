@@ -20,6 +20,7 @@ import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.security.WSSecured;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -78,6 +79,8 @@ public class PaymentWS implements WSSecured, Serializable {
     @Size(min = 0, max = 500, message = "validation.error.size,0,500")
     private String paymentNotes = null;
     private Integer paymentPeriod;
+
+    private MetaFieldValueWS[] metaFields;
     
     public Integer getResultId() {
         return resultId;
@@ -294,6 +297,14 @@ public class PaymentWS implements WSSecured, Serializable {
     
     public Integer getPaymentPeriod(){
         return paymentPeriod;
+    }
+
+    public MetaFieldValueWS[] getMetaFields() {
+        return metaFields;
+    }
+
+    public void setMetaFields(MetaFieldValueWS[] metaFields) {
+        this.metaFields = metaFields;
     }
 
     /**

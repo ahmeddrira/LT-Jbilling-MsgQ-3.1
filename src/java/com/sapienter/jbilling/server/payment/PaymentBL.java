@@ -21,6 +21,9 @@ import com.sapienter.jbilling.server.invoice.InvoiceIdComparator;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.metafields.MetaFieldBL;
+import com.sapienter.jbilling.server.metafields.db.EntityType;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -62,12 +65,7 @@ import javax.sql.rowset.CachedRowSet;
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class PaymentBL extends ResultList implements PaymentSQL {
 
@@ -217,6 +215,9 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             payment.setPaymentNotes(dto.getPaymentNotes());
         }
 
+        // meta fields
+        payment.updateMetaFieldsWithValidation(dto);
+
         dto.setId(payment.getId());
         dto.setCurrency(payment.getCurrency());
         paymentDas.save(payment);
@@ -299,6 +300,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         if (dto.getPaymentNotes() != null){
             payment.setPaymentNotes(dto.getPaymentNotes());
         }
+
+        payment.updateMetaFieldsWithValidation(dto);
     }
 
     /**
@@ -394,8 +397,10 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     }
 
     public PaymentDTO getDTO() {
-        return new PaymentDTO(payment.getId(), payment.getAmount(), payment.getBalance(), payment.getCreateDatetime(), payment.getUpdateDatetime(), payment.getPaymentDate(), payment.getAttempt(), payment.getDeleted(),
+        PaymentDTO dto = new PaymentDTO(payment.getId(), payment.getAmount(), payment.getBalance(), payment.getCreateDatetime(), payment.getUpdateDatetime(), payment.getPaymentDate(), payment.getAttempt(), payment.getDeleted(),
                 payment.getPaymentMethod(), payment.getPaymentResult(), payment.getIsRefund(), payment.getIsPreauth(), payment.getCurrency(), payment.getBaseUser());
+        dto.setMetaFields(new LinkedList<MetaFieldValue>(payment.getMetaFields()));
+        return dto;
     }
 
     public PaymentDTOEx getDTOEx(Integer language) {
@@ -498,6 +503,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         ws.setUpdateDatetime(dto.getUpdateDatetime());
         ws.setPaymentNotes(dto.getPaymentNotes());
         ws.setPaymentPeriod(dto.getPaymentPeriod());
+
+        ws.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(dto));
 
         if (dto.getCurrency() != null)
             ws.setCurrencyId(dto.getCurrency().getId());
@@ -748,6 +755,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             PaymentDTOEx ex = new PaymentDTOEx(dto);
             retValue = validate(ex.getCheque());
         }
+        MetaFieldBL.validateMetaFields(EntityType.PAYMENT, dto.getMetaFields());
 
         return retValue;
     }

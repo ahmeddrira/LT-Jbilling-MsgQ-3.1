@@ -38,6 +38,9 @@ import com.sapienter.jbilling.server.util.csv.Exporter
 import com.sapienter.jbilling.client.util.DownloadHelper
 import com.sapienter.jbilling.client.util.SortableCriteria
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS
+import com.sapienter.jbilling.server.metafields.db.EntityType
+import com.sapienter.jbilling.server.metafields.MetaFieldBL
 import com.sapienter.jbilling.server.user.db.CustomerDTO
 import com.sapienter.jbilling.server.customer.CustomerBL
 import com.sapienter.jbilling.server.user.db.UserDTO
@@ -209,7 +212,7 @@ class PaymentController {
         def user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
         def invoices = getUnpaidInvoices(user.userId)
 
-        render view: 'link', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, invoiceId: params.invoiceId ]
+        render view: 'link', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, invoiceId: params.invoiceId, metaFields: metaFields ]
     }
 
     /**
@@ -306,11 +309,11 @@ class PaymentController {
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
         //send all the payments of the current user as well which are not normal payments with a balance greater than zero
-//        List<PaymentDTO> paymentDTOList = new PaymentDAS().findAllPaymentByBaseUserAndIsRefund(user.getUserId(), 0)
         List<PaymentDTO> refundablePayments = new PaymentDAS().getRefundablePayments(user.getUserId())
         log.debug "invoices are ${invoices}"
         log.debug "payments are ${refundablePayments}"
-        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundablePayments: refundablePayments, refundPaymentId: params.int('payment?.paymentId') ]
+        
+        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundablePayments: refundablePayments, refundPaymentId: params.int('payment?.paymentId'), metaFields: metaFields ]
     }
 
     def getUnpaidInvoices(Integer userId) {
@@ -331,6 +334,7 @@ class PaymentController {
         bindPayment(payment, params)
 
         session['user_payment']= payment
+        
         // make sure the user still exists before
         def users
         try {
@@ -360,13 +364,13 @@ class PaymentController {
             }
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.local, e)
-            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundPaymentId: params.int('payment?.paymentId') ]
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundPaymentId: params.int('payment?.paymentId'), metaFields: metaFields  ]
             return
         }
 
         // validation passed, render the confirmation page
         def processNow = params.processNow ? true : false
-        [ payment: payment, user: user, invoices: invoices, currencies: currencies, processNow: processNow, invoiceId: params.invoiceId, refundPaymentId: params?.payment?.paymentId ]
+        [ payment: payment, user: user, invoices: invoices, currencies: currencies, processNow: processNow, invoiceId: params.invoiceId, refundPaymentId: params?.payment?.paymentId, metaFields: metaFields ]
     }
 
     /**
@@ -449,7 +453,7 @@ class PaymentController {
             def invoices = getUnpaidInvoices(user.userId)
             def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
 
-            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId') ]
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), metaFields: metaFields ]
             return
         } finally {
             session.removeAttribute("user_payment")
@@ -480,15 +484,14 @@ class PaymentController {
     }
     
     def bindPayment(PaymentWS payment, GrailsParameterMap params) {
-
-        log.debug "********************params.isRefund ${params.isRefund}"
-        
         if(params.isRefund == 'on' || params.isRefund == '1') {
             params.payment.isRefund = 1
         } else {
             params.payment.isRefund = 0
         }
         bindData(payment, params, 'payment')
+        
+        bindMetaFields(payment, params)
 
         // bind credit card object if parameters present
         if (params.creditCard.any { key, value -> value }) {
@@ -564,5 +567,25 @@ class PaymentController {
     def getCurrencies() {
         def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
         return currencies.findAll{ it.inUse }
+    }
+
+    def getMetaFields() {
+        return MetaFieldBL.getAvailableFieldsList(EntityType.PAYMENT);
+    }
+
+    def bindMetaFields(PaymentWS paymentWS, GrailsParameterMap params) {
+        def fieldsArray = new LinkedList<MetaFieldValueWS>();
+        metaFields.each{
+            if (params["metaField_${it.id}"].any { key, value -> value }) {
+                def fieldValue = it.createValue();
+                bindData(fieldValue, params, "metaField_${it.id}")
+
+                def metaFieldWS = new MetaFieldValueWS(fieldValue)
+                 // name of field
+                metaFieldWS.setFieldName(it.name)
+                fieldsArray << metaFieldWS;
+            }
+        }
+        paymentWS.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
     }
 }

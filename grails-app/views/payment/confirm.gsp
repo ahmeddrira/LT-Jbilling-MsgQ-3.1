@@ -131,6 +131,40 @@
                             <g:hiddenField class="field" name="payment.paymentDate" value="${formatDate(date: paymentDate)}"/>
                         </g:applyLayout>
 
+                        <!-- meta fields -->
+                        <g:each var="metaField" in="${metaFields?.sort{ it.displayOrder }}">
+                            <g:if test="${!metaField.disabled}">
+                                <g:set var="paymentMetaField" value="${payment?.metaFields?.find{ it.fieldName == metaField.name }}"/>
+                                <g:set var="fieldValue" value="${paymentMetaField?.getValue()}"/>
+
+                                <g:if test="${metaField.getDataType().name() == 'ENUMERATION'}">
+                                </g:if>
+                                <g:elseif test="${metaField.getDataType().name() == 'BOOLEAN'}">
+                                    <g:applyLayout name="form/checkbox">
+                                        <content tag="label">${metaField.name}</content>
+                                        <content tag="label.for">metaField_${metaField.id}.value</content>
+                                        <g:checkBox class="cb checkbox" name="metaField_${metaField.id}.value" checked="${fieldValue}"/>
+                                    </g:applyLayout>
+                                </g:elseif>
+                                <g:if test="${metaField.getDataType().name() == 'DATE'}">
+                                    <g:applyLayout name="form/text">
+                                        <content tag="label">${metaField.name}</content>
+                                        <content tag="label.for">metaField_${metaField.id}.value</content>
+                                        <span><g:formatDate date="${fieldValue}"/></span>
+                                        <g:hiddenField class="field" name="metaField_${metaField.id}.value" value="${formatDate(date: fieldValue)}"/>
+                                    </g:applyLayout>
+                                </g:if>
+                                <g:else>
+                                    <g:applyLayout name="form/text">
+                                        <content tag="label">${metaField.name}</content>
+                                        <span>${fieldValue}</span>
+                                        <g:hiddenField class="field" name="metaField_${metaField.id}.value" value="${fieldValue}"/>
+                                    </g:applyLayout>
+                                </g:else>
+                            </g:if>
+
+                        </g:each>
+
                     </div>
 
                     <div class="column">

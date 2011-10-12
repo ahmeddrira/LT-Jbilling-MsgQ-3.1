@@ -18,6 +18,7 @@ package com.sapienter.jbilling.server.payment;
 
 import java.util.List;
 
+import com.sapienter.jbilling.server.metafields.MetaFieldBL;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDAS;
@@ -78,6 +79,7 @@ public class PaymentDTOEx extends PaymentDTO {
         }
         setPaymentPeriod(dto.getPaymentPeriod());
         setPaymentNotes(dto.getPaymentNotes());
+        setMetaFields(dto.getMetaFields());
 
         invoiceIds = new ArrayList<Integer>();
         paymentMaps = new ArrayList();
@@ -163,7 +165,7 @@ public class PaymentDTOEx extends PaymentDTO {
         }
 
         authorization = new PaymentAuthorizationDAS().find(dto.getAuthorizationId());
-
+        MetaFieldBL.fillMetaFieldsFromWS(this, dto.getMetaFields());
     }
     /**
      *

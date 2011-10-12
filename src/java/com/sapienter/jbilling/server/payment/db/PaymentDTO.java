@@ -17,26 +17,17 @@ package com.sapienter.jbilling.server.payment.db;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
+import javax.persistence.*;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
-import javax.persistence.Transient;
-import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.metafields.MetaFieldHelper;
+import com.sapienter.jbilling.server.metafields.db.CustomizedEntity;
+import com.sapienter.jbilling.server.metafields.db.EntityType;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
@@ -44,8 +35,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.util.csv.Exportable;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.*;
 
 @Entity
 @TableGenerator(
@@ -57,7 +47,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         allocationSize = 100)
 @Table(name = "payment")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class PaymentDTO implements Serializable, Exportable {
+public class PaymentDTO extends CustomizedEntity implements Serializable, Exportable {
 
     private int id;
     private UserDTO baseUser;
@@ -207,6 +197,7 @@ public class PaymentDTO implements Serializable, Exportable {
         this.paymentInfoCheque = dto.paymentInfoCheque;
         this.paymentNotes = dto.paymentNotes;
         this.paymentPeriod = dto.paymentPeriod;
+        this.setMetaFields(new LinkedList<MetaFieldValue>(dto.getMetaFields()));
     }
 
     @Id
@@ -456,6 +447,23 @@ public class PaymentDTO implements Serializable, Exportable {
 
     public void setVersionNum(int versionNum) {
         this.versionNum = versionNum;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    @JoinTable(
+            name = "payment_meta_field_map",
+            joinColumns = @JoinColumn(name = "payment_id"),
+            inverseJoinColumns = @JoinColumn(name = "meta_field_value_id")
+    )
+    @Sort(type = SortType.COMPARATOR, comparator = MetaFieldHelper.MetaFieldValuesOrderComparator.class)
+    public List<MetaFieldValue> getMetaFields() {
+        return getMetaFieldsList();
+    }
+
+    @Transient
+    public EntityType getCustomizedEntityType() {
+        return EntityType.PAYMENT;
     }
 
     @Transient

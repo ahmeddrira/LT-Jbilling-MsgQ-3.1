@@ -1606,3 +1606,168 @@ insert into report_parameter(id, report_id, dtype, name) values(20, 12, 'string'
 insert into report_parameter(id, report_id, dtype, name) values(21, 12, 'string', 'end_year');
 insert into international_description(table_id, foreign_id, psudo_column, language_id, content) values(100, 12, 'description', 1, 'Total invoiced per customer over years grouped by year.');
 insert into entity_report_map(report_id, entity_id) values(12, 1);
+
+
+
+-- Date: 12-Oct-2011
+-- Redmine Issue: #1425
+-- Custom Fields for User, Item, Order, Invoice, Payment
+
+-- new tables
+create table meta_field_name (
+  id integer NOT NULL,
+  "name" character varying(100) NOT NULL,
+  entity_type character varying (25) NOT NULL,
+  data_type character varying (25) NOT NULL,
+  is_disabled smallint,
+  is_mandatory smallint,
+  display_order integer,
+  default_value_id integer,
+  CONSTRAINT meta_field_name_pkey PRIMARY KEY (id),
+  UNIQUE(id)
+);
+
+create table meta_field_value (
+    id integer NOT NULL,
+    meta_field_name_id integer NOT NULL,
+    dtype character varying(10) NOT NULL,
+    boolean_value boolean,
+    date_value timestamp without time zone,
+    decimal_value numeric(22,10), --todo:
+    integer_value integer,
+    string_value character varying(1000),
+    CONSTRAINT meta_field_value_fk_1 FOREIGN KEY (meta_field_name_id)
+      REFERENCES meta_field_name (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+    UNIQUE(id)
+);
+alter table meta_field_name add constraint meta_field_name_fk_1
+      FOREIGN KEY (default_value_id)
+      REFERENCES meta_field_value (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+create table customer_meta_field_map (
+    customer_id integer NOT NULL,
+    meta_field_value_id integer NOT NULL,
+    CONSTRAINT customer_meta_field_map_fk_1 FOREIGN KEY (customer_id)
+      REFERENCES customer (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+    CONSTRAINT customer_meta_field_map_fk_2 FOREIGN KEY (meta_field_value_id)
+      REFERENCES meta_field_value (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+create table order_meta_field_map (
+    order_id integer NOT NULL,
+    meta_field_value_id integer NOT NULL,
+    CONSTRAINT order_meta_field_map_fk_1 FOREIGN KEY (order_id)
+      REFERENCES purchase_order (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+    CONSTRAINT order_meta_field_map_fk_2 FOREIGN KEY (meta_field_value_id)
+      REFERENCES meta_field_value (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+create table item_meta_field_map (
+    item_id integer NOT NULL,
+    meta_field_value_id integer NOT NULL,
+    CONSTRAINT item_meta_field_map_fk_1 FOREIGN KEY (item_id)
+      REFERENCES item (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+    CONSTRAINT item_meta_field_map_fk_2 FOREIGN KEY (meta_field_value_id)
+      REFERENCES meta_field_value (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+create table invoice_meta_field_map (
+    invoice_id integer NOT NULL,
+    meta_field_value_id integer NOT NULL,
+    CONSTRAINT invoice_meta_field_map_fk_1 FOREIGN KEY (invoice_id)
+      REFERENCES invoice (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+    CONSTRAINT invoice_meta_field_map_fk_2 FOREIGN KEY (meta_field_value_id)
+      REFERENCES meta_field_value (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+create table payment_meta_field_map (
+    payment_id integer NOT NULL,
+    meta_field_value_id integer NOT NULL,
+    CONSTRAINT payment_meta_field_map_fk_1 FOREIGN KEY (payment_id)
+      REFERENCES payment (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+    CONSTRAINT payment_meta_field_map_fk_2 FOREIGN KEY (meta_field_value_id)
+      REFERENCES meta_field_value (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+-- move old CCF to new meta fields for USER entity type
+
+INSERT INTO meta_field_name(
+            id, "name", entity_type, data_type, is_disabled, is_mandatory,
+            display_order, default_value_id)
+select id, prompt_key, 'USER',
+   case data_type
+    when 'string' then 'STRING'
+    when 'integer' then 'INTEGER'
+    when 'date' then 'DATE'
+    when 'boolean' then 'BOOLEAN'
+    when 'decimal' then 'DECIMAL'
+    else 'STRING'
+   END,
+   0, 0, id, NULL
+from contact_field_type;
+
+
+
+INSERT INTO meta_field_value(
+            id, meta_field_name_id, dtype,
+            boolean_value, date_value, decimal_value, integer_value, string_value)
+select  cf.id,
+    cf.type_id,
+    case data_type
+        when 'string' then 'string'
+        when 'integer' then 'integer'
+        when 'date' then 'date'
+        when 'boolean' then 'boolean'
+        when 'decimal' then 'decimal'
+        else 'string'
+    END,
+    case cft.data_type
+        when 'boolean' then
+            case cf.content
+                when 'true' then TRUE
+                else FALSE
+            END
+        else NULL
+    END,
+    case cft.data_type
+        when 'date' then date(cf.content)
+        else NULL
+    END,
+    case cft.data_type
+        when 'decimal' then cast(cf.content as numeric(22,10))
+        else NULL
+    END,
+    case cft.data_type
+        when 'integer' then cast(cf.content as integer)
+        else NULL
+    END,
+    case cft.data_type
+        when 'integer' then NULL
+        when 'date' then NULL
+        when 'boolean' then NULL
+        when 'decimal' then NULL
+        else cf.content
+    END
+
+from contact_field cf
+  inner join contact_field_type cft on cf.type_id = cft.id
+  inner join contact_map cm on cf.contact_id = cm.contact_id, customer cust
+where cm.table_id = 10 and cust.user_id = cm.foreign_id;
+
+insert into customer_meta_field_map (customer_id, meta_field_value_id)
+select cust.id, cf.id
+from contact_field cf inner join contact_map cm on cf.contact_id = cm.contact_id, customer cust
+where cm.table_id = 10 and cust.user_id = cm.foreign_id;
+

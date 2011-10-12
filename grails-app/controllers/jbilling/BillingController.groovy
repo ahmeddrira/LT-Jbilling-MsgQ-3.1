@@ -61,39 +61,22 @@ class BillingController {
 	 * so that the lastest process shows first.
 	 */
 	def list = {
-
 		def filters = filterService.getFilters(FilterType.BILLINGPROCESS, params)
-		def filteredList= getProcesses(filters)
-
-		Map dataHashMap= new HashMap()
-        Iterator cntAndSumIter= null
-        def dataArr= null;
-        def processDas= new BillingProcessDAS()
-        for (BillingProcessDTO dto : filteredList) {
-            dataHashMap.put(Integer.valueOf(dto.getId()), [])
-            for (Object[] row: new BillingProcessDAS().getCountAndSum(dto.id)) {
-                dataArr= new Object[3]
-                dataArr[0]= row[0]
-                dataArr[1]= row[1]
-                dataArr[2]= CurrencyDTO.get(row[2] as Integer)
-                dataHashMap.get(Integer.valueOf(dto.getId())) << dataArr
-            }
-        }
+		def processes = getProcesses(filters)
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
+
         if (params.applyFilter || params.partial) {
-            render template: 'list', model: [lstBillingProcesses: filteredList, dataHashMap:dataHashMap, filters:filters]
-            return
+            render template: 'list', model: [ processes: processes, filters:filters ]
+        } else {
+            render view: "index", model: [ processes: processes, filters:filters ]
         }
-		render view: "index", model: [lstBillingProcesses: filteredList, dataHashMap:dataHashMap, filters:filters]
-	
 	}
 
 	/*
 	 * Filter the process results based on the parameter filter values
 	 */
 	def getProcesses(filters) {
-        
 		params.max = (params?.max?.toInteger()) ?: pagination.max
 		params.offset = (params?.offset?.toInteger()) ?: pagination.offset
         params.sort = params?.sort ?: pagination.sort
@@ -109,7 +92,6 @@ class BillingController {
 							addToCriteria(filter.getRestrictions());
 						}
 					}
-					//eq('isReview', 0)
 					eq('entity', new CompanyDTO(session['company_id']))
 				}
 
@@ -117,10 +99,6 @@ class BillingController {
                 SortableCriteria.sort(params, delegate)
 			}
 	}
-
-    def date = {
-
-    }
 
 	/*
 	 * To display the run details of a given Process Id

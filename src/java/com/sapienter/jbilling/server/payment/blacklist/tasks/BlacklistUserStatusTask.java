@@ -79,6 +79,32 @@ public class BlacklistUserStatusTask extends PluggableTask
         blacklistBL.create(user.getCompany(), BlacklistDTO.TYPE_USER_ID,
                 BlacklistDTO.SOURCE_USER_STATUS_CHANGE, null, null, user, null);
 
+                // blacklist ip address
+        Integer ipAddressCcf =
+                BlacklistBL.getIpAddressCcfId(user.getCompany().getId());
+
+        if (ipAddressCcf == null) {
+            // blacklist preference or payment filter plug-in
+            // not configured properly
+            LOG.warn("Null ipAddressCcf - skipping adding IpAddress contact info");
+        } else if (user.getCustomer() != null && user.getCustomer().getMetaFields() != null) {
+            Object ipAddress = null;
+            MetaField metaField = new MetaFieldDAS().find(ipAddressCcf);
+            if (metaField != null) {
+                MetaFieldValue metaFieldValue = user.getCustomer().getMetaField(metaField.getName());
+                if (metaFieldValue != null) {
+                    ipAddress = metaFieldValue.getValue();
+                }
+            }
+            // blacklist the ip address if it was found
+            if (ipAddress != null) {
+                MetaFieldValue newValue = metaField.createValue();
+                newValue.setValue(ipAddress);
+                blacklistBL.create(user.getCompany(), BlacklistDTO.TYPE_IP_ADDRESS,
+                        BlacklistDTO.SOURCE_USER_STATUS_CHANGE, null, null, null, newValue);
+            }
+        }
+
         // user's contact
         ContactDTO contact = new ContactDAS().findPrimaryContact(myEvent.getUserId());
 
@@ -145,35 +171,6 @@ public class BlacklistUserStatusTask extends PluggableTask
                 blacklistBL.create(user.getCompany(), BlacklistDTO.TYPE_CC_NUMBER,
                         BlacklistDTO.SOURCE_USER_STATUS_CHANGE, creditCard, 
                         null, null, null);
-            }
-        }
-
-        // blacklist ip address
-        Integer ipAddressCcf = 
-                BlacklistBL.getIpAddressCcfId(user.getCompany().getId());
-        Object ipAddress = null;
-
-        if (ipAddressCcf == null) {
-            // blacklist preference or payment filter plug-in 
-            // not configured properly
-            LOG.warn("Null ipAddressCcf - skipping adding IpAddress contact info");
-            return;
-        }
-
-        if (user.getCustomer() != null && user.getCustomer().getMetaFields() != null) {
-            MetaField metaField = new MetaFieldDAS().find(ipAddressCcf);
-            if (metaField != null) {
-                MetaFieldValue metaFieldValue = user.getCustomer().getMetaField(metaField.getName());
-                if (metaFieldValue != null) {
-                    ipAddress = metaFieldValue.getValue();
-                }
-            }
-            // blacklist the ip address if it was found
-            if (ipAddress != null) {
-                MetaFieldValue newValue = metaField.createValue();
-                newValue.setValue(ipAddress);
-                blacklistBL.create(user.getCompany(), BlacklistDTO.TYPE_IP_ADDRESS,
-                        BlacklistDTO.SOURCE_USER_STATUS_CHANGE, null, null, null, newValue);
             }
         }
     }

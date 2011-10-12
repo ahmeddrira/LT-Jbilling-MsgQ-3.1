@@ -1633,7 +1633,7 @@ create table meta_field_value (
     dtype character varying(10) NOT NULL,
     boolean_value boolean,
     date_value timestamp without time zone,
-    decimal_value numeric(22,10), --todo:
+    decimal_value numeric(22,10),
     integer_value integer,
     string_value character varying(1000),
     CONSTRAINT meta_field_value_fk_1 FOREIGN KEY (meta_field_name_id)
@@ -1771,3 +1771,13 @@ select cust.id, cf.id
 from contact_field cf inner join contact_map cm on cf.contact_id = cm.contact_id, customer cust
 where cm.table_id = 10 and cust.user_id = cm.foreign_id;
 
+-- changes to BlackListDTO for metaFields support
+alter table blacklist add meta_field_value_id integer;
+alter table blacklist add constraint blacklist_fk_4
+      FOREIGN KEY (meta_field_value_id)
+      REFERENCES meta_field_value (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+-- drop old contact custom fields
+DROP TABLE contact_field;
+DROP TABLE contact_field_type;

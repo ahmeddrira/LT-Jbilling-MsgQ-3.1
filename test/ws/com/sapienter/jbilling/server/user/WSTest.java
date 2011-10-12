@@ -27,6 +27,7 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentWS;
@@ -918,19 +919,22 @@ Ch8: no applicable orders
         newUser.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
         newUser.setInvoiceChild(new Boolean(false));
 
+
+        MetaFieldValueWS metaField1 = new MetaFieldValueWS();
+        metaField1.setFieldName("partner.prompt.fee");
+        metaField1.setValue("serial-from-ws");
+
+        MetaFieldValueWS metaField2 = new MetaFieldValueWS();
+        metaField2.setFieldName("ccf.payment_processor");
+        metaField2.setValue("FAKE_2"); // the plug-in parameter of the processor
+
+        newUser.setMetaFields(new MetaFieldValueWS[]{metaField1, metaField2});
+
         // add a contact
         ContactWS contact = new ContactWS();
         contact.setEmail("frodo@shire.com");
         contact.setFirstName("Frodo");
         contact.setLastName("Baggins");
-        Integer fields[] = new Integer[2];
-        fields[0] = 1;
-        fields[1] = 2; // the ID of the CCF for the processor
-        String fieldValues[] = new String[2];
-        fieldValues[0] = "serial-from-ws";
-        fieldValues[1] = "FAKE_2"; // the plug-in parameter of the processor
-        contact.setFieldIDs(fields);
-        contact.setFieldValues(fieldValues);
         newUser.setContact(contact);
 
         // add a credit card
@@ -1716,19 +1720,21 @@ Ch8: no applicable orders
         newUser.setCurrencyId(null);
         newUser.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
 
+        MetaFieldValueWS metaField1 = new MetaFieldValueWS();
+        metaField1.setFieldName("partner.prompt.fee");
+        metaField1.setValue("serial-from-ws");
+
+        MetaFieldValueWS metaField2 = new MetaFieldValueWS();
+        metaField2.setFieldName("ccf.payment_processor");
+        metaField2.setValue("FAKE_2"); // the plug-in parameter of the processor
+
+        newUser.setMetaFields(new MetaFieldValueWS[]{metaField1, metaField2});
+
         // add a contact
         ContactWS contact = new ContactWS();
         contact.setEmail("frodo@shire.com");
         contact.setFirstName("Frodo");
         contact.setLastName("Baggins");
-        Integer fields[] = new Integer[2];
-        fields[0] = 1;
-        fields[1] = 2; // the ID of the CCF for the processor
-        String fieldValues[] = new String[2];
-        fieldValues[0] = "serial-from-ws";
-        fieldValues[1] = "FAKE_2"; // the plug-in parameter of the processor
-        contact.setFieldIDs(fields);
-        contact.setFieldValues(fieldValues);
         newUser.setContact(contact);
 
         // add a credit card
@@ -1818,29 +1824,6 @@ Ch8: no applicable orders
 
         //cleanup
         api.deleteUser(user.getUserId());
-    }
-
-    public void testGetUserByContactFields() throws Exception {
-        JbillingAPI api = JbillingAPIFactory.getAPI();
-
-        // user by single contact field
-        ContactFieldWS ip = new ContactFieldWS(3, "255.255.255.2"); // ccf.ip_address
-
-        Integer[] userIds = api.getUsersByCustomFields(new ContactFieldWS[]{ip});
-        assertEquals("Should only find one user", 1, userIds.length);
-        assertEquals("Should find user 53", 53, userIds[0].intValue());
-
-        // user by multiple contact fields
-        ContactFieldWS ip2 = new ContactFieldWS(3, "123.123.123.123"); // ccf.ip_address
-        ContactFieldWS paymentProcessor = new ContactFieldWS(2, "FAKE_2"); // ccf.payment_processor
-
-        userIds = api.getUsersByCustomFields(new ContactFieldWS[]{ip2, paymentProcessor});
-        assertEquals("Should only find one user", 1, userIds.length);
-        assertEquals("Should find user 1005", 1005, userIds[0].intValue());
-
-        // find multiple users
-        userIds = api.getUsersByCustomFields(new ContactFieldWS[]{paymentProcessor});
-        assertEquals("Should find lots of users with 'FAKE_2'", 1017, userIds.length);
     }
 
     public void testUserExists() throws Exception {

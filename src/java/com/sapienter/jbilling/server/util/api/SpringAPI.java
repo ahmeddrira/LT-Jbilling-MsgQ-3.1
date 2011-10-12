@@ -53,8 +53,6 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
-import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.util.CurrencyWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
@@ -283,10 +281,6 @@ public class SpringAPI implements JbillingAPI {
 
     public Integer[] getUsersByCustomField(Integer typeId, String value) {
         return session.getUsersByCustomField(typeId, value);
-    }
-
-    public Integer[] getUsersByCustomFields(ContactFieldWS[] fields) {
-        return session.getUsersByCustomFields(fields);
     }
 
     public Integer[] getUsersByStatus(Integer statusId, boolean in) {
@@ -788,10 +782,6 @@ public class SpringAPI implements JbillingAPI {
     
     public void createUpdateNofications(Integer messageId, MessageDTO dto) {
         session.createUpdateNofications(messageId, dto);
-    }
-
-    public void saveCustomContactField(ContactFieldTypeWS ws) {
-        session.saveCustomContactField(ws);
     }
 
     public void saveCustomerNotes(Integer userId, String notes) {

@@ -16,36 +16,32 @@
 
 package jbilling
 
-import grails.plugins.springsecurity.Secured
-import com.sapienter.jbilling.server.payment.db.PaymentDTO
-import com.sapienter.jbilling.server.user.db.CompanyDTO
-
-import org.hibernate.Criteria
-import com.sapienter.jbilling.server.payment.PaymentWS
-import com.sapienter.jbilling.server.entity.CreditCardDTO
-import com.sapienter.jbilling.server.user.CreditCardBL
-import com.sapienter.jbilling.server.entity.AchDTO
-import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO
-import com.sapienter.jbilling.common.SessionInternalError
-import com.sapienter.jbilling.server.item.CurrencyBL
-import com.sapienter.jbilling.server.invoice.InvoiceWS
-
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import com.sapienter.jbilling.common.Util
-import com.sapienter.jbilling.common.Constants
-import com.sapienter.jbilling.server.util.csv.CsvExporter
-import com.sapienter.jbilling.server.util.csv.Exporter
+import com.sapienter.jbilling.client.metafield.MetaFieldUtils
 import com.sapienter.jbilling.client.util.DownloadHelper
 import com.sapienter.jbilling.client.util.SortableCriteria
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import com.sapienter.jbilling.common.Constants
+import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.common.Util
+import com.sapienter.jbilling.server.entity.AchDTO
+import com.sapienter.jbilling.server.entity.CreditCardDTO
+import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO
+import com.sapienter.jbilling.server.invoice.InvoiceWS
+import com.sapienter.jbilling.server.item.CurrencyBL
+import com.sapienter.jbilling.server.metafields.MetaFieldBL
 import com.sapienter.jbilling.server.metafields.MetaFieldValueWS
 import com.sapienter.jbilling.server.metafields.db.EntityType
-import com.sapienter.jbilling.server.metafields.MetaFieldBL
-import com.sapienter.jbilling.server.user.db.CustomerDTO
-import com.sapienter.jbilling.server.customer.CustomerBL
-import com.sapienter.jbilling.server.user.db.UserDTO
-import com.sapienter.jbilling.server.payment.db.PaymentDAS
 import com.sapienter.jbilling.server.payment.PaymentBL
+import com.sapienter.jbilling.server.payment.PaymentWS
+import com.sapienter.jbilling.server.payment.db.PaymentDAS
+import com.sapienter.jbilling.server.payment.db.PaymentDTO
+import com.sapienter.jbilling.server.user.CreditCardBL
+import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.util.csv.CsvExporter
+import com.sapienter.jbilling.server.util.csv.Exporter
+import grails.plugins.springsecurity.Secured
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.hibernate.Criteria
 
 /**
  * PaymentController 
@@ -180,7 +176,6 @@ class PaymentController {
      */
     @Secured(["PAYMENT_32"])
     def delete = {
-        println "params id ${params.id}"
         if (params.id) {
             try {
                 webServicesSession.deletePayment(params.int('id'))
@@ -574,18 +569,7 @@ class PaymentController {
     }
 
     def bindMetaFields(PaymentWS paymentWS, GrailsParameterMap params) {
-        def fieldsArray = new LinkedList<MetaFieldValueWS>();
-        metaFields.each{
-            if (params["metaField_${it.id}"].any { key, value -> value }) {
-                def fieldValue = it.createValue();
-                bindData(fieldValue, params, "metaField_${it.id}")
-
-                def metaFieldWS = new MetaFieldValueWS(fieldValue)
-                 // name of field
-                metaFieldWS.setFieldName(it.name)
-                fieldsArray << metaFieldWS;
-            }
-        }
+        def fieldsArray = MetaFieldUtils.bindMetaFields(metaFields, params);
         paymentWS.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
     }
 }

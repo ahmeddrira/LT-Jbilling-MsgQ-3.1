@@ -368,6 +368,11 @@ public class ItemDTO extends AbstractDescription implements MetaContent, Exporta
     }
 
     @Transient
+    public MetaFieldValue getMetaField(Integer metaFieldNameId) {
+        return MetaFieldHelper.getMetaField(this, metaFieldNameId);
+    }
+
+    @Transient
     public void setMetaField(MetaFieldValue field) {
         MetaFieldHelper.setMetaField(this, field);
     }

@@ -93,10 +93,8 @@
         <mapping class="com.sapienter.jbilling.server.user.permisson.db.RoleDTO" />
         <mapping package="com.sapienter.jbilling.server.user.contact.db" />
         <mapping class="com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO" />
-        <mapping class="com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO" />
         <mapping class="com.sapienter.jbilling.server.user.contact.db.ContactMapDTO" />
         <mapping class="com.sapienter.jbilling.server.user.contact.db.ContactDTO" />
-        <mapping class="com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO" />
         <mapping package="com.sapienter.jbilling.server.user.db" />
         <mapping class="com.sapienter.jbilling.server.user.db.UserStatusDTO" />
         <mapping class="com.sapienter.jbilling.server.user.db.CreditCardDTO" />

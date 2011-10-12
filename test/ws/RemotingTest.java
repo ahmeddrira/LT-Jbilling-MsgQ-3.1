@@ -20,6 +20,7 @@ import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
 import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.RecordCountWS;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
@@ -257,6 +258,16 @@ public class RemotingTest extends TestCase {
         newUser.setCurrencyId(null);
         newUser.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
 
+        MetaFieldValueWS metaField1 = new MetaFieldValueWS();
+        metaField1.setFieldName("partner.prompt.fee");
+        metaField1.setValue("serial-from-ws");
+
+        MetaFieldValueWS metaField2 = new MetaFieldValueWS();
+        metaField2.setFieldName("ccf.payment_processor");
+        metaField2.setValue("FAKE_2"); // the plug-in parameter of the processor
+
+        newUser.setMetaFields(new MetaFieldValueWS[]{metaField1, metaField2});
+
         // add a contact
         newUser.setContact(createContactWS());
 
@@ -280,14 +291,6 @@ public class RemotingTest extends TestCase {
         contact.setEmail("frodo@shire.com");
         contact.setFirstName("Frodo");
         contact.setLastName("Baggins");
-        Integer fields[] = new Integer[2];
-        fields[0] = 1;
-        fields[1] = 2;
-        String fieldValues[] = new String[2];
-        fieldValues[0] = "serial-from-ws";
-        fieldValues[1] = "FAKE_2";
-        contact.setFieldIDs(fields);
-        contact.setFieldValues(fieldValues);
         contact.setType(2);
         return contact;
     }

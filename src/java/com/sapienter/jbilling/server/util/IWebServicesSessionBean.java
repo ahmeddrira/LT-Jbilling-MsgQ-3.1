@@ -48,8 +48,6 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
-import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 
 import javax.jws.WebService;
@@ -99,14 +97,11 @@ public interface IWebServicesSessionBean {
     public Integer[] getUsersInStatus(Integer statusId) throws SessionInternalError;
     public Integer[] getUsersNotInStatus(Integer statusId) throws SessionInternalError;
     public Integer[] getUsersByCustomField(Integer typeId, String value) throws SessionInternalError;
-    public Integer[] getUsersByCustomFields(ContactFieldWS[] fields);
     public Integer[] getUsersByCreditCard(String number) throws SessionInternalError;
 
     public Integer getUserId(String username) throws SessionInternalError;
 
-    public void saveCustomContactField(ContactFieldTypeWS ws) throws SessionInternalError;
-
-    public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) throws SessionInternalError;
+        public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) throws SessionInternalError;
     public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id) throws SessionInternalError;
 
     public CreateResponseWS create(UserWS user, OrderWS order) throws SessionInternalError;
@@ -118,6 +113,7 @@ public interface IWebServicesSessionBean {
 
     public void triggerPartnerPayoutProcess(Date runDate);
     public void processPartnerPayout(Integer partnerId);
+    public void processPartnerPayouts(Date runDate);
 
     public PartnerWS getPartner(Integer partnerId) throws SessionInternalError;
     public Integer createPartner(UserWS newUser, PartnerWS partner) throws SessionInternalError;

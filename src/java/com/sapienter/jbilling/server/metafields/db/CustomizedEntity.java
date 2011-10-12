@@ -60,6 +60,17 @@ public abstract class CustomizedEntity implements MetaContent, java.io.Serializa
     }
 
     /**
+     * Returns the meta field by name if it's been defined for this object.
+     *
+     * @param metaFieldNameId ID of meta field name
+     * @return field if found, null if not set.
+     */
+    @Transient
+    public MetaFieldValue getMetaField(Integer metaFieldNameId) {
+        return MetaFieldHelper.getMetaField(this, metaFieldNameId);
+    }
+
+    /**
      * Adds a meta field to this object. If there is already a field associated with
      * this object then the existing value should be updated.
      *

@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO; com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO; com.sapienter.jbilling.server.util.Constants" %>
+<%@ page import="com.sapienter.jbilling.server.metafields.db.MetaField; com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO; com.sapienter.jbilling.server.util.Constants" %>
 
 <div class="column-hold">
     <div class="heading">
@@ -70,13 +70,12 @@
                         </g:if>
 
                         <g:if test="${selected.type == BlacklistDTO.TYPE_IP_ADDRESS}">
-                            <g:set var="ipAddressType" value="${ContactFieldTypeDTO.list().find{ it.promptKey ==~ /.*ip_address.*/ }}"/>
+                            <g:set var="ipAddressType" value="${MetaField.list().find{ it.name ==~ /.*ip_address.*/ }}"/>
                             <g:if test="${ipAddressType}">
                                 <tr>
                                     <td><g:message code="blacklist.entry.label.ip.address"/></td>
                                     <td class="value">
-                                        <g:set var="field" value="${selected.contact?.fields?.find{ it.type.id == ipAddressType.id }}"/>
-                                        ${field?.content}
+                                        ${selected.metaFieldValue?.value}
                                     </td>
                                 </tr>
                             </g:if>

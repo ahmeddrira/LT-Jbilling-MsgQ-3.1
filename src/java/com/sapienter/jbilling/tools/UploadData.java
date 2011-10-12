@@ -25,14 +25,16 @@ import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
+import com.sapienter.jbilling.server.metafields.db.DataType;
+import com.sapienter.jbilling.server.metafields.db.EntityType;
+import com.sapienter.jbilling.server.metafields.db.MetaField;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
@@ -45,6 +47,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -83,7 +87,6 @@ public class UploadData {
         int active_until = -1;
         int total = -1;
         // these are for entity-specific contact fields
-        Hashtable entitySpecificFeilds;
         int specific[];
         int specificType[];
 
@@ -102,8 +105,8 @@ public class UploadData {
             Boolean processOrders = Boolean.valueOf(
                     prop.getProperty("load_orders"));
             // initialize the entity specific data
-            entitySpecificFeilds = new Hashtable();
-            int totalSpecificFields = Integer.valueOf(prop.getProperty("specific_fields", "0"));
+            int totalSpecificFields = Integer.valueOf(prop.getProperty(
+                    "specific_fields", "0")).intValue();
             System.out.println("specific fields to load = " + totalSpecificFields);
             specific = new int[totalSpecificFields];
             specificType = new int[totalSpecificFields];
@@ -323,20 +326,23 @@ public class UploadData {
                 }
                 //System.out.println("CC = " + cc);
 
-                user.setCustomer(customer);
+                List<MetaFieldValue> metaFields = new LinkedList<MetaFieldValue>();
 
-                // the entity specific fields
                 for (int spField = 0; spField < totalSpecificFields; spField++) {
                     if (specific[spField] >= 0) {
-                        ContactFieldDTO fieldDto = new ContactFieldDTO();
-                        fieldDto.setType(new ContactFieldTypeDTO(specificType[spField]));
-                        fieldDto.setContent(fields[specific[spField]].trim());
-                        entitySpecificFeilds.put(
-                                (specificType[spField] + ""),fieldDto);
+                        MetaField metaField = new MetaField();
+                        metaField.setEntityType(EntityType.USER);
+                        metaField.setDataType(DataType.STRING);
+                        metaField.setId(specificType[spField]);
+                        MetaFieldValue metaFieldValue = metaField.createValue();
+                        metaFieldValue.setValue(fields[specific[spField]].trim());
+                        metaFields.add(metaFieldValue);
                     }
                 }
-                contact.setFieldsTable(entitySpecificFeilds);
-
+                customer.setMetaFields(metaFields);
+                
+                user.setCustomer(customer);
+                
                 Integer newUserId = remoteSession.create(user, contact);
                 if (newUserId != null && notes >= 0) {
                     remoteSession.setCustomerNotes(newUserId,

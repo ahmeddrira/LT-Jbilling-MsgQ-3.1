@@ -21,6 +21,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.sapienter.jbilling.server.metafields.db.MetaField;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.payment.blacklist.BlacklistBL;
@@ -32,8 +35,6 @@ import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
@@ -76,7 +77,7 @@ public class BlacklistUserStatusTask extends PluggableTask
 
         // blacklist user id
         blacklistBL.create(user.getCompany(), BlacklistDTO.TYPE_USER_ID,
-                BlacklistDTO.SOURCE_USER_STATUS_CHANGE, null, null, user);
+                BlacklistDTO.SOURCE_USER_STATUS_CHANGE, null, null, user, null);
 
         // user's contact
         ContactDTO contact = new ContactDAS().findPrimaryContact(myEvent.getUserId());
@@ -98,7 +99,7 @@ public class BlacklistUserStatusTask extends PluggableTask
             newContact.setLastName(contact.getLastName());
             blacklistBL.create(user.getCompany(), BlacklistDTO.TYPE_NAME,
                     BlacklistDTO.SOURCE_USER_STATUS_CHANGE, null, newContact, 
-                    null);
+                    null, null);
         }
 
         // blacklist address
@@ -115,7 +116,7 @@ public class BlacklistUserStatusTask extends PluggableTask
             newContact.setPostalCode(contact.getPostalCode());
             newContact.setCountryCode(contact.getCountryCode());
             blacklistBL.create(user.getCompany(), BlacklistDTO.TYPE_ADDRESS,
-                    BlacklistDTO.SOURCE_USER_STATUS_CHANGE, null, newContact, null);
+                    BlacklistDTO.SOURCE_USER_STATUS_CHANGE, null, newContact, null, null);
         }
 
         // blacklist phone number
@@ -129,7 +130,7 @@ public class BlacklistUserStatusTask extends PluggableTask
             newContact.setPhoneAreaCode(contact.getPhoneAreaCode());
             newContact.setPhoneNumber(contact.getPhoneNumber());
             blacklistBL.create(user.getCompany(), BlacklistDTO.TYPE_PHONE_NUMBER,
-                    BlacklistDTO.SOURCE_USER_STATUS_CHANGE, null, newContact, null);
+                    BlacklistDTO.SOURCE_USER_STATUS_CHANGE, null, newContact, null, null);
         }
 
         // blacklist cc numbers
@@ -143,14 +144,14 @@ public class BlacklistUserStatusTask extends PluggableTask
                 creditCard.setCcExpiry(cc.getCcExpiry()); // not null
                 blacklistBL.create(user.getCompany(), BlacklistDTO.TYPE_CC_NUMBER,
                         BlacklistDTO.SOURCE_USER_STATUS_CHANGE, creditCard, 
-                        null, null);
+                        null, null, null);
             }
         }
 
         // blacklist ip address
         Integer ipAddressCcf = 
                 BlacklistBL.getIpAddressCcfId(user.getCompany().getId());
-        String ipAddress = null;
+        Object ipAddress = null;
 
         if (ipAddressCcf == null) {
             // blacklist preference or payment filter plug-in 
@@ -159,30 +160,21 @@ public class BlacklistUserStatusTask extends PluggableTask
             return;
         }
 
-        // find the ip address custom contact field
-        Set<ContactFieldDTO> contactFields = contact.getFields();
-        for (ContactFieldDTO contactField : contactFields) {
-            if (contactField.getType().getId() == ipAddressCcf) {
-                ipAddress = contactField.getContent();
-                break;
+        if (user.getCustomer() != null && user.getCustomer().getMetaFields() != null) {
+            MetaField metaField = new MetaFieldDAS().find(ipAddressCcf);
+            if (metaField != null) {
+                MetaFieldValue metaFieldValue = user.getCustomer().getMetaField(metaField.getName());
+                if (metaFieldValue != null) {
+                    ipAddress = metaFieldValue.getValue();
+                }
             }
-        }
-
-        // blacklist the ip address if it was found
-        if (ipAddress != null) {
-            newContact = new ContactDTO();
-            newContact.setCreateDate(new Date());
-            newContact.setDeleted(0);
-            ContactFieldDTO newField = new ContactFieldDTO();
-            newField.setType(new ContactFieldTypeDAS().find(ipAddressCcf));
-            newField.setContent(ipAddress);
-            newField.setContact(newContact);
-
-            Set<ContactFieldDTO> fields = new HashSet<ContactFieldDTO>(1);
-            fields.add(newField);
-            newContact.setFields(fields);
-            blacklistBL.create(user.getCompany(), BlacklistDTO.TYPE_IP_ADDRESS,
-                    BlacklistDTO.SOURCE_USER_STATUS_CHANGE, null, newContact, null);
+            // blacklist the ip address if it was found
+            if (ipAddress != null) {
+                MetaFieldValue newValue = metaField.createValue();
+                newValue.setValue(ipAddress);
+                blacklistBL.create(user.getCompany(), BlacklistDTO.TYPE_IP_ADDRESS,
+                        BlacklistDTO.SOURCE_USER_STATUS_CHANGE, null, null, null, newValue);
+            }
         }
     }
 }

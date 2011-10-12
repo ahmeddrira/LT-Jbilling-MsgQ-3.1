@@ -136,10 +136,9 @@ public class BlacklistDAS extends AbstractDAS<BlacklistDTO> {
                 .createAlias("company", "c")
                     .add(Restrictions.eq("c.id", entityId))
                 .add(Restrictions.eq("type", BlacklistDTO.TYPE_IP_ADDRESS))
-                .createAlias("contact.fields.type", "cfType")
-                    .add(Restrictions.eq("cfType.id", ccfId))
-                .createAlias("contact.fields", "cf")
-                    .add(Restrictions.eq("cf.content", ipAddress));
+                .createAlias("metaFieldValue", "fieldValue")
+                    .add(Restrictions.eq("fieldValue.field.id", ccfId))
+                    .add(Restrictions.eq("fieldValue.value", ipAddress));
 
         return criteria.list();
     }
@@ -175,8 +174,8 @@ public class BlacklistDAS extends AbstractDAS<BlacklistDTO> {
         query.setParameter("source", source);
         query.executeUpdate();
 
-        hql = "DELETE FROM ContactFieldDTO WHERE contact.id IN (" +
-                "SELECT contact.id FROM BlacklistDTO " + 
+        hql = "DELETE FROM MetaFieldValue WHERE id IN (" +
+                "SELECT metaFieldValue.id FROM BlacklistDTO " +
                 "WHERE company.id = :company AND source = :source)";
         query = getSession().createQuery(hql);
         query.setParameter("company", entityId);

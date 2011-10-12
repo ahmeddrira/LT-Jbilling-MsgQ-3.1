@@ -41,6 +41,8 @@ import com.sapienter.jbilling.server.pricing.PriceModelBL
 import com.sapienter.jbilling.server.metafields.MetaFieldBL
 import com.sapienter.jbilling.server.metafields.db.EntityType
 import com.sapienter.jbilling.server.metafields.MetaFieldValueWS
+import com.sapienter.jbilling.server.metafields.db.DataType
+import com.sapienter.jbilling.client.metafield.MetaFieldUtils
 import org.apache.commons.lang.StringUtils
 
 @Secured(["MENU_97"])
@@ -690,18 +692,7 @@ class ProductController {
     }
 
     def bindMetaFields(ItemDTOEx itemDto, GrailsParameterMap params) {
-        def fieldsArray = new LinkedList<MetaFieldValueWS>();
-        metaFields.each{
-            if (params["metaField_${it.id}"].any { key, value -> value }) {
-                def fieldValue = it.createValue();
-                bindData(fieldValue, params, "metaField_${it.id}")
-
-                def metaFieldWS = new MetaFieldValueWS(fieldValue)
-                 // name of field
-                metaFieldWS.setFieldName(it.name)
-                fieldsArray << metaFieldWS;
-            }
-        }
+        def fieldsArray = MetaFieldUtils.bindMetaFields(metaFields, params)
         itemDto.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
     }
 }

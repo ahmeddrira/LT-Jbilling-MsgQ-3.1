@@ -30,6 +30,7 @@ import org.springframework.security.authentication.encoding.PasswordEncoder
 import com.sapienter.jbilling.server.util.Context
 import com.sapienter.jbilling.server.metafields.db.MetaField
 import com.sapienter.jbilling.server.metafields.MetaFieldValueWS
+import com.sapienter.jbilling.client.metafield.MetaFieldUtils
 
 /**
  * UserHelper 
@@ -119,15 +120,6 @@ class UserHelper {
         // manually bind primary contact "include in notifications" flag
         primaryContact.include = params."contact-${primaryContactTypeId}".include != null ? 1 : 0
 
-        if (params.contactField) {
-            primaryContact.fieldIDs = new Integer[params.contactField.size()]
-            primaryContact.fieldValues = new Integer[params.contactField.size()]
-            params.contactField.eachWithIndex { id, value, i ->
-                primaryContact.fieldIDs[i] = id.toInteger()
-                primaryContact.fieldValues[i] = value
-            }
-        }
-
         user.setContact(primaryContact)
         contacts << primaryContact
 
@@ -184,19 +176,7 @@ class UserHelper {
     }
 
     static def bindMetaFields(UserWS userWS, Collection<MetaField> metaFields, GrailsParameterMap params) {
-        def fieldsArray = new LinkedList<MetaFieldValueWS>();
-        metaFields.each{
-            // bind if contact object if parameters present
-            if (params["metaField_${it.id}"].any { key, value -> value }) {
-                def fieldValue = it.createValue();
-                bindData(fieldValue, params, "metaField_${it.id}")
-
-                def metaFieldWS = new MetaFieldValueWS(fieldValue)
-                 // name of field
-                metaFieldWS.setFieldName(it.name)
-                fieldsArray << metaFieldWS;
-            }
-        }
+        def fieldsArray = MetaFieldUtils.bindMetaFields(metaFields, params)
         userWS.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
     }
 

@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO" %>
+<%@ page import="com.sapienter.jbilling.server.metafields.db.EntityType; com.sapienter.jbilling.server.metafields.MetaFieldBL" %>
 <%@ page import="com.sapienter.jbilling.server.user.db.CompanyDTO" %>
 <%@ page import="com.sapienter.jbilling.server.util.Constants" %>
 
@@ -36,8 +36,8 @@
                     <g:set var="company" value="${CompanyDTO.get(session['company_id'])}"/>
                     <g:select style="float:left;"  
                             name="contactFieldTypes" 
-                            from="${(company.contactFieldTypes << new ContactFieldTypeDTO()).sort{it.id}}" 
-                            optionKey="id" optionValue="description"
+                            from="${MetaFieldBL.getAvailableFieldsList (EntityType.USER)}"
+                            optionKey="id" optionValue="name"
                             noSelection="['': message(code: 'filters.contactFieldTypes.empty')]" />
                 </div>
                 <div class="input-bg">

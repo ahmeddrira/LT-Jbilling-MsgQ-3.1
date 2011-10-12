@@ -131,22 +131,31 @@
                     <td class="value"><a href="mailto:${contact?.email}">${contact?.email}</a></td>
                 </tr>
 
-                <g:if test="${contact?.fields}">
-                    <g:set var="useFlag" value="${true}"/>
-                    <g:each var="ccf" in="${contact.fields}">
-                        <g:if test="${ccf?.type?.displayInView > 0}">
-                            <g:if test="${useFlag}">
-                                <g:set var="useFlag" value="${false}"/>
-                                <!-- empty spacer row --> 
+                <g:if test="${customer?.metaFields}">
+                    <!-- meta fields -->
+                    <g:each var="metaField" in="${customer?.metaFields?.sort{ it.field.displayOrder }}" status="iter">
+                        <g:if test="${!metaField?.field?.disabled}">
+                            <g:set var="fieldValue" value="${metaField.getValue()}"/>
+
+                            <g:if test="${iter ==0}">
+                                <!-- empty spacer row -->
                                 <tr>
                                     <td colspan="2"><br/></td>
                                 </tr>
                             </g:if>
                             <tr>
-                                <td><g:message code="${ccf.type.getDescription(session['language_id'])}"/></td>
-                                <td class="value">${ccf?.content}</td>
+                                <td>${metaField.field.name}</td>
+                                <td class="value">
+                                    <g:if test="${metaField.field.getDataType().name() == 'DATE'}">
+                                        <g:formatDate date="${fieldValue}"/>
+                                    </g:if>
+                                    <g:else>
+                                        ${fieldValue}
+                                    </g:else>
+                                </td>
                             </tr>
                         </g:if>
+
                     </g:each>
                 </g:if>
 

@@ -22,14 +22,14 @@ import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.process.PeriodOfTime;
-import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
-import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.Constants;
 import org.apache.log4j.Logger;
 
@@ -164,22 +164,19 @@ public class SimpleTaxCompositionTask extends PluggableTask
         }
     }
 
-    private boolean isTaxCalculationNeeded(Integer userId, Integer customContactFieldId) {
-        if (customContactFieldId == null) {
+    private boolean isTaxCalculationNeeded(Integer userId, Integer customFieldId) {
+        if (customFieldId == null) {
             return true;
         }
-        ContactDTO contactDto = new ContactDAS().findPrimaryContact(userId);
-        if (contactDto == null) {
+        CustomerDTO customer = new UserDAS().find(userId).getCustomer();
+        if (customer == null) {
             return true;
         }
 
-        for (ContactFieldDTO contactField : contactDto.getFields()) {
-            if (contactField.getType().getId() == customContactFieldId) {
-                String value = contactField.getContent();
-                if ("yes".equalsIgnoreCase(value) || "true".equalsIgnoreCase(value)) {
-                    return false;
-                }
-            }
+        MetaFieldValue customField = customer.getMetaField(customFieldId);
+        String value = (String) customField.getValue();
+        if ("yes".equalsIgnoreCase(value) || "true".equalsIgnoreCase(value)) {
+            return false;
         }
 
         return true;

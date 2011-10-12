@@ -98,11 +98,6 @@ import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean;
 import com.sapienter.jbilling.server.rule.task.IRulesGenerator;
 import com.sapienter.jbilling.server.user.*;
-import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
-import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.user.db.AchDTO;
@@ -811,47 +806,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
     }
 
-    /**
-     * Returns a list of user ids with matching custom contact fields.
-     *
-     * @param fields fields to match
-     * @return user ids with matching custom contact fields
-     */
-    public Integer[] getUsersByCustomFields(ContactFieldWS[] fields) {
-        List<ContactFieldDTO> dtos = new ArrayList<ContactFieldDTO>(fields.length);
-        for (ContactFieldWS field : fields) {
-            dtos.add(new ContactFieldDTO(field));
-        }
-
-        List<UserDTO> users = new UserBL().getByCustomFields(getCallerCompanyId(), dtos);
-
-        int i = 0;
-        Integer[] userIds = new Integer[users.size()];
-        for (UserDTO user : users) {
-            userIds[i++] = user.getId();
-        }
-        return userIds;
-    }
-
-    public void saveCustomContactField(ContactFieldTypeWS ws) throws SessionInternalError {
-    	try {
-
-    		ContactFieldTypeDAS das= new ContactFieldTypeDAS();
-            ContactFieldTypeDTO dto= ws.getDTO();
-    			dto= das.save(dto);
-
-            if ( ws.getDescriptions().size() > 0 ) {
-                InternationalDescriptionWS descrWs= (InternationalDescriptionWS)ws.getDescriptions().get(0);
-                dto.setDescription( descrWs.getContent(), descrWs.getLanguageId() );
-				}
-
-    			das.flush();
-
-    	}catch (Exception e) {
-    		throw new SessionInternalError(e);
-    	}
-    }
-
     @Deprecated
     private Integer[] getByCCNumber(Integer entityId, String number) {
         List<Integer> usersIds = new CreditCardDAS().findByLastDigits(entityId, number);
@@ -968,6 +922,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         } catch (NamingException e) {
             throw new SessionInternalError("Could not fetch bean from application context.", e);
         }
+    }
+
+    public void processPartnerPayouts(Date runDate) {
+        IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
+        userSession.processPayouts(runDate);
     }
 
     public PartnerWS getPartner(Integer partnerId) throws SessionInternalError {

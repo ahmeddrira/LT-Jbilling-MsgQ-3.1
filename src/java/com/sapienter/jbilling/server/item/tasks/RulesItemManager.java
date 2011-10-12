@@ -30,7 +30,6 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import org.apache.log4j.Logger;
@@ -99,9 +98,6 @@ public class RulesItemManager extends BasicItemManager {
             contact.set(userId);
             ContactDTOEx contactDTO = contact.getDTO();
             rulesMemoryContext.add(contactDTO);
-            for (ContactFieldDTO field : contactDTO.getFieldsTable().values()) {
-                rulesMemoryContext.add(field);
-            }
 
 
             // Add the subscriptions

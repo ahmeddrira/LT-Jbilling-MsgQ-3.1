@@ -48,8 +48,6 @@ import com.sapienter.jbilling.server.user.CreateResponseWS
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS
-import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS
-import com.sapienter.jbilling.server.user.contact.ContactFieldWS
 import com.sapienter.jbilling.server.user.partner.PartnerWS
 import com.sapienter.jbilling.server.util.CurrencyWS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
@@ -183,10 +181,8 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getUserId(username)
     }
 
-	public void saveCustomContactField(ContactFieldTypeWS ws) {
-		webServicesSession.saveCustomContactField(ws)
-	}
-	
+
+
     public Integer[] getUsersInStatus(Integer statusId) {
         return webServicesSession.getUsersInStatus(statusId)
     }
@@ -197,10 +193,6 @@ class ApiService implements IWebServicesSessionBean {
 
     public Integer[] getUsersByCustomField(Integer typeId, String value) {
         return webServicesSession.getUsersByCustomField(typeId, value)
-    }
-
-    public Integer[] getUsersByCustomFields(ContactFieldWS[] fields) {
-        return webServicesSession.getUsersByCustomFields(fields)
     }
 
     public Integer[] getUsersByCreditCard(String number) {
@@ -221,6 +213,10 @@ class ApiService implements IWebServicesSessionBean {
 
     void processPartnerPayout(Integer partnerId) {
         webServicesSession.processPartnerPayout(partnerId)
+    }
+
+    void processPartnerPayouts(Date runDate) {
+        webServicesSession.processPartnerPayouts(runDate)
     }
 
     public PartnerWS getPartner(Integer partnerId) {

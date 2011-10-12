@@ -26,7 +26,6 @@ import com.sapienter.jbilling.server.rule.RulesBaseTask;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 
@@ -83,9 +82,6 @@ public class RulesItemManager2 extends RulesBaseTask implements IItemPurchaseMan
             contact.set(userId);
             ContactDTOEx contactDTO = contact.getDTO();
             rulesMemoryContext.add(contactDTO);
-            for (ContactFieldDTO field : (Collection<ContactFieldDTO>) contactDTO.getFieldsTable().values()) {
-                rulesMemoryContext.add(field);
-            }
         } catch (Exception e) {
             throw new TaskException(e);
         }

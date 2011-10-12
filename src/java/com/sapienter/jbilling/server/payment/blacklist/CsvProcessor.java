@@ -20,11 +20,12 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Set;
 
+import com.sapienter.jbilling.server.metafields.db.MetaField;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -33,9 +34,6 @@ import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
@@ -87,7 +85,7 @@ public class CsvProcessor {
     private UserDAS userDAS = null;
     private ContactDAS contactDAS = null;
     private CreditCardDAS creditCardDAS = null;
-    private ContactFieldTypeDTO ipAddressFieldTypeDTO = null;
+    private Integer ipAddressCustomField = null;
     private ResourceBundle rBundle = null;
 
     // current line and line number
@@ -119,8 +117,7 @@ public class CsvProcessor {
             inFile = new BufferedReader(new FileReader(filePath));
 
             CompanyDTO company = new CompanyDAS().find(entityId);
-            ipAddressFieldTypeDTO = new ContactFieldTypeDAS().find(
-                BlacklistBL.getIpAddressCcfId(entityId));
+            ipAddressCustomField = BlacklistBL.getIpAddressCcfId(entityId);
 
             EntityBL entity = new EntityBL(entityId);
             Locale locale = entity.getLocale();
@@ -292,19 +289,12 @@ public class CsvProcessor {
     private void createIpAddressRecord(BlacklistDTO entry) throws ParseException {
         checkForEmptyRecord("IP_ADDRESS", Column.IP_ADDRESS);
 
-        ContactDTO newContact = new ContactDTO();
-        newContact.setCreateDate(new Date());
-        newContact.setDeleted(0);
-        ContactFieldDTO newField = new ContactFieldDTO();
-        newField.setType(ipAddressFieldTypeDTO);
-        newField.setContent(getString(Column.IP_ADDRESS));
-        newField.setContact(newContact);
+        MetaField metaField = new MetaFieldDAS().find(ipAddressCustomField);
 
-        Set<ContactFieldDTO> fields = new HashSet<ContactFieldDTO>(1);
-        fields.add(newField);
-        newContact.setFields(fields);
+        MetaFieldValue newValue = metaField.createValue();
+        newValue.setValue(getString(Column.IP_ADDRESS));
 
-        entry.setContact(newContact);
+        entry.setMetaFieldValue(newValue);
     }
 
     /**

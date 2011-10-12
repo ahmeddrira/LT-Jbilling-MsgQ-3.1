@@ -18,7 +18,6 @@ package com.sapienter.jbilling.server.user;
 
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.naming.NamingException;
@@ -31,10 +30,6 @@ import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDAS;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactMapDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactMapDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
@@ -53,7 +48,6 @@ public class ContactBL {
     
     // private methods
     private ContactDAS contactDas = null;
-    private ContactFieldDAS contactFieldDas = null;
     private ContactDTO contact = null;
     private Integer entityId = null;
     private JbillingTableDAS jbDAS = null;
@@ -128,7 +122,6 @@ public class ContactBL {
     public ContactDTOEx getVoidDTO(Integer myEntityId) {
         entityId = myEntityId;
         ContactDTOEx retValue = new ContactDTOEx();
-        retValue.setFieldsTable(initializeFields());
         return retValue;
     }
     
@@ -158,25 +151,6 @@ public class ContactBL {
             contact.getDeleted(),
             contact.getInclude());
         
-        LOG.debug("ContactDTO: getting custom fields");
-        try {
-            retValue.setFieldsTable(initializeFields());
-            for (ContactFieldDTO field: contact.getFields()) {
-                // now find the field of this type
-                ContactFieldDTO dto = (ContactFieldDTO) retValue
-                        .getFieldsTable().get(String.valueOf(field.getType().getId()));
-                if (field != null && dto != null) {
-                    dto.setContent(field.getContent() == null ? "" : field.getContent());
-                    dto.setId(field.getId());
-                }
-            }
-        } catch (Exception e) {
-            LOG.error("Error initializing fields", e);
-        } 
-        
-        LOG.debug("Returning dto with " + retValue.getFieldsTable().size() + 
-                " fields");
-        
         return retValue;
     }
     
@@ -194,31 +168,9 @@ public class ContactBL {
         }
         return retValue;
     }
-    
-    /**
-     * Create a Hashtable with the key beign the field type for the
-     * entity
-     * @return
-     */
-    private Hashtable<String, ContactFieldDTO> initializeFields() {
-        // now go over the entity specific fields
-        Hashtable<String, ContactFieldDTO> fields = new Hashtable<String, ContactFieldDTO>();
-        EntityBL entity = new EntityBL(entityId);
-        for (ContactFieldTypeDTO field: entity.getEntity().getContactFieldTypes()) {
-            ContactFieldDTO fieldDto = new ContactFieldDTO();
-            fieldDto.setType(field);
-            fieldDto.setContent(new String()); // can't be null
-            // the key HAS to be a String if we want struts to be able to
-            // read the Hashtabe
-            fields.put(String.valueOf(field.getId()), fieldDto);
-        }
-        
-        return fields;
-    }
-    
+
     private void init() {
         contactDas = new ContactDAS();
-        contactFieldDas = new ContactFieldDAS();
         jbDAS = (JbillingTableDAS) Context.getBean(Context.Name.JBILLING_TABLE_DAS);
         eLogger = EventLogger.getInstance();
     }
@@ -302,8 +254,6 @@ public class ContactBL {
         contact = contactDas.save(new ContactDTO(dto)); // it won't take the Ex
         contact.setContactMap(map);
         map.setContact(contact);
-        
-        updateCreateFields(dto.getFieldsTable(), false);
         
         LOG.debug("created " + contact);
 
@@ -393,67 +343,14 @@ public class ContactBL {
         NewContactEvent event = new NewContactEvent(contact, entityId);
         EventManager.process(event);
 
-        if (null != executorUserId ) {
-            eLogger.audit(executorUserId,
-                    contact.getUserId(),
-                    Constants.TABLE_CONTACT,
-                    contact.getId(),
-                    EventLogger.MODULE_USER_MAINTENANCE,
-                    EventLogger.ROW_UPDATED, null, null, null);
-        } else {
-            eLogger.auditBySystem(entityId,
-                                  contact.getUserId(),
-                                  Constants.TABLE_CONTACT,
-                                  contact.getId(),
-                                  EventLogger.MODULE_USER_MAINTENANCE,
-                                  EventLogger.ROW_UPDATED, null, null, null);
-        }
-        updateCreateFields(dto.getFieldsTable(), true);
+        eLogger.auditBySystem(entityId,
+                              contact.getUserId(),
+                              Constants.TABLE_CONTACT,
+                              contact.getId(),
+                              EventLogger.MODULE_USER_MAINTENANCE,
+                              EventLogger.ROW_UPDATED, null, null, null);
     }
-    
-    private void updateCreateFields(Hashtable fields, boolean isUpdate) {
-        if (fields == null) {
-            // if the fields are not there, do nothing
-            return;
-        }
-        // now the per-entity fields
-        for (Iterator it = fields.keySet().iterator(); it.hasNext();) {
-            String type = (String) it.next();
-            ContactFieldDTO field = (ContactFieldDTO) fields.get(type);
-            // we can't create or update custom fields with null value
-            if (field.getContent() == null) {
-                continue;
-            }
-            if (isUpdate) {
-                if (field.getId() != 0) {
-                    contactFieldDas.find(field.getId()).setContent(field.getContent());
-                } else {
-                    // it is un update, but don't know the field id
-                    ContactFieldDTO aField = contactFieldDas.findByType(Integer.valueOf(type), contact.getId());
-                    if (aField != null) {
-                        aField.setContent(field.getContent());
-                    } else {
-                        // not there yet. It's ok
-                        createContactField(Integer.valueOf(type), field.getContent());
-                    }
-                }
-            } else {
-                // create the new field
-                createContactField(Integer.valueOf(type), field.getContent());
-            }
-        }
 
-    }
-    
-    private void createContactField(Integer type, String content) {
-        ContactFieldDTO newField = new ContactFieldDTO();
-        newField.setType(new ContactFieldTypeDAS().find(type));
-        newField.setContent(content);
-        newField.setContact(contact);
-        newField = new ContactFieldDAS().save(newField);
-        contact.getFields().add(newField);
-    }
-    
     public void delete() {
         
         if (contact == null) return;
@@ -461,12 +358,6 @@ public class ContactBL {
         LOG.debug("Deleting contact " + contact.getId());
         // delete the map first
         new ContactMapDAS().delete(contact.getContactMap());
-        
-        // now the fields
-        for(ContactFieldDTO field: contact.getFields()) {
-            new ContactFieldDAS().delete(field);
-        }
-        contact.getFields().clear();
 
         // for the logger
         Integer entityId = this.entityId;

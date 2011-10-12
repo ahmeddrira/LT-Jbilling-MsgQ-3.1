@@ -50,6 +50,9 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
+import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -84,7 +87,6 @@ import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
@@ -778,19 +780,17 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
             // add all the custom contact fields
             // the from
-            for (Iterator it = from.getFieldsTable().values().iterator(); it
-                    .hasNext();) {
-                ContactFieldDTO field = (ContactFieldDTO) it.next();
-                String fieldName = field.getType().getPromptKey();
-                fieldName = fieldName.substring(fieldName.lastIndexOf('.') + 1);
-                parameters.put("from_custom_" + fieldName, field.getContent());
+            UserDTO fromUser = new UserDAS().find(from.getUserId());
+            if (fromUser.getCustomer() != null && fromUser.getCustomer().getMetaFields() != null) {
+                for (MetaFieldValue metaFieldValue : fromUser.getCustomer().getMetaFields()) {
+                    parameters.put("from_custom_" + metaFieldValue.getField().getName(), metaFieldValue.getValue());
+                }
             }
-            for (Iterator it = to.getFieldsTable().values().iterator(); it
-                    .hasNext();) {
-                ContactFieldDTO field = (ContactFieldDTO) it.next();
-                String fieldName = field.getType().getPromptKey();
-                fieldName = fieldName.substring(fieldName.lastIndexOf('.') + 1);
-                parameters.put("to_custom_" + fieldName, field.getContent());
+            UserDTO toUser = new UserDAS().find(to.getUserId());
+            if (toUser.getCustomer() != null && toUser.getCustomer().getMetaFields() != null) {
+                for (MetaFieldValue metaFieldValue : toUser.getCustomer().getMetaFields()) {
+                    parameters.put("to_custom_" + metaFieldValue.getField().getName(), metaFieldValue.getValue());
+                }
             }
 
             // the logo is a file
@@ -1085,17 +1085,9 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             retValue.addParameter("tools-iterator", new IteratorTool());
 
             //Adding a CCF Field to Email Template
-            List<ContactDTOEx> listDto= contact.getAll(userId);
-            if (null != listDto && listDto.size() > 0 ) {
-                ContactDTOEx contactDTOEx= listDto.get(0);
-                Map<String, ContactFieldDTO> fieldsMap= contactDTOEx.getFieldsTable();
-                for (Iterator<?> it= fieldsMap.values().iterator();it.hasNext(); ) {
-                     ContactFieldDTO contactFieldDTO= (ContactFieldDTO) it.next();
-                     if ( null != contactFieldDTO && null != contactFieldDTO.getContent()
-                        && null != contactFieldDTO.getType())
-                     {
-                        retValue.addParameter(contactFieldDTO.getType().getPromptKey(), contactFieldDTO.getContent());
-                     }
+            if (user.getEntity().getCustomer() != null && user.getEntity().getCustomer().getMetaFields() != null) {
+                for (MetaFieldValue metaFieldValue : user.getEntity().getCustomer().getMetaFields()) {
+                    retValue.addParameter(metaFieldValue.getField().getName(), metaFieldValue.getValue());
                 }
             }
             

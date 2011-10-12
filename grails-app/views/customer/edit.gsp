@@ -230,40 +230,6 @@
 
                         <br/>&nbsp;
 
-                        <!-- custom contact fields -->
-                        <g:each var="ccf" in="${company.contactFieldTypes.sort{ it.id }}">
-                            <g:set var="fieldIndex" value="${user?.contact?.fieldIDs?.findIndexOf{ it == ccf.id }}"/>
-                            <g:set var="fieldValue" value="${user?.contact?.fieldValues?.getAt(fieldIndex)}"/>
-
-                            <g:set var="enumValues" value="${null}"/>
-                            <%
-                                for (EnumerationDTO dto: EnumerationDTO.list()) {
-                                    if (dto.name == ccf.getDataType()) {
-                                        enumValues= ['']
-                                        enumValues.addAll(dto.values.collect {it.value})
-                                    }
-                                }
-                             %>
-
-                            <g:if test="${enumValues}">
-                                <g:applyLayout name="form/select">
-                                    <content tag="label"><g:message code="${ccf.getDescription(session['language_id'])}"/></content>
-                                    <g:select
-                                        class="field"
-                                        name="contactField.${ccf.id}"
-                                        from="${enumValues}"
-                                        value="${fieldValue}" />
-                                </g:applyLayout>
-                            </g:if>
-                            <g:else>
-                                <g:applyLayout name="form/input">
-                                    <content tag="label"><g:message code="${ccf.getDescription(session['language_id'])}"/></content>
-                                    <g:textField class="field" name="contactField.${ccf.id}" value="${fieldValue}"/>
-                                </g:applyLayout>
-                            </g:else>
-
-                        </g:each>
-
                         <!-- customer meta fields -->
                         <g:each var="metaField" in="${metaFields?.sort{ it.displayOrder }}">
                             <g:if test="${!metaField.disabled}">

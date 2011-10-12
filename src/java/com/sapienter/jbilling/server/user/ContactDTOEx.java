@@ -25,15 +25,12 @@ import java.util.Date;
 import java.util.Hashtable;
 
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 
 /**
  * @author Emil
  */
 public class ContactDTOEx extends ContactDTO implements Serializable  {
-    
-    private Hashtable<String, ContactFieldDTO> fieldsTable = null; // the entity specific fields
+
     private Integer type = null; // the contact type
 
     /**
@@ -77,7 +74,7 @@ public class ContactDTOEx extends ContactDTO implements Serializable  {
         super(id,organizationName, address1, address2, city, stateProvince, postalCode, countryCode, 
                 lastName, firstName, initial, title, phoneCountryCode, phoneAreaCode, 
                 phoneNumber, faxCountryCode, faxAreaCode, faxNumber, email, createDate, deleted, 
-                notify, null, null, null);
+                notify, null, null);
     }
 
     /**
@@ -114,24 +111,8 @@ public class ContactDTOEx extends ContactDTO implements Serializable  {
         // contacts from ws are always included in notifications
         //setInclude(new Integer(1));
 
-        // now add the custom fields
-        if (ws.getFieldIDs() == null || ws.getFieldIDs().length == 0) {
-            return;
-        }
-
-        fieldsTable = new Hashtable<String, ContactFieldDTO>();
-        for (int f = 0; f < ws.getFieldIDs().length; f++) {
-            fieldsTable.put(String.valueOf(ws.getFieldIDs()[f]),
-                            new ContactFieldDTO(0, new ContactFieldTypeDTO(ws.getFieldIDs()[f]), null, ws.getFieldValues()[f]));
-        }
     }
 
-    public Hashtable<String, ContactFieldDTO> getFieldsTable() {
-        return fieldsTable;
-    }
-    public void setFieldsTable(Hashtable<String, ContactFieldDTO> fields) {
-        this.fieldsTable = fields;
-    }
     public Integer getType() {
         return type;
 }

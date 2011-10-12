@@ -22,8 +22,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
-import com.sapienter.jbilling.server.user.CardValidationWS;
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import junit.framework.TestCase;
 
 import com.sapienter.jbilling.server.entity.AchDTO;
@@ -38,7 +37,6 @@ import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
-import org.joda.time.DateMidnight;
 
 /**
  * @author Emil
@@ -662,19 +660,21 @@ public class WSTest extends TestCase {
         newUser.setCurrencyId(null);
         newUser.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
 
+        MetaFieldValueWS metaField1 = new MetaFieldValueWS();
+        metaField1.setFieldName("partner.prompt.fee");
+        metaField1.setValue("serial-from-ws");
+
+        MetaFieldValueWS metaField2 = new MetaFieldValueWS();
+        metaField2.setFieldName("ccf.payment_processor");
+        metaField2.setValue("FAKE_2"); // the plug-in parameter of the processor
+
+        newUser.setMetaFields(new MetaFieldValueWS[]{metaField1, metaField2});
+
         // add a contact
         ContactWS contact = new ContactWS();
         contact.setEmail("frodo@shire.com");
         contact.setFirstName("Frodo");
         contact.setLastName("Baggins");
-        Integer fields[] = new Integer[2];
-        fields[0] = 1;
-        fields[1] = 2; // the ID of the CCF for the processor
-        String fieldValues[] = new String[2];
-        fieldValues[0] = "serial-from-ws";
-        fieldValues[1] = "FAKE_2"; // the plug-in parameter of the processor
-        contact.setFieldIDs(fields);
-        contact.setFieldValues(fieldValues);
         newUser.setContact(contact);
 
         // add a credit card
@@ -698,212 +698,6 @@ public class WSTest extends TestCase {
 
         return newUser;
 	}
-
-    public void testValidateCreditCardLevel1() throws Exception {
-        JbillingAPI api = JbillingAPIFactory.getAPI();
-
-        /*
-            Level 1 validation tests
-         */
-        System.out.println("Level 1 credit card validations");
-
-        // validate that credit card has name
-        CreditCardDTO creditCard = new CreditCardDTO();
-        creditCard.setNumber("4111111111111152");
-
-        creditCard.setName("");
-        CardValidationWS validation = api.validateCreditCard(creditCard, null, 1);
-        assertEquals("validating level 1", 1, validation.getLevel());
-        assertEquals("failed at level 1", 1, validation.getLevelFailed());
-        assertFalse("credit card name, not valid", validation.isValid());
-        assertFalse("credit card name has error message", validation.getErrors().isEmpty());
-        assertEquals("Credit card name is missing.", validation.getErrors().get(0));
-
-        creditCard.setName(null);
-        validation = api.validateCreditCard(creditCard, null, 1);
-        assertEquals("validating level 1", 1, validation.getLevel());
-        assertEquals("failed at level 1", 1, validation.getLevelFailed());
-        assertFalse("credit card name, not valid", validation.isValid());
-        assertFalse("credit card name has error message", validation.getErrors().isEmpty());
-        assertEquals("Credit card name is missing.", validation.getErrors().get(0));
-
-
-        // validate that credit card has a number
-        creditCard.setName("Frodo Baggins");
-        creditCard.setNumber("");
-        validation = api.validateCreditCard(creditCard, null, 1);
-        assertEquals("validating level 1", 1, validation.getLevel());
-        assertEquals("failed at level 1", 1, validation.getLevelFailed());
-        assertFalse("credit card number, not valid", validation.isValid());
-        assertFalse("credit card number has error message", validation.getErrors().isEmpty());
-        assertEquals( "Credit card number is missing.", validation.getErrors().get(0));
-
-
-        // validate that the credit card number must contain only digits
-        creditCard.setNumber("abcdefg");
-        validation = api.validateCreditCard(creditCard, null, 1);
-        assertEquals("validating level 1", 1, validation.getLevel());
-        assertEquals("failed at level 1", 1, validation.getLevelFailed());
-        assertFalse("credit card number, not a number", validation.isValid());
-        assertFalse("credit card number has error message", validation.getErrors().isEmpty());
-        assertEquals("Credit card number is not a valid number.", validation.getErrors().get(0));
-        assertEquals("Credit card mod10 validation failed.", validation.getErrors().get(1));
-
-
-        // validate that the credit card number passes the mod10 luhn check
-        creditCard.setNumber("4123456789000000");
-        validation = api.validateCreditCard(creditCard, null, 1);
-        assertEquals("validating level 1", 1, validation.getLevel());
-        assertEquals("failed at level 1", 1, validation.getLevelFailed());
-        assertFalse("credit card number, luhn not valid", validation.isValid());
-        assertFalse("credit card number has error message", validation.getErrors().isEmpty());
-        assertEquals("Credit card mod10 validation failed.", validation.getErrors().get(0));
-
-        // positive test
-        creditCard.setName("Frodo Baggins");
-        creditCard.setNumber("4111111111111152");
-        validation = api.validateCreditCard(creditCard, null, 1);
-        assertEquals("validating level 1", 1, validation.getLevel());
-        assertEquals("did not fail", 0, validation.getLevelFailed());
-        assertTrue("credit card is valid.", validation.isValid());
-    }
-
-    public void testValidateCreditCardLevel2() throws Exception {
-        JbillingAPI api = JbillingAPIFactory.getAPI();
-
-        /*
-            Level 2 validation tests
-         */
-        System.out.println("Level 2 credit card validations");
-
-        CreditCardDTO creditCard = new CreditCardDTO();
-        creditCard.setNumber("4111111111111152");
-        creditCard.setName("Frodo Baggins");
-
-        // validate that the contact has an address
-        ContactWS contact = new ContactWS();
-        contact.setEmail("test@test.com"); // required for validation
-        contact.setAddress1("");           // address for CC validation
-
-        CardValidationWS validation = api.validateCreditCard(creditCard, contact, 2);
-        assertEquals("validating level 2", 2, validation.getLevel());
-        assertEquals("failed at level 2", 2, validation.getLevelFailed());
-        assertFalse("address missing, not valid", validation.isValid());
-        assertFalse("address has error message", validation.getErrors().isEmpty());
-        assertEquals("Customer address is missing.", validation.getErrors().get(0));
-
-
-        // validate that credit card has security code
-        contact.setAddress1("123 Fake Street");
-        creditCard.setSecurityCode("");
-        validation = api.validateCreditCard(creditCard, contact, 2);
-        assertEquals("validating level 2", 2, validation.getLevel());
-        assertEquals("failed at level 2", 2, validation.getLevelFailed());
-        assertFalse("credit card security code missing, not valid", validation.isValid());
-        assertFalse("credit card security code has error message", validation.getErrors().isEmpty());
-        assertEquals("Credit card CVV security code is missing.", validation.getErrors().get(0));
-
-
-        // validate that the credit card security code must contain only digits
-        creditCard.setSecurityCode("abc");
-        validation = api.validateCreditCard(creditCard, contact, 2);
-        assertEquals("validating level 2", 2, validation.getLevel());
-        assertEquals("failed at level 2", 2, validation.getLevelFailed());
-        assertFalse("credit card security code not a number, not valid", validation.isValid());
-        assertFalse("credit card security code has error message", validation.getErrors().isEmpty());
-        assertEquals("Credit card CVV security code is not a valid number.", validation.getErrors().get(0));
-
-
-        // positive test
-        creditCard.setSecurityCode("123");
-        validation = api.validateCreditCard(creditCard, contact, 2);
-        assertEquals("validating level 2", 2, validation.getLevel());
-        assertEquals("did not fail", 0, validation.getLevelFailed());
-        assertTrue("credit card is valid.", validation.isValid());
-
-
-        // level 2 check, failure in level 1
-        creditCard.setName(null);
-        creditCard.setNumber(null);
-        validation = api.validateCreditCard(creditCard, contact, 2);
-        assertEquals("validating level 2", 2, validation.getLevel());
-        assertEquals("failed at level 1", 1, validation.getLevelFailed());
-        assertFalse("credit card is not valid.", validation.isValid());
-    }
-
-    public void testValidateCreditCardLevel3() throws Exception {
-        JbillingAPI api = JbillingAPIFactory.getAPI();
-        disablePaymentRouter(api); // pre-auth validation not compatible with payment routers
-
-        /*
-            Level 3 validation tests
-         */
-        System.out.println("Level 3 credit card validations");
-
-        CreditCardDTO creditCard = new CreditCardDTO();
-        creditCard.setNumber("4111111111111152");
-        creditCard.setName("Frodo Baggins");
-
-        ContactWS contact = new ContactWS();
-        contact.setEmail("test@test.com");
-        contact.setAddress1("123 Fake Street");
-        contact.setFieldIDs(new Integer[] { 1, 2 });
-        contact.setFieldValues(new String[] { "serial-from-ws", "FAKE_2" });
-
-
-        // validate pre-authorization using PaymentFakeTask CVV checks
-        // CCV last digit even = pass pre-auth
-        // CVV last digit odd = fail pre-auth
-        DateMidnight expiryDate = new DateMidnight().plusYears(5);
-        creditCard.setExpiry(expiryDate.toDate());
-
-        creditCard.setSecurityCode("003"); // odd digit, fail pre-auth
-
-        CardValidationWS validation = api.validateCreditCard(creditCard, contact, 3);
-        assertEquals("validating level 3", 3, validation.getLevel());
-        assertEquals("failed at level 3", 3, validation.getLevelFailed());
-        assertFalse("credit card failed pre-auth, not valid", validation.isValid());
-        assertFalse("credit card pre-auth has error message", validation.getErrors().isEmpty());
-        assertEquals("Credit card pre-authorization failed.", validation.getErrors().get(0));
-
-        assertNotNull(validation.getPreAuthorization());
-
-
-        creditCard.setSecurityCode("002"); // even digit, pass pre-auth
-        validation = api.validateCreditCard(creditCard, contact, 3);
-        assertEquals("validating level 3", 3, validation.getLevel());
-        assertEquals("did not fail", 0, validation.getLevelFailed());
-        assertTrue("credit card is valid.", validation.isValid());
-
-        // cleanup
-        enablePaymentRouter(api);
-    }
-
-    private void disablePaymentRouter(JbillingAPI api) {
-        // move plug-in 460 processing order to 99
-        PluggableTaskWS blacklist = api.getPluginWS(460);
-        blacklist.setProcessingOrder(99);
-        api.updatePlugin(blacklist);
-
-        // move plug-in 22 processing order to 1 so that the fake payment
-        // task is first in the chain. effectively disables the router & filter plug-ins.
-        PluggableTaskWS fakePayment = api.getPluginWS(22);
-        fakePayment.setProcessingOrder(1);
-        api.updatePlugin(fakePayment);
-    }
-
-    private void enablePaymentRouter(JbillingAPI api) {
-        // move plug-in 22 processing order to 5 to reset payment plug-ins back to where they were
-        PluggableTaskWS fakePayment = api.getPluginWS(22);
-        fakePayment.setProcessingOrder(5);
-        api.updatePlugin(fakePayment);
-
-        // move plug-in 460 processing order to 1
-        PluggableTaskWS blacklist = api.getPluginWS(460);
-        blacklist.setProcessingOrder(1);
-        api.updatePlugin(blacklist);
-    }
-
 
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {
         assertEquals(null, expected, actual);

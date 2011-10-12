@@ -23,7 +23,9 @@ import com.sapienter.jbilling.client.util.SortableCriteria
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.metafields.MetaFieldBL
+import com.sapienter.jbilling.server.metafields.db.DataType
 import com.sapienter.jbilling.server.metafields.db.EntityType
+import com.sapienter.jbilling.server.metafields.db.MetaField
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS
@@ -88,11 +90,31 @@ class CustomerController {
                             String ccfValue= filter.stringValue
                             log.debug "Contact Field Type ID: ${typeId}, CCF Value: ${ccfValue}"
                             if (typeId && ccfValue) {
-                                createAlias("contact.fields", "field")
-                                createAlias("field.type", "type")
-                                setFetchMode("type", FetchMode.JOIN)
-                                eq("type.id", typeId.toInteger())
-                                addToCriteria(Restrictions.ilike("field.content", ccfValue, MatchMode.ANYWHERE))
+                                MetaField type = findMetaFieldType(typeId.toInteger());
+                                if (type != null) {
+                                    createAlias("customer", "customer")
+                                    createAlias("customer.metaFields", "fieldValue")
+                                    createAlias("fieldValue.field", "type")
+                                    setFetchMode("type", FetchMode.JOIN)
+                                    eq("type.id", typeId.toInteger())
+
+                                    switch (type.getDataType()) {
+                                        case DataType.STRING:
+                                        case DataType.ENUMERATION:
+                                        case DataType.JSON_OBJECT:
+                                            addToCriteria(Restrictions.ilike("fieldValue.value", ccfValue, MatchMode.ANYWHERE))
+                                            break;
+                                        default:
+                                        // todo: now searching as string only, search for other types is impossible
+//                                            def fieldValue = type.createValue();
+//                                            bindData(fieldValue, ['value': ccfValue])
+//                                            addToCriteria(Restrictions.eq("fieldValue.value", fieldValue.getValue()))
+
+                                            addToCriteria(Restrictions.eq("fieldValue.value", ccfValue))
+                                            break;
+                                    }
+
+                                }
                             }
                         } else {
                             addToCriteria(filter.getRestrictions());
@@ -425,5 +447,14 @@ class CustomerController {
 
     def getMetaFields() {
         return MetaFieldBL.getAvailableFieldsList(EntityType.USER);
+    }
+
+    def findMetaFieldType(Integer metaFieldId) {
+        for (MetaField field : metaFields) {
+            if (field.id == metaFieldId) {
+                return field;
+            }
+        }
+        return null;
     }
 }

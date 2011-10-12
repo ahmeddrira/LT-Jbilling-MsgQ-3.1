@@ -19,7 +19,6 @@ package com.sapienter.jbilling.server.user.db;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.math.BigDecimal;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -55,7 +54,6 @@ import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.server.process.db.AgeingEntityStepDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
@@ -90,7 +88,6 @@ public class CompanyDTO implements java.io.Serializable {
     private Set<ItemDTO> items = new HashSet<ItemDTO>(0);
     private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
     private Set<NotificationMessageDTO> notificationMessages = new HashSet<NotificationMessageDTO>(0);
-    private Set<ContactFieldTypeDTO> contactFieldTypes = new HashSet<ContactFieldTypeDTO>(0);
     private Set<CurrencyDTO> currencyDTOs = new HashSet<CurrencyDTO>(0);
     private Set<ItemTypeDTO> itemTypes = new HashSet<ItemTypeDTO>(0);
     private Set<BillingProcessConfigurationDTO> billingProcessConfigurations = new HashSet<BillingProcessConfigurationDTO>(0);
@@ -118,7 +115,7 @@ public class CompanyDTO implements java.io.Serializable {
                       Set<PaymentMethodDTO> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs,
                       Set<BillingProcessDTO> billingProcesses, Set<UserDTO> baseUsers, Set<ContactTypeDTO> contactTypes,
                       Set<ItemDTO> items, Set<EventLogDTO> eventLogs, Set<NotificationMessageDTO> notificationMessages,
-                      Set<ContactFieldTypeDTO> contactFieldTypes, Set<CurrencyDTO> currencyDTOs,
+                      Set<CurrencyDTO> currencyDTOs,
                       Set<ItemTypeDTO> itemTypes, Set<BillingProcessConfigurationDTO> billingProcessConfigurations,
                       Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods) {
         this.id = id;
@@ -136,7 +133,6 @@ public class CompanyDTO implements java.io.Serializable {
         this.items = items;
         this.eventLogs = eventLogs;
         this.notificationMessages = notificationMessages;
-        this.contactFieldTypes = contactFieldTypes;
         this.currencyDTOs = currencyDTOs;
         this.itemTypes = itemTypes;
         this.billingProcessConfigurations = billingProcessConfigurations;
@@ -298,15 +294,6 @@ public class CompanyDTO implements java.io.Serializable {
 
     public void setNotificationMessages(Set<NotificationMessageDTO> notificationMessages) {
         this.notificationMessages = notificationMessages;
-    }
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "entity")
-    public Set<ContactFieldTypeDTO> getContactFieldTypes() {
-        return this.contactFieldTypes;
-    }
-
-    public void setContactFieldTypes(Set<ContactFieldTypeDTO> contactFieldTypes) {
-        this.contactFieldTypes = contactFieldTypes;
     }
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

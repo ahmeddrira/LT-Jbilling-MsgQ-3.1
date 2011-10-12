@@ -40,6 +40,8 @@ import com.sapienter.jbilling.server.metafields.db.EntityType
 import com.sapienter.jbilling.server.metafields.MetaFieldBL
 import com.sapienter.jbilling.server.metafields.db.MetaField
 import com.sapienter.jbilling.server.metafields.MetaFieldValueWS
+import com.sapienter.jbilling.server.metafields.db.DataType
+import com.sapienter.jbilling.client.metafield.MetaFieldUtils
 
 /**
  * OrderController
@@ -532,18 +534,7 @@ class OrderBuilderController {
     }
 
     def bindMetaFields(OrderWS orderWS, GrailsParameterMap params) {
-        def fieldsArray = new LinkedList<MetaFieldValueWS>();
-        metaFields.each{
-            if (params["metaField_${it.id}"].any { key, value -> value }) {
-                def fieldValue = it.createValue();
-                bindData(fieldValue, params, "metaField_${it.id}")
-
-                def metaFieldWS = new MetaFieldValueWS(fieldValue)
-                 // name of field
-                metaFieldWS.setFieldName(it.name)
-                fieldsArray << metaFieldWS;
-            }
-        }
+        def fieldsArray = MetaFieldUtils.bindMetaFields(metaFields, params);
         orderWS.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
     }
 }

@@ -14,9 +14,9 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO" %>
+<%@ page import="com.sapienter.jbilling.server.metafields.db.MetaField" %>
 
-<g:set var="ipAddressType" value="${ContactFieldTypeDTO.list().find{ it.promptKey ==~ /.*ip_address.*/ }}"/>
+<g:set var="ipAddressType" value="${MetaField.list().find{ it.name ==~ /.*ip_address.*/ }}"/>
 
 <div class="form-edit">
     <div class="heading">

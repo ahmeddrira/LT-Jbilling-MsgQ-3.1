@@ -20,10 +20,7 @@
 
 package com.sapienter.jbilling.server.metafields;
 
-import com.sapienter.jbilling.server.metafields.db.EntityType;
-import com.sapienter.jbilling.server.metafields.db.MetaField;
-import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS;
-import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
+import com.sapienter.jbilling.server.metafields.db.*;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -115,11 +112,24 @@ public class MetaFieldHelper {
         Map<String, MetaField> availableMetaFields = MetaFieldBL.getAvailableFields(entity.getCustomizedEntityType());
         for (String fieldName : availableMetaFields.keySet()) {
             MetaFieldValue newValue = dto.getMetaField(fieldName);
+            if (newValue == null) { // try to search by id, may be temp fix
+                MetaField metaFieldName = availableMetaFields.get(fieldName);
+                newValue = dto.getMetaField(metaFieldName.getId());
+            }
             entity.setMetaField(fieldName, newValue != null ? newValue.getValue() : null);
         }
         for (MetaFieldValue value : entity.getMetaFields()) {
             MetaFieldBL.validateMetaField(value.getField(), value);
         }
+    }
+
+    public static MetaFieldValue getMetaField(MetaContent customizedEntity, Integer metaFieldNameId) {
+        for (MetaFieldValue value : customizedEntity.getMetaFields()) {
+            if (value.getField() != null && value.getField().getId().equals(metaFieldNameId)) {
+                return value;
+            }
+        }
+        return null;
     }
 
 

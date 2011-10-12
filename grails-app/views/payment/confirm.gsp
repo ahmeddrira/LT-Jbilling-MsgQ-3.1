@@ -137,15 +137,6 @@
                                 <g:set var="paymentMetaField" value="${payment?.metaFields?.find{ it.fieldName == metaField.name }}"/>
                                 <g:set var="fieldValue" value="${paymentMetaField?.getValue()}"/>
 
-                                <g:if test="${metaField.getDataType().name() == 'ENUMERATION'}">
-                                </g:if>
-                                <g:elseif test="${metaField.getDataType().name() == 'BOOLEAN'}">
-                                    <g:applyLayout name="form/checkbox">
-                                        <content tag="label">${metaField.name}</content>
-                                        <content tag="label.for">metaField_${metaField.id}.value</content>
-                                        <g:checkBox class="cb checkbox" name="metaField_${metaField.id}.value" checked="${fieldValue}"/>
-                                    </g:applyLayout>
-                                </g:elseif>
                                 <g:if test="${metaField.getDataType().name() == 'DATE'}">
                                     <g:applyLayout name="form/text">
                                         <content tag="label">${metaField.name}</content>

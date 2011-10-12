@@ -37,7 +37,6 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import java.util.ArrayList;
 
@@ -92,10 +91,6 @@ public class RulesValidatePurchaseTask extends PluggableTask
         contact.set(userId);
         ContactDTOEx contactDTO = contact.getDTO();
         rulesMemoryContext.add(contactDTO);
-        for (ContactFieldDTO field : (Collection<ContactFieldDTO>) 
-                 contactDTO.getFieldsTable().values()) {
-            rulesMemoryContext.add(field);    
-        }
 
         // add the subscriptions
         OrderBL order = new OrderBL();

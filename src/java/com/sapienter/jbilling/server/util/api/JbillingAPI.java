@@ -52,8 +52,6 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
-import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.util.CurrencyWS;
 import com.sapienter.jbilling.server.util.PreferenceWS;
@@ -90,7 +88,6 @@ public interface JbillingAPI {
     public Integer[] getUsersInStatus(Integer statusId);
     public Integer[] getUsersNotInStatus(Integer statusId);
     public Integer[] getUsersByCustomField(Integer typeId, String value);
-    public Integer[] getUsersByCustomFields(ContactFieldWS[] fields);
     public Integer[] getUsersByCreditCard(String number);
 
     public Integer getUserId(String username);
@@ -356,7 +353,6 @@ public interface JbillingAPI {
     public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods);
     public boolean updateOrCreateOrderPeriod(OrderPeriodWS orderPeriod);
     public void createUpdateNofications(Integer messageId, MessageDTO dto);
-    public void saveCustomContactField(ContactFieldTypeWS ws);
     public void saveCustomerNotes(Integer userId, String notes);
     public void updateCompany(CompanyWS companyWS);
     

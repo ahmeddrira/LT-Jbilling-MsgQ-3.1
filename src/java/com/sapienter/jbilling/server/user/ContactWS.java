@@ -22,7 +22,6 @@
  */
 package com.sapienter.jbilling.server.user;
 
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.api.validation.EntitySignupValidationGroup;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -77,9 +76,6 @@ public class ContactWS implements Serializable {
     private int deleted;
     private Boolean include;
 
-    private Integer[] fieldIDs = null;
-    private String[] fieldNames = null;
-    private String[] fieldValues = null;
     private Integer type = null; // the contact type
 
     private Integer contactTypeId = null;
@@ -183,18 +179,7 @@ public class ContactWS implements Serializable {
         setDeleted(other.getDeleted());
         setInclude(other.getInclude() != null && other.getInclude().equals(1) );
         setType(other.getType());
-        fieldIDs = new Integer[other.getFieldsTable().size()];
-        fieldNames = new String[other.getFieldsTable().size()];
-        fieldValues = new String[other.getFieldsTable().size()];
         int index = 0;
-
-        for (Iterator it = other.getFieldsTable().keySet().iterator(); it.hasNext();) {
-            fieldIDs[index] = new Integer((String) it.next());
-            ContactFieldDTO fieldDto = (ContactFieldDTO) other.getFieldsTable().get(fieldIDs[index].toString());
-            fieldNames[index] = fieldDto.getType().getPromptKey();
-            fieldValues[index] = fieldDto.getContent();
-            index++;
-        }
 
         //set Contact Type Name
         if (null != other.getContactMap() && null != other.getContactMap().getContactType()) {
@@ -376,30 +361,6 @@ public class ContactWS implements Serializable {
 
     public void setInclude(Boolean include) {
         this.include = include;
-    }
-
-    public Integer[] getFieldIDs() {
-        return fieldIDs;
-    }
-
-    public void setFieldIDs(Integer[] fieldIDs) {
-        this.fieldIDs = fieldIDs;
-    }
-
-    public String[] getFieldNames() {
-        return fieldNames;
-    }
-
-    public void setFieldNames(String[] fieldNames) {
-        this.fieldNames = fieldNames;
-    }
-
-    public String[] getFieldValues() {
-        return fieldValues;
-    }
-
-    public void setFieldValues(String[] fieldValues) {
-        this.fieldValues = fieldValues;
     }
 
     public Integer getType() {

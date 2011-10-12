@@ -19,13 +19,14 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import com.sapienter.jbilling.server.metafields.db.MetaField;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
-import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Util;
 
 /**
@@ -47,20 +48,18 @@ public class IpAddressFilter implements BlacklistFilter {
     }
 
     public Result checkUser(Integer userId) {
-        ContactDTO contact = new ContactDAS().findPrimaryContact(userId);
+        UserDTO user = new UserDAS().find(userId);
 
-        if (contact == null) {
+        if (user == null || user.getCustomer() == null) {
             return new Result(false, null);
         }
 
-        Set<ContactFieldDTO> contactFields = contact.getFields();
         String ipAddress = null;
-
-        // find the ip address custom contact field
-        for (ContactFieldDTO contactField : contactFields) {
-            if (contactField.getType().getId() == ipAddressCcf) {
-                ipAddress = contactField.getContent();
-                break;
+        MetaField metaField = new MetaFieldDAS().find(ipAddressCcf);
+        if (metaField != null) {
+            MetaFieldValue metaFieldValue = user.getCustomer().getMetaField(metaField.getName());
+            if (metaFieldValue != null) {
+                ipAddress = (String) metaFieldValue.getValue();
             }
         }
 

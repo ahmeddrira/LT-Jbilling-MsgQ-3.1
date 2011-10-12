@@ -22,6 +22,7 @@ import java.util.List;
 
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
 import com.sapienter.jbilling.server.payment.tasks.PaymentFilterTask;
@@ -135,7 +136,7 @@ public class BlacklistBL {
      * Creates an entry in the blacklist.
      */
     public Integer create(CompanyDTO company, Integer type, Integer source, 
-            CreditCardDTO creditCard, ContactDTO contact, UserDTO user) {
+            CreditCardDTO creditCard, ContactDTO contact, UserDTO user, MetaFieldValue metaFieldValue) {
         BlacklistDTO entry = new BlacklistDTO();
         entry.setCompany(company);
         entry.setCreateDate(new Date());
@@ -144,6 +145,7 @@ public class BlacklistBL {
         entry.setCreditCard(creditCard);
         entry.setContact(contact);
         entry.setUser(user);
+        entry.setMetaFieldValue(metaFieldValue);
 
         // save data
         blacklistEntry = blacklistDAS.save(entry);

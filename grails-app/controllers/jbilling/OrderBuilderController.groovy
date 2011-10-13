@@ -272,32 +272,6 @@ class OrderBuilderController {
                 def index = params.int('index')
                 def line = order.orderLines[index]
 
-                // useItem only if price and description not set by user
-                def price = params["line-${index}.priceAsDecimal"]
-                def description = params["line-${index}.description"]
-
-                /**
-                 * @since 09-Oct-2011
-                 * @author Vikas Bodani
-                 * Bug#1397
-                 * Compare only if useItem is initially true. If useItem was already false, it should stay false.
-                 * Alternately, remove useItem condition and compare current price with ItemDTO.get(line.itemId).price
-                 * instead of line.getPriceAsDecimal
-                 *
-                 */ 
-                if (line.useItem && StringUtils.isNotBlank(price) && line.getPriceAsDecimal().compareTo(price as BigDecimal) != 0) {
-                    log.debug("Line price updated by the user, use item = false")
-                    line.useItem = false
-
-                } else if (line.useItem && StringUtils.isNotBlank(description) && line.description != description) {
-                    log.debug("Line description updated by the user, use item = false")
-                    line.useItem = false
-
-                } //else {
-                  //  log.debug "use item = true"
-                  //  line.useItem = true
-                //}
-
                 // update line
                 bindData(line, params["line-${index}"])
 

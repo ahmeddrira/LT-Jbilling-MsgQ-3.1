@@ -75,7 +75,19 @@
     </div>
 
     <ul class="top-nav">
-        <li><g:message code="topnav.greeting"/> <sec:loggedInUserInfo field="plainUsername"/></li>
+        <sec:ifSwitched>
+            <li>Working as <sec:loggedInUserInfo field="plainUsername"/></li>
+            <li>
+                <a href="${request.contextPath}/j_spring_security_exit_user">
+                    Resume <sec:switchedUserOriginalUsername/>
+                </a>
+            </li>
+        </sec:ifSwitched>
+
+        <sec:ifNotSwitched>
+            <li><g:message code="topnav.greeting"/> <sec:loggedInUserInfo field="plainUsername"/></li>
+        </sec:ifNotSwitched>
+
         <li>
             <g:if test="${session['main_role_id'] == Constants.TYPE_CUSTOMER}">
                 <g:link controller="customer" action="edit" id="${session['user_id']}">

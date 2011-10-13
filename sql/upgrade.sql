@@ -1438,3 +1438,14 @@ insert into report_parameter (id, report_id, dtype, name) values (16, 10, 'strin
 insert into report_parameter (id, report_id, dtype, name) values (17, 10, 'string', 'plan_description');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 10, 'description', 1, 'Plan pricing history for all plan products and start dates.');
 insert into entity_report_map (report_id, entity_id) values (10, 1);
+
+-- Date: 13-Oct-2011
+-- Redmine Issue: #1445
+-- Description: Switch Users
+insert into permission_type (id, description) values (11, 'User Switching');
+
+insert into permission (id, type_id) values (110, 11);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 110, 'description', 1, 'Switch to sub-account');
+
+insert into permission (id, type_id) values (111, 11);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 111, 'description', 1, 'Switch to any user');

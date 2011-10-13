@@ -130,11 +130,15 @@ grails.plugins.springsecurity.failureHandler.defaultFailureUrl = '/login/authfai
 grails.plugins.springsecurity.rememberMe.cookieName = "jbilling_remember_me"
 grails.plugins.springsecurity.rememberMe.key = "xANgU6Y7lJVhI"
 
+// allow user switching
+grails.plugins.springsecurity.useSwitchUserFilter = true
+
 // static security rules 
 grails.plugins.springsecurity.controllerAnnotations.staticRules = [
         '/services/**': ['IS_AUTHENTICATED_FULLY','API_120'],
         '/hessian/**': ['IS_AUTHENTICATED_FULLY','API_120'],
-        '/httpinvoker/**': ['IS_AUTHENTICATED_FULLY','API_120']
+        '/httpinvoker/**': ['IS_AUTHENTICATED_FULLY','API_120']/*,
+        '/j_spring_security_switch_user': ['IS_AUTHENTICATED_FULLY']*/
 ]
 
 // IP address restrictions to limit access to known systems (always use with web-services in production environments!)
@@ -161,3 +165,14 @@ grails.plugins.springsecurity.filterChain.chainMap = [
 // voter configuration
 grails.plugins.springsecurity.voterNames = ['authenticatedVoter', 'roleVoter', 'permissionVoter', 'webExpressionVoter']
 
+// configure which URL's require HTTP and which require HTTPS
+/*
+portMapper.httpPort = 8080
+portMapper.httpsPort = 8443
+
+grails.plugins.springsecurity.secureChannel.definition = [
+    '/login/**': 'REQUIRES_SECURE_CHANNEL',
+    '/version': 'REQUIRES_INSECURE_CHANNEL',
+    '/images/**': 'ANY_CHANNEL'
+]
+*/

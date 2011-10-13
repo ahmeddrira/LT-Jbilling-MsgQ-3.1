@@ -87,13 +87,14 @@
 
     </layout>       
   </appender>
-  
+
+<!--
   <logger name="com.sapienter.jbilling.client.authentication.CompanyUserRememberMeFilter"
           additivity="false">
       <level value="info"></level>
       <appender-ref ref="jbillingAppender"/>
   </logger>
-
+-->
   <logger name="com.sapienter.jbilling" additivity="false">
       <level value="debug"></level>
       <appender-ref ref="jbillingAppender"/>

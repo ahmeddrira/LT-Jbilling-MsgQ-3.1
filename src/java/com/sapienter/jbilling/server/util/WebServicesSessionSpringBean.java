@@ -2167,6 +2167,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             orderBL.set(id);
             return orderBL.getWS(languageId);
         }
+
+
         return getWSFromOrder(orderBL, languageId);
     }
 
@@ -2192,14 +2194,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
         for (Iterator<OrderLineDTO> it = order.getLines().iterator(); it.hasNext();) {
             OrderLineDTO line = (OrderLineDTO) it.next();
-            LOG.info("copying line: " + line);
-            if (line.getDeleted() == 0) {
 
+            if (line.getDeleted() == 0) {
                 OrderLineWS lineWS = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
                         line.getAmount(), line.getQuantity(), line.getPrice(),
                         line.getCreateDatetime(), line.getDeleted(), line.getOrderLineType().getId(),
-                        line.getEditable(), (line.getPurchaseOrder() != null?line.getPurchaseOrder().getId():null),
-                        null, line.getVersionNum(),line.getProvisioningStatusId(),line.getProvisioningRequestId());
+                        line.getEditable(), (line.getPurchaseOrder() != null ? line.getPurchaseOrder().getId() : null),
+                        line.getUseItem(), line.getVersionNum(),line.getProvisioningStatusId(),line.getProvisioningRequestId());
 
                 lines.add(lineWS);
             }

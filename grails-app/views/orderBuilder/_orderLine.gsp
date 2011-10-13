@@ -61,11 +61,17 @@
         <div class="box">
             <div class="form-columns">
 
+                <g:applyLayout name="form/input">
+                    <content tag="label"><g:message code="order.label.quantity"/></content>
+                    <content tag="label.for">line-${index}.quantityAsDecimal</content>
+                    <g:textField name="line-${index}.quantityAsDecimal" class="field quantity" value="${formatNumber(number: line.getQuantityAsDecimal() ?: BigDecimal.ONE, formatName: quantityNumberFormat)}"/>
+                </g:applyLayout>
+
                 <sec:ifAllGranted roles="ORDER_26">
                     <g:applyLayout name="form/input">
                         <content tag="label"><g:message code="order.label.line.price"/></content>
                         <content tag="label.for">line-${index}.priceAsDecimal</content>
-                        <g:textField name="line-${index}.priceAsDecimal" class="field" value="${formatNumber(number: line.getPriceAsDecimal() ?: BigDecimal.ZERO, formatName: 'money.format')}"/>
+                        <g:textField name="line-${index}.priceAsDecimal" class="field price" value="${formatNumber(number: line.getPriceAsDecimal() ?: BigDecimal.ZERO, formatName: 'money.format')}" disabled="${line.useItem}"/>
                     </g:applyLayout>
                 </sec:ifAllGranted>
 
@@ -73,15 +79,45 @@
                     <g:applyLayout name="form/input">
                         <content tag="label"><g:message code="order.label.line.descr"/></content>
                         <content tag="label.for">line-${index}.description</content>
-                        <g:textField name="line-${index}.description" class="field" value="${line.description}"/>
+                        <g:textField name="line-${index}.description" class="field description" value="${line.description}" disabled="${line.useItem}"/>
                     </g:applyLayout>
                 </sec:ifAllGranted>
 
-                <g:applyLayout name="form/input">
-                    <content tag="label"><g:message code="order.label.quantity"/></content>
-                    <content tag="label.for">line-${index}.quantityAsDecimal</content>
-                    <g:textField name="line-${index}.quantityAsDecimal" class="field" value="${formatNumber(number: line.getQuantityAsDecimal() ?: BigDecimal.ONE, formatName: quantityNumberFormat)}"/>
-                </g:applyLayout>
+                <sec:ifAnyGranted roles="ORDER_26, ORDER_27">
+                    <g:applyLayout name="form/checkbox">
+                        <content tag="label">
+                            <sec:ifNotGranted roles="ORDER_26">
+                                <g:message code="order.label.line.use.item.description"/>
+                            </sec:ifNotGranted>
+
+                            <sec:ifNotGranted roles="ORDER_27">
+                                <g:message code="order.label.line.use.item.price"/>
+                            </sec:ifNotGranted>
+
+                            <sec:ifAllGranted roles="ORDER_26, ORDER_27">
+                                <g:message code="order.label.line.use.item"/>
+                            </sec:ifAllGranted>
+                        </content>
+                        <content tag="label.for">line-${index}.useItem</content>
+                        <g:checkBox name="line-${index}.useItem" line="${index}" class="cb check" value="${line.useItem}" />
+
+                        <script type="text/javascript">
+                            $(function() {
+                                $('#line-${index}\\.useItem').change(function() {
+                                    var line = $(this).attr('line');
+
+                                    if ($(this).is(':checked')) {
+                                        $('#line-' + line + '\\.priceAsDecimal').attr('disabled', 'true');
+                                        $('#line-' + line + '\\.description').attr('disabled', 'true');
+                                    } else {
+                                        $('#line-' + line + '\\.priceAsDecimal').attr('disabled', '');
+                                        $('#line-' + line + '\\.description').attr('disabled', '');
+                                    }
+                                }).change();
+                            });
+                        </script>
+                    </g:applyLayout>
+                </sec:ifAnyGranted>
 
                 <g:hiddenField name="index" value="${index}"/>
             </div>

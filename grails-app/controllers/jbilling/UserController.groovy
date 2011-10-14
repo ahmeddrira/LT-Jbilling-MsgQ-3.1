@@ -35,6 +35,7 @@ import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import com.sapienter.jbilling.client.authentication.util.SecuritySession
 
 @Secured(["MENU_99"])
 class UserController {
@@ -45,7 +46,9 @@ class UserController {
     ViewUtils viewUtils
 
     def breadcrumbService
-
+    def recentItemService
+    def springSecurityService
+    def securitySession
 
     def index = {
         redirect action: list, params: params
@@ -239,5 +242,24 @@ class UserController {
         flash.args = [ params.id ]
 
         chain action: 'list', params: [ id: params.id ]
+    }
+
+    @Secured('isAuthenticated()')
+    def reload = {
+        log.debug("reloading session attributes for user ${springSecurityService.principal.username}")
+
+        securitySession.setAttributes(request, response, springSecurityService.principal)
+
+        breadcrumbService.load();
+        recentItemService.load();
+
+        def breadcrumb = breadcrumbService.getLastBreadcrumb()
+        if (breadcrumb) {
+            // show last page viewed
+            redirect(controller: breadcrumb.controller, action: breadcrumb.action, id: breadcrumb.objectId)
+        } else {
+            // show default page
+            redirect(controller: 'customer')
+        }
     }
 }

@@ -1449,3 +1449,15 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 
 insert into permission (id, type_id) values (111, 11);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 111, 'description', 1, 'Switch to any user');
+
+-- switch all for super users
+insert into permission_role_map (role_id, permission_id) values (2, 111);
+
+-- basic view permissions for customers
+insert into permission_role_map (role_id, permission_id) values (5, 24); -- view orders
+insert into permission_role_map (role_id, permission_id) values (5, 30); -- create payment
+insert into permission_role_map (role_id, permission_id) values (5, 34); -- view payments
+insert into permission_role_map (role_id, permission_id) values (5, 72); -- view invoices
+insert into permission_role_map (role_id, permission_id) values (5, 91); -- invoices menu
+insert into permission_role_map (role_id, permission_id) values (5, 92); -- order menu
+insert into permission_role_map (role_id, permission_id) values (5, 93); -- payments menu

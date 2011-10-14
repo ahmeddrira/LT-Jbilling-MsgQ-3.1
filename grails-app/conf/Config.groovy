@@ -132,13 +132,15 @@ grails.plugins.springsecurity.rememberMe.key = "xANgU6Y7lJVhI"
 
 // allow user switching
 grails.plugins.springsecurity.useSwitchUserFilter = true
+grails.plugins.springsecurity.switchUser.targetUrl = '/user/reload'
+
 
 // static security rules 
 grails.plugins.springsecurity.controllerAnnotations.staticRules = [
         '/services/**': ['IS_AUTHENTICATED_FULLY','API_120'],
         '/hessian/**': ['IS_AUTHENTICATED_FULLY','API_120'],
-        '/httpinvoker/**': ['IS_AUTHENTICATED_FULLY','API_120']/*,
-        '/j_spring_security_switch_user': ['IS_AUTHENTICATED_FULLY']*/
+        '/httpinvoker/**': ['IS_AUTHENTICATED_FULLY','API_120'],
+        '/j_spring_security_switch_user': ["hasAnyRole('USER_SWITCHING_110', 'USER_SWITCHING_111')",'IS_AUTHENTICATED_FULLY']
 ]
 
 // IP address restrictions to limit access to known systems (always use with web-services in production environments!)
@@ -147,6 +149,21 @@ grails.plugins.springsecurity.ipRestrictions = [
         '/services/**': ['192.168.0.110'],
         '/hessian/**': ['192.168.0.110','192.168.0.111'],
         '/httpinvoker/**': ['192.168.0.0/24']
+]
+*/
+
+// configure which URL's require HTTP and which require HTTPS
+/*
+portMapper.httpPort = 8080
+portMapper.httpsPort = 8443
+
+grails.plugins.springsecurity.secureChannel.definition = [
+    '/services/**': 'REQUIRES_SECURE_CHANNEL',
+    '/hessian/**': 'REQUIRES_SECURE_CHANNEL',
+    '/httpinvoker/**': 'REQUIRES_SECURE_CHANNEL',
+    '/version': 'REQUIRES_INSECURE_CHANNEL',
+    '/css/**': 'ANY_CHANNEL',
+    '/images/**': 'ANY_CHANNEL'
 ]
 */
 
@@ -165,14 +182,3 @@ grails.plugins.springsecurity.filterChain.chainMap = [
 // voter configuration
 grails.plugins.springsecurity.voterNames = ['authenticatedVoter', 'roleVoter', 'permissionVoter', 'webExpressionVoter']
 
-// configure which URL's require HTTP and which require HTTPS
-/*
-portMapper.httpPort = 8080
-portMapper.httpsPort = 8443
-
-grails.plugins.springsecurity.secureChannel.definition = [
-    '/login/**': 'REQUIRES_SECURE_CHANNEL',
-    '/version': 'REQUIRES_INSECURE_CHANNEL',
-    '/images/**': 'ANY_CHANNEL'
-]
-*/

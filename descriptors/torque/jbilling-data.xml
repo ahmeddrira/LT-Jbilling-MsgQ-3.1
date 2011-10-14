@@ -1805,6 +1805,7 @@
     <PermissionRoleMap PermissionId="97" RoleId="2"/>
     <PermissionRoleMap PermissionId="98" RoleId="2"/>
     <PermissionRoleMap PermissionId="99" RoleId="2"/>
+    <PermissionRoleMap PermissionId="111" RoleId="2"/>
     <PermissionRoleMap PermissionId="120" RoleId="2"/>
     <PermissionRoleMap PermissionId="10" RoleId="3"/>
     <PermissionRoleMap PermissionId="11" RoleId="3"/>

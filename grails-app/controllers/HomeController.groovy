@@ -36,7 +36,7 @@ class HomeController {
 
     @Secured(["isAuthenticated()"])
     def index = {        
-        def breadcrumb = Breadcrumb.findByUserId(session['user_id'], [sort:'id', order:'desc'])
+        def breadcrumb = breadcrumbService.getLastBreadcrumb()
 
         if (breadcrumb) {
             // show last page viewed

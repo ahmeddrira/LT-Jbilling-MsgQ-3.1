@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.common.Constants; jbilling.SearchType" %>
+<%@ page import="org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils; com.sapienter.jbilling.common.Constants; jbilling.SearchType" %>
 
 <%--
   Page header for all common jBilling layouts.
@@ -75,7 +75,23 @@
     </div>
 
     <ul class="top-nav">
-        <li><g:message code="topnav.greeting"/> <sec:loggedInUserInfo field="plainUsername"/></li>
+        <sec:ifSwitched>
+            <li>
+                <g:message code="switch.user.working.as"/> <sec:loggedInUserInfo field="plainUsername"/>
+            </li>
+            <li>
+                <a href="${request.contextPath}/j_spring_security_exit_user">
+                    <g:set var="switchedUserOriginalUsername" value="${SpringSecurityUtils.switchedUserOriginalUsername}"/>
+                    <g:set var="plainUsername" value="${switchedUserOriginalUsername?.substring(0, switchedUserOriginalUsername.indexOf(';'))}"/>
+                    <g:message code="switch.user.resume.session.as"/> ${plainUsername}
+                </a>
+            </li>
+        </sec:ifSwitched>
+
+        <sec:ifNotSwitched>
+            <li><g:message code="topnav.greeting"/> <sec:loggedInUserInfo field="plainUsername"/></li>
+        </sec:ifNotSwitched>
+
         <li>
             <g:if test="${session['main_role_id'] == Constants.TYPE_CUSTOMER}">
                 <g:link controller="customer" action="edit" id="${session['user_id']}">

@@ -27,14 +27,15 @@
 
     <div class="form-edit">
         <div class="heading">
-            <strong>Denied</strong>
+            <strong><g:message code="denied.title"/></strong>
         </div>
 
         <div class="form-hold">
             <div class="form-columns">
-
-              <p>Sorry, you're not authorized to view this page.</p>
-
+                <p><g:message code="denied.message"/></p>
+                <sec:ifSwitched>
+                    <p><g:message code="denied.message.user.switched"/></p>
+                </sec:ifSwitched>
             </div>
 
             <!-- spacer -->

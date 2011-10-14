@@ -1425,6 +1425,8 @@
     <InternationalDescription TableId="59" ForeignId="98" PsudoColumn="description" LanguageId="1" Content="Show plans menu"/>           
     <InternationalDescription TableId="59" ForeignId="99" PsudoColumn="description" LanguageId="1" Content="Show configuration menu"/>
     <InternationalDescription TableId="59" ForeignId="120" PsudoColumn="description" LanguageId="1" Content="Web Service API access"/>
+    <InternationalDescription TableId="59" ForeignId="110" PsudoColumn="description" LanguageId="1" Content="Switch to sub-account"/>
+    <InternationalDescription TableId="59" ForeignId="111" PsudoColumn="description" LanguageId="1" Content="Switch to any user"/>
 
     
     <InvoiceDeliveryMethod Id="1"/>
@@ -1695,6 +1697,7 @@
     <PermissionType Id="8" Description="Billing"/>
     <PermissionType Id="9" Description="Menu"/>
     <PermissionType Id="10" Description="API"/>
+    <PermissionType Id="11" Description="User Switching"/>
     
     <Permission Id="10" TypeId="1"/>
     <Permission Id="11" TypeId="1"/>
@@ -1748,6 +1751,8 @@
     <Permission Id="98" TypeId="9"/>
     <Permission Id="99" TypeId="9"/>
     <Permission Id="120" TypeId="10"/>
+    <Permission Id="110" TypeId="11"/>
+    <Permission Id="111" TypeId="11"/>
 
     <PermissionRoleMap PermissionId="10" RoleId="2"/>
     <PermissionRoleMap PermissionId="11" RoleId="2"/>
@@ -1800,6 +1805,7 @@
     <PermissionRoleMap PermissionId="97" RoleId="2"/>
     <PermissionRoleMap PermissionId="98" RoleId="2"/>
     <PermissionRoleMap PermissionId="99" RoleId="2"/>
+    <PermissionRoleMap PermissionId="111" RoleId="2"/>
     <PermissionRoleMap PermissionId="120" RoleId="2"/>
     <PermissionRoleMap PermissionId="10" RoleId="3"/>
     <PermissionRoleMap PermissionId="11" RoleId="3"/>

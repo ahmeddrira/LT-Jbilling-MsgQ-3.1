@@ -11484,6 +11484,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 100	10	description	1	Plan pricing history for all plan products and start dates.
 50	50	description	1	Invoice decimal rounding.
 50	50	instruction	1	The number of decimal places to be shown on the invoice. Defaults to 2.
+59	110	description	1	Switch to sub-account
+59	111	description	1	Switch to any user
 \.
 
 
@@ -14379,6 +14381,8 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 28	2	\N
 36	3	\N
 74	7	\N
+110	11	\N
+111	11	\N
 \.
 
 
@@ -14503,6 +14507,14 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 28	3
 36	3
 74	3
+111	2
+24	5
+34	5
+72	5
+91	5
+92	5
+93	5
+30	5
 \.
 
 
@@ -14521,6 +14533,7 @@ COPY permission_type (id, description) FROM stdin;
 8	Billing
 9	Menu
 10	API
+11	User Switching
 \.
 
 

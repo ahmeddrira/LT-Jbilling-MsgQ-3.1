@@ -39,6 +39,10 @@ class RecentItemService implements InitializingBean, Serializable {
     static scope = "session"
     
     def void afterPropertiesSet() {
+        load()
+    }
+
+    def void load() {
         if (session['user_id'])
             session[SESSION_RECENT_ITEMS] = getRecentItems()
     }

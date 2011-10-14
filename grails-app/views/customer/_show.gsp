@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL;" %>
+<%@ page import="org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils; com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL;" %>
 
 <%--
   Shows details of a selected user.
@@ -75,7 +75,39 @@
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.user.username"/></td>
-                    <td class="value">${selected.userName}</td>
+                    <td class="value">
+
+                        <g:if test="${!SpringSecurityUtils.isSwitched() && selected.id != session['user_id']}">
+                            <sec:ifAllGranted roles="USER_SWITCHING_111">
+                                <form id="switch-user-form" action="${request.contextPath}/j_spring_security_switch_user" method="POST">
+                                    <g:hiddenField name="j_username" value="${selected.userName};${session['company_id']}"/>
+                                </form>
+                                <a onclick="$('#switch-user-form').submit()" title="${message(code: 'switch.user.link')}">
+                                    ${selected.userName} <img src="${resource(dir: 'images', file: 'user_go.png')}" alt="switch user"/>
+                                </a>
+                            </sec:ifAllGranted>
+
+                            <sec:ifAllGranted roles="USER_SWITCHING_110">
+                                <sec:ifNotGranted roles="USER_SWITCHING_111">
+                                    <!-- todo: validate if this customer is a direct sub-account before showing switch-user link -->
+                                    <form id="switch-user-form" action="${request.contextPath}/j_spring_security_switch_user" method="POST">
+                                        <g:hiddenField name="j_username" value="${selected.userName};${session['company_id']}"/>
+                                    </form>
+                                    <a onclick="$('#switch-user-form').submit()" title="${message(code: 'switch.user.link')}">
+                                        ${selected.userName} <img src="${resource(dir: 'images', file: 'user_go.png')}" alt="switch user"/>
+                                    </a>
+                                </sec:ifNotGranted>
+                            </sec:ifAllGranted>
+
+                            <sec:ifNotGranted roles="USER_SWITCHING_110, USER_SWITCHING_111">
+                                ${selected.userName}
+                            </sec:ifNotGranted>
+                        </g:if>
+                        <g:else>
+                            ${selected.userName}
+                        </g:else>
+
+                    </td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.user.status"/></td>
@@ -390,5 +422,4 @@
                       'update': 'column1',
                       'onYes': 'closePanel(\'#column2\')'
                      ]"/>
-
 </div>

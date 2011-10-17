@@ -88,6 +88,13 @@ class FilterFactory {
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.IS_NOT_NULL, field: 'customer.parent', template: 'customer/child', visible: true),
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.EQ, field: 'customer.isParent', template: 'trueOrFalse', visible: true),
         ],
+        PARTNER: [
+            new Filter(type: FilterType.PARTNER, constraintType: FilterConstraint.LIKE, field: 'contact.firstName', template: 'value', visible: false),
+            new Filter(type: FilterType.PARTNER, constraintType: FilterConstraint.LIKE, field: 'contact.lastName', template: 'value', visible: false),
+            new Filter(type: FilterType.PARTNER, constraintType: FilterConstraint.LIKE, field: 'contact.email', template: 'value', visible: false),
+            new Filter(type: FilterType.PARTNER, constraintType: FilterConstraint.STATUS, field: 'baseUser.userStatus', template: 'customer/status', visible: true),
+            new Filter(type: FilterType.PARTNER, constraintType: FilterConstraint.LIKE, field: 'userName', template: 'customer/login', visible: true),
+        ],
         PAYMENT: [
             new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.EQ, field: 'u.id', template: 'id', visible: true),
             new Filter(type: FilterType.PAYMENT, constraintType: FilterConstraint.LIKE, field: 'u.userName', template: 'customer/login', visible: true),

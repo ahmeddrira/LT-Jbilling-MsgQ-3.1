@@ -48,7 +48,7 @@
                                 <th class="medium"><g:message code="contact.field.name"/></th>
                                 <th class="medium"><g:message code="contact.field.datatype"/></th>
                                 <th class="medium"><g:message code="contact.field.isReadOnly"/></th>
-                                <th class="medium"><g:message code="contact.field.displayOnView"/></th>
+                                <th class="medium"><g:message code="contact.field.displayInView"/></th>
                              </tr>
                          </thead>
                          
@@ -61,8 +61,7 @@
                                     </td>
                                     
                                     <td class="medium">
-                                        <g:textField 
-                                            class="field"  
+                                        <g:textField
                                             class="field" style="float: right;width: 150px" 
                                             name="obj[${iter}].description" 
                                             value="${type.getDescriptionDTO(session['language_id'])?.content}"/>
@@ -108,8 +107,7 @@
                             <tr>
                                 <td class="tiny"></td>
                                 <td class="medium">
-                                    <g:textField 
-                                        class="field" 
+                                    <g:textField
                                         class="field" style="float: right;width: 150px" 
                                         name="description" 
                                         value=""/>

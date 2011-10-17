@@ -1291,9 +1291,25 @@ alter table price_model alter column strategy_type type varchar(40); -- postgres
 insert into pluggable_task_type values (90, 7, 'com.sapienter.jbilling.server.notification.task.TestNotificationTask',0);
 
 
+-- Date: 27-Jul-2011
+-- Redmine Issue: #1108
+-- Description: Subscriber Management - Manage Tax Rates
+
+-- insert new tax plugin to the database
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (90, 4, 'com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask', 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Country Tax Invoice Composition Task');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply tax item to the Invoice if the Partner's country code is matching.');
+
+-- insert new payment term penalty plugin
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (91, 4, 'com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask', 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Payment Terms Penalty Task');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply a Penalty to an Invoice having a due date beyond a configurable days period.');
+
+
 -- Date: 28-Jul-2011
 -- Description: user names can not be less than 5 characters. jB1 and 2 allows for a length of 4 chars
 update base_user set user_name = user_name || '1' where id in ( select id from base_user where length(user_name) < 5); -- postgresql
+
 
 -- Date: 29-Jul-2011
 -- Redmine Issue: #1208
@@ -1305,20 +1321,6 @@ alter table customer alter column use_parent_pricing set not null;
 -- remove obsolete TieredPriceModelPricingTask plug-in, functionality moved into PriceModelPricingTask
 update pluggable_task set type_id = 79 where type_id = 80;
 delete from pluggable_task_type where id = 80;
-
--- Date: 27-Jul-2011
--- Redmine Issue: #1108
--- Description: Subscriber Management - Manage Tax Rates
-
--- insert new tax plugin to the database
-insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (90, 4, 'com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask', 2);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) valCues (24,  90, 'title',1, 'Country Tax Invoice Composition Task');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply tax item to the Invoice if the Partner's country code is matching.');
-
--- insert new payment term penalty plugin
-insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (91, 4, 'com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask', 2);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Payment Terms Penalty Task');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply a Penalty to an Invoice having a due date beyond a configurable days period.');
 
 
 -- Date: 08-Aug-2011
@@ -1363,11 +1365,13 @@ CREATE TABLE enumeration_values (
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
+
 -- Date: 11-Aug-2011
 -- Redmine Issue: #1234
 -- Description: CCF Display In View
 ALTER TABLE contact_field_type add column display_in_view smallint default 0;
 ALTER TABLE contact_field_type ALTER COLUMN data_type TYPE VARCHAR(50);
+
 
 -- Date: 14-Aug-2011
 -- Description: Add Simple Tax plug-in to DB
@@ -1376,6 +1380,7 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 (90, 4, 'com.sapienter.jbilling.server.process.task.SimpleTaxCompositionTask', 4);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Simple Tax Invoice Composition Task');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task to automatically add taxes to invoices, with the option of exluding some customers and some items (excemptions).');
+
 
 -- Date: 15-Aug-2011
 -- Redmine Issue: #1212
@@ -1461,3 +1466,14 @@ insert into permission_role_map (role_id, permission_id) values (5, 72); -- view
 insert into permission_role_map (role_id, permission_id) values (5, 91); -- invoices menu
 insert into permission_role_map (role_id, permission_id) values (5, 92); -- order menu
 insert into permission_role_map (role_id, permission_id) values (5, 93); -- payments menu
+
+
+-- Date 26-Jul-2011
+-- Description: Enabling Partner user
+-- partner upgrades
+
+insert into permission (id, type_id) values (100, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 100, 'description', 1, 'Show partner menu');
+
+insert into role values (4);
+

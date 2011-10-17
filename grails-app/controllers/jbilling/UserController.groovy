@@ -62,8 +62,6 @@ class UserController {
                 max:    params.max,
                 offset: params.offset
         ) {
-
-
             and {
                 or {
                     isEmpty('roles')

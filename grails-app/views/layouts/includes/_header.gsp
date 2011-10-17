@@ -133,6 +133,11 @@
                     <g:link controller="customer"><span><g:message code="menu.link.customers"/></span><em></em></g:link>
                 </li>
             </sec:access>
+            <sec:access url="/partner/list">
+                <li class="${controllerName == 'partner' ? 'active' : ''}">
+                    <g:link controller="partner"><span><g:message code="menu.link.partners"/></span><em></em></g:link>
+                </li>
+            </sec:access>
             <sec:access url="/invoice/list">
                 <li class="${controllerName == 'invoice' ? 'active' : ''}">
                     <g:link controller="invoice"><span><g:message code="menu.link.invoices"/></span><em></em></g:link>

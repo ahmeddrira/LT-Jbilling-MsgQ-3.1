@@ -39,6 +39,11 @@ public class PreferenceWS implements Serializable {
     public PreferenceWS() {
     }
 
+    public PreferenceWS(PreferenceTypeWS preferenceType, String value) {
+        this.preferenceType = preferenceType;
+        this.value = value;
+    }
+
     public PreferenceWS(PreferenceTypeDTO preferenceType) {
         this.preferenceType = new PreferenceTypeWS(preferenceType);
     }

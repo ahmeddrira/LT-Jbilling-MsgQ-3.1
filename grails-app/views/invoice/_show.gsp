@@ -42,7 +42,7 @@
     <div class="box">
         <table class="dataTable">
             <tr>
-                <td>
+                <td colspan="2">
                     <strong>
                         <g:if test="${user.contact?.firstName || user.contact?.lastName}">
                             ${user.contact?.firstName}&nbsp;${user.contact?.lastName}

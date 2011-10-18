@@ -1369,6 +1369,13 @@ CREATE TABLE enumeration_values (
 ALTER TABLE contact_field_type add column display_in_view smallint default 0;
 ALTER TABLE contact_field_type ALTER COLUMN data_type TYPE VARCHAR(50);
 
+-- Date: 14-Aug-2011
+-- Description: Add Simple Tax plug-in to DB
+-- insert new tax plugin to the database
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values 
+(90, 4, 'com.sapienter.jbilling.server.process.task.SimpleTaxCompositionTask', 4);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Simple Tax Invoice Composition Task');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task to automatically add taxes to invoices, with the option of exluding some customers and some items (excemptions).');
 
 -- Date: 15-Aug-2011
 -- Redmine Issue: #1212
@@ -1399,8 +1406,58 @@ create table plan_item_price_timeline (
     unique (price_model_id)
 );
 
+
 alter table plan_item_price_timeline add constraint plan_item_timeline_price_mode_id_FK foreign key (price_model_id) references price_model;
 alter table plan_item_price_timeline add constraint plan_item_timeline_plan_item_id_FK foreign key (plan_item_id) references plan_item;
 
 insert into plan_item_price_timeline (plan_item_id, price_model_id, start_date) select id, price_model_id, '1970-01-01 00:00' as start_date from plan_item where price_model_id is not null;
 alter table plan_item drop column price_model_id;
+
+
+-- Sept 10
+-- Redmine issue #1302
+-- Description: Round invoices total and balance to 2 digits
+insert into preference_type values (50, 2);
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 50, 'description', 1, 'Invoice decimal rounding.');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
+values (50, 50, 'instruction', 1, 'The number of decimal places to be shown on the invoice. Defaults to 2.');
+
+
+-- Date: 29-Sept-2011
+-- Redmine Issue: #1126
+-- Description: Historical plan pricing report
+insert into report_type (id, name, optlock) values (5, 'plan', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (101, 5, 'description', 1, 'Plan');
+
+insert into report (id, type_id, name, file_name, optlock) values (10, 5, 'plan_history', 'plan_history.jasper', 0);
+insert into report_parameter (id, report_id, dtype, name) values (15, 10, 'integer', 'plan_id');
+insert into report_parameter (id, report_id, dtype, name) values (16, 10, 'string', 'plan_code');
+insert into report_parameter (id, report_id, dtype, name) values (17, 10, 'string', 'plan_description');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 10, 'description', 1, 'Plan pricing history for all plan products and start dates.');
+insert into entity_report_map (report_id, entity_id) values (10, 1);
+
+-- Date: 13-Oct-2011
+-- Redmine Issue: #1445
+-- Description: Switch Users
+insert into permission_type (id, description) values (11, 'User Switching');
+
+insert into permission (id, type_id) values (110, 11);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 110, 'description', 1, 'Switch to sub-account');
+
+insert into permission (id, type_id) values (111, 11);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 111, 'description', 1, 'Switch to any user');
+
+-- switch all for super users
+insert into permission_role_map (role_id, permission_id) values (2, 111);
+
+-- basic view permissions for customers
+insert into permission_role_map (role_id, permission_id) values (5, 24); -- view orders
+insert into permission_role_map (role_id, permission_id) values (5, 30); -- create payment
+insert into permission_role_map (role_id, permission_id) values (5, 34); -- view payments
+insert into permission_role_map (role_id, permission_id) values (5, 72); -- view invoices
+insert into permission_role_map (role_id, permission_id) values (5, 91); -- invoices menu
+insert into permission_role_map (role_id, permission_id) values (5, 92); -- order menu
+insert into permission_role_map (role_id, permission_id) values (5, 93); -- payments menu

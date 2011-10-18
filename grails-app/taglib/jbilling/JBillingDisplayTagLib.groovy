@@ -1,5 +1,8 @@
 package jbilling
 
+import java.util.Hashtable.ValueCollection;
+
+
 /*
 jBilling - The Enterprise Open Source Billing System
 Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -29,6 +32,21 @@ along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 
 class JBillingDisplayTagLib {
 
+    
+    def showProperCase = { attrs, body -> 
+        
+        StringBuffer sb= new StringBuffer("")
+        
+        String str= attrs.value
+        if (str) {
+            sb.append(str.charAt(0).toUpperCase())
+            if (str.length() > 1) 
+                sb.append(str.substring(1))
+        }
+        
+        out << sb.toString()
+    }
+    
     /**
      * Prints the phone number is a nice format
      */

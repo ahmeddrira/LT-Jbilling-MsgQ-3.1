@@ -1812,6 +1812,18 @@ Ch8: no applicable orders
         assertEquals("Should find lots of users with 'FAKE_2'", 1003, userIds.length);
     }
 
+    public void testUserExists() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        // by user name
+        assertFalse(api.userExistsWithName("USER_THAT_DOESNT_EXIST"));
+        assertTrue(api.userExistsWithName("admin"));
+
+        // by id
+        assertFalse(api.userExistsWithId(Integer.MAX_VALUE));
+        assertTrue(api.userExistsWithId(1));
+    }
+
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {
         assertEquals(null, expected, actual);
     }

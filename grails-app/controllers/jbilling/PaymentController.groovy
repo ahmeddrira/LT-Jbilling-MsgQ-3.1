@@ -49,7 +49,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
  * @author Brian Cowdery
  * @since 04/01/11
  */
-@Secured(["MENU_90"])
+@Secured(["MENU_93"])
 class PaymentController {
 
     static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
@@ -124,7 +124,7 @@ class PaymentController {
     /**
      * Applies the set filters to the payment list, and exports it as a CSV for download.
      */
-    @Secured(["PAYMENT_34"])
+    @Secured(["PAYMENT_35"])
     def csv = {
         def filters = filterService.getFilters(FilterType.PAYMENT, params)
 
@@ -146,7 +146,7 @@ class PaymentController {
     /**
      * Show details of the selected payment.
      */
-    @Secured(["PAYMENT_35"])
+    @Secured(["PAYMENT_34"])
     def show = {
         PaymentDTO payment = PaymentDTO.get(params.int('id'))
         recentItemService.addRecentItem(params.int('id'), RecentItemType.PAYMENT)
@@ -348,11 +348,10 @@ class PaymentController {
         
         /* Reuse the same payment that was bound earlier during confirm */
         def payment = session['user_payment'];
-        //new PaymentWS()
+        //def payment = new PaymentWS()
         //bindPayment(payment, params)
 
         def invoiceId = params.int('invoiceId')
-
 
         // save or update
         try {
@@ -430,10 +429,31 @@ class PaymentController {
         chain action: 'list', params: [ id: payment.id ]
     }
 
+    /**
+     * Notify about this payment.
+     */
+    def emailNotify = {
+        
+        def pymId= params.id.toInteger()
+        try {
+            def result= webServicesSession.notifyPaymentByEmail(pymId)
+            if (result) {
+                flash.info = 'payment.notification.sent'
+                flash.args = [ pymId ]
+            } else {
+                flash.error = 'payment.notification.sent.fail'
+                flash.args = [ pymId ]
+            }
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.local, e)
+        } 
+        chain action: 'list', params: [ id: pymId]
+    }
+    
     def bindPayment(PaymentWS payment, GrailsParameterMap params) {
         bindData(payment, params, 'payment')
 
-        payment.isRefund = params.boolean('isRefund') ? 1 : 0
+        payment.isRefund = ('on' == params.isRefund) ? 1 : 0
 
         // bind credit card object if parameters present
         if (params.creditCard.any { key, value -> value }) {

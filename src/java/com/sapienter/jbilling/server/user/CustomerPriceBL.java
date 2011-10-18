@@ -99,6 +99,10 @@ public class CustomerPriceBL {
 
     }
 
+    public void flush() {
+        customerPriceDas.flush();
+    }
+
     public CustomerDTO getCustomer() {
         return customer;
     }
@@ -205,7 +209,19 @@ public class CustomerPriceBL {
     public void removePrice(PlanItemDTO planItem) {
         int deleted = customerPriceDas.deletePrice(userId, planItem.getId());
         LOG.debug("Removed " + deleted + " customer price entries for plan item: " + planItem);
-    }   
+    }
+
+    /**
+     * Judiciously removes all prices from the customer pricing table, ensuring that no
+     * customer subscriptions, orphaned prices and foreign keys exist on the given list
+     * of plan items.
+     *
+     * @param planItems plan items to remove from customer pricing
+     */
+    public void removeAllPrices(List<PlanItemDTO> planItems) {
+        int deleted = customerPriceDas.deletePricesByItems(planItems);
+        LOG.debug("Removed " + deleted + " customer price entries for " + planItems.size() + " plan items.");
+    }
 
     /**
      * Returns the customer's price for the given item. This method returns null

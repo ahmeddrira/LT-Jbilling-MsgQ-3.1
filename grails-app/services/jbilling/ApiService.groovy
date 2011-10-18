@@ -93,6 +93,11 @@ class ApiService implements IWebServicesSessionBean {
 	public boolean notifyInvoiceByEmail(Integer invoiceId) {
 		webServicesSession.notifyInvoiceByEmail (invoiceId)
 	}
+    
+    public boolean notifyPaymentByEmail(Integer paymentId) { 
+        webServicesSession.notifyPaymentByEmail(paymentId)
+    }
+    
     public Integer[] getAllInvoices(Integer userId) {
         return webServicesSession.getAllInvoices(userId)
     }
@@ -129,6 +134,10 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.createInvoice(userId, onlyRecurring)
     }
 
+    public Integer[] createInvoiceWithDate(Integer userId, Date billingDate, Integer dueDatePeriodId, Integer dueDatePeriodValue, boolean onlyRecurring) {
+        return webServicesSession.createInvoiceWithDate(userId, billingDate, dueDatePeriodId, dueDatePeriodValue, onlyRecurring)
+    }
+
     public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) {
         return webServicesSession.createInvoiceFromOrder(orderId, invoiceId)
     }
@@ -139,6 +148,14 @@ class ApiService implements IWebServicesSessionBean {
 
     public void deleteUser(Integer userId) {
         webServicesSession.deleteUser(userId)
+    }
+
+    public boolean userExistsWithName(String userName) {
+        return webServicesSession.userExistsWithName(userName)
+    }
+
+    public boolean userExistsWithId(Integer userId) {
+        return webServicesSession.userExistsWithId(userId)
     }
 
     public ContactTypeWS getContactTypeWS(Integer contactTypeId) {
@@ -169,8 +186,8 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getUserId(username)
     }
 
-	public void saveCustomContactFields(ContactFieldTypeWS[] fields) {
-		webServicesSession.saveCustomContactFields(fields)
+	public void saveCustomContactField(ContactFieldTypeWS ws) {
+		webServicesSession.saveCustomContactField(ws)
 	}
 	
     public Integer[] getUsersInStatus(Integer statusId) {
@@ -289,6 +306,11 @@ class ApiService implements IWebServicesSessionBean {
 		return webServicesSession.updateOrderPeriods(orderPeriods);
 	}
 	
+    public boolean updateOrCreateOrderPeriod(OrderPeriodWS orderPeriod) {
+        return webServicesSession.updateOrCreateOrderPeriod(orderPeriod);
+    }
+    
+    
 	public boolean deleteOrderPeriod(Integer periodId) {
 		return webServicesSession.deleteOrderPeriod(periodId);
 	}

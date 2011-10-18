@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.pluggableTask;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -36,30 +37,29 @@ import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
  * like business days, etc ...
  * @author Emil
  */
-public class CalculateDueDate
-    extends PluggableTask
-    implements InvoiceCompositionTask {
+public class CalculateDueDate extends PluggableTask implements InvoiceCompositionTask {
+
+    private static final Logger LOG = Logger.getLogger(CalculateDueDate.class);
 
     /* (non-Javadoc)
      * @see com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask#apply(com.sapienter.betty.server.invoice.NewInvoiceDTO)
      */
     public void apply(NewInvoiceDTO invoice, Integer userId) throws TaskException {
-        // set up
-        Date generated = invoice.getBillingDate();
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(generated);
-        Logger.getLogger(CalculateDueDate.class).debug(
-                "Calculating due date from " + cal.getTime());
-        
-        // get the days configures
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTime(invoice.getBillingDate());
+
+        LOG.debug("Calculating due date from " + invoice.getBillingDate() + " using period " + invoice.getDueDatePeriod());
+
         try {
             // add the period of time
-            cal.add(MapPeriodToCalendar.map(invoice.getDueDatePeriod().getUnitId()), 
-                    invoice.getDueDatePeriod().getValue().intValue());
+            calendar.add(MapPeriodToCalendar.map(invoice.getDueDatePeriod().getUnitId()),
+                         invoice.getDueDatePeriod().getValue());
+
             // set the due date
-            invoice.setDueDate(cal.getTime());
+            invoice.setDueDate(calendar.getTime());
+
         } catch (Exception e) {
-            Logger.getLogger(CalculateDueDate.class).error("Exception:", e);
+            LOG.error("Unhandled exception calculating due date.", e);
             throw new TaskException(e);
         }
        

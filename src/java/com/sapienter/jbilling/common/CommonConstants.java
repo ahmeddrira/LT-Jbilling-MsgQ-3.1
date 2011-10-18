@@ -78,13 +78,13 @@ public interface CommonConstants {
     public static final Integer PAYMENT_METHOD_DINERS = new Integer(7);
     public static final Integer PAYMENT_METHOD_PAYPAL = new Integer(8);
     public static final Integer PAYMENT_METHOD_GATEWAY_KEY = new Integer(9);
-    
-    //payment result 
+
+    //payment result
     public static final Integer PAYMENT_RESULT_SUCCESSFUL = new Integer(1);
     public static final Integer PAYMENT_RESULT_FAILED = new Integer(2);
     public static final Integer PAYMENT_RESULT_PROCESSOR_UNAVAILABLE = new Integer(3);
     public static final Integer PAYMENT_RESULT_ENTERED = new Integer(4);
- 
+
     // billing process review status
     public static final Integer REVIEW_STATUS_GENERATED = new Integer(1);
     public static final Integer REVIEW_STATUS_APPROVED = new Integer(2);
@@ -140,6 +140,7 @@ public interface CommonConstants {
     public static Integer PREFERENCE_MEDIATION_JDBC_READER_LAST_ID = new Integer(47);
     public static Integer PREFERENCE_USE_PROVISIONING = new Integer(48);
     public static Integer PREFERENCE_AUTO_RECHARGE_THRESHOLD = new Integer(49);
+    public static Integer PREFERENCE_INVOICE_DECIMALS = new Integer(50);
 
     // order status, in synch with db
     public static final Integer ORDER_STATUS_ACTIVE = new Integer(1);

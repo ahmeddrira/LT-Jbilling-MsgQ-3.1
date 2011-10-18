@@ -84,6 +84,9 @@ public interface IWebServicesSessionBean {
     public void updateUser(UserWS user) throws SessionInternalError;
     public void deleteUser(Integer userId) throws SessionInternalError;
 
+    public boolean userExistsWithName(String userName);
+    public boolean userExistsWithId(Integer userId);
+
     public ContactWS[] getUserContactsWS(Integer userId) throws SessionInternalError;
     public void updateUserContact(Integer userId, Integer typeId, ContactWS contact) throws SessionInternalError;
 
@@ -107,7 +110,7 @@ public interface IWebServicesSessionBean {
 
     public Integer getUserId(String username) throws SessionInternalError;
 
-    public void saveCustomContactFields(ContactFieldTypeWS[] fields) throws SessionInternalError;
+    public void saveCustomContactField(ContactFieldTypeWS ws) throws SessionInternalError;
 
     public void processPartnerPayouts(Date runDate);
     public PartnerWS getPartner(Integer partnerId) throws SessionInternalError;
@@ -176,6 +179,7 @@ public interface IWebServicesSessionBean {
     public OrderWS[] rateOrders(OrderWS orders[]) throws SessionInternalError;
 
     public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods) throws SessionInternalError;
+    public boolean updateOrCreateOrderPeriod(OrderPeriodWS orderPeriod) throws SessionInternalError;
     public boolean deleteOrderPeriod(Integer periodId) throws SessionInternalError;
     
     public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order) throws SessionInternalError;
@@ -186,7 +190,8 @@ public interface IWebServicesSessionBean {
      */
 
     public InvoiceWS getInvoiceWS(Integer invoiceId) throws SessionInternalError;
-    public Integer[] createInvoice(Integer userId, boolean onlyRecurring) throws SessionInternalError;
+    public Integer[] createInvoice(Integer userId, boolean onlyRecurring);
+    public Integer[] createInvoiceWithDate(Integer userId, Date billingDate, Integer dueDatePeriodId, Integer dueDatePeriodValue, boolean onlyRecurring);
     public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws SessionInternalError;
     public void deleteInvoice(Integer invoiceId);
 
@@ -201,7 +206,7 @@ public interface IWebServicesSessionBean {
 
     public byte[] getPaperInvoicePDF(Integer invoiceId) throws SessionInternalError;
     public boolean notifyInvoiceByEmail(Integer invoiceId);
-
+    public boolean notifyPaymentByEmail(Integer paymentId);
 
     /*
         Payments

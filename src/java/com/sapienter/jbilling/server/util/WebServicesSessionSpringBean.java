@@ -50,6 +50,7 @@ import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.mediation.db.*;
 import com.sapienter.jbilling.server.order.OrderHelper;
+import com.sapienter.jbilling.server.order.TimePeriod;
 import com.sapienter.jbilling.server.process.ProcessStatusWS;
 import com.sapienter.jbilling.server.user.CardValidationWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
@@ -63,6 +64,7 @@ import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
+import net.sf.jasperreports.charts.util.TimePeriodDatasetLabelGenerator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
@@ -294,6 +296,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 	            Context.Name.NOTIFICATION_SESSION);
 	    return notificationSession.emailInvoice(invoiceId);
     }
+    
+    public boolean notifyPaymentByEmail(Integer paymentId) {
+        INotificationSessionBean notificationSession =
+                (INotificationSessionBean) Context.getBean(
+                Context.Name.NOTIFICATION_SESSION);
+        return notificationSession.emailPayment(paymentId);
+    }
 
     public Integer[] getAllInvoices(Integer userId) {
         IInvoiceSessionBean invoiceBean = Context.getBean(Context.Name.INVOICE_SESSION);
@@ -481,38 +490,66 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * Optionally only allow recurring orders to generate invoices.
      * Returns the ids of the invoices generated.
      */
-    public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
-            throws SessionInternalError {
-        UserDTO user = new UserDAS().find(userId);
-        BillingProcessBL processBL = new BillingProcessBL();
+    public Integer[] createInvoice(Integer userId, boolean onlyRecurring) {
+        return createInvoiceWithDate(userId, null, null, null, onlyRecurring);
+    }
 
-        BillingProcessConfigurationDTO config =
-                new BillingProcessConfigurationDAS().findByEntity(
-                user.getCompany());
+
+    /**
+     * Generates an invoice for a customer using an explicit billing date & due date period.
+     *
+     * If the billing date is left blank, the invoice will be generated for today.
+     *
+     * If the due date period unit or value is left blank, then the due date will be calculated from the
+     * order period, or from the customer due date period if set.
+     *
+     * @param userId user id to generate an invoice for.
+     * @param billingDate billing date for the invoice generation run
+     * @param dueDatePeriodId due date period unit
+     * @param dueDatePeriodValue due date period value
+     * @param onlyRecurring only include recurring orders? false to include all orders in invoice.
+     * @return array of generated invoice ids.
+     */
+    public Integer[] createInvoiceWithDate(Integer userId, Date billingDate, Integer dueDatePeriodId,
+                                           Integer dueDatePeriodValue, boolean onlyRecurring) {
+
+        UserDTO user = new UserDAS().find(userId);
+        BillingProcessConfigurationDTO config = new BillingProcessConfigurationDAS().findByEntity(user.getCompany());
 
         // Create a mock billing process object, because the method
         // we are calling was meant to be called by the billing process.
         BillingProcessDTO billingProcess = new BillingProcessDTO();
         billingProcess.setId(0);
         billingProcess.setEntity(user.getCompany());
-        billingProcess.setBillingDate(new Date());
+        billingProcess.setBillingDate(billingDate != null ? billingDate : new Date());
         billingProcess.setPeriodUnit(config.getPeriodUnit());
         billingProcess.setPeriodValue(config.getPeriodValue());
         billingProcess.setIsReview(0);
         billingProcess.setRetriesToDo(0);
 
-        InvoiceDTO[] newInvoices = processBL.generateInvoice(billingProcess,
-                user, false, onlyRecurring, getCallerId());
-
-        if (newInvoices != null) {
-            Integer[] invoiceIds = new Integer[newInvoices.length];
-            for (int i = 0; i < newInvoices.length; i++) {
-                invoiceIds[i] = newInvoices[i].getId();
-            }
-            return invoiceIds;
-        } else {
-            return new Integer[]{};
+        // optional target due date
+        TimePeriod dueDatePeriod = null;
+        if (dueDatePeriodId != null && dueDatePeriodValue != null) {
+            dueDatePeriod = new TimePeriod();
+            dueDatePeriod.setUnitId(dueDatePeriodId);
+            dueDatePeriod.setValue(dueDatePeriodValue);
+            LOG.debug("Using provided due date " + dueDatePeriod);
         }
+
+        // generate invoices
+        InvoiceDTO[] invoices = new BillingProcessBL().generateInvoice(billingProcess, dueDatePeriod,
+                                                                       user, false, onlyRecurring, getCallerId());
+
+        // generate invoices should return an empty array instead of null... bad design :(
+        if (invoices == null)
+            return new Integer[0];
+
+        // build the list of generated ID's and return
+        List<Integer> invoiceIds = new ArrayList<Integer>(invoices.length);
+        for (InvoiceDTO invoice : invoices) {
+            invoiceIds.add(invoice.getId());
+        }
+        return invoiceIds.toArray(new Integer[invoiceIds.size()]);
     }
 
     /**
@@ -614,6 +651,26 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         Integer executorId = getCallerId();
         bl.set(userId);
         bl.delete(executorId);
+    }
+
+    /**
+     * Returns true if a user exists with the given user name, false if not.
+     *
+     * @param userName user name
+     * @return true if user exists, false if not.
+     */
+    public boolean userExistsWithName(String userName) {
+        return new UserBL().exists(userName, getCallerCompanyId());
+    }
+
+    /**
+     * Returns true if a user with the given ID exists and is accessible by the caller, false if not.
+     *
+     * @param userId user id
+     * @return true if user exists, false if not.
+     */
+    public boolean userExistsWithId(Integer userId) {
+        return new UserBL().exists(userId, getCallerCompanyId());
     }
 
     /**
@@ -805,25 +862,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return userIds;
     }
 
-    public void saveCustomContactFields(ContactFieldTypeWS[] fields) throws SessionInternalError {
-    	try {
-    		ContactFieldTypeDAS das= new ContactFieldTypeDAS();
-    		for (ContactFieldTypeWS ws: fields) { 
-    			ContactFieldTypeDTO dto= ws.getId() == null ? new ContactFieldTypeDTO() : das.find(ws.getId());
-    			dto.setDataType(ws.getDataType());
-    			dto.setReadOnly(ws.getReadOnly());
-    			dto.setDisplayInView(ws.getDisplayInView() ? 1 : 0);
-    			dto.setPromptKey("placeholder_text");
-    			dto.setEntity(new CompanyDTO(ws.getCompanyId()));
-    			dto.setVersionNum(new Integer(0));
-    			dto= das.save(dto);
-    			
-				for (InternationalDescriptionWS description : ws.getDescriptions()) {
-				    dto.setDescription(description.getContent(), description.getLanguageId());
-				}
-    			das.flush();
-    			das.clear();
-    		}
+    public void saveCustomContactField(ContactFieldTypeWS ws) throws SessionInternalError {
+        try {
+            
+            ContactFieldTypeDAS das= new ContactFieldTypeDAS(); 
+            ContactFieldTypeDTO dto= ws.getDTO();
+            dto= das.save(dto);
+            
+            if ( ws.getDescriptions().size() > 0 ) {
+                InternationalDescriptionWS descrWs= (InternationalDescriptionWS)ws.getDescriptions().get(0); 
+                dto.setDescription( descrWs.getContent(), descrWs.getLanguageId() );
+            }
+            
+            das.flush();
+            
     	}catch (Exception e) {
     		throw new SessionInternalError(e);
     	}
@@ -832,10 +884,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     @Deprecated
     private Integer[] getByCCNumber(Integer entityId, String number) {
         List<Integer> usersIds = new CreditCardDAS().findByLastDigits(entityId, number);
-
+        
         Integer[] ids = new Integer[usersIds.size()];
         return usersIds.toArray(ids);
-
+        
     }
 
     /**
@@ -843,7 +895,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer[] getUsersByCreditCard(String number) throws SessionInternalError {
         Integer entityId = getCallerCompanyId();
-
+        
         Integer[] ret = getByCCNumber(entityId, number);
         return ret;
     }
@@ -1394,9 +1446,46 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return true;
     }
 
+    public boolean updateOrCreateOrderPeriod(OrderPeriodWS orderPeriod)
+            throws SessionInternalError {
+
+        OrderPeriodDAS periodDas = new OrderPeriodDAS();
+        OrderPeriodDTO periodDto = null;
+        if (null != orderPeriod.getId()) {
+            periodDto = periodDas.find(orderPeriod.getId());
+        }
+
+        if (null == periodDto) {
+            periodDto = new OrderPeriodDTO();
+            periodDto.setCompany(new CompanyDAS().find(getCallerCompanyId()));
+            // periodDto.setVersionNum(new Integer(0));
+        }
+        periodDto.setValue(orderPeriod.getValue());
+        if (null != orderPeriod.getPeriodUnitId()) {
+            periodDto.setUnitId(orderPeriod.getPeriodUnitId().intValue());
+        }
+        periodDto = periodDas.save(periodDto);
+        if (orderPeriod.getDescriptions() != null
+                && orderPeriod.getDescriptions().size() > 0) {
+            periodDto.setDescription(((InternationalDescriptionWS) orderPeriod
+                    .getDescriptions().get(0)).getContent(),
+                    ((InternationalDescriptionWS) orderPeriod.getDescriptions()
+                            .get(0)).getLanguageId());
+        }
+        LOG.debug("Converted to DTO: " + periodDto);
+        periodDas.flush();
+        periodDas.clear();
+        return true;
+    }
+    
     public boolean deleteOrderPeriod(Integer periodId) throws SessionInternalError {
-    	IOrderSessionBean orderSession = Context.getBean(Context.Name.ORDER_SESSION);
-    	return orderSession.deletePeriod(periodId);
+        try {
+            // now get the order
+            OrderBL bl = new OrderBL();
+            return new Boolean(bl.deletePeriod(periodId));
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
     }
     
     /*
@@ -1888,7 +1977,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         order.setCurrencyId(zero2null(order.getCurrencyId()));
         order.setNotificationStep(zero2null(order.getNotificationStep()));
         order.setDueDateUnitId(zero2null(order.getDueDateUnitId()));
-        order.setDueDateValue(zero2null(order.getDueDateValue()));
+        //Bug Fix: 1385: Due Date may be zero
+        //order.setDueDateValue(zero2null(order.getDueDateValue()));
         order.setDfFm(zero2null(order.getDfFm()));
         order.setAnticipatePeriods(zero2null(order.getAnticipatePeriods()));
         order.setActiveSince(zero2null(order.getActiveSince()));
@@ -2077,6 +2167,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             orderBL.set(id);
             return orderBL.getWS(languageId);
         }
+
+
         return getWSFromOrder(orderBL, languageId);
     }
 
@@ -2102,14 +2194,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
         for (Iterator<OrderLineDTO> it = order.getLines().iterator(); it.hasNext();) {
             OrderLineDTO line = (OrderLineDTO) it.next();
-            LOG.info("copying line: " + line);
-            if (line.getDeleted() == 0) {
 
+            if (line.getDeleted() == 0) {
                 OrderLineWS lineWS = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
                         line.getAmount(), line.getQuantity(), line.getPrice(),
                         line.getCreateDatetime(), line.getDeleted(), line.getOrderLineType().getId(),
-                        line.getEditable(), (line.getPurchaseOrder() != null?line.getPurchaseOrder().getId():null),
-                        null, line.getVersionNum(),line.getProvisioningStatusId(),line.getProvisioningRequestId());
+                        line.getEditable(), (line.getPurchaseOrder() != null ? line.getPurchaseOrder().getId() : null),
+                        line.getUseItem(), line.getVersionNum(),line.getProvisioningStatusId(),line.getProvisioningRequestId());
 
                 lines.add(lineWS);
             }
@@ -2729,9 +2820,15 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return ids;
     }
 
-    public void deleteMediationConfiguration(Integer cfgId) {
+    public void deleteMediationConfiguration(Integer cfgId) throws SessionInternalError {
+        
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        mediationBean.delete(getCallerId(), cfgId);
+        try {
+            mediationBean.delete(getCallerId(), cfgId);
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+        
     }
 
 

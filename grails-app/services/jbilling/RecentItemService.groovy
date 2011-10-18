@@ -39,6 +39,10 @@ class RecentItemService implements InitializingBean, Serializable {
     static scope = "session"
     
     def void afterPropertiesSet() {
+        load()
+    }
+
+    def void load() {
         if (session['user_id'])
             session[SESSION_RECENT_ITEMS] = getRecentItems()
     }
@@ -87,8 +91,12 @@ class RecentItemService implements InitializingBean, Serializable {
                 item.save()
 
                 items << item
-                if (items.size() > MAX_ITEMS)
-                    items.remove(0).delete(flush: true)
+
+                if (items.size() > MAX_ITEMS) {
+                    def remove = items.subList(0, items.size() - MAX_ITEMS)
+                    remove.each{ it.delete(flush: true) }
+                    remove.clear()
+                }
 
                 session[SESSION_RECENT_ITEMS] = items
             }

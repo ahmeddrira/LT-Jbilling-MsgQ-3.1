@@ -129,6 +129,14 @@ public class SpringAPI implements JbillingAPI {
         session.deleteUser(userId);
     }
 
+    public boolean userExistsWithName(String userName) {
+        return session.userExistsWithName(userName);
+    }
+
+    public boolean userExistsWithId(Integer userId) {
+        return session.userExistsWithId(userId);
+    }
+
     public void deleteInvoice(Integer invoiceId) {
         session.deleteInvoice(invoiceId);
     }
@@ -153,6 +161,10 @@ public class SpringAPI implements JbillingAPI {
         return session.notifyInvoiceByEmail(invoiceId);
     }
 
+    public boolean notifyPaymentByEmail(Integer paymentId) {
+        return session.notifyPaymentByEmail(paymentId);
+    }
+    
     public Integer[] getLastInvoices(Integer userId, Integer number) {
         return session.getLastInvoices(userId, number);
     }
@@ -371,6 +383,10 @@ public class SpringAPI implements JbillingAPI {
 
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring) {
         return session.createInvoice(userId, onlyRecurring);
+    }
+
+    public Integer[] createInvoiceWithDate(Integer userId, Date billingDate, Integer dueDatePeriodId, Integer dueDatePeriodValue, boolean onlyRecurring) {
+        return session.createInvoiceWithDate(userId, billingDate, dueDatePeriodId, dueDatePeriodValue, onlyRecurring);
     }
 
     public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) {
@@ -750,12 +766,16 @@ public class SpringAPI implements JbillingAPI {
         return session.updateOrderPeriods(orderPeriods);
     }
 
+    public boolean updateOrCreateOrderPeriod(OrderPeriodWS orderPeriod) {
+        return session.updateOrCreateOrderPeriod(orderPeriod);
+    }
+    
     public void createUpdateNofications(Integer messageId, MessageDTO dto) {
         session.createUpdateNofications(messageId, dto);
     }
 
-    public void saveCustomContactFields(ContactFieldTypeWS[] fields) {
-        session.saveCustomContactFields(fields);
+    public void saveCustomContactField(ContactFieldTypeWS ws) {
+        session.saveCustomContactField(ws);
     }
 
     public void saveCustomerNotes(Integer userId, String notes) {

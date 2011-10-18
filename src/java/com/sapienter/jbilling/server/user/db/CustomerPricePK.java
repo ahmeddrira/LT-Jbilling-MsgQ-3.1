@@ -44,7 +44,7 @@ public class CustomerPricePK implements Serializable {
     public CustomerPricePK() {
     }
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "plan_item_id", nullable = false)
     public PlanItemDTO getPlanItem() {
         return planItem;

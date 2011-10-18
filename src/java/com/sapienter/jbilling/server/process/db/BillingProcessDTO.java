@@ -38,6 +38,7 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.process.BillingProcessWS;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
@@ -77,6 +78,17 @@ public class BillingProcessDTO implements Serializable {
     private static final Logger LOG = Logger.getLogger(BillingProcessDTO.class);
 
     public BillingProcessDTO() {
+    }
+
+    public BillingProcessDTO(BillingProcessWS ws) {
+        this.id = ws.getId() != null ? ws.getId() : 0;
+        this.billingDate = ws.getBillingDate();
+        this.periodValue = ws.getPeriodValue() != null ? ws.getPeriodValue() : 0;
+        this.isReview = ws.getReview() != null ? ws.getReview() : 0;
+        this.retriesToDo = ws.getRetriesToDo() != null ? ws.getRetriesToDo() : 0;
+
+        if (ws.getPeriodUnitId() != null) this.periodUnitDTO = new PeriodUnitDTO(ws.getPeriodUnitId());
+        if (ws.getEntityId() != null) this.entity = new CompanyDTO(ws.getEntityId());
     }
 
     public BillingProcessDTO(int id, PeriodUnitDTO periodUnitDTO,

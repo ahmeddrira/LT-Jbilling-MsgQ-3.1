@@ -6,12 +6,15 @@ import com.sapienter.jbilling.server.item.tasks.PricingResult
 import com.sapienter.jbilling.server.item.PricingField
 import com.sapienter.jbilling.server.item.db.PlanItemDTO
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO
+import com.sapienter.jbilling.server.pricing.PriceModelBL
 import com.sapienter.jbilling.server.user.CustomerPriceBL
 import com.sapienter.jbilling.server.order.UsageBL
 import com.sapienter.jbilling.server.order.Usage
 import java.util.HashMap
 import java.util.Map
+import java.util.SortedMap
 import java.util.List
+import java.util.Date
 import org.apache.log4j.Logger
 
 # global
@@ -25,14 +28,14 @@ global org.apache.log4j.Logger LOG
 # Author: Brian Cowdery
 # Date: Aug 17, 2010
 
-function PriceModelDTO getPriceModel(Integer userId, Integer itemId, String lata, String rateCenter, String stateProvince) {
+function SortedMap getPriceModel(Integer userId, Integer itemId, String lata, String rateCenter, String stateProvince) {
     Map<String, String> attributes = new HashMap<String, String>(3);
     attributes.put("lata", lata);
     attributes.put("rateCenter", rateCenter);
     attributes.put("stateProvince", stateProvince);
 
     List<PlanItemDTO> items = new CustomerPriceBL(userId).getPricesByWildcardAttributes(itemId, attributes, 1);
-    return !items.isEmpty() ? items.get(0).getModel() : null;
+    return !items.isEmpty() ? items.get(0).getModels() : null;
 }
 
 function Usage getCurrentUsage(Integer userId, Integer itemId) {
@@ -51,7 +54,8 @@ when
     PricingField( name == "stateProvince", $stateProvince : strValue != null, resultId == $result.id )
 then
     # use mediation fields as attributes to find customer pricing
-    PriceModelDTO model = getPriceModel($result.getUserId(), $result.getItemId(), $lata, $rateCenter, $stateProvince);
+    SortedMap models = getPriceModel($result.getUserId(), $result.getItemId(), $lata, $rateCenter, $stateProvince);
+    PriceModelDTO model =  models != null ? PriceModelBL.getPriceForDate(models, new Date()) : null;
 
     # apply pricing
     if (model != null) {

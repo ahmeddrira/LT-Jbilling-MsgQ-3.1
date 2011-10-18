@@ -40,20 +40,33 @@ class BreadcrumbService implements InitializingBean, Serializable {
     static scope = "session"
 
     def void afterPropertiesSet() {
+        load()
+    }
+
+    def void load() {
         if (session['user_id'])
             session[SESSION_BREADCRUMBS] = getBreadcrumbs()
     }
 
     /**
-     * Returns a list of recently viewed items for the currently logged in user.
+     * Returns a list of recorded breadcrumbs for the currently logged in user.
      *
-     * @return list of recently viewed items.
+     * @return list of recorded breadcrumbs.
      */
     def Object getBreadcrumbs() {
         return Breadcrumb.withCriteria {
             eq("userId", session["user_id"])
             order("id", "asc")
         }
+    }
+
+    /**
+     * Returns the last recorded breadcrumb for the currently logged in user.
+     *
+     * @return last recorded breadcrumb.
+     */
+    def Object getLastBreadcrumb() {
+        return Breadcrumb.findByUserId(session['user_id'], [sort:'id', order:'desc'])
     }
 
     /**
@@ -95,8 +108,12 @@ class BreadcrumbService implements InitializingBean, Serializable {
                 crumb.save()
 
                 crumbs << crumb
-                if (crumbs.size() > MAX_ITEMS)
-                    crumbs.remove(0).delete()
+
+                if (crumbs.size() > MAX_ITEMS) {
+                    def remove = crumbs.subList(0, crumbs.size() - MAX_ITEMS)
+                    remove.each{ it.delete(flush: true) }
+                    remove.clear()
+                }
 
                 session[SESSION_BREADCRUMBS] = crumbs
             }
@@ -105,7 +122,6 @@ class BreadcrumbService implements InitializingBean, Serializable {
             log.error("Exception caught adding breadcrumb", t)
             session.error = 'breadcrumb.failed'
         }
-
     }
 
     /**

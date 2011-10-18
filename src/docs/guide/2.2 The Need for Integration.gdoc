@@ -28,4 +28,4 @@ cleared and grant access without the need for manual operations.
 As we'll see in the following sections, integration services in *j*Billing are almost as
 comprehensive as the billing functionality provided through the standard web interface.
 Using the integration layer, you can retrieve lots of useful data from *j*Billing, as well as
-_create_, _update_ or _delete_ Users, Items, Orders and Invoices.
+_create, update_ or _delete_ Users, Items, Orders and Invoices.

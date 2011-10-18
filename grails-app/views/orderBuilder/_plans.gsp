@@ -61,7 +61,7 @@
                         <td>
                             <g:remoteLink class="cell double" action="edit" id="${plan.id}" params="[_eventId: 'addPlan']" update="column2" method="GET">
                                 <strong>${plan.getDescription(session['language_id'])}</strong>
-                                <em><g:message code="table.id.format" args="[plan.id]"/></em>
+                                <em><g:message code="table.id.format" args="[plan.id as String]"/></em>
                             </g:remoteLink>
                         </td>
                         <td class="small">
@@ -75,7 +75,8 @@
                                     %<g:formatNumber number="${plan.percentage}" formatName="money.format"/>
                                 </g:if>
                                 <g:else>
-                                    <g:formatNumber number="${plan.defaultPrice?.rate}" type="currency" currencySymbol="${plan.defaultPrice?.currency?.symbol}"/>
+                                    <g:set var="price" value="${plan.getPrice(order.activeSince ?: order.createDate ?: new Date())}"/>
+                                    <g:formatNumber number="${price?.rate}" type="currency" currencySymbol="${price?.currency?.symbol}"/>
                                 </g:else>
                             </g:remoteLink>
                         </td>

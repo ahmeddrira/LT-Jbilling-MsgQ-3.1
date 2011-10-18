@@ -1,14 +1,4 @@
-<html>
-<head>
-    <meta name="layout" content="configuration" />
-</head>
-<body>
-
-<!-- selected configuration menu item -->
-<content tag="menu.item">mediation</content>
-
-<content tag="column1">
-    %{--
+%{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
 
@@ -26,16 +16,20 @@
 
   You should have received a copy of the GNU Affero General Public License
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
-  --}%
-
-<g:render template="config" />
-</content>
-
-<content tag="column2">
-    <g:if test="${selected}">
-        <!-- show selected contact type -->
-    </g:if>
-</content>
-
+--}%
+<html>
+<head>
+<meta name="layout" content="configuration" />
+</head>
+<body>
+    <!-- selected configuration menu item -->
+    <content tag="menu.item">mediation</content>
+    <content tag="column1"> <g:render template="configs" model="['types': types, 'readers': readers]" /> </content>
+    <content tag="column2"> 
+        <g:if test="${selected}">
+            <!-- show selected period -->
+            <g:render template="show" model="['selected': selected ]" />
+        </g:if>
+    </content>
 </body>
 </html>

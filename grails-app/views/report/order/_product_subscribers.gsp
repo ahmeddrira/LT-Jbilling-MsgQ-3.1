@@ -28,7 +28,7 @@
 <div class="form-columns">
 
     <g:applyLayout name="form/input">
-        <content tag="label">Product Id</content>
+        <content tag="label"><g:message code="item_id" /></content>
         <content tag="label.for">item_id</content>
         <g:textField class="field" name="item_id"/>
     </g:applyLayout>

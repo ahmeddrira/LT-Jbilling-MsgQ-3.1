@@ -177,6 +177,17 @@ public class PlanBL {
 
     public void update(PlanDTO dto) {
         if (plan != null) {
+
+            // un-subscribe existing customers before updating
+            List<CustomerDTO> subscribers = getCustomersByPlan(plan.getId());
+            for (CustomerDTO customer : subscribers) {
+                unsubscribe(customer.getBaseUser().getUserId());
+            }
+
+            // clean all remaining prices just-in-case there's an orphaned record
+            purgeCustomerPrices();
+
+            // do update
             validateAttributes(dto);
 
             plan.setDescription(dto.getDescription());
@@ -185,8 +196,13 @@ public class PlanBL {
             plan.getPlanItems().clear();
             plan.getPlanItems().addAll(dto.getPlanItems());
 
+            LOG.debug("Saving updates to plan " + plan.getId());
             this.plan = planDas.save(plan);
-            refreshCustomerPrices();
+
+            // re-subscribe customers after plan has been saved
+            for (CustomerDTO customer : subscribers) {
+                subscribe(customer.getBaseUser().getUserId());
+            }
 
             // trigger internal event
             EventManager.process(new PlanUpdatedEvent(plan));
@@ -201,7 +217,10 @@ public class PlanBL {
             PriceModelBL.validateAttributes(planItem.getModels().values());
 
             plan.addPlanItem(planItem);
+
+            LOG.debug("Saving updates to plan " + plan.getId());
             this.plan = planDas.save(plan);
+
             refreshCustomerPrices();
 
             // trigger internal event
@@ -214,11 +233,7 @@ public class PlanBL {
 
     public void delete() {
         if (plan != null) {
-            for (CustomerDTO customer : getCustomersByPlan(plan.getId())) {
-                CustomerPriceBL bl = new CustomerPriceBL(customer);
-                bl.removePrices(plan.getId());
-            }
-
+            purgeCustomerPrices();
             planDas.delete(plan);
 
             // trigger internal event
@@ -235,6 +250,8 @@ public class PlanBL {
      */
     public void refreshCustomerPrices() {
         if (plan != null) {
+            LOG.debug("Refreshing customer prices for subscribers to plan " + plan.getId());
+
             for (CustomerDTO customer : getCustomersByPlan(plan.getId())) {
                 CustomerPriceBL bl = new CustomerPriceBL(customer);
                 bl.removePrices(plan.getId());
@@ -243,7 +260,22 @@ public class PlanBL {
         } else {
             LOG.error("Cannot update customer prices, PlanDTO not found or not set!");
         }
-    }    
+    }
+
+    /**
+     * Removes all customer prices for the plan's current set of plan items. This will remove
+     * prices for subscribed customers AND orphaned prices where the customers order has been
+     * deleted in a non-standard way (DB delete, non API usage).
+     */
+    public void purgeCustomerPrices() {
+        if (plan != null) {
+            LOG.debug("Removing ALL remaining customer prices for plan " + plan.getId());
+            new CustomerPriceBL().removeAllPrices(plan.getPlanItems());
+        } else {
+            LOG.error("Cannot purge customer prices, PlanDTO not found or not set!");
+        }
+
+    }
 
     /**
      * Subscribes a customer to all plans held by the given "plan subscription" item, adding all
@@ -254,6 +286,8 @@ public class PlanBL {
      * @return list of saved customer price entries, empty if no prices applied to customer.
      */
     public static List<CustomerPriceDTO> subscribe(Integer userId, Integer itemId) {
+        LOG.debug("Subscribing customer " + userId + " to plan subscription item " + itemId);
+
         List<CustomerPriceDTO> saved = new ArrayList<CustomerPriceDTO>();
 
         CustomerPriceBL customerPriceBl = new CustomerPriceBL(userId);
@@ -270,6 +304,8 @@ public class PlanBL {
      * @return list of saved customer price entries, empty if no prices applied to customer.
      */
     public List<CustomerPriceDTO> subscribe(Integer userId) {
+        LOG.debug("Subscribing customer " + userId + " to plan " + plan.getId());
+
         List<CustomerPriceDTO> saved = new ArrayList<CustomerPriceDTO>();
 
         CustomerPriceBL customerPriceBl = new CustomerPriceBL(userId);
@@ -286,6 +322,8 @@ public class PlanBL {
      * @param itemId item representing the subscription to a plan
      */
     public static void unsubscribe(Integer userId, Integer itemId) {
+        LOG.debug("Un-subscribing customer " + userId + " from plan subscription item " + itemId);
+
         CustomerPriceBL customerPriceBl = new CustomerPriceBL(userId);
         for (PlanDTO plan : new PlanBL().getPlansBySubscriptionItem(itemId))
             customerPriceBl.removePrices(plan.getId());
@@ -297,6 +335,7 @@ public class PlanBL {
      * @param userId user id of the customer to un-subscribe
      */
     public void unsubscribe(Integer userId) {
+        LOG.debug("Un-subscribing customer " + userId + " from plan " + plan.getId());
         new CustomerPriceBL(userId).removePrices(plan.getId());
     }
 

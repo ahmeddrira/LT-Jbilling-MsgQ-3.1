@@ -73,6 +73,9 @@ public interface JbillingAPI {
     public void updateUser(UserWS user);
     public void deleteUser(Integer userId);
 
+    public boolean userExistsWithName(String userName);
+    public boolean userExistsWithId(Integer userId);
+
     public ContactWS[] getUserContactsWS(Integer userId);
     public void updateUserContact(Integer userId, Integer typeId, ContactWS contact);
 
@@ -169,6 +172,7 @@ public interface JbillingAPI {
 
     public InvoiceWS getInvoiceWS(Integer invoiceId);
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring);
+    public Integer[] createInvoiceWithDate(Integer userId, Date billingDate, Integer dueDatePeriodId, Integer dueDatePeriodValue, boolean onlyRecurring);
     public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId);
     public void deleteInvoice(Integer invoiceId);
 
@@ -183,7 +187,7 @@ public interface JbillingAPI {
 
     public byte[] getPaperInvoicePDF(Integer invoiceId);
     public boolean notifyInvoiceByEmail(Integer invoiceId);
-
+    public boolean notifyPaymentByEmail(Integer paymentId);
 
     /*
         Payments
@@ -343,8 +347,9 @@ public interface JbillingAPI {
     public OrderWS[] getUserSubscriptions(Integer userId);
     public boolean deleteOrderPeriod(Integer periodId);
     public boolean updateOrderPeriods(OrderPeriodWS[] orderPeriods);
+    public boolean updateOrCreateOrderPeriod(OrderPeriodWS orderPeriod);
     public void createUpdateNofications(Integer messageId, MessageDTO dto);
-    public void saveCustomContactFields(ContactFieldTypeWS[] fields);
+    public void saveCustomContactField(ContactFieldTypeWS ws);
     public void saveCustomerNotes(Integer userId, String notes);
     public void updateCompany(CompanyWS companyWS);
     

@@ -271,22 +271,6 @@ class OrderBuilderController {
                 def index = params.int('index')
                 def line = order.orderLines[index]
 
-                // useItem only if price and description not set by user
-                def price = params["line-${index}.priceAsDecimal"]
-                def description = params["line-${index}.description"]
-
-                if (StringUtils.isNotBlank(price) && line.getPriceAsDecimal().compareTo(price as BigDecimal) != 0) {
-                    log.debug("Line price updated by the user, use item = false")
-                    line.useItem = false
-
-                } else if (StringUtils.isNotBlank(description) && line.description != description) {
-                    log.debug("Line description updated by the user, use item = false")
-                    line.useItem = false
-
-                } else {
-                    line.useItem = true
-                }
-
                 // update line
                 bindData(line, params["line-${index}"])
 

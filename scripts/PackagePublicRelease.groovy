@@ -113,10 +113,18 @@ target(updateImage: "Updates the jbilling image with the current release artifac
         fileset(dir: "${resourcesDir}/mediation", includes: "mediation.dtd")
     }
 
-    // copy jbilling.jar
+    // copy client api artifacts
     delete(file: "${jbillingHome}/resources/api")
     mkdir(dir: "${jbillingHome}/resources/api")
     copy(file: "${targetDir}/${grailsAppName}.jar", todir: "${jbillingHome}/resources/api")
+    copy(file: "${descriptorsDir}/spring/jbilling-remote-beans.xml", todir: "${jbillingHome}/resources/api")
+
+    // copy plug-in spring xml configuration files
+    delete(file: "${jbillingHome}/resources/spring")
+    mkdir(dir: "${jbillingHome}/resources/spring")
+    copy(todir: "${jbillingHome}/resources/spring") {
+        fileset(dir: "${descriptorsDir}/spring", excludes: "jbilling-remote-beans.xml")
+    }
 
     // copy configuration files
     // don't copy DataSource, the reference tomcat install uses HSQLDB

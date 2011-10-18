@@ -27,6 +27,7 @@ import com.sapienter.jbilling.server.mediation.MediationConfigurationWS
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskTypeCategoryDAS
 import com.sapienter.jbilling.server.util.Constants
+import com.sapienter.jbilling.server.mediation.db.MediationConfiguration
 
 /**
 * MediationConfigController
@@ -50,52 +51,97 @@ class MediationConfigController {
 
     def list = {
 
-        def types= webServicesSession.getAllMediationConfigurations()
+        def configurations= webServicesSession.getAllMediationConfigurations()
+        
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 		
-		def readers= new ArrayList<PluggableTaskDTO>()
-		for(PluggableTaskDTO reader: PluggableTaskDTO.list()) {
-			log.debug "Pluggable Task ${reader.id}, Category: ${reader.type.category.id}"
-			if (reader?.type?.category?.getId() == Constants.PLUGGABLE_TASK_MEDIATION_READER) {
-				readers.add reader
-			}
-		}
-
-		if (params.template) {
-			flash.message=flash.message
-			render template: params.template, model:[types: types, readers: readers] 
+		if (params.applyFilter) {
+			//flash.message=flash.message
+			render template: 'configs', model:[types: configurations, readers: readers] 
 		} else {
-        	render view: 'list', model: [types: types, readers: readers]
+        	render view: 'list', model: [types: configurations, readers: readers]
 		}
     }
+    
+    def show = {
+        
+        def configId= params.int('id')
+        
+        log.debug "Show config id $params.id"
+        
+        def config= MediationConfiguration.get(configId)
+        
+        if ( config.entityId != session['company_id']) {
+            flash.error = 'configuration.does.not.exists.for.entity' 
+            list()
+        }
+        
+        breadcrumbService.addBreadcrumb(controllerName, actionName, null, configId)
+        
+        render template: 'show', model: [selected: config]
+        
+    }
 	
+    def edit = {
+        
+        def configId= params.int('id')
+        
+        def config = configId ? MediationConfiguration.get(configId) : null
+
+        def crumbName = configId ? 'update' : 'create'
+        def crumbDescription = params.id ? config?.name : null
+        breadcrumbService.addBreadcrumb(controllerName, actionName, crumbName, configId, crumbDescription)
+        
+        render template: 'edit', model: [ config: config, readers: readers]
+    }
+    
 	def save = {
-		def cnt = params.int('recCnt')
-		log.debug "Records Count: ${cnt}"
+        
+		def ws= new MediationConfigurationWS()
+        
+		bindData(ws, params)
+        
+		if ( params.int('id') > 0 ) {
+            log.debug "config exists.."
+            webServicesSession.updateAllMediationConfigurations([ws])
+            flash.message = 'mediation.config.update.success'
+		} else {
+            log.debug "New config.."
+            ws.setCreateDatetime new Date()
+            ws.setEntityId webServicesSession.getCallerCompanyId()
+            webServicesSession.createMediationConfiguration(ws)
+            flash.message = 'mediation.config.create.success'
+        }
 		
-		List<MediationConfigurationWS> types= webServicesSession.getAllMediationConfigurations()
-		for (MediationConfigurationWS ws: types){
-			bindData(ws, params["obj[${ws.id}]"])
-			log.debug ws
-		}
-		webServicesSession.updateAllMediationConfigurations(types)
-		
-		if (params.orderValue && params.pluggableTaskId && params.name) {
-			MediationConfigurationWS ws= new MediationConfigurationWS();
-			bindData(ws, params);
-			ws.setCreateDatetime new Date()
-			ws.setEntityId webServicesSession.getCallerCompanyId()
-			webServicesSession.createMediationConfiguration(ws)
-		}
-		
-		flash.message = 'mediation.config.save.success'
 		redirect action: 'list'
 	}
 	
 	def delete = {
-		webServicesSession.deleteMediationConfiguration(params.int('id'))
-		flash.message = 'mediation.config.delete.success'
-		redirect action:'list', params:[template: 'config']
+        
+        try {
+            webServicesSession.deleteMediationConfiguration(params.int('id'))
+            flash.message = 'mediation.config.delete.success'
+        } catch (SessionInternalError e){
+            viewUtils.resolveException(flash, session.locale, e);
+        } catch (Exception e) {
+            log.error e.getMessage()
+            flash.error = 'mediation.config.delete.failure'
+        }
+        
+        // render list
+        params.applyFilter = true
+		list()
+        
 	}
 	
+    def getReaders() {
+        
+        def readers= new ArrayList<PluggableTaskDTO>()
+        for(PluggableTaskDTO reader: PluggableTaskDTO.list()) {
+            if (reader?.type?.category?.getId() == Constants.PLUGGABLE_TASK_MEDIATION_READER) {
+                readers.add reader
+            }
+        }
+        return readers
+    }
 }

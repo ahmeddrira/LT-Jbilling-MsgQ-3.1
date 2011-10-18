@@ -66,9 +66,9 @@
                 <content tag="label"><g:message code="order.label.active.since"/></content>
                 <content tag="label.for">activeSince</content>
                 <content tag="onClose">
-                    function() {
-                        $('#order-details-form').submit();
-                    }
+                        function() {
+                            $('#order-details-form').submit();
+                        }
                 </content>
                 <g:textField class="field" name="activeSince" value="${formatDate(date: order?.activeSince, formatName: 'datepicker.format')}"/>
             </g:applyLayout>
@@ -77,9 +77,9 @@
                 <content tag="label"><g:message code="order.label.active.until"/></content>
                 <content tag="label.for">activeUntil</content>
                 <content tag="onClose">
-                    function() {
-                        $('#order-details-form').submit();
-                    }
+                        function() {
+                            $('#order-details-form').submit();
+                        }
                 </content>
                 <g:textField class="field" name="activeUntil" value="${formatDate(date: order?.activeUntil, formatName: 'datepicker.format')}"/>
             </g:applyLayout>
@@ -101,7 +101,7 @@
                 <g:applyLayout name="form/input">
                     <content tag="label"><g:message code="order.label.anticipate.period"/></content>
                     <content tag="label.for">anticipatePeriods</content>
-                    <g:textField class="field" name="anticipatePeriods" value="${order?.anticipatePeriods}"/>
+                    <g:textField class="field text" name="anticipatePeriods" value="${order?.anticipatePeriods}"/>
                 </g:applyLayout>
             </g:preferenceEquals>
 
@@ -110,7 +110,7 @@
                 <content tag="label.for">dueDateValue</content>
 
                 <div class="inp-bg inp4">
-                    <g:textField class="field" name="dueDateValue" value="${order?.dueDateValue}"/>
+                    <g:textField class="field text" name="dueDateValue" value="${order?.dueDateValue}"/>
                 </div>
                 <div class="select4">
                     <g:select from="${periodUnits}"
@@ -173,18 +173,6 @@
                 }
             });
 
-            $('#order-details-form').find('input:checkbox').change(function() {
-                $('#order-details-form').submit();
-            });
-
-            $('#order-details-form').find('input:text.hasDatepicker, select').change(function() {
-                $('#order-details-form').submit();
-            });
-
-            $('#order-details-form').find('input:text, textarea').blur(function() {
-                $('#order-details-form').submit();
-            });
-
             $('#status-suspended-dialog').dialog({
                  autoOpen: false,
                  height: 200,
@@ -200,6 +188,22 @@
                      }
                  }
              });
+
+            $('#order-details-form').find('select').change(function() {
+                $('#order-details-form').submit();
+            });
+
+            $('#order-details-form').find('input:checkbox').change(function() {
+                $('#order-details-form').submit();
+            });
+
+            $('#order-details-form').find('input.text').blur(function() {
+                $('#order-details-form').submit();
+            });
+
+            $('#order-details-form').find('textarea').blur(function() {
+                $('#order-details-form').submit();
+            });
         });
     </script>
 

@@ -277,15 +277,21 @@ public class UserBL extends ResultList implements UserSQL {
     }
 
     public boolean exists(String userName, Integer entityId) {
-        if (userName == null) {
-            LOG.error("exists is being call with a null username");
-            return true;
+        if (userName == null || entityId == null) {
+            LOG.debug("User name and entity ID are required, cannot check user existence");
+            return true; // just in case this prompts them to try and create a user.
         }
-        if (new UserDAS().findByUserName(userName, entityId) == null) {
-            return false;
-        } else {
-            return true;
+
+        return new UserDAS().findByUserName(userName, entityId) != null;
+    }
+
+    public boolean exists(Integer userId, Integer entityId) {
+        if (userId == null || entityId == null) {
+            LOG.debug("User ID and entity ID are required, cannot check user existence");
+            return true; // just in case this prompts them to try and create a user.
         }
+
+        return new UserDAS().exists(userId, entityId);
     }
 
     public Integer create(UserDTOEx dto, Integer executorUserId) throws SessionInternalError {
@@ -352,6 +358,9 @@ public class UserBL extends ResultList implements UserSQL {
                 user.getCustomer().setUseParentPricing(dto.getCustomer().useParentPricing());
             }
 
+            user.getCustomer().setDueDateUnitId(dto.getCustomer().getDueDateUnitId());
+            user.getCustomer().setDueDateValue(dto.getCustomer().getDueDateValue());
+            
             // set dynamic balance fields
             user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());

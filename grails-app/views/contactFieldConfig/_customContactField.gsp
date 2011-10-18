@@ -44,6 +44,7 @@
                     <table cellpadding="0" cellspacing="0" id="custom_fields" class="innerTable" width="100%">
                         <thead class="innerHeader">
                              <tr>
+                                <th class="tiny"><g:message code="contact.field.type.id"/></th>
                                 <th class="medium"><g:message code="contact.field.name"/></th>
                                 <th class="medium"><g:message code="contact.field.datatype"/></th>
                                 <th class="medium"><g:message code="contact.field.isReadOnly"/></th>
@@ -55,8 +56,11 @@
                          
                             <g:each status="iter" var="type" in="${types}">
                                 <tr>
-                                    <td class="medium">
+                                    <td class="tiny">
+                                        ${type.id}
+                                    </td>
                                     
+                                    <td class="medium">
                                         <g:textField 
                                             class="field"  
                                             class="field" style="float: right;width: 150px" 
@@ -102,6 +106,7 @@
                             </g:each>
                             
                             <tr>
+                                <td class="tiny"></td>
                                 <td class="medium">
                                     <g:textField 
                                         class="field" 

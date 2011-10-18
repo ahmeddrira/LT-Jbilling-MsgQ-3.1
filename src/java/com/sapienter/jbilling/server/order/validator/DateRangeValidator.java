@@ -21,12 +21,15 @@
 package com.sapienter.jbilling.server.order.validator;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.DateMidnight;
+import org.springmodules.cache.util.Reflections;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,10 +45,6 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
 
     private static final Logger LOG = Logger.getLogger(DateRangeValidator.class);
 
-    // default java Date.toString() date format
-    private static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
-
-
     private String startDateFieldName;
     private String endDateFieldName;
 
@@ -56,31 +55,36 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
 
     public boolean isValid(Object object, ConstraintValidatorContext constraintValidatorContext) {
         try {
-            String startDateString = BeanUtils.getProperty(object, startDateFieldName);
-            String endDateString = BeanUtils.getProperty(object, endDateFieldName);
+            Class klass = object.getClass();
 
-            // only validate if both dates are present
-            if (startDateString == null || startDateString.equals(""))
-                return true;
+            Date startDate = (Date) getAccessorMethod(klass, startDateFieldName).invoke(object);
+            Date endDate = (Date) getAccessorMethod(klass, endDateFieldName).invoke(object);
 
-            if (endDateString == null || endDateString.equals(""))
-                return true;
-
-            Date startDate = DEFAULT_DATE_FORMAT.parse(startDateString);
-            Date endDate = DEFAULT_DATE_FORMAT.parse(endDateString);
-
-            return startDate.before(endDate);
+            return startDate == null || endDate == null || startDate.before(endDate);
 
         } catch (IllegalAccessException e) {
             LOG.debug("Illegal access to the date range property fields.");
         } catch (NoSuchMethodException e) {
-            LOG.debug("Date range property missing getter/setter methods.");
+            LOG.debug("Date range property missing JavaBeans getter/setter methods.");
         } catch (InvocationTargetException e) {
             LOG.debug("Date property field cannot be accessed.");
-        } catch (ParseException e) {
-            LOG.debug("Date property values cannot be parsed.");
+        } catch (ClassCastException e) {
+            LOG.debug("Property does not contain a java.util.Date object.");
         }
 
         return false;
+    }
+
+    /**
+     * Returns the accessor method for the given property name. This assumes
+     * that the property follows normal getter/setter naming conventions so that
+     * the method name can be resolved introspectively.
+     *
+     * @param klass class of the target object
+     * @param propertyName property name
+     * @return accessor method
+     */
+    public Method getAccessorMethod(Class klass, String propertyName) throws NoSuchMethodException {
+        return klass.getMethod("get" + WordUtils.capitalize(propertyName));
     }
 }

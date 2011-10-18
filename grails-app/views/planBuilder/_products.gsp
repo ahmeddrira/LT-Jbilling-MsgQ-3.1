@@ -71,7 +71,7 @@
                         <td>
                             <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'addPrice']" update="column2" method="GET">
                                 <strong>${product.getDescription(session['language_id'])}</strong>
-                                <em><g:message code="table.id.format" args="[product.id]"/></em>
+                                <em><g:message code="table.id.format" args="[product.id as String]"/></em>
                             </g:remoteLink>
                         </td>
                         <td class="small">

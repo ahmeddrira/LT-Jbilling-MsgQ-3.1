@@ -33,6 +33,9 @@ public class PreferenceTypeWS implements Serializable {
     private String description;
     private String defaultValue;
 
+    public PreferenceTypeWS() {
+    }
+
     public PreferenceTypeWS(int id) {
         this.id = id;
     }

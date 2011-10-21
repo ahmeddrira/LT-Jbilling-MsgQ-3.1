@@ -11406,6 +11406,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 50	38	instruction	1	Set to '1' to change the subscription status of a user when the user ages. '0' to disable.
 50	39	instruction	1	The number of retries to allow before locking the user account. A locked user account will have their password changed to the value of lockout_password in the jbilling.properties configuration file.
 50	40	instruction	1	If greater than zero, it represents the number of days that a password is valid. After those days, the password is expired and the user is forced to change it.
+59	101	description	1	Create partner
+59	102	description	1	Edit partner
 50	41	instruction	1	Set to '1' to allow the usage of the 'main subscription' flag for orders This flag is read only by the mediation process when determining where to place charges coming from external events.
 50	42	instruction	1	Set to '1' to allow the use of pro-rating to invoice fractions of a period. Shows the 'cycle' attribute of an order. Note that you need to configure the corresponding plug-ins for this feature to be fully functional.
 50	43	instruction	1	If the payment blacklist feature is used, this is set to the id of the configuration of the PaymentFilterTask plug-in. See the Blacklist section of the documentation.
@@ -11486,6 +11488,10 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 50	50	instruction	1	The number of decimal places to be shown on the invoice. Defaults to 2.
 59	110	description	1	Switch to sub-account
 59	111	description	1	Switch to any user
+59	100	description	1	Show partner menu
+59	103	description	1	Delete partner
+59	104	description	1	View partner details
+59	105	description	1	Download partner CSV
 \.
 
 
@@ -14360,7 +14366,6 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 97	9	\N
 98	9	\N
 99	9	\N
-120	10	\N
 23	2	\N
 71	7	\N
 13	1	\N
@@ -14383,6 +14388,13 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 74	7	\N
 110	11	\N
 111	11	\N
+100	9	\N
+120	12	\N
+101	10	\N
+102	10	\N
+103	10	\N
+104	10	\N
+105	10	\N
 \.
 
 
@@ -14515,6 +14527,31 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 92	5
 93	5
 30	5
+100	2
+101	2
+102	2
+103	2
+104	2
+105	2
+100	3
+101	3
+102	3
+103	3
+104	3
+105	3
+15	4
+10	4
+11	4
+24	4
+20	4
+21	4
+34	4
+30	4
+72	4
+90	4
+91	4
+92	4
+93	4
 \.
 
 
@@ -14532,8 +14569,9 @@ COPY permission_type (id, description) FROM stdin;
 7	Invoice
 8	Billing
 9	Menu
-10	API
 11	User Switching
+12	API
+10	Partner
 \.
 
 
@@ -16147,6 +16185,7 @@ COPY role (id) FROM stdin;
 2
 3
 5
+4
 \.
 
 

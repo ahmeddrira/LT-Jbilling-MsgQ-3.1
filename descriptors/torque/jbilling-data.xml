@@ -1424,10 +1424,15 @@
     <InternationalDescription TableId="59" ForeignId="97" PsudoColumn="description" LanguageId="1" Content="Show products menu"/>
     <InternationalDescription TableId="59" ForeignId="98" PsudoColumn="description" LanguageId="1" Content="Show plans menu"/>           
     <InternationalDescription TableId="59" ForeignId="99" PsudoColumn="description" LanguageId="1" Content="Show configuration menu"/>
-    <InternationalDescription TableId="59" ForeignId="120" PsudoColumn="description" LanguageId="1" Content="Web Service API access"/>
+    <InternationalDescription TableId="59" ForeignId="100" PsudoColumn="description" LanguageId="1" Content="Show partner menu"/>
+    <InternationalDescription TableId="59" ForeignId="101" PsudoColumn="description" LanguageId="1" Content="Create partner"/>
+    <InternationalDescription TableId="59" ForeignId="102" PsudoColumn="description" LanguageId="1" Content="Edit partner"/>
+    <InternationalDescription TableId="59" ForeignId="103" PsudoColumn="description" LanguageId="1" Content="Delete partner"/>
+    <InternationalDescription TableId="59" ForeignId="104" PsudoColumn="description" LanguageId="1" Content="View partner details"/>
+    <InternationalDescription TableId="59" ForeignId="105" PsudoColumn="description" LanguageId="1" Content="Download partner csv"/>
     <InternationalDescription TableId="59" ForeignId="110" PsudoColumn="description" LanguageId="1" Content="Switch to sub-account"/>
     <InternationalDescription TableId="59" ForeignId="111" PsudoColumn="description" LanguageId="1" Content="Switch to any user"/>
-
+    <InternationalDescription TableId="59" ForeignId="120" PsudoColumn="description" LanguageId="1" Content="Web Service API access"/>
     
     <InvoiceDeliveryMethod Id="1"/>
     <InvoiceDeliveryMethod Id="2"/>
@@ -1696,8 +1701,9 @@
     <PermissionType Id="7" Description="Invoice"/>
     <PermissionType Id="8" Description="Billing"/>
     <PermissionType Id="9" Description="Menu"/>
-    <PermissionType Id="10" Description="API"/>
+    <PermissionType Id="10" Description="Partner"/>
     <PermissionType Id="11" Description="User Switching"/>
+    <PermissionType Id="12" Description="API"/>
     
     <Permission Id="10" TypeId="1"/>
     <Permission Id="11" TypeId="1"/>
@@ -1750,9 +1756,15 @@
     <Permission Id="97" TypeId="9"/>
     <Permission Id="98" TypeId="9"/>
     <Permission Id="99" TypeId="9"/>
-    <Permission Id="120" TypeId="10"/>
+    <Permission Id="100" TypeId="10"/>
+    <Permission Id="101" TypeId="10"/>
+    <Permission Id="102" TypeId="10"/>
+    <Permission Id="103" TypeId="10"/>
+    <Permission Id="104" TypeId="10"/>
+    <Permission Id="105" TypeId="10"/>
     <Permission Id="110" TypeId="11"/>
     <Permission Id="111" TypeId="11"/>
+    <Permission Id="120" TypeId="12"/>
 
     <PermissionRoleMap PermissionId="10" RoleId="2"/>
     <PermissionRoleMap PermissionId="11" RoleId="2"/>
@@ -1805,8 +1817,15 @@
     <PermissionRoleMap PermissionId="97" RoleId="2"/>
     <PermissionRoleMap PermissionId="98" RoleId="2"/>
     <PermissionRoleMap PermissionId="99" RoleId="2"/>
+    <PermissionRoleMap PermissionId="100" RoleId="2"/>
+    <PermissionRoleMap PermissionId="101" RoleId="2"/>
+    <PermissionRoleMap PermissionId="102" RoleId="2"/>
+    <PermissionRoleMap PermissionId="103" RoleId="2"/>
+    <PermissionRoleMap PermissionId="104" RoleId="2"/>
+    <PermissionRoleMap PermissionId="105" RoleId="2"/>
     <PermissionRoleMap PermissionId="111" RoleId="2"/>
     <PermissionRoleMap PermissionId="120" RoleId="2"/>
+
     <PermissionRoleMap PermissionId="10" RoleId="3"/>
     <PermissionRoleMap PermissionId="11" RoleId="3"/>
     <PermissionRoleMap PermissionId="12" RoleId="3"/>
@@ -1849,6 +1868,30 @@
     <PermissionRoleMap PermissionId="96" RoleId="3"/>
     <PermissionRoleMap PermissionId="97" RoleId="3"/>
     <PermissionRoleMap PermissionId="98" RoleId="3"/>
+    <PermissionRoleMap PermissionId="100" RoleId="3"/>
+    <PermissionRoleMap PermissionId="101" RoleId="3"/>
+    <PermissionRoleMap PermissionId="102" RoleId="3"/>
+    <PermissionRoleMap PermissionId="103" RoleId="3"/>
+    <PermissionRoleMap PermissionId="104" RoleId="3"/>
+    <PermissionRoleMap PermissionId="105" RoleId="3"/>
+
+    <PermissionRoleMap PermissionId="15" RoleId="4"/>
+    <PermissionRoleMap PermissionId="10" RoleId="4"/>
+    <PermissionRoleMap PermissionId="11" RoleId="4"/>
+    <PermissionRoleMap PermissionId="24" RoleId="4"/>
+    <PermissionRoleMap PermissionId="28" RoleId="4"/>
+    <PermissionRoleMap PermissionId="20" RoleId="4"/>
+    <PermissionRoleMap PermissionId="21" RoleId="4"/>
+    <PermissionRoleMap PermissionId="34" RoleId="4"/>
+    <PermissionRoleMap PermissionId="36" RoleId="4"/>
+    <PermissionRoleMap PermissionId="30" RoleId="4"/>
+    <PermissionRoleMap PermissionId="72" RoleId="4"/>
+    <PermissionRoleMap PermissionId="74" RoleId="4"/>
+    <PermissionRoleMap PermissionId="90" RoleId="4"/>
+    <PermissionRoleMap PermissionId="91" RoleId="4"/>
+    <PermissionRoleMap PermissionId="92" RoleId="4"/>
+    <PermissionRoleMap PermissionId="93" RoleId="4"/>
+
     <PermissionRoleMap PermissionId="24" RoleId="5"/>
     <PermissionRoleMap PermissionId="30" RoleId="5"/>
     <PermissionRoleMap PermissionId="34" RoleId="5"/>
@@ -2054,6 +2097,7 @@
 
     <Role Id="2"/>
     <Role Id="3"/>
+    <Role Id="4"/>
     <Role Id="5"/>
 
     <GenericStatusType Id="order_line_provisioning_status"/>

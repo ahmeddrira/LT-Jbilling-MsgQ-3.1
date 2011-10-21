@@ -1468,12 +1468,69 @@ insert into permission_role_map (role_id, permission_id) values (5, 92); -- orde
 insert into permission_role_map (role_id, permission_id) values (5, 93); -- payments menu
 
 
--- Date 26-Jul-2011
+-- Date 21-Oct-2011
+-- Redmine Issue: #1445
 -- Description: Enabling Partner user
--- partner upgrades
-
 insert into permission (id, type_id) values (100, 9);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 100, 'description', 1, 'Show partner menu');
 
-insert into role values (4);
+-- move api permissions to 12 to fit with the api access permission
+insert into permission_type (id, description) values (12, 'API');
+update permission set type_id = 12 where type_id = 10;
+delete from permission_type where id = 10;
 
+-- use permission type 10 for partners now that its free
+insert into permission_type (id, description) values (10, 'Partner');
+
+insert into permission (id, type_id) values (101, 10);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 101, 'description', 1, 'Create partner');
+
+insert into permission (id, type_id) values (102, 10);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 102, 'description', 1, 'Edit partner');
+
+insert into permission (id, type_id) values (103, 10);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 103, 'description', 1, 'Delete partner');
+
+insert into permission (id, type_id) values (104, 10);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 104, 'description', 1, 'View partner details');
+
+insert into permission (id, type_id) values (105, 10);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 105, 'description', 1, 'Download partner CSV');
+
+-- permissions for super users
+insert into permission_role_map (role_id, permission_id) values (2, 100);
+insert into permission_role_map (role_id, permission_id) values (2, 101);
+insert into permission_role_map (role_id, permission_id) values (2, 102);
+insert into permission_role_map (role_id, permission_id) values (2, 103);
+insert into permission_role_map (role_id, permission_id) values (2, 104);
+insert into permission_role_map (role_id, permission_id) values (2, 105);
+
+-- permissions for clerks
+insert into permission_role_map (role_id, permission_id) values (3, 100);
+insert into permission_role_map (role_id, permission_id) values (3, 101);
+insert into permission_role_map (role_id, permission_id) values (3, 102);
+insert into permission_role_map (role_id, permission_id) values (3, 103);
+insert into permission_role_map (role_id, permission_id) values (3, 104);
+insert into permission_role_map (role_id, permission_id) values (3, 105);
+
+-- new role and basic permissions for partners
+insert into role values (4);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (60, 4, 'title', 1, 'Partner');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (60, 4, 'description', 1, 'A partner that will bring customers');
+
+insert into permission_role_map (role_id, permission_id) values (4, 15); -- view customers
+insert into permission_role_map (role_id, permission_id) values (4, 10); -- create customer
+insert into permission_role_map (role_id, permission_id) values (4, 11); -- edit customer
+insert into permission_role_map (role_id, permission_id) values (4, 24); -- view orders
+insert into permission_role_map (role_id, permission_id) values (4, 28); -- view all customer orders
+insert into permission_role_map (role_id, permission_id) values (4, 20); -- create orders
+insert into permission_role_map (role_id, permission_id) values (4, 21); -- edit orders
+insert into permission_role_map (role_id, permission_id) values (4, 34); -- view payments
+insert into permission_role_map (role_id, permission_id) values (4, 36); -- view all customer payments
+insert into permission_role_map (role_id, permission_id) values (4, 30); -- create payment
+insert into permission_role_map (role_id, permission_id) values (4, 72); -- view invoices
+insert into permission_role_map (role_id, permission_id) values (4, 74); -- view all customer invoices
+insert into permission_role_map (role_id, permission_id) values (4, 90); -- customers menu
+insert into permission_role_map (role_id, permission_id) values (4, 91); -- invoices menu
+insert into permission_role_map (role_id, permission_id) values (4, 92); -- order menu
+insert into permission_role_map (role_id, permission_id) values (4, 93); -- payments menu

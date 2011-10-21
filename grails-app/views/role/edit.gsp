@@ -73,9 +73,9 @@
                 </div>
 
                 <!-- role permissions -->
-                <g:each var="permissionType" status="n" in="${permissionTypes}">
+                <g:each var="permissionType" status="n" in="${permissionTypes.sort{ it.id }}">
                     <div class="form-columns">
-                        <h3>${permissionType.description}</h3>
+                        <h3>${permissionType.id}: ${permissionType.description}</h3>
 
                         <!-- column 1 -->
                         <div class="column">

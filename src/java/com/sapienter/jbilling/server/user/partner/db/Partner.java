@@ -84,7 +84,6 @@ public class Partner implements java.io.Serializable {
     private int automaticProcess;
 
     private Set<PartnerPayout> partnerPayouts = new HashSet<PartnerPayout>(0);
-
     private Set<CustomerDTO> customers = new HashSet<CustomerDTO>(0);
     private int versionNum;
 

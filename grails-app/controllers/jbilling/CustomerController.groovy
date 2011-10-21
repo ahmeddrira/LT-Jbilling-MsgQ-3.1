@@ -207,6 +207,16 @@ class CustomerController {
     }
 
     /**
+     * Shows all customers of the given partner id
+     */
+    def partner = {
+        def filter = new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.EQ, field: 'customer.partner.id', template: 'id', visible: true, integerValue: params.id)
+        filterService.setFilter(FilterType.CUSTOMER, filter)
+
+        redirect action: list
+    }
+
+    /**
      * Updates the notes for the given user id.
      */
     @Secured(["CUSTOMER_11"])

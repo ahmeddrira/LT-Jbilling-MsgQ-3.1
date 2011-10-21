@@ -20,7 +20,7 @@
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<%@ page import="com.sapienter.jbilling.server.process.db.PeriodUnitDTO"  %>
+<%@ page import="org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils; com.sapienter.jbilling.server.process.db.PeriodUnitDTO"  %>
 
 <%--
   Shows a Partner
@@ -52,7 +52,46 @@
             </tr>
             <tr>
                 <td><g:message code="customer.detail.user.username"/></td>
-                <td class="value">${selected?.baseUser.userName}</td>
+                <td class="value">
+
+                    <g:if test="${!SpringSecurityUtils.isSwitched() && selected.id != session['user_id']}">
+                        <sec:ifAllGranted roles="USER_SWITCHING_111">
+                            <form id="switch-user-form" action="${request.contextPath}/j_spring_security_switch_user" method="POST">
+                                <g:hiddenField name="j_username" value="${selected.baseUser.userName};${session['company_id']}"/>
+                            </form>
+                            <a onclick="$('#switch-user-form').submit()" title="${message(code: 'switch.user.link')}">
+                               ${selected.baseUser.userName} <img src="${resource(dir: 'images', file: 'user_go.png')}" alt="switch user"/>
+                            </a>
+                        </sec:ifAllGranted>
+
+                            <sec:ifAllGranted roles="USER_SWITCHING_110">
+                                <sec:ifNotGranted roles="USER_SWITCHING_111">
+                                    <!-- todo: validate if this customer is a direct sub-account before showing switch-user link -->
+                                    <form id="switch-user-form" action="${request.contextPath}/j_spring_security_switch_user" method="POST">
+                                        <g:hiddenField name="j_username" value="${selected.baseUser.userName};${session['company_id']}"/>
+                                    </form>
+                                    <a onclick="$('#switch-user-form').submit()" title="${message(code: 'switch.user.link')}">
+                                        ${selected.baseUser.userName} <img src="${resource(dir: 'images', file: 'user_go.png')}" alt="switch user"/>
+                                    </a>
+                                </sec:ifNotGranted>
+                            </sec:ifAllGranted>
+
+                        <sec:ifNotGranted roles="USER_SWITCHING_110, USER_SWITCHING_111">
+                            ${selected.baseUser.userName}
+                        </sec:ifNotGranted>
+                    </g:if>
+                    <g:else>
+                        ${selected.baseUser.userName}
+                    </g:else>
+                </td>
+            </tr>
+            <tr>
+                <td><g:message code="partner.detail.related.clerk"/></td>
+                <td class="value">
+                    <g:remoteLink controller="user" action="show" id="${selected?.baseUserByRelatedClerk?.id}" before="register(this);" onSuccess="render(data, next);">
+                        ${selected?.baseUserByRelatedClerk?.userName}
+                    </g:remoteLink>
+                </td>
             </tr>
             <tr>
                 <td><g:message code="customer.detail.user.status"/></td>
@@ -83,6 +122,14 @@
     <div class="box">
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>
+            <tr>
+                <td><g:message code="partner.detail.number.of.customers"/></td>
+                <td class="value">
+                    <g:link controller="customer" action="partner" id="${selected?.id}">
+                        ${selected?.customers?.size()}
+                    </g:link>
+                </td>
+            </tr>
             <tr>
                 <td><g:message code="partner.detail.balance"/></td>
                 <td class="value">

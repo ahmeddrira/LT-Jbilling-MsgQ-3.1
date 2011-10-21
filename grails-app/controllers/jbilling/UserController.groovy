@@ -67,6 +67,7 @@ class UserController {
                     isEmpty('roles')
                     roles {
                         ne('id', Constants.TYPE_CUSTOMER)
+                        ne('id', Constants.TYPE_PARTNER)
                     }
                 }
 

@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils" contentType="text/html;charset=UTF-8" %>
+<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO; org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils" contentType="text/html;charset=UTF-8" %>
 
 <%--
   Shows an internal user.
@@ -149,6 +149,57 @@
         </table>
     </div>
     </g:if>
+
+    <!-- linked partners -->
+    <g:if test="${selected.partnersForRelatedClerk}">
+    <div class="heading">
+        <strong>Linked Partners</strong>
+    </div>
+    <div class="box">
+        <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">
+            <tbody>
+                <g:each var="partner" status="i" in="${selected.partnersForRelatedClerk}">
+                    <g:set var="partnerContact" value="${ContactDTO.findByUserId(partner?.baseUser.id)}"/>
+                <tr>
+                    <td><g:message code="partner.detail.name"/></td>
+                    <td class="value">
+                        <g:remoteLink controller="partner" action="show" id="${partner.id}" before="register(this);" onSuccess="render(data, next);">
+                            <g:if test="${partnerContact?.firstName || partnerContact?.lastName}">
+                                ${partnerContact.firstName} ${partnerContact.lastName}
+                            </g:if>
+                            <g:else>
+                                ${partner.user.userName}
+                            </g:else>
+                        </g:remoteLink>
+                    </td>
+                    <td><g:message code="customer.detail.user.username"/></td>
+                    <td class="value">
+                        ${partner.user.userName}
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:message code="partner.detail.number.of.customers"/></td>
+                    <td class="value">
+                        <g:link controller="customer" action="partner" id="${partner.id}">
+                            ${partner.customers?.size() ?: 0}
+                        </g:link>
+                    </td>
+                    <td><g:message code="partner.detail.next.payout"/></td>
+                    <td class="value">
+                        <g:formatDate date="${partner.nextPayoutDate}"/>
+                    </td>
+                </tr>
+                    <tr>
+                        <td colspan="4">
+                            <g:if test="${i < selected.partnersForRelatedClerk.size()-1}"><hr/></g:if>
+                        </td>
+                    </tr>
+                </g:each>
+            </tbody>
+        </table>
+    </div>
+    </g:if>
+
 
     <div class="btn-box">
         <div class="row">

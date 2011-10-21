@@ -1,15 +1,19 @@
 /*
  jBilling - The Enterprise Open Source Billing System
  Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
+
  This file is part of jbilling.
+
  jbilling is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
+
  jbilling is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU Affero General Public License for more details.
+
  You should have received a copy of the GNU Affero General Public License
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -64,7 +68,7 @@ class PartnerController {
         params.sort = params?.sort ?: pagination.sort
         params.order = params?.order ?: pagination.order
 
-        def statuses= UserStatusDTO.findAll()
+        def statuses = UserStatusDTO.findAll()
         return Partner.createCriteria().list(
             max:    params.max,
             offset: params.offset
@@ -98,19 +102,12 @@ class PartnerController {
     /**
      */
     def list = {
-        
         def filters = filterService.getFilters(FilterType.PARTNER, params)
-        
-        def partners= getList(filters, params)
-        
-        log.debug "Found ${partners?.size()} partners."
-        
+        def partners = getList(filters, params)
+
         def selected = params.id ? Partner.get(params.int("id")) : null
-        
         def contact = selected ? ContactDTO.findByUserId(selected?.baseUser?.id) : null
 
-        //def crumbDescription = selected ? UserHelper.getDisplayName(selected.baseUser, contact) : null
-        
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, null)
         
         if (params.applyFilter) {
@@ -118,13 +115,10 @@ class PartnerController {
             return 
         } 
         render view: 'list', model: [ partners: partners, selected: selected, contact: contact, filters:filters]
-        
     }
 
     def show = {
-        
-        def partner= Partner.get(params.int('id'))
-        
+        def partner = Partner.get(params.int('id'))
         def contact = partner ? ContactDTO.findByUserId(partner?.baseUser.id) : null
 
         breadcrumbService.addBreadcrumb(controllerName, 'show', null, partner.id, UserHelper.getDisplayName(partner.baseUser, contact))
@@ -133,7 +127,6 @@ class PartnerController {
     }
 
     def edit = {
-        
         def user
         def partner
         def contacts

@@ -109,6 +109,16 @@
 
                     </td>
                 </tr>
+                <g:if test="${customer.partner}">
+                    <tr>
+                        <td>Related Partner</td>
+                        <td class="value">
+                            <g:remoteLink controller="partner" action="show" id="${customer.partner.id}" before="register(this);" onSuccess="render(data, next);">
+                                ${customer.partner.user.userName}
+                            </g:remoteLink>
+                        </td>
+                    </tr>
+                </g:if>
                 <tr>
                     <td><g:message code="customer.detail.user.status"/></td>
                     <td class="value">${selected.userStatus.description}</td>

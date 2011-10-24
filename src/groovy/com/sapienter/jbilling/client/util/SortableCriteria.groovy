@@ -31,15 +31,18 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
  */
 class SortableCriteria {
 
+    static String NO_ALIAS = "NONE";
+
     static def sort(GrailsParameterMap params, builder) {
         def sort = params.sort?.tokenize(',')?.collect { it.trim() }
 
         if (params.alias) {
-            // explicit alias definitions
-            params.alias.each { alias, aliasPath ->
-                builder.createAlias(aliasPath, alias)
+            if (params.alias != NO_ALIAS) {
+                // explicit alias definitions
+                params.alias.each { alias, aliasPath ->
+                    builder.createAlias(aliasPath, alias)
+                }
             }
-
         } else {
             // try and automatically add aliases for sorted associations
             def associations = sort.findAll{ it.contains('.') }

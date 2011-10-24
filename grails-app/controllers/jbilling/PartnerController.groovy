@@ -75,6 +75,7 @@ class PartnerController {
         ) {
             and {
                 createAlias("baseUser.contact", "contact")
+
                 filters.each { filter ->
                     if (filter.value) {
                         if (filter.constraintType == FilterConstraint.STATUS) {
@@ -99,8 +100,6 @@ class PartnerController {
         }
     }
 
-    /**
-     */
     def list = {
         def filters = filterService.getFilters(FilterType.PARTNER, params)
         def partners = getList(filters, params)
@@ -110,7 +109,7 @@ class PartnerController {
 
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, null)
         
-        if (params.applyFilter) {
+        if (params.applyFilter || params.partial) {
             render template: 'partners', model: [ partners: partners, selected: selected, contact: contact, filters:filters ]
             return 
         } 
@@ -124,6 +123,11 @@ class PartnerController {
         breadcrumbService.addBreadcrumb(controllerName, 'show', null, partner.id, UserHelper.getDisplayName(partner.baseUser, contact))
 
         render template: 'show', model: [ selected: partner, contact: contact ]
+    }
+
+    def payouts = {
+        def partner = Partner.get(params.int('id'))
+        [ partner : partner ]
     }
 
     def edit = {
@@ -153,23 +157,15 @@ class PartnerController {
      * Validate and Save the Partner User
      */
     def save = {
-        
-        def partner= new PartnerWS()
+        def partner = new PartnerWS()
         def user = new UserWS()
-        
-        //log.debug "totalPayments=${params?.totalPayments}"
 
         bindData(partner, params)
-        //partner?.nextPayoutDate= new java.text.SimpleDateFormat("dd-MM-yyyy").parse(params?.nextPayoutDate)
-        log.debug "def save ${partner?.nextPayoutDate}"
-        
         UserHelper.bindUser(user, params)
         
         def contacts = []
         UserHelper.bindContacts(user, contacts, company, params)
 
-        log.debug "user id=${params.user.userId} & partner id=${params.id}"
-        
         def oldUser = (user.userId && user.userId != 0) ? webServicesSession.getUserWS(user.userId) : null
         UserHelper.bindPassword(user, oldUser, params, flash)
 
@@ -181,14 +177,8 @@ class PartnerController {
         try {
             // save or update
             if (!oldUser) {
-                log.debug("creating user ${user}")
+                log.debug("creating partner ${user}")
 
-                //create partner with defaults
-                //partner.setTotalPayments(BigDecimal.ZERO);
-                //partner.setTotalPayouts(BigDecimal.ZERO);
-                //partner.setTotalRefunds(BigDecimal.ZERO);
-                //partner.setDuePayout(BigDecimal.ZERO);
-                
                 partner.id = webServicesSession.createPartner(user, partner)
                 
                 flash.message = 'partner.created'
@@ -198,7 +188,7 @@ class PartnerController {
                 
                 partner.setUserId(user.getUserId())
             
-                log.debug("saving changes to user ${user.userId} & ${user.customerId}")
+                log.debug("saving changes to partner ${user.userId} & ${user.customerId}")
                 webServicesSession.updatePartner(user, partner)
                 
                 flash.message = 'partner.updated'

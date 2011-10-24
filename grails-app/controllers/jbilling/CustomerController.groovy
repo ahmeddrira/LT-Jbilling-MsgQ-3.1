@@ -89,12 +89,12 @@ class CustomerController {
             createAlias("customer", "customer")
             and {
                 filters.each { filter ->
-                    //log.debug "Filter toString(): " + filter.toString()
                     if (filter.value) {
                         // handle user status separately from the other constraints
                         // we need to find the UserStatusDTO to compare to
                         if (filter.constraintType == FilterConstraint.STATUS) {
                             eq("userStatus", statuses.find{ it.id == filter.integerValue })
+
                         } else if (filter.field == 'contact.fields') {
                             String typeId = params['contactFieldTypes']
                             String ccfValue= filter.stringValue

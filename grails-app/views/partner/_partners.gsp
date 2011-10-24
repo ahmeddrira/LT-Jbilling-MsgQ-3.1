@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
+<%@ page import="com.sapienter.jbilling.client.util.SortableCriteria; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 <%--
   Customer table template. The customer table is used multiple times for rendering the
@@ -33,7 +33,7 @@
         <thead>
             <tr>
                 <th>
-                    <g:remoteSort action="list" sort="contact.firstName, contact.lastName, contact.organizationName, userName" update="column1">
+                    <g:remoteSort action="list" sort="contact.firstName, contact.lastName, contact.organizationName" alias="${SortableCriteria.NO_ALIAS}" update="column1">
                         <g:message code="customer.table.th.name"/>
                     </g:remoteSort>
                 </th>
@@ -43,15 +43,12 @@
                     </g:remoteSort>
                 </th>
                 <th class="tiny2">
-                    <g:remoteSort action="list" sort="userStatus.id" update="column1">
+                    <g:remoteSort action="list" sort="userStatus.id" alias="[userStatus: 'baseUser.userStatus']" update="column1">
                         <g:message code="customer.table.th.status"/>
                     </g:remoteSort>
                 </th>
                 <th class="small">
                     <g:message code="customer.table.th.balance"/>
-                </th>
-                <th class="tiny3">
-                    <g:message code="customer.table.th.hierarchy"/>
                 </th>
             </tr>
         </thead>
@@ -99,28 +96,6 @@
                         <span><g:formatNumber number="${new UserBL().getBalance(user.id)}" type="currency"  currencySymbol="${user.currency.symbol}"/></span>
                     </g:remoteLink>
                 </td>
-                <td class="center">
-                    <g:if test="${customer}">
-                        <g:if test="${customer.isParent == 1 && customer.parent}">
-                            <%-- is a parent, but also a child of another account --%>
-                            <g:remoteLink action="subaccounts" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
-                                <img src="${resource(dir:'images', file:'icon17.gif')}" alt="parent and child" />
-                                <span>${customer.children.size()}</span>
-                            </g:remoteLink>
-                        </g:if>
-                        <g:elseif test="${customer.isParent == 1 && !customer.parent}">
-                            <%-- is a top level parent --%>
-                            <g:remoteLink action="subaccounts" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
-                                <img src="${resource(dir:'images', file:'icon18.gif')}" alt="parent" />
-                                <span>${customer.children.size()}</span>
-                            </g:remoteLink>
-                        </g:elseif>
-                        <g:elseif test="${customer.isParent == 0 && customer.parent}">
-                            <%-- is a child account, but not a parent --%>
-                            <img src="${resource(dir:'images', file:'icon19.gif')}" alt="child" />
-                        </g:elseif>
-                    </g:if>
-                </td>
             </tr>
 
         </g:each>
@@ -129,34 +104,19 @@
 </div>
 
 <div class="pager-box">
-    %{-- remote pager does not support "onSuccess" for panel rendering, take a guess at the update column --}%
-    <g:set var="updateColumn" value="${actionName == 'subaccounts' ? 'column2' : 'column1'}"/>
-
     <div class="row">
         <div class="results">
-            <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], update: updateColumn]"/>
-        </div>
-        <div class="download">
-            <sec:access url="/customer/csv">
-                <g:link action="csv">
-                    <g:message code="download.csv.link"/>
-                </g:link>
-            </sec:access>
+            <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], update: 'column1']"/>
         </div>
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="customer" action="list" params="${sortableParams(params: [partial: true])}" total="${users?.totalCount ?: 0}" update="${updateColumn}"/>
+        <util:remotePaginate controller="partner" action="list" params="${sortableParams(params: [partial: true])}" total="${users?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 
 <div class="btn-box">
     <sec:ifAllGranted roles="CUSTOMER_10">
-        <g:if test="${parent?.customer?.isParent > 0}">
-            <g:link action="edit" params="[parentId: parent.id]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
-        </g:if>
-        <g:else>
-            <g:link action='edit' class="submit add"><span><g:message code="button.create"/></span></g:link>
-        </g:else>
+        <g:link action='edit' class="submit add"><span><g:message code="button.create"/></span></g:link>
     </sec:ifAllGranted>
 </div>

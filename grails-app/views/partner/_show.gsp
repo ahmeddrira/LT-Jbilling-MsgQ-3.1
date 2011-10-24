@@ -136,6 +136,14 @@
                     <g:formatNumber number="${selected?.balance?:0}" formatName="money.format"/>
                 </td>
             </tr>
+            </tbody>
+        </table>
+
+
+        <table class="dataTable" cellspacing="0" cellpadding="0">
+            <tbody>
+
+            <!-- payout totals -->
             <tr>
                 <td><g:message code="partner.detail.fees"/></td>
                 <td class="value">
@@ -155,6 +163,24 @@
                 </td>
             </tr>
 
+            <!-- spacer -->
+            <tr>
+                <td colspan="2"><br/></td>
+            </tr>
+
+            <!-- payout schedule -->
+            <tr>
+                <td><g:message code="partner.detail.payout.period"/></td>
+                <td class="value">
+                    ${selected?.periodValue} ${selected?.periodUnit?.getDescription(session['language_id'])}
+                </td>
+            </tr>
+            <tr>
+                <td><g:message code="partner.detail.next.payout"/></td>
+                <td class="value">
+                    <g:formatDate date="${selected?.nextPayoutDate}"/>
+                </td>
+            </tr>
             <tr>
                 <td><g:message code="partner.detail.rate"/></td>
                 <td class="value">
@@ -168,32 +194,46 @@
                 </td>
             </tr>
             <tr>
-                <td><g:message code="partner.detail.payout.period"/></td>
-                <td class="value">
-                    ${selected?.periodValue} ${selected?.periodUnit?.getDescription(session['language_id'])}
-                </td>
-            </tr> 
-            <%--  TODO - User PartnerPayout.java to populate payouts and amount due
-            <tr>
-                <td><g:message code="partner.detail.next.payout"/></td>
-                <td class="value">${selected.id}</td>
-            </tr>
-            <tr>
                 <td><g:message code="partner.detail.amount.due"/></td>
-                <td class="value">${selected.id}</td>
+                <td class="value">
+                    <g:formatNumber number="${selected?.duePayout}" formatName="money.format"/>
+                </td>
             </tr>
-            <tr>
-                <td><g:message code="partner.detail.batch"/></td>
-                <td class="value">${selected.id}</td>
-            </tr>
-            <tr>
-                <td><g:message code="partner.detail.related.clerk"/></td>
-                <td class="value">${selected.id}</td>
-            </tr>
-            --%>
             </tbody>
         </table>
     </div>
+    </g:if>
+
+    <!-- last payout -->
+    <g:if test="${selected.partnerPayouts}">
+        <g:set var="payouts" value="${selected.partnerPayouts.asList().sort{ it.id }}"/>
+        <g:set var="payout" value="${payouts.first()}"/>
+
+        <div class="heading">
+            <strong><g:message code="partner.detail.last.payout.title"/></strong>
+        </div>
+        <div class="box">
+            <table class="dataTable" cellspacing="0" cellpadding="0">
+                <tbody>
+                <tr>
+                    <td><g:message code="payment.date"/></td>
+                    <td class="value"><g:formatDate date="${payout.payment.paymentDate ?: payout.payment.createDatetime}" formatName="date.pretty.format"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="payment.amount"/></td>
+                    <td class="value"><g:formatNumber number="${payout.payment.amount}" type="currency" currencySymbol="${payout.payment.currency.symbol}"/></td>
+                </tr>
+                <tr>
+                    <td><g:message code="payment.result"/></td>
+                    <td class="value">${payout.payment.paymentResult.getDescription(session['language_id'])}</td>
+                </tr>
+                <tr>
+                    <td><g:message code="payment.method"/></td>
+                    <td class="value">${payout.payment.paymentMethod.getDescription(session['language_id'])}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </g:if>
     
     <!-- contact details -->
@@ -244,7 +284,12 @@
 
     <div class="btn-box">
         <div class="row">
-            <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+            <g:link controller="partner" action="payouts" id="${selected.id}" class="submit payment">
+                <span><g:message code="button.partner.payouts"/></span>
+            </g:link>
+        </div>
+        <div class="row">
+            <g:link controller="partner" edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
             <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
         </div>
     </div>

@@ -152,20 +152,28 @@ class MediationController {
     }
 
     def order = {
-        def order = OrderDTO.get(params.int('id'))
+        
+        def order, records
+        
+        try {
+            
+            order = OrderDTO.get(params.int('id'))
 
-        def records = MediationRecordDTO.createCriteria().listDistinct {
-            lines {
-                orderLine {
-                    eq("purchaseOrder.id", order.id)
+            records = MediationRecordDTO.createCriteria().listDistinct {
+                lines {
+                    orderLine {
+                        eq("purchaseOrder.id", order.id)
+                    }
+                }
+    
+                recordStatus {
+                    eq("id", Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE)
                 }
             }
-
-            recordStatus {
-                eq("id", Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE)
-            }
+        } catch (Exception e) {
+            flash.info = message(code: 'error.mediation.events.none')
+            flash.args = [params.id]
         }
-
         render view: 'events', model: [ order: order, records: records ]
     }
 	

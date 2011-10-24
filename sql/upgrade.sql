@@ -1619,13 +1619,27 @@ create table meta_field_name (
   "name" character varying(100) NOT NULL,
   entity_type character varying (25) NOT NULL,
   data_type character varying (25) NOT NULL,
-  is_disabled smallint,
-  is_mandatory smallint,
+  is_disabled boolean,
+  is_mandatory boolean,
   display_order integer,
   default_value_id integer,
   CONSTRAINT meta_field_name_pkey PRIMARY KEY (id),
   UNIQUE(id)
 );
+
+-- MySQL or other DB
+-- create table meta_field_name (
+--   id integer NOT NULL,
+--   "name" character varying(100) NOT NULL,
+--   entity_type character varying (25) NOT NULL,
+--   data_type character varying (25) NOT NULL,
+--   is_disabled smallint,
+--   is_mandatory smallint,
+--   display_order integer,
+--   default_value_id integer,
+--   CONSTRAINT meta_field_name_pkey PRIMARY KEY (id),
+--   UNIQUE(id)
+-- );
 
 create table meta_field_value (
     id integer NOT NULL,
@@ -1715,9 +1729,24 @@ select id, prompt_key, 'USER',
     when 'decimal' then 'DECIMAL'
     else 'STRING'
    END,
-   0, 0, id, NULL
+   false, false, id, NULL
 from contact_field_type;
 
+-- MySQL or other DB
+-- INSERT INTO meta_field_name(
+--             id, "name", entity_type, data_type, is_disabled, is_mandatory,
+--             display_order, default_value_id)
+-- select id, prompt_key, 'USER',
+--    case data_type
+--     when 'string' then 'STRING'
+--     when 'integer' then 'INTEGER'
+--     when 'date' then 'DATE'
+--     when 'boolean' then 'BOOLEAN'
+--     when 'decimal' then 'DECIMAL'
+--     else 'STRING'
+--    END,
+--    0, 0, id, NULL
+-- from contact_field_type;
 
 
 INSERT INTO meta_field_value(

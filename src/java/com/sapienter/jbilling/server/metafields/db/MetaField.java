@@ -139,7 +139,7 @@ public class MetaField implements Serializable {
         this.displayOrder = displayOrder;
     }
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "default_value_id", nullable = true)
     public MetaFieldValue getDefaultValue() {
         return defaultValue;

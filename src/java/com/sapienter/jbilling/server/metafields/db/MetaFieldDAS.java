@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.metafields.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -41,6 +42,7 @@ public class MetaFieldDAS extends AbstractDAS<MetaField> {
         return getHibernateTemplate().findByCriteria(query);
     }
 
+    @SuppressWarnings("unchecked")
     public MetaField getFieldByName(EntityType entityType, String name) {
         DetachedCriteria query = DetachedCriteria.forClass(MetaField.class);
         query.add(Restrictions.eq("entityType", entityType));
@@ -49,4 +51,31 @@ public class MetaFieldDAS extends AbstractDAS<MetaField> {
         return !fields.isEmpty() ? fields.get(0) : null;
     }
 
+    public void deleteMetaFieldValuesForEntity(EntityType entityType, int metaFieldId) {
+        Session session = getSession();
+        String deleteFromEntitiesSql = "delete from ";
+        switch (entityType) {
+           case INVOICE:
+               deleteFromEntitiesSql += " invoice_meta_field_map ";
+               break;
+           case USER:
+               deleteFromEntitiesSql += " customer_meta_field_map ";
+               break;
+           case ITEM:
+               deleteFromEntitiesSql += " item_meta_field_map ";
+               break;
+           case ORDER:
+               deleteFromEntitiesSql += " order_meta_field_map ";
+               break;
+           case PAYMENT:
+               deleteFromEntitiesSql += " payment_meta_field_map ";
+               break;
+        }
+        deleteFromEntitiesSql += " where meta_field_value_id in " +
+                "(select val.id from meta_field_value val where meta_field_name_id = " + metaFieldId + " )";
+        session.createSQLQuery(deleteFromEntitiesSql).executeUpdate();
+
+        String deleteValuesHql = "delete from " + MetaFieldValue.class.getSimpleName() + " where field.id = ?";
+        getHibernateTemplate().bulkUpdate(deleteValuesHql, metaFieldId);
+    }
 }

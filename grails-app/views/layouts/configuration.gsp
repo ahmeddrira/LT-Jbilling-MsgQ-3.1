@@ -138,6 +138,11 @@
                             <g:message code="configuration.menu.enumerations"/>
                         </g:link>
                     </li>
+                    <li class="${pageProperty(name: 'page.menu.item') == 'metaFields' ? 'active' : ''}">
+                        <g:link controller="metaFields">
+                            <g:message code="configuration.menu.metaFields"/>
+                        </g:link>
+                    </li>
                 </ul>
             </div>
 

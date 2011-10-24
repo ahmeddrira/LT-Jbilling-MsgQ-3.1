@@ -122,4 +122,57 @@ public class MetaFieldBL {
             }
         }
     }
+
+    public MetaField create(MetaField dto) {
+        MetaField metaField = new MetaField();
+        metaField.setEntityType(dto.getEntityType());
+        metaField.setDataType(dto.getDataType());
+        metaField.setName(dto.getName());
+        metaField.setDisplayOrder(dto.getDisplayOrder());
+        metaField.setMandatory(dto.isMandatory());
+        metaField.setDisabled(dto.isDisabled());
+        if (dto.getDefaultValue() != null) {
+            metaField.setDefaultValue(dto.getDefaultValue());
+        }
+        MetaFieldDAS das = new MetaFieldDAS();
+        metaField = das.save(metaField);
+        return metaField;
+    }
+
+    public void update(MetaField dto) {
+        MetaFieldDAS das = new MetaFieldDAS();
+        MetaField metaField = das.find(dto.getId());
+        metaField.setName(dto.getName());
+        metaField.setDisplayOrder(dto.getDisplayOrder());
+        metaField.setMandatory(dto.isMandatory());
+        metaField.setDisabled(dto.isDisabled());
+        if (metaField.getDefaultValue() != null && dto.getDefaultValue() == null) {
+            metaField.getDefaultValue().setValue(null);
+        } else if (dto.getDefaultValue() != null && metaField.getDefaultValue() == null) {
+            MetaFieldValue value = metaField.createValue();
+            value.setValue(dto.getDefaultValue().getValue());
+            metaField.setDefaultValue(value);
+        } else if (metaField.getDefaultValue() != null) {
+            metaField.getDefaultValue().setValue(dto.getDefaultValue().getValue());
+        }
+        das.save(metaField);
+    }
+
+    public void delete(int metaFieldId) {
+        MetaFieldDAS das = new MetaFieldDAS();
+        MetaField metaField = das.find(metaFieldId);
+        if (metaField.getDefaultValue() != null) {
+            metaField.setDefaultValue(null);
+            das.save(metaField);
+            das.flush();
+        }
+        das.deleteMetaFieldValuesForEntity(metaField.getEntityType(), metaFieldId);
+        das.flush();
+        das.clear();
+
+        das.delete(metaField);
+
+        das.flush();
+        das.clear();
+    }
 }

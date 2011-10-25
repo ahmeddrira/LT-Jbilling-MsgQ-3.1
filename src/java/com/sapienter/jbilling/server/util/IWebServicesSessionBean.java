@@ -110,17 +110,22 @@ public interface IWebServicesSessionBean {
 
     public void saveCustomContactField(ContactFieldTypeWS ws) throws SessionInternalError;
 
-    public void processPartnerPayouts(Date runDate);
-    
-    public PartnerWS getPartner(Integer partnerId) throws SessionInternalError;
-    public Integer createPartner(UserWS newUser, PartnerWS partner) throws SessionInternalError;
-    public void updatePartner(UserWS newUser, PartnerWS partner) throws SessionInternalError;
-    public void deletePartner (Integer partnerId) throws SessionInternalError;
-    
     public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) throws SessionInternalError;
     public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id) throws SessionInternalError;
 
     public CreateResponseWS create(UserWS user, OrderWS order) throws SessionInternalError;
+
+
+    /*
+        Partners
+     */
+
+    public void processPartnerPayouts(Date runDate);
+
+    public PartnerWS getPartner(Integer partnerId) throws SessionInternalError;
+    public Integer createPartner(UserWS newUser, PartnerWS partner) throws SessionInternalError;
+    public void updatePartner(UserWS newUser, PartnerWS partner) throws SessionInternalError;
+    public void deletePartner (Integer partnerId) throws SessionInternalError;
 
 
     /*

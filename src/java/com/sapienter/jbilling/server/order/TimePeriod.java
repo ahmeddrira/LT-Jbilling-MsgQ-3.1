@@ -83,44 +83,26 @@ public class TimePeriod {
     }
 
     @Override
-    public boolean equals(Object another) {
-        boolean retValue = false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        if (another != null) {
-            TimePeriod other = (TimePeriod) another;
-            if (unitId.equals(other.getUnitId()) &&
-                value.equals(other.getValue())) {
-                if (df_fm == null && other.getDf_fm() == null) {
-                    retValue = true;
-                } else if (df_fm != null && other.getDf_fm() != null &&
-                           df_fm.booleanValue() ==
-                           other.getDf_fm().booleanValue()){
-                    retValue = true;
-                }
-            }
+        TimePeriod that = (TimePeriod) o;
 
-            if (retValue) {
-                retValue = own_invoice.equals(other.getOwn_invoice());
-            }
-        }
-        return retValue;
+        if (df_fm != null ? !df_fm.equals(that.df_fm) : that.df_fm != null) return false;
+        if (own_invoice != null ? !own_invoice.equals(that.own_invoice) : that.own_invoice != null) return false;
+        if (!unitId.equals(that.unitId)) return false;
+        if (!value.equals(that.value)) return false;
+
+        return true;
     }
 
-    /*
-     * No need to add the own invoice here. You can return the same hash code
-     * for two unequal objects.
-     */
     @Override
     public int hashCode() {
-        int dfValue;
-        if (df_fm == null) {
-            dfValue = 0;
-        } else if (df_fm.booleanValue()) {
-            dfValue = 1;
-        } else {
-            dfValue = 2;
-        }
-        return unitId.intValue() * 100 + value.intValue() * 10 + dfValue;
+        int result = unitId.hashCode();
+        result = 31 * result + value.hashCode();
+        result = 31 * result + (df_fm != null ? df_fm.hashCode() : 0);
+        return result;
     }
 
     @Override

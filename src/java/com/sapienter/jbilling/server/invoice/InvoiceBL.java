@@ -33,6 +33,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
@@ -138,23 +139,31 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         // preference
         try {
             pref.set(entityId, Constants.PREFERENCE_CONTINUOUS_DATE);
-            Date lastDate = com.sapienter.jbilling.common.Util.parseDate(pref.getString());
-            if (lastDate.after(newInvoice.getBillingDate())) {
-                newInvoice.setBillingDate(lastDate);
-            } else {
-                // update the lastest date only if this is not a review
-                if (newInvoice.getIsReview() == null || newInvoice.getIsReview().intValue() == 0) {
-                    pref.createUpdateForEntity(entityId,
-                                               Constants.PREFERENCE_CONTINUOUS_DATE,
-                                               com.sapienter.jbilling.common.Util.parseDate(newInvoice.getBillingDate()));
+
+            if (StringUtils.isNotBlank(pref.getString())) {
+                Date lastDate = com.sapienter.jbilling.common.Util.parseDate(pref.getString());
+                LOG.debug("Last date invoiced: " + lastDate);
+
+                if (lastDate.after(newInvoice.getBillingDate())) {
+                    LOG.debug("Due date is before the last recorded date. Moving due date forward for continuous invoice dates.");
+                    newInvoice.setBillingDate(lastDate);
+
+                } else {
+                    // update the lastest date only if this is not a review
+                    if (newInvoice.getIsReview() == null || newInvoice.getIsReview().intValue() == 0) {
+                        pref.createUpdateForEntity(entityId,
+                                                   Constants.PREFERENCE_CONTINUOUS_DATE,
+                                                   com.sapienter.jbilling.common.Util.parseDate(newInvoice.getBillingDate()));
+                    }
                 }
             }
         } catch (EmptyResultDataAccessException e) {
-        // not interested, ignore
+            // not interested, ignore
         }
 
         // in any case, ensure that the due date is => that invoice date
         if (newInvoice.getDueDate().before(newInvoice.getBillingDate())) {
+            LOG.debug("Due date before billing date, moving date up to billing date.");
             newInvoice.setDueDate(newInvoice.getBillingDate());
         }
 

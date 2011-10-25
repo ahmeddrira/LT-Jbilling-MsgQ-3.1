@@ -126,9 +126,11 @@ public class PlanItemBL {
         List<PlanItemDTO> planItems = new ArrayList<PlanItemDTO>();
 
         for (OrderLineDTO line : lines) {
-            for (PlanDTO plan : new PlanBL().getPlansBySubscriptionItem(line.getItemId())) {
-                for (PlanItemDTO planItem : plan.getPlanItems()) {
-                    planItems.add(planItem);
+            if (line.getDeleted() == 0) {
+                for (PlanDTO plan : new PlanBL().getPlansBySubscriptionItem(line.getItemId())) {
+                    for (PlanItemDTO planItem : plan.getPlanItems()) {
+                        planItems.add(planItem);
+                    }
                 }
             }
         }

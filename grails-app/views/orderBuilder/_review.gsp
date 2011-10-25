@@ -96,7 +96,9 @@
         <!-- list of order lines -->
         <ul id="review-lines">
             <g:each var="line" status="index" in="${order.orderLines}">
-                <g:render template="orderLine" model="[ line: line, index: index, user: user ]"/>
+                <g:if test="${line.deleted == 0}">
+                    <g:render template="orderLine" model="[ line: line, index: index, user: user ]"/>
+                </g:if>
             </g:each>
 
             <g:if test="${!order.orderLines}">

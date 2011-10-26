@@ -86,7 +86,7 @@ class ConfigController {
             webServicesSession.updatePreference(preference)
 
             flash.message = 'preference.updated'
-            flash.args = [ type.id ]
+            flash.args = [ type.id as String ]
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)

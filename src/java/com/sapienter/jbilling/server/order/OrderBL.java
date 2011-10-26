@@ -693,7 +693,7 @@ public class OrderBL extends ResultList
         LOG.debug("Processing " + lines.size() + " order line(s), adding plans to user " + userId);
         for (OrderLineDTO line : lines) {
             // subscribe customer to plan if they haven't already been subscribed.
-            if (!line.getItem().getPlans().isEmpty()) {
+            if (!line.getItem().getPlans().isEmpty() && line.getDeleted() == 0) {
                 if (!PlanBL.isSubscribed(userId, line.getItemId())) {
                     LOG.debug("Subscribing user " + userId + " to plan item " + line.getItemId());
                     PlanBL.subscribe(userId, line.getItemId());

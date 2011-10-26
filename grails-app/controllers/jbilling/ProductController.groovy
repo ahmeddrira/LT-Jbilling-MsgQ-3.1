@@ -41,7 +41,7 @@ import com.sapienter.jbilling.server.pricing.PriceModelBL
 import com.sapienter.jbilling.server.metafields.MetaFieldBL
 import com.sapienter.jbilling.server.metafields.db.EntityType
 import com.sapienter.jbilling.server.metafields.MetaFieldValueWS
-import com.sapienter.jbilling.server.metafields.db.DataType
+
 import com.sapienter.jbilling.client.metafield.MetaFieldUtils
 import org.apache.commons.lang.StringUtils
 
@@ -435,7 +435,7 @@ class ProductController {
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'), product?.number)
 
-        [ product: product, currencies: currencies, categories: getProductCategories(), categoryId: params.category, metaFields: metaFields ]
+        [ product: product, currencies: currencies, categories: getProductCategories(), categoryId: params.category, availableFields: availableMetaFields ]
     }
 
     def updateStrategy = {
@@ -653,7 +653,7 @@ class ProductController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
-            render view: 'editProduct', model: [ product: product, categories: getProductCategories(), currencies: currencies, metaFields: metaFields ]
+            render view: 'editProduct', model: [ product: product, categories: getProductCategories(), currencies: currencies, availableFields: availableMetaFields ]
             return
         }
 
@@ -687,12 +687,12 @@ class ProductController {
         return currencies.findAll { it.inUse }
     }
 
-    def getMetaFields() {
+    def getAvailableMetaFields() {
         return MetaFieldBL.getAvailableFieldsList(EntityType.ITEM);
     }
 
     def bindMetaFields(ItemDTOEx itemDto, GrailsParameterMap params) {
-        def fieldsArray = MetaFieldUtils.bindMetaFields(metaFields, params)
+        def fieldsArray = MetaFieldUtils.bindMetaFields(availableMetaFields, params)
         itemDto.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
     }
 }

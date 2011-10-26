@@ -84,13 +84,21 @@
         </table>
         </g:if>
 
-        <!-- flags -->
+        <!-- flags & meta fields -->
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>
                 <tr>
                     <td><em><g:message code="product.detail.decimal"/></em></td>
                     <td class="value"><em><g:formatBoolean boolean="${selectedProduct.hasDecimals > 0}"/></em></td>
                 </tr>
+
+                <g:if test="${selectedProduct?.metaFields}">
+                    <!-- empty spacer row -->
+                    <tr>
+                        <td colspan="2"><br/></td>
+                    </tr>
+                    <g:render template="/metaFields/metaFields" model="[metaFields: selectedProduct?.metaFields]"/>
+                </g:if>
             </tbody>
         </table>
 

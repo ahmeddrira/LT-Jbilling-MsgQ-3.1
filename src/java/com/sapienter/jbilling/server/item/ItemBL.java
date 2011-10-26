@@ -163,6 +163,8 @@ public class ItemBL {
         updateTypes(dto);
         updateExcludedTypes(dto);
 
+        item.updateMetaFieldsWithValidation(dto);
+
         if (item.getPercentage() == null) {
             updateDefaultPrice(dto);
 
@@ -175,8 +177,6 @@ public class ItemBL {
             LOG.debug("Percentage items cannot have a default price model.");
             item.getDefaultPrices().clear();
         }
-
-        item.updateMetaFieldsWithValidation(dto);
 
         itemDas.save(item);
 

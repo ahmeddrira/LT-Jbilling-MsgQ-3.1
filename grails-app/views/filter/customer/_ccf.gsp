@@ -36,7 +36,7 @@
                     <g:set var="company" value="${CompanyDTO.get(session['company_id'])}"/>
                     <g:select style="float:left;"  
                             name="contactFieldTypes" 
-                            from="${MetaFieldBL.getAvailableFieldsList (EntityType.USER)}"
+                            from="${MetaFieldBL.getAvailableFieldsList (EntityType.CUSTOMER)}"
                             optionKey="id" optionValue="name"
                             noSelection="['': message(code: 'filters.contactFieldTypes.empty')]" />
                 </div>

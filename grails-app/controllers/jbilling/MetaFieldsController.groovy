@@ -23,12 +23,13 @@ package jbilling
 import com.sapienter.jbilling.server.metafields.MetaFieldBL
 import com.sapienter.jbilling.server.metafields.db.EntityType
 import com.sapienter.jbilling.server.metafields.db.MetaField
+import grails.plugins.springsecurity.Secured
 
 /**
  * @author Alexander Aksenov
  * @since 20.10.11
  */
-
+@Secured(['isAuthenticated()'])
 class MetaFieldsController {
 
     def breadcrumbService
@@ -44,11 +45,8 @@ class MetaFieldsController {
     }
 
     def list = {
-
-        log.debug "METHOD: list\nId=${params.id} selectedId= ${params.selectedId}"
         EntityType entityType = EntityType.valueOf(params.get('id').toString())
         def lstByCateg = MetaField.findAllByEntityType(entityType);
-        log.debug "size of metafields=" + lstByCateg.size() + " of total " + MetaField.list()?.size()
 
         if (params.template)
             render template: 'list', model: [lstByCategory: lstByCateg, selected: new MetaField()]

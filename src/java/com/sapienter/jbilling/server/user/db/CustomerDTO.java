@@ -21,7 +21,6 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
 import com.sapienter.jbilling.server.metafields.MetaFieldBL;
 import com.sapienter.jbilling.server.metafields.MetaFieldHelper;
-import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.metafields.db.CustomizedEntity;
 import com.sapienter.jbilling.server.metafields.db.EntityType;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
@@ -417,7 +416,7 @@ public class CustomerDTO extends CustomizedEntity implements java.io.Serializabl
 
     @Transient
     public EntityType getCustomizedEntityType() {
-        return EntityType.USER;
+        return EntityType.CUSTOMER;
     }
 
     @Transient

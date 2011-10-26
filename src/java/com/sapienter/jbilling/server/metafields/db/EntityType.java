@@ -28,6 +28,6 @@ package com.sapienter.jbilling.server.metafields.db;
  */
 public enum EntityType {
 
-    USER, ITEM, ORDER, INVOICE, PAYMENT
+    CUSTOMER, ITEM, ORDER, INVOICE, PAYMENT
 
 }

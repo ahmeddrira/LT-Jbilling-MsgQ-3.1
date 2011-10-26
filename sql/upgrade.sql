@@ -1720,7 +1720,7 @@ create table payment_meta_field_map (
 INSERT INTO meta_field_name(
             id, "name", entity_type, data_type, is_disabled, is_mandatory,
             display_order, default_value_id)
-select id, prompt_key, 'USER',
+select id, prompt_key, 'CUSTOMER',
    case data_type
     when 'string' then 'STRING'
     when 'integer' then 'INTEGER'
@@ -1736,7 +1736,7 @@ from contact_field_type;
 -- INSERT INTO meta_field_name(
 --             id, "name", entity_type, data_type, is_disabled, is_mandatory,
 --             display_order, default_value_id)
--- select id, prompt_key, 'USER',
+-- select id, prompt_key, 'CUSTOMER',
 --    case data_type
 --     when 'string' then 'STRING'
 --     when 'integer' then 'INTEGER'

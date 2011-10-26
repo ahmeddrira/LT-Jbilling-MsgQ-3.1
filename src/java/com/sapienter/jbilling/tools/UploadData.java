@@ -331,7 +331,7 @@ public class UploadData {
                 for (int spField = 0; spField < totalSpecificFields; spField++) {
                     if (specific[spField] >= 0) {
                         MetaField metaField = new MetaField();
-                        metaField.setEntityType(EntityType.USER);
+                        metaField.setEntityType(EntityType.CUSTOMER);
                         metaField.setDataType(DataType.STRING);
                         metaField.setId(specificType[spField]);
                         MetaFieldValue metaFieldValue = metaField.createValue();

@@ -96,7 +96,7 @@
 
         <hr/>
 
-        <!-- payment balance -->
+        <!-- payment balance & meta fields -->
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>
                 <tr>
@@ -126,6 +126,14 @@
                     <td><g:message code="payment.is.preauth"/></td>
                     <td class="value"><em><g:formatBoolean boolean="${selected.isPreauth > 0}"/></em></td>
                 </tr>
+
+                <g:if test="${selected?.metaFields}">
+                    <!-- empty spacer row -->
+                    <tr>
+                        <td colspan="2"><br/></td>
+                    </tr>
+                    <g:render template="/metaFields/metaFields" model="[metaFields: selected?.metaFields]"/>
+                </g:if>
             </tbody>
         </table>
 

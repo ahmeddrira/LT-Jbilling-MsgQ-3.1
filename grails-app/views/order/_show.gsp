@@ -112,6 +112,14 @@
                 <td><g:message code="order.label.billing.type"/>:</td>
                 <td class="value">${order?.billingTypeStr}</td>
             </tr>
+
+            <g:if test="${order?.metaFields}">
+                <!-- empty spacer row -->
+                <tr>
+                    <td colspan="2"><br/></td>
+                </tr>
+                <g:render template="/metaFields/metaFieldsWS" model="[metaFields: order?.metaFields]"/>
+            </g:if>
         </table>
     </div>
 

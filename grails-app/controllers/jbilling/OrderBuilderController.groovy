@@ -161,7 +161,7 @@ class OrderBuilderController {
                 conversation.order = order
                 conversation.products = productService.getFilteredProducts(company, params)
                 conversation.plans = productService.getFilteredPlans(company, params)
-                conversation.metaFields = metaFields
+                conversation.availableFields = getAvailableMetaFields()
                 conversation.deletedLines = []
                 conversation.pricingDate = order.activeSince ?: order.createDate ?: new Date()
             }
@@ -529,12 +529,12 @@ class OrderBuilderController {
         }
     }
 
-    def getMetaFields() {
+    def getAvailableMetaFields() {
         return MetaFieldBL.getAvailableFieldsList(EntityType.ORDER);
     }
 
     def bindMetaFields(OrderWS orderWS, GrailsParameterMap params) {
-        def fieldsArray = MetaFieldUtils.bindMetaFields(metaFields, params);
+        def fieldsArray = MetaFieldUtils.bindMetaFields(availableMetaFields, params);
         orderWS.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
     }
 }

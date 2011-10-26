@@ -340,7 +340,7 @@ class CustomerController {
 
         def periodUnits = PeriodUnitDTO.list()
         
-        [ user: user, contacts: contacts, parent: parent, company: company, currencies: currencies, periodUnits: periodUnits, metaFields: metaFields ]
+        [ user: user, contacts: contacts, parent: parent, company: company, currencies: currencies, periodUnits: periodUnits, availableFields: availableMetaFields ]
     }
 
     /**
@@ -351,7 +351,7 @@ class CustomerController {
         def user = new UserWS()
         UserHelper.bindUser(user, params)
 
-        UserHelper.bindMetaFields(user, metaFields, params)
+        UserHelper.bindMetaFields(user, availableMetaFields, params)
 
         def contacts = []
         UserHelper.bindContacts(user, contacts, company, params)
@@ -360,7 +360,7 @@ class CustomerController {
         UserHelper.bindPassword(user, oldUser, params, flash)
 
         if (flash.error) {
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company, metaFields: metaFields ]
+            render view: 'edit', model: [ user: user, contacts: contacts, company: company, availableFields: availableMetaFields ]
             return
         }
 
@@ -429,7 +429,7 @@ class CustomerController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies, metaFields: metaFields ]
+            render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies, availableFields: availableMetaFields ]
             return
         }
 
@@ -445,12 +445,12 @@ class CustomerController {
         CompanyDTO.get(session['company_id'])
     }
 
-    def getMetaFields() {
+    def getAvailableMetaFields() {
         return MetaFieldBL.getAvailableFieldsList(EntityType.USER);
     }
 
     def findMetaFieldType(Integer metaFieldId) {
-        for (MetaField field : metaFields) {
+        for (MetaField field : availableMetaFields) {
             if (field.id == metaFieldId) {
                 return field;
             }

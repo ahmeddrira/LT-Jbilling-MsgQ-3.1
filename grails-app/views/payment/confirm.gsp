@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.common.Constants" contentType="text/html;charset=UTF-8" %>
+<%@ page import="com.sapienter.jbilling.server.metafields.db.DataType; com.sapienter.jbilling.common.Constants" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <meta name="layout" content="main"/>
@@ -132,15 +132,14 @@
                         </g:applyLayout>
 
                         <!-- meta fields -->
-                        <g:each var="metaField" in="${metaFields?.sort{ it.displayOrder }}">
+                        <g:each var="metaField" in="${availableFields?.sort{ it.displayOrder }}">
                             <g:if test="${!metaField.disabled}">
                                 <g:set var="paymentMetaField" value="${payment?.metaFields?.find{ it.fieldName == metaField.name }}"/>
                                 <g:set var="fieldValue" value="${paymentMetaField?.getValue()}"/>
 
-                                <g:if test="${metaField.getDataType().name() == 'DATE'}">
+                                <g:if test="${metaField.getDataType() == DataType.DATE}">
                                     <g:applyLayout name="form/text">
                                         <content tag="label">${metaField.name}</content>
-                                        <content tag="label.for">metaField_${metaField.id}.value</content>
                                         <span><g:formatDate date="${fieldValue}"/></span>
                                         <g:hiddenField class="field" name="metaField_${metaField.id}.value" value="${formatDate(date: fieldValue)}"/>
                                     </g:applyLayout>

@@ -154,6 +154,13 @@
                     </td>
                 </tr>
             </g:if>
+            <g:if test="${selected?.metaFields}">
+                <!-- empty spacer row -->
+                <tr>
+                    <td colspan="2"><br/></td>
+                </tr>
+                <g:render template="/metaFields/metaFields" model="[metaFields: selected?.metaFields]"/>
+            </g:if>            
         </table>
     </div>
 

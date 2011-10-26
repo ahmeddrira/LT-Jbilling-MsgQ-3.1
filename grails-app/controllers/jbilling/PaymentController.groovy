@@ -41,7 +41,6 @@ import com.sapienter.jbilling.server.util.csv.Exporter
 import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import org.hibernate.Criteria
 
 /**
  * PaymentController 
@@ -207,7 +206,7 @@ class PaymentController {
         def user = webServicesSession.getUserWS(payment?.userId ?: params.int('userId'))
         def invoices = getUnpaidInvoices(user.userId)
 
-        render view: 'link', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, invoiceId: params.invoiceId, metaFields: metaFields ]
+        render view: 'link', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, invoiceId: params.invoiceId, availableFields: availableMetaFields ]
     }
 
     /**
@@ -308,7 +307,7 @@ class PaymentController {
         log.debug "invoices are ${invoices}"
         log.debug "payments are ${refundablePayments}"
         
-        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundablePayments: refundablePayments, refundPaymentId: params.int('payment?.paymentId'), metaFields: metaFields ]
+        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundablePayments: refundablePayments, refundPaymentId: params.int('payment?.paymentId'), availableFields: availableMetaFields ]
     }
 
     def getUnpaidInvoices(Integer userId) {
@@ -359,13 +358,13 @@ class PaymentController {
             }
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.local, e)
-            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundPaymentId: params.int('payment?.paymentId'), metaFields: metaFields  ]
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), availableFields: availableMetaFields ]
             return
         }
 
         // validation passed, render the confirmation page
         def processNow = params.processNow ? true : false
-        [ payment: payment, user: user, invoices: invoices, currencies: currencies, processNow: processNow, invoiceId: params.invoiceId, refundPaymentId: params?.payment?.paymentId, metaFields: metaFields ]
+        [ payment: payment, user: user, invoices: invoices, currencies: currencies, processNow: processNow, invoiceId: params.invoiceId, availableFields: availableMetaFields ]
     }
 
     /**
@@ -448,7 +447,7 @@ class PaymentController {
             def invoices = getUnpaidInvoices(user.userId)
             def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
 
-            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), metaFields: metaFields ]
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), availableFields: availableMetaFields ]
             return
         } finally {
             session.removeAttribute("user_payment")
@@ -564,12 +563,12 @@ class PaymentController {
         return currencies.findAll{ it.inUse }
     }
 
-    def getMetaFields() {
+    def getAvailableMetaFields() {
         return MetaFieldBL.getAvailableFieldsList(EntityType.PAYMENT);
     }
 
     def bindMetaFields(PaymentWS paymentWS, GrailsParameterMap params) {
-        def fieldsArray = MetaFieldUtils.bindMetaFields(metaFields, params);
+        def fieldsArray = MetaFieldUtils.bindMetaFields(availableMetaFields, params);
         paymentWS.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
     }
 }

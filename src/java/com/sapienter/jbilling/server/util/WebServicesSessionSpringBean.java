@@ -464,9 +464,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * The id of the invoice to delete
      */
     public void deleteInvoice(Integer invoiceId) {
-        Integer executorId = getCallerId();
-        InvoiceBL invoice = new InvoiceBL(invoiceId);
-        invoice.delete(executorId);
+        IInvoiceSessionBean session = Context.getBean(Context.Name.INVOICE_SESSION);
+        session.delete(invoiceId, getCallerId());
     }
 
     /**
@@ -475,9 +474,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * The id of the item to delete
      */
     public void deleteItem(Integer itemId) throws SessionInternalError {
-    	ItemBL itemBl= new ItemBL(itemId);
-    	itemBl.delete(getCallerId());
-    	LOG.debug("Deleted Item, " + itemBl.getEntity().getDeleted());
+        IItemSessionBean itemSession = (IItemSessionBean) Context.getBean(
+                Context.Name.ITEM_SESSION);
+        itemSession.delete(getCallerId(), itemId);
+    	LOG.debug("Deleted Item Id " + itemId);
     }
 
     /**

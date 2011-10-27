@@ -180,6 +180,8 @@ class InvoiceController {
                 flash.message = 'invoice.delete.success'
                 flash.args = [ invoiceId ]
 
+            } catch (SessionInternalError e) {
+                viewUtils.resolveException(flash, session.locale, e);
             } catch (Exception e) {
                 log.error("Exception deleting invoice.", e)
                 flash.error = 'error.invoice.delete'

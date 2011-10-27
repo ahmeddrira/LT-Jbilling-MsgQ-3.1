@@ -1313,7 +1313,7 @@ delete from pluggable_task_type where id = 80;
 -- insert new tax plugin to the database
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (90, 4, 'com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask', 2);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) valCues (24,  90, 'title',1, 'Country Tax Invoice Composition Task');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply tax item to the Invoice if the Partner's country code is matching.');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply tax item to the Invoice if the Partner''s country code is matching.');
 
 -- insert new payment term penalty plugin
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (91, 4, 'com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask', 2);
@@ -1461,3 +1461,28 @@ insert into permission_role_map (role_id, permission_id) values (5, 72); -- view
 insert into permission_role_map (role_id, permission_id) values (5, 91); -- invoices menu
 insert into permission_role_map (role_id, permission_id) values (5, 92); -- order menu
 insert into permission_role_map (role_id, permission_id) values (5, 93); -- payments menu
+
+-- Date: 27-Oct-2011
+-- Redmine Issue: #1444
+-- Description: Customer sub-account management
+
+-- Customer: view all customers
+insert into permission (id, type_id) values (17, 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59,17,'description', 1, 'View all customers');
+
+-- Customer: view customer sub-accounts
+insert into permission (id, type_id) values (18, 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59,18,'description', 1, 'View customer sub-accounts');
+
+-- Order: view customer sub-accounts
+insert into permission (id, type_id) values (29, 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59,29,'description', 1, 'View customer sub-accounts');
+
+-- Payment: view customer sub-accounts
+insert into permission (id, type_id) values (37, 3);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59,37,'description', 1, 'View customer sub-accounts');
+
+-- Invoice: view customer sub-accounts
+insert into permission (id, type_id) values (75, 7);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59,75,'description', 1, 'View customer sub-accounts');
+

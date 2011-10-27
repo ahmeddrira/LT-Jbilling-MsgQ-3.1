@@ -47,15 +47,17 @@ import com.sapienter.jbilling.client.util.SortableCriteria
 
 import org.hibernate.FetchMode
 import org.hibernate.criterion.MatchMode
-import org.hibernate.criterion.DetachedCriteria
-import org.hibernate.criterion.Subqueries
+
 import org.hibernate.criterion.Restrictions
-import org.hibernate.criterion.Criterion
+
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import com.sapienter.jbilling.server.user.ContactWS
+
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS
 
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
+
+import com.sapienter.jbilling.server.customer.CustomerBL
+import com.sapienter.jbilling.server.user.db.CustomerDTO
 
 @Secured(["MENU_90"])
 class CustomerController {
@@ -70,6 +72,7 @@ class CustomerController {
     def recentItemService
     def breadcrumbService
     def springSecurityService
+    def subAccountService
 
     def index = {
         redirect action: list, params: params
@@ -116,6 +119,15 @@ class CustomerController {
                 }
                 eq('company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
+
+                if (SpringSecurityUtils.ifNotGranted("CUSTOMER_17")) {
+                    // restrict query to sub-account user-ids
+                    if (SpringSecurityUtils.ifAnyGranted("CUSTOMER_18")) {
+                        'in'('id',subAccountService.getSubAccountUserIds())
+                    } else { // limit list to only this customer
+                        eq('id', session['user_id'])
+                    }
+                }
             }
 
             // apply sorting
@@ -195,10 +207,13 @@ class CustomerController {
                 max:    params.max,
                 offset: params.offset
         ) {
-            customer {
-                parent {
-                    eq('baseUser.id', params.int('id'))
+            and{
+                customer {
+                    parent {
+                        eq('baseUser.id', params.int('id'))
+                    }
                 }
+                eq('deleted', 0)
             }
         }
 
@@ -231,9 +246,10 @@ class CustomerController {
     def delete = {
         if (params.id) {
             webServicesSession.deleteUser(params.int('id'))
-
             log.debug("Deleted user ${params.id}.")
 
+            // remove the id from the list in session.
+            subAccountService.removeSubAccountUserId(params.int('id'))
         }
 
         // render the partial user list
@@ -300,9 +316,11 @@ class CustomerController {
                 if (SpringSecurityUtils.ifAllGranted("CUSTOMER_10")) {
 
                     user.userId = webServicesSession.createUser(user)
-
                     flash.message = 'customer.created'
                     flash.args = [ user.userId ]
+
+                    // add the id to the list in session.
+                    subAccountService.addSubAccountUserId(user)
 
                 } else {
                     render view: '/login/denied'

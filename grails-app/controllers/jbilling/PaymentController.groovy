@@ -42,6 +42,9 @@ import com.sapienter.jbilling.server.util.csv.Exporter
 import com.sapienter.jbilling.client.util.DownloadHelper
 import com.sapienter.jbilling.client.util.SortableCriteria
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import com.sapienter.jbilling.server.user.db.CustomerDTO
+import com.sapienter.jbilling.server.customer.CustomerBL
+import com.sapienter.jbilling.server.user.db.UserDTO
 
 /**
  * PaymentController 
@@ -60,6 +63,7 @@ class PaymentController {
     def filterService
     def recentItemService
     def breadcrumbService
+    def subAccountService
 
     def index = {
         redirect action: list, params: params
@@ -91,9 +95,13 @@ class PaymentController {
                 eq('u.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
 
-                // limit list to only this customer's payments
                 if (SpringSecurityUtils.ifNotGranted("PAYMENT_36")) {
-                    eq('u.id', session['user_id'])
+                    // restrict query to sub-account user-ids
+                    if (SpringSecurityUtils.ifAnyGranted("PAYMENT_37")) {
+                        'in'('u.id',subAccountService.getSubAccountUserIds())
+                    } else { // limit list to only this customer
+                        eq('u.id', session['user_id'])
+                    }
                 }
             }
 

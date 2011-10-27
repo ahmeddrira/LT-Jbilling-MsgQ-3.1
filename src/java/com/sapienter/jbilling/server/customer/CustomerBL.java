@@ -21,13 +21,18 @@
 package com.sapienter.jbilling.server.customer;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.servlet.http.HttpSession;
 import javax.sql.rowset.CachedRowSet;
 
+import com.sapienter.jbilling.server.item.db.PlanItemBundleDTO;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CustomerDAS;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -131,6 +136,47 @@ public final class CustomerBL extends ResultList implements CustomerSQL {
         execute();
         conn.close();
         return cachedResults;
+    }
+
+    /**
+     * Returns a list of userIds of the subAccounts for the customer passed in the parameters
+     * this list also includes the userId for the current customer.
+     *
+     * @param customer: for the logged-in user
+     * @param session: httpSession
+     */
+    public List<Integer> getSubAccountUserIds(CustomerDTO customer, HttpSession session){
+        List<Integer> descendants = (List<Integer>) session.getAttribute("customer_desendant_ids");
+        if(descendants!=null){
+            return descendants;
+        }else{
+            descendants = getDescendants(customer);
+            if(customer != null){
+                descendants.add(customer.getBaseUser().getId());
+            }
+            session.setAttribute("customer_desendant_ids",descendants);
+            return descendants;
+        }
+    }
+
+    /**
+     * Returns a list of userIds for the descendants of the customer given
+     * @param parent: top parent customer
+     * @return
+     */
+    public List<Integer> getDescendants(CustomerDTO parent){
+        List<Integer> descendants = new ArrayList();
+        if(parent!=null){
+            for(CustomerDTO customer: parent.getChildren()){
+                if(customer.getBaseUser().getDeleted()==0){
+                    //add it as desendant
+                    descendants.add(customer.getBaseUser().getId());
+                    //call the same function in a recursive way to get all the desendants
+                    descendants.addAll(getDescendants(customer));
+                }
+            }
+        }
+        return descendants;
     }
 
 }

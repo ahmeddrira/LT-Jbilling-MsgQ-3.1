@@ -42,9 +42,7 @@ import com.sapienter.jbilling.server.util.csv.Exporter
 import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.user.db.CompanyDTO
-import org.hibernate.FetchMode
-import org.hibernate.criterion.Restrictions
-import org.hibernate.criterion.Criterion
+
 import org.hibernate.Criteria
 import com.sapienter.jbilling.client.util.SortableCriteria
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
@@ -66,6 +64,7 @@ class OrderController {
     def filterService
     def recentItemService
     def breadcrumbService
+    def subAccountService
 
     def index = {
         redirect action: list, params: params
@@ -102,9 +101,13 @@ class OrderController {
                 eq('u.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
 
-                // limit list to only this customer's orders
                 if (SpringSecurityUtils.ifNotGranted("ORDER_28")) {
-                    eq('u.id', session['user_id'])
+                    // restrict query to sub-account user-ids
+                    if (SpringSecurityUtils.ifAnyGranted("ORDER_29")) {
+                        'in'('u.id',subAccountService.subAccountUserIds)
+                    } else { // limit list to only this customer
+                        eq('u.id', session['user_id'])
+                    }
                 }
             }
 

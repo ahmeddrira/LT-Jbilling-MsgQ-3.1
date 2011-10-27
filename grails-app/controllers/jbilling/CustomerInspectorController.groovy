@@ -57,7 +57,7 @@ class CustomerInspectorController {
 
         if (!user) {
             flash.error = 'no.user.found'
-            flash.args = [ params.id ]
+            flash.args = [ params.id as String ]
             return // todo: show generic error page
         }
 
@@ -282,14 +282,14 @@ class CustomerInspectorController {
                 price = webServicesSession.createCustomerPrice(user.userId, price);
 
                 flash.message = 'created.customer.price'
-                flash.args = [ price.itemId ]
+                flash.args = [ price.itemId as String ]
             } else {
                 log.debug("updating customer ${user.userId} specific price ${price.id}")
 
                 webServicesSession.updateCustomerPrice(user.userId, price);
 
                 flash.message = 'updated.customer.price'
-                flash.args = [ price.itemId ]
+                flash.args = [ price.itemId as String ]
             }
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
@@ -314,7 +314,7 @@ class CustomerInspectorController {
             webServicesSession.deleteCustomerPrice(userId, planItemId)
 
             flash.message = 'deleted.customer.price'
-            flash.args = [ params.itemId ]
+            flash.args = [ params.itemId as String ]
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)

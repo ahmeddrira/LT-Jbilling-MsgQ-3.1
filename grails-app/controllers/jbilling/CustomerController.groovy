@@ -232,7 +232,7 @@ class CustomerController {
             log.debug("Updating notes for user ${params.id}.")
 
             flash.message = 'customer.notes'
-            flash.args = [ params.id ]
+            flash.args = [ params.id as String ]
         }
 
         // render user list with selected id
@@ -276,7 +276,7 @@ class CustomerController {
             log.error("Could not fetch WS object", e)
 
             flash.error = 'customer.not.found'
-            flash.args = [ params.id ]
+            flash.args = [ params.id as String ]
 
             redirect controller: 'customer', action: 'list'
             return
@@ -317,7 +317,7 @@ class CustomerController {
 
                     user.userId = webServicesSession.createUser(user)
                     flash.message = 'customer.created'
-                    flash.args = [ user.userId ]
+                    flash.args = [ user.userId as String ]
 
                     // add the id to the list in session.
                     subAccountService.addSubAccountUserId(user)
@@ -350,7 +350,7 @@ class CustomerController {
                     }
 
                     flash.message = 'customer.updated'
-                    flash.args = [ user.userId ]
+                    flash.args = [ user.userId as String ]
 
                 } else {
                     render view: '/login/denied'

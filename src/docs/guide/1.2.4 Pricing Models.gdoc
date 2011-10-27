@@ -18,8 +18,7 @@ For example: an internet provider includes a free modem with a two year subscrip
 
 h3. Metered
 
-If this pricing model is selected, one unit will equal a set price. This means that if you have a product that costs $40, on the purchase order you will see $40. If you need  
-to add that product twice to the purchase order, the total cost will then be $80. 
+If this pricing model is selected, one unit will equal a set price. This means that if you have a product that costs $40, on the purchase order you will see $40. If you need to add that product twice to the purchase order, the total cost will then be $80. 
 
 !meteredpricing.png!
 
@@ -57,19 +56,177 @@ This field allows you to set pricing based upon the time of day it runs on.
 
 For example: a cell phone company would like to give their customers:  an evening free, on all local phone calls. Free calling will start at 6:00 PM, every weekday evening. 
 
+When this model is selected, several fields will appear that you will need to configure in order to set up your product correctly.
+
+*Date Field:*
+
+The Date Field represents the date from incoming data, when using mediation. If you are using mediation to tie the purchase of a product to an event, you would need to enter a field name. You can see an example of this below. If nothing is specified in this field, the system will use the time when it was created. 
+
+!eventdatetime.png!
+
+*00:00:* 
+
+This represents midnight (the beginning of a day) and it uses the current system time. This field specifies the price after a specific time. For example: 
+
+!timeofday.png!
+
+Entering $10.00 into the 00:00 field indicates that after midnight, the price of the product will be $10:00.
+
+*Attributes:* 
+
+In order to indicate a different price starting at a different time, you need to use the attributes available below the 00:00 field. For example:
+
+!attributes.png!
+
+Entering 12:00 and $8:00 will indicate to the system that after 12:00, the product will be at a price of $8.00. Entering 7:00 and $10.00, will let the system know that at 7:00, the price of the product needs to return to its original price of $10.00.
+
+It is possible to build as many attributes as you'd like, indicating a different price for any hour(s) of the day.
+
+h3. Volume Pricing
+
+This pricing model calculates the product by how much a customer purchases. It's generally used to give a discount; the more of a product that is purchased, the cheaper the cost. 
+
+*Volume Pricing Example*
+
+Product - cell phones:
+
+0 = $10.00
+
+10 = $9.50
+
+20 = $8.00
+
+As you can see, as the volume of the product goes up, the rate goes down.
+
+If a customer were to purchase 9 cell phones:
+
+$10.00 per unit: 9 x $10.00 = $90.00
+
+If a customer were to purchase 10 cell phones:
+
+$9.50 per unit: 10 x $9.50 = $95.00
+
+If a customer were to purchase 19 cell phones:
+
+$9.50 per unit: 19 x $9.50 = $180.50
+
+If a customer were to purchase 25 cell phones:
+
+$8.00 per unit: 25 x $8.00 = $200
+
+!volumemodel.png!
+
+{note}
+Please note: you can create as many levels to this pricing model as desired by adding attributes.
+{note}
+
+
 h3. Tiered
 
-The tiered pricing model is very similar to Graduated, except that it has many different layers. What this means is that a price for a product will change depending on how  much you buy.This pricing model is affected by *volume* of a product.
+The tiered pricing model is very similar to volume in that the product is calculated at a different price when larger quantities are purchased. However, tiered breaks down and groups the number of products purchased. Rate changes are based on a selected group of quantities purchased, and is calculated in the following manner:
 
-For example: if a customer buys 100 Test Products it will cost them $10 per product. However, if they buy 101 to 200 Test Products, it will cost them $5 per product. If the  customer decides to purchase 201 to 300 Test Products it will cost them $3 per product. 
+*Tiered Pricing Example* 
+
+Product - cell phones: 
+
+Tier 1: 0 to 10 = $10.00
+
+Tier 2: 10 to 20 = $9.50
+
+Tier 3: Greater than 20 = $8.00
+
+If a customer were to purchase 13 cell phones:
+
+Tier 1: (10 x $10.00) + Tier 2: (3 x $9.50) = $128.50
+
+If a customer were to purchase 25 cell phones:
+
+Tier 1: (10 x $10.00) + Tier 2: (10 x 9.50) + Tier 3 (5 x $8.00) = $152.50
+
+!tieredmodel.png!
+
+{note}
+Please note: a tier can be set to any price, and you can create as many tiers as needed to generate the different prices for the product.
+{note}
 
 h3. Pooled
 
-A pooled pricing model is based off of how much you buy of another item. It is based on free units applied to another product that has been purchased. 
+A pooled pricing model is based off of how much you buy of another item. It is based on free units applied to another product that has been purchased. The calculation of how many included is based off of the quantity of another item. 
 
-For example: if a customer buys 100 text messages for $5, they will recieve another 50 minutes of calls for free. 
+For example: if a customer buys 100 text messages for $5, they will receive another product: 50 minutes of calls for free. 
 
-h2. Add a Chain
+When this model is selected, a few fields will appear. You will need to configure them in order to set up the product correctly.
+
+*Pooled Item ID:*
+
+Enter the ID number of the product you wish to pool in this field. For example, if you were creating a product that pooled a 100MB mail box, and the ID number for that mailbox product is: 2100, you would enter that into the Pooled Item ID field. 
+
+!pooleditemid.png!
+
+As each purchase of the product would give you 100MB, you would want to enter this number in the multiplier field so that the system knows to assign 1 mailbox to each purchase of the pooled product.
+
+!multiplierpooled.png!
+
+This pricing model is different from graduated because the calculation is based on *something else* that a customer has bought instead of specifying *how much* of the product the customer is buying.
+
+{note}
+Please note: although the attribute fields are available on the screen, they are not needed for this pricing model.
+!pooledattributes.png!
+{note}
+
+h3. Item Selector
+
+This pricing model adds a particular number of items to an order. Whenever that item is purchased, if the customer has purchased over a certain limit, they will be automatically upgraded to another product. 
+
+For example:
+
+If a customer purchases 1 to 19 cell phones, they belong to mobility plan 1, which is a separate product, created with a metered rate of $40.00. If a customer purchases between 20 to 49 cell phones, they belong to mobility plan 2, created with a rate of $50.00. If a customer purchases between 50 to 69 cell phones, the belong to mobility plan 3, with a rate of $60.00. If 70 plus cell phones are purchased, the customer will belong to mobility plan 4, at a rate of $70.
+
+The appropriate plans (created as a product, not a plan) will be automatically applied to a purchase order, based on the quantity of cell phones selected. 
+
+There are a few fields that need to be configured in order for this pricing model to function.
+
+*Selection Category*
+
+This field represents the category the product belongs to. You need to enter the category ID into the text box. 
+
+!selectioncategory.png!
+
+*1 and Attributes*
+
+The remaining fields are very similar to the set up of tiered and volume pricing, except instead of a rate, you need to enter the ID of the product you want to be added based on the percent of products. Please refer to the screen shot to view how the example provided above would be set up:
+
+!itemselector.png!
+
+Remember, for this pricing model, instead entering a rate, you are entering a product ID in the field on the right hand side. Based on the example provided, ID 2000, 2001, 2002 and 2003 are the product mobility plans 1 to 4. 
+
+The fields on the left hand side represent the hierarchy of quantities that pertain to the specific product. Taking a look back at the example, you will see that the purchase of 1 to 19 cell phones is attached to product ID 2000, which is mobility plan 1. The second level, 20 to 49 cell phones is attached to product 2001, which is mobility plan 2. The third level, 50 to 69 cell phones is attached to product 2002, which is mobility plan 3. The final level, 70 plus, is attached to product 2003, which is mobility plan 4. 
+
+{note}
+Please note: it is possible to add as many attributes as needed to create the structure for your product.
+{note}
+
+h3. Item Percentage Selector
+
+Item Percentage Selector works exactly the same as Item Selector, however you are calculating a percentage over an item rather than quantity. 
+
+There are a few fields that you need to set up in order to use this pricing model.
+
+*Selection Category*
+
+Please refer to Item Selector for more information.
+
+*Percent of Category*
+
+This field needs to contain the ID of the category with the products that will be automatically generated on an invoice. In the previous example, this would be the category ID that contained the product mobility plans 1 to 4.
+
+!percentageofcategory.png!
+
+*0 and Attributes*
+
+Please refer to Item Selector for more information.
+
+h3. Add a Chain
 
 Another function included with these pricing models is the ability to add a chain. This allows you to add a percentage, which will then be applied in addition to the pricing model for the product. To add a chain, click on the 'Add Chain' button.
 

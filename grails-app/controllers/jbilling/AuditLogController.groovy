@@ -25,6 +25,7 @@ import org.hibernate.FetchMode
 import org.hibernate.criterion.Restrictions
 import org.hibernate.criterion.Criterion
 import org.hibernate.Criteria
+
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO
 import jbilling.FilterType
@@ -32,7 +33,7 @@ import jbilling.FilterType
 @Secured(["isAuthenticated()"])
 class AuditLogController {
 
-    static pagination = [ max: 10, offset: 0 ]
+    static pagination = [ max: 10, offset: 0, sort: 'createDatetime', order: 'desc' ]
 
     def webServicesSession
     def viewUtils
@@ -53,6 +54,8 @@ class AuditLogController {
 
         params.max = params?.max?.toInteger() ?: pagination.max
         params.offset = params?.offset?.toInteger() ?: pagination.offset
+        params.sort = params?.sort ?: pagination.sort
+        params.order = params?.order ?: pagination.order
 
         def logs = EventLogDTO.createCriteria().list(
                 max:    params.max,
@@ -63,7 +66,7 @@ class AuditLogController {
 
             and {
                 filters.each { filter ->
-                    //log.debug("Now processing filter " + filter);
+                    log.debug("Now processing filter " + filter);
                     if (filter.getValue() != null) {
                         // avoid adding a filter for no table selection
                         if (!(filter.getField().equals("table.name") && filter.getStringValue().trim().length() == 0)) {
@@ -83,7 +86,7 @@ class AuditLogController {
 
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
 
-        if (params.applyFilter) {
+        if (params.applyFilter || params.partial) {
             render template: 'logs', model: [ logs: logs, selected: selected, filters: filters ]
         } else {
             [ logs: logs, selected: selected, filters: filters ]
@@ -104,11 +107,10 @@ class AuditLogController {
      * Convenience shortcut, this action shows all logs for the given user id.
      */
     def user = {
-        Filter filter =  new Filter(type: FilterType.LOGS, constraintType: FilterConstraint.EQ,
-                field: 'affectedUser.id', template: 'id', visible: true, integerValue: params.id)
-        filterService.setFilter(FilterType.LOGS, filter)
-
-        redirect action: list
+        def filters= filterService.getFilters(FilterType.LOGS, params)
+        def filter = filters.find{ it.field == 'u.id' }
+        filter.integerValue=params.int('id') 
+        redirect action: list, params: params
     }
 
 }

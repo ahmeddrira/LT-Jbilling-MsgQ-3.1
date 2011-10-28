@@ -102,10 +102,11 @@ class OrderController {
                 eq('deleted', 0)
 
                 if (SpringSecurityUtils.ifNotGranted("ORDER_28")) {
-                    // restrict query to sub-account user-ids
                     if (SpringSecurityUtils.ifAnyGranted("ORDER_29")) {
-                        'in'('u.id',subAccountService.subAccountUserIds)
-                    } else { // limit list to only this customer
+                        // restrict query to sub-account user-ids
+                        'in'('u.id', subAccountService.subAccountUserIds)
+                    } else {
+                        // limit list to only this customer
                         eq('u.id', session['user_id'])
                     }
                 }

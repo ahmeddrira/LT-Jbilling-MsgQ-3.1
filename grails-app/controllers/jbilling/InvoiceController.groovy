@@ -111,10 +111,11 @@ class InvoiceController {
                 eq('deleted', 0)
 
                 if (SpringSecurityUtils.ifNotGranted("INVOICE_74")) {
-                    // restrict query to sub-account user-ids
                     if (SpringSecurityUtils.ifAnyGranted("INVOICE_75")) {
-                        'in'('baseUser.id',subAccountService.subAccountUserIds)
-                    } else { // limit list to only this customer
+                        // restrict query to sub-account user-ids
+                        'in'('baseUser.id', subAccountService.subAccountUserIds)
+                    } else {
+                        // limit list to only this customer
                         eq('baseUser.id', session['user_id'])
                     }
                 }

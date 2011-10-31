@@ -152,6 +152,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.partner.db.PartnerDAS;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
@@ -1006,22 +1007,19 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         
     }
     
-    public void updatePartner(UserWS newUser, PartnerWS partner) throws SessionInternalError {
-        
+    public void updatePartner(UserWS user, PartnerWS partner) throws SessionInternalError {
         Integer entityId = getCallerCompanyId();
+        IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
 
-        UserDTOEx userDto = new UserDTOEx(newUser, entityId);
-        
-        Partner partnerDto= partner.getPartnerDTO();
-        
-        //dto.setPartner(partnerDto);
-        
-        IUserSessionBean userSession = (IUserSessionBean) Context.getBean(
-                Context.Name.USER_SESSION);
-        
-        userSession.update(getCallerId(), userDto);
-        userSession.updatePartner(getCallerId(), partnerDto);
-        
+        if (user != null) {
+            UserDTOEx userDto = new UserDTOEx(user, entityId);
+            userSession.update(getCallerId(), userDto);
+        }
+
+        if (partner != null) {
+            Partner partnerDto = partner.getPartnerDTO();
+            userSession.updatePartner(getCallerId(), partnerDto);
+        }
     }
     
     public void deletePartner (Integer partnerId) throws SessionInternalError {

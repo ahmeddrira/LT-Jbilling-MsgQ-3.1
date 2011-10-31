@@ -231,7 +231,8 @@ class PartnerController {
                 or {
                     isEmpty('roles')
                     roles {
-                        eq('id', Constants.TYPE_CLERK)
+                        ne('id', Constants.TYPE_CUSTOMER)
+                        ne('id', Constants.TYPE_PARTNER)
                     }
                 }
 

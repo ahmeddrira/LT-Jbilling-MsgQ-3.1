@@ -289,7 +289,7 @@
             </g:link>
         </div>
         <div class="row">
-            <g:link controller="partner" edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+            <g:link controller="partner" action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
             <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
         </div>
     </div>

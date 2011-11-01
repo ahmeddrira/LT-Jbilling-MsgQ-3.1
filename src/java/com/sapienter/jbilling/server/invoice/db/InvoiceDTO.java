@@ -240,6 +240,16 @@ public class InvoiceDTO implements Serializable, Exportable {
         this.dueDate = dueDate;
     }
 
+    /**
+     * Sum total of the invoice lines for the current period. This amount will not change
+     * when the invoice is paid, and will always show the dollar value of this invoice for
+     * historical purposes.
+     *
+     * Since a carried invoice balance is added as an invoice line, this total automatically
+     * includes the total for the current month plus the carried balances of old un-paid invoices.
+     *
+     * @return sum total of the invoice lines
+     */
     @Column(name = "total", nullable = false, precision = 17, scale = 17)
     public BigDecimal getTotal() {
         return this.total;
@@ -304,6 +314,17 @@ public class InvoiceDTO implements Serializable, Exportable {
         ));
     }
 
+    /**
+     * The total amount owing that must be paid for this single invoice to be brought to zero and marked
+     * paid. The initial balance is calculated as the invoice total {@link #getTotal()} - carried
+     * balance {@link #getCarriedBalance()}. The initial balance of the invoice <strong>represents the
+     * current periods charges only</strong>, not including any carried balances.
+     *
+     * As payments are applied, this balance will be reduced until it reaches zero and the invoice
+     * is marked as paid.
+     *
+     * @return total owing balance
+     */
     @Column(name = "balance", precision = 17, scale = 17)
     public BigDecimal getBalance() {
         return this.balance;
@@ -313,6 +334,13 @@ public class InvoiceDTO implements Serializable, Exportable {
         this.balance = balance;
     }
 
+    /**
+     * The sum total of all remaining un-paid or partially paid invoice balances. This represents
+     * the portion of the invoice total amount {@link #getTotal()} that was brought forward from
+     * an old un-paid invoice.
+     *
+     * @return portion of the invoice total that was carried forward.
+     */
     @Column(name = "carried_balance", nullable = false, precision = 17, scale = 17)
     public BigDecimal getCarriedBalance() {
         return this.carriedBalance;

@@ -504,6 +504,7 @@ class PaymentController {
             calendar.clear()
             calendar.set(Calendar.MONTH, expiryMonth - 1) // calendar API months start at 0
             calendar.set(Calendar.YEAR, expiryYear)
+            calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
 
             creditCard.expiry = calendar.getTime()
         }

@@ -1300,3 +1300,9 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 values (50, 50, 'instruction', 1, 'The number of decimal places to be shown on the invoice. Defaults to 2.');
 
 
+-- 01-Nov-2011
+-- Redmine Issue: #1404
+-- Description: Credit Card that expires in the same month does not process automatically
+
+update credit_card set cc_expiry = date_trunc('month', cc_expiry) + INTERVAL '1 month' - INTERVAL '1 day'; -- postgresql
+-- update credit_card set cc_expiry = last_day(cc_expiry); -- mysql

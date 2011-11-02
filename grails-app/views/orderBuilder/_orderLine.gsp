@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.item.db.PlanItemBundleDTO; com.sapienter.jbilling.server.item.db.ItemDTO" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelBL; org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.item.db.PlanItemBundleDTO; com.sapienter.jbilling.server.item.db.ItemDTO" %>
 
 <%--
   Renders an OrderLineWS as an editable row for the order builder preview pane.
@@ -134,6 +134,8 @@
     <g:if test="${product.plans}">
         <g:each var="plan" in="${product.plans}">
             <g:each var="planItem" in="${plan.planItems}">
+                <g:set var="planItemPriceModel" value="${PriceModelBL.getPriceForDate(planItem.models, pricingDate)}"/>
+
                 <g:if test="${planItem.bundle?.quantity}">
                     <li class="bundled">
                         <span class="description">
@@ -153,7 +155,7 @@
                     <li class="bundled-price">
                         <table class="dataTable" cellspacing="0" cellpadding="0" width="100%">
                             <tbody>
-                               <g:render template="/plan/priceModel" model="[model: planItem.model]"/>
+                               <g:render template="/plan/priceModel" model="[model: planItemPriceModel]"/>
                             </tbody>
                         </table>
                     </li>

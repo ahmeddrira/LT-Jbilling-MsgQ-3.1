@@ -22,17 +22,20 @@ package com.sapienter.jbilling.server.util;
 
 import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
 
+import java.io.Serializable;
+
 /**
  * InternationalDescriptionWS
  *
  * @author Brian Cowdery
  * @since 27/01/11
  */
-public class InternationalDescriptionWS {
+public class InternationalDescriptionWS implements Serializable{
 
     private String psudoColumn;
     private Integer languageId;
     private String content;
+    private boolean deleted;
 
     public InternationalDescriptionWS() {
     }
@@ -95,6 +98,14 @@ public class InternationalDescriptionWS {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     @Override

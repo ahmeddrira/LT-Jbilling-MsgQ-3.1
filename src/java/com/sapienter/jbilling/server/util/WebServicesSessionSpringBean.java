@@ -1161,6 +1161,21 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public void updateItem(ItemDTOEx item) {
+        // check if all descriptions are to delete
+        List<InternationalDescriptionWS> descriptions = item.getDescriptions();
+        boolean noDescriptions = true;
+        for (InternationalDescriptionWS description : descriptions) {
+            if (!description.isDeleted()) {
+                noDescriptions = false;
+                break;
+            }
+        }
+        if (noDescriptions) {
+            throw new SessionInternalError("Must have a description", new String[] {
+                "ItemDTOEx,descriptions,validation.error.is.required"
+            });
+        }
+
         UserBL bl = new UserBL(getCallerId());
         Integer executorId = bl.getEntity().getUserId();
         Integer languageId = bl.getEntity().getLanguageIdField();
@@ -1169,9 +1184,22 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         ItemBL itemBL = new ItemBL();
         ItemDTO dto = itemBL.getDTO(item);
 
-        IItemSessionBean itemSession = (IItemSessionBean) Context.getBean(
-                Context.Name.ITEM_SESSION);
+        // Set description to null
+        dto.setDescription(null);
+
+        IItemSessionBean itemSession = (IItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
         itemSession.update(executorId, dto, languageId);
+
+        // save-delete descriptions
+        for (InternationalDescriptionWS description : descriptions) {
+            if (description.getLanguageId() != null) {
+                if (description.isDeleted()) {
+                    dto.deleteDescription(description.getLanguageId());
+                } else {
+                    dto.setDescription(description.getContent(), description.getLanguageId());
+                }
+            }
+        }
     }
 
     /**
@@ -1815,9 +1843,27 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * ITEM
      */
     public Integer createItem(ItemDTOEx item) throws SessionInternalError {
+        // check if all descriptions are to delete
+        List<InternationalDescriptionWS> descriptions = item.getDescriptions();
+        boolean noDescriptions = true;
+        for (InternationalDescriptionWS description : descriptions) {
+            if (!description.isDeleted()) {
+                noDescriptions = false;
+                break;
+            }
+        }
+        if (noDescriptions) {
+            throw new SessionInternalError("Must have a description", new String[] {
+                    "ItemDTOEx,descriptions,validation.error.is.required"
+            });
+        }
+
         ItemBL itemBL = new ItemBL();
         ItemDTO dto = itemBL.getDTO(item);
-        
+
+        // Set description to null
+        dto.setDescription(null);
+
         // get the info from the caller
         UserBL bl = new UserBL(getCallerId());
         Integer languageId = bl.getEntity().getLanguageIdField();
@@ -1825,7 +1871,21 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         dto.setEntity(new CompanyDTO(entityId));
 
         // call the creation
-        return itemBL.create(dto, languageId);
+        Integer id = itemBL.create(dto, languageId);
+
+        dto = itemBL.getEntity();
+
+        // save-delete descriptions
+        for (InternationalDescriptionWS description : descriptions) {
+            if (description.getLanguageId() != null && description.getContent() != null) {
+                if (description.isDeleted()) {
+                    dto.deleteDescription(description.getLanguageId());
+                } else {
+                    dto.setDescription(description.getContent(), description.getLanguageId());
+                }
+            }
+        }
+        return id;
     }
 
     /**

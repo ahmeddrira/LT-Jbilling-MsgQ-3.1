@@ -83,6 +83,30 @@ public class InternationalDescriptionDAS extends AbstractDAS<InternationalDescri
         return query.list();
     }
 
+    public Collection<InternationalDescriptionDTO> findAll(int tableId,int foreignId,String psudoColumn) {
+        final String QUERY = "SELECT a " + "FROM InternationalDescriptionDTO a " + "WHERE a.id.tableId = :tableId "
+                + "AND a.id.foreignId = :foreignId " + "AND a.id.psudoColumn = :psudoColumn ";
+
+        Query query = getSession().createQuery(QUERY);
+        query.setParameter("tableId", tableId);
+        query.setParameter("foreignId", foreignId);
+        query.setParameter("psudoColumn", psudoColumn);
+        return query.list();
+    }
+
+    public void delete(int tableId,int foreignId,String psudoColumn,int languageId) {
+        final String QUERY = "DELETE " + "InternationalDescriptionDTO a " + "WHERE a.id.tableId = :tableId "
+                + "AND a.id.foreignId = :foreignId " + "AND a.id.psudoColumn = :psudoColumn "
+                + "AND a.id.languageId = :languageId ";
+
+        Query query = getSession().createQuery(QUERY);
+        query.setParameter("tableId", tableId);
+        query.setParameter("foreignId", foreignId);
+        query.setParameter("psudoColumn", psudoColumn);
+        query.setParameter("languageId", languageId);
+        query.executeUpdate();
+    }
+
     public static InternationalDescriptionDAS getInstance() {
         return new InternationalDescriptionDAS();
     }

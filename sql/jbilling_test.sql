@@ -11486,6 +11486,11 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 50	50	instruction	1	The number of decimal places to be shown on the invoice. Defaults to 2.
 59	110	description	1	Switch to sub-account
 59	111	description	1	Switch to any user
+59	17	description	1	View all customers
+59	18	description	1	View customer sub-accounts
+59	29	description	1	View customer sub-accounts
+59	37	description	1	View customer sub-accounts
+59	75	description	1	View customer sub-accounts
 \.
 
 
@@ -14383,6 +14388,11 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 74	7	\N
 110	11	\N
 111	11	\N
+17	1	\N
+18	1	\N
+29	2	\N
+37	3	\N
+75	7	\N
 \.
 
 
@@ -14515,6 +14525,14 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 92	5
 93	5
 30	5
+17	2
+17	3
+90	5
+15	5
+18	5
+29	5
+37	5
+75	5
 \.
 
 

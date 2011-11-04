@@ -139,39 +139,18 @@ public final class CustomerBL extends ResultList implements CustomerSQL {
     }
 
     /**
-     * Returns a list of userIds of the subAccounts for the customer passed in the parameters
-     * this list also includes the userId for the current customer.
-     *
-     * @param customer: for the logged-in user
-     * @param session: httpSession
-     */
-    public List<Integer> getSubAccountUserIds(CustomerDTO customer, HttpSession session){
-        List<Integer> descendants = (List<Integer>) session.getAttribute("customer_desendant_ids");
-        if(descendants!=null){
-            return descendants;
-        }else{
-            descendants = getDescendants(customer);
-            if(customer != null){
-                descendants.add(customer.getBaseUser().getId());
-            }
-            session.setAttribute("customer_desendant_ids",descendants);
-            return descendants;
-        }
-    }
-
-    /**
      * Returns a list of userIds for the descendants of the customer given
      * @param parent: top parent customer
      * @return
      */
     public List<Integer> getDescendants(CustomerDTO parent){
-        List<Integer> descendants = new ArrayList();
-        if(parent!=null){
+        List<Integer> descendants = new ArrayList<Integer>();
+        if(parent != null){
             for(CustomerDTO customer: parent.getChildren()){
-                if(customer.getBaseUser().getDeleted()==0){
-                    //add it as desendant
+                if(customer.getBaseUser().getDeleted() == 0){
+                    //add it as descendant
                     descendants.add(customer.getBaseUser().getId());
-                    //call the same function in a recursive way to get all the desendants
+                    //call the same function in a recursive way to get all the descendants
                     descendants.addAll(getDescendants(customer));
                 }
             }

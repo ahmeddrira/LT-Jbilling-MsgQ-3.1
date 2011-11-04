@@ -40,8 +40,8 @@
 
         <!-- content columns -->
         <div class="columns-holder">
-            <div class="column panel" id="column1">
-                <div class="column-hold">
+            <div class="column panel">
+                <div class="column-hold" id="column1">
                     <g:pageProperty name="page.builder"/>
                 </div>
             </div>

@@ -28,7 +28,7 @@ If the status of a payment is 'bad', it means that the balance will equal zero. 
 Let's take a look at an example. For the month of February the system generates an invoice for a customer. The total of the invoice is $100, which means that the invoice balance will also be $100. 
 
 {note}
-Please Note: for more information on the balance and status of an invoice, please refer to Chapter 5: Invoices.
+Please Note: for more information on the balance and status of an invoice, please refer to section 1.6.4.
 {note}
 
 There is a payment attempt made on the invoice for: $100. However, the payment fails: 

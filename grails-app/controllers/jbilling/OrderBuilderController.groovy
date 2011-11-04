@@ -156,6 +156,7 @@ class OrderBuilderController {
                 conversation.products = productService.getFilteredProducts(company, params)
                 conversation.plans = productService.getFilteredPlans(company, params)
                 conversation.deletedLines = []
+                conversation.pricingDate = order.activeSince ?: order.createDate ?: new Date()
             }
             on("success").to("build")
         }

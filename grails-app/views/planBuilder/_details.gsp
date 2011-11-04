@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.util.Constants; com.sapienter.jbilling.server.user.db.CompanyDTO" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelBL; com.sapienter.jbilling.server.util.Constants; com.sapienter.jbilling.server.user.db.CompanyDTO" %>
 
 <%--
   Order details form. Allows editing of primary order attributes.
@@ -54,18 +54,20 @@
                           value="${plan?.periodId}"/>
             </g:applyLayout>
 
+            <g:set var="defaultProductPrice" value="${PriceModelBL.getWsPriceForDate(product.defaultPrices, startDate)}"/>
+
             <g:applyLayout name="form/select">
                 <content tag="label"><g:message code="prompt.user.currency"/></content>
                 <content tag="label.for">price.currencyId</content>
                 <g:select name="price.currencyId" from="${currencies}"
                           optionKey="id" optionValue="description"
-                          value="${product?.defaultPrice?.currencyId}" />
+                          value="${defaultProductPrice?.currencyId}" />
             </g:applyLayout>
 
             <g:applyLayout name="form/input">
                 <content tag="label"><g:message code="plan.model.rate"/></content>
                 <content tag="label.for">price.rateAsDecimal</content>
-                <g:textField class="field text" name="price.rateAsDecimal" value="${formatNumber(number: product?.defaultPrice?.rate, formatName: 'money.format')}"/>
+                <g:textField class="field text" name="price.rateAsDecimal" value="${formatNumber(number: defaultProductPrice?.rate, formatName: 'money.format')}"/>
             </g:applyLayout>
         </div>
 

@@ -49,6 +49,7 @@ class UserController {
     def recentItemService
     def springSecurityService
     def securitySession
+    def subAccountService
 
     def index = {
         redirect action: list, params: params
@@ -250,8 +251,9 @@ class UserController {
 
         securitySession.setAttributes(request, response, springSecurityService.principal)
 
-        breadcrumbService.load();
-        recentItemService.load();
+        breadcrumbService.load()
+        recentItemService.load()
+        subAccountService.load()
 
         def breadcrumb = breadcrumbService.getLastBreadcrumb()
         if (breadcrumb) {

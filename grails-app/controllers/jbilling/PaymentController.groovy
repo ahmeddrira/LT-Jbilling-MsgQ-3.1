@@ -96,10 +96,11 @@ class PaymentController {
                 eq('deleted', 0)
 
                 if (SpringSecurityUtils.ifNotGranted("PAYMENT_36")) {
-                    // restrict query to sub-account user-ids
                     if (SpringSecurityUtils.ifAnyGranted("PAYMENT_37")) {
+                        // restrict query to sub-account user-ids
                         'in'('u.id',subAccountService.getSubAccountUserIds())
-                    } else { // limit list to only this customer
+                    } else {
+                        // limit list to only this customer
                         eq('u.id', session['user_id'])
                     }
                 }

@@ -63,11 +63,11 @@ class PlanBuilderController {
     }
 
     /**
-        * Sorts a list of PlanItemWS objects by precedence and itemId.
-        *
-        * @param planItems plan items
-        * @return sorted list of plan items
-        */
+     * Sorts a list of PlanItemWS objects by precedence and itemId.
+     *
+     * @param planItems plan items
+     * @return sorted list of plan items
+     */
     def sortPlanItems(planItems) {
         // precedence in ascending order, item id in descending
         return planItems.sort { a, b->
@@ -75,6 +75,12 @@ class PlanBuilderController {
         }
     }
 
+    /**
+     * Returns a sorted list of all plan item pricing dates.
+     *
+     * @param planItems plan items
+     * @return sorted list of pricing dates
+     */
     def collectPricingDates(planItems) {
         def dates = new TreeSet<Date>()
 
@@ -90,9 +96,9 @@ class PlanBuilderController {
     def editFlow = {
 
         /**
-                * Initializes the plan builder, putting necessary data into the flow and conversation
-                * contexts so that it can be referenced later.
-                */
+         * Initializes the plan builder, putting necessary data into the flow and conversation
+         * contexts so that it can be referenced later.
+         */
         initialize {
             action {
                 if (!params.id && !SpringSecurityUtils.ifAllGranted("PLAN_60")) {
@@ -106,7 +112,6 @@ class PlanBuilderController {
                     redirect controller: 'login', action: 'denied'
                     return
                 }
-
 
                 def plan
                 def product
@@ -145,7 +150,7 @@ class PlanBuilderController {
                     priceModel.rate = BigDecimal.ZERO
                     priceModel.currencyId = session['currency_id']
 
-                    product.defaultPrice = priceModel
+                    product.defaultPrices.put(PriceModelWS.EPOCH_DATE, priceModel)
                 }
 
                 // subscription product uses a METERED price model
@@ -197,8 +202,8 @@ class PlanBuilderController {
         }
 
         /**
-                * Renders the plan details tab panel.
-                */
+         * Renders the plan details tab panel.
+         */
         showDetails {
             action {
                 params.template = 'details'
@@ -207,8 +212,8 @@ class PlanBuilderController {
         }
 
         /**
-                * Renders the product list tab panel, filtering the product list by the given criteria.
-                */
+         * Renders the product list tab panel, filtering the product list by the given criteria.
+         */
         showProducts {
             action {
                 // filter using the first item type by default
@@ -222,8 +227,8 @@ class PlanBuilderController {
         }
 
         /**
-                * Renders the pricing timeline top panel, allowing navigation and creation of pricing dates.
-                */
+         * Renders the pricing timeline top panel, allowing navigation and creation of pricing dates.
+         */
         showTimeline {
             action {
                 params.template = 'timeline'
@@ -236,7 +241,7 @@ class PlanBuilderController {
             action {
                 def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
-                log.debug("adding pricing date ${params.startDate}")
+                log.debug("adding plan items pricing date ${params.startDate}")
 
                 // find the closet price model to the new date and copy it
                 // to create a new price for the given start date
@@ -251,6 +256,16 @@ class PlanBuilderController {
                 // update pricing dates
                 conversation.pricingDates = collectPricingDates(conversation.plan.planItems)
                 conversation.startDate = startDate
+
+                log.debug("adding subscription product pricing date ${params.startDate}")
+
+                // copy the closest model to the new date
+                def defaultPriceModel = PriceModelBL.getWsPriceForDate(conversation.product.defaultPrices, startDate)
+                def priceModel = new PriceModelWS(defaultPriceModel)
+                priceModel.id = null
+
+                conversation.product.defaultPrices.put(startDate, priceModel)
+
 
                 params.template = 'review'
             }
@@ -270,8 +285,8 @@ class PlanBuilderController {
         }
 
         /**
-                * Add a new price for the given product id, and render the review panel.
-                */
+         * Add a new price for the given product id, and render the review panel.
+         */
         addPrice {
             action {
                 // product being added
@@ -300,8 +315,8 @@ class PlanBuilderController {
         }
 
         /**
-                * Updates a price and renders the review panel.
-                */
+         * Updates a price and renders the review panel.
+         */
         updatePrice {
             action {
                 def index = params.int('index')
@@ -341,8 +356,8 @@ class PlanBuilderController {
         }
 
         /**
-                * Removes a item price from the plan and renders the review panel.
-                */
+         * Removes a item price from the plan and renders the review panel.
+         */
         removePrice {
             action {
                 conversation.plan.planItems.remove(params.int('index'))
@@ -352,8 +367,8 @@ class PlanBuilderController {
         }
 
         /**
-                * Updates a strategy of a model in a pricing chain.
-                */
+         * Updates a strategy of a model in a pricing chain.
+         */
         updateStrategy {
             action {
                 def index = params.int('index')
@@ -369,8 +384,8 @@ class PlanBuilderController {
         }
 
         /**
-                * Adds an additional price model to the chain.
-                */
+         * Adds an additional price model to the chain.
+         */
         addChainModel {
             action {
                 def index = params.int('index')
@@ -394,8 +409,8 @@ class PlanBuilderController {
         }
 
         /**
-                * Removes a price model from the chain.
-                */
+         * Removes a price model from the chain.
+         */
         removeChainModel {
             action {
                 def index = params.int('index')
@@ -423,9 +438,9 @@ class PlanBuilderController {
         }
 
         /**
-               * Adds a new attribute field to the plan price model, and renders the review panel.
-               * The rendered review panel will have the edited line open for further modification.
-               */
+         * Adds a new attribute field to the plan price model, and renders the review panel.
+         * The rendered review panel will have the edited line open for further modification.
+         */
         addAttribute {
             action {
                 def index = params.int('index')
@@ -454,9 +469,9 @@ class PlanBuilderController {
         }
 
         /**
-               * Removes the given attribute name from a plan price model, and renders the review panel.
-               * The rendered review panel will have the edited line open for further modification.
-               */
+         * Removes the given attribute name from a plan price model, and renders the review panel.
+         * The rendered review panel will have the edited line open for further modification.
+         */
         removeAttribute {
             action {
                 def index = params.int('index')
@@ -487,13 +502,22 @@ class PlanBuilderController {
         }
 
         /**
-                * Updates the plan description and renders the review panel.
-                */
+         * Updates the plan description and renders the review panel.
+         */
         updatePlan {
             action {
+                log.debug("updating plan details")
+
                 bindData(conversation.plan, params, 'plan')
                 bindData(conversation.product, params, 'product')
-                bindData(conversation.product.defaultPrice, params, 'price')
+
+                // update default price for the current working start date
+                def startDate = conversation.startDate
+                def defaultPriceModel = PriceModelBL.getWsPriceForDate(conversation.product.defaultPrices, startDate)
+                bindData(defaultPriceModel, params, 'price')
+
+                log.debug("updating subscription product pricing for date ${startDate} = ${defaultPriceModel}")
+                conversation.product.defaultPrices.put(startDate, defaultPriceModel)
 
                 // sort prices by precedence
                 conversation.plan.planItems = sortPlanItems(conversation.plan.planItems)
@@ -504,13 +528,13 @@ class PlanBuilderController {
         }
 
         /**
-                * Shows the plan builder. This is the "waiting" state that branches out to the rest
-                * of the flow. All AJAX actions and other states that build on the order should
-                * return here when complete.
-                *
-                * If the parameter 'template' is set, then a partial view template will be rendered instead
-                * of the complete 'build.gsp' page view (workaround for the lack of AJAX support in web-flow).
-                */
+         * Shows the plan builder. This is the "waiting" state that branches out to the rest
+         * of the flow. All AJAX actions and other states that build on the order should
+         * return here when complete.
+         *
+         * If the parameter 'template' is set, then a partial view template will be rendered instead
+         * of the complete 'build.gsp' page view (workaround for the lack of AJAX support in web-flow).
+         */
         build {
             // list
             on("details").to("showDetails")
@@ -538,8 +562,8 @@ class PlanBuilderController {
         }
 
         /**
-                * Saves the plan and exits the builder flow.
-                */
+         * Saves the plan and exits the builder flow.
+         */
         savePlan {
             action {
                 try {

@@ -27,9 +27,17 @@ import com.sapienter.jbilling.server.customer.CustomerBL
 import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.user.UserWS
 
-class SubAccountService {
+class SubAccountService implements Serializable {
+
+    public static final String SESSION_DESCENDANT_IDS = "customer_desendant_ids"
 
     static transactional = true
+
+    def void load() {
+        session[SESSION_DESCENDANT_IDS] == null;
+        getSubAccountUserIds();
+    }
+
 
     /**
      * Returns a list of userIds of the subAccounts for the current logged-in user.
@@ -37,17 +45,16 @@ class SubAccountService {
      */
     public List<Integer> getSubAccountUserIds(){
         CustomerDTO customer = CustomerDTO.findByBaseUser(UserDTO.get(session['user_id']))
-        List<Integer> descendants = (List<Integer>) session.getAttribute("customer_desendant_ids");
-        if(descendants!=null){
-            return descendants;
-        }else{
+
+        List<Integer> descendants = (List<Integer>) session.getAttribute(SESSION_DESCENDANT_IDS);
+        if (descendants == null) {
             descendants = new CustomerBL().getDescendants(customer);
-            if(customer != null){
-                descendants.add(customer.getBaseUser().getId());
-            }
-            session.setAttribute("customer_desendant_ids",descendants);
-            return descendants;
+            descendants.add(session['user_id'] as Integer);
+
+            session.setAttribute(SESSION_DESCENDANT_IDS,descendants);
         }
+
+        return descendants;
     }
 
     /**
@@ -58,7 +65,7 @@ class SubAccountService {
     def addSubAccountUserId(UserWS user){
         def CustomerDTO customer = CustomerDTO.findByBaseUser(UserDTO.get(session['user_id']))
         def descendantsId = getSubAccountUserIds()
-        if(descendantsId.contains(user.parentId)){
+        if (descendantsId.contains(user.parentId)) {
             //saved in session
             descendantsId << user.userId
         }
@@ -72,9 +79,9 @@ class SubAccountService {
     def removeSubAccountUserId(int userId){
         def CustomerDTO customer = CustomerDTO.findByBaseUser(UserDTO.get(session['user_id']))
         def descendantsId = getSubAccountUserIds()
-        if(descendantsId.contains(params.int('id'))){
+        if (descendantsId.contains(userId)) {
             //saved in session
-            descendantsId - params.int('id')
+            descendantsId - userId
         }
     }
 

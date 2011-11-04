@@ -92,7 +92,6 @@ class CustomerController {
             createAlias("customer", "customer")
             and {
                 filters.each { filter ->
-                    //log.debug "Filter toString(): " + filter.toString()
                     if (filter.value) {
                         // handle user status separately from the other constraints
                         // we need to find the UserStatusDTO to compare to
@@ -121,10 +120,11 @@ class CustomerController {
                 eq('deleted', 0)
 
                 if (SpringSecurityUtils.ifNotGranted("CUSTOMER_17")) {
-                    // restrict query to sub-account user-ids
                     if (SpringSecurityUtils.ifAnyGranted("CUSTOMER_18")) {
-                        'in'('id',subAccountService.getSubAccountUserIds())
-                    } else { // limit list to only this customer
+                        // restrict query to sub-account user-ids
+                        'in'('id', subAccountService.getSubAccountUserIds())
+                    } else {
+                        // limit list to only this customer
                         eq('id', session['user_id'])
                     }
                 }

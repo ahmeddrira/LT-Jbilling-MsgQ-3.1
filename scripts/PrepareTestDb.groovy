@@ -28,12 +28,28 @@ target(prepareTestDb: "Import the test postgresql database.") {
     def file = referenceDb.exists() ? referenceDb : testDb
 
     // optionally accept database name and user name arguments
-    args = args?.tokenize("\n")
-    def username = args ? args[0] : "jbilling"
-    def database = args ? args[1] : "jbilling_test"
+    parseArguments();
+    def cleanDb = argsMap.cleanDb;
+    def username = argsMap.user ? argsMap.user : "jbilling"
+    def database = argsMap.db ? argsMap.db : "jbilling_test"
+
+    if (cleanDb) {
+        println "Dropping a database: ${database}..."
+        // call postgresl to drop database
+        exec(executable: "dropdb", failonerror: false) {
+            arg(line: "-U ${username} -e ${database}")
+        }
+        println "Done."
+
+        println "Creating a database: ${database}..."
+        // call postgresl to create database
+        exec(executable: "createdb", failonerror: true) {
+            arg(line: "-U ${username} -O ${username} -E UTF-8 -e ${database}")
+        }
+        println "Done."
+    }
 
     println "Importing file '${file.name}' into the ${database} database (user: ${username})"
-
     // call postgresl to load the database
     exec(executable: "psql", failonerror: false) {
         arg(line: "-U ${username} -f ${file.path} ${database}")

@@ -1771,6 +1771,7 @@
     <PermissionRoleMap PermissionId="14" RoleId="2"/>
     <PermissionRoleMap PermissionId="15" RoleId="2"/>
     <PermissionRoleMap PermissionId="16" RoleId="2"/>
+    <PermissionRoleMap PermissionId="17" RoleId="2"/>
     <PermissionRoleMap PermissionId="20" RoleId="2"/>
     <PermissionRoleMap PermissionId="21" RoleId="2"/>
     <PermissionRoleMap PermissionId="22" RoleId="2"/>
@@ -1823,6 +1824,7 @@
     <PermissionRoleMap PermissionId="13" RoleId="3"/>
     <PermissionRoleMap PermissionId="14" RoleId="3"/>
     <PermissionRoleMap PermissionId="15" RoleId="3"/>
+    <PermissionRoleMap PermissionId="17" RoleId="3"/>
     <PermissionRoleMap PermissionId="20" RoleId="3"/>
     <PermissionRoleMap PermissionId="21" RoleId="3"/>
     <PermissionRoleMap PermissionId="22" RoleId="3"/>
@@ -1859,10 +1861,16 @@
     <PermissionRoleMap PermissionId="96" RoleId="3"/>
     <PermissionRoleMap PermissionId="97" RoleId="3"/>
     <PermissionRoleMap PermissionId="98" RoleId="3"/>
+    <PermissionRoleMap PermissionId="15" RoleId="5"/>
+    <PermissionRoleMap PermissionId="18" RoleId="5"/>
     <PermissionRoleMap PermissionId="24" RoleId="5"/>
+    <PermissionRoleMap PermissionId="29" RoleId="5"/>
     <PermissionRoleMap PermissionId="30" RoleId="5"/>
     <PermissionRoleMap PermissionId="34" RoleId="5"/>
+    <PermissionRoleMap PermissionId="37" RoleId="5"/>
     <PermissionRoleMap PermissionId="72" RoleId="5"/>
+    <PermissionRoleMap PermissionId="75" RoleId="5"/>
+    <PermissionRoleMap PermissionId="90" RoleId="5"/>
     <PermissionRoleMap PermissionId="91" RoleId="5"/>
     <PermissionRoleMap PermissionId="92" RoleId="5"/>
     <PermissionRoleMap PermissionId="93" RoleId="5"/>

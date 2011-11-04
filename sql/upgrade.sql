@@ -1486,3 +1486,14 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 insert into permission (id, type_id) values (75, 7);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59,75,'description', 1, 'View customer sub-accounts');
 
+-- super users and clerks can view all
+insert into permission_role_map (role_id, permission_id) values (2, 17);
+insert into permission_role_map (role_id, permission_id) values (3, 17);
+
+-- customers can view sub-accounts
+insert into permission_role_map (role_id, permission_id) values (5, 90);
+insert into permission_role_map (role_id, permission_id) values (5, 15);
+insert into permission_role_map (role_id, permission_id) values (5, 18);
+insert into permission_role_map (role_id, permission_id) values (5, 29);
+insert into permission_role_map (role_id, permission_id) values (5, 37);
+insert into permission_role_map (role_id, permission_id) values (5, 75);

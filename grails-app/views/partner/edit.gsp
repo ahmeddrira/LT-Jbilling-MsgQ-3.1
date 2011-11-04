@@ -39,6 +39,22 @@
                 $(selected).show();
                 $('div.contact').not(selected).hide();
             }).change();
+
+            $('#percentageRate').blur(function() {
+                if ($(this).val() != "") {
+                    $('#referralFee').attr('disabled', 'true');
+                } else {
+                    $('#referralFee').attr('disabled', '');
+                }
+            }).blur();
+
+            $('#referralFee').blur(function() {
+                if ($(this).val() != "") {
+                    $('#percentageRate').attr('disabled', 'true');
+                } else {
+                    $('#percentageRate').attr('disabled', '');
+                }
+            }).blur();
         });
     </script>
 </head>
@@ -157,19 +173,19 @@
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.partner.balance"/></content>
                             <content tag="label.for">balance</content>
-                            <g:textField class="field" name="balance" value="${partner?.balance?:0}"/>
+                            <g:textField class="field" name="balance" value="${formatNumber(number: partner?.balance ?: 0, formatName: 'money.format')}"/>
                         </g:applyLayout>
                         
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.partner.percentageRate"/></content>
                             <content tag="label.for">percentageRate</content>
-                            <g:textField class="field" name="percentageRate" value="${partner?.percentageRate?:0}"/>
+                            <g:textField class="field" name="percentageRate" value="${formatNumber(number: partner?.percentageRate, formatName: 'money.format')}"/>
                         </g:applyLayout>
                         
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.partner.referralFee"/></content>
                             <content tag="label.for">referralFee</content>
-                            <g:textField class="field" name="referralFee" value="${partner?.referralFee?:0}"/>
+                            <g:textField class="field" name="referralFee" value="${formatNumber(number: partner?.referralFee, formatName: 'money.format')}"/>
                         </g:applyLayout>
                         
                         <g:applyLayout name="form/select">

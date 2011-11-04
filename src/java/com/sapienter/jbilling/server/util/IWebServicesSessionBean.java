@@ -120,7 +120,8 @@ public interface IWebServicesSessionBean {
         Partners
      */
 
-    public void processPartnerPayouts(Date runDate);
+    public void triggerPartnerPayoutProcess(Date runDate);
+    public void processPartnerPayout(Integer partnerId);
 
     public PartnerWS getPartner(Integer partnerId) throws SessionInternalError;
     public Integer createPartner(UserWS newUser, PartnerWS partner) throws SessionInternalError;

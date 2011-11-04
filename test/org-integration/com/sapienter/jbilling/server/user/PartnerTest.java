@@ -65,7 +65,7 @@ public class PartnerTest extends TestCase {
              *  first run
              */
             cal.set(2009, Calendar.MARCH, 15);
-            api.processPartnerPayouts(cal.getTime());
+            api.triggerPartnerPayoutProcess(cal.getTime());
 
             // partner 1
             PartnerWS partner = api.getPartner(10);
@@ -111,7 +111,7 @@ public class PartnerTest extends TestCase {
              * second run
              */
             cal.set(2009, Calendar.APRIL, 1);
-            api.processPartnerPayouts(cal.getTime());
+            api.triggerPartnerPayoutProcess(cal.getTime());
 
             // partner 1
             partner = api.getPartner(10);

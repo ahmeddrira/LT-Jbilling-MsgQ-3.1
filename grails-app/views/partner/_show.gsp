@@ -209,12 +209,38 @@
         <g:set var="payouts" value="${selected.partnerPayouts.asList().sort{ it.id }}"/>
         <g:set var="payout" value="${payouts.first()}"/>
 
+
         <div class="heading">
             <strong><g:message code="partner.detail.last.payout.title"/></strong>
         </div>
         <div class="box">
             <table class="dataTable" cellspacing="0" cellpadding="0">
                 <tbody>
+                <tr>
+                    <td>Starting</td>
+                    <td class="value"><g:formatDate date="${payout.startingDate}" formatName="date.pretty.format"/></td>
+                </tr>
+                <tr>
+                    <td>Ending</td>
+                    <td class="value"><g:formatDate date="${payout.endingDate}" formatName="date.pretty.format"/></td>
+                </tr>
+                <tr>
+                    <td>Payment Amount</td>
+                    <td class="value"><g:formatNumber number="${payout.paymentsAmount}" formatName="money.format"/></td>
+                </tr>
+                <tr>
+                    <td>Refunds Amount</td>
+                    <td class="value"><g:formatNumber number="${payout.refundsAmount}" formatName="money.format"/></td>
+                </tr>
+                <tr>
+                    <td>Remaining Balance</td>
+                    <td class="value"><g:formatNumber number="${payout.balanceLeft}" formatName="money.format"/></td>
+                </tr>
+
+                <g:if test="${payout.payment}">
+                <tr>
+                    <td colspan="2"><br/></td>
+                </tr>
                 <tr>
                     <td><g:message code="payment.date"/></td>
                     <td class="value"><g:formatDate date="${payout.payment.paymentDate ?: payout.payment.createDatetime}" formatName="date.pretty.format"/></td>
@@ -231,6 +257,7 @@
                     <td><g:message code="payment.method"/></td>
                     <td class="value">${payout.payment.paymentMethod.getDescription(session['language_id'])}</td>
                 </tr>
+                </g:if>
                 </tbody>
             </table>
         </div>

@@ -219,8 +219,12 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.create(user, order)
     }
 
-    public void processPartnerPayouts(Date runDate) {
-        webServicesSession.processPartnerPayouts(runDate)
+    void triggerPartnerPayoutProcess(Date runDate) {
+        webServicesSession.triggerPartnerPayoutProcess(runDate)
+    }
+
+    void processPartnerPayout(Integer partnerId) {
+        webServicesSession.processPartnerPayout(partnerId)
     }
 
     public PartnerWS getPartner(Integer partnerId) {

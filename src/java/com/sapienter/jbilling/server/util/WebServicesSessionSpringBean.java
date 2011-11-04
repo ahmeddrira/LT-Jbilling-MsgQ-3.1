@@ -970,9 +970,35 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return retValue;
     }
 
-    public void processPartnerPayouts(Date runDate) {
+
+    /**
+     * Processes partner payouts for all partners that have a payout due before the given run date.
+     *
+     * @param runDate date to process payouts for
+     */
+    public void triggerPartnerPayoutProcess(Date runDate) {
         IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
         userSession.processPayouts(runDate);
+    }
+
+    /**
+     * Process partner payout for a single given partner ID.
+     *
+     * @param partnerId partner id to process payouts for
+     */
+    public void processPartnerPayout(Integer partnerId) {
+        try {
+            new PartnerBL().processPayout(partnerId);
+
+        } catch (SQLException e) {
+            throw new SessionInternalError("SQL exception occurred while processing payout.", e);
+        } catch (PluggableTaskException e) {
+            throw new SessionInternalError("Required plug-in was not configured.", e);
+        } catch (TaskException e) {
+            throw new SessionInternalError("Exception occurred processing pluggable task.", e);
+        } catch (NamingException e) {
+            throw new SessionInternalError("Could not fetch bean from application context.", e);
+        }
     }
 
     public PartnerWS getPartner(Integer partnerId) throws SessionInternalError {

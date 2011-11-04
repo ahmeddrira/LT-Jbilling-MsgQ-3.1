@@ -29,6 +29,7 @@
     <div class="table-info">
         <em><strong><g:message code="partner.payout.partner.id"/> ${partner.id}</strong></em>
         <em><strong><g:message code="partner.payout.total.payouts"/> <g:formatNumber number="${partner.totalPayouts}" formatName="money.format"/></strong></em>
+        <em><strong><g:message code="partner.payout.total.refunds"/> <g:formatNumber number="${partner.totalRefunds}" formatName="money.format"/></strong></em>
         <em><strong><g:message code="partner.payout.next.payout.date"/> <g:formatDate date="${partner.nextPayoutDate}" formatName="date.pretty.format"/></strong></em>
     </div>
 
@@ -47,6 +48,10 @@
             </thead>
             <tbody>
 
+            <g:set var="totalPayments" value="${BigDecimal.ZERO}"/>
+            <g:set var="totalRefunds" value="${BigDecimal.ZERO}"/>
+            <g:set var="totalBalance" value="${BigDecimal.ZERO}"/>
+
             <g:each var="payout" status="i" in="${partner.partnerPayouts}">
                 <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
                     <td class="col02">
@@ -57,20 +62,23 @@
                     </td>
                     <td>
                         <g:formatNumber number="${payout.paymentsAmount}" formatName="money.format"/>
+                        <g:set var="totalPayments" value="${totalPayments.add(payout.paymentsAmount)}"/>
                     </td>
                     <td>
                         <g:formatNumber number="${payout.refundsAmount}" formatName="money.format"/>
+                        <g:set var="totalRefunds" value="${totalRefunds.add(payout.refundsAmount)}"/>
                     </td>
                     <td>
                         <g:formatNumber number="${payout.balanceLeft}" formatName="money.format"/>
+                        <g:set var="totalBalance" value="${totalBalance.add(payout.balanceLeft)}"/>
                     </td>
                     <td>
                         <div>
                             <span class="small">
-                                <g:formatNumber number="${payout.payment.amount}" type="currency" currencySymbol="${payout.payment.currency.symbol}"/>
+                                <g:formatNumber number="${payout.payment?.amount ?: BigDecimal.ZERO}" type="currency" currencySymbol="${payout.payment?.currency?.symbol}"/>
                             </span>
                             <span class="small">
-                                ${payout.payment.paymentMethod.getDescription(session['language_id'])}
+                                ${payout.payment?.paymentMethod?.getDescription(session['language_id'])}
                             </span>
                         </div>
 
@@ -82,9 +90,9 @@
             <tr class="bg">
                 <td class="col02"></td>
                 <td></td>
-                <td><g:formatNumber number="${partner.totalPayments}" formatName="money.format"/></td>
-                <td><g:formatNumber number="${partner.totalPayouts}" formatName="money.format"/></td>
-                <td><g:formatNumber number="${partner.balance}" formatName="money.format"/></td>
+                <td><g:formatNumber number="${totalPayments}" formatName="money.format"/></td>
+                <td><g:formatNumber number="${totalRefunds}" formatName="money.format"/></td>
+                <td><g:formatNumber number="${totalBalance}" formatName="money.format"/></td>
                 <td></td>
             </tbody>
         </table>

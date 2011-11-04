@@ -25,8 +25,11 @@ import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.InternationalDescriptionWS;
 import com.sapienter.jbilling.server.util.csv.Exportable;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
+import org.apache.commons.collections.FactoryUtils;
+import org.apache.commons.collections.ListUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
@@ -53,14 +56,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 @Entity
 @TableGenerator(
@@ -99,6 +95,8 @@ public class ItemDTO extends AbstractDescription implements Exportable {
     private Integer currencyId = null;
     private BigDecimal price = null;
     private Integer orderLineTypeId = null;
+    private List<InternationalDescriptionWS> descriptions = ListUtils.lazyList(new ArrayList<InternationalDescriptionWS>(), FactoryUtils.instantiateFactory(InternationalDescriptionWS.class));
+
 
     public ItemDTO() {
     }
@@ -465,6 +463,16 @@ public class ItemDTO extends AbstractDescription implements Exportable {
         this.price = price;
     }
 
+    @Transient
+    public List<InternationalDescriptionWS> getDescriptions() {
+        return descriptions;
+    }
+
+    @Transient
+    public void setDescriptions(List<InternationalDescriptionWS> descriptions) {
+        this.descriptions = descriptions;
+    }
+
     @Override
     public String toString() {
         return "ItemDTO: id=" + getId();
@@ -510,6 +518,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
             }
         };
     }
+    
 }
 
 

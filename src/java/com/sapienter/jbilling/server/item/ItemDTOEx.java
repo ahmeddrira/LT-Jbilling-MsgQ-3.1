@@ -23,6 +23,11 @@ package com.sapienter.jbilling.server.item;
 import com.sapienter.jbilling.server.item.validator.ItemTypes;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.security.WSSecured;
+import com.sapienter.jbilling.server.util.InternationalDescriptionWS;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import org.apache.commons.collections.FactoryUtils;
+import org.apache.commons.collections.ListUtils;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -51,12 +56,11 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer[] excludedTypes = null;
     private Integer hasDecimals;
     private Integer deleted;
+    
     private Integer entityId;
     private SortedMap<Date, PriceModelWS> defaultPrices = new TreeMap<Date, PriceModelWS>();
     private PriceModelWS defaultPrice;
 
-    // *** ItemDTOEx ***
-    @NotNull @Size (min=1,max=100, message="validation.error.size,1,100")
     private String description = null;
     @ItemTypes
     private Integer[] types = null;
@@ -65,11 +69,14 @@ public class ItemDTOEx implements WSSecured, Serializable {
     @Digits(integer=30, fraction=10, message="validation.error.not.a.number")
     private String price = null;
     private Integer orderLineTypeId = null;
+    @NotEmpty(message = "validation.error.notnull")
+    private List<InternationalDescriptionWS> descriptions = ListUtils.lazyList(new ArrayList<InternationalDescriptionWS>(), FactoryUtils.instantiateFactory(InternationalDescriptionWS.class));
+
 
     public ItemDTOEx() {
     }
 
-    public ItemDTOEx(Integer id,String number, String glCode, Integer entity, String description, 
+    public ItemDTOEx(Integer id,String number, String glCode, Integer entity, String description,
                      Integer deleted, Integer currencyId, BigDecimal price, BigDecimal percentage,
                      Integer orderLineTypeId, Integer hasDecimals) {
 
@@ -178,19 +185,37 @@ public class ItemDTOEx implements WSSecured, Serializable {
     }
 
     /**
-     * Returns the description.
+     * Returns an english description.
+     * 
      * @return String
      */
     public String getDescription() {
-        return description;
+        for (InternationalDescriptionWS description : descriptions) {
+            if (description.getLanguageId() == LanguageDTO.ENGLISH_LANGUAGE_ID) {
+                return description.getContent();
+            }
+        }
+        return "";
     }
 
     /**
-     * Sets the description.
-     * @param description The description to set
+     * Sets the a description in english.
+     * 
+     * @param newDescription
+     *            The description to set
      */
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescription(String newDescription) {
+        for (InternationalDescriptionWS description : descriptions) {
+            if (description.getLanguageId() == LanguageDTO.ENGLISH_LANGUAGE_ID) {
+                description.setContent(newDescription);
+                return;
+            }
+        }
+        InternationalDescriptionWS newDescriptionWS = new InternationalDescriptionWS();
+        newDescriptionWS.setContent(newDescription);
+        newDescriptionWS.setPsudoColumn("description");
+        newDescriptionWS.setLanguageId(LanguageDTO.ENGLISH_LANGUAGE_ID);
+        descriptions.add(newDescriptionWS);
     }
 
     public Integer[] getTypes() {
@@ -270,6 +295,14 @@ public class ItemDTOEx implements WSSecured, Serializable {
 
     public Integer getOwningEntityId() {
         return getEntityId();
+    }
+
+    public List<InternationalDescriptionWS> getDescriptions() {
+        return descriptions;
+    }
+
+    public void setDescriptions(List<InternationalDescriptionWS> descriptions) {
+        this.descriptions = descriptions;
     }
 
     /**

@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.util.db;
 
 import java.io.Serializable;
 
+import com.sapienter.jbilling.server.util.Constants;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -138,5 +139,14 @@ public abstract class AbstractDescription implements Serializable {
         InternationalDescriptionDTO desc = new InternationalDescriptionDTO(id, content);
 
         new DescriptionDAS().save(desc);
+    }
+
+    public void deleteDescription(int languageId) {
+        JbillingTableDAS tableDas = Context.getBean(Context.Name.JBILLING_TABLE_DAS);
+        JbillingTable table = tableDas.findByName(Constants.TABLE_ITEM);
+
+        InternationalDescriptionDAS descriptionDas = (InternationalDescriptionDAS) Context
+                .getBean(Context.Name.DESCRIPTION_DAS);
+        descriptionDas.delete(table.getId(), getId(), "description", languageId);
     }
 }

@@ -25,6 +25,34 @@
 package com.sapienter.jbilling.server.util;
 
 
+import grails.plugins.springsecurity.SpringSecurityService;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.naming.NamingException;
+import javax.sql.rowset.CachedRowSet;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.sapienter.jbilling.client.authentication.CompanyUserDetails;
 import com.sapienter.jbilling.common.InvalidArgumentException;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -152,40 +180,18 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
-import com.sapienter.jbilling.server.user.partner.db.PartnerDAS;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
+import com.sapienter.jbilling.server.util.db.JbillingTable;
+import com.sapienter.jbilling.server.util.db.JbillingTableDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
-import grails.plugins.springsecurity.SpringSecurityService;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.naming.NamingException;
-import javax.sql.rowset.CachedRowSet;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -1895,7 +1901,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public ItemDTOEx[] getAllItems() throws SessionInternalError {
         Integer entityId = getCallerCompanyId();
         ItemBL itemBL = new ItemBL();
-        return itemBL.getAllItems(entityId);
+        ItemDTOEx[] items = itemBL.getAllItems(entityId);
+        for (ItemDTOEx item : items) {
+            item.setDescriptions(getAllItemDescriptions(item.getId()));
+        }
+        return items;
     }
 
     /**
@@ -2008,7 +2018,25 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                               : caller.getCurrencyId());
 
         ItemDTOEx retValue = helper.getWS(helper.getDTO(languageId, userId, entityId, currencyId));
+        // get descriptions
+        retValue.setDescriptions(getAllItemDescriptions(retValue.getId()));
         return retValue;
+    }
+
+    private List<InternationalDescriptionWS> getAllItemDescriptions(int itemId) {
+        JbillingTableDAS tableDas = Context.getBean(Context.Name.JBILLING_TABLE_DAS);
+        JbillingTable table = tableDas.findByName(Constants.TABLE_ITEM);
+
+        InternationalDescriptionDAS descriptionDas = (InternationalDescriptionDAS) Context
+                .getBean(Context.Name.DESCRIPTION_DAS);
+        Collection<InternationalDescriptionDTO> descriptionsDTO = descriptionDas.findAll(table.getId(), itemId,
+                "description");
+
+        List<InternationalDescriptionWS> descriptionsWS = new ArrayList<InternationalDescriptionWS>();
+        for (InternationalDescriptionDTO descriptionDTO : descriptionsDTO) {
+            descriptionsWS.add(new InternationalDescriptionWS(descriptionDTO));
+        }
+        return descriptionsWS;
     }
 
     public Integer createItemCategory(ItemTypeWS itemType)

@@ -50,10 +50,10 @@
     <div class="heading">
         <strong>
             <g:if test="${isNew}">
-                New Partner
+                <g:message code="partner.create.title"/>
             </g:if>
             <g:else>
-                Edit Partner
+                <g:message code="partner.edit.title"/>
             </g:else>
         </strong>
     </div>

@@ -1429,7 +1429,6 @@
     <InternationalDescription TableId="59" ForeignId="102" PsudoColumn="description" LanguageId="1" Content="Edit partner"/>
     <InternationalDescription TableId="59" ForeignId="103" PsudoColumn="description" LanguageId="1" Content="Delete partner"/>
     <InternationalDescription TableId="59" ForeignId="104" PsudoColumn="description" LanguageId="1" Content="View partner details"/>
-    <InternationalDescription TableId="59" ForeignId="105" PsudoColumn="description" LanguageId="1" Content="Download partner csv"/>
     <InternationalDescription TableId="59" ForeignId="110" PsudoColumn="description" LanguageId="1" Content="Switch to sub-account"/>
     <InternationalDescription TableId="59" ForeignId="111" PsudoColumn="description" LanguageId="1" Content="Switch to any user"/>
     <InternationalDescription TableId="59" ForeignId="120" PsudoColumn="description" LanguageId="1" Content="Web Service API access"/>
@@ -1761,7 +1760,6 @@
     <Permission Id="102" TypeId="10"/>
     <Permission Id="103" TypeId="10"/>
     <Permission Id="104" TypeId="10"/>
-    <Permission Id="105" TypeId="10"/>
     <Permission Id="110" TypeId="11"/>
     <Permission Id="111" TypeId="11"/>
     <Permission Id="120" TypeId="12"/>
@@ -1822,7 +1820,6 @@
     <PermissionRoleMap PermissionId="102" RoleId="2"/>
     <PermissionRoleMap PermissionId="103" RoleId="2"/>
     <PermissionRoleMap PermissionId="104" RoleId="2"/>
-    <PermissionRoleMap PermissionId="105" RoleId="2"/>
     <PermissionRoleMap PermissionId="111" RoleId="2"/>
     <PermissionRoleMap PermissionId="120" RoleId="2"/>
 
@@ -1873,7 +1870,6 @@
     <PermissionRoleMap PermissionId="102" RoleId="3"/>
     <PermissionRoleMap PermissionId="103" RoleId="3"/>
     <PermissionRoleMap PermissionId="104" RoleId="3"/>
-    <PermissionRoleMap PermissionId="105" RoleId="3"/>
 
     <PermissionRoleMap PermissionId="15" RoleId="4"/>
     <PermissionRoleMap PermissionId="10" RoleId="4"/>

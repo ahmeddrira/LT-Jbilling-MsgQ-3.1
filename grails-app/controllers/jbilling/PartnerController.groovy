@@ -43,6 +43,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO
 import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import com.sapienter.jbilling.server.user.partner.PartnerBL
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 @Secured(["MENU_100"])
 class PartnerController {
@@ -116,6 +117,7 @@ class PartnerController {
         render view: 'list', model: [ partners: partners, selected: selected, contact: contact, filters:filters]
     }
 
+    @Secured(["PARTNER_104"])
     def show = {
         def partner = Partner.get(params.int('id'))
         def contact = partner ? ContactDTO.findByUserId(partner?.baseUser.id) : null
@@ -130,6 +132,7 @@ class PartnerController {
         [ partner : partner ]
     }
 
+    @Secured(["hasAnyRole('PARTNER_101', 'PARTNER_102')"])
     def edit = {
         def user
         def partner
@@ -156,6 +159,7 @@ class PartnerController {
     /**
      * Validate and Save the Partner User
      */
+    @Secured(["hasAnyRole('PARTNER_101', 'PARTNER_102')"])
     def save = {
         def partner = new PartnerWS()
         def user = new UserWS()
@@ -177,22 +181,33 @@ class PartnerController {
         try {
             // save or update
             if (!oldUser) {
-                log.debug("creating partner ${user}")
+                if (SpringSecurityUtils.ifAllGranted("PARTNER_101")) {
+                    log.debug("creating partner ${user}")
 
-                partner.id = webServicesSession.createPartner(user, partner)
-                
-                flash.message = 'partner.created'
-                flash.args = [user.userId]
+                    partner.id = webServicesSession.createPartner(user, partner)
+
+                    flash.message = 'partner.created'
+                    flash.args = [user.userId]
+
+                } else {
+                    render view: '/login/denied'
+                    return
+                }
 
             } else {
-                
-                partner.setUserId(user.getUserId())
-            
-                log.debug("saving changes to partner ${user.userId} & ${user.customerId}")
-                webServicesSession.updatePartner(user, partner)
-                
-                flash.message = 'partner.updated'
-                flash.args = [user.userId]
+                if (SpringSecurityUtils.ifAllGranted("PARTNER_102")) {
+                    log.debug("saving changes to partner ${user.userId} & ${user.customerId}")
+
+                    partner.setUserId(user.getUserId())
+                    webServicesSession.updatePartner(user, partner)
+
+                    flash.message = 'partner.updated'
+                    flash.args = [user.userId]
+
+                } else {
+                    render view: '/login/denied'
+                    return
+                }
             }
 
             // save secondary contacts
@@ -211,6 +226,7 @@ class PartnerController {
         chain action: 'list', params: [ id: partner.id ]
     }
 
+    @Secured(["PARTNER_103"])
     def delete = {
         if (params.id) {
             webServicesSession.deletePartner(params.int('id'))

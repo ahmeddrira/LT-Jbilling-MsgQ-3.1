@@ -1494,16 +1494,12 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 insert into permission (id, type_id) values (104, 10);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 104, 'description', 1, 'View partner details');
 
-insert into permission (id, type_id) values (105, 10);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 105, 'description', 1, 'Download partner CSV');
-
 -- permissions for super users
 insert into permission_role_map (role_id, permission_id) values (2, 100);
 insert into permission_role_map (role_id, permission_id) values (2, 101);
 insert into permission_role_map (role_id, permission_id) values (2, 102);
 insert into permission_role_map (role_id, permission_id) values (2, 103);
 insert into permission_role_map (role_id, permission_id) values (2, 104);
-insert into permission_role_map (role_id, permission_id) values (2, 105);
 
 -- permissions for clerks
 insert into permission_role_map (role_id, permission_id) values (3, 100);
@@ -1511,7 +1507,6 @@ insert into permission_role_map (role_id, permission_id) values (3, 101);
 insert into permission_role_map (role_id, permission_id) values (3, 102);
 insert into permission_role_map (role_id, permission_id) values (3, 103);
 insert into permission_role_map (role_id, permission_id) values (3, 104);
-insert into permission_role_map (role_id, permission_id) values (3, 105);
 
 -- new role and basic permissions for partners
 insert into role values (4);

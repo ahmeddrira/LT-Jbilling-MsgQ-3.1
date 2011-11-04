@@ -181,18 +181,22 @@
                     <g:formatDate date="${selected?.nextPayoutDate}"/>
                 </td>
             </tr>
+            <g:if test="${selected?.percentageRate}">
             <tr>
                 <td><g:message code="partner.detail.rate"/></td>
                 <td class="value">
-                    <g:formatNumber number="${selected?.percentageRate}" formatName="money.format"/>
+                    <g:formatNumber number="${selected.percentageRate}" formatName="percentage.format"/>
                 </td>
             </tr>
+            </g:if>
+            <g:if test="${selected?.referralFee}">
             <tr>
                 <td><g:message code="partner.detail.ref.fee"/></td>
                 <td class="value">
-                    <g:formatNumber number="${selected?.referralFee}" formatName="money.format"/>
+                    <g:formatNumber number="${selected.referralFee}" type="currency" currencySymbol="${selected.feeCurrency.symbol}"/>
                 </td>
             </tr>
+            </g:if>
             <tr>
                 <td><g:message code="partner.detail.amount.due"/></td>
                 <td class="value">
@@ -217,23 +221,23 @@
             <table class="dataTable" cellspacing="0" cellpadding="0">
                 <tbody>
                 <tr>
-                    <td>Starting</td>
+                    <td><g:message code="partner.payout.starting"/></td>
                     <td class="value"><g:formatDate date="${payout.startingDate}" formatName="date.pretty.format"/></td>
                 </tr>
                 <tr>
-                    <td>Ending</td>
+                    <td><g:message code="partner.payout.ending"/></td>
                     <td class="value"><g:formatDate date="${payout.endingDate}" formatName="date.pretty.format"/></td>
                 </tr>
                 <tr>
-                    <td>Payment Amount</td>
+                    <td><g:message code="partner.payout.payments.amount"/></td>
                     <td class="value"><g:formatNumber number="${payout.paymentsAmount}" formatName="money.format"/></td>
                 </tr>
                 <tr>
-                    <td>Refunds Amount</td>
+                    <td><g:message code="partner.payout.refunds.amount"/></td>
                     <td class="value"><g:formatNumber number="${payout.refundsAmount}" formatName="money.format"/></td>
                 </tr>
                 <tr>
-                    <td>Remaining Balance</td>
+                    <td><g:message code="partner.payout.balance.left"/></td>
                     <td class="value"><g:formatNumber number="${payout.balanceLeft}" formatName="money.format"/></td>
                 </tr>
 

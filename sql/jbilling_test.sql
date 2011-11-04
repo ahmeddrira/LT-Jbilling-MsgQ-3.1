@@ -11501,7 +11501,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	100	description	1	Show partner menu
 59	103	description	1	Delete partner
 59	104	description	1	View partner details
-59	105	description	1	Download partner CSV
 \.
 
 
@@ -14405,7 +14404,6 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 102	10	\N
 103	10	\N
 104	10	\N
-105	10	\N
 \.
 
 
@@ -14543,13 +14541,11 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 102	2
 103	2
 104	2
-105	2
 100	3
 101	3
 102	3
 103	3
 104	3
-105	3
 15	4
 10	4
 11	4

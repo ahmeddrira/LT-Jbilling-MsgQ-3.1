@@ -89,12 +89,28 @@ public class SpringAPI implements JbillingAPI {
         return session.validateCreditCard(creditCard, contact, level);
     }
 
-    public void processPartnerPayouts(Date runDate) {
-        session.processPartnerPayouts(runDate);
+    public void triggerPartnerPayoutProcess(Date runDate) {
+        session.triggerPartnerPayoutProcess(runDate);
+    }
+
+    public void processPartnerPayout(Integer partnerId) {
+        session.processPartnerPayout(partnerId);
     }
 
     public PartnerWS getPartner(Integer partnerId) {
         return session.getPartner(partnerId);
+    }
+    
+    public Integer createPartner(UserWS newUser, PartnerWS partner) {
+        return session.createPartner(newUser, partner);
+    }
+    
+    public void updatePartner(UserWS newUser, PartnerWS partner) {
+        session.updatePartner(newUser, partner);
+    }
+    
+    public void deletePartner (Integer partnerId){
+        session.deletePartner(partnerId);
     }
 
     public CreateResponseWS create(UserWS user, OrderWS order) {

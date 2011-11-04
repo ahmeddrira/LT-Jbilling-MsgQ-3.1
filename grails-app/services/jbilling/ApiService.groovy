@@ -25,39 +25,40 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO
 import com.sapienter.jbilling.server.invoice.InvoiceWS
 import com.sapienter.jbilling.server.item.ItemDTOEx
 import com.sapienter.jbilling.server.item.ItemTypeWS
+import com.sapienter.jbilling.server.item.PlanItemWS
+import com.sapienter.jbilling.server.item.PlanWS
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS
 import com.sapienter.jbilling.server.mediation.MediationProcessWS
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS
 import com.sapienter.jbilling.server.mediation.MediationRecordWS
+import com.sapienter.jbilling.server.mediation.RecordCountWS
+import com.sapienter.jbilling.server.notification.MessageDTO
 import com.sapienter.jbilling.server.order.OrderLineWS
+import com.sapienter.jbilling.server.order.OrderPeriodWS
+import com.sapienter.jbilling.server.order.OrderProcessWS
 import com.sapienter.jbilling.server.order.OrderWS
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx
 import com.sapienter.jbilling.server.payment.PaymentWS
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS 
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS
+import com.sapienter.jbilling.server.process.AgeingWS
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS
 import com.sapienter.jbilling.server.process.BillingProcessWS
+import com.sapienter.jbilling.server.process.ProcessStatusWS
+import com.sapienter.jbilling.server.user.CardValidationWS
+import com.sapienter.jbilling.server.user.CompanyWS
+import com.sapienter.jbilling.server.user.ContactTypeWS
 import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.server.user.CreateResponseWS
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS
-import com.sapienter.jbilling.server.user.partner.PartnerWS
-import com.sapienter.jbilling.server.util.IWebServicesSessionBean
-import com.sapienter.jbilling.server.mediation.RecordCountWS
-import com.sapienter.jbilling.server.notification.MessageDTO;
-import com.sapienter.jbilling.server.util.PreferenceWS
-import com.sapienter.jbilling.server.order.OrderProcessWS
-import com.sapienter.jbilling.server.user.ContactTypeWS;
-import com.sapienter.jbilling.server.item.PlanWS
-import com.sapienter.jbilling.server.item.PlanItemWS;
-import com.sapienter.jbilling.server.process.AgeingWS;
-import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
-import com.sapienter.jbilling.server.order.OrderPeriodWS
-import com.sapienter.jbilling.server.util.CurrencyWS;
-import com.sapienter.jbilling.server.user.CompanyWS
+import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS
 import com.sapienter.jbilling.server.user.contact.ContactFieldWS
-import com.sapienter.jbilling.server.user.CardValidationWS
-import com.sapienter.jbilling.server.process.ProcessStatusWS;
+import com.sapienter.jbilling.server.user.partner.PartnerWS
+import com.sapienter.jbilling.server.util.CurrencyWS
+import com.sapienter.jbilling.server.util.IWebServicesSessionBean
+import com.sapienter.jbilling.server.util.PreferenceWS
+
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
  * the WebServicesSessionBean just like the core JbillingAPI.
@@ -218,12 +219,28 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.create(user, order)
     }
 
-    public void processPartnerPayouts(Date runDate) {
-        webServicesSession.processPartnerPayouts(runDate)
+    void triggerPartnerPayoutProcess(Date runDate) {
+        webServicesSession.triggerPartnerPayoutProcess(runDate)
+    }
+
+    void processPartnerPayout(Integer partnerId) {
+        webServicesSession.processPartnerPayout(partnerId)
     }
 
     public PartnerWS getPartner(Integer partnerId) {
         return webServicesSession.getPartner(partnerId)
+    }
+
+    public Integer createPartner(UserWS newUser, PartnerWS partner) {
+        return webServicesSession.createPartner(newUser, partner)
+    }
+    
+    public void updatePartner(UserWS newUser, PartnerWS partner) {
+        webServicesSession.updatePartner(newUser, partner)
+    }
+    
+    public void deletePartner (Integer partnerId){
+        webServicesSession.deletePartner(partnerId);
     }
 
     public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order) {
@@ -670,7 +687,7 @@ class ApiService implements IWebServicesSessionBean {
     }
     
     public void updateCompany(CompanyWS companyWS) {
-        webServicesSession.saveCompany(companyWS);
+        webServicesSession.updateCompany(companyWS);
     }
     
     /*

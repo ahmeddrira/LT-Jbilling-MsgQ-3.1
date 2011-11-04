@@ -1291,9 +1291,25 @@ alter table price_model alter column strategy_type type varchar(40); -- postgres
 insert into pluggable_task_type values (90, 7, 'com.sapienter.jbilling.server.notification.task.TestNotificationTask',0);
 
 
+-- Date: 27-Jul-2011
+-- Redmine Issue: #1108
+-- Description: Subscriber Management - Manage Tax Rates
+
+-- insert new tax plugin to the database
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (90, 4, 'com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask', 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Country Tax Invoice Composition Task');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply tax item to the Invoice if the Partner's country code is matching.');
+
+-- insert new payment term penalty plugin
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (91, 4, 'com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask', 2);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Payment Terms Penalty Task');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply a Penalty to an Invoice having a due date beyond a configurable days period.');
+
+
 -- Date: 28-Jul-2011
 -- Description: user names can not be less than 5 characters. jB1 and 2 allows for a length of 4 chars
 update base_user set user_name = user_name || '1' where id in ( select id from base_user where length(user_name) < 5); -- postgresql
+
 
 -- Date: 29-Jul-2011
 -- Redmine Issue: #1208
@@ -1305,20 +1321,6 @@ alter table customer alter column use_parent_pricing set not null;
 -- remove obsolete TieredPriceModelPricingTask plug-in, functionality moved into PriceModelPricingTask
 update pluggable_task set type_id = 79 where type_id = 80;
 delete from pluggable_task_type where id = 80;
-
--- Date: 27-Jul-2011
--- Redmine Issue: #1108
--- Description: Subscriber Management - Manage Tax Rates
-
--- insert new tax plugin to the database
-insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (90, 4, 'com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask', 2);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) valCues (24,  90, 'title',1, 'Country Tax Invoice Composition Task');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply tax item to the Invoice if the Partner''s country code is matching.');
-
--- insert new payment term penalty plugin
-insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (91, 4, 'com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask', 2);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Payment Terms Penalty Task');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply a Penalty to an Invoice having a due date beyond a configurable days period.');
 
 
 -- Date: 08-Aug-2011
@@ -1363,11 +1365,13 @@ CREATE TABLE enumeration_values (
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
+
 -- Date: 11-Aug-2011
 -- Redmine Issue: #1234
 -- Description: CCF Display In View
 ALTER TABLE contact_field_type add column display_in_view smallint default 0;
 ALTER TABLE contact_field_type ALTER COLUMN data_type TYPE VARCHAR(50);
+
 
 -- Date: 14-Aug-2011
 -- Description: Add Simple Tax plug-in to DB
@@ -1376,6 +1380,7 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 (90, 4, 'com.sapienter.jbilling.server.process.task.SimpleTaxCompositionTask', 4);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Simple Tax Invoice Composition Task');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task to automatically add taxes to invoices, with the option of exluding some customers and some items (excemptions).');
+
 
 -- Date: 15-Aug-2011
 -- Redmine Issue: #1212
@@ -1497,3 +1502,66 @@ insert into permission_role_map (role_id, permission_id) values (5, 18);
 insert into permission_role_map (role_id, permission_id) values (5, 29);
 insert into permission_role_map (role_id, permission_id) values (5, 37);
 insert into permission_role_map (role_id, permission_id) values (5, 75);
+
+
+-- Date 21-Oct-2011
+-- Redmine Issue: #1445
+-- Description: Enabling Partner user
+insert into permission (id, type_id) values (100, 9);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 100, 'description', 1, 'Show partner menu');
+
+-- move api permissions to 12 to fit with the api access permission
+insert into permission_type (id, description) values (12, 'API');
+update permission set type_id = 12 where type_id = 10;
+delete from permission_type where id = 10;
+
+-- use permission type 10 for partners now that its free
+insert into permission_type (id, description) values (10, 'Partner');
+
+insert into permission (id, type_id) values (101, 10);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 101, 'description', 1, 'Create partner');
+
+insert into permission (id, type_id) values (102, 10);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 102, 'description', 1, 'Edit partner');
+
+insert into permission (id, type_id) values (103, 10);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 103, 'description', 1, 'Delete partner');
+
+insert into permission (id, type_id) values (104, 10);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 104, 'description', 1, 'View partner details');
+
+-- permissions for super users
+insert into permission_role_map (role_id, permission_id) values (2, 100);
+insert into permission_role_map (role_id, permission_id) values (2, 101);
+insert into permission_role_map (role_id, permission_id) values (2, 102);
+insert into permission_role_map (role_id, permission_id) values (2, 103);
+insert into permission_role_map (role_id, permission_id) values (2, 104);
+
+-- permissions for clerks
+insert into permission_role_map (role_id, permission_id) values (3, 100);
+insert into permission_role_map (role_id, permission_id) values (3, 101);
+insert into permission_role_map (role_id, permission_id) values (3, 102);
+insert into permission_role_map (role_id, permission_id) values (3, 103);
+insert into permission_role_map (role_id, permission_id) values (3, 104);
+
+-- new role and basic permissions for partners
+insert into role values (4);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (60, 4, 'title', 1, 'Partner');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (60, 4, 'description', 1, 'A partner that will bring customers');
+
+insert into permission_role_map (role_id, permission_id) values (4, 15); -- view customers
+insert into permission_role_map (role_id, permission_id) values (4, 10); -- create customer
+insert into permission_role_map (role_id, permission_id) values (4, 11); -- edit customer
+insert into permission_role_map (role_id, permission_id) values (4, 24); -- view orders
+insert into permission_role_map (role_id, permission_id) values (4, 28); -- view all customer orders
+insert into permission_role_map (role_id, permission_id) values (4, 20); -- create orders
+insert into permission_role_map (role_id, permission_id) values (4, 21); -- edit orders
+insert into permission_role_map (role_id, permission_id) values (4, 34); -- view payments
+insert into permission_role_map (role_id, permission_id) values (4, 36); -- view all customer payments
+insert into permission_role_map (role_id, permission_id) values (4, 30); -- create payment
+insert into permission_role_map (role_id, permission_id) values (4, 72); -- view invoices
+insert into permission_role_map (role_id, permission_id) values (4, 74); -- view all customer invoices
+insert into permission_role_map (role_id, permission_id) values (4, 90); -- customers menu
+insert into permission_role_map (role_id, permission_id) values (4, 91); -- invoices menu
+insert into permission_role_map (role_id, permission_id) values (4, 92); -- order menu
+insert into permission_role_map (role_id, permission_id) values (4, 93); -- payments menu

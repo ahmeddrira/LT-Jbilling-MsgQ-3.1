@@ -54,6 +54,7 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.PartnerRangeComparator;
 import com.sapienter.jbilling.server.user.PartnerSQL;
+import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
@@ -132,6 +133,10 @@ public class PartnerBL extends ResultList implements PartnerSQL {
     }
     
     public void update(Integer executorId, Partner dto) {
+        dto.getBaseUser();
+        dto.getBaseUser().getId();
+        partner.getId();
+        dto.getRelatedClerkUserId();
         eLogger.audit(executorId, dto.getBaseUser().getId(), 
                 Constants.TABLE_PARTNER, partner.getId(),
                 EventLogger.MODULE_USER_MAINTENANCE, 
@@ -652,6 +657,34 @@ public class PartnerBL extends ResultList implements PartnerSQL {
             range.setReferralFee(ranges[f].getReferralFee());
             partnerRange = new PartnerRangeDAS().save(range);
             partner.getRanges().add(partnerRange);
+        }
+    }
+    
+    /**
+     * Deletes the composed Partner object from the system 
+     * by first deleting the associated user and then deleting the Partner record.
+     * @param executorId
+     * @throws SessionInternalError
+     */
+    public void delete(Integer executorId) throws SessionInternalError {
+        if (partner == null) {
+            throw new SessionInternalError("The partner has to be set before delete");
+        }
+        
+        Integer userId= partner.getBaseUser().getId();
+        Integer partnerId=partner.getId();
+        
+        UserBL userBl= new UserBL(userId);
+        userBl.getEntity().setPartner(null);
+        partner.setBaseUser(null);
+        
+        userBl.delete(executorId);
+        partnerDAS.delete(partner);
+        
+        if (executorId != null) {
+            eLogger.audit(executorId, userId, Constants.TABLE_BASE_USER,
+                    partnerId, EventLogger.MODULE_USER_MAINTENANCE,
+                    EventLogger.ROW_DELETED, null, null, null);
         }
     }
 

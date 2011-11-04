@@ -20,13 +20,6 @@
 
 package com.sapienter.jbilling.server.util;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.jws.WebService;
-
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -41,6 +34,7 @@ import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.RecordCountWS;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.order.OrderPeriodWS;
 import com.sapienter.jbilling.server.order.OrderProcessWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -51,17 +45,21 @@ import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
 import com.sapienter.jbilling.server.process.ProcessStatusWS;
 import com.sapienter.jbilling.server.user.CardValidationWS;
+import com.sapienter.jbilling.server.user.CompanyWS;
 import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
-import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
-import com.sapienter.jbilling.server.order.OrderPeriodWS;
-import com.sapienter.jbilling.server.user.CompanyWS;
+
+import javax.jws.WebService;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Web service bean interface. 
@@ -112,13 +110,23 @@ public interface IWebServicesSessionBean {
 
     public void saveCustomContactField(ContactFieldTypeWS ws) throws SessionInternalError;
 
-    public void processPartnerPayouts(Date runDate);
-    public PartnerWS getPartner(Integer partnerId) throws SessionInternalError;
-
     public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) throws SessionInternalError;
     public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id) throws SessionInternalError;
 
     public CreateResponseWS create(UserWS user, OrderWS order) throws SessionInternalError;
+
+
+    /*
+        Partners
+     */
+
+    public void triggerPartnerPayoutProcess(Date runDate);
+    public void processPartnerPayout(Integer partnerId);
+
+    public PartnerWS getPartner(Integer partnerId) throws SessionInternalError;
+    public Integer createPartner(UserWS newUser, PartnerWS partner) throws SessionInternalError;
+    public void updatePartner(UserWS newUser, PartnerWS partner) throws SessionInternalError;
+    public void deletePartner (Integer partnerId) throws SessionInternalError;
 
 
     /*

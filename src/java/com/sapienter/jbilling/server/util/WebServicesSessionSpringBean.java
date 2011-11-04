@@ -25,55 +25,6 @@
 package com.sapienter.jbilling.server.util;
 
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.sapienter.jbilling.server.item.CurrencyBL;
-import com.sapienter.jbilling.server.item.PlanBL;
-import com.sapienter.jbilling.server.item.PlanItemBL;
-import com.sapienter.jbilling.server.item.PlanItemWS;
-import com.sapienter.jbilling.server.item.PlanWS;
-import com.sapienter.jbilling.server.item.db.PlanDTO;
-import com.sapienter.jbilling.server.item.db.PlanItemDTO;
-import com.sapienter.jbilling.server.mediation.db.*;
-import com.sapienter.jbilling.server.order.OrderHelper;
-import com.sapienter.jbilling.server.order.TimePeriod;
-import com.sapienter.jbilling.server.process.ProcessStatusWS;
-import com.sapienter.jbilling.server.user.CardValidationWS;
-import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
-import com.sapienter.jbilling.server.user.ContactTypeWS;
-import com.sapienter.jbilling.server.user.CustomerPriceBL;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
-import com.sapienter.jbilling.server.user.db.CompanyDAS;
-import com.sapienter.jbilling.server.user.db.CustomerPriceDTO;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
-import com.sapienter.jbilling.server.util.db.LanguageDAS;
-import com.sapienter.jbilling.server.util.db.LanguageDTO;
-import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
-import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
-import net.sf.jasperreports.charts.util.TimePeriodDatasetLabelGenerator;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.sql.rowset.CachedRowSet;
-
 import com.sapienter.jbilling.client.authentication.CompanyUserDetails;
 import com.sapienter.jbilling.common.InvalidArgumentException;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -82,14 +33,21 @@ import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeBL;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
+import com.sapienter.jbilling.server.item.PlanBL;
+import com.sapienter.jbilling.server.item.PlanItemBL;
+import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
+import com.sapienter.jbilling.server.item.db.PlanDTO;
+import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationBL;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
@@ -99,6 +57,15 @@ import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.mediation.RecordCountWS;
+import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
+import com.sapienter.jbilling.server.mediation.db.MediationProcess;
+import com.sapienter.jbilling.server.mediation.db.MediationProcessDAS;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDAS;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDAS;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.MediationResult;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
@@ -106,18 +73,19 @@ import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.OrderBL;
+import com.sapienter.jbilling.server.order.OrderHelper;
 import com.sapienter.jbilling.server.order.OrderLineBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.order.OrderPeriodWS;
 import com.sapienter.jbilling.server.order.OrderProcessWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.order.TimePeriod;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
-import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
-import com.sapienter.jbilling.server.util.db.PreferenceDTO;
-import grails.plugins.springsecurity.SpringSecurityService;
 import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
@@ -133,57 +101,91 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
+import com.sapienter.jbilling.server.process.AgeingBL;
+import com.sapienter.jbilling.server.process.AgeingDTOEx;
+import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
 import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
+import com.sapienter.jbilling.server.process.ProcessStatusWS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean;
 import com.sapienter.jbilling.server.rule.task.IRulesGenerator;
 import com.sapienter.jbilling.server.user.AchBL;
+import com.sapienter.jbilling.server.user.CardValidationWS;
+import com.sapienter.jbilling.server.user.CompanyWS;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
+import com.sapienter.jbilling.server.user.ContactTypeWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.CreditCardBL;
+import com.sapienter.jbilling.server.user.CustomerPriceBL;
+import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
+import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.user.db.AchDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.CustomerPriceDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.partner.db.PartnerDAS;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
-
-import com.sapienter.jbilling.server.process.AgeingBL;
-import com.sapienter.jbilling.server.process.AgeingDTOEx;
-import com.sapienter.jbilling.server.process.AgeingWS;
-
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS;
-import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
-import com.sapienter.jbilling.server.order.OrderPeriodWS;
-import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
-import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
-
-import com.sapienter.jbilling.server.user.CompanyWS;
-import com.sapienter.jbilling.server.user.EntityBL; 
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.server.util.db.LanguageDAS;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import com.sapienter.jbilling.server.util.db.PreferenceDTO;
+import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
+import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
+import grails.plugins.springsecurity.SpringSecurityService;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.naming.NamingException;
+import javax.sql.rowset.CachedRowSet;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -968,9 +970,35 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return retValue;
     }
 
-    public void processPartnerPayouts(Date runDate) {
+
+    /**
+     * Processes partner payouts for all partners that have a payout due before the given run date.
+     *
+     * @param runDate date to process payouts for
+     */
+    public void triggerPartnerPayoutProcess(Date runDate) {
         IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
         userSession.processPayouts(runDate);
+    }
+
+    /**
+     * Process partner payout for a single given partner ID.
+     *
+     * @param partnerId partner id to process payouts for
+     */
+    public void processPartnerPayout(Integer partnerId) {
+        try {
+            new PartnerBL().processPayout(partnerId);
+
+        } catch (SQLException e) {
+            throw new SessionInternalError("SQL exception occurred while processing payout.", e);
+        } catch (PluggableTaskException e) {
+            throw new SessionInternalError("Required plug-in was not configured.", e);
+        } catch (TaskException e) {
+            throw new SessionInternalError("Exception occurred processing pluggable task.", e);
+        } catch (NamingException e) {
+            throw new SessionInternalError("Could not fetch bean from application context.", e);
+        }
     }
 
     public PartnerWS getPartner(Integer partnerId) throws SessionInternalError {
@@ -980,6 +1008,51 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return PartnerBL.getWS(dto);
     }
 
+    public Integer createPartner(UserWS newUser, PartnerWS partner) throws SessionInternalError {
+        
+        UserBL bl = new UserBL();
+        newUser.setUserId(0);
+        
+        Integer entityId = getCallerCompanyId();
+        if (bl.exists(newUser.getUserName(), entityId)) {
+            throw new SessionInternalError("User already exists with username " + newUser.getUserName(),
+                    new String[] { "UserWS,userName,validation.error.user.already.exists" });
+        }
+        Partner partnerDto= partner.getPartnerDTO();
+        ContactBL cBl = new ContactBL();
+        UserDTOEx dto = new UserDTOEx(newUser, entityId);
+        dto.setPartner(partnerDto);
+        Integer userId = bl.create(dto, getCallerId());
+        
+        if (newUser.getContact() != null) {
+            newUser.getContact().setId(0);
+            cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId, getCallerId());
+        }
+        
+        return bl.getDto().getPartner().getId();
+        
+    }
+    
+    public void updatePartner(UserWS user, PartnerWS partner) throws SessionInternalError {
+        Integer entityId = getCallerCompanyId();
+        IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
+
+        if (user != null) {
+            UserDTOEx userDto = new UserDTOEx(user, entityId);
+            userSession.update(getCallerId(), userDto);
+        }
+
+        if (partner != null) {
+            Partner partnerDto = partner.getPartnerDTO();
+            userSession.updatePartner(getCallerId(), partnerDto);
+        }
+    }
+    
+    public void deletePartner (Integer partnerId) throws SessionInternalError {
+        PartnerBL bl= new PartnerBL(partnerId);
+        bl.delete(getCallerId());
+    }
+    
     /**
      * Pays given invoice, using the first credit card available for invoice'd
      * user.

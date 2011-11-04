@@ -21,13 +21,18 @@
 package com.sapienter.jbilling.server.customer;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.servlet.http.HttpSession;
 import javax.sql.rowset.CachedRowSet;
 
+import com.sapienter.jbilling.server.item.db.PlanItemBundleDTO;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CustomerDAS;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -131,6 +136,26 @@ public final class CustomerBL extends ResultList implements CustomerSQL {
         execute();
         conn.close();
         return cachedResults;
+    }
+
+    /**
+     * Returns a list of userIds for the descendants of the customer given
+     * @param parent: top parent customer
+     * @return
+     */
+    public List<Integer> getDescendants(CustomerDTO parent){
+        List<Integer> descendants = new ArrayList<Integer>();
+        if(parent != null){
+            for(CustomerDTO customer: parent.getChildren()){
+                if(customer.getBaseUser().getDeleted() == 0){
+                    //add it as descendant
+                    descendants.add(customer.getBaseUser().getId());
+                    //call the same function in a recursive way to get all the descendants
+                    descendants.addAll(getDescendants(customer));
+                }
+            }
+        }
+        return descendants;
     }
 
 }

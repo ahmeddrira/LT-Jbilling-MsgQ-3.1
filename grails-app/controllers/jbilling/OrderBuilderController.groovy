@@ -155,6 +155,8 @@ class OrderBuilderController {
                 conversation.order = order
                 conversation.products = productService.getFilteredProducts(company, params)
                 conversation.plans = productService.getFilteredPlans(company, params)
+                conversation.deletedLines = []
+                conversation.pricingDate = order.activeSince ?: order.createDate ?: new Date()
             }
             on("success").to("build")
         }
@@ -287,6 +289,17 @@ class OrderBuilderController {
                     line.quantity = line.getQuantityAsDecimal().setScale(0, RoundingMode.HALF_UP)
                 }
 
+                // existing line that's stored in the database will be deleted when quantity == 0
+                if (line.quantityAsDecimal == BigDecimal.ZERO) {
+                    log.debug("zero quantity, marking line to be deleted.")
+                    line.deleted = 1
+
+                    if (line.id != 0) {
+                        // keep track of persisted lines so that we can make sure they're removed on save
+                        conversation.deletedLines << line
+                    }
+                }
+
                 // add line to order
                 order.orderLines[index] = line
 
@@ -317,7 +330,19 @@ class OrderBuilderController {
 
                 def index = params.int('index')
                 def lines = order.orderLines as List
-                lines.remove(index)
+
+                // remove or mark as deleted if already saved to the DB
+                def line = lines.get(index)
+                if (line.id != 0) {
+                    log.debug("marking line ${line.id} to be deleted.")
+                    line.deleted = 1
+                    conversation.deletedLines << line
+
+                } else {
+                    log.debug("removing transient line from order.")
+                    lines.remove(index)
+                }
+
                 order.orderLines = lines.toArray()
 
                 // rate order
@@ -458,6 +483,15 @@ class OrderBuilderController {
                     } else {
                         if (SpringSecurityUtils.ifAllGranted("ORDER_21")) {
 
+                            // add deleted lines to our order so that updateOrder() can save them
+                            def deletedLines = conversation.deletedLines
+                            def lines = order.orderLines as List
+
+                            log.debug "appending ${deletedLines.size()} line(s) for deletion."
+                            lines.addAll(deletedLines)
+                            order.orderLines = lines.toArray()
+
+                            // save changes
                             log.debug("saving changes to order ${order.id}")
                             webServicesSession.updateOrder(order)
 

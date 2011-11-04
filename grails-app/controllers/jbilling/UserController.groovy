@@ -49,6 +49,7 @@ class UserController {
     def recentItemService
     def springSecurityService
     def securitySession
+    def subAccountService
 
     def index = {
         redirect action: list, params: params
@@ -115,7 +116,7 @@ class UserController {
             log.error("Could not fetch WS object", e)
 
             flash.error = 'user.not.found'
-            flash.args = [ params.id ]
+            flash.args = [ params.id as String ]
 
             redirect controller: 'user', action: 'list'
             return
@@ -154,7 +155,7 @@ class UserController {
                 user.userId = webServicesSession.createUser(user)
 
                 flash.message = 'user.created'
-                flash.args = [ user.userId ]
+                flash.args = [ user.userId as String ]
 
             } else {
                 log.debug("saving changes to user ${user.userId}")
@@ -162,7 +163,7 @@ class UserController {
                 webServicesSession.updateUser(user)
 
                 flash.message = 'user.updated'
-                flash.args = [ user.userId ]
+                flash.args = [ user.userId as String ]
             }
 
             // save secondary contacts
@@ -188,7 +189,7 @@ class UserController {
         }
 
         flash.message = 'user.deleted'
-        flash.args = [ params.id ]
+        flash.args = [ params.id as String ]
 
         // render the partial user list
         params.applyFilter = true
@@ -204,7 +205,7 @@ class UserController {
             log.error("Could not fetch WS object", e)
 
             flash.error = 'user.not.found'
-            flash.args = [ params.id ]
+            flash.args = [ params.id as String ]
 
             redirect controller: 'user', action: 'list'
             return
@@ -250,8 +251,9 @@ class UserController {
 
         securitySession.setAttributes(request, response, springSecurityService.principal)
 
-        breadcrumbService.load();
-        recentItemService.load();
+        breadcrumbService.load()
+        recentItemService.load()
+        subAccountService.load()
 
         def breadcrumb = breadcrumbService.getLastBreadcrumb()
         if (breadcrumb) {

@@ -103,14 +103,16 @@
                             <%-- is a parent, but also a child of another account --%>
                             <g:remoteLink action="subaccounts" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                                 <img src="${resource(dir:'images', file:'icon17.gif')}" alt="parent and child" />
-                                <span>${customer.children.size()}</span>
+                                <g:set var="children" value="${customer.children.findAll{ it.baseUser.deleted == 0 }}"/>
+                                <span>${children.size()}</span>
                             </g:remoteLink>
                         </g:if>
                         <g:elseif test="${customer.isParent == 1 && !customer.parent}">
                             <%-- is a top level parent --%>
                             <g:remoteLink action="subaccounts" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                                 <img src="${resource(dir:'images', file:'icon18.gif')}" alt="parent" />
-                                <span>${customer.children.size()}</span>
+                                <g:set var="children" value="${customer.children.findAll{ it.baseUser.deleted == 0 }}"/>
+                                <span>${children.size()}</span>
                             </g:remoteLink>
                         </g:elseif>
                         <g:elseif test="${customer.isParent == 0 && customer.parent}">
@@ -151,10 +153,14 @@
 <div class="btn-box">
     <sec:ifAllGranted roles="CUSTOMER_10">
         <g:if test="${parent?.customer?.isParent > 0}">
-            <g:link action="edit" params="[parentId: parent.id]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
+            <sec:ifAnyGranted roles="CUSTOMER_17, CUSTOMER_18">
+                <g:link action="edit" params="[parentId: parent.id]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
+            </sec:ifAnyGranted>
         </g:if>
         <g:else>
-            <g:link action='edit' class="submit add"><span><g:message code="button.create"/></span></g:link>
+            <sec:ifAllGranted roles="CUSTOMER_17">
+                <g:link action='edit' class="submit add"><span><g:message code="button.create"/></span></g:link>
+            </sec:ifAllGranted>
         </g:else>
     </sec:ifAllGranted>
 </div>

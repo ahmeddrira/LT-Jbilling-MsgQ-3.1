@@ -62,11 +62,14 @@
 
             var details = {
                 refresh: function() {
-                    return $.ajax({
-                                  type: 'GET',
-                                  url: '${createLink(action: 'edit', params:['_eventId': 'details'])}',
-                                  success: function(data) { $('#column1').replaceWith(data); }
-                              });
+                    if ($('#timeline').is(':visible')) {
+                        return $.ajax({
+                                          type: 'GET',
+                                          url: '${createLink(action: 'edit', params:['_eventId': 'details'])}',
+                                          success: function(data) { $('#details-box').replaceWith(data); }
+                                      });
+                    }
+                    return undefined;
                 }
             };
 

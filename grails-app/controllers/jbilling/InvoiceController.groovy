@@ -21,14 +21,12 @@
 package jbilling
 
 import grails.plugins.springsecurity.Secured;
-import javax.servlet.ServletOutputStream
-import grails.converters.JSON
-import com.sapienter.jbilling.server.payment.PaymentWS;
-import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
-import com.sapienter.jbilling.server.util.WebServicesSessionSpringBean;
+
+
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.user.UserWS;
+
+
 import com.sapienter.jbilling.common.SessionInternalError
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.util.csv.Exporter
@@ -39,6 +37,9 @@ import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.client.util.SortableCriteria;
 import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import com.sapienter.jbilling.server.user.db.CustomerDTO
+import com.sapienter.jbilling.server.user.db.UserDTO
+import com.sapienter.jbilling.server.customer.CustomerBL
 
 /**
  * BillingController
@@ -56,6 +57,7 @@ class InvoiceController {
     def filterService
     def recentItemService
     def breadcrumbService
+    def subAccountService
 
     def index = {
         redirect action: 'list', params: params
@@ -108,9 +110,14 @@ class InvoiceController {
                 eq('baseUser.company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
 
-                // limit list to only this customer's invoices
                 if (SpringSecurityUtils.ifNotGranted("INVOICE_74")) {
-                    eq('baseUser.id', session['user_id'])
+                    if (SpringSecurityUtils.ifAnyGranted("INVOICE_75")) {
+                        // restrict query to sub-account user-ids
+                        'in'('baseUser.id', subAccountService.subAccountUserIds)
+                    } else {
+                        // limit list to only this customer
+                        eq('baseUser.id', session['user_id'])
+                    }
                 }
             }
 

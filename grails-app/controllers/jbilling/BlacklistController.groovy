@@ -99,7 +99,7 @@ class BlacklistController {
             bl.setUserBlacklisted((Integer) session['user_id'], true)
 
             flash.message = 'user.blacklisted'
-            flash.args = [ params.id ]
+            flash.args = [ params.id as String ]
         }
 
         redirect controller: 'customerInspector', action: 'inspect', id: params.id

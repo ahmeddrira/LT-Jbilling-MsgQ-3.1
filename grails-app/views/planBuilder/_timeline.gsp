@@ -28,7 +28,7 @@
                     <li class="${startDate.equals(date) ? 'current' : ''}">
                         <g:set var="pricingDate" value="${formatDate(date: date)}"/>
                         <g:remoteLink action="edit" params="[_eventId: 'editDate', startDate: pricingDate]"
-                                      update="column2" method="GET" onSuccess="timeline.refresh();">
+                                      update="column2" method="GET" onSuccess="timeline.refresh(); details.refresh();">
                             ${pricingDate}
                         </g:remoteLink>
                     </li>
@@ -38,7 +38,7 @@
                 <li class="current">
                     <g:set var="pricingDate" value="${formatDate(date: PriceModelWS.EPOCH_DATE)}"/>
                     <g:remoteLink action="edit" params="[_eventId: 'editDate', startDate : pricingDate]"
-                                  update="column2" method="GET" onSuccess="timeline.refresh();">
+                                  update="column2" method="GET" onSuccess="timeline.refresh(); details.refresh();">
                         ${pricingDate}
                     </g:remoteLink>
                 </li>

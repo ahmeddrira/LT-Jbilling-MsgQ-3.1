@@ -2215,7 +2215,6 @@ COPY ageing_entity_step (id, entity_id, status_id, days, optlock) FROM stdin;
 
 COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscriber_status, currency_id, create_datetime, last_status_change, last_login, user_name, failed_attempts, optlock) FROM stdin;
 2	1	6a204bd89f3c8348afd5c77c717a097a	0	1	1	9	1	2006-07-26 09:29:19.596	\N	\N	gandalf	0	1
-12	2	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2006-12-07 00:00:00	\N	2007-08-16 14:56:18.752	mordor	0	1
 13	2	9369e99369e9	0	1	1	9	1	2006-12-07 14:56:32.79	\N	\N	orc1	0	1
 23	1	9369e99369e9	0	1	5	9	1	2007-01-12 15:41:42.382	2007-01-12 15:41:59.907	\N	inactive	0	1
 33	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2007-02-10 10:56:43.359	\N	\N	authuser	0	1
@@ -3250,6 +3249,8 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 10781	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:39:09.731	\N	\N	mediation-batch-test-15	0	1
 1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2010-05-25 12:27:12.217	admin	0	18
 10790	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2011-06-01 10:36:25.441	\N	\N	ageing-test-01	0	1
+12	2	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2006-12-07 00:00:00	\N	2007-08-16 14:56:18.752	mordor	0	2
+10800	2	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2011-10-31 15:26:59.445	\N	\N	saurman	0	1
 \.
 
 
@@ -3299,6 +3300,11 @@ COPY breadcrumb (id, user_id, controller, action, name, object_id, version, desc
 12	1	plugin	plugins	\N	18	0	\N
 13	1	plugin	show	\N	530	0	\N
 14	1	plugin	edit	\N	530	0	\N
+15	12	customer	list	\N	\N	0	\N
+16	12	partner	list	\N	\N	0	\N
+17	12	config	index	\N	\N	0	\N
+18	12	user	list	\N	\N	0	\N
+19	12	partner	list	\N	\N	0	\N
 \.
 
 
@@ -4366,6 +4372,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 113010	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-14@test.com	2009-12-17 13:38:54.151	0	1	10780	1
 113011	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-15@test.com	2009-12-17 13:39:09.738	0	1	10781	1
 113100							CA			\N	\N	\N	\N		\N	\N	\N	test@test.com	2011-06-01 10:36:25.546	0	0	10790	1
+113200	Isengard Inc.						CA	The White	Saurman	\N	\N	\N	\N		\N	\N	\N	saurman@isengard.com	2011-10-31 15:26:59.482	0	0	10800	1
 \.
 
 
@@ -7472,6 +7479,7 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 790910	113010	2	10	10780	1
 790911	113011	2	10	10781	1
 791000	113100	2	10	10790	1
+791100	113200	3	10	10800	1
 \.
 
 
@@ -8802,7 +8810,6 @@ COPY currency_exchange (id, entity_id, currency_id, rate, create_datetime, optlo
 --
 
 COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_method_id, notes, auto_payment_type, due_date_unit_id, due_date_value, df_fm, parent_id, is_parent, exclude_aging, invoice_child, current_order_id, optlock, balance_type, dynamic_balance, credit_limit, auto_recharge, use_parent_pricing) FROM stdin;
-2	13	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N	\N	f
 65	76	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
 66	77	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
 67	78	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
@@ -9833,6 +9840,7 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 63	74	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000	f
 64	75	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000	f
 107000	10790	\N	\N	1		\N	\N	\N	\N	\N	0	0	\N	\N	1	1	0.0000000000	0.0000000000	0.0000000000	f
+2	13	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000	f
 \.
 
 
@@ -10562,6 +10570,8 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 468000	1	\N	10	10790	2011-06-01 10:36:25.494	2	2	25	\N	\N	\N	0	10790
 468001	\N	\N	27	113100	2011-06-01 10:36:25.665	2	2	25	\N	\N	\N	0	\N
 469000	1	1	25	530	2011-06-01 17:15:48.842	2	11	9	\N	\N	\N	0	\N
+470000	2	12	10	10800	2011-10-31 15:26:59.465	2	2	25	\N	\N	\N	0	10800
+470001	2	12	27	113200	2011-10-31 15:26:59.51	2	2	25	\N	\N	\N	0	\N
 \.
 
 
@@ -11406,6 +11416,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 50	38	instruction	1	Set to '1' to change the subscription status of a user when the user ages. '0' to disable.
 50	39	instruction	1	The number of retries to allow before locking the user account. A locked user account will have their password changed to the value of lockout_password in the jbilling.properties configuration file.
 50	40	instruction	1	If greater than zero, it represents the number of days that a password is valid. After those days, the password is expired and the user is forced to change it.
+59	101	description	1	Create partner
+59	102	description	1	Edit partner
 50	41	instruction	1	Set to '1' to allow the usage of the 'main subscription' flag for orders This flag is read only by the mediation process when determining where to place charges coming from external events.
 50	42	instruction	1	Set to '1' to allow the use of pro-rating to invoice fractions of a period. Shows the 'cycle' attribute of an order. Note that you need to configure the corresponding plug-ins for this feature to be fully functional.
 50	43	instruction	1	If the payment blacklist feature is used, this is set to the id of the configuration of the PaymentFilterTask plug-in. See the Blacklist section of the documentation.
@@ -11491,6 +11503,9 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	29	description	1	View customer sub-accounts
 59	37	description	1	View customer sub-accounts
 59	75	description	1	View customer sub-accounts
+59	100	description	1	Show partner menu
+59	103	description	1	Delete partner
+59	104	description	1	View partner details
 \.
 
 
@@ -11717,7 +11732,6 @@ billing_process_configuration	1
 order_period	1
 report	1
 partner_range	2
-partner	2
 entity	1
 contact_type	1
 payment_info_cheque	17
@@ -11760,21 +11774,22 @@ filter_set	1
 shortcut	1
 report_parameter	1
 pluggable_task	607
-base_user	1080
 customer	1071
-contact_map	7911
-contact	1132
 contact_field	2027
-breadcrumb	15
 recent_item	2
 pluggable_task_parameter	8314
-event_log	470
 permission_user	10
 permission_user	1
 permission_user	1
 permission_user	1
 enumeration	1
 enumeration_values	1
+base_user	1081
+event_log	471
+partner	3
+contact_map	7912
+contact	1133
+breadcrumb	20
 \.
 
 
@@ -14216,6 +14231,7 @@ COPY partner (id, user_id, balance, total_payments, total_refunds, total_payouts
 10	10740	0.0000000000	0.0000000000	0.0000000000	0.0000000000	10.0000000000	0.0000000000	1	0	1	1	2009-04-01	0.0000000000	1	1	1
 12	10742	0.0000000000	0.0000000000	0.0000000000	0.0000000000	10.0000000000	0.0000000000	1	0	3	10	2009-03-15	0.0000000000	1	1	1
 11	10741	0.0000000000	0.0000000000	0.0000000000	0.0000000000	0.0000000000	1.0000000000	1	1	1	1	2009-03-01	0.0000000000	0	1	2
+20	10800	0.0000000000	0.0000000000	0.0000000000	0.0000000000	5.0000000000	10.0000000000	1	0	1	1	2011-11-01	0.0000000000	0	12	1
 \.
 
 
@@ -14365,7 +14381,6 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 97	9	\N
 98	9	\N
 99	9	\N
-120	10	\N
 23	2	\N
 71	7	\N
 13	1	\N
@@ -14393,6 +14408,12 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 29	2	\N
 37	3	\N
 75	7	\N
+100	9	\N
+120	12	\N
+101	10	\N
+102	10	\N
+103	10	\N
+104	10	\N
 \.
 
 
@@ -14533,6 +14554,29 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 29	5
 37	5
 75	5
+100	2
+101	2
+102	2
+103	2
+104	2
+100	3
+101	3
+102	3
+103	3
+104	3
+15	4
+10	4
+11	4
+24	4
+20	4
+21	4
+34	4
+30	4
+72	4
+90	4
+91	4
+92	4
+93	4
 \.
 
 
@@ -14550,8 +14594,9 @@ COPY permission_type (id, description) FROM stdin;
 7	Invoice
 8	Billing
 9	Menu
-10	API
 11	User Switching
+12	API
+10	Partner
 \.
 
 
@@ -16165,6 +16210,7 @@ COPY role (id) FROM stdin;
 2
 3
 5
+4
 \.
 
 
@@ -18227,9 +18273,10 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 10780	5
 10781	5
 10790	5
-10740	3
-10741	3
-10742	3
+10740	4
+10741	4
+10742	4
+10800	4
 \.
 
 

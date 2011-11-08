@@ -181,6 +181,7 @@
             <test name="com.sapienter.jbilling.server.process.WSTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.pricing.WSTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.pricing.strategy.WSTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>
+            <test name="com.sapienter.jbilling.server.user.PartnerWSTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>
 
             <test name="${test.class}" if="test.class" todir="${build.test-results.dir}/ws/xml"/>
         </junit>

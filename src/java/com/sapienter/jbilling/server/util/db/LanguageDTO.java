@@ -42,7 +42,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 @Table(name="language")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class LanguageDTO  implements java.io.Serializable {
-
+     public static final int ENGLISH_LANGUAGE_ID = 1;
 
      private int id;
      private String code;

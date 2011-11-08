@@ -35,7 +35,6 @@ import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
@@ -321,7 +320,8 @@ public class UserBL extends ResultList implements UserSQL {
                     dto.getLanguageId(), roles, dto.getCurrencyId(),
                     dto.getStatusId(), dto.getSubscriptionStatusId(), executorUserId);
             PartnerBL partner = new PartnerBL();
-            partner.create(dto.getPartner());
+            Integer partnerId= partner.create(dto.getPartner());
+            partner.getEntity().setId(partnerId);
             user.setPartner(partner.getEntity());
             partner.getEntity().setBaseUser(user);
         } else if (dto.getCustomer() != null) {

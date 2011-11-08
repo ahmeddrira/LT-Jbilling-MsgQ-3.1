@@ -34,6 +34,7 @@ import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.InternationalDescriptionWS;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 
@@ -69,7 +70,102 @@ public class WSTest  extends TestCase {
             fail("Exception caught:" + e);
         }
     }
-    
+
+    private ItemDTOEx createItemWithMultipleDescriptions(String number) {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            /*
+             * Create
+             */
+            ItemDTOEx newItem = new ItemDTOEx();
+
+            List<InternationalDescriptionWS> descriptions = new java.util.ArrayList<InternationalDescriptionWS>();
+            InternationalDescriptionWS enDesc = new InternationalDescriptionWS(1, "itemDescription-en");
+            InternationalDescriptionWS frDesc = new InternationalDescriptionWS(2, "itemDescription-fr");
+            descriptions.add(enDesc);
+            descriptions.add(frDesc);
+
+            newItem.setDescriptions(descriptions);
+            newItem.setPrice(new BigDecimal("10.0"));
+            newItem.setNumber(number);
+            newItem.setHasDecimals(0);
+
+            Integer types[] = new Integer[1];
+            types[0] = new Integer(1);
+            newItem.setTypes(types);
+
+            System.out.println("Creating item ..." + newItem);
+            Integer ret = api.createItem(newItem);
+            assertNotNull("The item was not created", ret);
+            System.out.println("Done!");
+            newItem.setId(ret);
+
+            return newItem;
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+            return null;
+        }
+    }
+
+    private String getDescription(List<InternationalDescriptionWS> descriptions,int langId) {
+        for (InternationalDescriptionWS description : descriptions) {
+            if (description.getLanguageId() == langId) {
+                return description.getContent();
+            }
+        }
+        return "";
+    }
+
+    public void testCreateMultipleDescriptions() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            ItemDTOEx newItem = createItemWithMultipleDescriptions("WS-002");
+            System.out.println("ItemId created: " + newItem.getId());
+            System.out.println("Item created: " + newItem);
+
+            newItem = api.getItem(newItem.getId(), 2, null);
+            String enDescription = getDescription(newItem.getDescriptions(), 1);
+            String frDescription = getDescription(newItem.getDescriptions(), 2);
+            System.out.println("descriptions: " + enDescription + ", " + frDescription);
+            assertEquals("itemDescription-en", enDescription);
+            assertEquals("itemDescription-fr", frDescription);
+
+            // delete the item
+            api.deleteItem(newItem.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+
+    public void testModifyMultipleDescriptions() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            ItemDTOEx newItem = createItemWithMultipleDescriptions("WS-003");
+            // test remove one description (english)
+            newItem.getDescriptions().get(0).setDeleted(true);
+            api.updateItem(newItem);
+            newItem = api.getItem(newItem.getId(), 2, null);
+            int descriptionsCount = newItem.getDescriptions().size();
+            assertEquals(1, descriptionsCount);
+
+            // test modify content
+            newItem.getDescriptions().get(0).setContent("newItemDescription-fr");
+            api.updateItem(newItem);
+            newItem = api.getItem(newItem.getId(), 2, null);
+            String frDescription = getDescription(newItem.getDescriptions(), 2);
+            assertEquals("newItemDescription-fr", frDescription);
+
+            // delete the item
+            api.deleteItem(newItem.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+
     public void testPricingRules() {
     	
     	try {
@@ -217,7 +313,7 @@ public class WSTest  extends TestCase {
             	}
             });
             assertNotNull("The items were not retrieved", items);
-            assertEquals("Wrong number of items", 20, items.length);
+            assertEquals("Wrong number of items", 22, items.length);
 
             assertEquals("Description", "Lemonade - 1 per day monthly pass", items[0].getDescription());
             assertEquals("Price", new BigDecimal("10"), items[0].getPriceAsDecimal());
@@ -254,8 +350,8 @@ public class WSTest  extends TestCase {
 
             // item at index 5 tested in testCurrencyConvert() below
 
-            // this is alwyas the last item
-            int lastItem = items.length - 1;
+            // this is alwyas the last item added in the first method. Excluding the ones added to test the multiple language descriptions.
+            int lastItem = items.length - 3;
             assertEquals("Description", "an item from ws", items[lastItem].getDescription());
             assertEquals("Price", new BigDecimal("29.5"), items[lastItem].getPriceAsDecimal());
             assertEquals("Price List", new BigDecimal("29.5"), items[lastItem].getDefaultPrice().getRateAsDecimal());

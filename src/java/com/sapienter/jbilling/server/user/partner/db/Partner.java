@@ -48,6 +48,7 @@ import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
+@SuppressWarnings("serial")
 @Entity
 @TableGenerator(
         name = "partner_GEN",
@@ -83,7 +84,6 @@ public class Partner implements java.io.Serializable {
     private int automaticProcess;
 
     private Set<PartnerPayout> partnerPayouts = new HashSet<PartnerPayout>(0);
-
     private Set<CustomerDTO> customers = new HashSet<CustomerDTO>(0);
     private int versionNum;
 

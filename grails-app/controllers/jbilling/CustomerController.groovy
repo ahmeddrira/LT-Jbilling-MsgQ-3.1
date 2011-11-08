@@ -97,6 +97,7 @@ class CustomerController {
                         // we need to find the UserStatusDTO to compare to
                         if (filter.constraintType == FilterConstraint.STATUS) {
                             eq("userStatus", statuses.find{ it.id == filter.integerValue })
+
                         } else if (filter.field == 'contact.fields') {
                             String typeId = params['contactFieldTypes']
                             String ccfValue= filter.stringValue
@@ -219,6 +220,16 @@ class CustomerController {
 
         def parent = UserDTO.get(params.int('id'))
         render template: 'customers', model: [ users: children, parent: parent ]
+    }
+
+    /**
+     * Shows all customers of the given partner id
+     */
+    def partner = {
+        def filter = new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.EQ, field: 'customer.partner.id', template: 'id', visible: true, integerValue: params.id)
+        filterService.setFilter(FilterType.CUSTOMER, filter)
+
+        redirect action: list
     }
 
     /**

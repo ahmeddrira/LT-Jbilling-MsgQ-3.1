@@ -63,13 +63,12 @@ class UserController {
                 max:    params.max,
                 offset: params.offset
         ) {
-
-
             and {
                 or {
                     isEmpty('roles')
                     roles {
                         ne('id', Constants.TYPE_CUSTOMER)
+                        ne('id', Constants.TYPE_PARTNER)
                     }
                 }
 

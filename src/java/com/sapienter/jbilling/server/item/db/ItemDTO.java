@@ -53,14 +53,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 @Entity
 @TableGenerator(
@@ -99,6 +92,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
     private Integer currencyId = null;
     private BigDecimal price = null;
     private Integer orderLineTypeId = null;
+
 
     public ItemDTO() {
     }
@@ -510,6 +504,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
             }
         };
     }
+    
 }
 
 

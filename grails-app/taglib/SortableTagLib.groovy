@@ -1,4 +1,4 @@
-
+import com.sapienter.jbilling.client.util.SortableCriteria
 /*
  jBilling - The Enterprise Open Source Billing System
  Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -69,8 +69,12 @@ class SortableTagLib {
             urlParameters.put('order', order)
         }
 
-        alias?.each { k, v ->
-            urlParameters.put("alias.${k}", v)
+        if (alias == SortableCriteria.NO_ALIAS) {
+            urlParameters.put("alias", SortableCriteria.NO_ALIAS)
+        } else {
+            alias?.each { k, v ->
+                urlParameters.put("alias.${k}", v)
+            }
         }
 
         return urlParameters

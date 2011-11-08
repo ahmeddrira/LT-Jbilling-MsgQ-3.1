@@ -20,17 +20,26 @@
 
 package com.sapienter.jbilling.server.user.partner;
 
-import com.sapienter.jbilling.server.security.WSSecured;
-import com.sapienter.jbilling.server.user.db.CustomerDTO;
-import com.sapienter.jbilling.server.user.partner.db.Partner;
-import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
-import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
+import com.sapienter.jbilling.server.security.WSSecured;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
+import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
+import com.sapienter.jbilling.server.util.api.validation.CreateValidationGroup;
+import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
+import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 
 /**
  * PartnerWS
@@ -40,22 +49,29 @@ import java.util.List;
  */
 public class PartnerWS implements WSSecured, Serializable {
 
+    @Min(value = 1, message = "validation.error.min,1", groups = UpdateValidationGroup.class)
+    @Max(value = 0, message = "validation.error.max,0", groups = CreateValidationGroup.class)
     private Integer id;
     private Integer periodUnitId;
     private Integer userId;
+    @NotNull(message="validation.error.notnull")
     private Integer feeCurrencyId;
+    @NotNull(message="validation.error.notnull")
     private String balance;
     private String totalPayments;
     private String totalRefunds;
     private String totalPayouts;
     private String percentageRate;
     private String referralFee;
-    private Integer oneTime;
+    private Boolean oneTime;
     private Integer periodValue;
+    @NotNull(message="validation.error.notnull")
     private Date nextPayoutDate;
     private String duePayout;
-    private Integer automaticProcess;
-
+    private Boolean automaticProcess;
+    @NotNull(message="validation.error.notnull")
+    private Integer relatedClerkUserId;
+    
     private List<PartnerRangeWS> ranges = new ArrayList<PartnerRangeWS>(0);
     private List<PartnerPayoutWS> partnerPayouts = new ArrayList<PartnerPayoutWS>(0);
     private List<Integer> customerIds = new ArrayList<Integer>(0);
@@ -74,12 +90,14 @@ public class PartnerWS implements WSSecured, Serializable {
         setTotalPayouts(dto.getTotalPayouts());
         setPercentageRate(dto.getPercentageRate());
         setReferralFee(dto.getReferralFee());
-        this.oneTime = dto.getOneTime();
+        this.oneTime = dto.getOneTime()>0;
         this.periodValue = dto.getPeriodValue();
         this.nextPayoutDate = dto.getNextPayoutDate();
         setDuePayout(dto.getDuePayout());
-        this.automaticProcess = dto.getAutomaticProcess();
+        this.automaticProcess = dto.getAutomaticProcess()>0;
 
+        this.relatedClerkUserId= dto.getBaseUserByRelatedClerk().getId();
+        
         // partner ranges
         this.ranges = new ArrayList<PartnerRangeWS>(dto.getRanges().size());
         for (PartnerRange range : dto.getRanges())
@@ -94,6 +112,14 @@ public class PartnerWS implements WSSecured, Serializable {
         this.customerIds = new ArrayList<Integer>(dto.getCustomers().size());
         for (CustomerDTO customer : dto.getCustomers())
             customerIds.add(customer.getId());
+    }
+
+    public Integer getRelatedClerkUserId() {
+        return relatedClerkUserId;
+    }
+
+    public void setRelatedClerkUserId(Integer relatedClerkUserId) {
+        this.relatedClerkUserId = relatedClerkUserId;
     }
 
     public Integer getId() {
@@ -157,7 +183,7 @@ public class PartnerWS implements WSSecured, Serializable {
     }
 
     public void setTotalPayments(BigDecimal totalPayments) {
-        this.totalPayments = (totalPayments != null ? totalPayments.toString() : null);
+        this.totalPayments = (totalPayments != null ? totalPayments.toPlainString() : null);
     }
 
     public String getTotalRefunds() {
@@ -173,7 +199,7 @@ public class PartnerWS implements WSSecured, Serializable {
     }
 
     public void setTotalRefunds(BigDecimal totalRefunds) {
-        this.totalRefunds = (totalRefunds != null ? totalRefunds.toString() : null);
+        this.totalRefunds = (totalRefunds != null ? totalRefunds.toPlainString() : null);
     }
 
     public String getTotalPayouts() {
@@ -189,7 +215,7 @@ public class PartnerWS implements WSSecured, Serializable {
     }
 
     public void setTotalPayouts(BigDecimal totalPayouts) {
-        this.totalPayouts = (totalPayouts != null ? totalPayouts.toString() : null);
+        this.totalPayouts = (totalPayouts != null ? totalPayouts.toPlainString() : null);
     }
 
     public String getPercentageRate() {
@@ -205,7 +231,7 @@ public class PartnerWS implements WSSecured, Serializable {
     }
 
     public void setPercentageRate(BigDecimal percentageRate) {
-        this.percentageRate = (percentageRate != null ? percentageRate.toString() : null);
+        this.percentageRate = (percentageRate != null ? percentageRate.toPlainString() : null);
     }
 
     public String getReferralFee() {
@@ -221,14 +247,14 @@ public class PartnerWS implements WSSecured, Serializable {
     }
 
     public void setReferralFee(BigDecimal referralFee) {
-        this.referralFee = (referralFee != null ? referralFee.toString() : null);
+        this.referralFee = (referralFee != null ? referralFee.toPlainString() : null);
     }
 
-    public Integer getOneTime() {
+    public Boolean getOneTime() {
         return oneTime;
     }
 
-    public void setOneTime(Integer oneTime) {
+    public void setOneTime(Boolean oneTime) {
         this.oneTime = oneTime;
     }
 
@@ -261,14 +287,14 @@ public class PartnerWS implements WSSecured, Serializable {
     }
 
     public void setDuePayout(BigDecimal duePayout) {
-        this.duePayout = (duePayout != null ? duePayout.toString() : null);
+        this.duePayout = (duePayout != null ? duePayout.toPlainString() : null);
     }
 
-    public Integer getAutomaticProcess() {
+    public Boolean getAutomaticProcess() {
         return automaticProcess;
     }
 
-    public void setAutomaticProcess(Integer automaticProcess) {
+    public void setAutomaticProcess(Boolean automaticProcess) {
         this.automaticProcess = automaticProcess;
     }
 
@@ -308,6 +334,41 @@ public class PartnerWS implements WSSecured, Serializable {
         return getUserId();
     }
 
+    public Partner getPartnerDTO () {
+        
+        Partner partner = null;
+        if ( this.getId()!= null ) {
+            PartnerBL partnerBl= new PartnerBL(this.getId());
+            partner= partnerBl.getEntity();
+        } else {
+            partner= new Partner();
+            partner.setId(0);
+        }
+        
+        partner.setAutomaticProcess(this.getAutomaticProcess()?1:0);
+        partner.setOneTime(this.getOneTime()?1:0);
+        partner.setPeriodUnit(new PeriodUnitDTO(this.getPeriodUnitId()));
+        partner.setPeriodValue(this.getPeriodValue());
+        partner.setNextPayoutDate(this.getNextPayoutDate());
+        partner.setBalance(this.getBalanceAsDecimal());
+        partner.setPercentageRate(this.getPercentageRateAsDecimal());
+        partner.setReferralFee(this.getReferralFeeAsDecimal());
+        partner.setFeeCurrency(new CurrencyDAS().find(this.getFeeCurrencyId()));
+        partner.setRelatedClerkUserId(this.getRelatedClerkUserId());
+        if ( null != this.userId && this.userId.intValue() > 0) {
+            partner.setBaseUser(new UserDAS().find(this.userId));
+        }
+        //partner.setBaseUserByRelatedClerk(new UserDAS().find(partner.getRelatedClerkUserId()));
+        
+        partner.setTotalPayments(this.getTotalPaymentsAsBigDecimal());
+        partner.setTotalRefunds(this.getTotalRefundsAsDecimal());
+        partner.setTotalPayouts(this.getTotalPayoutsAsDecimal());
+        partner.setDuePayout(this.getDuePayoutAsDecimal());
+        
+        return partner;
+    }
+    
+    
     @Override
     public String toString() {
         return "PartnerWS{"

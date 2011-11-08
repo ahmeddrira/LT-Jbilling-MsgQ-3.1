@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelDTO; com.sapienter.jbilling.server.util.db.CurrencyDTO; com.sapienter.jbilling.server.util.db.LanguageDTO; com.sapienter.jbilling.server.item.db.ItemTypeDTO" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelDTO; com.sapienter.jbilling.server.util.db.CurrencyDTO; com.sapienter.jbilling.server.util.db.LanguageDTO; com.sapienter.jbilling.server.item.db.ItemTypeDTO;" %>
 
 <html>
 <head>
@@ -37,7 +37,91 @@
                     openSlide('#pricing');
                 }
             }).blur();
+            loadAvailableDecLang();
         });
+
+        function addNewDescription(){
+            var languageId = $('#newDescriptionLanguage').val();
+            var previousDescription = $("#descriptions div:hidden .descLanguage[value='"+languageId+"']");
+            if(previousDescription.size()){
+                previousDescription.parents('.row:first').show();
+                previousDescription.parents('.row:first').find(".descDeleted").val(false);
+                previousDescription.parents('.row:first').find(".descContent").val('');
+            }else{
+                var languageDescription = $('#newDescriptionLanguage option:selected').text();
+                var clone = $('#descriptionClone').children().clone();
+                var languagesCount = $('#descriptions').children().size();
+                var newName = 'product.descriptions['+languagesCount+']';
+                clone.find("label").attr('for', newName+'.content');
+                var label = clone.find('label').html();
+                clone.find('label').html(label.replace('{0}', languageDescription));
+
+                clone.find(".descContent").attr('id',newName+'.content');
+                clone.find(".descContent").attr('name',newName+'.content');
+
+                clone.find(".descLanguage").attr('id',newName+'.languageId');
+                clone.find(".descLanguage").attr('name',newName+'.languageId');
+                clone.find(".descLanguage").val(languageId);
+
+                clone.find(".descDeleted").attr('id',newName+'.deleted');
+                clone.find(".descDeleted").attr('name',newName+'.deleted');
+
+                $('#descriptions').append(clone);
+            }
+            removeSelectedLanguage();
+        }
+
+        function removeDescription(elm){
+            var div = $(elm).parents('.row:first');
+            //set 'deleted'=true;
+            div.find('.descDeleted').val(true);
+            div.hide();
+
+            if($("#addDescription").is(':hidden')){
+                $("#addDescription").show();
+            }
+            var langId = div.find(".descLanguage").val();
+            var langValue = getValueForLangId(langId);
+            if(langValue){
+                $("#newDescriptionLanguage").append("<option value='"+langId+"'>"+langValue+"</option>");
+            }
+        }
+
+        function loadAvailableDecLang(){
+            var languages = $('#availableDescriptionLanguages').val().split(',')
+            if(languages[0]!=''){
+                $.each(languages,function(i,lang){
+                   var lang = lang.split('-');
+                   $("#newDescriptionLanguage").append("<option value='"+lang[0]+"'>"+lang[1]+"</option>");
+                });
+            }else{
+                $('#addDescription').hide();
+            }
+        }
+
+        function getValueForLangId(langId){
+            var languages = $('#allDescriptionLanguages').val().split(',')
+            if(languages[0]!=''){
+                var value = false;
+                $.each(languages,function(i,lang){
+                   var lang = lang.split('-');
+                   if(lang[0] == langId){
+                       value = lang[1];
+                   }
+                });
+                return value;
+            }else{
+                return false;
+            }
+            return false;
+        }
+
+        function removeSelectedLanguage(){
+            $('#newDescriptionLanguage option:selected').remove();
+            if(!$('#newDescriptionLanguage option').size()){
+                $('#addDescription').hide();
+            }
+        }
     </script>
 </head>
 <body>
@@ -69,11 +153,7 @@
                             <g:hiddenField name="product.id" value="${product?.id}"/>
                         </g:applyLayout>
 
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="product.description"/></content>
-                            <content tag="label.for">product.description</content>
-                            <g:textField class="field" name="product.description" value="${product?.description}" size="40"/>
-                        </g:applyLayout>
+                        <g:render template="/product/descriptions" model="[product: product]"/>
 
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="product.percentage"/></content>

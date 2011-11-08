@@ -1409,6 +1409,15 @@ ul#review-lines {
     margin: 3px;
 	width:72px;
 }
+.form-columns .inp-desc input.field {
+	width:192px;
+}
+.form-columns .inp-desc a img {
+	top: 0px;
+}
+.form-columns .add-desc select {
+    width: 205px;
+}
 .form-columns .select2 select {
     margin: 3px;
     width:22px;

@@ -137,7 +137,9 @@ public class ItemBL {
 
         item = itemDas.save(dto);
 
-        item.setDescription(dto.getDescription(), languageId);
+        if (dto.getDescription() != null) {
+            item.setDescription(dto.getDescription(), languageId);
+        }
         updateTypes(dto);
         updateExcludedTypes(dto);
 
@@ -154,7 +156,9 @@ public class ItemBL {
 
         item.setNumber(dto.getNumber());
         item.setGlCode(dto.getGlCode());
-        item.setDescription(dto.getDescription(), languageId);
+        if (dto.getDescription() != null) {
+            item.setDescription(dto.getDescription(), languageId);
+        }
         item.setPercentage(dto.getPercentage());
         item.setHasDecimals(dto.getHasDecimals());
 

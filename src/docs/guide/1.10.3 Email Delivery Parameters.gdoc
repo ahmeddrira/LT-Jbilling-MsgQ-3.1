@@ -50,6 +50,10 @@ If a customer receiving and email clicks on 'Reply' they will be replying to the
 
 Here you can enter an email address that will receive a copy of every single email that the system sends to your customers. You can use this to monitor what is being sent to your customers, or to have an archive of all the communication done by *j*Billing to your customers. 
 
+*ssl_auth* and *tls*
+
+These fields pertain to security. The question they ask is: are you going to use secure communication with the mail server or not? These fields should be 'True', provided that the mail server you are using supports this functionality. If your mail server does, and you want to use these features, then you will need to enter the word: True into the fields. If you don't require the use of these fields, or your mail server doesn't support the security functionality, then you will need to enter the word: False.
+
 The other parameters are specific to the mail server. You will need to contact your Internet Service Provider (ISP) or your network system administrator for the correct values.
 
 The following is a sample of how the fictitious company, Trend configured their Email Delivery Parameters:
@@ -61,4 +65,5 @@ The following is a sample of how the fictitious company, Trend configured their 
 * password: vanilla
 * smtp_server: smpt.trend.com
 * port: 25
+
 

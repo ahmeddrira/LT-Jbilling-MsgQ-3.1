@@ -20,19 +20,14 @@
 
 package jbilling
 
-import grails.plugins.springsecurity.Secured
-import com.sapienter.jbilling.server.mediation.db.MediationProcess
-import com.sapienter.jbilling.server.mediation.MediationRecordWS
-import com.sapienter.jbilling.server.util.Constants
-import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO
-import com.sapienter.jbilling.server.invoice.db.InvoiceDTO
-import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO
-import com.sapienter.jbilling.server.order.db.OrderDTO
-import org.hibernate.criterion.Restrictions
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import org.hibernate.FetchMode
-import org.hibernate.Criteria
 import com.sapienter.jbilling.client.util.SortableCriteria
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO
+import com.sapienter.jbilling.server.mediation.db.MediationProcess
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO
+import com.sapienter.jbilling.server.order.db.OrderDTO
+import com.sapienter.jbilling.server.util.Constants
+import grails.plugins.springsecurity.Secured
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 /**
 * MediationController
@@ -49,6 +44,7 @@ class MediationController {
 	def recentItemService
 	def breadcrumbService
 	def filterService
+    def mediationSession
 
 	def index = {
 		redirect action: list, params: params
@@ -66,7 +62,7 @@ class MediationController {
 			render view: "list", model: [processes: processes, filters:filters]
 		}
     }
-	
+
 	def getFilteredProcesses (filters, GrailsParameterMap params) {
 		params.max = (params?.max?.toInteger()) ?: pagination.max
 		params.offset = (params?.offset?.toInteger()) ?: pagination.offset
@@ -130,23 +126,9 @@ class MediationController {
 	}
 
     def invoice = {
-        def invoice = InvoiceDTO.get(params.int('id'))
-
-        def records = MediationRecordDTO.createCriteria().listDistinct {
-            lines {
-                orderLine {
-                    purchaseOrder {
-                        orderProcesses {
-                            eq("invoice.id", invoice.id)
-                        }
-                    }
-                }
-            }
-
-            recordStatus {
-                eq("id", Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE)
-            }
-        }
+        def invoiceId = params.int('id')
+        def invoice = InvoiceDTO.get(invoiceId)
+        def records = mediationSession.getMediationRecordLinesForInvoice(invoiceId)
 
         render view: 'events', model: [ invoice: invoice, records: records ]
     }
@@ -168,5 +150,5 @@ class MediationController {
 
         render view: 'events', model: [ order: order, records: records ]
     }
-	
+
 }

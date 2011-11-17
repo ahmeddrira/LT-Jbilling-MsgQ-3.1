@@ -25,7 +25,6 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDTO
 import com.sapienter.jbilling.server.mediation.db.MediationProcess
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO
 import com.sapienter.jbilling.server.order.db.OrderDTO
-import com.sapienter.jbilling.server.util.Constants
 import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
@@ -134,24 +133,13 @@ class MediationController {
     }
 
     def order = {
-        
-        def order, records
-        
-        try {
-            
-            order = OrderDTO.get(params.int('id'))
 
-            records = MediationRecordDTO.createCriteria().listDistinct {
-                lines {
-                    orderLine {
-                        eq("purchaseOrder.id", order.id)
-                    }
-                }
-    
-                recordStatus {
-                    eq("id", Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE)
-                }
-            }
+        def orderId = params.int('id')
+        def order, records
+
+        try {
+            order = OrderDTO.get(orderId)
+            records = mediationSession.getMediationRecordLinesForOrder(orderId)
         } catch (Exception e) {
             flash.info = message(code: 'error.mediation.events.none')
             flash.args = [params.id]

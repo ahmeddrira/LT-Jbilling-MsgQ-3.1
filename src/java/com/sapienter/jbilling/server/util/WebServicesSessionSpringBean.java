@@ -2520,7 +2520,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        List<MediationRecordLineDTO> events = mediationBean.getEventsForOrder(orderId);
+        List<MediationRecordLineDTO> events = mediationBean.getMediationRecordLinesForOrder(orderId);
 
         return MediationRecordBL.getWS(events);
     }

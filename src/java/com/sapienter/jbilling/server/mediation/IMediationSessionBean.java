@@ -69,7 +69,7 @@ public interface IMediationSessionBean {
                                      Date eventDate,
                                      String description);
 
-    public List<MediationRecordLineDTO> getEventsForOrder(Integer orderId);
+    public List<MediationRecordLineDTO> getMediationRecordLinesForOrder(Integer orderId);
 
     public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId);
 }

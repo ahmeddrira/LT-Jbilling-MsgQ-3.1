@@ -468,8 +468,8 @@ public class MediationSessionBean implements IMediationSessionBean {
         }
     }
 
-    public List<MediationRecordLineDTO> getEventsForOrder(Integer orderId) {
-        List<MediationRecordLineDTO> events = new MediationRecordLineDAS().getByOrder(orderId);
+    public List<MediationRecordLineDTO> getMediationRecordLinesForOrder(Integer orderId) {
+        List<MediationRecordLineDTO> events = new MediationRecordLineDAS().findByOrder(orderId);
         for (MediationRecordLineDTO line : events) {
             line.toString(); //as a touch
         }

@@ -44,7 +44,6 @@ class MediationController {
 	def recentItemService
 	def breadcrumbService
 	def filterService
-    def mediationSession
 
 	def index = {
 		redirect action: list, params: params
@@ -126,9 +125,23 @@ class MediationController {
 	}
 
     def invoice = {
-        def invoiceId = params.int('id')
-        def invoice = InvoiceDTO.get(invoiceId)
-        def records = mediationSession.getMediationRecordLinesForInvoice(invoiceId)
+        def invoice = InvoiceDTO.get(params.int('id'))
+
+        def records = MediationRecordDTO.createCriteria().listDistinct {
+            lines {
+                orderLine {
+                    purchaseOrder {
+                        orderProcesses {
+                            eq("invoice.id", invoice.id)
+                        }
+                    }
+                }
+            }
+
+            recordStatus {
+                eq("id", Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE)
+            }
+        }
 
         render view: 'events', model: [ invoice: invoice, records: records ]
     }

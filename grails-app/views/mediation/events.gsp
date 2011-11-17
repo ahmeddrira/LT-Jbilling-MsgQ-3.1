@@ -76,35 +76,39 @@
                 <g:set var="totalQuantity" value="${BigDecimal.ZERO}"/>
                 <g:set var="totalAmount" value="${BigDecimal.ZERO}"/>
 
-            <g:each var="recordLine" in="${records}">
-                <g:set var="totalQuantity" value="${totalQuantity.add(recordLine.quantity)}"/>
-                <g:set var="totalAmount" value="${totalAmount.add(recordLine.amount)}"/>
+                <g:each var="record" in="${records}">
+                    <g:each var="event" in="${record.lines}">
 
-                <tr>
-                    <td class="col02">
-                        ${recordLine.id}
-                    </td>
-                    <td>
-                        ${recordLine.record.key}
-                    </td>
-                    <td>
-                        <g:formatDate date="${recordLine.eventDate}" formatName="date.pretty.format"/>
-                    </td>
-                    <td class="col03">
-                        ${recordLine.description ?: '-'}
-                    </td>
-                    <td>
-                        <strong>
-                            <g:formatNumber number="${recordLine.quantity}" formatName="decimal.format"/>
-                        </strong>
-                    </td>
-                    <td>
-                        <strong>
-                            <g:formatNumber number="${recordLine.amount}"  type="currency" currencySymbol="${currency.symbol}"/>
-                        </strong>
-                    </td>
-                </tr>
-            </g:each>
+                        <g:set var="totalQuantity" value="${totalQuantity.add(event.quantity)}"/>
+                        <g:set var="totalAmount" value="${totalAmount.add(event.amount)}"/>
+
+                        <tr>
+                            <td class="col02">
+                                ${event.id}
+                            </td>
+                            <td>
+                                ${record.key}
+                            </td>
+                            <td>
+                                <g:formatDate date="${event.eventDate}" formatName="date.pretty.format"/>
+                            </td>
+                            <td class="col03">
+                                ${event.description ?: '-'}
+                            </td>
+                            <td>
+                                <strong>
+                                    <g:formatNumber number="${event.quantity}" formatName="decimal.format"/>
+                                </strong>
+                            </td>
+                            <td>
+                                <strong>
+                                    <g:formatNumber number="${event.amount}"  type="currency" currencySymbol="${currency.symbol}"/>
+                                </strong>
+                            </td>
+                        </tr>
+
+                    </g:each>
+                </g:each>
 
                 <!-- subtotals -->
                 <tr class="bg">

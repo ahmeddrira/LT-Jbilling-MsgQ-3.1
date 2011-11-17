@@ -40,6 +40,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Version;
 import java.io.Serializable;
 
 /**
@@ -70,6 +71,8 @@ public class MetaField implements Serializable {
     private boolean mandatory = false;
     private Integer displayOrder = 1;
     private MetaFieldValue defaultValue = null;
+
+    private Integer versionNum;
 
 
     @Id
@@ -174,6 +177,15 @@ public class MetaField implements Serializable {
         }
 
         return null;
+    }
+
+    @Version
+    @Column(name="OPTLOCK")
+    public Integer getVersionNum() {
+        return versionNum;
+    }
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
     }
 
     @Override

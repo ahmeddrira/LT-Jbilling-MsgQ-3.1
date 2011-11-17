@@ -1112,6 +1112,7 @@
         <column name="name" size="50" type="VARCHAR"/>
         <column name="value" size="50" type="VARCHAR"/>
         <column name="entity_id" type="INTEGER"/>
+        <column name="OPTLOCK" type="INTEGER" required="true"/>
          <foreign-key foreignTable="entity">
             <reference foreign="id" local="entity_id"/>
         </foreign-key>
@@ -1120,6 +1121,7 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="enumeration_id" type="INTEGER"/>
         <column name="value" size="50" type="VARCHAR"/>
+        <column name="OPTLOCK" type="INTEGER" required="true"/>
         <foreign-key foreignTable="enumeration">
             <reference foreign="id" local="enumeration_id"/>
         </foreign-key>
@@ -1499,10 +1501,11 @@
         <column name="name" type="VARCHAR" size="100"/>
         <column name="entity_type" type="VARCHAR" size="25" required="true"/>
         <column name="data_type" type="VARCHAR" size="25" required="true"/>
-        <column name="is_disabled" type="SMALLINT" />
-        <column name="is_mandatory" type="SMALLINT" />
+        <column name="is_disabled" type="BIT" />
+        <column name="is_mandatory" type="BIT" />
         <column name="display_order" type="INTEGER"/>
         <column name="default_value_id" type="INTEGER"/>
+        <column name="OPTLOCK" type="INTEGER" required="true"/>
         <foreign-key foreignTable="meta_field_value">
             <reference foreign="id" local="default_value_id"/>
         </foreign-key>

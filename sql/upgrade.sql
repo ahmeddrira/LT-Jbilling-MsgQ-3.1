@@ -1614,18 +1614,20 @@ insert into entity_report_map(report_id, entity_id) values(12, 1);
 -- Custom Fields for User, Item, Order, Invoice, Payment
 
 -- new tables
-create table meta_field_name (
-  id integer NOT NULL,
-  "name" character varying(100) NOT NULL,
-  entity_type character varying (25) NOT NULL,
-  data_type character varying (25) NOT NULL,
-  is_disabled boolean,
-  is_mandatory boolean,
-  display_order integer,
-  default_value_id integer,
-  CONSTRAINT meta_field_name_pkey PRIMARY KEY (id),
-  UNIQUE(id)
+CREATE TABLE meta_field_name
+(
+    id INTEGER NOT NULL,
+    name VARCHAR(100),
+    entity_type VARCHAR(25) NOT NULL,
+    data_type VARCHAR(25) NOT NULL,
+    is_disabled BOOLEAN,
+    is_mandatory BOOLEAN,
+    display_order INTEGER,
+    default_value_id INTEGER,
+    PRIMARY KEY (id)
 );
+ALTER TABLE meta_field_name ADD CONSTRAINT meta_field_name_FK_1 FOREIGN KEY (default_value_id) REFERENCES meta_field_value (id);
+
 
 -- MySQL or other DB
 -- create table meta_field_name (

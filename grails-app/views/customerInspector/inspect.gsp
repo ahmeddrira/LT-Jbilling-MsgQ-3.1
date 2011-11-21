@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.process.db.PeriodUnitDTO; com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.contact.db.ContactDTO; com.sapienter.jbilling.server.util.Util"%>
+<%@ page import="com.sapienter.jbilling.server.metafields.db.DataType; com.sapienter.jbilling.server.process.db.PeriodUnitDTO; com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.server.user.UserBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.contact.db.ContactDTO; com.sapienter.jbilling.server.util.Util"%>
 
 <html>
 <head>
@@ -119,14 +119,30 @@
                     </g:applyLayout>
 
                     <!-- custom contact fields -->
-                    <g:each var="ccf" in="${company.contactFieldTypes?.sort{ it.id }}">
-                        <g:set var="field" value="${contact?.fields?.find{ it.type.id == ccf.id }}"/>
+                    <g:if test="${customer?.metaFields}">
+                        <!-- meta fields -->
+                        <g:each var="metaField" in="${customer?.metaFields?.sort{ it.field.displayOrder }}">
+                            <g:if test="${!metaField.field.disabled}">
+                                <g:set var="fieldValue" value="${metaField.getValue()}"/>
 
-                        <g:applyLayout name="form/text">
-                            <content tag="label"><g:message code="${ccf.getDescription(session['language_id'])}"/></content>
-                            <span>${field?.content}</span>
-                        </g:applyLayout>
-                    </g:each>
+                                <g:applyLayout name="form/text">
+                                    <content tag="label">${metaField.field.name}</content>
+                                    <span title="${metaField.field.name}">
+                                        <g:if test="${metaField.field.getDataType() == DataType.DATE}">
+                                            <g:formatDate date="${fieldValue}" formatName="date.pretty.format"/>
+                                        </g:if>
+                                        <g:elseif test="${metaField.field.getDataType() == DataType.LIST}">
+                                            ${fieldValue?.join(', ')}
+                                        </g:elseif>
+                                        <g:else>
+                                            ${fieldValue}
+                                        </g:else>
+                                    </span>
+                                </g:applyLayout>
+
+                            </g:if>
+                        </g:each>
+                    </g:if>
 
                     <g:applyLayout name="form/text">
                         <content tag="label"><g:message code="customer.detail.user.next.invoice.date"/></content>

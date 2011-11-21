@@ -20,19 +20,14 @@
 
 package jbilling
 
-import grails.plugins.springsecurity.Secured
-import com.sapienter.jbilling.server.mediation.db.MediationProcess
-import com.sapienter.jbilling.server.mediation.MediationRecordWS
-import com.sapienter.jbilling.server.util.Constants
-import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO
-import com.sapienter.jbilling.server.invoice.db.InvoiceDTO
-import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO
-import com.sapienter.jbilling.server.order.db.OrderDTO
-import org.hibernate.criterion.Restrictions
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import org.hibernate.FetchMode
-import org.hibernate.Criteria
 import com.sapienter.jbilling.client.util.SortableCriteria
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO
+import com.sapienter.jbilling.server.mediation.db.MediationProcess
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO
+import com.sapienter.jbilling.server.order.db.OrderDTO
+import com.sapienter.jbilling.server.util.Constants
+import grails.plugins.springsecurity.Secured
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 /**
 * MediationController
@@ -66,7 +61,7 @@ class MediationController {
 			render view: "list", model: [processes: processes, filters:filters]
 		}
     }
-	
+
 	def getFilteredProcesses (filters, GrailsParameterMap params) {
 		params.max = (params?.max?.toInteger()) ?: pagination.max
 		params.offset = (params?.offset?.toInteger()) ?: pagination.offset
@@ -168,5 +163,5 @@ class MediationController {
 
         render view: 'events', model: [ order: order, records: records ]
     }
-	
+
 }

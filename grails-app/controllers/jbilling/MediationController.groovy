@@ -37,7 +37,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 @Secured(["MENU_95"])
 class MediationController {
 
-    static pagination = [max: 1, offset: 0, sort: 'id', order: 'desc']
+    static pagination = [max: 10, offset: 0, sort: 'id', order: 'desc']
 
     def webServicesSession
     def recentItemService
@@ -69,31 +69,6 @@ class MediationController {
         params.offset = (params?.offset?.toInteger()) ?: pagination.offset
         params.sort = params?.sort ?: pagination.sort
         params.order = params?.order ?: pagination.order
-
-//		def processes = new HashMap<MediationProcess, Integer>()
-        //
-        //        MediationProcess.createCriteria().list(
-        //			max:    params.max,
-        //			offset: params.offset
-        //		) {
-        //			and {
-        //				filters.each { filter ->
-        //					if (filter.value != null) {
-        //						addToCriteria(filter.getRestrictions());
-        //					}
-        //				}
-        //			}
-        //
-        //            configuration {
-        //                eq("entityId", session['company_id'])
-        //            }
-        //
-        //            // apply sorting
-        //            SortableCriteria.sort(params, delegate)
-        //
-        //        }.each { process ->
-        //            processes.put(process, getRecordCount(process))
-        //        }
 
         List<MediationProcess> processes = []
         List<Integer> processValues = []

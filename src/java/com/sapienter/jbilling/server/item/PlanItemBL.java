@@ -56,9 +56,6 @@ public class PlanItemBL {
             if (ws.getItemId() == null)
                 throw new SessionInternalError("PlanItemWS must have an affected item.");
 
-            if (ws.getModel() == null)
-                throw new SessionInternalError("PlanItemWS must have a price model.");
-
             // affected item
             ItemDTO item = new ItemBL(ws.getItemId()).getEntity();
 

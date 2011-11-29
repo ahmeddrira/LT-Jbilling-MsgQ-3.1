@@ -1306,3 +1306,8 @@ values (50, 50, 'instruction', 1, 'The number of decimal places to be shown on t
 
 update credit_card set cc_expiry = date_trunc('month', cc_expiry) + INTERVAL '1 month' - INTERVAL '1 day'; -- postgresql
 -- update credit_card set cc_expiry = last_day(cc_expiry); -- mysql
+
+-- Date: 29-Nov-2011
+-- Redmine Issue: #1575
+-- Description: Cannot add Line Percentage to a Plan
+alter table plan_item alter column price_model_id drop not null;

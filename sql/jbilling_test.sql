@@ -1740,7 +1740,7 @@ CREATE TABLE plan_item (
     id integer NOT NULL,
     plan_id integer,
     item_id integer NOT NULL,
-    price_model_id integer NOT NULL,
+    price_model_id integer,
     precedence integer NOT NULL,
     plan_item_bundle_id integer
 );

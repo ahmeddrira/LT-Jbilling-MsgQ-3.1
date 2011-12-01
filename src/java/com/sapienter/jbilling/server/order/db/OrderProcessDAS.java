@@ -19,7 +19,28 @@
  */
 package com.sapienter.jbilling.server.order.db;
 
+import java.util.List;
+
+import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
 public class OrderProcessDAS extends AbstractDAS<OrderProcessDTO> {
+    
+    //used to check of the order has any invoices (non deleted not cancelled)
+    public List<Integer> findActiveInvoicesForOrder(Integer orderId) {
+
+        String hql = "select pr.invoice.id" +
+                     "  from OrderProcessDTO pr " +
+                     "  where pr.purchaseOrder.id = :orderId" +
+                     "    and pr.invoice.deleted = 0" + 
+                     "    and pr.isReview = 0";
+
+        List<Integer> data = getSession()
+                        .createQuery(hql)
+                        .setParameter("orderId", orderId)
+                        .setComment("OrderProcessDAS.findActiveInvoicesForOrder " + orderId)
+                        .list();
+        return data;
+    }
+    
 }

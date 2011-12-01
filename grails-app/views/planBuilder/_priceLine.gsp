@@ -28,7 +28,6 @@
   @since 24-Jan-2011
 --%>
 <g:set var="product" value="${ItemDTO.get(planItem.itemId)}"/>
-<g:set var="strategy" value="${PriceModelStrategy.valueOf(planItem.model.type)?.getStrategy()}"/>
 <g:set var="editable" value="${index == params.int('newLineIndex')}"/>
 
 <g:formRemote name="price-${index}-update-form" url="[action: 'edit']" update="column2" method="GET">
@@ -38,17 +37,27 @@
 
     <!-- review line ${index} -->
     <li id="line-${index}" class="line ${editable ? 'active' : ''}">
-        <g:set var="currency" value="${currencies.find{ it.id == planItem.model.currencyId}}"/>
-
         <span class="description">
             ${planItem.precedence} &nbsp; ${product.description}
         </span>
-        <span class="rate">
-            <g:formatNumber number="${planItem.model.getRateAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"/>
-        </span>
-        <span class="strategy">
-            <g:message code="price.strategy.${planItem.model.type}"/>
-        </span>
+        <g:if test="${planItem?.model?.type}">
+            <g:set var="currency" value="${currencies.find{ it.id == planItem.model.currencyId}}"/>
+            <span class="rate">
+                <g:formatNumber number="${planItem.model.getRateAsDecimal()}" type="currency"
+                                currencySymbol="${currency?.symbol}"/>
+            </span>
+            <span class="strategy">
+                <g:message code="price.strategy.${planItem.model?.type}"/>
+            </span>
+        </g:if>
+        <g:else>
+            <span class="rate">
+                <g:formatNumber number="${product.percentage}" formatName="percentage.format"/>
+            </span>
+            <span class="strategy">
+                <g:message code="product.percentage"/>
+            </span>
+        </g:else>
         <div style="clear: both;"></div>
     </li>
 
@@ -96,7 +105,9 @@
 
                 <br/>
 
-                <g:render template="/priceModel/builderModel" model="[model: planItem.model]"/>
+                <g:if test="${planItem.model?.type}">
+                    <g:render template="/priceModel/builderModel" model="[model: planItem.model]"/>
+                </g:if>
             </div>
         </div>
 

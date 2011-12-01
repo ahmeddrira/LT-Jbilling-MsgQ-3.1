@@ -49,10 +49,10 @@
 				</tr>
 			</thead>
 	
-			<tbody>
-				<g:each var="entry" in="${processes.entrySet()}">
-                    <g:set var="proc" value="${entry.key}"/>
-                    <g:set var="recordCount" value="${entry.value}"/>
+            <tbody>
+				<g:each var="entry" status="idx" in="${processes}">
+                    <g:set var="proc" value="${entry}"/>
+                    <g:set var="recordCount" value="${processValues[idx]}"/>
 
 					<tr id="mediation-${proc.id}" class="${proc?.id == processId ? 'active' : ''}">
 						<td>

@@ -122,7 +122,7 @@ public class PlanItemDTO implements Serializable {
     }
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "price_model_id", nullable = false)
+    @JoinColumn(name = "price_model_id", nullable = true)
     public PriceModelDTO getModel() {
         return model;
     }

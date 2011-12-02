@@ -71,9 +71,8 @@ class CustomerController {
     def breadcrumbService
     def springSecurityService
 
-    @Secured(["hasAnyRole('MENU_90', 'CUSTOMER_11')"])
+    @Secured(["hasAnyRole('MENU_90', 'CUSTOMER_15')"])
     def index = {
-        log.debug "roles of the user are --${SpringSecurityUtils.getPrincipalAuthorities()}"
         redirect action: list, params: params
     }
 
@@ -84,7 +83,7 @@ class CustomerController {
         params.order = params?.order ?: pagination.order
 
         return UserDTO.createCriteria().list(
-                max: params.max,
+                max:    params.max,
                 offset: params.offset
         ) {
             createAlias("contact", "contact")
@@ -128,7 +127,7 @@ class CustomerController {
      * Get a list of users and render the list page. If the "applyFilters" parameter is given, the
      * partial "_users.gsp" template will be rendered instead of the complete user list.
      */
-    @Secured(["hasAnyRole('MENU_90', 'CUSTOMER_11')"])
+    @Secured(["hasAnyRole('MENU_90', 'CUSTOMER_15')"])
     def list = {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()

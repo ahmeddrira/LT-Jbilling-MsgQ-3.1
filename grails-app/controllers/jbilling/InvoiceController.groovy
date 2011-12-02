@@ -84,7 +84,7 @@ class InvoiceController {
 
         // hide review invoices by default
         def reviewFilter = filters.find{ it.field == 'isReview' }
-        if (reviewFilter && reviewFilter.value == null) reviewFilter.integerValue = 0
+        if (reviewFilter && reviewFilter.value == null) reviewFilter.integerValue = Integer.valueOf(0)
 
         // get list
         return InvoiceDTO.createCriteria().list(
@@ -93,7 +93,7 @@ class InvoiceController {
         ) {
             and {
                 filters.each { filter ->
-                    if (filter.value) {
+                    if (filter.value != null) {
                         //handle invoiceStatus
                         if (filter.field == 'invoiceStatus') {
                             def statuses = new InvoiceStatusDAS().findAll()

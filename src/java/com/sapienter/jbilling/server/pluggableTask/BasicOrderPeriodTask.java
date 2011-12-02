@@ -146,8 +146,9 @@ public class BasicOrderPeriodTask
                     cal.add(MapPeriodToCalendar.map(order.getOrderPeriod().getUnitId()), order.getOrderPeriod().getValue());
                     Date cycleEnds = cal.getTime();
 
-                    if (cycleEnds.after(firstBillableDate)
-                            && (cycleEnds.before(viewLimit) || (order.getActiveUntil() != null && order.getActiveUntil().before(viewLimit)))) {
+                    if ((cycleEnds.after(firstBillableDate) && (cycleEnds.compareTo(viewLimit) <= 0)
+                                || (order.getActiveUntil() != null && order.getActiveUntil().before(viewLimit)))) {
+
                         // calculate the days for this cycle
                         PeriodOfTime cycle = new PeriodOfTime(cycleStarts, cycleEnds, 0, 0);
 

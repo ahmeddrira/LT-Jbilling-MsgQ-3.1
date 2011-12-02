@@ -85,7 +85,8 @@ public class PreferenceBL {
     }
 
     public void createUpdateForEntity(Integer entityId, Integer preferenceId, String value) {
-        set(entityId, preferenceId);
+        preference = preferenceDas.findByType_Row(preferenceId, entityId, Constants.TABLE_ENTITY);
+        type = typeDas.find(preferenceId);
 
         if (preference != null) {
             // update preference

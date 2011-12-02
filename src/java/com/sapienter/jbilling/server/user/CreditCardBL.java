@@ -167,11 +167,13 @@ public class CreditCardBL extends ResultList
                     EventLogger.ROW_UPDATED, null,
                     null, creditCard.getCcExpiry());
         }
+
         creditCard.setCcExpiry(dto.getCcExpiry());
         creditCard.setName(dto.getName());
+
         // the number can be null, because calls from the API would do this
-        // to leave the number unchanged (was returned masked)
-        if (dto.getNumber() != null) {
+        // to leave the number unchanged (or number was returned masked)
+        if (dto.getNumber() != null && !dto.isNumberObsucred()) {
             creditCard.setNumber(dto.getNumber());
         }
         creditCard.setDeleted(new Integer(0));
@@ -188,15 +190,27 @@ public class CreditCardBL extends ResultList
 
         }
 
-        UserDTO userD = new UserDAS().find(userId);
-        dto.getBaseUsers().add(userD);
-        creditCard.setBaseUsers(dto.getBaseUsers());
-        userD.getCreditCards().add(creditCard);        
+        // update owning user
+        if (dto.getBaseUsers() != null) {
+            creditCard.getBaseUsers().addAll(dto.getBaseUsers());
+        }
 
-        NewCreditCardEvent event = new NewCreditCardEvent(creditCard, userD.getCompany().getId());     
+        UserDTO user = null;
+        if (userId != null) {
+            user = new UserDAS().find(userId);
+            if (!creditCard.getBaseUsers().contains(user)) {
+                creditCard.getBaseUsers().add(user);
+                user.getCreditCards().add(creditCard);
+            }
+
+        } else {
+            user = getUser();
+        }
+
+        NewCreditCardEvent event = new NewCreditCardEvent(creditCard, user.getCompany().getId());
         EventManager.process(event);
 
-        new UserDAS().save(userD);
+        new UserDAS().save(user);
         new CreditCardDAS().save(creditCard);
 
     }

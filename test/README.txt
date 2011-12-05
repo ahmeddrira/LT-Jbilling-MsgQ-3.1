@@ -41,4 +41,4 @@ Integration Tests
         * ant test-process
 
 
-** You must run 'ant prepare-test' or 'ant dclean' prior to running either the web service or integration tests.
+** You must run 'grails prepare-test' prior to running either the web service or integration tests.

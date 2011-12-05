@@ -105,7 +105,10 @@ public class AutoRechargeTask extends PluggableTask implements IInternalEventsTa
             // optimistic lock: this transaction and the new payment one both changing the same customer.dynamic_balance
             IPaymentSessionBean paymentSession = new PaymentSessionBean(); 
 
-            Integer result = paymentSession.processAndUpdateInvoice(payment, null, balanceEvent.getEntityId());
+            Integer result = paymentSession.processAndUpdateInvoice(payment,
+                                                                    null,
+                                                                    balanceEvent.getEntityId(),
+                                                                    balanceEvent.getUserId());
 
             LOG.debug("Payment created with result: " + result);
         } else {

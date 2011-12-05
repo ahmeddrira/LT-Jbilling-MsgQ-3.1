@@ -48,6 +48,8 @@ import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+
+import org.apache.velocity.runtime.log.SystemLogChute;
 import org.joda.time.DateMidnight;
 
 /**
@@ -1142,9 +1144,15 @@ Ch8: no applicable orders
             // delete one line from the one time order
             System.out.println("remove one line from one time order");
             order = api.getOrder(orderId);
-            line = order.getOrderLines()[0].getItemId() == 1 ? order.getOrderLines()[0] : order.getOrderLines()[1];
-            order.setOrderLines(new OrderLineWS[] { line });
+
+            for (OrderLineWS orderLine : order.getOrderLines()) {
+                if (orderLine.getItemId() != 1) {
+                    orderLine.setDeleted(1);
+                }
+            }
+
             api.updateOrder(order);
+
             myUser = api.getUserWS(myId);
             assertEquals("user should have new balance", new BigDecimal("10"), myUser.getDynamicBalanceAsDecimal());
 
@@ -1154,7 +1162,6 @@ Ch8: no applicable orders
             assertEquals("validate purchase success 3", Boolean.valueOf(true), result.getSuccess());
             assertEquals("validate purchase authorized 3", Boolean.valueOf(true), result.getAuthorized());
             assertEquals("validate purchase quantity 3", Constants.BIGDECIMAL_ONE, result.getQuantityAsDecimal());
-
 
             // delete the order, the balance has to go back to 20
             System.out.println("deleting one time order");

@@ -375,8 +375,8 @@ public class WSTest extends TestCase {
          */
 
         UserWS user = createUser(true, 43, null);
+        user = api.getUserWS(user.getUserId());
 
-        Integer userId = user.getUserId();
         CreditCardDTO card = user.getCreditCard(); // fetch card after each update to ensure that we're
                                                    // always updating the most recent credit card
 
@@ -384,43 +384,47 @@ public class WSTest extends TestCase {
         card.setNumber("4111111111111985");
         api.updateCreditCard(user.getUserId(), card);
 
-        user = api.getUserWS(userId);
+        user = api.getUserWS(user.getUserId());
         card = user.getCreditCard();
         System.out.println("Updated card " + card.getId() + " number: " + card.getNumber());
         assertEquals("card type Visa", Constants.PAYMENT_METHOD_VISA, card.getType());
 
         // Mastercard
         card.setNumber("5111111111111985");
+        System.out.println("Updating credit card " + card.getId() + " With a Mastercard number");
         api.updateCreditCard(user.getUserId(), card);
 
-        user = api.getUserWS(userId);
+        user = api.getUserWS(user.getUserId());
         card = user.getCreditCard();
         System.out.println("Updated card " + card.getId() + " number: " + card.getNumber());
         assertEquals("card type Mastercard", Constants.PAYMENT_METHOD_MASTERCARD, card.getType());
         
         // American Express
         card.setNumber("3711111111111985");
+        System.out.println("Updating credit card " + card.getId() + " With an American Express number");
         api.updateCreditCard(user.getUserId(), card);
 
-        user = api.getUserWS(userId);
+        user = api.getUserWS(user.getUserId());
         card = user.getCreditCard();
         System.out.println("Updated card " + card.getId() + " number: " + card.getNumber());
         assertEquals("card type American Express", Constants.PAYMENT_METHOD_AMEX, card.getType());
 
         // Diners Club
         card.setNumber("3811111111111985");
+        System.out.println("Updating credit card " + card.getId() + " With a Diners Club number");
         api.updateCreditCard(user.getUserId(), card);
 
-        user = api.getUserWS(userId);
+        user = api.getUserWS(user.getUserId());
         card = user.getCreditCard();
         System.out.println("Updated card " + card.getId() + " number: " + card.getNumber());
         assertEquals("card type Diners", Constants.PAYMENT_METHOD_DINERS, card.getType());
 
         // Discovery
         card.setNumber("6111111111111985");
+        System.out.println("Updating credit card " + card.getId() + " With a Discovery card number");
         api.updateCreditCard(user.getUserId(), card);
 
-        user = api.getUserWS(userId);
+        user = api.getUserWS(user.getUserId());
         card = user.getCreditCard();
         System.out.println("Updated card " + card.getId() + " number: " + card.getNumber());
         assertEquals("card type Discovery", Constants.PAYMENT_METHOD_DISCOVERY, card.getType());

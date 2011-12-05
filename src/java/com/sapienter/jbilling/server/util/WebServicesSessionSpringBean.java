@@ -2595,7 +2595,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
 
     /**
-     * Updates a users stored credit card.
+     * Updates a users stored credit card to the given details. If the given credit card is
+     * null then the user's existing credit card will be deleted.
      *
      * @param userId user to update
      * @param creditCard credit card details
@@ -2604,14 +2605,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard)
             throws SessionInternalError {
 
-        if (creditCard == null)
-            return;
-
-        if (creditCard.getName() == null || creditCard.getExpiry() == null)
-            throw new SessionInternalError("Missing credit card name or expiry date");
+        // card can be null, passing null will delete the user's card
+        if (creditCard != null) {
+            if (creditCard.getName() == null || creditCard.getExpiry() == null)
+                throw new SessionInternalError("Missing credit card name or expiry date");
+        }
 
         IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
-        userSession.updateCreditCard(getCallerId(), userId, new CreditCardDTO(creditCard));
+        userSession.updateCreditCard(getCallerId(), userId, creditCard != null ? new CreditCardDTO(creditCard) : null);
     }
 
     /**

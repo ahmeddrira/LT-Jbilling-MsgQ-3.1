@@ -1627,7 +1627,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
             throws SessionInternalError {
-        validatePayment(payment);
         payment.setIsRefund(0);
 
         if (payment.getMethodId() == null) {
@@ -1657,7 +1656,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         if (payment == null && invoiceId != null)
             return payInvoice(invoiceId);
 
-        validatePayment(payment);
         Integer entityId = getCallerCompanyId();
         PaymentDTOEx dto = new PaymentDTOEx(payment);
 
@@ -2186,19 +2184,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             }
         }
     }
-
-    private void validatePayment(PaymentWS payment)
-            throws SessionInternalError {
-        if (payment == null) {
-            throw new SessionInternalError("Null parameter");
-        }
-        payment.setBaseUserId(payment.getBaseUserId());
-        payment.setMethodId(payment.getMethodId());
-        payment.setCurrencyId(payment.getCurrencyId());
-        payment.setPaymentId(payment.getPaymentId());
-
-        // todo: additional hibernate validations
-            }
 
     private InvoiceDTO doCreateInvoice(Integer orderId) {
         try {

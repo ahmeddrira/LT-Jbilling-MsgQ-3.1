@@ -75,7 +75,6 @@ public class PaymentWS implements WSSecured, Serializable {
     private Date createDatetime;
     private Date updateDatetime;
     private int deleted;
-    private Integer baseUserId;
     private Integer resultId;
     private String paymentNotes = null;
     private Integer paymentPeriod;
@@ -281,14 +280,6 @@ public class PaymentWS implements WSSecured, Serializable {
         this.deleted = deleted;
     }
 
-    public Integer getBaseUserId() {
-        return baseUserId;
-    }
-
-    public void setBaseUserId(Integer baseUserId) {
-        this.baseUserId = baseUserId;
-    }
-    
     public void setPaymentNotes(String paymentNotes){
         this.paymentNotes = paymentNotes;
     }
@@ -321,7 +312,7 @@ public class PaymentWS implements WSSecured, Serializable {
     public String toString() {
         return "PaymentWS{"
                + "id=" + id
-               + ", baseUserId=" + baseUserId
+               + ", userId=" + userId
                + ", paymentMethodId=" + paymentMethodId
                + ", method='" + method + '\''
                + ", amount='" + amount + '\''

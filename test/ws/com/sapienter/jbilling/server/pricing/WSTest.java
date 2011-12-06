@@ -24,6 +24,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.PlanItemBundleWS;
 import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.item.PlanWS;
+import com.sapienter.jbilling.server.order.OrderLineBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
@@ -266,14 +267,18 @@ public class WSTest extends PricingTestCase {
         PlanItemWS price = api.getCustomerPrice(user.getUserId(), PLAN_AFFECTED_ITEM_ID);
         assertEquals("Affected item should be discounted.", new BigDecimal("0.50"), price.getModel().getRateAsDecimal());
 
-        // remove plan item, replace with non-plan junk item
+        // remove plan item
+        OrderLineWS oldLine = order.getOrderLines()[0];
+        oldLine.setDeleted(1);
+
+        // replace with non-plan junk item
         OrderLineWS line = new OrderLineWS();
         line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
         line.setItemId(NON_PLAN_ITEM_ID);
         line.setUseItem(true);
         line.setQuantity(1);
-        order.setOrderLines(new OrderLineWS[] { line });
 
+        order.setOrderLines(new OrderLineWS[] { oldLine, line });
         api.updateOrder(order); // update order
 
         // verify price removed

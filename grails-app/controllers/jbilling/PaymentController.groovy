@@ -462,6 +462,11 @@ class PaymentController {
     def bindPayment(PaymentWS payment, GrailsParameterMap params) {
         bindData(payment, params, 'payment')
 
+        if (params.isRefund) {
+            log.debug("negating the payment if refund flag is on.")
+            payment.setAmountAsDecimal(payment.amountAsDecimal.negate())
+        }
+
         payment.isRefund = ('on' == params.isRefund) ? 1 : 0
 
         // bind credit card object if parameters present

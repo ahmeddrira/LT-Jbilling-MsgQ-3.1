@@ -185,7 +185,9 @@ public class PlanBL {
             }
 
             // clean all remaining prices just-in-case there's an orphaned record
-            purgeCustomerPrices();
+            if (plan.getPlanItems().size() > 0) {
+                purgeCustomerPrices();
+            }
 
             // do update
             validateAttributes(dto);

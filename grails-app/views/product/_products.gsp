@@ -119,7 +119,7 @@
     </g:if>
 
     <sec:access url="/product/allProducts">
-        <g:remoteLink action="allProducts" update="column2" class="submit show"><span><g:message code="button.show.all"/></span></g:remoteLink>
+        <g:remoteLink action="allProducts" update="column2" class="submit show" onSuccess="\$('.submit.show').hide();" ><span><g:message code="button.show.all"/></span></g:remoteLink>
     </sec:access>
 </div>
 

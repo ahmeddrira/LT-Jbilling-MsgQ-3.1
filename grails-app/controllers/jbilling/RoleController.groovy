@@ -20,12 +20,12 @@
 
 package jbilling
 
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO
 import com.sapienter.jbilling.server.user.permisson.db.PermissionTypeDTO
 import com.sapienter.jbilling.server.user.RoleBL
 import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO
 import grails.plugins.springsecurity.Secured
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 /**
  * RoleController 
@@ -84,38 +84,42 @@ class RoleController {
         def role = new RoleDTO();
         bindData(role, params, 'role')
 
-        List<PermissionDTO> allPermissions = PermissionDTO.list()
-        params.permission.each { id, granted ->
-            if (granted) {
-                role.permissions.add(allPermissions.find{ it.id == id as Integer })
+        if (params.role.title) {
+            List<PermissionDTO> allPermissions = PermissionDTO.list()
+            params.permission.each { id, granted ->
+                if (granted) {
+                    role.permissions.add(allPermissions.find { it.id == id as Integer })
+                }
             }
-        }
 
-        def roleService = new RoleBL();
+            def roleService = new RoleBL();
 
-        // save or update
-        if (!role.id || role.id == 0) {
-            log.debug("saving new role ${role}")
-            role.id = roleService.create(role)
+            // save or update
+            if (!role.id || role.id == 0) {
+                log.debug("saving new role ${role}")
+                role.id = roleService.create(role)
 
-            flash.message = 'role.created'
-            flash.args = [ role.id as String ]
+                flash.message = 'role.created'
+                flash.args = [role.id as String]
 
+            } else {
+                log.debug("updating role ${role.id}")
+
+                roleService.set(role.id)
+                roleService.update(role)
+
+                flash.message = 'role.updated'
+                flash.args = [role.id as String]
+            }
+
+            // set/update international descriptions
+            roleService.setTitle(session['language_id'], params.role.title)
+            roleService.setDescription(session['language_id'], params.role.description)
+            chain action: 'list', params: [id: role.id]
         } else {
-            log.debug("updating role ${role.id}")
-
-            roleService.set(role.id)
-            roleService.update(role)
-
-            flash.message = 'role.updated'
-            flash.args = [ role.id as String ]
+            flash.error = "role.error.title.empty"
+            chain action: 'edit'
         }
-
-        // set/update international descriptions
-        roleService.setTitle(session['language_id'], params.role.title)
-        roleService.setDescription(session['language_id'], params.role.description)
-
-        chain action: 'list', params: [ id: role.id ]
     }
 
     def delete = {

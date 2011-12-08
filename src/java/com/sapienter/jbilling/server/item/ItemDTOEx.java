@@ -43,7 +43,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private String number;
     @Size (min=0,max=50, message="validation.error.size,1,50")
     private String glCode;
-    @Digits(integer=3, fraction=2, message="validation.error.not.a.number")
+    @Digits(integer=3, fraction=4, message="validation.error.invalid.number.or.fraction")
     private String percentage;
     private Integer[] excludedTypes = null;
     private Integer hasDecimals;

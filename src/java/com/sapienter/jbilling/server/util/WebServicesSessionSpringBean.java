@@ -25,6 +25,7 @@
 package com.sapienter.jbilling.server.util;
 
 
+import com.sapienter.jbilling.server.pluggableTask.admin.*;
 import grails.plugins.springsecurity.SpringSecurityService;
 
 import java.io.PrintWriter;
@@ -124,11 +125,6 @@ import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.process.AgeingDTOEx;
 import com.sapienter.jbilling.server.process.AgeingWS;
@@ -3183,6 +3179,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public void deletePlugin(Integer id) {
         new PluggableTaskBL(id).delete(getCallerId());
+
+        // invalidate the plug-in cache to clear the deleted plug-in reference
+        PluggableTaskDAS pluggableTaskDas = Context.getBean(Context.Name.PLUGGABLE_TASK_DAS);
+        pluggableTaskDas.invalidateCache();
     }
 
 

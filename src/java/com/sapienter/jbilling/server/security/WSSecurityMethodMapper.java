@@ -226,7 +226,7 @@ public class WSSecurityMethodMapper {
         SAVE_CUSTOMER_NOTES             ("saveCustomerNotes", 0, Type.USER),
         NOTIFY_INVOICE_BY_EMAIL         ("notifyInvoiceByEmail", 0, Type.INVOICE),
         NOTIFY_PAYMENT_BY_EMAIL         ("notifyPaymentByEmail", 0, Type.PAYMENT),
-        DELETE_PLUGIN                   ("deletePlugin", 1, Type.PLUG_IN),
+        DELETE_PLUGIN                   ("deletePlugin", 0, Type.PLUG_IN),
 
         GET_PLAN                        ("getPlanWS", 0, Type.PLAN),
         DELETE_PLAN                     ("deletePlan", 0, Type.PLAN),

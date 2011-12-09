@@ -243,13 +243,14 @@
 
             <!--
                 The tests need to run in a specific order (partners first). Don't use batchtest!
-            -->
             <test name="com.sapienter.jbilling.server.user.PartnerTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
+            -->
             <test name="com.sapienter.jbilling.server.process.BillingProcessTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.mediation.MediationTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.provisioning.ProvisioningTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
-            <test name="com.sapienter.jbilling.server.process.AgeingTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>  <!-- must be last -->            
-            <test name="com.sapienter.jbilling.server.task.SimpleTaxCompositionTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
+            <test name="com.sapienter.jbilling.server.process.AgeingTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>  
+            <!-- must be last -->            
+            <test name="com.sapienter.jbilling.server.task.SimpleTaxCompositionTaskTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.task.CountryTaxCompositionTaskTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.task.PaymentTermPenaltyTaskTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             

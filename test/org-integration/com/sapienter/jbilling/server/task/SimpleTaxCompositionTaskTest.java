@@ -50,7 +50,7 @@ import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
  * @author Alexander Aksenov, Vikas Bodani
  * @since 30.04.11
  */
-public class SimpleTaxCompositionTest extends TestCase {
+public class SimpleTaxCompositionTaskTest extends TestCase {
     
     private JbillingAPI api;
 
@@ -68,6 +68,8 @@ public class SimpleTaxCompositionTest extends TestCase {
     private final static BigDecimal TAX_ITEM_COST = new BigDecimal(10.0);
     private final static BigDecimal TAX_ITEM_PERCENTAGE = new BigDecimal(10.0);
     private final static BigDecimal FIXED_ORDER_COST = new BigDecimal(25);
+    
+    private static Integer SIMPLE_TAX_PLUGIN_ID= null;
     
     @Override
     protected void setUp() throws Exception {
@@ -103,9 +105,9 @@ public class SimpleTaxCompositionTest extends TestCase {
             newTask.setVersionNumber(1);
             newTask.getParameters().put(PLUGIN_PARAM_TAX_ITEM_ID, taxItemID.toString());
             newTask.getParameters().put(PLUGIN_PARAM_EXEMPT_ITEM_CATEGORY_ID, item_exempt_category_id.toString());
-            Integer pluginId = api.createPlugin(newTask);
+            Integer SIMPLE_TAX_PLUGIN_ID = api.createPlugin(newTask);
             
-            assertNotNull("Plugin added successfully.", pluginId);
+            assertNotNull("Plugin added successfully.", SIMPLE_TAX_PLUGIN_ID);
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -218,6 +220,15 @@ public class SimpleTaxCompositionTest extends TestCase {
             assertTrue("Invoice should CONTAINS tax line with FLAT price for EXEMPT item", hasTaxLine);
             //flat price for tax applies even for exempt item category
             assertEquals("Total by invoice should be 25 + 10", invoice.getTotalAsDecimal().compareTo(FIXED_ORDER_COST.add(TAX_ITEM_COST).setScale(2, RoundingMode.HALF_UP)), 0);
+            
+            //delete plugin in the last test case so that it doesn't interfere with other test cases
+            try {
+                api.deletePlugin(SIMPLE_TAX_PLUGIN_ID);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);

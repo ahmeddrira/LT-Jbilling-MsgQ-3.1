@@ -80,13 +80,14 @@
                             </g:remoteLink>
                         </td>
                         <td class="medium">
-                            <g:remoteLink class="cell double" action="edit" id="${product.id}" params="[_eventId: 'addLine']" update="column2" method="GET">
+                            <g:remoteLink class="cell double" action="edit" id="${product.id}" 
+                                                params="[_eventId: 'addLine']" update="column2" method="GET">
                                 <g:if test="${product.percentage}">
-                                    %<g:formatNumber number="${product.percentage}" formatName="money.format"/>
+                                    <g:formatNumber number="${product.percentage}" formatName="money.format"/>
                                 </g:if>
                                 <g:else>
-                                    <g:set var="price" value="${product.getPrice(order.activeSince ?: order.createDate ?: new Date())}"/>
-                                    <g:formatNumber number="${price?.rate}" type="currency" currencySymbol="${price?.currency?.symbol}" maxFractionDigits="4"/>
+                                    <g:formatNumber number="${product.defaultPrice?.rate}" type="currency" 
+                                        currencySymbol="${product.defaultPrice?.currency?.symbol}" maxFractionDigits="4"/> 
                                 </g:else>
                             </g:remoteLink>
                         </td>

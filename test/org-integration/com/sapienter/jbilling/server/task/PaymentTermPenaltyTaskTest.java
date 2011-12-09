@@ -90,7 +90,7 @@ public class PaymentTermPenaltyTaskTest extends TestCase {
                             .println("The amount should be equal to $0.5 (1 percent of 50)");
                     assertEquals(
                             "The amount should have been $0.5 (1 percent of 50).",
-                            new BigDecimal("0.5").compareTo(new BigDecimal(line.getAmount()))==0);
+                            new BigDecimal("0.5").compareTo(line.getAmountAsDecimal())==0);
                 }
             }
 

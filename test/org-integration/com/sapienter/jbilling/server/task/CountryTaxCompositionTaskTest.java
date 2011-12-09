@@ -13,7 +13,6 @@ import junit.framework.TestCase;
 import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
@@ -34,10 +33,11 @@ import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
  */
 public class CountryTaxCompositionTaskTest extends TestCase {
 
-    private static final String CHARGE_CARRYING_ITEM_ID = "charge_carrying_item_id";
-    private static final String TAX_COUNTRY_CODE = "tax_country_code";
-
     private static final Integer COUNTRY_TAX_PLUGIN_TYPE_ID = 90;
+
+    private static final String PLUGIN_PARAM_CHARGE_CARRYING_ITEM_ID = "charge_carrying_item_id";
+    private static final String PLUGIN_PARAM_TAX_COUNTRY_CODE = "tax_country_code";
+
     private static final Integer FEE_ITEM_TYPE_ID = 22;
     private static final Integer LEMONADE_ITEM_ID = 2602;
 
@@ -344,8 +344,8 @@ public class CountryTaxCompositionTaskTest extends TestCase {
         // plug-in adds the given tax item to the invoice
         // when the customers country code is Australia 'AU'
         Hashtable<String, String> parameters = new Hashtable<String, String>();
-        parameters.put(CHARGE_CARRYING_ITEM_ID, itemId.toString());
-        parameters.put(TAX_COUNTRY_CODE, "AU");
+        parameters.put(PLUGIN_PARAM_CHARGE_CARRYING_ITEM_ID, itemId.toString());
+        parameters.put(PLUGIN_PARAM_TAX_COUNTRY_CODE, "AU");
         plugin.setParameters(parameters);
 
         return api.createPlugin(plugin);

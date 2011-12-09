@@ -24,387 +24,173 @@
 package com.sapienter.jbilling.server.entity;
 
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * Value object for InvoiceLineEntity.
  */
 @XmlType(name = "invoice-line")
-public class InvoiceLineDTO
-   extends java.lang.Object
-   implements java.io.Serializable 
-{
-   private java.lang.Integer id;
-   private boolean idHasBeenSet = false;
-   private java.lang.String description;
-   private boolean descriptionHasBeenSet = false;
-   private java.math.BigDecimal amount;
-   private boolean amountHasBeenSet = false;
-   private java.math.BigDecimal price;
-   private boolean priceHasBeenSet = false;
-   private java.math.BigDecimal quantity;
-   private boolean quantityHasBeenSet = false;
-   private java.lang.Integer deleted;
-   private boolean deletedHasBeenSet = false;
-   private java.lang.Integer itemId;
-   private boolean itemIdHasBeenSet = false;
-   private java.lang.Integer sourceUserId;
-   private boolean sourceUserIdHasBeenSet = false;
-   private java.lang.Integer isPercentage;
-   private boolean isPercentageHasBeenSet = false;
+public class InvoiceLineDTO implements Serializable {
 
-   private java.lang.Integer pk;
+    private Integer id;
+    private String description;
+    private String amount;
+    private String price;
+    private String quantity;
+    private Integer deleted;
+    private Integer itemId;
+    private Integer sourceUserId;
+    private Integer isPercentage;
 
-   public InvoiceLineDTO()
-   {
-   }
+    public InvoiceLineDTO() {
+    }
 
-   public InvoiceLineDTO( java.lang.Integer id,java.lang.String description,java.math.BigDecimal amount,java.math.BigDecimal price,java.math.BigDecimal quantity,java.lang.Integer deleted,java.lang.Integer itemId,java.lang.Integer sourceUserId,java.lang.Integer isPercentage )
-   {
-      this.id = id;
-      idHasBeenSet = true;
-      this.description = description;
-      descriptionHasBeenSet = true;
-      this.amount = amount;
-      amountHasBeenSet = true;
-      this.price = price;
-      priceHasBeenSet = true;
-      this.quantity = quantity;
-      quantityHasBeenSet = true;
-      this.deleted = deleted;
-      deletedHasBeenSet = true;
-      this.itemId = itemId;
-      itemIdHasBeenSet = true;
-      this.sourceUserId = sourceUserId;
-      sourceUserIdHasBeenSet = true;
-      this.isPercentage = isPercentage;
-      isPercentageHasBeenSet = true;
-      pk = this.getId();
-   }
+    public InvoiceLineDTO(Integer id, String description, BigDecimal amount, BigDecimal price, BigDecimal quantity,
+                          Integer deleted, Integer itemId, Integer sourceUserId, Integer percentage) {
+        this.id = id;
+        this.description = description;
+        setAmount(amount);
+        setPrice(price);
+        setQuantity(quantity);
+        this.deleted = deleted;
+        this.itemId = itemId;
+        this.sourceUserId = sourceUserId;
+        isPercentage = percentage;
+    }
 
-   //TODO Cloneable is better than this !
-   public InvoiceLineDTO( InvoiceLineDTO otherValue )
-   {
-      this.id = otherValue.id;
-      idHasBeenSet = true;
-      this.description = otherValue.description;
-      descriptionHasBeenSet = true;
-      this.amount = otherValue.amount;
-      amountHasBeenSet = true;
-      this.price = otherValue.price;
-      priceHasBeenSet = true;
-      this.quantity = otherValue.quantity;
-      quantityHasBeenSet = true;
-      this.deleted = otherValue.deleted;
-      deletedHasBeenSet = true;
-      this.itemId = otherValue.itemId;
-      itemIdHasBeenSet = true;
-      this.sourceUserId = otherValue.sourceUserId;
-      sourceUserIdHasBeenSet = true;
-      this.isPercentage = otherValue.isPercentage;
-      isPercentageHasBeenSet = true;
+    public InvoiceLineDTO(InvoiceLineDTO otherValue) {
+        this.id = otherValue.id;
+        this.description = otherValue.description;
+        this.amount = otherValue.amount;
+        this.price = otherValue.price;
+        this.quantity = otherValue.quantity;
+        this.deleted = otherValue.deleted;
+        this.itemId = otherValue.itemId;
+        this.sourceUserId = otherValue.sourceUserId;
+        this.isPercentage = otherValue.isPercentage;
+    }
 
-      pk = this.getId();
-   }
+    public Integer getId() {
+        return id;
+    }
 
-   public java.lang.Integer getPrimaryKey()
-   {
-      return pk;
-   }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-   public void setPrimaryKey( java.lang.Integer pk )
-   {
-      // it's also nice to update PK object - just in case
-      // somebody would ask for it later...
-      this.pk = pk;
-      setId( pk );
-   }
+    public String getDescription() {
+        return description;
+    }
 
-   public java.lang.Integer getId()
-   {
-      return this.id;
-   }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-   public void setId( java.lang.Integer id )
-   {
-      this.id = id;
-      idHasBeenSet = true;
+    public String getAmount() {
+        return amount;
+    }
 
-          pk = id;
-   }
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
 
-   public boolean idHasBeenSet(){
-      return idHasBeenSet;
-   }
-   public java.lang.String getDescription()
-   {
-      return this.description;
-   }
+    public void setAmount(BigDecimal amount) {
+        this.amount = (amount != null ? amount.toString() : null);
+    }
 
-   public void setDescription( java.lang.String description )
-   {
-      this.description = description;
-      descriptionHasBeenSet = true;
+    public BigDecimal getAmountAsDecimal() {
+        return amount == null ? null : new BigDecimal(amount);
+    }
 
-   }
+    public void setAmountAsDecimal(BigDecimal amount) {
+        setPrice(amount);
+    }
 
-   public boolean descriptionHasBeenSet(){
-      return descriptionHasBeenSet;
-   }
-   public java.math.BigDecimal getAmount()
-   {
-      return this.amount;
-   }
+    public String getPrice() {
+        return price;
+    }
 
-   public void setAmount( java.math.BigDecimal amount )
-   {
-      this.amount = amount;
-      amountHasBeenSet = true;
+    public void setPrice(String price) {
+        this.price = price;
+    }
 
-   }
+    public void setPrice(BigDecimal price) {
+        this.price = (price != null ? price.toString() : null);
+    }
 
-   public boolean amountHasBeenSet(){
-      return amountHasBeenSet;
-   }
-   public java.math.BigDecimal getPrice()
-   {
-      return this.price;
-   }
+    public BigDecimal getPriceAsDecimal() {
+        return price == null ? null : new BigDecimal(price);
+    }
 
-   public void setPrice( java.math.BigDecimal price )
-   {
-      this.price = price;
-      priceHasBeenSet = true;
+    public void setPriceAsDecimal(BigDecimal price) {
+        setPrice(price);
+    }
 
-   }
+    public String getQuantity() {
+        return quantity;
+    }
 
-   public boolean priceHasBeenSet(){
-      return priceHasBeenSet;
-   }
-   public java.math.BigDecimal getQuantity()
-   {
-      return this.quantity;
-   }
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
+    }
 
-   public void setQuantity( java.math.BigDecimal quantity )
-   {
-      this.quantity = quantity;
-      quantityHasBeenSet = true;
+    public void setQuantity(BigDecimal quantity) {
+        this.quantity = (quantity != null ? quantity.toString() : null);
+    }
 
-   }
+    public BigDecimal getQuantityAsDecimal() {
+        return quantity == null ? null : new BigDecimal(quantity);
+    }
 
-   public boolean quantityHasBeenSet(){
-      return quantityHasBeenSet;
-   }
-   public java.lang.Integer getDeleted()
-   {
-      return this.deleted;
-   }
+    public void setQuantityAsDecimal(BigDecimal quantity) {
+        setPrice(quantity);
+    }
 
-   public void setDeleted( java.lang.Integer deleted )
-   {
-      this.deleted = deleted;
-      deletedHasBeenSet = true;
+    public Integer getDeleted() {
+        return deleted;
+    }
 
-   }
+    public void setDeleted(Integer deleted) {
+        this.deleted = deleted;
+    }
 
-   public boolean deletedHasBeenSet(){
-      return deletedHasBeenSet;
-   }
-   public java.lang.Integer getItemId()
-   {
-      return this.itemId;
-   }
+    public Integer getItemId() {
+        return itemId;
+    }
 
-   public void setItemId( java.lang.Integer itemId )
-   {
-      this.itemId = itemId;
-      itemIdHasBeenSet = true;
+    public void setItemId(Integer itemId) {
+        this.itemId = itemId;
+    }
 
-   }
+    public Integer getSourceUserId() {
+        return sourceUserId;
+    }
 
-   public boolean itemIdHasBeenSet(){
-      return itemIdHasBeenSet;
-   }
-   public java.lang.Integer getSourceUserId()
-   {
-      return this.sourceUserId;
-   }
+    public void setSourceUserId(Integer sourceUserId) {
+        this.sourceUserId = sourceUserId;
+    }
 
-   public void setSourceUserId( java.lang.Integer sourceUserId )
-   {
-      this.sourceUserId = sourceUserId;
-      sourceUserIdHasBeenSet = true;
+    public Integer getPercentage() {
+        return isPercentage;
+    }
 
-   }
+    public void setPercentage(Integer percentage) {
+        isPercentage = percentage;
+    }
 
-   public boolean sourceUserIdHasBeenSet(){
-      return sourceUserIdHasBeenSet;
-   }
-   public java.lang.Integer getIsPercentage()
-   {
-      return this.isPercentage;
-   }
-
-   public void setIsPercentage( java.lang.Integer isPercentage )
-   {
-      this.isPercentage = isPercentage;
-      isPercentageHasBeenSet = true;
-
-   }
-
-   public boolean isPercentageHasBeenSet(){
-      return isPercentageHasBeenSet;
-   }
-
-   public String toString()
-   {
-      StringBuffer str = new StringBuffer("{");
-
-      str.append("id=" + getId() + " " + "description=" + getDescription() + " " + "amount=" + getAmount() + " " + "price=" + getPrice() + " " + "quantity=" + getQuantity() + " " + "deleted=" + getDeleted() + " " + "itemId=" + getItemId() + " " + "sourceUserId=" + getSourceUserId() + " " + "isPercentage=" + getIsPercentage());
-      str.append('}');
-
-      return(str.toString());
-   }
-
-   /**
-    * A Value Object has an identity if the attributes making its Primary Key have all been set. An object without identity is never equal to any other object.
-    *
-    * @return true if this instance has an identity.
-    */
-   protected boolean hasIdentity()
-   {
-      return idHasBeenSet;
-   }
-
-   public boolean equals(Object other)
-   {
-      if (this == other)
-         return true;
-      if ( ! hasIdentity() ) return false;
-      if (other instanceof InvoiceLineDTO)
-      {
-         InvoiceLineDTO that = (InvoiceLineDTO) other;
-         if ( ! that.hasIdentity() ) return false;
-         boolean lEquals = true;
-         if( this.id == null )
-         {
-            lEquals = lEquals && ( that.id == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.id.equals( that.id );
-         }
-
-         lEquals = lEquals && isIdentical(that);
-
-         return lEquals;
-      }
-      else
-      {
-         return false;
-      }
-   }
-
-   public boolean isIdentical(Object other)
-   {
-      if (other instanceof InvoiceLineDTO)
-      {
-         InvoiceLineDTO that = (InvoiceLineDTO) other;
-         boolean lEquals = true;
-         if( this.description == null )
-         {
-            lEquals = lEquals && ( that.description == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.description.equals( that.description );
-         }
-         if( this.amount == null )
-         {
-            lEquals = lEquals && ( that.amount == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.amount.equals( that.amount );
-         }
-         if( this.price == null )
-         {
-            lEquals = lEquals && ( that.price == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.price.equals( that.price );
-         }
-         if( this.quantity == null )
-         {
-            lEquals = lEquals && ( that.quantity == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.quantity.equals( that.quantity );
-         }
-         if( this.deleted == null )
-         {
-            lEquals = lEquals && ( that.deleted == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.deleted.equals( that.deleted );
-         }
-         if( this.itemId == null )
-         {
-            lEquals = lEquals && ( that.itemId == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.itemId.equals( that.itemId );
-         }
-         if( this.sourceUserId == null )
-         {
-            lEquals = lEquals && ( that.sourceUserId == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.sourceUserId.equals( that.sourceUserId );
-         }
-         if( this.isPercentage == null )
-         {
-            lEquals = lEquals && ( that.isPercentage == null );
-         }
-         else
-         {
-            lEquals = lEquals && this.isPercentage.equals( that.isPercentage );
-         }
-
-         return lEquals;
-      }
-      else
-      {
-         return false;
-      }
-   }
-
-   public int hashCode(){
-      int result = 17;
-      result = 37*result + ((this.id != null) ? this.id.hashCode() : 0);
-
-      result = 37*result + ((this.description != null) ? this.description.hashCode() : 0);
-
-      result = 37*result + ((this.amount != null) ? this.amount.hashCode() : 0);
-
-      result = 37*result + ((this.price != null) ? this.price.hashCode() : 0);
-
-      result = 37*result + ((this.quantity != null) ? this.quantity.hashCode() : 0);
-
-      result = 37*result + ((this.deleted != null) ? this.deleted.hashCode() : 0);
-
-      result = 37*result + ((this.itemId != null) ? this.itemId.hashCode() : 0);
-
-      result = 37*result + ((this.sourceUserId != null) ? this.sourceUserId.hashCode() : 0);
-
-      result = 37*result + ((this.isPercentage != null) ? this.isPercentage.hashCode() : 0);
-
-      return result;
-   }
-
+    @Override
+    public String toString() {
+        return "InvoiceLineDTO{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", amount=" + amount +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                ", deleted=" + deleted +
+                ", itemId=" + itemId +
+                ", sourceUserId=" + sourceUserId +
+                ", isPercentage=" + isPercentage +
+                '}';
+    }
 }

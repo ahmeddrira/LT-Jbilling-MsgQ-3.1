@@ -453,7 +453,9 @@ class PaymentController {
     
     def bindPayment(PaymentWS payment, GrailsParameterMap params) {
 
-        if(params.isRefund == 'on') {
+        log.debug "********************params.isRefund ${params.isRefund}"
+        
+        if(params.isRefund == 'on' || params.isRefund == '1') {
             params.payment.isRefund = 1
         } else {
             params.payment.isRefund = 0

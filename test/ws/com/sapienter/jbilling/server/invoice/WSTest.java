@@ -464,8 +464,8 @@ public class WSTest extends TestCase {
             assertEquals(1, invoiceIds.size());
 
             InvoiceWS invoice = api.getInvoiceWS(invoiceIds.get(0));
-            assertEquals("1.7280000000", invoice.getTotal());
-            assertEquals(new BigDecimal("1.728"), invoice.getTotalAsDecimal());            
+            assertEquals("1.7300000000", invoice.getTotal());
+            assertEquals(new BigDecimal("1.730"), invoice.getTotalAsDecimal());
 
         } catch (Exception e) {
             e.printStackTrace();

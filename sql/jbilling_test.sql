@@ -7480,6 +7480,7 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 790911	113011	2	10	10781	1
 791000	113100	2	10	10790	1
 791100	113200	3	10	10800	1
+791101	112603	2	10	10743	1
 \.
 
 

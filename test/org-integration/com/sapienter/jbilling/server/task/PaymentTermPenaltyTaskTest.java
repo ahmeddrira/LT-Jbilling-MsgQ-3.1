@@ -83,14 +83,14 @@ public class PaymentTermPenaltyTaskTest extends TestCase {
                 System.out.println(line.getDescription());
                 if (line.getDescription() != null
                         && line.getDescription().startsWith("Tax or Penalty")) {
-                    System.out.println("Penalty line found. Amount=" + line.getAmount().toPlainString());
+                    System.out.println("Penalty line found. Amount=" + line.getAmount());
                     assertTrue(line.getItemId().intValue() == taxItemID
                             .intValue());
                     System.out
                             .println("The amount should be equal to $0.5 (1 percent of 50)");
                     assertEquals(
                             "The amount should have been $0.5 (1 percent of 50).",
-                            new BigDecimal("0.5").compareTo(line.getAmount())==0);
+                            new BigDecimal("0.5").compareTo(line.getAmountAsDecimal())==0);
                 }
             }
 

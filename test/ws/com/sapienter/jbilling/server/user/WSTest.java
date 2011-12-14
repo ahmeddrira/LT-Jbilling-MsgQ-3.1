@@ -49,6 +49,8 @@ import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+
+import org.apache.velocity.runtime.log.SystemLogChute;
 import org.joda.time.DateMidnight;
 
 /**
@@ -267,7 +269,7 @@ public class WSTest extends TestCase {
             // update credit card details
             System.out.println("Removing credit card");
             api.updateCreditCard(newUserId, null);
-            assertNull("Credit card removed",api.getUserWS(newUserId).getCreditCard());
+            assertNull("Credit card removed" ,api.getUserWS(newUserId).getCreditCard());
 
             System.out.println("Creating credit card");
             String ccName = "New ccName";
@@ -287,6 +289,10 @@ public class WSTest extends TestCase {
             assertEquals("updated cc number", ccNumber, retCc.getNumber());
             assertEquals("updated cc expiry", ccExpiry, retCc.getExpiry());
 
+            // set the credit card ID so that we update the existing card with the API call
+            cc.setId(retUser.getCreditCard().getId());
+
+            // try and update the card details ignoring the credit card number
             System.out.println("Updating credit card");
             cc.setName("Updated ccName");
             cc.setNumber(null);
@@ -369,44 +375,59 @@ public class WSTest extends TestCase {
          */
 
         UserWS user = createUser(true, 43, null);
+        user = api.getUserWS(user.getUserId());
 
-        Integer userId = user.getUserId();
-        CreditCardDTO card = user.getCreditCard();
+        CreditCardDTO card = user.getCreditCard(); // fetch card after each update to ensure that we're
+                                                   // always updating the most recent credit card
 
         // Visa
         card.setNumber("4111111111111985");
         api.updateCreditCard(user.getUserId(), card);
 
-        user = api.getUserWS(userId);
-        assertEquals("card type Visa", Constants.PAYMENT_METHOD_VISA, user.getCreditCard().getType());
+        user = api.getUserWS(user.getUserId());
+        card = user.getCreditCard();
+        System.out.println("Updated card " + card.getId() + " number: " + card.getNumber());
+        assertEquals("card type Visa", Constants.PAYMENT_METHOD_VISA, card.getType());
 
         // Mastercard
         card.setNumber("5111111111111985");
+        System.out.println("Updating credit card " + card.getId() + " With a Mastercard number");
         api.updateCreditCard(user.getUserId(), card);
 
-        user = api.getUserWS(userId);
-        assertEquals("card type Mastercard", Constants.PAYMENT_METHOD_MASTERCARD, user.getCreditCard().getType());
+        user = api.getUserWS(user.getUserId());
+        card = user.getCreditCard();
+        System.out.println("Updated card " + card.getId() + " number: " + card.getNumber());
+        assertEquals("card type Mastercard", Constants.PAYMENT_METHOD_MASTERCARD, card.getType());
         
         // American Express
         card.setNumber("3711111111111985");
+        System.out.println("Updating credit card " + card.getId() + " With an American Express number");
         api.updateCreditCard(user.getUserId(), card);
 
-        user = api.getUserWS(userId);
-        assertEquals("card type American Express", Constants.PAYMENT_METHOD_AMEX, user.getCreditCard().getType());
+        user = api.getUserWS(user.getUserId());
+        card = user.getCreditCard();
+        System.out.println("Updated card " + card.getId() + " number: " + card.getNumber());
+        assertEquals("card type American Express", Constants.PAYMENT_METHOD_AMEX, card.getType());
 
         // Diners Club
         card.setNumber("3811111111111985");
+        System.out.println("Updating credit card " + card.getId() + " With a Diners Club number");
         api.updateCreditCard(user.getUserId(), card);
 
-        user = api.getUserWS(userId);
-        assertEquals("card type Diners", Constants.PAYMENT_METHOD_DINERS, user.getCreditCard().getType());
+        user = api.getUserWS(user.getUserId());
+        card = user.getCreditCard();
+        System.out.println("Updated card " + card.getId() + " number: " + card.getNumber());
+        assertEquals("card type Diners", Constants.PAYMENT_METHOD_DINERS, card.getType());
 
         // Discovery
         card.setNumber("6111111111111985");
+        System.out.println("Updating credit card " + card.getId() + " With a Discovery card number");
         api.updateCreditCard(user.getUserId(), card);
 
-        user = api.getUserWS(userId);
-        assertEquals("card type Discovery", Constants.PAYMENT_METHOD_DISCOVERY, user.getCreditCard().getType());
+        user = api.getUserWS(user.getUserId());
+        card = user.getCreditCard();
+        System.out.println("Updated card " + card.getId() + " number: " + card.getNumber());
+        assertEquals("card type Discovery", Constants.PAYMENT_METHOD_DISCOVERY, card.getType());
 
         //cleanup
         api.deleteUser(user.getUserId());
@@ -1128,9 +1149,15 @@ Ch8: no applicable orders
             // delete one line from the one time order
             System.out.println("remove one line from one time order");
             order = api.getOrder(orderId);
-            line = order.getOrderLines()[0].getItemId() == 1 ? order.getOrderLines()[0] : order.getOrderLines()[1];
-            order.setOrderLines(new OrderLineWS[] { line });
+
+            for (OrderLineWS orderLine : order.getOrderLines()) {
+                if (orderLine.getItemId() != 1) {
+                    orderLine.setDeleted(1);
+                }
+            }
+
             api.updateOrder(order);
+
             myUser = api.getUserWS(myId);
             assertEquals("user should have new balance", new BigDecimal("10"), myUser.getDynamicBalanceAsDecimal());
 
@@ -1140,7 +1167,6 @@ Ch8: no applicable orders
             assertEquals("validate purchase success 3", Boolean.valueOf(true), result.getSuccess());
             assertEquals("validate purchase authorized 3", Boolean.valueOf(true), result.getAuthorized());
             assertEquals("validate purchase quantity 3", Constants.BIGDECIMAL_ONE, result.getQuantityAsDecimal());
-
 
             // delete the order, the balance has to go back to 20
             System.out.println("deleting one time order");
@@ -1491,28 +1517,6 @@ Ch8: no applicable orders
     	}
     }
 
-    // name changed so it is not called in normal test runs
-    public void XXtestLoad() {
-        try {
-            JbillingAPI api = JbillingAPIFactory.getAPI();
-            for (int i = 0; i < 1000; i++) {
-                Random rnd = new Random();
-                UserWS newUser = createUser(rnd.nextBoolean(), null, null);
-                OrderWS newOrder = getOrder();
-                // change the quantities for viarety
-                newOrder.getOrderLines()[0].setQuantity(rnd.nextInt(100) + 1);
-                //newOrder.getLines().first().setUseItem(true);
-                newOrder.getOrderLines()[newOrder.getOrderLines().length - 1].setQuantity(rnd.nextInt(100) + 1);
-                //newOrder.getLines().last().setUseItem(true);
-                newOrder.setUserId(newUser.getUserId());
-                api.createOrder(newOrder);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Exception caught:" + e);
-        }
-   }
-
     public void testPenaltyTaskOrder() throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();
 
@@ -1809,7 +1813,7 @@ Ch8: no applicable orders
 
         // find multiple users
         userIds = api.getUsersByCustomFields(new ContactFieldWS[] { paymentProcessor });
-        assertEquals("Should find lots of users with 'FAKE_2'", 1003, userIds.length);
+        assertEquals("Should find lots of users with 'FAKE_2'", 1016, userIds.length);
     }
 
     public void testUserExists() throws Exception {

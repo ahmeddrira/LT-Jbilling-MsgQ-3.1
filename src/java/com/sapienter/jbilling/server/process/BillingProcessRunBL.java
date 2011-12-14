@@ -349,16 +349,18 @@ public class BillingProcessRunBL  extends ResultList implements ProcessSQL {
         } else {
             ProcessStatusWS result = new ProcessStatusWS();
             result.setStart(processRunDTO.getStarted());
-            result.setEnd(processRunDTO.getFinished());
             result.setProcessId(processRunDTO.getBillingProcess().getId());
+
             if (processRunDTO.getFinished() == null) {
                 result.setState(ProcessStatusWS.State.RUNNING);
             } else if (processRunDTO.getStatus().getId() == Constants.PROCESS_RUN_STATUS_RINNING) {
                 result.setState(ProcessStatusWS.State.RUNNING);
             } else if (processRunDTO.getStatus().getId() == Constants.PROCESS_RUN_STATUS_FAILED) {
                 result.setState(ProcessStatusWS.State.FAILED);
+                result.setEnd(processRunDTO.getFinished());
             } else {
                 result.setState(ProcessStatusWS.State.FINISHED);
+                result.setEnd(processRunDTO.getFinished());
             }
             return result;
         }

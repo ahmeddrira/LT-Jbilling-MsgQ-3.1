@@ -20,33 +20,17 @@
 package com.sapienter.jbilling.server.user.permisson.db;
 
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
-import javax.persistence.Transient;
-
 import com.sapienter.jbilling.client.authentication.InitializingGrantedAuthority;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.OrderBy;
-
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
-import org.springframework.security.core.GrantedAuthority;
+import org.hibernate.annotations.OrderBy;
+import org.springframework.beans.factory.annotation.Required;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "role")
@@ -135,7 +119,7 @@ public class RoleDTO extends AbstractDescription implements Serializable, Initia
      */
     public void initializeAuthority() {
         String title = getTitle(AUTHORITY_LANGUAGE_ID);
-        if (title != null)
+        if (title != null && !title.equals(""))
             authority = ROLE_AUTHORITY_PREFIX + title.toUpperCase().trim().replaceAll(" ", "_");
     }
 

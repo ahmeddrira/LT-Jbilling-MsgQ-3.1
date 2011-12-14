@@ -67,6 +67,7 @@ import java.util.List;
                             + " inner join line.item.plans as plan "
                             + " inner join line.purchaseOrder.baseUserByUserId as user"
                             + " where plan.id = :plan_id"
+                            +"  and line.deleted = 0 "
                             + " and line.purchaseOrder.orderPeriod.id != 1 " // Constants.ORDER_PERIOD_ONCE
                             + " and line.purchaseOrder.orderStatus.id = 1 "  // Constants.ORDER_STATUS_ACTIVE
                             + " and line.purchaseOrder.deleted = 0"),
@@ -78,6 +79,7 @@ import java.util.List;
                             + " inner join line.purchaseOrder.baseUserByUserId as user "
                             + " where plan.id = :plan_id "
                             + " and user.id = :user_id "
+                            +"  and line.deleted = 0 "
                             + " and line.purchaseOrder.orderPeriod.id != 1 " // Constants.ORDER_PERIOD_ONCE
                             + " and line.purchaseOrder.orderStatus.id = 1 "  // Constants.ORDER_STATUS_ACTIVE
                             + " and line.purchaseOrder.deleted = 0"),

@@ -112,7 +112,11 @@ public class CsvExporter<T extends Exportable> implements Exporter<T> {
         for (Object object : objects) {
             if (object != null) {
                 Converter converter = ConvertUtils.lookup(object.getClass());
-                strings[i++] = converter.convert(object.getClass(), object).toString();
+                if (converter != null) {
+                    strings[i++] = converter.convert(object.getClass(), object).toString();
+                } else {
+                    strings[i++] = object.toString();
+                }
             } else {
                 strings[i++] = "";
             }

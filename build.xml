@@ -85,7 +85,7 @@
             <classpath refid="compile.classpath"/>
             <classpath refid="test.classpath"/>                                    
 
-            <batchtest fork="yes" todir="${build.test-results.dir}/unit/xml">
+            <batchtest todir="${build.test-results.dir}/unit/xml">
                 <formatter type="brief" usefile="false"/>
                 <formatter type="xml"/>
                 <fileset dir="${source.test.dir}/unit">

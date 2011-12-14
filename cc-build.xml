@@ -6,8 +6,6 @@
     database connection details for the running instance of jBilling. This is to ensure
     that multiple instances of jBilling can be run under the same Cruise Control build loop.
 
-    Requires Ant 1.7.0
-
     @author: Brian Cowdery
     @since: Dec-13-2011
 -->
@@ -33,8 +31,7 @@
         <ant antfile="build.xml" target="test-unit" inheritall="false" inheritrefs="true"/>
         <ant antfile="build.xml" target="test-ws" inheritall="false" inheritrefs="true"/>
         <antcall target="stop"/>
-    </target>    
-
+    </target>
 
     <target name="init" depends="clean" description="Update the data source and remote bean definitions for the test run.">
         <!-- update DataSource.groovy connection details -->
@@ -61,18 +58,18 @@
         <delete file="TESTS-TestSuites.xml"/>
 
         <!-- clean and re-compile -->
-        <exec dir="${root.dir}" executable="grails">
+        <exec dir="${root.dir}" executable="grails" failonerror="true">
             <arg value="clean"/>
         </exec>
-        <exec dir="${root.dir}" executable="grails">
+        <exec dir="${root.dir}" executable="grails" failonerror="false"> <!-- always fails -->
             <arg value="compile"/>
         </exec>
-        <exec dir="${root.dir}" executable="grails">
+        <exec dir="${root.dir}" executable="grails" failonerror="true">  <!-- should compile on the 2nd try -->
             <arg value="compile"/>
         </exec>
 
         <!-- compile resources and load testing database -->
-        <exec dir="${root.dir}" executable="grails">
+        <exec dir="${root.dir}" executable="grails" failonerror="true">
             <arg value="prepare-test"/>
             <arg value="-cleanDb=true"/>
             <arg value="-user=${test_db_user}"/>
@@ -86,20 +83,20 @@
     -->
 
     <target name="start" description="Start jBilling and wait for the application to become available.">
-        <exec executable="./startup.sh"/>
+        <exec executable="./startup.sh" spawn="true"/>
 
-        <echo message="Waiting for application to become available ..."/>
+        <echo message="Waiting for application to start ..."/>
         <waitfor maxwait="3" maxwaitunit="minute" checkevery="500" timeoutproperty="startup.timeout">
             <http url="http://localhost:${server_port}/jbilling"/>
         </waitfor>  
-        <antcall target="check.application"/>
+        <antcall target="stop.if.failed"/>
     </target>
 
     <target name="stop" description="Shutdown jBilling.">
         <exec executable="./shutdown.sh"/>
     </target>
 
-    <target name="check.application" if="startup.timeout">
+    <target name="stop.if.failed" if="startup.timeout">
         <exec executable="./shutdown.sh"/>
         <fail message="jBilling failed start in the expected time."/>
     </target>

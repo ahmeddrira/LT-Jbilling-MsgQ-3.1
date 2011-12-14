@@ -3708,6 +3708,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	98	description	1	Show plans menu
 59	99	description	1	Show configuration menu
 59	120	description	1	Web Service API access
+50	50	description	1	Invoice decimal rounding.
+50	50	instruction	1	The number of decimal places to be shown on the invoice. Defaults to 2.
 \.
 
 
@@ -4683,6 +4685,7 @@ COPY preference_type (id, def_value) FROM stdin;
 47	0
 48	1
 49	\N
+50	2
 \.
 
 

@@ -1,0 +1,107 @@
+<!--
+    Delegating build script, used by Cruise Control to build the source tree and run all
+    tests with a common test output directory.
+
+    You must define a 'cc-build.properties' file to set the grails server port and
+    database connection details for the running instance of jBilling. This is to ensure
+    that multiple instances of jBilling can be run under the same Cruise Control build loop.
+
+    Requires Ant 1.7.0
+
+    @author: Brian Cowdery
+    @since: Dec-13-2011
+-->
+
+<project name="CruiseControl Build" default="test.quick" basedir=".">
+
+    <property name="root.dir" value="."/>
+    <property file="cc-build.properties" />
+
+
+    <!-- 
+        Targets
+    -->
+
+    <target name="test.all" depends="init" description="Run entire test suite">
+        <antcall target="start"/>
+        <ant antfile="build.xml" target="test" inheritall="false" inheritrefs="true"/>
+        <antcall target="stop"/>
+    </target>
+
+    <target name="test.quick" depends="init" description="Run quick check-in tests">
+        <antcall target="start"/>
+        <ant antfile="build.xml" target="test-unit" inheritall="false" inheritrefs="true"/>
+        <ant antfile="build.xml" target="test-ws" inheritall="false" inheritrefs="true"/>
+        <antcall target="stop"/>
+    </target>    
+
+
+    <target name="init" depends="clean" description="Update the data source and remote bean definitions for the test run.">
+        <!-- update DataSource.groovy connection details -->
+        <replace file="${root.dir}/grails-app/conf/DataSource.groovy">
+            <replacefilter token='username = "jbilling"'
+                           value='username = "${test_db_user}"'/>
+        </replace>
+
+        <replace file="${root.dir}/grails-app/conf/DataSource.groovy">
+            <replacefilter token="jdbc:postgresql://localhost:5432/jbilling_test"
+                           value="jdbc:postgresql://localhost:5432/${test_db}"/>
+        </replace>
+
+        <!-- update remote bean definitions with the running server port -->
+        <replace file="${root.dir}/descriptors/spring/jbilling-remote-beans.xml">
+            <replacefilter token="8080" value="${server_port}"/>
+        </replace>
+    </target>
+
+    <target name="clean" description="Complete clean and recompile of all source-code, resources, and testing databases.">
+        <!-- delete some leftover junk from previous runs -->
+        <delete file="nohup.out"/>
+        <delete file="velocity.log*"/>
+        <delete file="TESTS-TestSuites.xml"/>
+
+        <!-- clean and re-compile -->
+        <exec dir="${root.dir}" executable="grails">
+            <arg value="clean"/>
+        </exec>
+        <exec dir="${root.dir}" executable="grails">
+            <arg value="compile"/>
+        </exec>
+        <exec dir="${root.dir}" executable="grails">
+            <arg value="compile"/>
+        </exec>
+
+        <!-- compile resources and load testing database -->
+        <exec dir="${root.dir}" executable="grails">
+            <arg value="prepare-test"/>
+            <arg value="-cleanDb=true"/>
+            <arg value="-user=${test_db_user}"/>
+            <arg value="-db=${test_db}"/>
+        </exec>
+    </target>
+
+
+    <!-- 
+         jBilling Start / Stop
+    -->
+
+    <target name="start" description="Start jBilling and wait for the application to become available.">
+        <exec executable="./startup.sh"/>
+
+        <echo message="Waiting for application to become available ..."/>
+        <waitfor maxwait="3" maxwaitunit="minute" checkevery="500" timeoutproperty="startup.timeout">
+            <http url="http://localhost:${server_port}/jbilling"/>
+        </waitfor>  
+        <antcall target="check.application"/>
+    </target>
+
+    <target name="stop" description="Shutdown jBilling.">
+        <exec executable="./shutdown.sh"/>
+    </target>
+
+    <target name="check.application" if="startup.timeout">
+        <exec executable="./shutdown.sh"/>
+        <fail message="jBilling failed start in the expected time."/>
+    </target>
+
+</project>

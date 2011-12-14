@@ -315,6 +315,7 @@ class PaymentController {
     def confirm = {
         def payment = new PaymentWS()
         bindPayment(payment, params)
+
         session['user_payment']= payment
         
         // make sure the user still exists before
@@ -460,14 +461,14 @@ class PaymentController {
     }
     
     def bindPayment(PaymentWS payment, GrailsParameterMap params) {
-        bindData(payment, params, 'payment')
 
-        if (params.isRefund) {
-            log.debug("negating the payment if refund flag is on.")
-            payment.setAmountAsDecimal(payment.amountAsDecimal.negate())
+        if(params.isRefund == 'on') {
+            params.payment.isRefund = 1
+        } else {
+            params.payment.isRefund = 0
         }
-
-        payment.isRefund = ('on' == params.isRefund) ? 1 : 0
+        bindData(payment, params, 'payment')
+        log.debug "params.isRefund after binding data is ----> ${payment}"
 
         // bind credit card object if parameters present
         if (params.creditCard.any { key, value -> value }) {

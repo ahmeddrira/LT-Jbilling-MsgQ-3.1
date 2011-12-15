@@ -1094,10 +1094,12 @@ public class UserBL extends ResultList implements UserSQL {
 
     public boolean canInvoice() {
         // can't be deleted and has to be a customer
-        if (user.getDeleted() == 1 ||
-                !getMainRole().equals(Constants.TYPE_CUSTOMER)) {
+        if (user.getDeleted() == 1
+            || user.getCustomer() == null
+            || !getMainRole().equals(Constants.TYPE_CUSTOMER)) {
             return false;
         }
+
         // child accounts only get invoiced if the exlicit flag is on
         if (user.getCustomer().getParent() != null &&
                 (user.getCustomer().getInvoiceChild() == null ||

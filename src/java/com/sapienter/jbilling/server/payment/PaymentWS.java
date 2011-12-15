@@ -321,6 +321,7 @@ public class PaymentWS implements WSSecured, Serializable {
     public String toString() {
         return "PaymentWS{"
                + "id=" + id
+               + ", userId=" + userId
                + ", baseUserId=" + baseUserId
                + ", paymentMethodId=" + paymentMethodId
                + ", method='" + method + '\''

@@ -40,24 +40,12 @@
         <span class="description">
             ${planItem.precedence} &nbsp; ${product.description}
         </span>
-        <g:if test="${planItem?.model?.type}">
-            <g:set var="currency" value="${currencies.find{ it.id == planItem.model.currencyId}}"/>
-            <span class="rate">
-                <g:formatNumber number="${planItem.model.getRateAsDecimal()}" type="currency"
-                                currencySymbol="${currency?.symbol}"/>
-            </span>
-            <span class="strategy">
-                <g:message code="price.strategy.${planItem.model?.type}"/>
-            </span>
-        </g:if>
-        <g:else>
-            <span class="rate">
-                <g:formatNumber number="${product.percentage}" formatName="percentage.format"/>
-            </span>
-            <span class="strategy">
-                <g:message code="product.percentage"/>
-            </span>
-        </g:else>
+        <span class="rate">
+            <g:formatNumber number="${model.getRateAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"  maxFractionDigits="4"/>
+        </span>
+        <span class="strategy">
+            <g:message code="price.strategy.${model.type}"/>
+        </span>
         <div style="clear: both;"></div>
     </li>
 

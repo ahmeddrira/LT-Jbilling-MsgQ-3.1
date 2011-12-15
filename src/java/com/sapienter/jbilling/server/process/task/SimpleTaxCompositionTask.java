@@ -29,6 +29,7 @@ import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.process.PeriodOfTime;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
@@ -61,19 +62,29 @@ public class SimpleTaxCompositionTask extends PluggableTask
     private static final Logger LOG = Logger.getLogger(SimpleTaxCompositionTask.class);
 
     // plug-in parameters
-    // mandatory parameters
-    protected final static String PARAM_TAX_ITEM_ID = "tax_item_id";
-    // optional, may be empty
-    protected final static String PARAM_CUSTOM_CONTACT_FIELD_ID = "custom_contact_field_id";
-    protected final static String PARAM_ITEM_EXEMPT_CATEGORY_ID = "item_exempt_category_id";
+    //mandatory
+    public static final ParameterDescription PARAM_TAX_ITEM_ID = 
+        new ParameterDescription("tax_item_id", true, ParameterDescription.Type.STR);
 
+    // optional, may be empty
+    public static final ParameterDescription PARAM_CUSTOM_CONTACT_FIELD_ID = 
+        new ParameterDescription("custom_contact_field_id", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAM_ITEM_EXEMPT_CATEGORY_ID = new ParameterDescription("item_exempt_category_id", false, ParameterDescription.Type.STR);
+
+    //initializer for pluggable params
+    { 
+        descriptions.add(PARAM_TAX_ITEM_ID);
+        descriptions.add(PARAM_CUSTOM_CONTACT_FIELD_ID);
+        descriptions.add(PARAM_ITEM_EXEMPT_CATEGORY_ID);
+    }
+    
     @Override
     public void apply(NewInvoiceDTO invoice, Integer userId) throws TaskException {
         ItemDTO taxItem;
         Integer itemExemptCategoryId = null;
         Integer customContactFieldId = null;
         try {
-            String paramValue = getParameter(PARAM_TAX_ITEM_ID, "");
+            String paramValue = getParameter(PARAM_TAX_ITEM_ID.getName(), "");
             if (paramValue == null || "".equals(paramValue.trim())) {
                 throw new TaskException("Tax item id is not defined!");
             }
@@ -81,11 +92,11 @@ public class SimpleTaxCompositionTask extends PluggableTask
             if (taxItem == null) {
                 throw new TaskException("Tax item not found!");
             }
-            paramValue = getParameter(PARAM_ITEM_EXEMPT_CATEGORY_ID, "");
+            paramValue = getParameter(PARAM_ITEM_EXEMPT_CATEGORY_ID.getName(), "");
             if (paramValue != null && !"".equals(paramValue.trim())) {
                 itemExemptCategoryId = new Integer(paramValue);
             }
-            paramValue = getParameter(PARAM_CUSTOM_CONTACT_FIELD_ID, "");
+            paramValue = getParameter(PARAM_CUSTOM_CONTACT_FIELD_ID.getName(), "");
             if (paramValue != null && !"".equals(paramValue.trim())) {
                 customContactFieldId = new Integer(paramValue);
             }

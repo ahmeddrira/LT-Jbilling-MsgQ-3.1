@@ -78,7 +78,7 @@
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="product.percentage"/></content>
                             <content tag="label.for">product.percentageAsDecimal</content>
-                            <g:textField class="field" name="product.percentageAsDecimal" value="${formatNumber(number: product?.percentage, formatName: 'decimal.format')}" size="5"/>
+                            <g:textField class="field" name="product.percentageAsDecimal" value="${formatNumber(number: product?.percentage, maxFractionDigits: '4')}" size="6"/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/checkbox">

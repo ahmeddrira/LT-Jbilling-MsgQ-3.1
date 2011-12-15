@@ -122,16 +122,30 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
     }
     
     public BigDecimal findTotalBalanceByUser(Integer userId) {
-        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
         
+        //user's payments which are not refunds
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
         criteria.add(Restrictions.eq("deleted", 0))
             .createAlias("baseUser", "u")
-            .add(Restrictions.eq("u.id", userId));
+            .add(Restrictions.eq("u.id", userId))
+            .add(Restrictions.eq("isRefund", 0));
         
         criteria.setProjection(Projections.sum("balance"));
         criteria.setComment("PaymentDAS.findTotalBalanceByUser");
+        BigDecimal paymentBalances = (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
 
-        return (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
+        //calculate refunds
+        Criteria criteria2 = getSession().createCriteria(PaymentDTO.class);
+        criteria2.add(Restrictions.eq("deleted", 0))
+                .createAlias("baseUser", "u")
+                    .add(Restrictions.eq("u.id", userId))
+                    .add(Restrictions.eq("isRefund", 1));
+        
+        criteria2.setProjection(Projections.sum("balance"));
+        criteria2.setComment("PaymentDAS.findTotalBalanceByUser-less_Refunds");
+        BigDecimal refunds= criteria2.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria2.uniqueResult();
+
+        return paymentBalances.subtract(refunds);
     }
     
 

@@ -900,6 +900,7 @@ public class UserBL extends ResultList implements UserSQL {
                 new PaymentDAS().findTotalBalanceByUser(userId));
     }
 
+    @Deprecated
     public BigDecimal getTotalOwed(Integer userId) {
         return new InvoiceDAS().findTotalAmountOwed(userId);
     }

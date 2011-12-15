@@ -815,7 +815,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     			ContactFieldTypeDTO dto= ws.getId() == null ? new ContactFieldTypeDTO() : das.find(ws.getId());
     			dto.setDataType(ws.getDataType());
     			dto.setReadOnly(ws.getReadOnly());
-    			dto.setPromptKey("placeholder_text");
+    			if (null == ws.getPromptKey()) {
+    			    dto.setPromptKey("placeholder_text");
+    			} else {
+    			    dto.setPromptKey(ws.getPromptKey());
+    			}
     			dto.setEntity(new CompanyDTO(ws.getCompanyId()));
     			dto.setVersionNum(new Integer(0));
     			dto= das.save(dto);
@@ -1434,7 +1438,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
             throws SessionInternalError {
         validatePayment(payment);
-        payment.setIsRefund(0);
 
         if (payment.getMethodId() == null) {
             throw new SessionInternalError("Cannot apply a payment without a payment method.",

@@ -60,7 +60,7 @@ import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
 @Secured(["MENU_90"])
 class CustomerController {
 
-    static pagination = [ max: 10, offset: 0, sort: 'id', order: 'desc' ]
+    static pagination = [max: 10, offset: 0, sort: 'id', order: 'desc']
 
     IWebServicesSessionBean webServicesSession
     ViewUtils viewUtils
@@ -71,6 +71,7 @@ class CustomerController {
     def breadcrumbService
     def springSecurityService
 
+    @Secured(["hasAnyRole('MENU_90', 'CUSTOMER_15')"])
     def index = {
         redirect action: list, params: params
     }
@@ -126,12 +127,21 @@ class CustomerController {
      * Get a list of users and render the list page. If the "applyFilters" parameter is given, the
      * partial "_users.gsp" template will be rendered instead of the complete user list.
      */
+    @Secured(["hasAnyRole('MENU_90', 'CUSTOMER_15')"])
     def list = {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()
-        def users = getList(filters, statuses, params)
-
         def selected = params.id ? UserDTO.get(params.int("id")) : null
+        def users = []
+        if (SpringSecurityUtils.ifNotGranted("MENU_90")) {
+            log.debug "Customer , so you will view only yourself."
+            users << UserDTO.get(springSecurityService.principal.id)
+            selected = users[0]
+        }
+        else {
+            log.debug "Super user , so you can view anything"
+            users = getList(filters, statuses, params)
+        }
         def contact = selected ? ContactDTO.findByUserId(selected.id) : null
 
         def crumbDescription = selected ? UserHelper.getDisplayName(selected, contact) : null
@@ -268,9 +278,9 @@ class CustomerController {
         def crumbName = params.id ? 'update' : 'create'
         def crumbDescription = params.id ? UserHelper.getDisplayName(user, user.contact) : null
         breadcrumbService.addBreadcrumb(controllerName, actionName, crumbName, params.int('id'), crumbDescription)
-        
+
         def periodUnits = PeriodUnitDTO.list()
-        
+
         [ user: user, contacts: contacts, parent: parent, company: company, currencies: currencies, periodUnits:periodUnits ]
     }
 
@@ -281,7 +291,7 @@ class CustomerController {
     def save = {
         def user = new UserWS()
         UserHelper.bindUser(user, params)
-        
+
         def contacts = []
         UserHelper.bindContacts(user, contacts, company, params)
 
@@ -359,7 +369,7 @@ class CustomerController {
         def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
         return currencies.findAll { it.inUse }
     }
-    
+
     def getCompany() {
         CompanyDTO.get(session['company_id'])
     }

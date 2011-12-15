@@ -40,7 +40,7 @@
             ${line.description}
         </span>
         <span class="sub-total">
-            <g:set var="subTotal" value="${formatNumber(number: line.getAmountAsDecimal(), type: 'currency', currencySymbol: user.currency.symbol)}"/>
+            <g:set var="subTotal" value="${formatNumber(number: line.getAmountAsDecimal(), type: 'currency', currencySymbol: user.currency.symbol, maxFractionDigits: 4)}"/>
             <g:message code="order.review.line.total" args="[subTotal]"/>
         </span>
         <span class="qty-price">
@@ -50,7 +50,7 @@
                 <g:message code="order.review.quantity.by.price" args="[quantity, percentage]"/>
             </g:if>
             <g:else>
-                <g:set var="price" value="${formatNumber(number: line.getPriceAsDecimal(), type: 'currency', currencySymbol: user.currency.symbol)}"/>
+                <g:set var="price" value="${formatNumber(number: line.getPriceAsDecimal(), type: 'currency', currencySymbol: user.currency.symbol, maxFractionDigits: 4)}"/>
                 <g:message code="order.review.quantity.by.price" args="[quantity, price]"/>
             </g:else>
         </span>
@@ -65,7 +65,7 @@
                     <g:applyLayout name="form/input">
                         <content tag="label"><g:message code="order.label.line.price"/></content>
                         <content tag="label.for">line-${index}.priceAsDecimal</content>
-                        <g:textField name="line-${index}.priceAsDecimal" class="field" value="${formatNumber(number: line.getPriceAsDecimal() ?: BigDecimal.ZERO, formatName: 'money.format')}"/>
+                        <g:textField name="line-${index}.priceAsDecimal" class="field" value="${formatNumber(number: line.getPriceAsDecimal() ?: BigDecimal.ZERO, formatName: 'money.format', maxFractionDigits: 4)}"/>
                     </g:applyLayout>
                 </sec:ifAllGranted>
 

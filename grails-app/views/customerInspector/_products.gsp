@@ -86,7 +86,8 @@
                                     %<g:formatNumber number="${product.percentage}" formatName="money.format"/>
                                 </g:if>
                                 <g:else>
-                                    <g:formatNumber number="${product.defaultPrice?.rate}" type="currency" currencySymbol="${product.defaultPrice?.currency?.symbol}"/>
+                                    <g:set var="price" value="${product.getPrice(new Date())}"/>
+                                    <g:formatNumber number="${price?.rate}" type="currency" currencySymbol="${price?.currency?.symbol}" maxFractionDigits="4"/>
                                 </g:else>
                             </g:remoteLink>
                         </td>

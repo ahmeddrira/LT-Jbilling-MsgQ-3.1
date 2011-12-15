@@ -1131,6 +1131,10 @@ ul.cloud li a {
     width: 90%;
     margin: 0 auto 13px;
 }
+#review-box .header h2.product-description {
+    overflow: hidden;
+    width: 525px;
+}
 #review-box .header h2 { font-size: 16px; }
 #review-box .header h3 { font-size: 12px; }
 #review-box .header h2 span, #review-box .header h3 span {

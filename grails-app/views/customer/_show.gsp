@@ -126,7 +126,7 @@
                     </tr>
                     
                     <!-- direct sub-accounts -->
-                    <g:each var="account" in="${customer.children}">
+                    <g:each var="account" in="${customer.children.findAll{ it.baseUser.deleted == 0 }}">
                         <tr>
                             <td><g:message code="customer.subaccount.title" args="[ account.baseUser.id ]"/></td>
                             <td class="value">

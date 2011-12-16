@@ -161,21 +161,19 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
      * @param planItems plan items to remove from customer pricing
      * @return number of rows deleted
      */
-    public int deletePricesByItems(List<PlanItemDTO> planItems) {
-        List<Integer> ids = new ArrayList<Integer>(planItems.size());
-        for (PlanItemDTO planItem : planItems) {
-            ids.add(planItem.getId());
-        }
-        LOG.debug("Trying to delete plan items");
-        if (ids.size() > 0) {
-            LOG.debug("Deleting plan items");
+   public int deletePricesByItems (List<PlanItemDTO> planItems) {
+        if (planItems.size() < 1) {
+            return 0;
+        } else {
+            List<Integer> ids = new ArrayList<Integer>(planItems.size());
+            for (PlanItemDTO planItem : planItems) {
+                ids.add(planItem.getId());
+            }
+
             Query query = getSession().getNamedQuery("CustomerPriceDTO.deletePricesByItems");
             query.setParameterList("plan_item_ids", ids);
 
             return query.executeUpdate();
-        } else {
-            LOG.debug("No need to delete the plan items since they don't exist, they are " + ids.size()+" in SIZE , so returning 0");
-            return 0;
         }
     }
 

@@ -49,20 +49,12 @@
         <!-- plan review header -->
         <div class="header">
             <div class="column">
-                <h2>${product.description} &nbsp;</h2>
+                <h2 class="product-description">${product.description} &nbsp;</h2>
             </div>
             <div class="column">
                 <h2 class="right">
-                    <g:set var="defaultProductPrice" value="${PriceModelBL.getWsPriceForDate(product.defaultPrices, startDate)}"/>
-
-                    <g:if test="${defaultProductPrice}">
-                        <g:set var="currency" value="${currencies.find{ it.id == defaultProductPrice.currencyId }}"/>
-                        <g:set var="price" value="${formatNumber(number: defaultProductPrice.getRateAsDecimal(), type: 'currency', currencySymbol: currency.symbol, , maxFractionDigits: 4)}"/>
-                    </g:if>
-                    <g:else>
-                        <g:set var="currency" value="${CompanyDTO.get(session['company_id']).currency}"/>
-                        <g:set var="price" value="${formatNumber(number: BigDecimal.ZERO, type: 'currency', currencySymbol: currency.symbol, maxFractionDigits: 4)}"/>
-                    </g:else>
+                    <g:set var="currency" value="${currencies.find{ it.id == product.defaultPrice.currencyId }}"/>
+                    <g:set var="price" value="${formatNumber(number: product.defaultPrice.getRateAsDecimal(), type: 'currency', currencySymbol: currency.symbol)}"/>
 
                     <g:if test="${plan.periodId == Constants.ORDER_PERIOD_ONCE}">
                         <g:message code="plan.review.onetime.price" args="[price]"/>

@@ -33,7 +33,7 @@
         <thead>
             <tr>
                 <th>
-                    <g:remoteSort action="list" sort="contact.firstName, contact.lastName, contact.organizationName, userName" update="column1">
+                    <g:remoteSort action="list" sort="userName" update="column1">
                         <g:message code="customer.table.th.name"/>
                     </g:remoteSort>
                 </th>

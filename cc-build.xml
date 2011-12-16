@@ -106,7 +106,7 @@
     <target name="start" description="Start jBilling and wait for the application to become available.">
         <exec executable="./startup.sh" spawn="true"/>
 
-        <echo message="Waiting for application to start ..."/>
+        <echo message="Waiting for application to start on port ${server_port} ..."/>
         <waitfor maxwait="3" maxwaitunit="minute" checkevery="500" timeoutproperty="startup.timeout">
             <http url="http://localhost:${server_port}/jbilling"/>
         </waitfor>  

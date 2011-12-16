@@ -241,6 +241,8 @@ class CustomerController {
         if (params.id) {
             webServicesSession.deleteUser(params.int('id'))
 
+            flash.message = 'customer.deleted'
+            flash.args = [ params.id ]
             log.debug("Deleted user ${params.id}.")
 
         }

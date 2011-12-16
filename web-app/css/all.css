@@ -1571,6 +1571,10 @@ div.box-text {
 	margin:0;
 	color:#383838;
 }
+.box-text ul p.paymentConfirm {
+    overflow: hidden;
+    white-space: normal;
+}
 .box-text ul p em {
 	color:#696969;
 }

@@ -19,6 +19,17 @@
     <property name="root.dir" value="."/>
     <property file="cc-build.properties" />
 
+    <property environment="env"/>
+
+    <condition property="grails.home" value="${env.GRAILS_HOME}">
+        <isset property="env.GRAILS_HOME"/>
+    </condition>
+
+    <condition property="grails" value="${grails.home}\bin\grails.bat">
+        <os family="windows"/>
+    </condition>
+    <property name="grails" value="${grails.home}/bin/grails"/>
+
 
     <!-- 
         Targets
@@ -66,18 +77,20 @@
         <property name="test-results.cleaned" value="true"/> <!-- mark test results as clean so the build doesn't do it again -->
 
         <!-- clean and re-compile -->
-        <exec dir="${root.dir}" executable="grails" failonerror="true">
+        <echo message="Building with grails ${grails}"/>
+
+        <exec dir="${root.dir}" executable="${grails}" failonerror="true">
             <arg value="clean"/>
         </exec>
-        <exec dir="${root.dir}" executable="grails" failonerror="false"> <!-- always fails -->
+        <exec dir="${root.dir}" executable="${grails}" failonerror="false"> <!-- always fails -->
             <arg value="compile"/>
         </exec>
-        <exec dir="${root.dir}" executable="grails" failonerror="true">  <!-- should compile on the 2nd try -->
+        <exec dir="${root.dir}" executable="${grails}" failonerror="true">  <!-- should compile on the 2nd try -->
             <arg value="compile"/>
         </exec>
 
         <!-- compile resources and load testing database -->
-        <exec dir="${root.dir}" executable="grails" failonerror="true">
+        <exec dir="${root.dir}" executable="${grails}" failonerror="true">
             <arg value="prepare-test"/>
             <arg value="-cleanDb=true"/>
             <arg value="-user=${test_db_user}"/>

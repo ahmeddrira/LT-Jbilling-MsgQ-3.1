@@ -257,8 +257,13 @@ class InvoiceController {
             return
         }
 
-        def filter = new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: true, integerValue: params.int('id'))
-        filterService.setFilter(FilterType.INVOICE, filter)
+        // limit by billing process
+        def processFilter = new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: true, integerValue: params.int('id'))
+        filterService.setFilter(FilterType.INVOICE, processFilter)
+
+        // show review invoices if process generated a review
+        def reviewFilter = new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'isReview', template: 'invoice/review', visible: true, integerValue: params.int('isReview'))
+        filterService.setFilter(FilterType.INVOICE, reviewFilter, false)
 
         redirect action: list
     }

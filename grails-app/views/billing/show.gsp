@@ -13,7 +13,7 @@
         </div>
 
         <div class="form-box ${process?.isReview == 0 ? 'last' : ''}">
-            <g:link action="showOrders" id="${process?.id}" class="submit apply"><span>Show Orders</span></g:link>
+            <g:link action="showOrders" id="${process?.id}" params="[isReview : process?.isReview]" class="submit apply"><span>Show Orders</span></g:link>
             <g:link action="showInvoices" id="${process?.id}" class="submit show"><span>Show Invoices</span></g:link>
         </div>
 

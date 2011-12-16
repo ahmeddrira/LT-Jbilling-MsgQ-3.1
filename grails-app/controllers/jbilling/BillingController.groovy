@@ -133,7 +133,7 @@ class BillingController {
 	}
 
 	def showInvoices = {
-		redirect controller: 'invoice', action: 'byProcess', id: params.id
+		redirect controller: 'invoice', action: 'byProcess', id: params.id, params: [ isReview : params.isReview ]
 	}
 	
 	def showOrders = {

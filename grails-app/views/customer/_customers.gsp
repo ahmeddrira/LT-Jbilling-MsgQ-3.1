@@ -33,7 +33,7 @@
         <thead>
             <tr>
                 <th>
-                    <g:remoteSort action="list" sort="contact.firstName, contact.lastName, contact.organizationName, userName" update="column1">
+                    <g:remoteSort action="list" sort="userName" update="column1">
                         <g:message code="customer.table.th.name"/>
                     </g:remoteSort>
                 </th>
@@ -103,14 +103,16 @@
                             <%-- is a parent, but also a child of another account --%>
                             <g:remoteLink action="subaccounts" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                                 <img src="${resource(dir:'images', file:'icon17.gif')}" alt="parent and child" />
-                                <span>${customer.children.size()}</span>
+                                <g:set var="children" value="${customer.children.findAll{ it.baseUser.deleted == 0 }}"/>
+                                <span>${children.size()}</span>
                             </g:remoteLink>
                         </g:if>
                         <g:elseif test="${customer.isParent == 1 && !customer.parent}">
                             <%-- is a top level parent --%>
                             <g:remoteLink action="subaccounts" id="${user.id}" before="register(this);" onSuccess="render(data, next);">
                                 <img src="${resource(dir:'images', file:'icon18.gif')}" alt="parent" />
-                                <span>${customer.children.size()}</span>
+                                <g:set var="children" value="${customer.children.findAll{ it.baseUser.deleted == 0 }}"/>
+                                <span>${children.size()}</span>
                             </g:remoteLink>
                         </g:elseif>
                         <g:elseif test="${customer.isParent == 0 && customer.parent}">

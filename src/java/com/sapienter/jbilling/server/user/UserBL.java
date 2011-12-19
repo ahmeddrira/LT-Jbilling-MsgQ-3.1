@@ -209,20 +209,22 @@ public class UserBL extends ResultList implements UserSQL {
             if (dto.getCustomer().getParent() != null) {
                 // the API accepts the user ID of the parent instead of the customer ID
                 user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
-
-                // log invoice if child changes
-                Integer oldInvoiceIfChild = user.getCustomer().getInvoiceChild();
-                user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
-
-                eLogger.audit(executorId,
-                              user.getId(),
-                              Constants.TABLE_CUSTOMER,
-                              user.getCustomer().getId(),
-                              EventLogger.MODULE_USER_MAINTENANCE,
-                              EventLogger.INVOICE_IF_CHILD_CHANGE,
-                              (oldInvoiceIfChild != null ? oldInvoiceIfChild : 0),
-                              null, null);
+            }else{
+                user.getCustomer().setParent(null);
             }
+
+            // log invoice if child changes
+            Integer oldInvoiceIfChild = user.getCustomer().getInvoiceChild();
+            user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
+
+            eLogger.audit(executorId,
+                          user.getId(),
+                          Constants.TABLE_CUSTOMER,
+                          user.getCustomer().getId(),
+                          EventLogger.MODULE_USER_MAINTENANCE,
+                          EventLogger.INVOICE_IF_CHILD_CHANGE,
+                          (oldInvoiceIfChild != null ? oldInvoiceIfChild : 0),
+                          null, null);
 
             // update the main order
             if (dto.getCustomer().getCurrentOrderId() != null) {

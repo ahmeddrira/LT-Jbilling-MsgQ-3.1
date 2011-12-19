@@ -43,7 +43,7 @@
         <g:if test="${planItem?.model?.type}">
             <g:set var="currency" value="${currencies.find{ it.id == planItem.model.currencyId}}"/>
             <span class="rate">
-            <g:formatNumber number="${model.getRateAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"  maxFractionDigits="4"/>
+            <g:formatNumber number="${planItem.model.getRateAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"  maxFractionDigits="4"/>
             </span>
             <span class="strategy">
                 <g:message code="price.strategy.${planItem.model?.type}"/>

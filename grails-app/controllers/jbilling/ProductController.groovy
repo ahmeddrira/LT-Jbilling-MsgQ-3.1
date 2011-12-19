@@ -294,13 +294,6 @@ class ProductController {
             redirect controller: 'product', action: 'list'
             return
         }
-        if (!params.id) {
-            flash.error = 'product.category.not.selected'
-            flash.args = [ params.id  as String]
-
-            redirect controller: 'product', action: 'list'
-            return
-        }
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'), category?.description)
 

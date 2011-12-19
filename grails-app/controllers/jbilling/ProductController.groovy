@@ -294,7 +294,8 @@ class ProductController {
             redirect controller: 'product', action: 'list'
             return
         }
-        if (!params.id && !params.add.toBoolean()) {
+        
+        if (!params.id && !params.boolean('add')) {
             flash.error = 'product.category.not.selected'
             flash.args = [ params.id  as String]
 

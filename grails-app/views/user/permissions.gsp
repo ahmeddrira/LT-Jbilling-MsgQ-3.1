@@ -94,7 +94,7 @@
                                     <g:applyLayout name="form/checkbox">
                                         <content tag="group.label">
                                             ${permission.id}
-                                            <em>(<g:formatBoolean boolean="${rolePermission != null}" true="${message(code: 'boolean.on')}" false="${message(code: 'boolean.off')}"/>)</em>:
+                                            <em>(<g:formatBoolean boolean="${userPermission != null}" true="${message(code: 'boolean.on')}" false="${message(code: 'boolean.off')}"/>)</em>:
                                         </content>
                                         <content tag="label">
                                             <g:if test="${(userPermission && !rolePermission) || (!userPermission && rolePermission)}">
@@ -129,7 +129,7 @@
                                     <g:applyLayout name="form/checkbox">
                                         <content tag="group.label">
                                             ${permission.id}
-                                            <em>(<g:formatBoolean boolean="${rolePermission != null}" true="${message(code: 'boolean.on')}" false="${message(code: 'boolean.off')}"/>)</em>:
+                                            <em>(<g:formatBoolean boolean="${userPermission != null}" true="${message(code: 'boolean.on')}" false="${message(code: 'boolean.off')}"/>)</em>:
                                         </content>
                                         <content tag="label">
                                             <g:if test="${(userPermission && !rolePermission) || (!userPermission && rolePermission)}">

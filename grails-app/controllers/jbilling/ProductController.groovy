@@ -424,18 +424,23 @@ class ProductController {
         PriceModelWS priceModel = PlanHelper.bindPriceModel(params)
 
         def modelIndex = params.int('modelIndex')
-        def attribute = message(code: 'plan.new.attribute.key', args: [ params.attributeIndex ])
+        def attribute = ""
 
         // find the model in the chain, and add a new attribute
         def model = priceModel
         for (int i = 0; model != null; i++) {
             if (i == modelIndex) {
+                int newIndex = 1
+                while (model.attributes.containsKey("attribute $newIndex")) {
+                    newIndex++
+                }
+                attribute = message(code: 'plan.new.attribute.key', args: [newIndex])
                 model.attributes.put(attribute, '')
             }
             model = model.next
         }
 
-        render template: '/priceModel/model', model: [ model: priceModel, currencies: currencies ]
+        render template: '/priceModel/model', model: [model: priceModel, currencies: currencies]
     }
 
     def removeAttribute = {

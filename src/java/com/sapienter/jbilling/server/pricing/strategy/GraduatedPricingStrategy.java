@@ -88,13 +88,18 @@ public class GraduatedPricingStrategy extends AbstractPricingStrategy {
         if (usage == null || usage.getQuantity() == null)
             throw new IllegalArgumentException("Usage quantity cannot be null for GraduatedPricingStrategy.");
 
-        BigDecimal total = quantity.add(usage.getQuantity());
+        /*
+            Usage quantity normally includes the quantity being purchased because we roll in the order
+            lines. If there is no pricing order (populating a single ItemDTO price), add the quantity
+            being purchased to the usage calc to get the total quantity.
+         */
+        BigDecimal total = pricingOrder == null ?  usage.getQuantity().add(quantity) : usage.getQuantity();
+        BigDecimal existing = pricingOrder == null ? usage.getQuantity() : usage.getQuantity().subtract(quantity);
         BigDecimal included = getIncludedQuantity(pricingOrder, planPrice, usage);
 
         LOG.debug("Graduated pricing for " + included + " units included, " + total + " purchased ...");
 
-
-        if (usage.getQuantity().compareTo(included) >= 0) {
+        if (existing.compareTo(included) >= 0) {
             // included usage exceeded by current usage
             result.setPrice(planPrice.getRate());
 

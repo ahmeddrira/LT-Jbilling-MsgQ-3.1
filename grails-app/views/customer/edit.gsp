@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO; com.sapienter.jbilling.server.user.db.CompanyDTO; com.sapienter.jbilling.server.user.permisson.db.RoleDTO; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.util.db.LanguageDTO" %>
+<%@ page import="com.sapienter.jbilling.server.user.UserDTOEx; com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO; com.sapienter.jbilling.server.user.db.CompanyDTO; com.sapienter.jbilling.server.user.permisson.db.RoleDTO; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.util.db.LanguageDTO" %>
 <html>
 <head>
     <meta name="layout" content="main" />
@@ -110,7 +110,12 @@
                         <g:applyLayout name="form/select">
                             <content tag="label"><g:message code="prompt.user.status"/></content>
                             <content tag="label.for">user.statusId</content>
-                            <g:userStatus name="user.statusId" value="${user?.statusId}" languageId="${session['language_id']}" />
+                            <g:if test="${params.id}">
+                                <g:userStatus name="user.statusId" value="${user?.statusId}" languageId="${session['language_id']}"/>
+                            </g:if>
+                            <g:else>
+                                <g:userStatus name="user.statusId" value="${user?.statusId}" languageId="${session['language_id']}" except="${[UserDTOEx.STATUS_DELETED]}"/>
+                            </g:else>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/select">

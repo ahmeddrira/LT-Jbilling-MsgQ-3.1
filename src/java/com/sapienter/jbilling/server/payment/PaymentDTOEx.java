@@ -106,7 +106,7 @@ public class PaymentDTOEx extends PaymentDTO {
             setPaymentMethod(new PaymentMethodDTO(dto.getMethodId()));
 
         if (dto.getResultId() != null)
-        setPaymentResult(new PaymentResultDAS().find(dto.getResultId()));
+            setPaymentResult(new PaymentResultDAS().find(dto.getResultId()));
 
         userId = dto.getUserId();
 

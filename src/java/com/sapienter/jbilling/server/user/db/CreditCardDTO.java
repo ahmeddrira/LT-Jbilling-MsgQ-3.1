@@ -342,9 +342,9 @@ public class CreditCardDTO implements Serializable {
         com.sapienter.jbilling.server.entity.CreditCardDTO oldCC =
                 new com.sapienter.jbilling.server.entity.CreditCardDTO();
 
+        oldCC.setId(this.getId());
         oldCC.setDeleted(this.getDeleted());
         oldCC.setExpiry(this.getExpiry());
-        oldCC.setId(this.getId());
         oldCC.setName(this.getName());
         oldCC.setNumber(this.getNumber());
         oldCC.setSecurityCode(this.getSecurityCode());

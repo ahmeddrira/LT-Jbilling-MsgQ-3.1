@@ -47,7 +47,8 @@ public class ItemDTOEx implements WSSecured, Serializable {
 
     // ItemDTO
     private Integer id;
-    @NotNull @Size (min=1,max=50, message="validation.error.size,1,50")
+    @NotNull(message = "validation.error.notnull")
+    @Size (min=1,max=50, message="validation.error.size,1,50")
     private String number;
     @Size (min=0,max=50, message="validation.error.size,1,50")
     private String glCode;

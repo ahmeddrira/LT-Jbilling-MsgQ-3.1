@@ -25,6 +25,7 @@
 package com.sapienter.jbilling.server.util;
 
 
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
 import grails.plugins.springsecurity.SpringSecurityService;
 
 import java.io.PrintWriter;
@@ -1627,7 +1628,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
             throws SessionInternalError {
-        validatePayment(payment);
         payment.setIsRefund(0);
 
         if (payment.getMethodId() == null) {
@@ -1657,7 +1657,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         if (payment == null && invoiceId != null)
             return payInvoice(invoiceId);
 
-        validatePayment(payment);
         Integer entityId = getCallerCompanyId();
         PaymentDTOEx dto = new PaymentDTOEx(payment);
 
@@ -2187,19 +2186,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
     }
 
-    private void validatePayment(PaymentWS payment)
-            throws SessionInternalError {
-        if (payment == null) {
-            throw new SessionInternalError("Null parameter");
-        }
-        payment.setBaseUserId(payment.getBaseUserId());
-        payment.setMethodId(payment.getMethodId());
-        payment.setCurrencyId(payment.getCurrencyId());
-        payment.setPaymentId(payment.getPaymentId());
-
-        // todo: additional hibernate validations
-            }
-
     private InvoiceDTO doCreateInvoice(Integer orderId) {
         try {
             BillingProcessBL process = new BillingProcessBL();
@@ -2595,7 +2581,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
 
     /**
-     * Updates a users stored credit card.
+     * Updates a users stored credit card to the given details. If the given credit card is
+     * null then the user's existing credit card will be deleted.
      *
      * @param userId user to update
      * @param creditCard credit card details
@@ -2604,14 +2591,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard)
             throws SessionInternalError {
 
-        if (creditCard == null)
-            return;
-
-        if (creditCard.getName() == null || creditCard.getExpiry() == null)
-            throw new SessionInternalError("Missing credit card name or expiry date");
+        // card can be null, passing null will delete the user's card
+        if (creditCard != null) {
+            if (creditCard.getName() == null || creditCard.getExpiry() == null)
+                throw new SessionInternalError("Missing credit card name or expiry date");
+        }
 
         IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
-        userSession.updateCreditCard(getCallerId(), userId, new CreditCardDTO(creditCard));
+        userSession.updateCreditCard(getCallerId(), userId, creditCard != null ? new CreditCardDTO(creditCard) : null);
     }
 
     /**
@@ -3197,6 +3184,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public void deletePlugin(Integer id) {
         new PluggableTaskBL(id).delete(getCallerId());
+
+        // invalidate the plug-in cache to clear the deleted plug-in reference
+        PluggableTaskDAS pluggableTaskDas = Context.getBean(Context.Name.PLUGGABLE_TASK_DAS);
+        pluggableTaskDas.invalidateCache();
     }
 
 

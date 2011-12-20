@@ -48,7 +48,7 @@ import org.joda.time.DateMidnight;
  * @author Emil
  */
 public class WSTest extends TestCase {
-	
+
 
     public void testApplyGet() {
         try {
@@ -507,7 +507,7 @@ public class WSTest extends TestCase {
 
             // check payment successful
             assertNotNull("Payment result not null", authInfo);
-            assertEquals("Auth id", 116, authInfo.getId().intValue());
+            assertNotNull("Auth id not null", authInfo.getId());
             assertTrue("Payment Authorization result should be OK", authInfo.getResult().booleanValue());
 
             // check payment was made
@@ -531,10 +531,15 @@ public class WSTest extends TestCase {
              * another payment for $10, this time with the user's credit card
              */
             // update the credit card to the one that is good
-            api.updateCreditCard(USER_ID, cc);
-            // now the payment does not have a cc
-            payment.setCreditCard(null);
+            user = api.getUserWS(USER_ID);
 
+            CreditCardDTO userCard = user.getCreditCard();
+            userCard.setNumber("4111111111111152");
+            api.updateCreditCard(USER_ID, userCard);
+
+            // process a payment without an attached credit card
+            // should try and use the user's saved credit card
+            payment.setCreditCard(null);
             payment.setAmount(new BigDecimal("10.00"));
             System.out.println("processing payment.");
             authInfo = api.processPayment(payment, null);

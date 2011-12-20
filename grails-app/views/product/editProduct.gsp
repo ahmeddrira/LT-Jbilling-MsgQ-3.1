@@ -28,12 +28,18 @@
         $(document).ready(function() {
             $('#product\\.percentageAsDecimal').blur(function() {
                 if ($(this).val()) {
-                    $('#pricing :input').val('').attr('disabled', 'true');
+                    $('#pricing :input:not(#startDate)').val('').attr('disabled', 'true');
                     $('#product\\.excludedTypes').attr('disabled', '');
                     closeSlide('#pricing');
                 } else {
                     $('#pricing :input').attr('disabled', '');
                     $('#product\\.excludedTypes').val('').attr('disabled', 'true');
+
+                    //the model.i.oldType field takes the value of the first option of te available modelTypes
+                    $("[id$='oldType']").each(function(i, o){
+                        $(o).val($(o).siblings("[id$='type']").find("option:first").val())
+                    });
+                    
                     openSlide('#pricing');
                 }
             }).blur();

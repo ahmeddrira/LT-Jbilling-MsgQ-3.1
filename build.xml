@@ -50,12 +50,14 @@
 
     <target name="test" depends="test-unit, test-ws, test-integration"/>
 
-    <target name="test.init">
+    <target name="test.init" depends="test.clean-results">
         <delete dir="${build.test.dir}"/>
-        <delete dir="${build.test-results.dir}"/>
-
         <mkdir dir="${build.test.dir}"/>
-        <mkdir dir="${build.test-results.dir}"/>
+    </target>
+
+    <target name="test.clean-results" unless="test-results.cleaned">
+        <delete dir="${build.test-results.dir}"/>
+        <property name="test-results.cleaned" value="true"/>
     </target>
 
     <target name="test-unit" depends="test.init" description="Run all class level unit tests and generate testing reports.">
@@ -77,12 +79,13 @@
         </copy>
 
         <!-- run unit tests -->
+        <delete dir="${build.test-results.dir}/unit/"/>
         <mkdir dir="${build.test-results.dir}/unit/xml"/>
         <junit errorproperty="test.failed" failureproperty="test.failed">
             <classpath refid="compile.classpath"/>
             <classpath refid="test.classpath"/>                                    
 
-            <batchtest fork="yes" todir="${build.test-results.dir}/unit/xml">
+            <batchtest todir="${build.test-results.dir}/unit/xml">
                 <formatter type="brief" usefile="false"/>
                 <formatter type="xml"/>
                 <fileset dir="${source.test.dir}/unit">
@@ -105,44 +108,6 @@
         <fail if="test.failed" message="Unit tests failed! See log's for details."/>
     </target>
 
-	<target name="test-remoting" depends="test.init">
-	        <javac srcdir="${source.test.dir}/ws"
-                   destdir="${build.test.dir}"
-                   includes="RemotingTest.java"
-                   debug="true" deprecation="false" nowarn="true" fork="true"
-                   includeantruntime="false">
-                <classpath refid="compile.classpath"/>
-                <classpath refid="test.classpath"/>
-	        </javac>
-
-	        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
-
-	        <!-- run web service tests -->
-	        <mkdir dir="${build.test-results.dir}/ws/xml"/>
-	        <junit errorproperty="test.failed" failureproperty="test.failed" haltonfailure="true">
-	            <jvmarg value="-Djava.security.manager" />
-	            <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
-	            <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
-
-                <classpath refid="compile.classpath"/>
-                <classpath refid="test.classpath"/>
-                
-	            <formatter type="brief" usefile="false"/>
-	            <formatter type="xml"/>
-
-	            <test name="RemotingTest" todir="${build.test-results.dir}/ws/xml"/>
-	        </junit>
-
-	        <!-- generate testing reports -->
-	        <mkdir dir="${build.test-results.dir}/ws/html"/>
-	        <junitreport>
-	            <fileset dir="${build.test-results.dir}/ws/xml" includes="TEST-*.xml"/>
-	            <report format="frames" todir="${build.test-results.dir}/ws/html"/>
-	        </junitreport>
-
-	        <fail if="test.failed" message="Remoting test failed! See log's for details."/>
-	</target>
-
     <target name="test-ws" depends="test.init" description="Run all web service tests and generate testing reports.">
         <javac srcdir="${source.test.ws.dir}"
                destdir="${build.test.dir}"
@@ -161,6 +126,7 @@
         </copy>
 
         <!-- run web service tests -->
+        <delete dir="${build.test-results.dir}/ws/"/>
         <mkdir dir="${build.test-results.dir}/ws/xml"/>
         <junit errorproperty="test.failed" failureproperty="test.failed" haltonfailure="true">
             <jvmarg value="-Djava.security.manager" />
@@ -226,6 +192,7 @@
         </copy>
 
         <!-- run integration tests -->
+        <delete dir="${build.test-results.dir}/org-integration/"/>
         <mkdir dir="${build.test-results.dir}/org-integration/xml"/>
         <junit errorproperty="test.failed" failureproperty="test.failed" haltonfailure="true">
             <jvmarg value="-Djava.security.manager" />
@@ -243,14 +210,15 @@
 
             <!--
                 The tests need to run in a specific order (partners first). Don't use batchtest!
-            -->
             <test name="com.sapienter.jbilling.server.user.PartnerTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
+            -->
             <test name="com.sapienter.jbilling.server.process.BillingProcessTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.mediation.MediationTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.provisioning.ProvisioningTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
-            <test name="com.sapienter.jbilling.server.process.AgeingTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>  <!-- must be last -->            
-            <test name="com.sapienter.jbilling.server.task.SimpleTaxCompositionTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
-            <test name="com.sapienter.jbilling.server.task.CountryTaxPluginTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
+            <test name="com.sapienter.jbilling.server.process.AgeingTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>  
+            <!-- must be last -->            
+            <test name="com.sapienter.jbilling.server.task.SimpleTaxCompositionTaskTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
+            <test name="com.sapienter.jbilling.server.task.CountryTaxCompositionTaskTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.task.PaymentTermPenaltyTaskTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             
             <!-- explicitly run a single test case if 'test.class' was set -->
@@ -400,42 +368,6 @@
         <delete>
             <fileset dir="${basedir}" includes="velocity.log*"/>
         </delete>
-    </target>
-
-
-    <!--
-        Git version control commands
-    -->
-
-    <macrodef name="git">
-        <attribute name="command"/>
-        <attribute name="dir" default=""/>
-        <element name="args" optional="true"/>
-        <sequential>
-            <echo message="git @{command}"/>
-            <exec executable="git" dir="@{dir}">
-                <arg value="@{command}"/>
-                <args/>
-            </exec>
-        </sequential>
-    </macrodef>
-
-    <macrodef name="git-clone-pull">
-        <attribute name="repository"/>
-        <attribute name="dest"/>
-        <sequential>
-            <git command="clone">
-                <args>
-                    <arg value="@{repository}"/>
-                    <arg value="@{dest}"/>
-                </args>
-            </git>
-            <git command="pull" dir="@{dest}"/>
-        </sequential>
-    </macrodef>
-
-    <target name="checkout" description="Update files from GIT">
-        <git command="pull" dir="${source.dir}"/>
     </target>
 
 </project>

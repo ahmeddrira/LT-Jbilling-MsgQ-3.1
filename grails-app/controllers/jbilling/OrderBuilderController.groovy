@@ -378,7 +378,10 @@ class OrderBuilderController {
                     } catch (SessionInternalError e) {
                         viewUtils.resolveException(flow, session.locale, e)
                     }
+                } else {
+                    order.setTotal(new BigDecimal(0))
                 }
+
                 conversation.order = order
 
                 params.template = 'review'

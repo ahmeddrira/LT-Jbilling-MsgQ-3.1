@@ -27,6 +27,7 @@ import com.sapienter.jbilling.server.user.validator.CreditCardNumber;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Only used for web services backward compatibility. 
@@ -34,192 +35,100 @@ import java.io.Serializable;
  */
 @XmlType(name = "credit-card")
 public class CreditCardDTO implements Serializable {
-    private java.lang.Integer id;
-    private boolean idHasBeenSet = false;
 
+    private Integer id;
     @CreditCardNumber(message = "validation.error.invalid.card.number")
     @NotEmpty(message="validation.error.notnull")
-    private java.lang.String number;
-    private boolean numberHasBeenSet = false;
+    private String number;
     @NotNull(message="validation.error.notnull")
-    private java.util.Date expiry;
-    private boolean expiryHasBeenSet = false;
+    private Date expiry;
     @NotEmpty(message="validation.error.notnull")
-    private java.lang.String name;
-    private boolean nameHasBeenSet = false;
-    private java.lang.Integer type;
-    private boolean typeHasBeenSet = false;
-    private java.lang.Integer deleted;
-    private boolean deletedHasBeenSet = false;
-    private java.lang.String securityCode;
-    private boolean securityCodeHasBeenSet = false;
-    private java.lang.String gatewayKey;
+    private String name;
+    private Integer type;
+    private Integer deleted;
+    private String securityCode;
+    private String gatewayKey;
 
-    private java.lang.Integer pk;
-
-    public CreditCardDTO()
-    {
+    public CreditCardDTO() {
     }
 
-    public CreditCardDTO( java.lang.Integer id,java.lang.String number,java.util.Date expiry,java.lang.String name,java.lang.Integer type,java.lang.Integer deleted,java.lang.String securityCode )
-    {
+    public CreditCardDTO(Integer id, String number, Date expiry, String name, Integer type, Integer deleted,
+                         String securityCode) {
         this.id = id;
-        idHasBeenSet = true;
         this.number = number;
-        numberHasBeenSet = true;
         this.expiry = expiry;
-        expiryHasBeenSet = true;
         this.name = name;
-        nameHasBeenSet = true;
         this.type = type;
-        typeHasBeenSet = true;
         this.deleted = deleted;
-        deletedHasBeenSet = true;
         this.securityCode = securityCode;
-        securityCodeHasBeenSet = true;
-        pk = this.getId();
+
     }
 
-    //TODO Cloneable is better than this !
-    public CreditCardDTO( CreditCardDTO otherValue )
-    {
+    public CreditCardDTO(CreditCardDTO otherValue) {
         this.id = otherValue.id;
-        idHasBeenSet = true;
         this.number = otherValue.number;
-        numberHasBeenSet = true;
         this.expiry = otherValue.expiry;
-        expiryHasBeenSet = true;
         this.name = otherValue.name;
-        nameHasBeenSet = true;
         this.type = otherValue.type;
-        typeHasBeenSet = true;
         this.deleted = otherValue.deleted;
-        deletedHasBeenSet = true;
         this.securityCode = otherValue.securityCode;
-        securityCodeHasBeenSet = true;
         this.gatewayKey = otherValue.gatewayKey;
-
-        pk = this.getId();
     }
 
-    public java.lang.Integer getPrimaryKey()
-    {
-        return pk;
+    public Integer getId() {
+        return id;
     }
 
-    public void setPrimaryKey( java.lang.Integer pk )
-    {
-        // it's also nice to update PK object - just in case
-        // somebody would ask for it later...
-        this.pk = pk;
-        setId( pk );
-    }
-
-    public java.lang.Integer getId()
-    {
-        return this.id;
-    }
-
-    public void setId( java.lang.Integer id )
-    {
+    public void setId(Integer id) {
         this.id = id;
-        idHasBeenSet = true;
-
-        pk = id;
     }
 
-    public boolean idHasBeenSet(){
-        return idHasBeenSet;
-    }
-    public java.lang.String getNumber()
-    {
-        return this.number;
+    public String getNumber() {
+        return number;
     }
 
-    public void setNumber( java.lang.String number )
-    {
+    public void setNumber(String number) {
         this.number = number;
-        numberHasBeenSet = true;
-
     }
 
-    public boolean numberHasBeenSet(){
-        return numberHasBeenSet;
-    }
-    public java.util.Date getExpiry()
-    {
-        return this.expiry;
+    public Date getExpiry() {
+        return expiry;
     }
 
-    public void setExpiry( java.util.Date expiry )
-    {
+    public void setExpiry(Date expiry) {
         this.expiry = expiry;
-        expiryHasBeenSet = true;
-
     }
 
-    public boolean expiryHasBeenSet(){
-        return expiryHasBeenSet;
-    }
-    public java.lang.String getName()
-    {
-        return this.name;
+    public String getName() {
+        return name;
     }
 
-    public void setName( java.lang.String name )
-    {
+    public void setName(String name) {
         this.name = name;
-        nameHasBeenSet = true;
-
     }
 
-    public boolean nameHasBeenSet(){
-        return nameHasBeenSet;
-    }
-    public java.lang.Integer getType()
-    {
-        return this.type;
+    public Integer getType() {
+        return type;
     }
 
-    public void setType( java.lang.Integer type )
-    {
+    public void setType(Integer type) {
         this.type = type;
-        typeHasBeenSet = true;
-
     }
 
-    public boolean typeHasBeenSet(){
-        return typeHasBeenSet;
-    }
-    public java.lang.Integer getDeleted()
-    {
-        return this.deleted;
+    public Integer getDeleted() {
+        return deleted;
     }
 
-    public void setDeleted( java.lang.Integer deleted )
-    {
+    public void setDeleted(Integer deleted) {
         this.deleted = deleted;
-        deletedHasBeenSet = true;
-
     }
 
-    public boolean deletedHasBeenSet(){
-        return deletedHasBeenSet;
-    }
-    public java.lang.String getSecurityCode()
-    {
-        return this.securityCode;
+    public String getSecurityCode() {
+        return securityCode;
     }
 
-    public void setSecurityCode( java.lang.String securityCode )
-    {
+    public void setSecurityCode(String securityCode) {
         this.securityCode = securityCode;
-        securityCodeHasBeenSet = true;
-
-    }
-
-    public boolean securityCodeHasBeenSet(){
-        return securityCodeHasBeenSet;
     }
 
     public String getGatewayKey() {
@@ -234,6 +143,8 @@ public class CreditCardDTO implements Serializable {
     public String toString() {
         return "CreditCardDTO{" +
                "id=" + id +
+               ", number='" + number + '\'' +
+               ", expiry=" + expiry +
                ", name='" + name + '\'' +
                ", type=" + type +
                ", deleted=" + deleted +
@@ -241,126 +152,4 @@ public class CreditCardDTO implements Serializable {
                ", gatewayKey='" + gatewayKey + '\'' +
                '}';
     }
-
-    /**
-     * A Value Object has an identity if the attributes making its Primary Key have all been set. An object without identity is never equal to any other object.
-     *
-     * @return true if this instance has an identity.
-     */
-    protected boolean hasIdentity()
-    {
-        return idHasBeenSet;
-    }
-
-    public boolean equals(Object other)
-    {
-        if (this == other)
-            return true;
-        if ( ! hasIdentity() ) return false;
-        if (other instanceof CreditCardDTO)
-        {
-            CreditCardDTO that = (CreditCardDTO) other;
-            if ( ! that.hasIdentity() ) return false;
-            boolean lEquals = true;
-            if( this.id == null )
-            {
-                lEquals = lEquals && ( that.id == null );
-            }
-            else
-            {
-                lEquals = lEquals && this.id.equals( that.id );
-            }
-
-            lEquals = lEquals && isIdentical(that);
-
-            return lEquals;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public boolean isIdentical(Object other)
-    {
-        if (other instanceof CreditCardDTO)
-        {
-            CreditCardDTO that = (CreditCardDTO) other;
-            boolean lEquals = true;
-            if( this.number == null )
-            {
-                lEquals = lEquals && ( that.number == null );
-            }
-            else
-            {
-                lEquals = lEquals && this.number.equals( that.number );
-            }
-            if( this.expiry == null )
-            {
-                lEquals = lEquals && ( that.expiry == null );
-            }
-            else
-            {
-                lEquals = lEquals && this.expiry.equals( that.expiry );
-            }
-            if( this.name == null )
-            {
-                lEquals = lEquals && ( that.name == null );
-            }
-            else
-            {
-                lEquals = lEquals && this.name.equals( that.name );
-            }
-            if( this.type == null )
-            {
-                lEquals = lEquals && ( that.type == null );
-            }
-            else
-            {
-                lEquals = lEquals && this.type.equals( that.type );
-            }
-            if( this.deleted == null )
-            {
-                lEquals = lEquals && ( that.deleted == null );
-            }
-            else
-            {
-                lEquals = lEquals && this.deleted.equals( that.deleted );
-            }
-            if( this.securityCode == null )
-            {
-                lEquals = lEquals && ( that.securityCode == null );
-            }
-            else
-            {
-                lEquals = lEquals && this.securityCode.equals( that.securityCode );
-            }
-
-            return lEquals;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public int hashCode(){
-        int result = 17;
-        result = 37*result + ((this.id != null) ? this.id.hashCode() : 0);
-
-        result = 37*result + ((this.number != null) ? this.number.hashCode() : 0);
-
-        result = 37*result + ((this.expiry != null) ? this.expiry.hashCode() : 0);
-
-        result = 37*result + ((this.name != null) ? this.name.hashCode() : 0);
-
-        result = 37*result + ((this.type != null) ? this.type.hashCode() : 0);
-
-        result = 37*result + ((this.deleted != null) ? this.deleted.hashCode() : 0);
-
-        result = 37*result + ((this.securityCode != null) ? this.securityCode.hashCode() : 0);
-
-        return result;
-    }
-
 }

@@ -174,12 +174,6 @@ class UserHelper {
                     return
                 }
             }
-        } else {
-            // validate that the new user has a password
-            if (!params.newPassword) {
-                flash.error = 'password.required'
-                return
-            }
         }
 
         // verify passwords

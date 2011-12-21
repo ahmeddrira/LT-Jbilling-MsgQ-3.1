@@ -102,9 +102,17 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
     }
 
     public boolean process(PaymentDTOEx paymentInfo) throws PluggableTaskException {
-        LOG.debug("processing " + paymentInfo + " cc number is " + paymentInfo.getCreditCard().getNumber());
+        LOG.debug("Processing payment: " + paymentInfo);
+
+        if (paymentInfo.getCreditCard() != null)
+            LOG.debug("Processing with credit card number: " + paymentInfo.getCreditCard().getNumber());
+
+        if(paymentInfo.getAch() != null)
+            LOG.debug("Processing with ach payment: " + paymentInfo.getAch());
+
         Result result = doFakeAuthorization(paymentInfo, null);
-        LOG.debug("result " + result);
+        LOG.debug("Fake result: " + result);
+
         return result.shouldCallOtherProcessors();
     }
 

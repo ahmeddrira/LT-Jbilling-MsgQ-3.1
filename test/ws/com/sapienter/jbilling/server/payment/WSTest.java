@@ -45,13 +45,13 @@ import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
  * @author Emil
  */
 public class WSTest extends TestCase {
-	
-      
+
+
     public void testApplyGet() {
         try {
-        	
+
             JbillingAPI api = JbillingAPIFactory.getAPI();
-           
+
             /*
              * apply payment
              */
@@ -65,23 +65,23 @@ public class WSTest extends TestCase {
             payment.setUserId(new Integer(2));
 						payment.setPaymentNotes("Notes");
 						payment.setPaymentPeriod(new Integer(1));
-            
-            
+
+
             PaymentInfoChequeDTO cheque = new PaymentInfoChequeDTO();
             cheque.setBank("ws bank");
             cheque.setDate(Calendar.getInstance().getTime());
             cheque.setNumber("2232-2323-2323");
             payment.setCheque(cheque);
-           
+
             System.out.println("Applying payment");
             Integer ret = api.applyPayment(payment, new Integer(35));
             System.out.println("Created payemnt " + ret);
             assertNotNull("Didn't get the payment id", ret);
-            
+
             /*
              * get
              */
-            //verify the created payment       
+            //verify the created payment
             System.out.println("Getting created payment");
             PaymentWS retPayment = api.getPayment(ret);
             assertNotNull("didn't get payment ", retPayment);
@@ -96,7 +96,7 @@ public class WSTest extends TestCase {
             assertNotNull("payment not related to invoice", retPayment.getInvoiceIds());
             assertTrue("payment not related to invoice", retPayment.getInvoiceIds().length == 1);
             assertEquals("payment not related to invoice", retPayment.getInvoiceIds()[0], new Integer(35));
-            
+
             InvoiceWS retInvoice = api.getInvoiceWS(retPayment.getInvoiceIds()[0]);
             assertNotNull("New invoice not present", retInvoice);
             assertEquals("Balance of invoice should be total of order", BigDecimal.ZERO, retInvoice.getBalanceAsDecimal());
@@ -105,11 +105,11 @@ public class WSTest extends TestCase {
             assertNotNull("invoice not related to payment", retInvoice.getPayments());
             assertTrue("invoice not related to payment", retInvoice.getPayments().length == 1);
             assertEquals("invoice not related to payment", retInvoice.getPayments()[0].intValue(), retPayment.getId());
-            
+
             /*
              * get latest
              */
-            //verify the created payment       
+            //verify the created payment
             System.out.println("Getting latest");
             retPayment = api.getLatestPayment(new Integer(2));
             assertNotNull("didn't get payment ", retPayment);
@@ -124,7 +124,7 @@ public class WSTest extends TestCase {
                 fail("User 13 belongs to entity 301");
             } catch (Exception e) {
             }
-            
+
             /*
              * get last
              */
@@ -132,10 +132,10 @@ public class WSTest extends TestCase {
             Integer retPayments[] = api.getLastPayments(new Integer(2), new Integer(2));
             assertNotNull("didn't get payment ", retPayments);
             // fetch the payment
-            
-            
+
+
             retPayment = api.getPayment(retPayments[0]);
-            
+
             assertEquals("created payment result", retPayment.getResultId(), payment.getResultId());
             assertEquals("created payment cheque ", retPayment.getCheque().getNumber(), payment.getCheque().getNumber());
             assertEquals("created payment user ", retPayment.getUserId(), payment.getUserId());
@@ -143,19 +143,19 @@ public class WSTest extends TestCase {
 
             try {
                 System.out.println("Getting last - invalid");
-                retPayments = api.getLastPayments(new Integer(13), 
+                retPayments = api.getLastPayments(new Integer(13),
                 	new Integer(2));
                 fail("User 13 belongs to entity 301");
             } catch (Exception e) {
             }
-            
-            
+
+
             /*
              * TODO test refunds. There are no refund WS methods.
              * Using applyPayment with is_refund = 1 DOES NOT work
              */
 
- 
+
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);
@@ -163,7 +163,7 @@ public class WSTest extends TestCase {
     }
 
     /**
-     * Test for UserIdFilter, NameFilter, AddressFilter, PhoneFilter, 
+     * Test for UserIdFilter, NameFilter, AddressFilter, PhoneFilter,
      * CreditCardFilter and IpAddressFilter
      */
     public void testBlacklistFilters() {
@@ -175,21 +175,21 @@ public class WSTest extends TestCase {
                     "User id is blacklisted.",
                     "Name is blacklisted.",
                     "Address is blacklisted.",
-                    "Phone number is blacklisted.", 
-                    "Credit card number is blacklisted.", 
+                    "Phone number is blacklisted.",
+                    "Credit card number is blacklisted.",
                     "IP address is blacklisted." };
 
             JbillingAPI api = JbillingAPIFactory.getAPI();
 
             /*
-             * Loop through users 1000-1005, which should fail on a respective 
-             * filter: UserIdFilter, NameFilter, AddressFilter, PhoneFilter, 
+             * Loop through users 1000-1005, which should fail on a respective
+             * filter: UserIdFilter, NameFilter, AddressFilter, PhoneFilter,
              * CreditCardFilter or IpAddressFilter
              */
             for(int i = 0; i < 6; i++, userId++) {
                 // create a new order and invoice it
-                OrderWS order = new OrderWS();            
-                order.setUserId(userId); 
+                OrderWS order = new OrderWS();
+                order.setUserId(userId);
                 order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
                 order.setPeriod(2);
                 order.setCurrencyId(new Integer(1));
@@ -239,7 +239,7 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
         }
     }
-    
+
     public void testRemoveOnCCChange() throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();
         final Integer userId = 868; // this is a user with a good CC
@@ -277,7 +277,7 @@ public class WSTest extends TestCase {
 
     /**
      * Test for BlacklistUserStatusTask. When a user's status moves to
-     * suspended or higher, the user and all their information is 
+     * suspended or higher, the user and all their information is
      * added to the blacklist.
      */
     public void testBlacklistUserStatus() {
@@ -299,7 +299,7 @@ public class WSTest extends TestCase {
             UserWS user = api.getUserWS(USER_ID);
             // CXF returns null
             if (user.getBlacklistMatches() != null) {
-            assertTrue("User shouldn't be blacklisted yet", 
+            assertTrue("User shouldn't be blacklisted yet",
                     user.getBlacklistMatches().length == 0);
             }
 
@@ -326,7 +326,7 @@ public class WSTest extends TestCase {
     }
 
     /**
-     * Tests the PaymentRouterCurrencyTask. 
+     * Tests the PaymentRouterCurrencyTask.
      */
     public void testPaymentRouterCurrencyTask() {
         try {
@@ -336,7 +336,7 @@ public class WSTest extends TestCase {
             JbillingAPI api = JbillingAPIFactory.getAPI();
 
             // create a new order
-            OrderWS order = new OrderWS();            
+            OrderWS order = new OrderWS();
             order.setUserId(USER_USD);
             order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
             order.setPeriod(2);
@@ -421,7 +421,7 @@ public class WSTest extends TestCase {
 
     public void testProcessPayment(){
         try {
-            JbillingAPI api = JbillingAPIFactory.getAPI();		
+            JbillingAPI api = JbillingAPIFactory.getAPI();
             final Integer USER_ID = new Integer(1071);
 
             // first, create two unpaid invoices
@@ -436,9 +436,9 @@ public class WSTest extends TestCase {
             payment.setMethodId(Constants.PAYMENT_METHOD_VISA);
             payment.setPaymentDate(Calendar.getInstance().getTime());
             payment.setCurrencyId(new Integer(1));
-            payment.setUserId(USER_ID);            
+            payment.setUserId(USER_ID);
 
-            UserWS user = api.getUserWS(USER_ID);         
+            UserWS user = api.getUserWS(USER_ID);
             CreditCardDTO originalCC= user.getCreditCard();
 
 
@@ -452,7 +452,7 @@ public class WSTest extends TestCase {
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.YEAR, 5);
             cc.setExpiry(cal.getTime());
-            payment.setCreditCard(cc);                       
+            payment.setCreditCard(cc);
 
             System.out.println("processing payment.");
             PaymentAuthorizationDTOEx authInfo = api.processPayment(payment, null);
@@ -504,7 +504,7 @@ public class WSTest extends TestCase {
 
             // check payment successful
             assertNotNull("Payment result not null", authInfo);
-            assertEquals("Auth id", 116, authInfo.getId().intValue());
+            assertNotNull("Auth id not null", authInfo.getId());
             assertTrue("Payment Authorization result should be OK", authInfo.getResult().booleanValue());
 
             // check payment was made
@@ -528,10 +528,15 @@ public class WSTest extends TestCase {
              * another payment for $10, this time with the user's credit card
              */
             // update the credit card to the one that is good
-            api.updateCreditCard(USER_ID, cc);
-            // now the payment does not have a cc
-            payment.setCreditCard(null);
+            user = api.getUserWS(USER_ID);
 
+            CreditCardDTO userCard = user.getCreditCard();
+            userCard.setNumber("4111111111111152");
+            api.updateCreditCard(USER_ID, userCard);
+
+            // process a payment without an attached credit card
+            // should try and use the user's saved credit card
+            payment.setCreditCard(null);
             payment.setAmount(new BigDecimal("10.00"));
             System.out.println("processing payment.");
             authInfo = api.processPayment(payment, null);
@@ -556,7 +561,7 @@ public class WSTest extends TestCase {
             assertEquals("correct invoice balance", new BigDecimal("5"), invoice2.getBalanceAsDecimal());
 
 
-            /* 
+            /*
              *another payment for $10
              */
             payment.setCreditCard(cc);
@@ -597,20 +602,20 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
         }
     }
-    
+
     public void testAchFakePayments() throws Exception {
-		
+
 		JbillingAPI api = JbillingAPIFactory.getAPI();
 		UserWS newUser = createUser();
 		newUser.setCreditCard(null);
-		
+
 		System.out.println("Creating user with ACH record and no CC...");
         Integer userId = api.createUser(newUser);
-        
+
         newUser = api.getUserWS(userId);
 		AchDTO ach = newUser.getAch();
 		// CreditCardDTO cc = newUser.getCreditCard();
-		
+
 		System.out.println("Testing ACH payment with even amount (should pass)");
 		PaymentWS payment = new PaymentWS();
         payment.setAmount(new BigDecimal("15.00"));
@@ -623,11 +628,11 @@ public class WSTest extends TestCase {
 		payment.setPaymentNotes("Notes");
 		payment.setPaymentPeriod(new Integer(1));
 		payment.setAch(ach);
-		
+
 		PaymentAuthorizationDTOEx result = api.processPayment(payment, null);
 		assertEquals("ACH payment with even amount should pass",
 				Constants.RESULT_OK, api.getPayment(result.getPaymentId()).getResultId());
-		
+
 		System.out.println("Testing ACH payment with odd amount (should fail)");
 		payment = new PaymentWS();
         payment.setAmount(new BigDecimal("15.01"));
@@ -640,14 +645,14 @@ public class WSTest extends TestCase {
 		payment.setPaymentNotes("Notes");
 		payment.setPaymentPeriod(new Integer(1));
 		payment.setAch(ach);
-		
+
 		result = api.processPayment(payment, null);
 		assertEquals("ACH payment with odd amount should fail",
 				Constants.RESULT_FAIL, api.getPayment(result.getPaymentId()).getResultId());
 	}
-    
+
     private UserWS createUser() {
-		
+
         UserWS newUser = new UserWS();
         newUser.setUserName("testUserName-" + Calendar.getInstance().getTimeInMillis());
         newUser.setPassword("asdfasdf1");
@@ -657,7 +662,7 @@ public class WSTest extends TestCase {
         newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
         newUser.setCurrencyId(null);
         newUser.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
-        
+
         // add a contact
         ContactWS contact = new ContactWS();
         contact.setEmail("frodo@shire.com");
@@ -672,29 +677,29 @@ public class WSTest extends TestCase {
         contact.setFieldIDs(fields);
         contact.setFieldValues(fieldValues);
         newUser.setContact(contact);
-        
+
         // add a credit card
         CreditCardDTO cc = new CreditCardDTO();
         cc.setName("Frodo Baggins");
         cc.setNumber("4111111111111152");
         Calendar expiry = Calendar.getInstance();
         expiry.set(Calendar.YEAR, expiry.get(Calendar.YEAR) + 1);
-        cc.setExpiry(expiry.getTime());        
+        cc.setExpiry(expiry.getTime());
 
         newUser.setCreditCard(cc);
-        
+
         AchDTO ach = new AchDTO();
         ach.setAbaRouting("123456789");
         ach.setAccountName("Frodo Baggins");
         ach.setAccountType(Integer.valueOf(1));
         ach.setBankAccount("123456789");
         ach.setBankName("Shire Financial Bank");
-        
+
         newUser.setAch(ach);
-        
+
         return newUser;
 	}
-    
+
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {
         assertEquals(null, expected, actual);
     }

@@ -30,9 +30,17 @@
         <table id="logs" cellspacing="0" cellpadding="0">
             <thead>
                 <tr>
-                    <th class="small"><g:message code="log.th.date"/></th>
+                    <th class="small">
+                        <g:remoteSort action="list" sort="createDatetime" update="column1">
+                            <g:message code="log.th.date"/>
+                        </g:remoteSort>
+                    </th>
                     <th class="small"><g:message code="log.th.table"/></th>
-                    <th class="small"><g:message code="log.th.foreign_id"/></th>
+                    <th class="small">
+                        <g:remoteSort action="list" sort="foreignId" update="column1">
+                            <g:message code="log.th.foreign_id"/>
+                        </g:remoteSort>
+                    </th>
                     <th class="medium"><g:message code="log.th.message"/></th>
                     <th class="small"><g:message code="log.th.user"/></th>
                 </tr>
@@ -75,16 +83,16 @@
     </div>
 </div>
 
-<g:if test="${logs?.totalCount > params.max}">
-    <div class="pager-box">
-        <div class="row left">
-            <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], update: 'column1']"/>
-        </div>
-        <div class="row">
-            <util:remotePaginate controller="auditLog" action="list" params="${sortableParams(params: [partial: true])}" total="${logs.totalCount}" update="column1"/>
-        </div>
+
+<div class="pager-box">
+    <div class="row left">
+        <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], update: 'column1']"/>
     </div>
-</g:if>
+    <div class="row">
+        <util:remotePaginate controller="auditLog" action="list" params="${sortableParams(params: [partial: true])}" total="${logs?.totalCount ?: 0}" update="column1"/>
+    </div>
+</div>
+
 
 <div class="btn-box">
 </div>

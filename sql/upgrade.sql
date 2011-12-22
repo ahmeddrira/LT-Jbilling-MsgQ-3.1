@@ -1565,3 +1565,17 @@ insert into permission_role_map (role_id, permission_id) values (4, 90); -- cust
 insert into permission_role_map (role_id, permission_id) values (4, 91); -- invoices menu
 insert into permission_role_map (role_id, permission_id) values (4, 92); -- order menu
 insert into permission_role_map (role_id, permission_id) values (4, 93); -- payments menu
+
+
+-- 01-Nov-2011
+-- Redmine Issue: #1404
+-- Description: Credit Card that expires in the same month does not process automatically
+
+update credit_card set cc_expiry = date_trunc('month', cc_expiry) + INTERVAL '1 month' - INTERVAL '1 day'; -- postgresql
+-- update credit_card set cc_expiry = last_day(cc_expiry); -- mysql
+
+
+-- Date: 29-Nov-2011
+-- Redmine Issue: #1575
+-- Description: Cannot add Line Percentage to a Plan
+alter table plan_item alter column price_model_id drop not null;

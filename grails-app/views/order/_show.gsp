@@ -29,7 +29,7 @@
     <div class="heading">
         <strong><g:message code="order.label.details"/>&nbsp;<em>${order?.id}</em></strong>
     </div>
-    
+
     <!-- Order Details -->
     <div class="box">
         <table class="dataTable">
@@ -67,7 +67,7 @@
                 <td class="value">${user?.userName}</td>
             </tr>
         </table>
-        
+
         <table class="dataTable">
             <tr><td><g:message code="order.label.create.date"/>:</td>
                 <td class="value">
@@ -118,11 +118,11 @@
             </tr>
         </table>
     </div>
-    
+
     <div class="heading">
         <strong><g:message code="order.label.notes"/></strong>
     </div>
-    
+
     <!-- Order Notes -->
     <div class="box">
         <g:if test="${order?.notes}">
@@ -132,11 +132,11 @@
             <p><em><g:message code="order.prompt.no.notes"/></em></p>
         </g:else>
     </div>
-    
+
     <div class="heading">
         <strong><g:message code="order.label.lines"/></strong>
     </div>
-    
+
     <!-- Order Lines -->
     <div class="box">
         <g:if test="${order?.orderLines}">
@@ -184,10 +184,10 @@
                                 <g:formatNumber number="${line.quantityAsDecimal ?: BigDecimal.ZERO}" formatName="decimal.format"/>
                             </td>
                             <td class="innerContent">
-                                <g:formatNumber number="${line.priceAsDecimal ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency.symbol}"/>
+                                <g:formatNumber number="${line.priceAsDecimal ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency.symbol}" maxFractionDigits="4"/>
                             </td>
                             <td class="innerContent">
-                                <g:formatNumber number="${line.amountAsDecimal ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency.symbol}"/>
+                                <g:formatNumber number="${line.amountAsDecimal ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency.symbol}" maxFractionDigits="4"/>
                             </td>
                          </tr>
                      </g:each>
@@ -198,13 +198,13 @@
             <em><g:message code="order.prompt.no.lines"/></em>
         </g:else>
     </div>
-    
+
     <!-- Invoices Generated -->
     <g:if test="${order?.generatedInvoices}">
         <div class="heading">
             <strong><g:message code="order.label.invoices.generated"/></strong>
         </div>
-        
+
         <div class="box">
             <table class="innerTable" >
                 <thead class="innerHeader">
@@ -241,7 +241,7 @@
             </table>
         </div>
     </g:if>
-    
+
     <div class="btn-box">
         <div class="row">
             <sec:ifAllGranted roles="ORDER_23">

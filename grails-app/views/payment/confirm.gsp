@@ -346,7 +346,7 @@
                 <div class="box-text">
                     <label><g:message code="payment.notes"/></label>
                     <ul>
-                        <li><p>${payment?.paymentNotes}</p></li>
+                        <li><p class="paymentConfirm">${payment?.paymentNotes}</p></li>
                     </ul>
                     <g:hiddenField name="payment.paymentNotes" value="${payment?.paymentNotes}"/>
                 </div>

@@ -467,9 +467,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * The id of the invoice to delete
      */
     public void deleteInvoice(Integer invoiceId) {
-        Integer executorId = getCallerId();
-        InvoiceBL invoice = new InvoiceBL(invoiceId);
-        invoice.delete(executorId);
+        IInvoiceSessionBean session = Context.getBean(Context.Name.INVOICE_SESSION);
+        session.delete(invoiceId, getCallerId());
     }
 
     /**
@@ -478,9 +477,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * The id of the item to delete
      */
     public void deleteItem(Integer itemId) throws SessionInternalError {
-    	ItemBL itemBl= new ItemBL(itemId);
-    	itemBl.delete(getCallerId());
-    	LOG.debug("Deleted Item, " + itemBl.getEntity().getDeleted());
+        IItemSessionBean itemSession = (IItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
+        itemSession.delete(getCallerId(), itemId);
+    	LOG.debug("Deleted Item Id " + itemId);
     }
 
     /**
@@ -872,19 +871,19 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public void saveCustomContactField(ContactFieldTypeWS ws) throws SessionInternalError {
-        try {
-            
-            ContactFieldTypeDAS das= new ContactFieldTypeDAS(); 
+    	try {
+
+    		ContactFieldTypeDAS das= new ContactFieldTypeDAS();
             ContactFieldTypeDTO dto= ws.getDTO();
-            dto= das.save(dto);
-            
+    			dto= das.save(dto);
+    			
             if ( ws.getDescriptions().size() > 0 ) {
-                InternationalDescriptionWS descrWs= (InternationalDescriptionWS)ws.getDescriptions().get(0); 
+                InternationalDescriptionWS descrWs= (InternationalDescriptionWS)ws.getDescriptions().get(0);
                 dto.setDescription( descrWs.getContent(), descrWs.getLanguageId() );
-            }
-            
-            das.flush();
-            
+				}
+
+    			das.flush();
+
     	}catch (Exception e) {
     		throw new SessionInternalError(e);
     	}
@@ -2906,7 +2905,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        List<MediationRecordLineDTO> events = mediationBean.getEventsForOrder(orderId);
+        List<MediationRecordLineDTO> events = mediationBean.getMediationRecordLinesForOrder(orderId);
 
         return MediationRecordBL.getWS(events);
     }

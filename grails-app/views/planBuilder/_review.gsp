@@ -49,7 +49,7 @@
         <!-- plan review header -->
         <div class="header">
             <div class="column">
-                <h2>${product.description} &nbsp;</h2>
+                <h2 class="product-description">${product.description} &nbsp;</h2>
             </div>
             <div class="column">
                 <h2 class="right">

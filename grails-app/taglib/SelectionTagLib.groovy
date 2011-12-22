@@ -68,6 +68,7 @@ class SelectionTagLib {
 		Integer langId= attrs.languageId?.toInteger();
 		String name= attrs.name;
 		String value = attrs.value?.toString()
+        List except = attrs.except ?: []
 
 		List list= new ArrayList();
 		String[] sarr= null;
@@ -76,7 +77,10 @@ class SelectionTagLib {
 			sarr=new String[2]
 			sarr[0]= status.getId()
 			sarr[1]= title
-			list.add(sarr)
+            // add the status if its id is not in the exception List
+            if(!except.contains(status.getId())){
+                list.add(sarr)
+            }
 		}
 		out << render(template:"/selectTag", model:[name:name, list:list, value:value])
 		

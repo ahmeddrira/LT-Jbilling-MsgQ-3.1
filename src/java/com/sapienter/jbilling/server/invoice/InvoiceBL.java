@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -43,6 +44,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceLineDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.list.ResultList;
@@ -315,7 +317,15 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
      */
     public void delete(Integer executorId) throws SessionInternalError {
         if (invoice == null) {
-            throw new SessionInternalError("An invoice has to be set before " + "delete");
+            throw new SessionInternalError("An invoice has to be set before delete");
+        }
+        
+        //prevent a delegated Invoice from being deleted
+        if (invoice.getDelegatedInvoiceId() != null && invoice.getDelegatedInvoiceId().intValue() > 0 ) {
+            SessionInternalError sie= new SessionInternalError("A carried forward Invoice cannot be deleted");
+            sie.setErrorMessages(new String[] {
+                    "InvoiceDTO,invoice,invoice.error.fkconstraint," + invoice.getId()});
+            throw sie;
         }
         // start by updating purchase_order.next_billable_day if applicatble
         // for each of the orders included in this invoice
@@ -384,6 +394,17 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         // PAYMENT_INVOICE
         new PaymentInvoiceMapDAS().deleteAllWithInvoice(invoice);
 
+        Set<InvoiceDTO> invoices= invoice.getInvoices();
+        if (invoices.size() > 0 ) {
+            for (InvoiceDTO delegate: invoices) {
+                //set status to unpaid as against carried
+                delegate.setInvoiceStatus(new InvoiceStatusDAS().find(Constants.INVOICE_STATUS_UNPAID));
+                //remove delegated invoice link
+                delegate.setInvoice(null);
+                getHome().save(delegate);
+            }
+        }
+        
         // now delete the invoice itself
         getHome().delete(invoice);
         getHome().flush();

@@ -86,7 +86,7 @@ class InvoiceController {
 
         // hide review invoices by default
         def reviewFilter = filters.find{ it.field == 'isReview' }
-        if (reviewFilter && reviewFilter.value == null) reviewFilter.integerValue = 0
+        if (reviewFilter && reviewFilter.value == null) reviewFilter.integerValue = Integer.valueOf(0)
 
         // get list
         return InvoiceDTO.createCriteria().list(
@@ -95,7 +95,7 @@ class InvoiceController {
         ) {
             and {
                 filters.each { filter ->
-                    if (filter.value) {
+                    if (filter.value != null) {
                         //handle invoiceStatus
                         if (filter.field == 'invoiceStatus') {
                             def statuses = new InvoiceStatusDAS().findAll()
@@ -187,6 +187,8 @@ class InvoiceController {
                 flash.message = 'invoice.delete.success'
                 flash.args = [ invoiceId ]
 
+            } catch (SessionInternalError e) {
+                viewUtils.resolveException(flash, session.locale, e);
             } catch (Exception e) {
                 log.error("Exception deleting invoice.", e)
                 flash.error = 'error.invoice.delete'
@@ -262,8 +264,13 @@ class InvoiceController {
             return
         }
 
-        def filter = new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: true, integerValue: params.int('id'))
-        filterService.setFilter(FilterType.INVOICE, filter)
+        // limit by billing process
+        def processFilter = new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'billingProcess.id', template: 'id', visible: true, integerValue: params.int('id'))
+        filterService.setFilter(FilterType.INVOICE, processFilter)
+
+        // show review invoices if process generated a review
+        def reviewFilter = new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'isReview', template: 'invoice/review', visible: true, integerValue: params.int('isReview'))
+        filterService.setFilter(FilterType.INVOICE, reviewFilter, false)
 
         redirect action: list
     }

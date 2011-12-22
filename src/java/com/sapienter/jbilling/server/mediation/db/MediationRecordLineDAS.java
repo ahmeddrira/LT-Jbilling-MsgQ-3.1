@@ -19,27 +19,21 @@
  */
 package com.sapienter.jbilling.server.mediation.db;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.sapienter.jbilling.server.invoice.InvoiceBL;
-import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
-import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import org.hibernate.Query;
 
-import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import java.util.List;
 
 public class MediationRecordLineDAS extends AbstractDAS<MediationRecordLineDTO> {
-    
+
     private static final String findByOrder =
             " select a " +
             "   from MediationRecordLineDTO a " +
             "  where a.orderLine.purchaseOrder.id = :orderId " +
             "    and a.orderLine.deleted = 0 " +
             "  order by a.orderLine.id, a.id";
-    
-    public List<MediationRecordLineDTO> getByOrder(Integer orderId) {
+
+    public List<MediationRecordLineDTO> findByOrder(Integer orderId) {
         Query query = getSession().createQuery(findByOrder);
         query.setParameter("orderId", orderId);
         return query.list();

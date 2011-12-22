@@ -34,7 +34,7 @@
             <div class="input-row">
                 <div class="select-bg">
                     <g:select name="filters.${filter.name}.integerValue"
-                              value="${filter.integerValue}"
+                              value="${filter.integerValue ?: 0}"
                               from="${[0, 1]}"
                               valueMessagePrefix='filters.isReview'/>
                 </div>

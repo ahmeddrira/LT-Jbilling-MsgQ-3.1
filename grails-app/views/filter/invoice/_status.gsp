@@ -38,7 +38,7 @@
                     <g:select name="filters.${filter.name}.integerValue"
                             value="${filter.integerValue}"
                             from="${new InvoiceStatusDAS().findAll()}"
-                            optionKey="id" optionValue="description"
+                            optionKey="statusValue" optionValue="description"
                             noSelection="['': message(code: 'filters.status.empty')]" />
 
                 </div>

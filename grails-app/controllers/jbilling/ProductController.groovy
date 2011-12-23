@@ -41,6 +41,7 @@ import org.hibernate.Criteria
 import com.sapienter.jbilling.client.util.SortableCriteria
 
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import org.apache.commons.lang.StringUtils
 
 @Secured(["MENU_97"])
 class ProductController {
@@ -326,11 +327,18 @@ class ProductController {
                 if (SpringSecurityUtils.ifAllGranted("PRODUCT_CATEGORY_50")) {
                     log.debug("creating product category ${category}")
 
-                    category.id = webServicesSession.createItemCategory(category)
+                    if (category.description.trim()) {
+                        category.id = webServicesSession.createItemCategory(category)
 
-                    flash.message = 'product.category.created'
-                    flash.args = [ category.id as String ]
+                        flash.message = 'product.category.created'
+                        flash.args = [category.id as String]
+                    } else {
+                        category.description = StringUtils.EMPTY
+                        flash.error = message(code: 'product.category.error.name.blank')
 
+                        render view: "editCategory", params: [category: category]
+                        return
+                    }
                 } else {
                     render view: '/login/denied'
                     return
@@ -476,11 +484,18 @@ class ProductController {
                 if (SpringSecurityUtils.ifAllGranted("PRODUCT_40")) {
                     log.debug("creating product ${product}")
 
-                    product.id = webServicesSession.createItem(product)
+                    if (product.description.trim()) {
+                        product.id = webServicesSession.createItem(product)
 
-                    flash.message = 'product.created'
-                    flash.args = [ product.id ]
+                        flash.message = 'product.created'
+                        flash.args = [product.id]
+                    } else {
+                        product.description = StringUtils.EMPTY
+                        flash.error = message(code: 'product.error.name.blank')
 
+                        render view: "editProduct", model: [product: product, currencies: currencies, categories: getProductCategories(), category: params.selectedCategoryId]
+                        return
+                    }
                 } else {
                     render view: '/login/denied'
                     return;

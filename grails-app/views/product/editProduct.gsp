@@ -56,6 +56,7 @@
 
     <div class="form-hold">
         <g:form name="save-product-form" action="saveProduct">
+            <g:hiddenField name="selectedCategoryId" value="${categoryId}"/>
             <fieldset>
                 <!-- product info -->
                 <div class="form-columns">

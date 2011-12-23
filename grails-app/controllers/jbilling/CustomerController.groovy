@@ -56,6 +56,7 @@ import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS
 
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
+import org.apache.commons.lang.StringUtils
 
 @Secured(["MENU_90"])
 class CustomerController {
@@ -309,12 +310,18 @@ class CustomerController {
             // save or update
             if (!oldUser) {
                 if (SpringSecurityUtils.ifAllGranted("CUSTOMER_10")) {
+                    if (user.userName.trim()) {
+                        user.userId = webServicesSession.createUser(user)
 
-                    user.userId = webServicesSession.createUser(user)
+                        flash.message = 'customer.created'
+                        flash.args = [user.userId as String]
+                    } else {
+                        user.userName = StringUtils.EMPTY
+                        flash.error = message(code: 'customer.error.name.blank')
 
-                    flash.message = 'customer.created'
-                    flash.args = [ user.userId as String ]
-
+                        render view: "edit", model: [user: user, contacts: contacts, parent: null, company: company, currencies: currencies, periodUnits: PeriodUnitDTO.list()]
+                        return
+                    }
                 } else {
                     render view: '/login/denied'
                     return

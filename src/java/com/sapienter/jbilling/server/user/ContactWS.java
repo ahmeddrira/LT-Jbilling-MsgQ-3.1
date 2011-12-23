@@ -31,6 +31,7 @@ import com.sapienter.jbilling.server.util.api.validation.EntitySignupValidationG
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
@@ -40,21 +41,30 @@ public class ContactWS implements Serializable {
 
     private Integer id;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
+    @Size(min = 0, max = 200, message = "validation.error.size,0,200")
     private String organizationName;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
+    @Size(min = 0, max = 100, message = "validation.error.size,0,100")
     private String address1;
+    @Size(min = 0, max = 100, message = "validation.error.size,0,100")
     private String address2;
+    @Size(min = 0, max = 50, message = "validation.error.size,0,50")
     private String city;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
+    @Size(min = 0, max = 30, message = "validation.error.size,0,30")
     private String stateProvince;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
+    @Size(min = 0, max = 15, message = "validation.error.size,0,15")
     private String postalCode;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
     private String countryCode;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
+    @Size(min = 0, max = 30, message = "validation.error.size,0,30")
     private String lastName;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
+    @Size(min = 0, max = 30, message = "validation.error.size,0,30")
     private String firstName;
+    @Size(min = 0, max = 30, message = "validation.error.size,0,30")
     private String initial;
     private String title;
     private Integer phoneCountryCode;

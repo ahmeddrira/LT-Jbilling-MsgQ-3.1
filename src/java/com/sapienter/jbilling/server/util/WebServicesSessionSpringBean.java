@@ -1765,6 +1765,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         dto.setEntity(new CompanyDTO(entityId));
 
         ItemTypeBL itemTypeBL = new ItemTypeBL();
+
+        //Check if the category already exists to throw an error to the user.
+        if (itemTypeBL.exists(dto.getDescription())) {
+            throw new SessionInternalError("The product category already exists with name " + dto.getDescription(),
+                    new String[]{"ItemTypeWS,name,validation.error.category.already.exists"});
+        }
+
         itemTypeBL.create(dto);
         return itemTypeBL.getEntity().getId();
     }
@@ -1778,6 +1785,12 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         ItemTypeDTO dto = new ItemTypeDTO();
         dto.setDescription(itemType.getDescription());
         dto.setOrderLineTypeId(itemType.getOrderLineTypeId());
+
+        //Check if the category already exists to throw an error to the user.
+        if (itemTypeBL.exists(dto.getDescription())) {
+            throw new SessionInternalError("The product category already exists with name " + dto.getDescription(),
+                    new String[]{"ItemTypeWS,name,validation.error.category.already.exists"});
+        }
 
         itemTypeBL.update(executorId, dto);
     }

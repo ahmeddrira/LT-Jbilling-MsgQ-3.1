@@ -130,4 +130,21 @@ public class ItemTypeBL {
 
         return types;
     }
+
+    /**
+     * Checks to see a category with the same description already exists.
+     * @param description Description to use to find an existent category.
+     * @return <b>true</b> if another category exists. <b>false</b> if no category with the same description exists.
+     */
+    public boolean exists(String description) {
+        if (description == null) {
+            LOG.error("exists is being call with a null description");
+            return true;
+        }
+        if (new ItemTypeDAS().findByDescription(description) == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

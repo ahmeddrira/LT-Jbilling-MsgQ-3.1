@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import com.sapienter.jbilling.common.SessionInternalError;
 import junit.framework.TestCase;
 
 import com.sapienter.jbilling.server.item.ItemDTOEx;
@@ -348,7 +349,6 @@ public class WSTest  extends TestCase {
 
     public void testCreateItemCategory() throws Exception {
         try {
-
             String description = "Ice creams (WS test)";
 
             System.out.println("Getting API...");
@@ -367,25 +367,34 @@ public class WSTest  extends TestCase {
             ItemTypeWS[] types = api.getAllItemCategories();
 
             boolean addedFound = false;
-            for(int i = 0; i < types.length; ++i) {
-                if(description.equals(types[i].getDescription())) {
+            for (int i = 0; i < types.length; ++i) {
+                if (description.equals(types[i].getDescription())) {
                     System.out.println("Test category was found. Creation was completed successfully.");
                     addedFound = true;
                     break;
                 }
             }
             assertTrue("Ice cream not found.", addedFound);
-            System.out.println("Test completed!");
 
+            //Test the creation of a category with the same description as another one.
+            System.out.println("Going to create a category with the same description.");
+
+            try {
+                itemTypeId = api.createItemCategory(itemType);
+                fail("It should have thrown a SessionInternalError exception.");
+            } catch (SessionInternalError sessionInternalError) {
+                System.out.println("Exception caught. The category was not created because another one already existed with the same description.");
+            }
+
+            System.out.println("Test completed!");
         } catch (Exception e) {
-    		e.printStackTrace();
-    		fail("Exception caught:" + e);
-    	}
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
     }
 
     public void testUpdateItemCategory() throws Exception {
         try {
-
             Integer categoryId;
             String originalDescription;
             String description = "Drink passes (WS test)";
@@ -405,8 +414,8 @@ public class WSTest  extends TestCase {
             System.out.println("Getting all item categories...");
             types = api.getAllItemCategories();
             System.out.println("Verifying description has changed...");
-            for(int i = 0; i < types.length; ++i) {
-                if(categoryId.equals(types[i].getId())) {
+            for (int i = 0; i < types.length; ++i) {
+                if (categoryId.equals(types[i].getId())) {
                     assertEquals(description, types[i].getDescription());
 
                     System.out.println("Restoring description...");
@@ -416,12 +425,26 @@ public class WSTest  extends TestCase {
                 }
             }
 
-            System.out.println("Test completed!");
+            //Test the update of a category description to match one from another description.
+            System.out.println("Getting all item categories...");
+            types = api.getAllItemCategories();
+            System.out.println("Storing an existent description");
+            String usedDescription = types[0].getDescription();
+            System.out.println("Changing the description of another category for this one.");
+            types[1].setDescription(usedDescription);
 
+            try {
+                api.updateItemCategory(types[1]);
+                fail("It should have thrown a SessionInternalError exception.");
+            } catch (SessionInternalError sessionInternalError) {
+                System.out.println("Exception caught. The category was not updated because another one already existed with the same description.");
+            }
+
+            System.out.println("Test completed!");
         } catch (Exception e) {
-    		e.printStackTrace();
-    		fail("Exception caught:" + e);
-    	}
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
     }
 
     public void testGetItemsByCategory() throws Exception {

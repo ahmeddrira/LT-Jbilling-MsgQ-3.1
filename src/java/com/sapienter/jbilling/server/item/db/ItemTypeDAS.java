@@ -75,4 +75,16 @@ public class ItemTypeDAS extends AbstractDAS<ItemTypeDTO> {
 
         return type;
     }
+
+    /**
+     * Returns the category that has the specified description.
+     * @param description Description.
+     * @return The category that matches the description or null if no category was found.
+     */
+    public ItemTypeDTO findByDescription(String description) {
+        Criteria criteria = getSession().createCriteria(ItemTypeDTO.class)
+                .add(Restrictions.eq("description", description));
+
+        return (ItemTypeDTO) criteria.uniqueResult();
+    }
 }

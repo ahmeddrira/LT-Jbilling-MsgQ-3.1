@@ -302,7 +302,7 @@ class CustomerController {
         UserHelper.bindPassword(user, oldUser, params, flash)
 
         if (flash.error) {
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company ]
+            render view: 'edit', model: [user: user, contacts: contacts, company: company]
             return
         }
 
@@ -350,7 +350,7 @@ class CustomerController {
                     }
 
                     flash.message = 'customer.updated'
-                    flash.args = [ user.userId as String ]
+                    flash.args = [user.userId as String]
 
                 } else {
                     render view: '/login/denied'
@@ -360,18 +360,18 @@ class CustomerController {
 
             // save contacts
             if (user.userId) {
-                contacts.each{
+                contacts.each {
                     webServicesSession.updateUserContact(user.userId, it.type, it);
                 }
             }
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
+            render view: 'edit', model: [user: user, contacts: contacts, company: company, currencies: currencies]
             return
         }
 
-        chain action: 'list', params: [ id: user.userId ]
+        chain action: 'list', params: [id: user.userId]
     }
 
     def getCurrencies() {

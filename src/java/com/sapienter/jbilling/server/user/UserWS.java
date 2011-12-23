@@ -55,7 +55,7 @@ public class UserWS implements WSSecured, Serializable {
     private int id;
     private Integer currencyId;
     @NotNull(message="validation.error.notnull", groups = CreateValidationGroup.class)
-    @Size(min = 5, max = 40, message = "validation.error.size,5,40", groups = CreateValidationGroup.class)
+    @Size(min = 5, max = 40, message = "validation.error.size,5,40")
     private String password;
     private int deleted;
     private Date createDatetime;

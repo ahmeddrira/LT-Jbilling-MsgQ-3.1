@@ -116,7 +116,9 @@
                                 <g:userStatus name="user.statusId" value="${user?.statusId}" languageId="${session['language_id']}"/>
                             </g:if>
                             <g:else>
-                                <g:userStatus name="user.statusId" value="${user?.statusId}" languageId="${session['language_id']}" except="${[UserDTOEx.STATUS_DELETED]}"/>
+                                <g:if test="${user}">
+                                    <g:userStatus name="user.statusId" value="${user?.statusId}" languageId="${session['language_id']}" except="${[UserDTOEx.STATUS_DELETED]}"/>
+                                </g:if>
                             </g:else>
                         </g:applyLayout>
 

@@ -20,18 +20,18 @@
 
 package com.sapienter.jbilling.server.order;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.order.validator.DateBetween;
 import com.sapienter.jbilling.server.order.validator.DateRange;
 import com.sapienter.jbilling.server.security.WSSecured;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Date;
 
 /**
  * @author Emil
@@ -54,6 +54,7 @@ public class OrderWS implements WSSecured, Serializable {
     private Date createDate;
     private Integer createdBy;
     @NotNull(message = "validation.error.null.activeSince")
+    @DateBetween(start = "01/01/1901", end = "12/31/9999")
     private Date activeSince;
     private Date activeUntil;
     private Date cycleStarts;

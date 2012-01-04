@@ -1786,8 +1786,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         dto.setDescription(itemType.getDescription());
         dto.setOrderLineTypeId(itemType.getOrderLineTypeId());
 
-        //Check if the category already exists to throw an error to the user.
-        if (itemTypeBL.exists(dto.getDescription())) {
+        // make sure that item category names are unique. If the name was changed, then check
+        // that the new name isn't a duplicate of an existing category.
+        if (!itemTypeBL.getEntity().getDescription().equals(itemType.getDescription())
+            && itemTypeBL.exists(dto.getDescription())) {
             throw new SessionInternalError("The product category already exists with name " + dto.getDescription(),
                     new String[]{"ItemTypeWS,name,validation.error.category.already.exists"});
         }

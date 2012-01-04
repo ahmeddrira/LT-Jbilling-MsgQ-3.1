@@ -115,7 +115,11 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
     	   Map<String, String> map = planPrice.getAttributes();
            Map<BigDecimal, BigDecimal> priceMap= new HashMap<BigDecimal, BigDecimal>();
            for (Map.Entry<String, String> entry : map.entrySet()) {
-        	   priceMap.put(AttributeUtils.parseDecimal(entry.getKey()), AttributeUtils.parseDecimal(entry.getValue()) );
+               BigDecimal tier = AttributeUtils.parseDecimal(entry.getKey());
+               BigDecimal price = AttributeUtils.parseDecimal(entry.getValue());
+               if (tier != null && price != null) {
+                   priceMap.put(tier, price);
+               }
            }     
            ArrayList<BigDecimal> maxValues= new ArrayList<BigDecimal>(priceMap.keySet());
            Collections.sort(maxValues);
@@ -158,7 +162,7 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
            }
            //on any remaining quantity, if quantity was greater than max tier
            //therefore, the last tier quantity acts as 'under max or more'
-           if (availableQty.compareTo(BigDecimal.ZERO) > 0) {
+           if (maxValues.size() > 0 && availableQty.compareTo(BigDecimal.ZERO) > 0) {
         	   BigDecimal extraQty=  total.subtract(toRateQty);
         	   totalCost= totalCost.add(((BigDecimal)priceMap.get(maxValues.get((maxValues.size()-1)))).multiply(extraQty));
         	   toRateQty= toRateQty.add(availableQty);

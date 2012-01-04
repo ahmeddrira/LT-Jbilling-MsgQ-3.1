@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.pricing.util;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalTime;
 
 import java.math.BigDecimal;
@@ -154,7 +155,11 @@ public class AttributeUtils {
     public static BigDecimal parseDecimal(String value) {
         if (value != null) {
             try {
-                return new BigDecimal(value);
+                if (StringUtils.isEmpty(value)) {
+                    return null;
+                } else {
+                    return new BigDecimal(value);
+                }
             } catch (NumberFormatException e) {
                 throw new SessionInternalError("Cannot parse attribute value '" + value + "' as a decimal number.",
                                                new String[] { "validation.error.not.a.number" });

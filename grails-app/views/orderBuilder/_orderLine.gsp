@@ -40,7 +40,7 @@
             ${line.description}
         </span>
         <span class="sub-total">
-            <g:set var="subTotal" value="${formatNumber(number: line.getAmountAsDecimal(), type: 'currency', currencySymbol: user.currency.symbol)}"/>
+            <g:set var="subTotal" value="${formatNumber(number: line.getAmountAsDecimal(), type: 'currency', currencySymbol: user.currency.symbol, maxFractionDigits: 4)}"/>
             <g:message code="order.review.line.total" args="[subTotal]"/>
         </span>
         <span class="qty-price">
@@ -50,7 +50,7 @@
                 <g:message code="order.review.quantity.by.price" args="[quantity, percentage]"/>
             </g:if>
             <g:else>
-                <g:set var="price" value="${formatNumber(number: line.getPriceAsDecimal(), type: 'currency', currencySymbol: user.currency.symbol)}"/>
+                <g:set var="price" value="${formatNumber(number: line.getPriceAsDecimal(), type: 'currency', currencySymbol: user.currency.symbol, maxFractionDigits: 4)}"/>
                 <g:message code="order.review.quantity.by.price" args="[quantity, price]"/>
             </g:else>
         </span>

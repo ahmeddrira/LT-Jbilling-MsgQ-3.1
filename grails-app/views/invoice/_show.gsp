@@ -224,10 +224,10 @@
                         <g:formatNumber number="${line.quantity}" formatName="decimal.format"/>
                     </td>
                     <td class="innerContent">
-                        <g:formatNumber number="${line.price ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency?.symbol}"/>
+                        <g:formatNumber number="${line.price ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency?.symbol}" maxFractionDigits="4"/>
                     </td>
                     <td class="innerContent">
-                        <g:formatNumber number="${line.amount ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency?.symbol}"/>
+                        <g:formatNumber number="${line.amount ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency?.symbol}" maxFractionDigits="4"/>
                     </td>
                 </tr>
             </g:each>

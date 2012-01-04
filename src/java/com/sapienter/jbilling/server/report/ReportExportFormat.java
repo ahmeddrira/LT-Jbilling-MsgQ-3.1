@@ -24,6 +24,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JExcelApiExporter;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 
 import java.io.ByteArrayOutputStream;
@@ -54,10 +55,12 @@ public enum ReportExportFormat {
         public ReportExportDTO export(JasperPrint print) throws JRException, IOException {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            JExcelApiExporter exporter = new JExcelApiExporter();
+            JRXlsExporter exporter = new JRXlsExporter();
             exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT, print);
             exporter.setParameter(JRXlsExporterParameter.IS_DETECT_CELL_TYPE, true);
             exporter.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, false);
+            exporter.setParameter(JRXlsExporterParameter.IS_COLLAPSE_ROW_SPAN, true);
+            exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_COLUMNS, true);
             exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, true);
             exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, baos);
 

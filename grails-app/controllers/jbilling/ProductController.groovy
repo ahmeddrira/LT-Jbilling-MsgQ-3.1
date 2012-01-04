@@ -325,6 +325,14 @@ class ProductController {
             redirect controller: 'product', action: 'list'
             return
         }
+        
+        if (!params.id && !params.boolean('add')) {
+            flash.error = 'product.category.not.selected'
+            flash.args = [ params.id  as String]
+
+            redirect controller: 'product', action: 'list'
+            return
+        }
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, params.id ? 'update' : 'create', params.int('id'), category?.description)
 
@@ -457,13 +465,18 @@ class ProductController {
         def priceModel = PlanHelper.bindPriceModel(params)
         def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
-        def modelIndex = params.int('modelIndex')
-        def attribute = message(code: 'plan.new.attribute.key', args: [ params.attributeIndex ])
+        def modelIndex = params.int('modelIndex')        
 
         // find the model in the chain, and add a new attribute
         def model = priceModel
         for (int i = 0; model != null; i++) {
             if (i == modelIndex) {
+                int newIndex = params.int('attributeIndex')
+                def attribute = message(code: 'plan.new.attribute.key', args: [ newIndex ])
+                while (model.attributes.containsKey(attribute)) {
+                    newIndex++
+                    attribute = message(code: 'plan.new.attribute.key', args: [ newIndex ])
+                }                
                 model.attributes.put(attribute, '')
             }
             model = model.next

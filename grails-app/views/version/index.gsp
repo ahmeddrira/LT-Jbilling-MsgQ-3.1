@@ -1,3 +1,4 @@
+<%@ page import="org.joda.time.DateTimeZone" %>
 %{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -60,6 +61,34 @@
                     <tr>
                         <td>JVM Version:</td>
                         <td class="value">${System.getProperty('java.version')}</td>
+                    </tr>
+                </table>
+
+                <h2>Locale</h2>
+
+                <table cellpadding="0" cellspacing="0" class="dataTable">
+                    <tr>
+                        <td>JVM Default Locale:</td>
+                        <td class="value">${Locale.getDefault()}</td>
+                    </tr>
+                    <tr>
+                        <td>JVM Default TimeZone:</td>
+                        <td class="value">
+                            <g:set var="jdkTimezone" value="${TimeZone.getDefault()}"/>
+                            ${jdkTimezone.getID()}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Joda-Time Default TimeZone:</td>
+                        <td class="value">
+                            <g:set var="jodaTimezone" value="${DateTimeZone.getDefault()}"/>
+                            <g:if test="${jodaTimezone.toTimeZone().equals(jdkTimezone)}">
+                                ${jodaTimezone.getID()}
+                            </g:if>
+                            <g:else>
+                                <span style="color: red;" title="Does not match JDK TimeZone">${jodaTimezone.getID()}</span>
+                            </g:else>
+                        </td>
                     </tr>
                 </table>
             </div>

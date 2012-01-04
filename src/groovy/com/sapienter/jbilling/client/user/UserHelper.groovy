@@ -101,13 +101,13 @@ class UserHelper {
 
     /**
      * Binds user contacts. The given UserWS object will be populated with the primary contact type, and the
-     * given list will be populated with all remaining bound secondary contacts.
+     * given list will be populated with all the contacts.
      *
      * @param user user object to bind primary contact to
      * @param contacts list to populate with remaining secondary contacts
      * @param company company
      * @param params parameters to bind
-     * @return list of bound secondary contact types
+     * @return list of bound contact types
      */
     static def Object[] bindContacts(UserWS user, List contacts, CompanyDTO company, GrailsParameterMap params) {
         def contactTypes = company.contactTypes
@@ -119,7 +119,7 @@ class UserHelper {
         primaryContact.type = primaryContactTypeId
 
         // manually bind primary contact "include in notifications" flag
-		primaryContact.include = params."contact-${primaryContactTypeId}".include != null ? 1 : 0
+        primaryContact.include = params."contact-${primaryContactTypeId}".include != null ? 1 : 0
 
         if (params.contactField) {
             primaryContact.fieldIDs = new Integer[params.contactField.size()]
@@ -131,20 +131,20 @@ class UserHelper {
         }
 
         user.setContact(primaryContact)
+        contacts << primaryContact
 
         log.debug("Primary contact (type ${primaryContactTypeId}): ${primaryContact}")
 
-
         // bind secondary contact types
-        contactTypes.findAll{ it.id != primaryContactTypeId }.each{
+        contactTypes.findAll { it.id != primaryContactTypeId }.each {
             // bind if contact object if parameters present
             if (params["contact-${it.id}"].any { key, value -> value }) {
                 def otherContact = new ContactWS()
                 bindData(otherContact, params, "contact-${it.id}")
                 otherContact.type = it.id
 
-				// manually bind secondary contact "include in notifications" flag
-				otherContact.include = params."contact-${it.id}".include != null ? 1 : 0
+                // manually bind secondary contact "include in notifications" flag
+                otherContact.include = params."contact-${it.id}".include != null ? 1 : 0
 
                 contacts << otherContact;
             }
@@ -173,12 +173,6 @@ class UserHelper {
                     flash.error = 'current.password.doesnt.match.existing'
                     return
                 }
-            }
-        } else {
-            // validate that the new user has a password
-            if (!params.newPassword) {
-                flash.error = 'password.required'
-                return
             }
         }
 

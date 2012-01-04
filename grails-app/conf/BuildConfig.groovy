@@ -100,7 +100,7 @@ grails.project.dependency.resolution = {
             excludes 'jaxen', 'xalan', 'xml-apis'
         }
         compile 'net.sf.jasperreports:jasperreports-fonts:4.0.0'
-        compile 'net.sourceforge.jexcelapi:jxl:2.6.10'
+        compile 'org.apache.poi:poi:3.6'
 
         compile('net.sf.barcode4j:barcode4j:2.0') {
             excludes 'xerces', 'xalan', 'xml-apis'

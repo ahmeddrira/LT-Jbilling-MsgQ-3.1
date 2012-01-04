@@ -43,7 +43,7 @@
                     <tr id="category-${category.id}" class="${selectedCategoryId == category.id ? 'active' : ''}">
                         <td>
                             <g:remoteLink class="cell double" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
-                                <strong>${category.description}</strong>
+                                <strong>${category.description.encodeAsHTML()}</strong>
                                 <em><g:message code="table.id.format" args="[category.id as String]"/></em>
                             </g:remoteLink>
                         </td>
@@ -73,7 +73,7 @@
 
 <div class="btn-box">
     <sec:ifAllGranted roles="PRODUCT_CATEGORY_50">
-        <g:link action="editCategory" class="submit add"><span><g:message code="button.create.category"/></span></g:link>
+        <g:link action="editCategory" class="submit add" params="${[add: true]}"><span><g:message code="button.create.category"/></span></g:link>
     </sec:ifAllGranted>
 
     <sec:ifAllGranted roles="PRODUCT_CATEGORY_51">

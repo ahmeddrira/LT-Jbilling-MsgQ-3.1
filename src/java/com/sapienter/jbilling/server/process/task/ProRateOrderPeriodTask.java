@@ -21,10 +21,12 @@
 package com.sapienter.jbilling.server.process.task;
 
 import java.util.Date;
+import java.util.List;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderProcessDAS;
 import com.sapienter.jbilling.server.pluggableTask.BasicOrderPeriodTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.util.Constants;
@@ -75,7 +77,8 @@ public class ProRateOrderPeriodTask extends BasicOrderPeriodTask {
 
     private Date calculateCycleStarts(OrderDTO order, Date periodStart) {
         Date retValue = null;
-        if (order.getNextBillableDay() != null) {
+        List<Integer> results = new OrderProcessDAS().findActiveInvoicesForOrder(order.getId());
+        if ( !results.isEmpty() && order.getNextBillableDay() != null) {
             retValue = order.getNextBillableDay();
         } else if (order.getCycleStarts() != null) {
             retValue = order.getCycleStarts();

@@ -46,6 +46,7 @@
 
         function clearInvoiceSelection() {
             $(':input[type=radio][name=invoiceId]').attr('checked','');
+            $('#payment\\.amountAsDecimal').val('');
         }
 
         <g:if test="${isNew}">

@@ -124,10 +124,13 @@ public class ContactFieldTypeWS  implements java.io.Serializable {
 			dto.setReadOnly(this.readOnly);
 			dto.setDisplayInView(this.displayInView ? 1 : 0);
 			//since Prompt key is not null
-			dto.setPromptKey(this.getPromptKey() != null? this.getPromptKey(): "placeholder_text");
-			if (this.id == null ) {
-			    dto.setId(0);
-			    dto.setVersionNum(0);
+			if (null == this.promptKey) {
+			    dto.setPromptKey("placeholder_text");
+			} else {
+			    dto.setPromptKey(this.promptKey);
+			}
+			if (this.descriptions != null && this.descriptions.size() > 0 ) {
+				dto.setDescription(((InternationalDescriptionWS)this.descriptions.get(0)).getContent(), ((InternationalDescriptionWS)this.descriptions.get(0)).getLanguageId());
 			}
 		}
 		return dto;

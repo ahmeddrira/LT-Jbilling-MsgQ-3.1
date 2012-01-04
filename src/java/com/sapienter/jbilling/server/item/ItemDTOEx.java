@@ -48,11 +48,11 @@ public class ItemDTOEx implements WSSecured, Serializable {
     // ItemDTO
     private Integer id;
     @NotNull(message = "validation.error.notnull")
-    @Size (min=1,max=50, message="validation.error.size,1,50")
+   	@Size(min=1,max=50, message="validation.error.size,1,50")
     private String number;
     @Size (min=0,max=50, message="validation.error.size,1,50")
     private String glCode;
-    @Digits(integer=3, fraction=2, message="validation.error.not.a.number")
+    @Digits(integer=3, fraction=4, message="validation.error.invalid.number.or.fraction")
     private String percentage;
     private Integer[] excludedTypes = null;
     private Integer hasDecimals;

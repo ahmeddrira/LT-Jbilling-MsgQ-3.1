@@ -112,7 +112,14 @@
                         <g:applyLayout name="form/select">
                             <content tag="label"><g:message code="prompt.user.status"/></content>
                             <content tag="label.for">user.statusId</content>
-                            <g:userStatus name="user.statusId" value="${user?.statusId}" languageId="${session['language_id']}" />
+                            <g:if test="${params.id}">
+                                <g:userStatus name="user.statusId" value="${user?.statusId}" languageId="${session['language_id']}"/>
+                            </g:if>
+                            <g:else>
+                                <g:if test="${user}">
+                                    <g:userStatus name="user.statusId" value="${user?.statusId}" languageId="${session['language_id']}" except="${[UserDTOEx.STATUS_DELETED]}"/>
+                                </g:if>
+                            </g:else>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/select">

@@ -30,7 +30,7 @@
 <body>
 
     <content tag="column1">
-        <g:render template="processes" model="[processes: processes, filters:filters]"/>
+        <g:render template="processes" model="[processes: processes, filters:filters ,processValues:processValues]"/>
     </content>
 
     <content tag="column2">

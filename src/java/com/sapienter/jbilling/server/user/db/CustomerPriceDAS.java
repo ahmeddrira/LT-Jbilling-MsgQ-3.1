@@ -95,6 +95,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
 
     /**
      * Fetch a list of all customer prices for a specific item.
+     *
      * @param userId user id of the customer
      * @param itemId item id
      * @return list of customer prices, empty list if none found
@@ -116,7 +117,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
      * @return number of rows deleted
      */
     public int deletePrices(Integer userId, Integer planId) {
-        Query query = getSession().getNamedQuery("CustomerPriceDTO.deletePriceByPlan");        
+        Query query = getSession().getNamedQuery("CustomerPriceDTO.deletePriceByPlan");
         query.setParameter("plan_id", planId);
         query.setParameter("user_id", userId);
 
@@ -126,7 +127,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
     /**
      * Deletes all the given customer prices for the given list of plan items.
      *
-     * @param userId user id of the customer
+     * @param userId    user id of the customer
      * @param planItems list of plan items to delete
      * @return number of rows deleted
      */
@@ -142,7 +143,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
     /**
      * Deletes the customer price for the given plan item id (plan item price).
      *
-     * @param userId user id of the customer
+     * @param userId     user id of the customer
      * @param planItemId plan item price id
      * @return number of rows deleted
      */
@@ -160,16 +161,20 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
      * @param planItems plan items to remove from customer pricing
      * @return number of rows deleted
      */
-    public int deletePricesByItems(List<PlanItemDTO> planItems) {
-        List<Integer> ids = new ArrayList<Integer>(planItems.size());
-        for (PlanItemDTO planItem : planItems) {
-            ids.add(planItem.getId());
+   public int deletePricesByItems (List<PlanItemDTO> planItems) {
+        if (planItems.size() < 1) {
+            return 0;
+        } else {
+            List<Integer> ids = new ArrayList<Integer>(planItems.size());
+            for (PlanItemDTO planItem : planItems) {
+                ids.add(planItem.getId());
+            }
+
+            Query query = getSession().getNamedQuery("CustomerPriceDTO.deletePricesByItems");
+            query.setParameterList("plan_item_ids", ids);
+
+            return query.executeUpdate();
         }
-
-        Query query = getSession().getNamedQuery("CustomerPriceDTO.deletePricesByItems");
-        query.setParameterList("plan_item_ids", ids);
-
-        return query.executeUpdate();
     }
 
     // it would be nice to do this with hibernate criteria, but unfortunately criteria
@@ -178,11 +183,11 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
 
     private static final String PRICE_ATTRIBUTE_QUERY_HQL =
             "select price.id.planItem "
-            + " from CustomerPriceDTO price "
-            + "  join price.id.planItem.model as model "
-            + " where price.id.planItem.item.id = :item_id "
-            + "  and price.id.baseUser.id = :user_id " ;
-    
+                    + " from CustomerPriceDTO price "
+                    + "  join price.id.planItem.model as model "
+                    + " where price.id.planItem.item.id = :item_id "
+                    + "  and price.id.baseUser.id = :user_id ";
+
     private static final String PRICE_ATTRIBUTE_ORDER_HQL =
             " order by price.id.planItem.precedence, price.createDatetime desc";
 
@@ -190,15 +195,15 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
      * Fetch all customer pricing in order of precedence (highest first), where
      * all plan attributes <strong>must</strong> match the given map of attributes.
      *
-     * @param userId user id of the customer
-     * @param itemId item id of the item being priced
+     * @param userId     user id of the customer
+     * @param itemId     item id of the item being priced
      * @param attributes attributes of pricing to match
      * @param maxResults maximum limit of returned query results
      * @return list of found plan prices, empty list if none found.
      */
     @SuppressWarnings("unchecked")
     public List<PlanItemDTO> findPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attributes,
-                                                     Integer maxResults) {
+                                                   Integer maxResults) {
 
         StringBuffer hql = new StringBuffer();
         hql.append(PRICE_ATTRIBUTE_QUERY_HQL);
@@ -232,37 +237,37 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
      * Fetch all customer pricing in order of precedence (highest first), where
      * attributes matched are equal or saved in the database as a wildcard ('*'). Allows partial
      * matches of attributes to find the "best fit" pricing.
-     *
+     * <p/>
      * Attributes may be persisted as a wildcard ('*') which will match any attribute value
      * passed into this method. This is useful for defining pricing that only need to match
      * on a single attribute out of many possible attributes.
-     *
+     * <p/>
      * Eg.
-     *
+     * <p/>
      * Item price with saved attributes:
      * <code>
-     *      lata = '*'
-     *      rateCenter = '*'
-     *      stateProvince = 'NC'
+     * lata = '*'
+     * rateCenter = '*'
+     * stateProvince = 'NC'
      * </code>
-     *
+     * <p/>
      * Matches:
      * <code>
-     *      lata = '0772'
-     *      rateCenter = 'CHARLOTTE'
-     *      stateProvince = 'NC'
+     * lata = '0772'
+     * rateCenter = 'CHARLOTTE'
+     * stateProvince = 'NC'
      * </code>
      *
-     * @param userId user id of the customer
-     * @param itemId item id of the item being priced
+     * @param userId     user id of the customer
+     * @param itemId     item id of the item being priced
      * @param attributes attributes of pricing to match
      * @param maxResults maximum limit of returned query results
      * @return list of found prices, empty list if none found.
      */
     @SuppressWarnings("unchecked")
     public List<PlanItemDTO> findPriceByWildcardAttributes(Integer userId, Integer itemId,
-                                                             Map<String, String> attributes,
-                                                             Integer maxResults) {
+                                                           Map<String, String> attributes,
+                                                           Integer maxResults) {
 
         StringBuffer hql = new StringBuffer();
         hql.append(PRICE_ATTRIBUTE_QUERY_HQL);

@@ -1,6 +1,6 @@
 The filter fields allow you to narrow down your search for a particular customer, product, invoice, etc. You can also customize your *j*Billing filters so that the information, or areas of the system you search through most often is right at your fingertips.
 
-Although the Filters have the same look in every tabs of the system (Customers, Invoices, Payments and Refunds, etc), it is important to remember that they do not carry the same filter fields. 
+Although the Filters appear to be the same in every tabs of the system (Customers, Invoices, Payments and Refunds, etc), it is important to remember that each tab carries a different set of filter fields. 
 
 If you wanted to search for a particular invoice, you would click on the Invoices Tab. If you wanted to find a Purchase order from six months ago, you would click on the Orders Tab. If you wanted to search for a Report that was generated last week, you would click on the Reports Tab. Within each section of the system, you will find Filters, and additional filters that apply specifically to the tab you are in.
 
@@ -11,6 +11,7 @@ For example: if you want to search by the first name of a customer, you would ha
 The new filter will appear under the Filter By list:
 
 !filterby.png!
+
 
 h2. To Search Using a Filter
 
@@ -32,3 +33,92 @@ It is important to remember to clear the filters if you decide to search for ano
 To remove any filter, simply click on the red 'x' located to the right of the filter you wish to delete. 
 
 !deletefilter.png!
+
+
+h2. Current List of Available Filters by Tab
+
+{table}
+*Customers*|
+Email
+Custom Fields
+First Name
+Last Name
+Login Name
+Status
+Organization Name
+Phone Number
+Postal Code
+Created Date
+Currency
+ID 
+Has Invoices
+Language
+Has Orders
+Has Payments
+{table}
+
+{table}
+*Invoices*|
+Due Date
+Invoice Status
+Balance
+User ID
+Billing Process ID
+Carried Balance
+Created Date
+Currency
+ID
+Review Invoices
+Payment Applied
+Total
+{table}
+
+{table}
+*Payment and Refunds*|
+Amount
+User ID
+Login Name
+Balance
+Created Date
+Invoice ID
+ID
+Refund Payments 
+Payment Method
+Payment Result
+{table}
+
+{table}
+*Orders*|
+Created Date
+Order Period
+User ID
+Active Since
+Active Until
+ID
+Main Subscription
+Next Billable Date
+Order Status
+Login Name
+{table}
+
+{table}
+*Billing*|
+Run Date
+Review Process
+ID
+{table}
+
+{table}
+*Products*|
+Description
+Product Code
+Pricing Rate
+Pricing Strategy
+GL Code
+Decimal Quantities
+ID
+Line Percentage
+{table}
+
+
+

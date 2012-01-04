@@ -122,14 +122,14 @@
                                         </td>
                                         <td class="innerContent">
                                             ${invoice.paymentAttempts}
-                                            <g:hiddenField name="invoice-${invoice.id}-curid" value="${currency.id}"/>
+                                            <g:hiddenField name="invoice-${invoice.id}-curid" value="${currency?.id}"/>
                                         </td>
                                         <td class="innerContent">
-                                            <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
+                                            <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"/>
                                             <g:hiddenField name="invoice-${invoice.id}-amount" value="${formatNumber(number: invoice.total, formatName: 'money.format')}"/>
                                         </td>
                                         <td class="innerContent">
-                                            <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
+                                            <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"/>
                                             <g:hiddenField name="invoice-${invoice.id}-balance" value="${formatNumber(number: invoice.balance, formatName: 'money.format')}"/>
                                         </td>
                                         <td class="innerContent">

@@ -1,21 +1,17 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 /*
@@ -31,6 +27,7 @@ import com.sapienter.jbilling.server.util.api.validation.EntitySignupValidationG
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
@@ -40,21 +37,30 @@ public class ContactWS implements Serializable {
 
     private Integer id;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
+    @Size(min = 0, max = 200, message = "validation.error.size,0,200")
     private String organizationName;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
+    @Size(min = 0, max = 100, message = "validation.error.size,0,100")
     private String address1;
+    @Size(min = 0, max = 100, message = "validation.error.size,0,100")
     private String address2;
+    @Size(min = 0, max = 50, message = "validation.error.size,0,50")
     private String city;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
+    @Size(min = 0, max = 30, message = "validation.error.size,0,30")
     private String stateProvince;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
+    @Size(min = 0, max = 15, message = "validation.error.size,0,15")
     private String postalCode;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
     private String countryCode;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
+    @Size(min = 0, max = 30, message = "validation.error.size,0,30")
     private String lastName;
     @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
+    @Size(min = 0, max = 30, message = "validation.error.size,0,30")
     private String firstName;
+    @Size(min = 0, max = 30, message = "validation.error.size,0,30")
     private String initial;
     private String title;
     private Integer phoneCountryCode;

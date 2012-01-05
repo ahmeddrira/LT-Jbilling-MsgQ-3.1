@@ -1,21 +1,17 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package jbilling
@@ -44,6 +40,9 @@ import org.hibernate.FetchMode
 import org.hibernate.criterion.MatchMode
 import org.hibernate.criterion.Restrictions
 import org.springframework.security.authentication.encoding.PasswordEncoder
+
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
+import org.apache.commons.lang.StringUtils
 
 @Secured(["MENU_90"])
 class CustomerController {
@@ -316,7 +315,7 @@ class CustomerController {
         UserHelper.bindPassword(user, oldUser, params, flash)
 
         if (flash.error) {
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company ]
+            render view: 'edit', model: [user: user, contacts: contacts, company: company]
             return
         }
 
@@ -324,14 +323,22 @@ class CustomerController {
             // save or update
             if (!oldUser) {
                 if (SpringSecurityUtils.ifAllGranted("CUSTOMER_10")) {
+                    if (user.userName.trim()) {
+                        user.userId = webServicesSession.createUser(user)
 
-                    user.userId = webServicesSession.createUser(user)
-                    flash.message = 'customer.created'
-                    flash.args = [ user.userId as String ]
+                        flash.message = 'customer.created'
+                        flash.args = [user.userId as String]
+                                                
+                        // add the id to the list in session.
+                        subAccountService.addSubAccountUserId(user)
+                        
+                    } else {
+                        user.userName = StringUtils.EMPTY
+                        flash.error = message(code: 'customer.error.name.blank')
 
-                    // add the id to the list in session.
-                    subAccountService.addSubAccountUserId(user)
-
+                        render view: "edit", model: [user: user, contacts: contacts, parent: null, company: company, currencies: currencies, periodUnits: PeriodUnitDTO.list()]
+                        return
+                    }
                 } else {
                     render view: '/login/denied'
                     return
@@ -360,7 +367,7 @@ class CustomerController {
                     }
 
                     flash.message = 'customer.updated'
-                    flash.args = [ user.userId as String ]
+                    flash.args = [user.userId as String]
 
                 } else {
                     render view: '/login/denied'
@@ -370,18 +377,18 @@ class CustomerController {
 
             // save contacts
             if (user.userId) {
-                contacts.each{
+                contacts.each {
                     webServicesSession.updateUserContact(user.userId, it.type, it);
                 }
             }
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            render view: 'edit', model: [ user: user, contacts: contacts, company: company, currencies: currencies ]
+            render view: 'edit', model: [user: user, contacts: contacts, company: company, currencies: currencies]
             return
         }
 
-        chain action: 'list', params: [ id: user.userId ]
+        chain action: 'list', params: [id: user.userId]
     }
 
     def getCurrencies() {

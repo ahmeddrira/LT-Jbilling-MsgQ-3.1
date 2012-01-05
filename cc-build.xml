@@ -67,6 +67,9 @@
     </target>
 
     <target name="clean" description="Complete clean and recompile of all source-code, resources, and testing databases.">
+        <!-- make sure jbilling was shutdown after the previous run -->
+        <exec executable="./shutdown.sh"/>
+
         <!-- delete some leftover junk from previous runs -->
         <delete file="nohup.out"/>
         <delete file="velocity.log*"/>

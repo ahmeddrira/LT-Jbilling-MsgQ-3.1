@@ -1,21 +1,17 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package com.sapienter.jbilling.server.pricing.strategy;
@@ -115,7 +111,11 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
     	   Map<String, String> map = planPrice.getAttributes();
            Map<BigDecimal, BigDecimal> priceMap= new HashMap<BigDecimal, BigDecimal>();
            for (Map.Entry<String, String> entry : map.entrySet()) {
-        	   priceMap.put(AttributeUtils.parseDecimal(entry.getKey()), AttributeUtils.parseDecimal(entry.getValue()) );
+               BigDecimal tier = AttributeUtils.parseDecimal(entry.getKey());
+               BigDecimal price = AttributeUtils.parseDecimal(entry.getValue());
+               if (tier != null && price != null) {
+                   priceMap.put(tier, price);
+               }
            }     
            ArrayList<BigDecimal> maxValues= new ArrayList<BigDecimal>(priceMap.keySet());
            Collections.sort(maxValues);
@@ -158,7 +158,7 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
            }
            //on any remaining quantity, if quantity was greater than max tier
            //therefore, the last tier quantity acts as 'under max or more'
-           if (availableQty.compareTo(BigDecimal.ZERO) > 0) {
+           if (maxValues.size() > 0 && availableQty.compareTo(BigDecimal.ZERO) > 0) {
         	   BigDecimal extraQty=  total.subtract(toRateQty);
         	   totalCost= totalCost.add(((BigDecimal)priceMap.get(maxValues.get((maxValues.size()-1)))).multiply(extraQty));
         	   toRateQty= toRateQty.add(availableQty);

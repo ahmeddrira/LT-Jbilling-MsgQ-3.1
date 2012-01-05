@@ -320,7 +320,9 @@ public class PaymentWS implements WSSecured, Serializable {
                + ", isRefund=" + isRefund
                + ", isPreauth=" + isPreauth
                + ", paymentDate=" + paymentDate
-               + ", deleted=" + deleted               
+               + ", deleted=" + deleted
+               + ", paymentId=" + paymentId
+               + ", currencyId=" + currencyId
                + '}';
     }
 }

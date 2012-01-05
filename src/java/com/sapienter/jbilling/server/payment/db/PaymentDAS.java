@@ -28,6 +28,7 @@ import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
+import org.apache.tools.ant.types.resources.Restrict;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Order;
@@ -68,7 +69,8 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
         payment.setCurrency(new CurrencyDAS().find(currency.getId()));
         payment.setCreateDatetime(Calendar.getInstance().getTime());
         payment.setDeleted(new Integer(0));
-        payment.setIsRefund(new Integer(0));
+        // todo dont know why it is setting isRefund to explicitly 0 ?
+//        payment.setIsRefund(new Integer(0));
         payment.setIsPreauth(new Integer(0));
 
         return save(payment);
@@ -238,5 +240,18 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
         query.setParameter("end", end);
 
         return query.list();
+    }
+
+    public List<PaymentDTO> findAllPaymentByBaseUserAndBalanceAndIsRefund(Integer userId, BigDecimal balance, Integer isRefund) {
+
+        UserDTO user = new UserDAS().find(userId);
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("baseUser", user));
+        criteria.add(Restrictions.ge("balance",balance ));
+        criteria.add(Restrictions.eq("isRefund",isRefund));
+        criteria.add(Restrictions.eq("deleted", 0));
+
+        return criteria.list();
+
     }
 }

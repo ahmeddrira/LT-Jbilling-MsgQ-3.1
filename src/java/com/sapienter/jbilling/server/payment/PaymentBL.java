@@ -174,8 +174,11 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         if (dto.getIsRefund() == 1) {
             payment.setIsRefund(new Integer(1));
             // now all refunds have balance = 0
+            // todo refund balance is always set to ZERO
             payment.setBalance(BigDecimal.ZERO);
+            LOG.debug("dto of paymentDTOEX contains "+dto);
             if (dto.getPayment() != null) {
+                LOG.debug("Refund is linked to some payment "+dto.getPayment());
                 // this refund is link to a payment
                 PaymentBL linkedPayment = new PaymentBL(dto.getPayment().getId());
                 payment.setPayment(linkedPayment.getEntity());
@@ -429,6 +432,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         dto.setIsRefund(payment.getIsRefund());
         if (payment.getPayment() != null && payment.getId() != payment.getPayment().getId()) {
             PaymentBL linkedPayment = new PaymentBL(payment.getPayment().getId());
+            // nikhil linking it to a payment
             dto.setPayment(linkedPayment.getDTOEx(language));
         }
 

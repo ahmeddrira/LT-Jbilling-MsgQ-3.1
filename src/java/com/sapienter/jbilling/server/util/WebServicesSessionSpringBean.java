@@ -1627,7 +1627,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
             throws SessionInternalError {
-        payment.setIsRefund(0);
+//        payment.setIsRefund(0);
 
         if (payment.getMethodId() == null) {
             throw new SessionInternalError("Cannot apply a payment without a payment method.",
@@ -1635,6 +1635,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
+        LOG.debug("payment has "+payment);
         return session.applyPayment(new PaymentDTOEx(payment), invoiceId, getCallerId());
     }
 

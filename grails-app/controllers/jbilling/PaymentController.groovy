@@ -45,6 +45,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import com.sapienter.jbilling.server.user.db.CustomerDTO
 import com.sapienter.jbilling.server.customer.CustomerBL
 import com.sapienter.jbilling.server.user.db.UserDTO
+import com.sapienter.jbilling.server.payment.db.PaymentDAS
 
 /**
  * PaymentController 
@@ -296,7 +297,11 @@ class PaymentController {
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
-        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId') ]
+        //send all the payments of the current user as well which are not normal payments with a balance greater than zero
+        List<PaymentDTO> paymentDTOList = new PaymentDAS().findAllPaymentByBaseUserAndBalanceAndIsRefund(user.getUserId(),Constants.BIGDECIMAL_ONE_CENT,0)
+        log.debug "invoices are ${invoices}"
+        log.debug "payments are ${paymentDTOList}"
+        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), paymentDTOList: paymentDTOList, refundPaymentId: params.int('payment?.paymentId') ]
     }
 
     def getUnpaidInvoices(Integer userId) {
@@ -315,9 +320,7 @@ class PaymentController {
     def confirm = {
         def payment = new PaymentWS()
         bindPayment(payment, params)
-
         session['user_payment']= payment
-        
         // make sure the user still exists before
         def users
         try {
@@ -341,13 +344,13 @@ class PaymentController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.local, e)
-            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId') ]
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundPaymentId: params.int('payment?.paymentId') ]
             return
         }
 
         // validation passed, render the confirmation page
         def processNow = params.processNow ? true : false
-        [ payment: payment, user: user, invoices: invoices, currencies: currencies, processNow: processNow, invoiceId: params.invoiceId ]
+        [ payment: payment, user: user, invoices: invoices, currencies: currencies, processNow: processNow, invoiceId: params.invoiceId, refundPaymentId: params?.payment?.paymentId ]
     }
 
     /**
@@ -355,7 +358,7 @@ class PaymentController {
      */
     @Secured(["hasAnyRole('PAYMENT_30', 'PAYMENT_31')"])
     def save = {
-        
+
         /* Reuse the same payment that was bound earlier during confirm */
         def payment = session['user_payment'];
         //new PaymentWS()
@@ -470,7 +473,6 @@ class PaymentController {
             params.payment.isRefund = 0
         }
         bindData(payment, params, 'payment')
-        log.debug "params.isRefund after binding data is ----> ${payment}"
 
         // bind credit card object if parameters present
         if (params.creditCard.any { key, value -> value }) {

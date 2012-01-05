@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 import org.apache.log4j.Logger;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -355,22 +356,25 @@ public class PaymentSessionBean implements IPaymentSessionBean {
             if (success) {
                 // update the invoice's balance if applicable
                 BigDecimal balance = invoice.getBalance();
+                LOG.debug("balance is "+balance);
                 if (balance != null) {
                     boolean balanceSign = (balance.compareTo(BigDecimal.ZERO) < 0) ? false : true;
-
+                    LOG.debug("balance sign is "+balanceSign);
                     BigDecimal newBalance = null;
                     if (payment.getIsRefund() == 0) {
+                        LOG.debug("payment is a normal payment");
                         newBalance = balance.subtract(payment.getBalance());
-
+                        LOG.debug("new balance is "+newBalance);
                         // I need the payment record to update its balance
                         if (payment.getId() == 0) {
                             throw new SessionInternalError("The ID of the payment to has to be present in the DTO");
                         }
                         PaymentBL paymentBL = new PaymentBL(payment.getId());
                         BigDecimal paymentBalance = payment.getBalance().subtract(balance);
-
+                        LOG.debug("payment balance is "+paymentBalance);
                         // payment balance cannot be negative, must be at least zero
                         if (BigDecimal.ZERO.compareTo(paymentBalance) > 0) {
+                            LOG.debug("setting the paymentBalance which was "+paymentBalance+ " to ZERO");
                             paymentBalance = BigDecimal.ZERO;
                         }
 
@@ -380,11 +384,17 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                         payment.setBalance(paymentBalance);
 
                     } else { // refunds add to the invoice
+                        LOG.debug("payment is a refund");
+                        LOG.debug("payment amount which is "+payment.getAmount()+ "is added to balance which is "+balance);
+                        // todo get the invoice associated to the payment and increase its balance by the refund payment amount already done
                         newBalance = balance.add(payment.getAmount());
+                        LOG.debug("new balance is "+newBalance);
                     }
                         
                     // only level the balance if the original balance wasn't negative
                     if (newBalance.compareTo(Constants.BIGDECIMAL_ONE_CENT) < 0 && balanceSign) {
+                        LOG.debug("new balance is "+newBalance+ " and BIGDECIMAL_ONE_CENT is "+Constants.BIGDECIMAL_ONE_CENT+ " and balance sign is "+balanceSign);
+                        LOG.debug("setting the new balance to ZERO");
                         // the payment balance was greater than the invoice's
                         newBalance = BigDecimal.ZERO;
                     }
@@ -444,6 +454,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
      */
     public Integer applyPayment(PaymentDTOEx payment, Integer invoiceId, Integer executorUserId)  
             throws SessionInternalError {
+        LOG.debug("payment dtoex contains "+payment);
         try {
             // create the payment record
             PaymentBL paymentBl = new PaymentBL();
@@ -477,13 +488,29 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                         paymentBl.getEntity().getBaseUser().getEntity().getId(),payment);
                 EventManager.process(event);
             } else {
+                LOG.debug("payment is linked to payment "+payment.getPayment() +" and is probably linked with invoice ");
                 if (payment.getPayment() != null && !payment.getPayment().
                         getInvoiceIds().isEmpty()) {
+                    LOG.debug("Refund payment linked to some payment which in turn is linked to invoices");
                     // so this refund is linked to a payment, and that payment
                     // is linked to at least one invoice.
+                    // fetch one invoice from db
                     InvoiceBL invoiceBL = new InvoiceBL((Integer) payment.
                             getPayment().getInvoiceIds().get(0));
                     applyPayment(payment, invoiceBL.getEntity(), true);
+                }
+                else if(payment.getPayment()!=null && payment.getPayment().getInvoiceIds().isEmpty()) {
+                //  since payment is not linked to any invoice now , we must subtract the payment balance with that of the refund payment value
+                LOG.debug("The linked payment id is "+payment.getPayment());
+                // fetch the linked payment from database
+                   PaymentDTO linkedPayment =  new PaymentBL(payment.getPayment().getId()).getEntity();
+                // subtract its amount with refund payment amount
+                linkedPayment.setBalance(linkedPayment.getBalance().subtract(payment.getAmount()));
+                LOG.debug("This refund payment is linked to a payment which in turn is not linked ");
+                }
+                else {
+                    LOG.debug("This refund is not linked with any payment which is wrong");
+                    //todo throw exception
                 }
             }
             

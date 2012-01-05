@@ -281,13 +281,14 @@ public class PaymentSessionBean implements IPaymentSessionBean {
             } else if (dto.getIsRefund() == 1 && 
                     dto.getPayment() != null && 
                     !dto.getPayment().getInvoiceIds().isEmpty()) {
+                LOG.debug("The payment is a refund and its linked payment has some invoice connected to it");
                 InvoiceBL bl = new InvoiceBL((Integer) dto.
                         getPayment().getInvoiceIds().get(0));
                 return processAndUpdateInvoice(dto, bl.getEntity(), executorUserId);
             } else {
                 // without an invoice, it's just creating the payment row
                 // and calling the processor
-                LOG.info("method called without invoice");
+                LOG.info("The payment is a refund and its linked payment has no invoices connected to it");
                 
                 PaymentBL bl = new PaymentBL();
                 Integer result = bl.processPayment(entityId, dto, executorUserId);

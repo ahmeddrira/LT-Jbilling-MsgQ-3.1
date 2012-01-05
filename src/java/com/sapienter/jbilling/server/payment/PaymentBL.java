@@ -89,6 +89,26 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         set(paymentId);
     }
 
+    /**
+     * Validates that a refund payment must be linked to a payment and the amount of the refund payment should
+     * be equal to the linked payment
+     * @param refundPayment
+     * @return
+     */
+    public static Boolean validateRefund(PaymentWS refundPayment) {
+        if(refundPayment.getPaymentId() == null) {
+            LOG.debug("There is no linked payment with this refund");
+            return false;
+        }
+        // fetch the linked payment from database
+        PaymentDTO linkedPayment =  new PaymentBL(refundPayment.getPaymentId()).getEntity();
+        if(!(linkedPayment.getAmount().equals(refundPayment.getAmountAsDecimal()))) {
+            LOG.debug("The linked payment amount is different than the refund value amount");
+            return false;
+        }
+        return true;
+    }
+
     public PaymentBL() {
         init();
     }
@@ -601,6 +621,39 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     }
 
     /**
+     * Validates the deletion of a payment
+     * @param paymentId
+     * @return  boolean
+     */
+
+    public static boolean validateRefundDelete(Integer paymentId) {
+        // check if this payment has been refunded
+        //  get all refunded payments
+        LOG.debug("Trying to delete payment of ID "+paymentId);
+        List<PaymentDTO> refundedPayments = new PaymentDAS().findAllPaymentIsRefund(1);
+        Iterator iterator = refundedPayments.iterator();
+        while(iterator.hasNext()) {
+        // check whether one of them is this one
+            PaymentDTO refund = (PaymentDTO)iterator.next();
+            // there should be a linked payment
+            if(refund.getPayment()!= null) {
+                LOG.debug("Linked payment Id "+refund.getPayment().getId());
+                if(refund.getPayment().getId()==paymentId) {
+                    // this payment has been refunded
+                    LOG.debug("Refund Payment Id "+refund.getId());
+                    return false;
+                }
+            }
+            else {
+                // todo delete this block not needed if d/b is consistent
+                LOG.debug("There is no linked payment for this refund .. ");
+            }
+        }
+        return true;
+    }
+
+
+    /**
      * Does the actual work of deleteing the payment
      *
      * @throws SessionInternalError
@@ -608,6 +661,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     public void delete() throws SessionInternalError {
 
         try {
+
             LOG.debug("Deleting payment " + payment.getId());
 
             Integer entityId = payment.getBaseUser().getEntity().getId();

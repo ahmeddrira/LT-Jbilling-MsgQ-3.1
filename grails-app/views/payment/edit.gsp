@@ -52,9 +52,21 @@
         function storeValues(index) {
             // update the value of amount
             var amount = $("#payment-amount-"+index).attr('value');
-            $("#payment_amountAsDecimal").attr('value',amount);
-            $('#refund_cb').attr('checked',true);
+            $("#payment_amountAsDecimal").attr({value:amount,disabled:true});
+            // ensure the value is passed to server
+            $("#payment_amountAsDecimal_hidden").attr('value',amount);
+            $('#refund_cb').attr({checked:true});
             $("#invoicesContainer").slideUp(1000);
+        }
+
+        function clearPaymentSelection() {
+            // clear the selected payment
+            // reset the amount back to zero
+            $("#payment_amountAsDecimal").attr({value:'',disabled:false});
+            $('#refund_cb').attr({checked:false, disabled:false});
+            $(".paymentRadio").each(function(){
+                $(this).attr('checked',false);
+            });
         }
 
         <g:if test="${isNew}">
@@ -200,7 +212,7 @@
                                     <tr>
                                         <td class="innerContent">
                                             <g:applyLayout name="form/radio">
-                                                <g:radio id="payment-${payment.id}" name="payment.paymentId" value="${payment.id}" onclick="storeValues(${counter});" />
+                                                <g:radio id="payment-${payment.id}" class="paymentRadio" name="payment.paymentId" value="${payment.id}" onclick="storeValues(${counter});" />
                                                 <label for="payment-${payment.id}" class="rb">
                                                     ${payment.id}
                                                 </label>
@@ -234,7 +246,7 @@
                             </table>
 
                             <div class="btn-row">
-                                <a onclick="clearInvoiceSelection();" class="submit delete"><span><g:message code="button.clear"/></span></a>
+                                <a onclick="clearPaymentSelection();" class="submit delete"><span><g:message code="button.clear"/></span></a>
                             </div>
 
                         </div>
@@ -288,6 +300,7 @@
                             <content tag="label.for">payment.amountAsDecimal</content>
                             <g:set var="paymentAmount" value="${payment?.amount ?: invoices?.find{ it.id == invoiceId }?.balance }"/>
                             <g:textField class="field" id="payment_amountAsDecimal" name="payment.amountAsDecimal" value="${formatNumber(number: paymentAmount, formatName: 'money.format')}"/>
+                            <g:hiddenField name="payment.amountAsDecimal" id="payment_amountAsDecimal_hidden" value=""/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/date">
@@ -302,6 +315,7 @@
                                 <content tag="label"><g:message code="payment.is.refund.payment"/></content>
                                 <content tag="label.for">isRefund</content>
                                 <g:checkBox id="refund_cb" class="cb checkbox" name="isRefund" checked="${payment?.isRefund > 0}"/>
+                                %{--<g:hiddenField id="refund_cb_hidden" name="isRefund" value=""/>--}%
                             </g:applyLayout>
                         </g:if>
                         <g:else>

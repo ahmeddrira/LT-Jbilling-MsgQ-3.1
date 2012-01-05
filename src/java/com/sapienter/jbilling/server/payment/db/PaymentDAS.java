@@ -254,4 +254,17 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
         return criteria.list();
 
     }
+
+    /**
+     * Returns all  refund or non refund payments
+     * @param isRefund
+     * @return
+     */
+    public List<PaymentDTO> findAllPaymentIsRefund(Integer isRefund) {
+
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("isRefund",isRefund));
+
+        return criteria.list();
+    }
 }

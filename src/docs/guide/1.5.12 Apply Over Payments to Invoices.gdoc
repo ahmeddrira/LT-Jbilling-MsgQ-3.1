@@ -8,4 +8,9 @@ Let's take a look at an example: one of *Trend's* customers receive a $100 invoi
 
 By turning the 'Apply over payments to invoices' option on, *Trend* doesn`t do anything special about this situation. It will simply enter the $150 payment and link it to the current invoice. Next month, a new invoice for $100 will be generated. But this time it will be already linked to a payment and will have a balance of just $50.
 
+If you are using automatic payment processing, it is important to remember that if this field is *not* selected (along with the Automatic Payment Processsing field), the system will *not* automatically link a payment to an invoice. 
+
+For example, if you are making a manual payment of $150 on an invoice, and you select the 'Process Payment in Real-Time' field, the balance of the payment will remain as $150. The invoice will remain unpaid. When the Billing Process runs, the system will then see the payment, and link it to the invoice. 
+
+To summarize, if the 'Apply overpayments to invoice' and 'Automatic Payment Processing' fields are not selected, any manual automatic payments that you create will *not* be applied, or linked, until the Billing Process runs.
 

@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
+<%@ page import="com.sapienter.jbilling.server.payment.db.PaymentDTO; com.sapienter.jbilling.server.user.contact.db.ContactDTO" %>
 
 %{--
   jBilling - The Enterprise Open Source Billing System
@@ -112,7 +112,7 @@
                     </td>
                     <td class="small">
                         <g:remoteLink class="cell" action="show" id="${payment.id}" before="register(this);" onSuccess="render(data, next);">
-                            <span><g:formatNumber number="${payment.amount}" type="currency" currencySymbol="${payment.currencyDTO.symbol}"/></span>
+                            <span><g:formatNumber number="${payment.amount}" type="currency" currencySymbol="${payment?.getCurrency()?.getSymbol()}"/></span>
                         </g:remoteLink>
                     </td>
                     <td class="small">

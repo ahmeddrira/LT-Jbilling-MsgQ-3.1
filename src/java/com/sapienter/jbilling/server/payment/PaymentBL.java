@@ -102,7 +102,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
         // fetch the linked payment from database
         PaymentDTO linkedPayment =  new PaymentBL(refundPayment.getPaymentId()).getEntity();
-        if(!(linkedPayment.getAmount().equals(refundPayment.getAmountAsDecimal()))) {
+        if(linkedPayment.getAmount().compareTo(refundPayment.getAmountAsDecimal()) !=0 ) {
             LOG.debug("The linked payment amount is different than the refund value amount");
             return false;
         }

@@ -19,13 +19,11 @@
  */
 package com.sapienter.jbilling.server.payment.db;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.Constants;
+import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import org.apache.tools.ant.types.resources.Restrict;
@@ -242,17 +240,39 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
         return query.list();
     }
 
-    public List<PaymentDTO> findAllPaymentByBaseUserAndBalanceAndIsRefund(Integer userId, BigDecimal balance, Integer isRefund) {
+    public List<PaymentDTO> findAllPaymentByBaseUserAndIsRefund(Integer userId, Integer isRefund) {
 
         UserDTO user = new UserDAS().find(userId);
         Criteria criteria = getSession().createCriteria(PaymentDTO.class);
         criteria.add(Restrictions.eq("baseUser", user));
-        criteria.add(Restrictions.ge("balance",balance ));
         criteria.add(Restrictions.eq("isRefund",isRefund));
         criteria.add(Restrictions.eq("deleted", 0));
 
         return criteria.list();
 
+    }
+
+    public List<PaymentDTO> getRefundablePayments(Integer userId) {
+
+        UserDTO user = new UserDAS().find(userId);
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("baseUser", user));
+        criteria.add(Restrictions.eq("isRefund",0));
+        criteria.add(Restrictions.eq("deleted", 0));
+
+        // all payments of the given user which are not refund payments
+        List<PaymentDTO> allPayments =  criteria.list();
+
+        Iterator<PaymentDTO> iterator = allPayments.iterator();
+        while(iterator.hasNext()) {
+            PaymentDTO payment = (PaymentDTO)iterator.next();
+            if(PaymentBL.ifRefunded(payment)) {
+                // remove this from original list as the payment has already been refunded
+//                allPayments.remove(payment);
+                iterator.remove();
+            }
+        }
+        return allPayments;
     }
 
     /**
@@ -263,7 +283,7 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
     public List<PaymentDTO> findAllPaymentIsRefund(Integer isRefund) {
 
         Criteria criteria = getSession().createCriteria(PaymentDTO.class);
-        criteria.add(Restrictions.eq("isRefund",isRefund));
+        criteria.add(Restrictions.eq("isRefund", isRefund));
 
         return criteria.list();
     }

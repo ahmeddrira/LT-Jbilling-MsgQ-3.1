@@ -67,6 +67,7 @@
             $(".paymentRadio").each(function(){
                 $(this).attr('checked',false);
             });
+            $("#invoicesContainer").slideDown(1000);
         }
 
         <g:if test="${isNew}">
@@ -184,7 +185,7 @@
 
             %{--Payments made --}%
             <div id="paymentContainer">
-            <g:if test="${paymentDTOList}">
+            <g:if test="${refundablePayments}">
                     <div id="invoices" class="box-cards box-cards-open">
                         <div class="box-cards-title">
                             <a class="btn-open"><span><g:message code="payment.paid.title"/></span></a>
@@ -204,7 +205,7 @@
                                 </thead>
                                 <tbody>
                                 <g:set var="selectedPaymentCurrencyId" value=""/>
-                                <g:each var="payment" in="${paymentDTOList}" status="counter">
+                                <g:each var="payment" in="${refundablePayments}" status="counter">
                                     <g:set var="currency" value="${currencies.find { it.id == payment?.getCurrency()?.getId()}}"/>
                                     <g:if test="${payment?.id == refundPaymentId}">
                                         <g:set var="selectedPaymentCurrencyId" value="${payment?.getCurrency()?.getId()}"/>

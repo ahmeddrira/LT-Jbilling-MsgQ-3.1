@@ -304,10 +304,11 @@ class PaymentController {
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
         //send all the payments of the current user as well which are not normal payments with a balance greater than zero
-        List<PaymentDTO> paymentDTOList = new PaymentDAS().findAllPaymentByBaseUserAndBalanceAndIsRefund(user.getUserId(),Constants.BIGDECIMAL_ONE_CENT,0)
+//        List<PaymentDTO> paymentDTOList = new PaymentDAS().findAllPaymentByBaseUserAndIsRefund(user.getUserId(), 0)
+        List<PaymentDTO> refundablePayments = new PaymentDAS().getRefundablePayments(user.getUserId())
         log.debug "invoices are ${invoices}"
-        log.debug "payments are ${paymentDTOList}"
-        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), paymentDTOList: paymentDTOList, refundPaymentId: params.int('payment?.paymentId') ]
+        log.debug "payments are ${refundablePayments}"
+        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundablePayments: refundablePayments, refundPaymentId: params.int('payment?.paymentId') ]
     }
 
     def getUnpaidInvoices(Integer userId) {

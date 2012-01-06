@@ -626,30 +626,65 @@ public class PaymentBL extends ResultList implements PaymentSQL {
      * @return  boolean
      */
 
-    public static boolean validateRefundDelete(Integer paymentId) {
-        // check if this payment has been refunded
-        //  get all refunded payments
-        LOG.debug("Trying to delete payment of ID "+paymentId);
+    // todo use ifRefunded() method for the logic
+//    public static boolean validateRefundDelete(Integer paymentId) {
+//        // check if this payment has been refunded
+//        //  get all refunded payments
+//        LOG.debug("Trying to delete payment of ID "+paymentId);
+//        List<PaymentDTO> refundedPayments = new PaymentDAS().findAllPaymentIsRefund(1);
+//        Iterator iterator = refundedPayments.iterator();
+//        while(iterator.hasNext()) {
+//        // check whether one of them is this one
+//            PaymentDTO refund = (PaymentDTO)iterator.next();
+//            // there should be a linked payment
+//            if(refund.getPayment()!= null) {
+//                LOG.debug("Linked payment Id "+refund.getPayment().getId());
+//                if(refund.getPayment().getId()==paymentId) {
+//                    // this payment has been refunded
+//                    LOG.debug("Refund Payment Id "+refund.getId());
+//                    return false;
+//                }
+//            }
+//            else {
+//                // todo delete this block not needed if d/b is consistent
+//                LOG.debug("There is no linked payment for this refund .. ");
+//            }
+//        }
+//        return true;
+//    }
+
+    public static boolean ifRefunded(PaymentDTO payment) {
+
+        LOG.debug("The payment id to be checked is "+payment.getId());
+        // get all Refunded payments
         List<PaymentDTO> refundedPayments = new PaymentDAS().findAllPaymentIsRefund(1);
+        // iterate over them
         Iterator iterator = refundedPayments.iterator();
         while(iterator.hasNext()) {
-        // check whether one of them is this one
+            // check whether the payment provided has been refunded
             PaymentDTO refund = (PaymentDTO)iterator.next();
-            // there should be a linked payment
-            if(refund.getPayment()!= null) {
-                LOG.debug("Linked payment Id "+refund.getPayment().getId());
-                if(refund.getPayment().getId()==paymentId) {
-                    // this payment has been refunded
-                    LOG.debug("Refund Payment Id "+refund.getId());
-                    return false;
+            // just to avoid NPE for now
+            if(refund.getPayment()!=null) {
+                if(refund.getPayment().getId()== payment.getId()) {
+                    LOG.debug("This payment has been refunded");
+                    LOG.debug("The refund linked payment id is "+refund.getPayment().getId());
+                    return true;
                 }
             }
             else {
-                // todo delete this block not needed if d/b is consistent
-                LOG.debug("There is no linked payment for this refund .. ");
+                // todo block only needed due to inconsistent db state
+                LOG.debug("There is no linked payment for this refund ");
             }
         }
-        return true;
+
+        return false;
+    }
+
+    public static boolean ifRefunded(Integer paymentId) {
+        // fetch payment from db
+        LOG.debug("fetching paymentdto of id "+paymentId+" from database");
+        PaymentDTO payment = new PaymentBL(paymentId).getEntity();
+        return ifRefunded(payment);
     }
 
 
@@ -663,7 +698,33 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         try {
 
             LOG.debug("Deleting payment " + payment.getId());
-
+            // check if payment is a refund payment
+            if(payment.getIsRefund() == 1) {
+                // get its linked payment
+                PaymentDTO linkedPayment = payment.getPayment();
+                // undo point 1
+                // if payment is not linked to any invoice
+                if (linkedPayment.getInvoicesMap().size()==0) {
+                    // payment is not linked to any invoice
+                    // add the amount back from refund payment to this linked payment in its balance
+                    linkedPayment.setBalance(linkedPayment.getBalance().add(payment.getAmount()));
+                }
+                // if the linked payment is linked with atleast one invoice
+                else if(linkedPayment.getInvoicesMap().size() > 0) {
+                    // linked payment is linked with one invoice
+                    // make invoice balance as zero again by subtracting the refund payment amount from it
+                    Iterator<PaymentInvoiceMapDTO> iterator = linkedPayment.getInvoicesMap().iterator();
+                    while(iterator.hasNext()) {
+                        PaymentInvoiceMapDTO mapDTO = iterator.next();
+                        // get the invoice
+                        // subtract the balance of the invoice with the amount of the refunded payment
+                        // increase the map's amount
+                        //todo basically he has done a new payment equal to the refund amount
+                        // decrease the invoice balance
+                        // increase the payment balance
+                    }
+                }
+            }
             Integer entityId = payment.getBaseUser().getEntity().getId();
             EventManager.process(new PaymentDeletedEvent(entityId, payment));
 
@@ -967,4 +1028,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         dto.setCurrencyId(map.getPayment().getCurrency().getId());
         return dto;
     }
+
+//    public static BigDecimal getLinkedInvoiceAmount(PaymentDTO payment, InvoiceDTO invoice) {
+//
+//    }
 }

@@ -1610,7 +1610,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public void deletePayment(Integer paymentId) throws SessionInternalError {
 
-            if(!PaymentBL.validateRefundDelete(paymentId)) {
+            if(PaymentBL.ifRefunded(paymentId)) {
                 throw new SessionInternalError("This payment has been refunded and hence cannot be deleted",
                         new String[] {"PaymentWS,deleted,validation.error.delete.refunded.payment"});
             }

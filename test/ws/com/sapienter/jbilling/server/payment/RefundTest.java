@@ -33,6 +33,7 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.user.ContactWS;
+import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
@@ -112,7 +113,8 @@ public class RefundTest extends TestCase {
             System.out.println("User created successfully " + user.getUserId());
 
             user= api.getUserWS(user.getUserId());
-            assertEquals(user.getDynamicBalanceAsDecimal(), BigDecimal.ZERO);
+            UserBL userBl= new UserBL();
+            assertEquals(userBl.getBalance(user.getUserId()), BigDecimal.ZERO);
     
             //make payment
             Integer paymentId= createPayment(api, "100.00", false, user.getUserId(), null);
@@ -126,7 +128,7 @@ public class RefundTest extends TestCase {
     
             //check user's balance
             user= api.getUserWS(user.getUserId());
-            BigDecimal userBalance= user.getDynamicBalanceAsDecimal();
+            BigDecimal userBalance= userBl.getBalance(user.getUserId());
             assertNotNull(userBalance);
             assertTrue("User Balance should have been negetive", BigDecimal.ZERO.compareTo(userBalance) > 0);
                        
@@ -140,7 +142,7 @@ public class RefundTest extends TestCase {
             //check user's balance = 0
             user = api.getUserWS(user.getUserId());
             assertNotNull(user);
-            assertEquals(BigDecimal.ZERO, user.getDynamicBalanceAsDecimal());
+            assertEquals(BigDecimal.ZERO, userBl.getBalance(user.getUserId()));
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -177,7 +179,7 @@ public class RefundTest extends TestCase {
     }
 
     /**
-     * 4. Test payment balance unchanged when linked payment has linked invoices,
+     * 4. Test payment balance unchanged when linked payment has zero balance and linked invoices,
      * but invoice balance increased from previous balance
      */
     public void testRefundPaymentWithInvoiceLinked() {
@@ -243,8 +245,8 @@ public class RefundTest extends TestCase {
 
     /**
      * Refund a payment that is linked to one invoice, paying it in full, but
-     * having some balance left. Result: payment balance is zero. Invoice
-     * balance is equal to its total (used to be zero).
+     * having some balance left. Result: payment balance is Refund amount less amount used to pay invoice originally. 
+     * Invoice balance is equal to its total (used to be zero).
      */
     public void testRefundWithPaymentBalance() {
 
@@ -284,7 +286,7 @@ public class RefundTest extends TestCase {
             assertTrue(payment.getInvoiceIds().length > 0 );
 
             //CREATE REFUND for above payment, refund amount = payment amount
-            Integer refundId= createPayment(api, "100.00", true, user.getUserId(), paymentId);
+            Integer refundId= createPayment(api, "200.00", true, user.getUserId(), paymentId);
             System.out.println("Created refund " + refundId);
             assertNotNull("Didn't get the payment id", refundId);
 
@@ -299,7 +301,7 @@ public class RefundTest extends TestCase {
             assertTrue(invoice.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) > 0);
 
             //invoice balance is equal to its total
-            assertEquals(invoice.getBalanceAsDecimal(), invoice.getTotalAsDecimal());
+            assertEquals("Invoice balance should have been $100.00", invoice.getBalanceAsDecimal(), invoice.getTotalAsDecimal());
             
             System.out.println("Invoice balance is " + invoice.getBalance());
 
@@ -342,7 +344,7 @@ public class RefundTest extends TestCase {
             assertTrue(invoice.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) > 0 );
             
             //MAKE PAYMENT
-            Integer paymentId= createPayment(api, "100.00", false, user.getUserId(), null);
+            Integer paymentId= createPayment(api, "300.00", false, user.getUserId(), null);
             System.out.println("Created payment " + paymentId);
             assertNotNull("Didn't get the payment id", paymentId);
 
@@ -357,10 +359,10 @@ public class RefundTest extends TestCase {
             assertEquals(BigDecimal.ZERO, payment.getBalanceAsDecimal());
 
             //payment has linked invoices
-            assertTrue(payment.getInvoiceIds().length > 0 );
+            assertTrue(payment.getInvoiceIds().length == 3 );
 
             //CREATE REFUND for above payment, refund amount = payment amount
-            Integer refundId= createPayment(api, "100.00", true, user.getUserId(), paymentId);
+            Integer refundId= createPayment(api, "300.00", true, user.getUserId(), paymentId);
             System.out.println("Created refund " + refundId);
             assertNotNull("Didn't get the payment id", refundId);
 
@@ -376,6 +378,12 @@ public class RefundTest extends TestCase {
 
             //invoice balance is equal to its total
             assertEquals(invoice.getBalanceAsDecimal(), invoice.getTotalAsDecimal());
+            
+            InvoiceWS[] userInvoices= api.getAllInvoicesForUser(user.getUserId());
+            
+            for (InvoiceWS inv: userInvoices) {
+                assertEquals("Should have been $100.00", new BigDecimal("100.00"), inv.getBalanceAsDecimal());
+            }
             
             System.out.println("Invoice balance is " + invoice.getBalance());
 
@@ -490,7 +498,7 @@ public class RefundTest extends TestCase {
      * Delete a Refund for a Payment that pays one or more Invoice in full and 
      * has zero balance left.
      */
-    public void testRefundForPaymentWithPaidInvoice() {
+    public void testDeleteRefundForPaymentWithPaidInvoice() {
         
         try {
             //CREATE USER

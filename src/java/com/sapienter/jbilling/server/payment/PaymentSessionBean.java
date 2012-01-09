@@ -503,8 +503,6 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                 EventManager.process(event);
             } else {
                 LOG.debug("payment is linked to payment "+payment.getPayment() +" and is probably linked with invoice ");
-//                if (payment.getPayment() != null && !payment.getPayment().
-//                        getInvoiceIds().isEmpty()) {
                 // todo changing this suspecting getInvoiceIds are not giving correct result
                 // fetch the linked payment
                 PaymentDTO linkedPmt = new PaymentBL(payment.getPayment().getId()).getEntity();
@@ -514,8 +512,6 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                     // is linked to at least one invoice.
                     // fetch one invoice from db
                 // todo changing this suspecting getInvoiceIds are not giving correct result
-//                    InvoiceBL invoiceBL = new InvoiceBL((Integer) payment.
-//                            getPayment().getInvoiceIds().get(0));
                     // iterate on the map
                     Iterator<PaymentInvoiceMapDTO> iterator = linkedPmt.getInvoicesMap().iterator();
                     // the amount till iteration should be done
@@ -524,16 +520,22 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                         PaymentInvoiceMapDTO mapDTO = (PaymentInvoiceMapDTO)iterator.next();
                         InvoiceBL invoiceBL = new InvoiceBL(mapDTO.getInvoiceEntity().getId());
                         applyPayment(payment, invoiceBL.getEntity(), true);
+
+                        BigDecimal amtLinkedInvoice = mapDTO.getAmount();
                         // reduce the amount of the map to ZERO
                         LOG.debug("SETTING THE MAP ID "+mapDTO.getId()+ " amount to ZERO");
+                        // todo this can be invoice amount to handle PARTIAL PAYMENTS OF INVOICES
                         mapDTO.setAmount(BigDecimal.ZERO);
 
                         //
 //                        iterateAmount = iterateAmount.subtract(linkedInvoiceAmount);
                         // reduce the linked payment balance as well    (should always be ZERO)
+                        // todo creating the payment_invoice_dto map for refund payment as well
+                        paymentBl.createMap(invoiceBL.getEntity(), amtLinkedInvoice);
                     }
                     // always set the linked payment's balance to ZERO
                     linkedPmt.setBalance(BigDecimal.ZERO);
+
                 }
                 else if(payment.getPayment()!=null && payment.getPayment().getInvoiceIds().isEmpty()) {
                 //  since payment is not linked to any invoice now , we must subtract the payment balance with that of the refund payment value

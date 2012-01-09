@@ -81,4 +81,12 @@ public class PaymentInvoiceMapDAS extends AbstractDAS<PaymentInvoiceMapDTO> {
 
         return criteria.uniqueResult() == null ? null : (PaymentInvoiceMapDTO) criteria.uniqueResult();
     }
+
+    public PaymentInvoiceMapDTO getRow(Integer id) {
+
+        Criteria criteria = getSession().createCriteria(PaymentInvoiceMapDTO.class);
+        criteria.add(Restrictions.eq("id", id));
+
+        return criteria.uniqueResult() == null ? null : (PaymentInvoiceMapDTO) criteria.uniqueResult();
+    }
 }

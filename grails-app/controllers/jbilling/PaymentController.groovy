@@ -181,6 +181,7 @@ class PaymentController {
      */
     @Secured(["PAYMENT_32"])
     def delete = {
+        println "params id ${params.id}"
         if (params.id) {
             try {
                 webServicesSession.deletePayment(params.int('id'))

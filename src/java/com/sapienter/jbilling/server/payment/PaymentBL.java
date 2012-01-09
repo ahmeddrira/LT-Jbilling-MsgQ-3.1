@@ -702,7 +702,6 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             if(payment.getIsRefund() == 1) {
                 // get its linked payment
                 PaymentDTO linkedPayment = payment.getPayment();
-                // undo point 1
                 // if payment is not linked to any invoice
                 if (linkedPayment.getInvoicesMap().size()==0) {
                     // payment is not linked to any invoice
@@ -710,18 +709,32 @@ public class PaymentBL extends ResultList implements PaymentSQL {
                     linkedPayment.setBalance(linkedPayment.getBalance().add(payment.getAmount()));
                 }
                 // if the linked payment is linked with atleast one invoice
-                else if(linkedPayment.getInvoicesMap().size() > 0) {
-                    // linked payment is linked with one invoice
+                else if(payment.getInvoicesMap().size() > 0) {
+                    LOG.debug("Got linked invoices");
+                    List<Integer>mapIds = new ArrayList<Integer>();
+                    BigDecimal linkedPaymentBalance = BigDecimal.ZERO;
                     // make invoice balance as zero again by subtracting the refund payment amount from it
-                    Iterator<PaymentInvoiceMapDTO> iterator = linkedPayment.getInvoicesMap().iterator();
+                    Iterator<PaymentInvoiceMapDTO> iterator = payment.getInvoicesMap().iterator();
                     while(iterator.hasNext()) {
-                        PaymentInvoiceMapDTO mapDTO = iterator.next();
-                        // get the invoice
-                        // subtract the balance of the invoice with the amount of the refunded payment
-                        // increase the map's amount
+                        PaymentInvoiceMapDTO refundMapDTO = iterator.next();
+                        linkedPaymentBalance = linkedPaymentBalance.add(refundMapDTO.getAmount());
                         //todo basically he has done a new payment equal to the refund amount
-                        // decrease the invoice balance
-                        // increase the payment balance
+                           BigDecimal amount = refundMapDTO.getAmount();
+                           InvoiceDTO linkedInvoice = refundMapDTO.getInvoiceEntity();
+                        // 5. decrease the balance of the invoice with the amount same as that got from the amount field
+                           LOG.debug("Linked invoice balance is earlier "+linkedInvoice.getBalance());
+                           linkedInvoice.setBalance(linkedInvoice.getBalance().subtract(amount));
+                           LOG.debug("Linked Balance invoice is now "+linkedInvoice.getBalance());
+                        // 7. delete the row from the payment_invoice_dto_map
+//                        new PaymentInvoiceMapDAS().delete(refundMapDTO);
+                        mapIds.add(refundMapDTO.getId());
+                    }
+                    linkedPayment.setBalance(linkedPayment.getAmount().subtract(linkedPaymentBalance));
+                    Iterator<Integer> it = mapIds.iterator();
+                    while(it.hasNext()) {
+                        LOG.debug("Deleting row");
+//                        new PaymentInvoiceMapDAS().delete(new PaymentInvoiceMapDAS().getRow((Integer)it.next()));
+                        LOG.debug("Deleted ROW "+it.next());
                     }
                 }
             }

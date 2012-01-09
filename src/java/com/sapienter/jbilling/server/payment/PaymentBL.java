@@ -712,6 +712,16 @@ public class PaymentBL extends ResultList implements PaymentSQL {
                     linkedPayment.setBalance(linkedPayment.getBalance().add(payment.getAmount()));
                 }
                 // REST CASES ARE HANDLED IN UNLINK ACTION
+
+                else if(payment.getInvoicesMap().size() > 0) {
+                    LOG.debug("Atleast one invoice linked..");
+                    Iterator<PaymentInvoiceMapDTO> refundInvoiceMapIterator = payment.getInvoicesMap().iterator();
+                    while(refundInvoiceMapIterator.hasNext())  {
+                        PaymentInvoiceMapDTO map = (PaymentInvoiceMapDTO)refundInvoiceMapIterator.next();
+                        LOG.debug("Trying to remove object of map ID "+map.getId());
+                        removeInvoiceLink(map.getId());
+                    }
+                }
             }
             Integer entityId = payment.getBaseUser().getEntity().getId();
             EventManager.process(new PaymentDeletedEvent(entityId, payment));

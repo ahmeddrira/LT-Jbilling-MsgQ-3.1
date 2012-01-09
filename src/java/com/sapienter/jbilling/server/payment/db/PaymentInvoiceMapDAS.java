@@ -89,4 +89,5 @@ public class PaymentInvoiceMapDAS extends AbstractDAS<PaymentInvoiceMapDTO> {
 
         return criteria.uniqueResult() == null ? null : (PaymentInvoiceMapDTO) criteria.uniqueResult();
     }
+
 }

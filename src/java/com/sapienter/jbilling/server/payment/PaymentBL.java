@@ -60,6 +60,9 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.sql.rowset.CachedRowSet;
 
 import javax.persistence.EntityNotFoundException;
@@ -622,7 +625,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
 
     /**
      * Validates the deletion of a payment
-     * @param paymentId
+     * @param
      * @return  boolean
      */
 
@@ -708,35 +711,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
                     // add the amount back from refund payment to this linked payment in its balance
                     linkedPayment.setBalance(linkedPayment.getBalance().add(payment.getAmount()));
                 }
-                // if the linked payment is linked with atleast one invoice
-                else if(payment.getInvoicesMap().size() > 0) {
-                    LOG.debug("Got linked invoices");
-                    List<Integer>mapIds = new ArrayList<Integer>();
-                    BigDecimal linkedPaymentBalance = BigDecimal.ZERO;
-                    // make invoice balance as zero again by subtracting the refund payment amount from it
-                    Iterator<PaymentInvoiceMapDTO> iterator = payment.getInvoicesMap().iterator();
-                    while(iterator.hasNext()) {
-                        PaymentInvoiceMapDTO refundMapDTO = iterator.next();
-                        linkedPaymentBalance = linkedPaymentBalance.add(refundMapDTO.getAmount());
-                        //todo basically he has done a new payment equal to the refund amount
-                           BigDecimal amount = refundMapDTO.getAmount();
-                           InvoiceDTO linkedInvoice = refundMapDTO.getInvoiceEntity();
-                        // 5. decrease the balance of the invoice with the amount same as that got from the amount field
-                           LOG.debug("Linked invoice balance is earlier "+linkedInvoice.getBalance());
-                           linkedInvoice.setBalance(linkedInvoice.getBalance().subtract(amount));
-                           LOG.debug("Linked Balance invoice is now "+linkedInvoice.getBalance());
-                        // 7. delete the row from the payment_invoice_dto_map
-//                        new PaymentInvoiceMapDAS().delete(refundMapDTO);
-                        mapIds.add(refundMapDTO.getId());
-                    }
-                    linkedPayment.setBalance(linkedPayment.getAmount().subtract(linkedPaymentBalance));
-                    Iterator<Integer> it = mapIds.iterator();
-                    while(it.hasNext()) {
-                        LOG.debug("Deleting row");
-//                        new PaymentInvoiceMapDAS().delete(new PaymentInvoiceMapDAS().getRow((Integer)it.next()));
-                        LOG.debug("Deleted ROW "+it.next());
-                    }
-                }
+                // REST CASES ARE HANDLED IN UNLINK ACTION
             }
             Integer entityId = payment.getBaseUser().getEntity().getId();
             EventManager.process(new PaymentDeletedEvent(entityId, payment));
@@ -972,22 +947,54 @@ public class PaymentBL extends ResultList implements PaymentSQL {
      */
     public void removeInvoiceLink(Integer mapId) {
         try {
+            // declare variables
+            InvoiceDTO invoice;
+
             // find the map
             PaymentInvoiceMapDTO map = mapDas.find(mapId);
-            // start returning the money to the payment's balance
-            BigDecimal amount = map.getAmount();
-            payment = map.getPayment();
-            amount = amount.add(payment.getBalance());
-            payment.setBalance(amount);
+            // handle for refund cases
+            // check if payment is a refund
+            if(map.getPayment().getIsRefund() == 1) {
+                //
+                LOG.debug("This is a refund payment");
+                BigDecimal amount = map.getAmount();
+                LOG.debug("Amount associated wth the refund payment "+amount);
+                payment = map.getPayment();
+                // get the linked payment
+                PaymentDTO linkedPayment = payment.getPayment();
+                LOG.debug("The linked payment id is "+linkedPayment.getId());
+                // setting the balance amount of the linked payment to correct value
+                LOG.debug("The linked balance is now "+linkedPayment.getBalance());
+                linkedPayment.setBalance(linkedPayment.getAmount().subtract(amount));
+                LOG.debug("The balance of the linked payment is now "+linkedPayment.getBalance());
+                // the balance of the invoice decreases
+                invoice = map.getInvoiceEntity();
+                LOG.debug("The invoice balance earlier was "+invoice.getBalance());
+                invoice.setBalance(invoice.getBalance().subtract(amount));
+                LOG.debug("The invoice balance is now "+invoice.getBalance());
+                // this invoice probably has to be paid now
+                if (Constants.BIGDECIMAL_ONE_CENT.compareTo(invoice.getBalance()) <= 0) {
+                    LOG.debug("Setting the invoice as PAID ");
+                    invoice.setToProcess(1);
+                }
 
-            // the balace of the invoice also increases
-            InvoiceDTO invoice = map.getInvoiceEntity();
-            amount = map.getAmount().add(invoice.getBalance());
-            invoice.setBalance(amount);
+            }
+            else {
+                // start returning the money to the payment's balance
+                BigDecimal amount = map.getAmount();
+                payment = map.getPayment();
+                amount = amount.add(payment.getBalance());
+                payment.setBalance(amount);
 
-            // this invoice probably has to be paid now
-            if (Constants.BIGDECIMAL_ONE_CENT.compareTo(invoice.getBalance()) <= 0) {
-                invoice.setToProcess(1);
+                // the balace of the invoice also increases
+                invoice = map.getInvoiceEntity();
+                amount = map.getAmount().add(invoice.getBalance());
+                invoice.setBalance(amount);
+
+                // this invoice probably has to be paid now
+                if (Constants.BIGDECIMAL_ONE_CENT.compareTo(invoice.getBalance()) <= 0) {
+                    invoice.setToProcess(1);
+                }
             }
 
             // log that this was deleted, otherwise there will be no trace
@@ -1015,6 +1022,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
      * <i>invoiceId</i> of the Invoice
      * @param invoiceId Invoice Id to be unlinked from this payment
      */
+//    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public boolean unLinkFromInvoice(Integer invoiceId) {
 
     	InvoiceDTO invoice= new InvoiceDAS().find(invoiceId);

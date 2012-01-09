@@ -287,4 +287,19 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
 
         return criteria.list();
     }
+
+
+    /**
+     *  Checks
+     * @param isRefund
+     * @return
+     */
+
+    public PaymentDTO findByIsRefund(Integer isRefund) {
+
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("isRefund",isRefund));
+
+        return (criteria.uniqueResult() == null ? null: (PaymentDTO)criteria.uniqueResult());
+    }
 }

@@ -701,28 +701,6 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         try {
 
             LOG.debug("Deleting payment " + payment.getId());
-            // check if payment is a refund payment
-            if(payment.getIsRefund() == 1) {
-                // get its linked payment
-                PaymentDTO linkedPayment = payment.getPayment();
-                // if payment is not linked to any invoice
-                if (linkedPayment.getInvoicesMap().size()==0) {
-                    // payment is not linked to any invoice
-                    // add the amount back from refund payment to this linked payment in its balance
-                    linkedPayment.setBalance(linkedPayment.getBalance().add(payment.getAmount()));
-                }
-                // REST CASES ARE HANDLED IN UNLINK ACTION
-
-                else if(payment.getInvoicesMap().size() > 0) {
-                    LOG.debug("Atleast one invoice linked..");
-                    Iterator<PaymentInvoiceMapDTO> refundInvoiceMapIterator = payment.getInvoicesMap().iterator();
-                    while(refundInvoiceMapIterator.hasNext())  {
-                        PaymentInvoiceMapDTO map = (PaymentInvoiceMapDTO)refundInvoiceMapIterator.next();
-                        LOG.debug("Trying to remove object of map ID "+map.getId());
-                        removeInvoiceLink(map.getId());
-                    }
-                }
-            }
             Integer entityId = payment.getBaseUser().getEntity().getId();
             EventManager.process(new PaymentDeletedEvent(entityId, payment));
 
@@ -962,34 +940,6 @@ public class PaymentBL extends ResultList implements PaymentSQL {
 
             // find the map
             PaymentInvoiceMapDTO map = mapDas.find(mapId);
-            // handle for refund cases
-            // check if payment is a refund
-            if(map.getPayment().getIsRefund() == 1) {
-                //
-                LOG.debug("This is a refund payment");
-                BigDecimal amount = map.getAmount();
-                LOG.debug("Amount associated wth the refund payment "+amount);
-                payment = map.getPayment();
-                // get the linked payment
-                PaymentDTO linkedPayment = payment.getPayment();
-                LOG.debug("The linked payment id is "+linkedPayment.getId());
-                // setting the balance amount of the linked payment to correct value
-                LOG.debug("The linked balance is now "+linkedPayment.getBalance());
-                linkedPayment.setBalance(linkedPayment.getAmount().subtract(amount));
-                LOG.debug("The balance of the linked payment is now "+linkedPayment.getBalance());
-                // the balance of the invoice decreases
-                invoice = map.getInvoiceEntity();
-                LOG.debug("The invoice balance earlier was "+invoice.getBalance());
-                invoice.setBalance(invoice.getBalance().subtract(amount));
-                LOG.debug("The invoice balance is now "+invoice.getBalance());
-                // this invoice probably has to be paid now
-                if (Constants.BIGDECIMAL_ONE_CENT.compareTo(invoice.getBalance()) <= 0) {
-                    LOG.debug("Setting the invoice as PAID ");
-                    invoice.setToProcess(1);
-                }
-
-            }
-            else {
                 // start returning the money to the payment's balance
                 BigDecimal amount = map.getAmount();
                 payment = map.getPayment();
@@ -1005,7 +955,6 @@ public class PaymentBL extends ResultList implements PaymentSQL {
                 if (Constants.BIGDECIMAL_ONE_CENT.compareTo(invoice.getBalance()) <= 0) {
                     invoice.setToProcess(1);
                 }
-            }
 
             // log that this was deleted, otherwise there will be no trace
             eLogger.info(invoice.getBaseUser().getEntity().getId(),
@@ -1016,8 +965,6 @@ public class PaymentBL extends ResultList implements PaymentSQL {
 
             // get rid of the map all together
             mapDas.delete(map);
-
-
 
         } catch (EntityNotFoundException enfe) {
             LOG.error("Exception removing payment-invoice link: EntityNotFoundException", enfe);
@@ -1060,7 +1007,4 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         return dto;
     }
 
-//    public static BigDecimal getLinkedInvoiceAmount(PaymentDTO payment, InvoiceDTO invoice) {
-//
-//    }
 }

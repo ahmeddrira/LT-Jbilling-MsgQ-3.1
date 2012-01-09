@@ -443,6 +443,19 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 		if (invoiceId == null || paymentId == null)
             return;
 
+        // check if the payment is a refund , if it is do not allow it
+        if(new PaymentBL(paymentId).getEntity().getIsRefund()==1) {
+            LOG.debug("This payment id "+paymentId+" is a refund so we cannot unlink it from the invoice");
+            throw new SessionInternalError("This payment is a refund and hence cannot be unlinked from any invoice",
+                        new String[] {"PaymentWS,unlink,validation.error.payment.unlink"});
+        }
+
+        // if the payment has been refunded
+        if(PaymentBL.ifRefunded(paymentId)) {
+            throw new SessionInternalError("This payment has been refunded and hence cannot be unlinked from the invoice",
+                        new String[] {"PaymentWS,unlink,validation.error.delete.refunded.payment"});
+        }
+
         boolean result= new PaymentBL(paymentId).unLinkFromInvoice(invoiceId);
         if (!result)
 			throw new SessionInternalError("Unable to find the Invoice Id " + invoiceId + " linked to Payment Id " + paymentId);
@@ -1611,11 +1624,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public void deletePayment(Integer paymentId) throws SessionInternalError {
 
         PaymentDTO payment = new PaymentBL(paymentId).getEntity();
-        // don't check if the payment is a refund
-            if(payment.getIsRefund()!=1 && PaymentBL.ifRefunded(paymentId)) {
-                throw new SessionInternalError("This payment has been refunded and hence cannot be deleted",
-                        new String[] {"PaymentWS,deleted,validation.error.delete.refunded.payment"});
-            }
+
+        // check if the payment is a refund , if it is do not allow it
+        if(new PaymentBL(paymentId).getEntity().getIsRefund()==1) {
+            LOG.debug("This payment id "+paymentId+" is a refund so we cannot delete it");
+            throw new SessionInternalError("This payment is a refund and hence cannot be deleted",
+                        new String[] {"PaymentWS,deleted,validation.error.delete.refund.payment"});
+        }
+
+        // check if payment has been refunded
+        if(PaymentBL.ifRefunded(paymentId)) {
+            throw new SessionInternalError("This payment has been refunded and hence cannot be deleted",
+            new String[] {"PaymentWS,deleted,validation.error.delete.refunded.payment"});
+        }
+
         new PaymentBL(paymentId).delete();
     }
 

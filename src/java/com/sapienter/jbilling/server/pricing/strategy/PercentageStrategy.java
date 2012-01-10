@@ -68,7 +68,7 @@ public class PercentageStrategy extends AbstractPricingStrategy {
 
         if (result.getPrice() != null) {
             BigDecimal percentage = AttributeUtils.getDecimal(planPrice.getAttributes(), "percentage");
-            result.setPrice(result.getPrice().multiply(percentage));
+            result.setPrice((result.getPrice().multiply(percentage)).add(result.getPrice()));
         }
     }
 }

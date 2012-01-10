@@ -17,9 +17,11 @@
 package com.sapienter.jbilling.server.util;
 
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * CurrencyWS
@@ -37,6 +39,7 @@ public class CurrencyWS implements Serializable {
     private Boolean inUse;
     private String rate;
     private String sysRate;
+    private Date fromDate;
 
     private boolean defaultCurrency;
 
@@ -114,7 +117,9 @@ public class CurrencyWS implements Serializable {
     }
 
     public void setRate(String rate) {
-        this.rate = rate;
+        if(!StringUtils.isEmpty(rate)) {
+            this.rate = rate;
+        }
     }
 
     public void setRate(BigDecimal rate) {
@@ -157,6 +162,14 @@ public class CurrencyWS implements Serializable {
         this.defaultCurrency = defaultCurrency;
     }
 
+    public Date getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(Date fromDate) {
+        this.fromDate = fromDate;
+    }
+
     @Override
     public String toString() {
         return "CurrencyWS{"
@@ -168,6 +181,7 @@ public class CurrencyWS implements Serializable {
                + ", rate='" + rate + '\''
                + ", systemRate='" + sysRate + '\''
                + ", isDefaultCurrency=" + defaultCurrency
+               + ", fromDate=" + fromDate
                + '}';
     }
 }

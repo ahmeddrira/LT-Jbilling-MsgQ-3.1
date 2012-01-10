@@ -42,11 +42,9 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 public class ItemBL {
@@ -269,9 +267,9 @@ public class ItemBL {
             item.getExcludedTypes().add(itemType.getEntity());
         }
     }
-    
+
     public void delete(Integer executorId) {
-        item.setDeleted(new Integer(1));
+        item.setDeleted(1);
 
         eLogger.audit(executorId, null, Constants.TABLE_ITEM, item.getId(),
                 EventLogger.MODULE_ITEM_MAINTENANCE,
@@ -316,7 +314,6 @@ public class ItemBL {
             PricingResult result = new PricingResult(item.getId(), userId, currencyId);
             List<PricingField> fields = Collections.emptyList();
 
-
             // price for today
             PriceModelDTO price = item.getPrice(new Date());
              if (price != null) {
@@ -353,9 +350,8 @@ public class ItemBL {
             throws SessionInternalError {
 
         if (currencyId == null || entityId == null) {
-            throw new SessionInternalError("Can't get a price with null parameters. "
-                                           + "currencyId = " + currencyId
-                                           + " entityId = " + entityId);
+            throw new SessionInternalError("Can't get a price with null parameters. currencyId = " + currencyId +
+                    " entityId = " + entityId);
         }
 
         CurrencyBL currencyBL;
@@ -565,8 +561,7 @@ public class ItemBL {
         int index = 0;
         for (ItemDTO item: entity.getItems()) {
             set(item.getId());
-            items[index++] = getWS(getDTO(entity.getLanguageId(),
-                    null, entityId, entity.getCurrencyId()));
+            items[index++] = getWS(getDTO(entity.getLanguageId(), null, entityId, entity.getCurrencyId()));
         }
 
         return items;

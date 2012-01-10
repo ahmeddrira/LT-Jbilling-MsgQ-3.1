@@ -17,25 +17,20 @@
 package jbilling
 
 import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.common.Util
+import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.process.AgeingWS
-import com.sapienter.jbilling.server.user.contact.db.ContactDTO
-import com.sapienter.jbilling.server.user.contact.db.ContactMapDTO
-import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO
-import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.user.CompanyWS
+import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.server.util.Constants
+import com.sapienter.jbilling.server.util.CurrencyWS
 import com.sapienter.jbilling.server.util.PreferenceTypeWS
 import com.sapienter.jbilling.server.util.PreferenceWS
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO
-import com.sapienter.jbilling.common.Util
 import grails.plugins.springsecurity.Secured
-import com.sapienter.jbilling.server.util.db.CurrencyDTO
-import com.sapienter.jbilling.server.item.CurrencyBL
-import com.sapienter.jbilling.server.util.CurrencyWS
-import com.sapienter.jbilling.server.user.ContactWS
-import com.sapienter.jbilling.server.user.CompanyWS
 
 /**
- * ConfigurationController 
+ * ConfigurationController
  *
  * @author Brian Cowdery
  * @since 03-Jan-2011
@@ -96,7 +91,7 @@ class ConfigController {
         Ageing configuration
      */
 
-	
+
 	def aging = {
 		log.debug "config.aging ${session['language_id']}"
 		AgeingWS[] array= webServicesSession.getAgeingConfiguration(session['language_id'] as Integer)
@@ -104,12 +99,12 @@ class ConfigController {
 		def gracePeriod= userSession.getEntityPreference(session['company_id'] as Integer, Constants.PREFERENCE_GRACE_PERIOD)
 		[ageingSteps: array, gracePeriod:gracePeriod]
 	}
-	
+
 	def saveAging = {
-		
+
 		def cnt = params.recCnt.toInteger()
 		log.debug "Records Count: ${cnt}"
-		
+
 		AgeingWS[] array= new AgeingWS[cnt]
 		for (int i=0; i < cnt; i++) {
 			log.debug "${params['obj[' + i + '].statusId']}"
@@ -117,8 +112,8 @@ class ConfigController {
 			bindData(ws, params["obj["+i+"]"])
 			array[i]= ws
 		}
-		
-		for (AgeingWS dto: array) { 
+
+		for (AgeingWS dto: array) {
 			log.debug "Printing: ${dto.toString()}"
 		}
 		try {
@@ -134,16 +129,16 @@ class ConfigController {
 	}
 
     /*
-        Company configuration    
+        Company configuration
      */
-    
+
 	def company = {
 		CompanyWS company = webServicesSession.getCompany()
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 
 		[ company: company ]
 	}
-	
+
 	def saveCompany= {
 		try {
 			CompanyWS company= new CompanyWS(session['company_id'].intValue())
@@ -155,7 +150,7 @@ class ConfigController {
             company.setContact(contact)
 
             webServicesSession.updateCompany(company)
-            
+
 			flash.message = 'config.company.save.success'
 
 		} catch (SessionInternalError e){
@@ -217,17 +212,14 @@ class ConfigController {
      */
 
     def currency = {
-        def currency = new CurrencyBL()
+        def startDate = params.startDate ? new Date().parse(message(code: 'date.format'), params.startDate) : new Date()
 
-        def entityCurrency = currency.getEntityCurrency(session['company_id'])
-        def currencies = currency.getCurrencies(session['language_id'], session['company_id'])
-
-
-        [ entityCurrency: entityCurrency, currencies: currencies ]
+        return generateCurrenciesFormModel(com.sapienter.jbilling.common.Util.truncateDate(startDate));
     }
 
     def saveCurrencies = {
         def defaultCurrencyId = params.int('defaultCurrencyId')
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
         // build a list of currencies
         def currencies = []
@@ -236,6 +228,7 @@ class ConfigController {
                 def currency = new CurrencyWS()
                 bindData(currency, v, ['_inUse'])
                 currency.defaultCurrency = (currency.id == defaultCurrencyId)
+                currency.fromDate = startDate
 
                 currencies << currency
             }
@@ -244,15 +237,44 @@ class ConfigController {
         // update all currencies
         try {
             webServicesSession.updateCurrencies((CurrencyWS[]) currencies)
-
             flash.message = 'currencies.updated'
-
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
         }
 
         redirect action: 'currency'
     }
+
+    def addDatePoint = {
+        def startDate = com.sapienter.jbilling.common.Util.truncateDate(new Date())
+        def mdl = generateCurrenciesFormModel(startDate)
+        mdl.timePoints.add(startDate)
+
+        render template: 'currency/form', model: mdl
+    }
+
+    def editDatePoint = {
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+
+        render template: 'currency/form', model:  generateCurrenciesFormModel(startDate)
+    }
+
+    def removeDatePoint = {
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+        CurrencyBL.removeExchangeRatesForDate(session['company_id'], startDate)
+
+        render template: 'currency/form', model:  generateCurrenciesFormModel(new Date())
+    }
+
+    def generateCurrenciesFormModel = { date ->
+        def currency = new CurrencyBL()
+        def entityCurrency = currency.getEntityCurrency(session['company_id'])
+        def currencies = currency.getCurrenciesToDate(session['language_id'], session['company_id'], date)
+        def timePoints = currency.getUsedTimePoints(session['company_id'])
+
+        return [ entityCurrency: entityCurrency, currencies: currencies, startDate : date, timePoints : timePoints ]
+    }
+
 
     def editCurrency = {
         // only shows edit template to create new currencies.
@@ -269,7 +291,6 @@ class ConfigController {
 
             flash.message = 'currency.created'
             flash.args = [ currency.code ]
-
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
             chain action: 'currency', model: [ currency: currency ]

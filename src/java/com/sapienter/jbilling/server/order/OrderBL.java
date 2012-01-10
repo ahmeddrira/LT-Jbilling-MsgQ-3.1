@@ -179,8 +179,7 @@ public class OrderBL extends ResultList
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
 
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
-        for (Iterator it = order.getLines().iterator(); it.hasNext();) {
-            OrderLineDTO line = (OrderLineDTO) it.next();
+        for (OrderLineDTO line : order.getLines()) {
             if (line.getDeleted() == 0) {
                 lines.add(getOrderLineWS(line.getId()));
             }
@@ -382,8 +381,8 @@ public class OrderBL extends ResultList
 
             // add a log row for convenience
             if (userAgentId != null) {
-                eLogger.audit(userAgentId, order.getBaseUserByUserId().getId(), 
-                        Constants.TABLE_PUCHASE_ORDER, order.getId(), 
+                eLogger.audit(userAgentId, order.getBaseUserByUserId().getId(),
+                        Constants.TABLE_PUCHASE_ORDER, order.getId(),
                         EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
             } else {
                 eLogger.auditBySystem(entityId, order.getBaseUserByUserId().getId(),
@@ -981,8 +980,8 @@ public class OrderBL extends ResultList
         conn.close();
         return cachedResults;
     }
-    
-    public List<Integer> getOrdersByProcess(Integer processId) throws SQLException, Exception { 
+
+    public List<Integer> getOrdersByProcess(Integer processId) throws SQLException, Exception {
     	conn = ((DataSource) Context.getBean(Context.Name.DATA_SOURCE)).getConnection();
     	PreparedStatement stmt = conn.prepareStatement(OrderSQL.listByProcess);
 		stmt.setInt(1, processId.intValue());
@@ -1021,34 +1020,6 @@ public class OrderBL extends ResultList
         EventManager.process(event);
         order.setOrderStatus(new OrderStatusDAS().find(statusId));
 
-    }
-
-    /**
-     * To be called from the http api, this simply looks for lines
-     * in the order that lack some fields, it finds that info based
-     * in the item.
-     *
-     * @param dto order with lines to pricess
-     * @param entityId entity id
-     */
-    public void fillInLines(OrderDTO dto, Integer entityId) throws NamingException, SessionInternalError {
-        ItemBL itemBl = new ItemBL();
-
-        // iterate over order lines
-        for (OrderLineDTO line : dto.getLines()) {
-            itemBl.set(line.getItemId());
-            Integer languageId = itemBl.getEntity().getEntity().getLanguageId();
-
-            // populate the basic item price and item description
-            ItemDAS itemDas = new ItemDAS();
-            line.setItem(itemDas.find(line.getItemId()));
-            if (line.getPrice() == null) {
-                line.setPrice(itemBl.getPrice(dto.getUserId(), dto.getCurrencyId(), line.getQuantity(), entityId));
-            }
-            if (line.getDescription() == null) {
-                line.setDescription(itemBl.getEntity().getDescription(languageId));
-            }
-        }
     }
 
     private void audit(Integer executorId, Date date) {
@@ -1196,7 +1167,7 @@ public class OrderBL extends ResultList
                     continue;
                 }
 
-                set(new Integer(orderId));
+                set(orderId);
                 UserBL user = new UserBL(order.getBaseUserByUserId().getId());
                 try {
                     NotificationBL notification = new NotificationBL();
@@ -1204,15 +1175,14 @@ public class OrderBL extends ResultList
                     contact.set(user.getEntity().getUserId());
                     MessageDTO message = notification.getOrderNotification(
                             ent.getId(),
-                            new Integer(currentStep),
+                            currentStep,
                             user.getEntity().getLanguageIdField(),
                             order.getActiveSince(),
                             order.getActiveUntil(),
                             user.getEntity().getUserId(),
                             order.getTotal(), order.getCurrencyId());
                     // update the order record only if the message is sent
-                    if (notificationSess.notify(user.getEntity(), message).
-                            booleanValue()) {
+                    if (notificationSess.notify(user.getEntity(), message)) {
                         // if in the last step, turn the notification off, so
                         // it is skiped in the next process
                         if (currentStep >= totalSteps) {

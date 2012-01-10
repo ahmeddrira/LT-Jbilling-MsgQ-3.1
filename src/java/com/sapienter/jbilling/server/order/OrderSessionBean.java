@@ -16,21 +16,19 @@
 
 package com.sapienter.jbilling.server.order;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-
-import org.apache.log4j.Logger;
-
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Date;
 
 /**
  *
@@ -41,13 +39,13 @@ import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
  **/
 @Transactional( propagation = Propagation.REQUIRED )
 public class OrderSessionBean implements IOrderSessionBean {
-    
+
     private static final Logger LOG = Logger.getLogger(OrderSessionBean.class);
 
     @Transactional( propagation = Propagation.REQUIRES_NEW )
-    public void reviewNotifications(Date today) 
+    public void reviewNotifications(Date today)
             throws SessionInternalError {
-        
+
         try {
             OrderBL order = new OrderBL();
             order.reviewNotifications(today);
@@ -67,7 +65,7 @@ public class OrderSessionBean implements IOrderSessionBean {
         }
     }
 
-    public OrderDTO getOrderEx(Integer orderId, Integer languageId) 
+    public OrderDTO getOrderEx(Integer orderId, Integer languageId)
             throws SessionInternalError {
         try {
             OrderDAS das = new OrderDAS();
@@ -83,8 +81,8 @@ public class OrderSessionBean implements IOrderSessionBean {
         }
     }
 
-    public OrderDTO setStatus(Integer orderId, Integer statusId, 
-            Integer executorId, Integer languageId) 
+    public OrderDTO setStatus(Integer orderId, Integer statusId,
+            Integer executorId, Integer languageId)
             throws SessionInternalError {
         try {
             OrderBL order = new OrderBL(orderId);
@@ -98,42 +96,7 @@ public class OrderSessionBean implements IOrderSessionBean {
         }
     }
 
-    /**
-     * This is a version used by the http api, should be
-     * the same as the web service but without the 
-     * security check
-    public Integer create(OrderWS order, Integer entityId,
-            String rootUser, boolean process) 
-            throws SessionInternalError {
-        try {
-            LOG.debug("bkp 1");
-            // get the info from the caller
-            UserBL bl = new UserBL();
-            bl.setRoot(rootUser);
-            Integer executorId = bl.getEntity().getUserId();
-            LOG.debug("bkp 2");
-            // make a dto out of the ws
-            NewOrderDTO dto = new NewOrderDTO(order);
-            
-            // call the creation
-            OrderBL orderBL = new OrderBL(dto);
-            if (process) {
-                orderBL.fillInLines(dto, entityId);
-                orderBL.recalculate(entityId);
-            }
-            LOG.debug("bkp 4");
-            return orderBL.create(entityId, executorId, dto);
-            
-        } catch(Exception e) {
-            LOG.debug("Exception:", e);
-            throw new SessionInternalError(e);
-        }
-
-    }
-     */
-
-
-    public void delete(Integer id, Integer executorId) 
+     public void delete(Integer id, Integer executorId)
             throws SessionInternalError {
         try {
             // now get the order
@@ -144,8 +107,8 @@ public class OrderSessionBean implements IOrderSessionBean {
         }
 
     }
- 
-    public OrderPeriodDTO[] getPeriods(Integer entityId, Integer languageId) 
+
+    public OrderPeriodDTO[] getPeriods(Integer entityId, Integer languageId)
             throws SessionInternalError {
         try {
             // now get the order
@@ -156,14 +119,14 @@ public class OrderSessionBean implements IOrderSessionBean {
         }
     }
 
-    public OrderPeriodDTO getPeriod(Integer languageId, Integer id) 
+    public OrderPeriodDTO getPeriod(Integer languageId, Integer id)
             throws SessionInternalError {
         try {
             // now get the order
             OrderBL bl = new OrderBL();
             OrderPeriodDTO dto =  bl.getPeriod(languageId, id);
             dto.touch();
-            
+
             return dto;
         } catch (Exception e) {
             throw new SessionInternalError(e);
@@ -176,7 +139,7 @@ public class OrderSessionBean implements IOrderSessionBean {
         bl.updatePeriods(languageId, periods);
     }
 
-    public void addPeriod(Integer entityId, Integer languageId) 
+    public void addPeriod(Integer entityId, Integer languageId)
             throws SessionInternalError {
         try {
             // now get the order
@@ -187,7 +150,7 @@ public class OrderSessionBean implements IOrderSessionBean {
         }
     }
 
-    public Boolean deletePeriod(Integer periodId) 
+    public Boolean deletePeriod(Integer periodId)
             throws SessionInternalError {
         try {
             // now get the order
@@ -222,23 +185,23 @@ public class OrderSessionBean implements IOrderSessionBean {
         bl.addItem(itemID, quantity, languageId, userId, entityId, order.getCurrencyId());
         return order;
     }
-    
+
     public OrderDTO addItem(Integer itemID, Integer quantity, OrderDTO order, Integer languageId, Integer userId,
                             Integer entityId) throws SessionInternalError, ItemDecimalsException {
 
         return addItem(itemID, new BigDecimal(quantity), order, languageId, userId, entityId);
     }
 
-    public OrderDTO recalculate(OrderDTO modifiedOrder, Integer entityId) 
+    public OrderDTO recalculate(OrderDTO modifiedOrder, Integer entityId)
             throws ItemDecimalsException {
-        
+
         OrderBL bl = new OrderBL();
         bl.set(modifiedOrder);
         bl.recalculate(entityId);
         return bl.getDTO();
     }
 
-    public Integer createUpdate(Integer entityId, Integer executorId, 
+    public Integer createUpdate(Integer entityId, Integer executorId,
             OrderDTO order, Integer languageId) throws SessionInternalError {
         Integer retValue = null;
         try {
@@ -252,11 +215,11 @@ public class OrderSessionBean implements IOrderSessionBean {
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-        
+
         return retValue;
     }
 
-     public Long getCountWithDecimals(Integer itemId) 
+     public Long getCountWithDecimals(Integer itemId)
              throws SessionInternalError {
          try {
             return new OrderLineDAS().findLinesWithDecimals(itemId);
@@ -264,5 +227,5 @@ public class OrderSessionBean implements IOrderSessionBean {
              throw new SessionInternalError(e);
          }
      }
-    
+
 }

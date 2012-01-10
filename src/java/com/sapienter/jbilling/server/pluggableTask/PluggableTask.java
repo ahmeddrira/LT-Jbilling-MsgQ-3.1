@@ -20,18 +20,11 @@
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
-import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.drools.KnowledgeBase;
@@ -43,11 +36,17 @@ import org.drools.io.impl.ByteArrayResource;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 
-import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
+import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public abstract class PluggableTask {
@@ -61,7 +60,7 @@ public abstract class PluggableTask {
     protected StatefulKnowledgeSession session = null;
     private static final Logger LOG = Logger.getLogger(PluggableTask.class);
 
-    private static HashMap<Integer, KnowledgeAgent> knowledgeBasesCache = new HashMap<Integer, KnowledgeAgent>();
+    private static Map<Integer, KnowledgeAgent> knowledgeBasesCache = new HashMap<Integer, KnowledgeAgent>();
     private static AtomicBoolean isRulesChangeScanerStarted = new AtomicBoolean(false);
 
 
@@ -89,8 +88,7 @@ public abstract class PluggableTask {
         parameters = new HashMap<String, String>();
         entityId = task.getEntityId();
         this.task = task;
-        if (DBparameters.size() <
-                task.getType().getMinParameters().intValue()) {
+        if (DBparameters.size() < task.getType().getMinParameters()) {
             throw new PluggableTaskException("Type [" + task.getType().getClassName() + "] requires at least " +
                     task.getType().getMinParameters() + " parameters." +
                     DBparameters.size() + " found.");

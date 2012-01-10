@@ -34,23 +34,22 @@ public class Util {
      * @param day
      * @return null if the parameters are invalid, otherwise the date object
      */
-    static public Date getDate(Integer year, Integer month, 
-            Integer day) {
+    static public Date getDate(Integer year, Integer month, Integer day) {
         Date retValue = null;
-        
+
         try {
             GregorianCalendar cal = new GregorianCalendar();
             cal.setLenient(false);
             cal.clear();
-            cal.set(year.intValue(), month.intValue()-1, day.intValue());
-        
+            cal.set(year, month -1, day);
+
             retValue = cal.getTime();
         } catch (Exception e) {
-            
+
         }
         return retValue;
     }
-    
+
     /**
      * Converts a string in the format yyyy-mm-dd to a Date.
      * If the string can't be converted, it returns null
@@ -61,70 +60,65 @@ public class Util {
         if (str == null || str.length() < 8 || str.length() > 10) {
             return null;
         }
-        
-        if (str.charAt(4) != '-' || str.lastIndexOf('-') < 6 || 
+
+        if (str.charAt(4) != '-' || str.lastIndexOf('-') < 6 ||
                 str.lastIndexOf('-') > 7) {
             return null;
         }
-        
+
         try {
             int year = getYear(str);
             int month = getMonth(str);
             int day = getDay(str);
-        
+
             return getDate(new Integer(year), new Integer(month),
                     new Integer(day));
         } catch (Exception e) {
             return null;
         }
     }
-    
+
     /**
      * Recives date in sql format yyyy-mm-dd and extracts the day
      * @param day
      * @return
      */
-    static public int getDay(String str) 
-            throws SessionInternalError {
+    static public int getDay(String str) throws SessionInternalError {
         // from the last '-' to the end
         try {
-            return Integer.valueOf(str.substring(str.lastIndexOf('-') + 1)).
-                    intValue();
+            return Integer.valueOf(str.substring(str.lastIndexOf('-') + 1));
         } catch (NumberFormatException e) {
             throw new SessionInternalError("Cant get the day from " + str);
         }
     }
 
-    static public int getMonth(String str) 
-            throws SessionInternalError {
+    static public int getMonth(String str) throws SessionInternalError {
         // from the first '-' to the second '-'
         try {
-            return Integer.valueOf(str.substring(str.indexOf('-') + 1, 
-                    str.lastIndexOf('-'))).intValue();
+            return Integer.valueOf(str.substring(str.indexOf('-') + 1, str.lastIndexOf('-')));
         } catch (NumberFormatException e) {
             throw new SessionInternalError("Cant get the month from " + str);
         }
-                    
+
     }
 
-    static public int getYear(String str) 
-            throws SessionInternalError {
+    static public int getYear(String str) throws SessionInternalError {
         // from the begining to the first '-'
         try {
-            return Integer.valueOf(str.substring(0, str.indexOf('-'))).intValue();
+            return Integer.valueOf(str.substring(0, str.indexOf('-')));
         } catch (NumberFormatException e) {
             throw new SessionInternalError("Cant get the year from " + str);
         }
     }
-    
+
     /**
      * Compares to dates, contemplating the posibility of null values.
      * If both are null, they are consider equal.
      * @param date1
      * @param date2
-     * @return true if equal, otherwise false. 
+     * @return true if equal, otherwise false.
      */
-   
+
     static public boolean equal(Date date1, Date date2) {
         boolean retValue;
         if (date1 == null && date2 == null) {
@@ -135,20 +129,20 @@ public class Util {
         } else {
             retValue = (date1.compareTo(date2) == 0);
         }
-        
+
         return retValue;
     }
 
     static public Date truncateDate(Date arg) {
         if (arg == null) return null;
         GregorianCalendar cal = new GregorianCalendar();
-        
+
         cal.setTime(arg);
         cal.set(GregorianCalendar.HOUR_OF_DAY, 0);
         cal.set(GregorianCalendar.MINUTE, 0);
         cal.set(GregorianCalendar.SECOND, 0);
         cal.set(GregorianCalendar.MILLISECOND, 0);
-        
+
         return cal.getTime();
     }
 
@@ -159,11 +153,11 @@ public class Util {
      */
     static public String parseDate(Date date) {
         GregorianCalendar cal = new GregorianCalendar();
-        
+
         cal.setTime(date);
         return cal.get(GregorianCalendar.YEAR) + "-" +
                 (cal.get(GregorianCalendar.MONTH) + 1) + "-" +
-                cal.get(GregorianCalendar.DATE); 
+                cal.get(GregorianCalendar.DATE);
     }
 
     /**
@@ -216,11 +210,11 @@ public class Util {
         } else {
             retValue = str.substring(0, length);
         }
-        
+
         return retValue;
     }
 
-    public static String getSysProp(String key) { 
+    public static String getSysProp(String key) {
         try {
             return SystemProperties.getSystemProperties().get(key);
         } catch (Exception e) {
@@ -244,7 +238,7 @@ public class Util {
 
         return true; // default if not found
     }
-    
+
     /**
      * Credit Card Validate
      * Reference: http://www.ling.nwu.edu/~sburke/pub/luhn_lib.pl
@@ -256,7 +250,7 @@ public class Util {
         if (isLuhnNum(cardNumber)) {
             int no_digit = cardNumber.length();
             int oddoeven = no_digit & 1;
-            
+
             int sum = 0;
             int digit = 0;
             int addend = 0;
@@ -279,7 +273,7 @@ public class Util {
         };
         return false;
     }
-    
+
     private static String getDigitsOnly(String s) {
         StringBuffer digitsOnly = new StringBuffer();
         char c;
@@ -291,7 +285,7 @@ public class Util {
         }
         return digitsOnly.toString();
     }
-    
+
     private static boolean isLuhnNum(String argvalue) {
         if (argvalue.length() == 0) {
             return false;

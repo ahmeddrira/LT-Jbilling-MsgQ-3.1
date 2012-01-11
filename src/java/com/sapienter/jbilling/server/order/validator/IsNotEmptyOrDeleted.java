@@ -35,7 +35,7 @@ import java.lang.annotation.*;
 
 public @interface IsNotEmptyOrDeleted {
 
-    String message() default "validation.orderLines.emptyOrDeleted";
+    String message() default "validation.error.empty.lines";
 
     Class<?>[] groups() default {};
 

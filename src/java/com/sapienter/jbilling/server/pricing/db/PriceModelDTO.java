@@ -76,7 +76,6 @@ import java.util.TreeMap;
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class PriceModelDTO implements Serializable {
 
-    public static final Date EPOCH_DATE = new DateMidnight(1970, 1, 1).toDate();
     public static final String ATTRIBUTE_WILDCARD = "*";
 
     private Integer id;
@@ -123,7 +122,7 @@ public class PriceModelDTO implements Serializable {
     }
 
     public void setType(PriceModelStrategy type) {
-        this.type = type;        
+        this.type = type;
     }
 
     @Transient
@@ -230,7 +229,14 @@ public class PriceModelDTO implements Serializable {
                 && next.getCurrency().getId() != result.getCurrencyId()) {
 
                 Integer entityId = new UserBL().getEntityId(result.getUserId());
-                result.setPrice(new CurrencyBL().convert(next.getCurrency().getId(), result.getCurrencyId(), result.getPrice(), entityId));
+                Date pricingDate = pricingOrder.getActiveSince();
+                if(pricingDate == null) {
+                    pricingDate = pricingOrder.getCreateDate();
+                }
+
+                final BigDecimal converted = new CurrencyBL().convert(next.getCurrency().getId(), result.getCurrencyId(),
+                        result.getPrice(), pricingDate, entityId);
+                result.setPrice(converted);
             }
         }
     }

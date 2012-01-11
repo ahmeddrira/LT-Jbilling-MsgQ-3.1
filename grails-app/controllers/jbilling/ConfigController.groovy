@@ -28,6 +28,7 @@ import com.sapienter.jbilling.server.util.PreferenceTypeWS
 import com.sapienter.jbilling.server.util.PreferenceWS
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO
 import grails.plugins.springsecurity.Secured
+import com.sapienter.jbilling.common.CommonConstants
 
 /**
  * ConfigurationController
@@ -212,9 +213,8 @@ class ConfigController {
      */
 
     def currency = {
-        def startDate = params.startDate ? new Date().parse(message(code: 'date.format'), params.startDate) : new Date()
-
-        return generateCurrenciesFormModel(com.sapienter.jbilling.common.Util.truncateDate(startDate));
+        def startDate = params.startDate ? new Date().parse(message(code: 'date.format'), params.startDate) : getLastTimePointDate()
+        return generateCurrenciesFormModel(com.sapienter.jbilling.common.Util.truncateDate(startDate))
     }
 
     def saveCurrencies = {
@@ -263,7 +263,7 @@ class ConfigController {
         def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
         CurrencyBL.removeExchangeRatesForDate(session['company_id'], startDate)
 
-        render template: 'currency/form', model:  generateCurrenciesFormModel(new Date())
+        render template: 'currency/form', model:  generateCurrenciesFormModel(getLastTimePointDate())
     }
 
     def generateCurrenciesFormModel = { date ->
@@ -275,6 +275,14 @@ class ConfigController {
         return [ entityCurrency: entityCurrency, currencies: currencies, startDate : date, timePoints : timePoints ]
     }
 
+    def getLastTimePointDate = {
+        def timePoints = new CurrencyBL().getUsedTimePoints(session['company_id'])
+        def lastDate = CommonConstants.EPOCH_DATE;
+        if(timePoints.size() > 0) {
+            lastDate = timePoints.get(timePoints.size() - 1)
+        }
+        return lastDate
+    }
 
     def editCurrency = {
         // only shows edit template to create new currencies.

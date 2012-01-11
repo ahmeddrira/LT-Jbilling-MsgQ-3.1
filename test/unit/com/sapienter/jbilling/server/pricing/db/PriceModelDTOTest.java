@@ -16,6 +16,7 @@
 
 package com.sapienter.jbilling.server.pricing.db;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.server.BigDecimalTestCase;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
@@ -25,8 +26,6 @@ import org.joda.time.DateMidnight;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -131,12 +130,12 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
 
         assertNotSame(ws.getAttributes(), dto.getAttributes());
         assertEquals(PriceModelDTO.ATTRIBUTE_WILDCARD, dto.getAttributes().get("null_attr"));
-        assertEquals("some value", dto.getAttributes().get("attr"));   
+        assertEquals("some value", dto.getAttributes().get("attr"));
     }
 
     public void testGetPriceForDate() {
         SortedMap<Date, PriceModelDTO> prices = new TreeMap<Date, PriceModelDTO>();
-        prices.put(PriceModelDTO.EPOCH_DATE, new PriceModelDTO(PriceModelStrategy.METERED, new BigDecimal("0.10"), null));
+        prices.put(CommonConstants.EPOCH_DATE, new PriceModelDTO(PriceModelStrategy.METERED, new BigDecimal("0.10"), null));
         prices.put(new DateMidnight(2011, 6, 1).toDate(), new PriceModelDTO(PriceModelStrategy.METERED, new BigDecimal("0.20"), null));
         prices.put(new DateMidnight(2011, 8, 1).toDate(), new PriceModelDTO(PriceModelStrategy.METERED, new BigDecimal("0.30"), null));
 

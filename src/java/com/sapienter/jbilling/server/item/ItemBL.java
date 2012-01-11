@@ -16,6 +16,7 @@
 
 package com.sapienter.jbilling.server.item;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
@@ -105,7 +106,7 @@ public class ItemBL {
             // Backwards compatible with the old ItemDTOEx Web Service API, use the
             // transient price field as the rate for a default pricing model.
             if (dto.getPrice() != null) {
-                dto.addDefaultPrice(PriceModelDTO.EPOCH_DATE, getDefaultPrice(dto.getPrice()));
+                dto.addDefaultPrice(CommonConstants.EPOCH_DATE, getDefaultPrice(dto.getPrice()));
             }
 
             // default currency for new prices (if currency is not explicitly set)
@@ -213,7 +214,7 @@ public class ItemBL {
                 item.getDefaultPrices().putAll(dto.getDefaultPrices());
 
             } else if (dto.getPrice() != null) {
-                item.addDefaultPrice(PriceModelDTO.EPOCH_DATE, getDefaultPrice(dto.getPrice()));
+                item.addDefaultPrice(CommonConstants.EPOCH_DATE, getDefaultPrice(dto.getPrice()));
             }
 
         } else {

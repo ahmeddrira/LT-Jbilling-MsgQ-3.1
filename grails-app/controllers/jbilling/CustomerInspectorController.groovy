@@ -37,14 +37,14 @@ import com.sapienter.jbilling.server.pricing.PriceModelBL
 
 @Secured(["CUSTOMER_13"])
 class CustomerInspectorController {
-	
+
 	def webServicesSession
     def viewUtils
 
     def breadcrumbService
     def productService
 
-	def index = { 
+	def index = {
 		redirect action: 'inspect', params: params
 	}
 
@@ -160,7 +160,7 @@ class CustomerInspectorController {
             priceModel.id = null;
 
             def price = new PlanItemWS()
-            price.addModel(PriceModelWS.EPOCH_DATE, priceModel);
+            price.addModel(CommonConstants.EPOCH_DATE, priceModel);
 
             [ price: price, product: product, user: user, currencies: currencies ]
         }

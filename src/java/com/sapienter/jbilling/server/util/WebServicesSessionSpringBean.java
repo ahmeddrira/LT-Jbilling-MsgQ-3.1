@@ -3063,10 +3063,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         // update exchange rates for date
-        if(ws.getRate() != null) {
-            final Date fromDate = ws.getFromDate();
-            currencyBl.setOrUpdateExchangeRate(ws.getRateAsDecimal(), entityId, fromDate);
-        }
+        final Date fromDate = ws.getFromDate();
+        currencyBl.setOrUpdateExchangeRate(ws.getRateAsDecimal(), entityId, fromDate);
     }
 
     public Integer createCurrency(CurrencyWS ws) {

@@ -16,13 +16,13 @@
 
 package com.sapienter.jbilling.server.pricing.strategy;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.pricing.PricingTestCase;
-import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -30,10 +30,8 @@ import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
-import junit.framework.TestCase;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 
 /**
@@ -83,7 +81,7 @@ public class WSTest extends PricingTestCase {
 
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
-        callPrice.getModels().put(PriceModelWS.EPOCH_DATE, pooledPrice);
+        callPrice.getModels().put(CommonConstants.EPOCH_DATE, pooledPrice);
 
         PlanWS plan = new PlanWS();
         plan.setItemId(LONG_DISTANCE_PLAN_ITEM);

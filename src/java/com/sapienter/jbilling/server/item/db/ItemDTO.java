@@ -15,6 +15,7 @@
  */
 package com.sapienter.jbilling.server.item.db;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
@@ -32,24 +33,16 @@ import org.hibernate.annotations.MapKey;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
-import javax.persistence.Transient;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 @Entity
 @TableGenerator(
@@ -97,7 +90,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
         this.id = id;
     }
 
-    public ItemDTO(int id, String internalNumber, String glCode,BigDecimal percentage, 
+    public ItemDTO(int id, String internalNumber, String glCode,BigDecimal percentage,
                    Integer hasDecimals, Integer deleted, CompanyDTO entity) {
         this.id = id;
         this.internalNumber = internalNumber;
@@ -114,7 +107,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
         this.hasDecimals = hasDecimals;
     }
 
-    public ItemDTO(int id, CompanyDTO entity, String internalNumber, String glCode, BigDecimal percentage, 
+    public ItemDTO(int id, CompanyDTO entity, String internalNumber, String glCode, BigDecimal percentage,
                    Integer deleted, Integer hasDecimals, Set<OrderLineDTO> orderLineDTOs, Set<ItemTypeDTO> itemTypes,
                    Set<InvoiceLineDTO> invoiceLines) {
         this.id = id;
@@ -133,7 +126,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
     public ItemDTO(int id, String number, String glCode, CompanyDTO entity, String description, Integer deleted,
                    Integer currencyId, BigDecimal price, BigDecimal percentage, Integer orderLineTypeId,
                    Integer hasDecimals) {
-        
+
         this(id, number, glCode, percentage, hasDecimals, deleted, entity);
         setDescription(description);
         setCurrencyId(currencyId);
@@ -210,7 +203,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
      * @param price price
      */
     public void addDefaultPrice(Date date, PriceModelDTO price) {
-        getDefaultPrices().put(date != null ? date : PriceModelDTO.EPOCH_DATE, price);
+        getDefaultPrices().put(date != null ? date : CommonConstants.EPOCH_DATE, price);
     }
 
     @Transient
@@ -500,7 +493,7 @@ public class ItemDTO extends AbstractDescription implements Exportable {
             }
         };
     }
-    
+
 }
 
 

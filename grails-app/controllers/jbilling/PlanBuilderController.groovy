@@ -16,28 +16,22 @@
 
 package jbilling
 
-import grails.plugins.springsecurity.Secured
-import com.sapienter.jbilling.server.item.db.ItemDTO
-import com.sapienter.jbilling.server.user.db.CompanyDTO
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import com.sapienter.jbilling.client.pricing.util.PlanHelper
+import com.sapienter.jbilling.common.CommonConstants
 import com.sapienter.jbilling.common.SessionInternalError
-import com.sapienter.jbilling.server.item.PlanWS
-import com.sapienter.jbilling.server.item.PlanItemWS
-import com.sapienter.jbilling.server.pricing.PriceModelWS
 import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.item.ItemDTOEx
-import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
-import com.sapienter.jbilling.server.pricing.util.AttributeUtils
-import com.sapienter.jbilling.server.item.ItemTypeBL
-import com.sapienter.jbilling.server.pricing.PriceModelBL
-import com.sapienter.jbilling.server.pricing.db.PriceModelDTO
-import com.sapienter.jbilling.server.order.db.OrderPeriodDTO
-import com.sapienter.jbilling.server.util.Constants
-import com.sapienter.jbilling.client.pricing.util.PlanHelper
 import com.sapienter.jbilling.server.item.PlanItemBundleWS
-import com.sapienter.jbilling.server.item.db.PlanItemBundleDTO
+import com.sapienter.jbilling.server.item.PlanItemWS
+import com.sapienter.jbilling.server.item.PlanWS
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO
+import com.sapienter.jbilling.server.pricing.PriceModelBL
+import com.sapienter.jbilling.server.pricing.PriceModelWS
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
+import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.util.Constants
+import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import java.util.Map.Entry
 
 /**
  * Plan builder controller
@@ -146,7 +140,7 @@ class PlanBuilderController {
                     priceModel.rate = BigDecimal.ZERO
                     priceModel.currencyId = session['currency_id']
 
-                    product.defaultPrices.put(PriceModelWS.EPOCH_DATE, priceModel)
+                    product.defaultPrices.put(CommonConstants.EPOCH_DATE, priceModel)
                 }
 
                 // subscription product uses a METERED price model
@@ -167,12 +161,12 @@ class PlanBuilderController {
                 def pricingDates = collectPricingDates(plan.planItems)
                 def startDate
                 if (!product.id || product.id == 0) {
-                    startDate = PriceModelWS.EPOCH_DATE
+                    startDate = CommonConstants.EPOCH_DATE
                 } else {
                     if (pricingDates) {
                         startDate = pricingDates.asList().last()
                     } else {
-                        startDate = PriceModelWS.EPOCH_DATE
+                        startDate = CommonConstants.EPOCH_DATE
                     }
                 }
 

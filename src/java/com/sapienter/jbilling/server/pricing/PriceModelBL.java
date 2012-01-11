@@ -16,12 +16,11 @@
 
 package com.sapienter.jbilling.server.pricing;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.CurrencyBL;
-import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
-import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
 import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 import org.apache.log4j.Logger;
 
@@ -42,7 +41,7 @@ import java.util.TreeMap;
 public class PriceModelBL {
 
     private static final Logger LOG = Logger.getLogger(PriceModelBL.class);
-    
+
     /**
      * Returns the given PriceModelDTO entity as a WS object
      *
@@ -227,7 +226,7 @@ public class PriceModelBL {
 
         // list of prices in ordered by start date, earliest first
         // return the model with the closest start date
-        Date forDate = PriceModelDTO.EPOCH_DATE;
+        Date forDate = CommonConstants.EPOCH_DATE;
         for (Date start : prices.keySet()) {
             if (start != null && start.after(date))
                 break;

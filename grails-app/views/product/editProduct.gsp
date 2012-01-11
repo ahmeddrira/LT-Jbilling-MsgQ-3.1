@@ -35,7 +35,7 @@
                     $("[id$='oldType']").each(function(i, o){
                         $(o).val($(o).siblings("[id$='type']").find("option:first").val())
                     });
-                    
+
                     openSlide('#pricing');
                 }
             }).blur();
@@ -221,7 +221,7 @@
                         <a class="btn-open" href="#"><span><g:message code="product.prices"/></span></a>
                     </div>
                     <div class="box-card-hold">
-                        <g:set var="startDate" value="${product ? new Date() : PriceModelDTO.EPOCH_DATE}"/>
+                        <g:set var="startDate" value="${product ? new Date() : CommonConstants.EPOCH_DATE}"/>
                         <g:render template="/priceModel/model" model="[models: product?.defaultPrices, startDate: startDate]"/>
                     </div>
                 </div>

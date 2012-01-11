@@ -363,7 +363,7 @@ public class PartnerBL extends ResultList implements PartnerSQL {
             // the amount will have to be in the requested currency
             // convert then the payment amout
             CurrencyBL currency = new CurrencyBL();
-            BigDecimal paymentAmount = currency.convert(paymentCurrencyId, currencyId, payment.getEntity().getAmount(), entityId);
+            BigDecimal paymentAmount = currency.convert(paymentCurrencyId, currencyId, payment.getEntity().getAmount(), new Date(), entityId);
             LOG.debug("payment amount = " + paymentAmount);
             BigDecimal amount = calculateCommission(paymentAmount, currencyId, payment.getEntity().getBaseUser(), payout != null);
             LOG.debug("commission = " + amount);
@@ -521,10 +521,9 @@ public class PartnerBL extends ResultList implements PartnerSQL {
                 LOG.info("Partner without currency, using entity's as default");
                 partnerCurrencyId = partner.getUser().getEntity().getCurrencyId();
             }
-            result = currency.convert(partnerCurrencyId, currencyId, fee, partner.getUser().getEntity().getId());
+            result = currency.convert(partnerCurrencyId, currencyId, fee, new Date(), partner.getUser().getEntity().getId());
         } else {
-            throw new SessionInternalError(
-                    "Partner without commission configuration");
+            throw new SessionInternalError("Partner without commission configuration");
         }
         LOG.debug("result = " + result);
         return result;

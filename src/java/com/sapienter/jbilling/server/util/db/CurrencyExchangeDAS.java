@@ -29,15 +29,15 @@ public class CurrencyExchangeDAS extends AbstractDAS<CurrencyExchangeDTO> {
         "  FROM CurrencyExchangeDTO a " +
         " WHERE a.entityId = :entity " +
         "   AND a.currency.id = :currency " +
-        "   AND a.createDatetime <= :date ORDER BY a.createDatetime DESC";
+        "   AND a.validSince <= :date ORDER BY a.validSince DESC";
 
     private static final String findExchangeInRangeSQL =
         "SELECT a " +
         "  FROM CurrencyExchangeDTO a " +
         " WHERE a.entityId = :entity " +
         "   AND a.currency.id = :currency " +
-        "   AND a.createDatetime >= :dateFrom " +
-        "   AND a.createDatetime <= :dateTo ORDER BY a.createDatetime DESC";
+        "   AND a.validSince >= :dateFrom " +
+        "   AND a.validSince <= :dateTo ORDER BY a.validSince DESC";
 
     private static final String  findByEntitySQL =
         " SELECT a " +

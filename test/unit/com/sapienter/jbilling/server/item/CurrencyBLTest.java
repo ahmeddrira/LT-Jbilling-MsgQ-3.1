@@ -21,6 +21,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyExchangeDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyExchangeDTO;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import static org.easymock.classextension.EasyMock.*;
 
@@ -60,7 +61,7 @@ public class CurrencyBLTest extends BigDecimalTestCase {
 
         // convert $20.00 CAD to AUD - approximated conversion rates ;)
         CurrencyBL bl = new CurrencyBL(mockCurrencyDas, mockExchangeDas);
-        BigDecimal amount = bl.convert(200, 201, new BigDecimal("20.00"), ENTITY_ID);
+        BigDecimal amount = bl.convert(200, 201, new BigDecimal("20.00"), new Date(), ENTITY_ID);
 
         verify(mockCurrencyDas, mockExchangeDas);
 
@@ -79,10 +80,12 @@ public class CurrencyBLTest extends BigDecimalTestCase {
             10.00 / 3.00 = 3.333333~
          */
         CurrencyBL bl = new CurrencyBL(mockCurrencyDas, mockExchangeDas);
-        BigDecimal amount = bl.convert(200, 201, new BigDecimal("10.00"), ENTITY_ID);
+        BigDecimal amount = bl.convert(200, 201, new BigDecimal("10.00"), new Date(), ENTITY_ID);
 
         verify(mockCurrencyDas, mockExchangeDas);
 
         assertEquals(new BigDecimal("3.33"), amount);
     }
+
+
 }

@@ -32,10 +32,8 @@ import java.util.TreeMap;
  */
 public class PriceModelWS implements Serializable {
 
-    // convenience constants for WS, copied from PriceModelDTO
-    public static final Date EPOCH_DATE = new DateMidnight(1970, 1, 1).toDate();
     public static final String ATTRIBUTE_WILDCARD = "*";
-    
+
     private Integer id;
     private String type;
     private SortedMap<String, String> attributes = new TreeMap<String, String>();

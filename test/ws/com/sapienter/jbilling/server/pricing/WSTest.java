@@ -16,15 +16,13 @@
 
 package com.sapienter.jbilling.server.pricing;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.PlanItemBundleWS;
 import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.item.PlanWS;
-import com.sapienter.jbilling.server.order.OrderLineBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
-import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -32,13 +30,10 @@ import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
-import junit.framework.TestCase;
 import org.joda.time.DateMidnight;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * @author Brian Cowdery
@@ -177,7 +172,7 @@ public class WSTest extends PricingTestCase {
         line.setUseItem(true);
         line.setQuantity(1);
         order.setOrderLines(new OrderLineWS[] { line });
-        
+
         order.setId(api.createOrder(order)); // create order
         order = api.getOrder(order.getId());
         assertNotNull("order created", order.getId());
@@ -206,7 +201,7 @@ public class WSTest extends PricingTestCase {
         assertEquals("Affected item should be discounted.", new BigDecimal("0.50"), price.getModel().getRateAsDecimal());
 
         // cleanup
-        api.deleteOrder(order.getId());                
+        api.deleteOrder(order.getId());
         api.deleteUser(user.getUserId());
     }
 
@@ -287,7 +282,7 @@ public class WSTest extends PricingTestCase {
 
         // cleanup
         api.deleteOrder(order.getId());
-        api.deleteUser(user.getUserId());        
+        api.deleteUser(user.getUserId());
     }
 
     /**
@@ -332,7 +327,7 @@ public class WSTest extends PricingTestCase {
         // create plan
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
-        callPrice.getModels().put(PriceModelWS.EPOCH_DATE,
+        callPrice.getModels().put(CommonConstants.EPOCH_DATE,
                                   new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         PlanWS plan = new PlanWS();
@@ -359,7 +354,7 @@ public class WSTest extends PricingTestCase {
         // update the description and add a price for the generic LD item
         PlanItemWS genericPrice = new PlanItemWS();
         genericPrice.setItemId(LONG_DISTANCE_CALL_GENERIC);
-        genericPrice.getModels().put(PriceModelWS.EPOCH_DATE,
+        genericPrice.getModels().put(CommonConstants.EPOCH_DATE,
                                      new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.25"), 1));
 
         fetchedPlan.setDescription("Updated description.");
@@ -405,7 +400,7 @@ public class WSTest extends PricingTestCase {
         // create plan
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
-        callPrice.getModels().put(PriceModelWS.EPOCH_DATE,
+        callPrice.getModels().put(CommonConstants.EPOCH_DATE,
                                   new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         PlanWS plan = new PlanWS();
@@ -587,7 +582,7 @@ public class WSTest extends PricingTestCase {
         // includes 10 bundled "long distance call" items
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
-        callPrice.getModels().put(PriceModelDTO.EPOCH_DATE,
+        callPrice.getModels().put(CommonConstants.EPOCH_DATE,
                                   new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         PlanItemBundleWS bundle = new PlanItemBundleWS();
@@ -788,7 +783,7 @@ public class WSTest extends PricingTestCase {
         planItem.setItemId(LONG_DISTANCE_CALL);
 
         // price starting at epoch date - used as default when no other prices set in timeline
-        planItem.addModel(PriceModelWS.EPOCH_DATE,
+        planItem.addModel(CommonConstants.EPOCH_DATE,
                           new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         // price for june
@@ -957,7 +952,7 @@ public class WSTest extends PricingTestCase {
         // addPlanPrice
         PlanItemWS addPlanPrice = new PlanItemWS();
         addPlanPrice.setItemId(BAD_ITEM_ID);
-        addPlanPrice.getModels().put(PriceModelDTO.EPOCH_DATE,
+        addPlanPrice.getModels().put(CommonConstants.EPOCH_DATE,
                                      new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("1.00"), 1));
 
         try {

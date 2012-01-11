@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelWS; com.sapienter.jbilling.server.pricing.db.PriceModelDTO; com.sapienter.jbilling.server.pricing.PriceModelBL; com.sapienter.jbilling.server.pricing.db.ChainPosition; org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.common.CommonConstants; com.sapienter.jbilling.server.pricing.PriceModelWS; com.sapienter.jbilling.server.pricing.db.PriceModelDTO; com.sapienter.jbilling.server.pricing.PriceModelBL; com.sapienter.jbilling.server.pricing.db.ChainPosition; org.apache.commons.lang.WordUtils; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
 
 <%--
   Editor form for price models.
@@ -76,7 +76,7 @@
     <div class="form-columns">
         <div class="column">
 
-            <g:if test="${startDate.equals(PriceModelDTO.EPOCH_DATE)}">
+            <g:if test="${startDate.equals(CommonConstants.EPOCH_DATE)}">
                 <g:applyLayout name="form/text">
                     <content tag="label"><g:message code="plan.item.start.date"/></content>
                     <g:formatDate date="${startDate}" formatName="date.format"/>

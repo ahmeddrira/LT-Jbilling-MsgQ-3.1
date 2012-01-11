@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.item.CurrencyBL; com.sapienter.jbilling.server.util.Constants" %>
+<%@ page import="com.sapienter.jbilling.common.CommonConstants; com.sapienter.jbilling.server.item.CurrencyBL; com.sapienter.jbilling.server.util.Constants" %>
 
 <g:set var="startDate" value="${startDate ?: new Date()}"/>
 %{--<g:set var="timePoints" value="${CurrencyBL.getUsedTimePoints(session['company_id'])}"/>--}%
@@ -200,7 +200,9 @@
         <div class="row">
             <a onclick="$('#save-currencies-form').submit();" class="submit save"><span><g:message
                     code="button.save"/></span></a>
-            <a class="submit delete" onclick="removeDate()"><span><g:message code="button.delete"/></span></a>
+            <g:if test="${!CommonConstants.EPOCH_DATE.equals(startDate)}">
+                <a class="submit delete" onclick="removeDate()"><span><g:message code="button.delete"/></span></a>
+            </g:if>
             <g:link controller="config" action="index" class="submit cancel"><span><g:message
                     code="button.cancel"/></span></g:link>
         </div>

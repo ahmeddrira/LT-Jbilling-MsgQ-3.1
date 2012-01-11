@@ -16,15 +16,13 @@
 
 package com.sapienter.jbilling.server.item;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -50,7 +48,7 @@ public class PlanItemWS implements Serializable {
         this.itemId = itemId;
         this.bundle = bundle;
 
-        this.models.put(PriceModelWS.EPOCH_DATE, model);
+        this.models.put(CommonConstants.EPOCH_DATE, model);
         this.model = model;
     }
 

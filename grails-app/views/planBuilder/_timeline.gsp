@@ -18,7 +18,7 @@
   along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.pricing.PriceModelWS" contentType="text/html;charset=UTF-8" %>
+<%@ page import="com.sapienter.jbilling.common.CommonConstants; com.sapienter.jbilling.server.pricing.PriceModelWS" contentType="text/html;charset=UTF-8" %>
 
 <div id="timeline">
     <div class="form-columns">
@@ -36,7 +36,7 @@
             </g:if>
             <g:else>
                 <li class="current">
-                    <g:set var="pricingDate" value="${formatDate(date: PriceModelWS.EPOCH_DATE)}"/>
+                    <g:set var="pricingDate" value="${formatDate(date: CommonConstants.EPOCH_DATE)}"/>
                     <g:remoteLink action="edit" params="[_eventId: 'editDate', startDate : pricingDate]"
                                   update="column2" method="GET" onSuccess="timeline.refresh(); details.refresh();">
                         ${pricingDate}

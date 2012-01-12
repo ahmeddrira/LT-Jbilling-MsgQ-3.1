@@ -39,13 +39,15 @@
 <body>
 <div class="form-edit">
 
+    <g:set var="isNew" value="${!product || !product?.id || product?.id == 0}"/>
+
     <div class="heading">
         <strong>
-            <g:if test="${product}">
-                <g:message code="product.edit.title"/>
+            <g:if test="${isNew}">
+                <g:message code="product.add.title"/>
             </g:if>
             <g:else>
-                <g:message code="product.add.title"/>
+                <g:message code="product.edit.title"/>
             </g:else>
         </strong>
     </div>
@@ -60,8 +62,8 @@
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="product.id"/></content>
 
-                            <g:if test="${product}">${product?.id}</g:if>
-                            <g:else><em><g:message code="prompt.id.new"/></em></g:else>
+                            <g:if test="${isNew}"><em><g:message code="prompt.id.new"/></em></g:if>
+                            <g:else>${product?.id}</g:else>
 
                             <g:hiddenField name="product.id" value="${product?.id}"/>
                         </g:applyLayout>

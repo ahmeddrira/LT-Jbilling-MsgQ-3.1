@@ -301,7 +301,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 	            Context.Name.NOTIFICATION_SESSION);
 	    return notificationSession.emailInvoice(invoiceId);
     }
-    
+
     public boolean notifyPaymentByEmail(Integer paymentId) {
         INotificationSessionBean notificationSession =
                 (INotificationSessionBean) Context.getBean(
@@ -438,6 +438,19 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public void removePaymentLink(Integer invoiceId, Integer paymentId) {
 		if (invoiceId == null || paymentId == null)
             return;
+
+        // check if the payment is a refund , if it is do not allow it
+        if(new PaymentBL(paymentId).getEntity().getIsRefund()==1) {
+            LOG.debug("This payment id "+paymentId+" is a refund so we cannot unlink it from the invoice");
+            throw new SessionInternalError("This payment is a refund and hence cannot be unlinked from any invoice",
+                        new String[] {"PaymentWS,unlink,validation.error.payment.unlink"});
+        }
+
+        // if the payment has been refunded
+        if(PaymentBL.ifRefunded(paymentId)) {
+            throw new SessionInternalError("This payment has been refunded and hence cannot be unlinked from the invoice",
+                        new String[] {"PaymentWS,unlink,validation.error.delete.refunded.payment"});
+        }
 
         boolean result= new PaymentBL(paymentId).unLinkFromInvoice(invoiceId);
         if (!result)
@@ -580,7 +593,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         if (invoiceId == null) {
             LOG.debug("Creating a new invoice for order " + order.getId());
             invoice = doCreateInvoice(order.getId());
-            if ( null == invoice) { 
+            if ( null == invoice) {
             	throw new SessionInternalError("Invoice could not be generated. The purchase order may not have any applicable periods to be invoiced.");
             }
         } else {
@@ -872,7 +885,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     		ContactFieldTypeDAS das= new ContactFieldTypeDAS();
             ContactFieldTypeDTO dto= ws.getDTO();
     			dto= das.save(dto);
-    			
+
             if ( ws.getDescriptions().size() > 0 ) {
                 InternationalDescriptionWS descrWs= (InternationalDescriptionWS)ws.getDescriptions().get(0);
                 dto.setDescription( descrWs.getContent(), descrWs.getLanguageId() );
@@ -884,14 +897,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     		throw new SessionInternalError(e);
     	}
     }
-    
+
     @Deprecated
     private Integer[] getByCCNumber(Integer entityId, String number) {
         List<Integer> usersIds = new CreditCardDAS().findByLastDigits(entityId, number);
-        
+
         Integer[] ids = new Integer[usersIds.size()];
         return usersIds.toArray(ids);
-        
+
     }
 
     /**
@@ -899,7 +912,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer[] getUsersByCreditCard(String number) throws SessionInternalError {
         Integer entityId = getCallerCompanyId();
-        
+
         Integer[] ret = getByCCNumber(entityId, number);
         return ret;
     }
@@ -1011,10 +1024,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public Integer createPartner(UserWS newUser, PartnerWS partner) throws SessionInternalError {
-        
+
         UserBL bl = new UserBL();
         newUser.setUserId(0);
-        
+
         Integer entityId = getCallerCompanyId();
         if (bl.exists(newUser.getUserName(), entityId)) {
             throw new SessionInternalError("User already exists with username " + newUser.getUserName(),
@@ -1025,16 +1038,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         UserDTOEx dto = new UserDTOEx(newUser, entityId);
         dto.setPartner(partnerDto);
         Integer userId = bl.create(dto, getCallerId());
-        
+
         if (newUser.getContact() != null) {
             newUser.getContact().setId(0);
             cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId, getCallerId());
         }
-        
+
         return bl.getDto().getPartner().getId();
-        
+
     }
-    
+
     public void updatePartner(UserWS user, PartnerWS partner) throws SessionInternalError {
         Integer entityId = getCallerCompanyId();
         IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
@@ -1049,12 +1062,12 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             userSession.updatePartner(getCallerId(), partnerDto);
         }
     }
-    
+
     public void deletePartner (Integer partnerId) throws SessionInternalError {
         PartnerBL bl= new PartnerBL(partnerId);
         bl.delete(getCallerId());
     }
-    
+
     /**
      * Pays given invoice, using the first credit card available for invoice'd
      * user.
@@ -1371,8 +1384,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     /**
-     * Returns the current order (order collecting current one-time charges) for the 
-     * period of the given date and the given user. 
+     * Returns the current order (order collecting current one-time charges) for the
+     * period of the given date and the given user.
      * Returns null for users with no main subscription order.
      */
     public OrderWS getCurrentOrder(Integer userId, Date date) {
@@ -1525,7 +1538,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 		for (OrderPeriodWS periodWS: orderPeriods) {
 			if ( null != periodWS.getId()) {
 				periodDto= periodDas.find(periodWS.getId());
-			} 
+			}
 			if ( null == periodDto ) {
 				periodDto= new OrderPeriodDTO();
 				periodDto.setCompany(new CompanyDAS().find(getCallerCompanyId()));
@@ -1580,7 +1593,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         periodDas.clear();
         return true;
     }
-    
+
     public boolean deleteOrderPeriod(Integer periodId) throws SessionInternalError {
         try {
             // now get the order
@@ -1590,7 +1603,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throw new SessionInternalError(e);
         }
     }
-    
+
     /*
      * PAYMENT
      */
@@ -1604,7 +1617,23 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         new PaymentBL(payment.getId()).update(getCallerId(), dto);
     }
 
-    public void deletePayment(Integer paymentId) {
+    public void deletePayment(Integer paymentId) throws SessionInternalError {
+
+        PaymentDTO payment = new PaymentBL(paymentId).getEntity();
+
+        // check if the payment is a refund , if it is do not allow it
+        if(new PaymentBL(paymentId).getEntity().getIsRefund()==1) {
+            LOG.debug("This payment id "+paymentId+" is a refund so we cannot delete it");
+            throw new SessionInternalError("This payment is a refund and hence cannot be deleted",
+                        new String[] {"PaymentWS,deleted,validation.error.delete.refund.payment"});
+        }
+
+        // check if payment has been refunded
+        if(PaymentBL.ifRefunded(paymentId)) {
+            throw new SessionInternalError("This payment has been refunded and hence cannot be deleted",
+            new String[] {"PaymentWS,deleted,validation.error.delete.refunded.payment"});
+        }
+
         new PaymentBL(paymentId).delete();
     }
 
@@ -1623,7 +1652,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
             throws SessionInternalError {
-        payment.setIsRefund(0);
+//        payment.setIsRefund(0);
+
+        // apply validations for refund payments
+        if(payment.getIsRefund() == 1) {
+            // check for validations
+            if(!PaymentBL.validateRefund(payment)){
+                throw new SessionInternalError("Either refund payment was not linked to any payment or the refund amount is different from the linked payment",
+                        new String[] {"PaymentWS,paymentId,validation.error.apply.without.payment.or.different.linked.payment.amount"});
+            }
+        }
 
         if (payment.getMethodId() == null) {
             throw new SessionInternalError("Cannot apply a payment without a payment method.",
@@ -1631,6 +1669,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
+        LOG.debug("payment has "+payment);
         return session.applyPayment(new PaymentDTOEx(payment), invoiceId, getCallerId());
     }
 
@@ -1649,6 +1688,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @return payment authorization from the payment processor
      */
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId) {
+        // apply validations for refund payment
+        if(payment.getIsRefund() == 1) {
+            // check for validations
+            if(!PaymentBL.validateRefund(payment)){
+                throw new SessionInternalError("Either refund payment was not linked to any payment or the refund amount is different from the linked payment",
+                        new String[] {"PaymentWS,paymentId,validation.error.apply.without.payment.or.different.linked.payment.amount"});
+            }
+        }
         if (payment == null && invoiceId != null)
             return payInvoice(invoiceId);
 
@@ -1681,9 +1728,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         // populate payment method based on the payment instrument
-        if (dto.getCreditCard() != null) {    
+        if (dto.getCreditCard() != null) {
             dto.setPaymentMethod(new PaymentMethodDTO(dto.getCreditCard().getCcType()));
-        } else if (dto.getAch() != null) { 
+        } else if (dto.getAch() != null) {
             dto.setPaymentMethod(new PaymentMethodDTO(Constants.PAYMENT_METHOD_ACH));
         }
 
@@ -2671,7 +2718,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public AgeingWS[] getAgeingConfiguration(Integer languageId) throws SessionInternalError {
 	    try {
-		    IBillingProcessSessionBean processSession = 
+		    IBillingProcessSessionBean processSession =
 		    	(IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
 		    AgeingDTOEx[] dtoArr= processSession.getAgeingSteps(getCallerCompanyId(), getCallerLanguageId(), languageId);
 		    AgeingWS[] wsArr= new AgeingWS[dtoArr.length];
@@ -2685,23 +2732,23 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 	    }
     }
 
-    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError { 
+    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError {
     	AgeingBL bl= new AgeingBL();
     	AgeingDTOEx[] dtoList= new AgeingDTOEx[steps.length];
 	    for (int i = 0; i < steps.length; i++) {
 	    	dtoList[i]= bl.getDTOEx(steps[i]);
 		}
-	    IBillingProcessSessionBean processSession = 
+	    IBillingProcessSessionBean processSession =
 	    (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
 	    processSession.setAgeingSteps (getCallerCompanyId(), languageId, bl.validate(dtoList));
-	
+
 	    // update the grace period in another call
 	    IUserSessionBean userSession = (IUserSessionBean) Context.getBean(Context.Name.USER_SESSION);
 	    userSession.setEntityParameter(getCallerCompanyId(),
                                        Constants.PREFERENCE_GRACE_PERIOD,
                                        (gracePeriod != null ? gracePeriod.toString() : null));
     }
-    
+
     /*
         Billing process
      */
@@ -2714,10 +2761,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 		    	 processBean.trigger(runDate);
 		    }
 	    });
-	 
+
 	    t.start();
     }
-    
+
     public boolean triggerBilling(Date runDate) {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
         return processBean.trigger(runDate);
@@ -2979,14 +3026,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public void deleteMediationConfiguration(Integer cfgId) throws SessionInternalError {
-        
+
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
         try {
             mediationBean.delete(getCallerId(), cfgId);
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-        
+
     }
 
 
@@ -3147,7 +3194,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         LOG.debug(company);
         return new CompanyWS(company);
     }
-    
+
     public void updateCompany(CompanyWS companyWS) {
         new EntityBL().updateEntityAndContact(companyWS, getCallerCompanyId(), getCallerId());
     }

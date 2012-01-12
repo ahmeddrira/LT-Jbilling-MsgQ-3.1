@@ -139,6 +139,8 @@
             <formatter type="brief" usefile="false"/>
             <formatter type="xml"/>            
 
+            <test name="com.sapienter.jbilling.server.payment.RefundTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>
+
         	<test name="com.sapienter.jbilling.server.order.WSTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.user.WSTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.payment.WSTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>

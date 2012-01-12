@@ -20,6 +20,8 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import java.math.BigDecimal;
@@ -56,4 +58,32 @@ public class PaymentInvoiceMapDAS extends AbstractDAS<PaymentInvoiceMapDTO> {
             }
         }
     }
+
+    public BigDecimal getLinkedInvoiceAmount(PaymentDTO payment, InvoiceDTO invoice) {
+
+        Criteria criteria = getSession().createCriteria(PaymentInvoiceMapDTO.class);
+        criteria.add(Restrictions.eq("payment", payment));
+        criteria.add(Restrictions.eq("invoiceEntity", invoice));
+        criteria.setProjection(Projections.sum("amount"));
+        return criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult();
+
+    }
+
+    public PaymentInvoiceMapDTO getRow(PaymentDTO payment, InvoiceDTO invoice) {
+
+        Criteria criteria = getSession().createCriteria(PaymentInvoiceMapDTO.class);
+        criteria.add(Restrictions.eq("payment", payment));
+        criteria.add(Restrictions.eq("invoiceEntity", invoice));
+
+        return criteria.uniqueResult() == null ? null : (PaymentInvoiceMapDTO) criteria.uniqueResult();
+    }
+
+    public PaymentInvoiceMapDTO getRow(Integer id) {
+
+        Criteria criteria = getSession().createCriteria(PaymentInvoiceMapDTO.class);
+        criteria.add(Restrictions.eq("id", id));
+
+        return criteria.uniqueResult() == null ? null : (PaymentInvoiceMapDTO) criteria.uniqueResult();
+    }
+
 }

@@ -84,6 +84,7 @@ public class PaymentDTOEx extends PaymentDTO {
     }
 
     public PaymentDTOEx(PaymentWS dto) {
+
         setId(dto.getId());
         setAmount(dto.getAmountAsDecimal());
         setAttempt(dto.getAttempt());
@@ -237,7 +238,7 @@ public class PaymentDTOEx extends PaymentDTO {
 
 
         return super.toString() + " credit card:" + cc.toString() +
-            " cheque:" + cheque + " payment maps:" + maps.toString();
+            " cheque:" + cheque + " payment maps:" + maps.toString() + "payment for refund "+payment;
     }
     /**
      * @return

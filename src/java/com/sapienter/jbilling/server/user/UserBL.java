@@ -17,7 +17,6 @@
 package com.sapienter.jbilling.server.user;
 
 import com.sapienter.jbilling.common.JBCrypto;
-import com.sapienter.jbilling.common.PermissionConstants;
 import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;

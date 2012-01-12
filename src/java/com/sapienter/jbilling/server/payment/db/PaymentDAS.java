@@ -15,28 +15,27 @@
  */
 package com.sapienter.jbilling.server.payment.db;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
-import com.sapienter.jbilling.common.CommonConstants;
-import com.sapienter.jbilling.common.Constants;
-import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
-import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import com.sapienter.jbilling.common.CommonConstants;
+import com.sapienter.jbilling.common.Constants;
+import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
-
-import java.math.BigDecimal;
 
 public class PaymentDAS extends AbstractDAS<PaymentDTO> {
 
@@ -234,5 +233,68 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
         query.setParameter("end", end);
 
         return query.list();
+    }
+
+    public List<PaymentDTO> findAllPaymentByBaseUserAndIsRefund(Integer userId, Integer isRefund) {
+
+        UserDTO user = new UserDAS().find(userId);
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("baseUser", user));
+        criteria.add(Restrictions.eq("isRefund",isRefund));
+        criteria.add(Restrictions.eq("deleted", 0));
+
+        return criteria.list();
+
+    }
+
+    public List<PaymentDTO> getRefundablePayments(Integer userId) {
+
+        UserDTO user = new UserDAS().find(userId);
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("baseUser", user));
+        criteria.add(Restrictions.eq("isRefund",0));
+        criteria.add(Restrictions.eq("deleted", 0));
+
+        // all payments of the given user which are not refund payments
+        List<PaymentDTO> allPayments =  criteria.list();
+
+        Iterator<PaymentDTO> iterator = allPayments.iterator();
+        while(iterator.hasNext()) {
+            PaymentDTO payment = (PaymentDTO)iterator.next();
+            if(PaymentBL.ifRefunded(payment)) {
+                // remove this from original list as the payment has already been refunded
+//                allPayments.remove(payment);
+                iterator.remove();
+            }
+        }
+        return allPayments;
+    }
+
+    /**
+     * Returns all  refund or non refund payments
+     * @param isRefund
+     * @return
+     */
+    public List<PaymentDTO> findAllPaymentIsRefund(Integer isRefund) {
+
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("isRefund", isRefund));
+
+        return criteria.list();
+    }
+
+
+    /**
+     *  Checks
+     * @param isRefund
+     * @return
+     */
+
+    public PaymentDTO findByIsRefund(Integer isRefund) {
+
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("isRefund",isRefund));
+
+        return (criteria.uniqueResult() == null ? null: (PaymentDTO)criteria.uniqueResult());
     }
 }

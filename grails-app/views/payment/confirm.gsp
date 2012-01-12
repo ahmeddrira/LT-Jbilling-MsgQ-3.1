@@ -163,6 +163,9 @@
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="payment.is.refund"/></content>
                             <g:formatBoolean boolean="${payment?.isRefund > 0}"/>
+                            %{--<g:if test="${refundPaymentId}">--}%
+                                %{--(${refundPaymentId})--}%
+                            %{--</g:if>--}%
                             <g:hiddenField name="isRefund" value="${payment?.isRefund}"/>
                         </g:applyLayout>
 
@@ -171,6 +174,16 @@
                             <g:formatBoolean boolean="${processNow}"/>
                             <g:hiddenField name="processNow" value="${processNow}"/>
                         </g:applyLayout>
+
+                        %{--show linked payment ID if present--}%
+                        <g:if test="${refundPaymentId}">
+                            <g:applyLayout name="form/text">
+                                <content tag="label"><g:message code="prompt.linked.payment"/></content>
+                                <em>${refundPaymentId} </em>
+                                <g:hiddenField name="payment_id" value="${refundPaymentId}"/>
+                            </g:applyLayout>
+                        </g:if>
+
                     </div>
                 </div>
 

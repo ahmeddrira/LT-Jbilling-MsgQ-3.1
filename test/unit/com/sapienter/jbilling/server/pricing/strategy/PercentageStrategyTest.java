@@ -20,7 +20,6 @@ import com.sapienter.jbilling.server.BigDecimalTestCase;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
-import junit.framework.TestCase;
 
 import java.math.BigDecimal;
 
@@ -52,7 +51,7 @@ public class PercentageStrategyTest extends BigDecimalTestCase {
 
         // test that the price has been reduced by %80
         // $10 * 0.80 = $8
-        planPrice.applyTo(null, result, null, null, null);
+        planPrice.applyTo(null, null, result, null, null, null);
         assertEquals(new BigDecimal("8.00"), result.getPrice());
     }
 
@@ -70,7 +69,7 @@ public class PercentageStrategyTest extends BigDecimalTestCase {
 
         // applying without a price shouldn't cause an exception
         // price should still be null
-        planPrice.applyTo(null, result, null, null, null);
+        planPrice.applyTo(null, null, result, null, null, null);
         assertNull(result.getPrice());
     }
 }

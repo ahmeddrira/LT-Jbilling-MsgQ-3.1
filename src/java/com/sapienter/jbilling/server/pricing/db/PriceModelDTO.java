@@ -33,24 +33,8 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.MapKey;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
-import org.joda.time.DateMidnight;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -209,14 +193,15 @@ public class PriceModelDTO implements Serializable {
      * PricingResult if the set currencies differ.
      *
      * @see com.sapienter.jbilling.server.pricing.strategy.PricingStrategy
-     *
-     * @param pricingOrder target order for this pricing request (may be null)
-     * @param result pricing result to apply pricing to
+     *@param pricingOrder target order for this pricing request (may be null)
      * @param quantity quantity of item being priced
+     * @param result pricing result to apply pricing to
      * @param usage total item usage for this billing period
+     * @param date
      */
     @Transient
-    public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields, BigDecimal quantity, Usage usage) {
+    public void applyTo(OrderDTO pricingOrder, BigDecimal quantity, PricingResult result, List<PricingField> fields,
+                        Usage usage, Date pricingDate) {
         // each model in the chain
         for (PriceModelDTO next = this; next != null; next = next.getNext()) {
             // apply pricing
@@ -229,9 +214,8 @@ public class PriceModelDTO implements Serializable {
                 && next.getCurrency().getId() != result.getCurrencyId()) {
 
                 Integer entityId = new UserBL().getEntityId(result.getUserId());
-                Date pricingDate = pricingOrder.getActiveSince();
                 if(pricingDate == null) {
-                    pricingDate = pricingOrder.getCreateDate();
+                    pricingDate = new Date();
                 }
 
                 final BigDecimal converted = new CurrencyBL().convert(next.getCurrency().getId(), result.getCurrencyId(),

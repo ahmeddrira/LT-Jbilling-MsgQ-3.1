@@ -306,7 +306,7 @@ public class CurrencyBL {
     }
 
     private CurrencyExchangeDTO findExchange(Integer entityId, Integer currencyId, Date toDate) throws SessionInternalError {
-        CurrencyExchangeDTO exchange = exchangeDas.getExchangeRateForDate(entityId, currency.getId(), toDate);
+        CurrencyExchangeDTO exchange = exchangeDas.getExchangeRateForDate(entityId, currencyId, toDate);
         if (exchange == null) {
             // this entity doesn't have this exchange defined
             // 0 is the default, don't try to use null, it won't work

@@ -104,9 +104,6 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
         LOG.debug("Calling PriceModelPricingTask with pricing order: " + pricingOrder);
         LOG.debug("Pricing item " + itemId + ", quantity " + quantity + " - for user " + userId);
 
-        Date pricingDate = getPricingDate(pricingOrder);
-        LOG.debug("Price date: " + pricingDate);
-
         if (userId != null) {
             // get customer pricing model, use fields as attributes
             Map<String, String> attributes = getAttributes(fields);
@@ -135,6 +132,9 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
                 models = new ItemBL(itemId).getEntity().getDefaultPrices();
             }
 
+            Date pricingDate = getPricingDate(pricingOrder);
+            LOG.debug("Price date: " + pricingDate);
+
             // apply price model
             if (models != null && !models.isEmpty()) {
                 PriceModelDTO model = PriceModelBL.getPriceForDate(models, pricingDate);
@@ -151,13 +151,14 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
                 } else {
                     LOG.debug("Pricing strategy " + model.getType() + " does not require usage.");
                 }
-                                
+
                 PricingResult result = new PricingResult(itemId, quantity, userId, currencyId);
-                model.applyTo(pricingOrder, result, fields, result.getQuantity(), usage);
+
+                model.applyTo(pricingOrder, result.getQuantity(), result, fields, usage, pricingDate);
                 LOG.debug("Price discovered: " + result.getPrice());
                 return result.getPrice();
             }
-        }        
+        }
 
         LOG.debug("No price model found, using default price.");
         return defaultPrice;

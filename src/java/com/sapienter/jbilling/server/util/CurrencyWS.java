@@ -119,6 +119,8 @@ public class CurrencyWS implements Serializable {
     public void setRate(String rate) {
         if(!StringUtils.isEmpty(rate)) {
             this.rate = rate;
+        } else {
+            this.rate = null;
         }
     }
 

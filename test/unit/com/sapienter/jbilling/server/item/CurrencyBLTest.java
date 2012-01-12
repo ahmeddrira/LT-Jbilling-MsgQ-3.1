@@ -55,13 +55,14 @@ public class CurrencyBLTest extends BigDecimalTestCase {
     }
 
     public void testConvert() throws Exception {
-        expect(mockExchangeDas.findExchange(ENTITY_ID, 200)).andReturn(_mockCurrencyExchangeDTO("0.98")).once();
-        expect(mockExchangeDas.findExchange(ENTITY_ID, 201)).andReturn(_mockCurrencyExchangeDTO("1.20")).once();
+        final Date date = new Date();
+        expect(mockExchangeDas.getExchangeRateForDate(ENTITY_ID, 200, date)).andReturn(_mockCurrencyExchangeDTO("0.98")).once();
+        expect(mockExchangeDas.getExchangeRateForDate(ENTITY_ID, 201, date)).andReturn(_mockCurrencyExchangeDTO("1.20")).once();
         replay(mockCurrencyDas, mockExchangeDas);
 
         // convert $20.00 CAD to AUD - approximated conversion rates ;)
         CurrencyBL bl = new CurrencyBL(mockCurrencyDas, mockExchangeDas);
-        BigDecimal amount = bl.convert(200, 201, new BigDecimal("20.00"), new Date(), ENTITY_ID);
+        BigDecimal amount = bl.convert(200, 201, new BigDecimal("20.00"), date, ENTITY_ID);
 
         verify(mockCurrencyDas, mockExchangeDas);
 
@@ -69,8 +70,9 @@ public class CurrencyBLTest extends BigDecimalTestCase {
     }
 
     public void testConvertRepeatingDecimal() throws Exception {
-        expect(mockExchangeDas.findExchange(ENTITY_ID, 200)).andReturn(_mockCurrencyExchangeDTO("3.00")).once();
-        expect(mockExchangeDas.findExchange(ENTITY_ID, 201)).andReturn(_mockCurrencyExchangeDTO("1.00")).once();
+        final Date date = new Date();
+        expect(mockExchangeDas.getExchangeRateForDate(ENTITY_ID, 200, date)).andReturn(_mockCurrencyExchangeDTO("3.00")).once();
+        expect(mockExchangeDas.getExchangeRateForDate(ENTITY_ID, 201, date)).andReturn(_mockCurrencyExchangeDTO("1.00")).once();
         replay(mockCurrencyDas, mockExchangeDas);
 
         /*
@@ -80,7 +82,7 @@ public class CurrencyBLTest extends BigDecimalTestCase {
             10.00 / 3.00 = 3.333333~
          */
         CurrencyBL bl = new CurrencyBL(mockCurrencyDas, mockExchangeDas);
-        BigDecimal amount = bl.convert(200, 201, new BigDecimal("10.00"), new Date(), ENTITY_ID);
+        BigDecimal amount = bl.convert(200, 201, new BigDecimal("10.00"), date, ENTITY_ID);
 
         verify(mockCurrencyDas, mockExchangeDas);
 

@@ -297,14 +297,16 @@ public class ItemBL {
      * the users current usage in the pricing calculation.
      *
      * This method does not execute any pricing plug-ins and does not use quantity or usage
-     * values for {@link PriceModelDTO#applyTo(OrderDTO, PricingResult, List, BigDecimal, Usage)}
+     * values for {@link PriceModelDTO#applyTo(com.sapienter.jbilling.server.order.db.OrderDTO, java.math.BigDecimal,
+     * com.sapienter.jbilling.server.item.tasks.PricingResult, java.util.List}
      * price calculations.
      *
+     * @param date
      * @param item item to price
      * @param currencyId currency id of requested price
      * @return The price in the requested currency
      */
-    public BigDecimal getPriceByCurrency(ItemDTO item, Integer userId, Integer currencyId)  {
+    public BigDecimal getPriceByCurrency(Date date, ItemDTO item, Integer userId, Integer currencyId)  {
         if (item.getDefaultPrices() != null && !item.getDefaultPrices().isEmpty()) {
             // empty usage for default pricing
             Usage usage = new Usage();
@@ -316,9 +318,10 @@ public class ItemBL {
             List<PricingField> fields = Collections.emptyList();
 
             // price for today
-            PriceModelDTO price = item.getPrice(new Date());
-             if (price != null) {
-                 price.applyTo(null, result, fields, BigDecimal.ONE, usage);
+            PriceModelDTO priceModel = item.getPrice(new Date());
+
+             if (priceModel != null) {
+                 priceModel.applyTo(null, BigDecimal.ONE, result, fields, usage, date);
                  return result.getPrice();
              }
         }
@@ -364,7 +367,7 @@ public class ItemBL {
         }
 
         // default "simple" price
-        BigDecimal price = getPriceByCurrency(item, userId, currencyId);
+        BigDecimal price = getPriceByCurrency(order != null ? order.getPricingDate() : null, item, userId, currencyId);
 
         // run a plug-in with external logic (rules), if available
         try {

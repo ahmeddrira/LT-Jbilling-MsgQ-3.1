@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -223,7 +224,7 @@ public class OrderLineBL {
             myLine.setItem(item);
             myLine.setQuantity(quantity);
         }
-        populateWithSimplePrice(language, userId, currencyId, itemID, myLine, CommonConstants.BIGDECIMAL_SCALE);
+        populateWithSimplePrice(newOrder, myLine, language, userId, currencyId, itemID, CommonConstants.BIGDECIMAL_SCALE);
         myLine.setDefaults();
 
         // create a new line if an existing line does not exist
@@ -251,14 +252,16 @@ public class OrderLineBL {
     /**
      * Returns an order line with everything correctly
      * initialized. It does not call plug-ins to set the price
+     *
+     * @param order
      * @param language
      * @param userId
      * @param currencyId
      * @param precision
      * @return
      */
-    private static void populateWithSimplePrice(Integer language, Integer userId, Integer currencyId,
-                                                Integer itemId, OrderLineDTO line, Integer precision) {
+    private static void populateWithSimplePrice(OrderDTO order, OrderLineDTO line, Integer language, Integer userId, Integer currencyId,
+                                                Integer itemId, Integer precision) {
 
         ItemBL itemBl = new ItemBL(itemId);
         ItemDTO item = itemBl.getEntity();
@@ -279,7 +282,8 @@ public class OrderLineBL {
         if (line.getPrice() == null) {
             BigDecimal price = item.getPercentage();
             if(price == null) {
-                price = itemBl.getPriceByCurrency(item, userId, currencyId); // basic price, ignoring current usage and
+                Date pricingDate = order != null ? order.getPricingDate() : null;
+                price = itemBl.getPriceByCurrency(pricingDate, item, userId, currencyId); // basic price, ignoring current usage and
                 // and quantity purchased for price calculations
             }
             line.setPrice(price);

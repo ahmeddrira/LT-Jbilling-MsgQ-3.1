@@ -152,7 +152,7 @@ public class SimpleTaxCompositionTask extends PluggableTask
         } else {
             LOG.debug("Flat Price.");
             ItemBL itemBL = new ItemBL(taxItem);
-            BigDecimal price = itemBL.getPriceByCurrency(taxItem, userId, invoice.getCurrency().getId());
+            BigDecimal price = itemBL.getPriceByCurrency(invoice.getCreateDatetime(), taxItem, userId, invoice.getCurrency().getId());
 
             if (price != null && price.compareTo(BigDecimal.ZERO) != 0) {
                 // tax as additional invoiceLine

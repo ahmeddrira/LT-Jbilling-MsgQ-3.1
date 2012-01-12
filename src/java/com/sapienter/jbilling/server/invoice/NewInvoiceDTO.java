@@ -20,24 +20,23 @@
  */
 package com.sapienter.jbilling.server.invoice;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.order.TimePeriod;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.PeriodOfTime;
+import org.apache.log4j.Logger;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class NewInvoiceDTO extends InvoiceDTO {
 
@@ -121,7 +120,7 @@ public class NewInvoiceDTO extends InvoiceDTO {
     }
 
     /**
-     * 
+     *
      * @return If this object holds any order lines or invoice lines,
      * therefore if it makes sense to apply invoice composition tasks to it.
      */

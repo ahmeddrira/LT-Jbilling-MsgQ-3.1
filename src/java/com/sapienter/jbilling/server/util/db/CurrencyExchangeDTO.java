@@ -53,11 +53,13 @@ public class CurrencyExchangeDTO  implements java.io.Serializable {
 
 
     public CurrencyExchangeDTO(int id, BigDecimal rate, Date createDatetime) {
+        this();
         this.id = id;
         this.rate = rate;
         this.createDatetime = createDatetime;
     }
     public CurrencyExchangeDTO(int id, CurrencyDTO currencyDTO, Integer entityId, BigDecimal rate, Date createDatetime) {
+       this();
        this.id = id;
        this.currencyDTO = currencyDTO;
        this.entityId = entityId;

@@ -381,6 +381,19 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 		if (invoiceId == null || paymentId == null)
             return;
 
+        // check if the payment is a refund , if it is do not allow it
+        if(new PaymentBL(paymentId).getEntity().getIsRefund()==1) {
+            LOG.debug("This payment id "+paymentId+" is a refund so we cannot unlink it from the invoice");
+            throw new SessionInternalError("This payment is a refund and hence cannot be unlinked from any invoice",
+                        new String[] {"PaymentWS,unlink,validation.error.payment.unlink"});
+        }
+
+        // if the payment has been refunded
+        if(PaymentBL.ifRefunded(paymentId)) {
+            throw new SessionInternalError("This payment has been refunded and hence cannot be unlinked from the invoice",
+                        new String[] {"PaymentWS,unlink,validation.error.delete.refunded.payment"});
+        }
+
         boolean result= new PaymentBL(paymentId).unLinkFromInvoice(invoiceId);
         if (!result)
 			throw new SessionInternalError("Unable to find the Invoice Id " + invoiceId + " linked to Payment Id " + paymentId);
@@ -1545,7 +1558,23 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         new PaymentBL(payment.getId()).update(getCallerId(), dto);
     }
 
-    public void deletePayment(Integer paymentId) {
+    public void deletePayment(Integer paymentId) throws SessionInternalError {
+
+        PaymentDTO payment = new PaymentBL(paymentId).getEntity();
+
+        // check if the payment is a refund , if it is do not allow it
+        if(new PaymentBL(paymentId).getEntity().getIsRefund()==1) {
+            LOG.debug("This payment id "+paymentId+" is a refund so we cannot delete it");
+            throw new SessionInternalError("This payment is a refund and hence cannot be deleted",
+                        new String[] {"PaymentWS,deleted,validation.error.delete.refund.payment"});
+        }
+
+        // check if payment has been refunded
+        if(PaymentBL.ifRefunded(paymentId)) {
+            throw new SessionInternalError("This payment has been refunded and hence cannot be deleted",
+            new String[] {"PaymentWS,deleted,validation.error.delete.refunded.payment"});
+        }
+
         new PaymentBL(paymentId).delete();
     }
 
@@ -1564,7 +1593,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
             throws SessionInternalError {
-        payment.setIsRefund(0);
+//        payment.setIsRefund(0);
+
+        // apply validations for refund payments
+        if(payment.getIsRefund() == 1) {
+            // check for validations
+            if(!PaymentBL.validateRefund(payment)){
+                throw new SessionInternalError("Either refund payment was not linked to any payment or the refund amount is different from the linked payment",
+                        new String[] {"PaymentWS,paymentId,validation.error.apply.without.payment.or.different.linked.payment.amount"});
+            }
+        }
 
         if (payment.getMethodId() == null) {
             throw new SessionInternalError("Cannot apply a payment without a payment method.",
@@ -1572,6 +1610,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
+        LOG.debug("payment has "+payment);
         return session.applyPayment(new PaymentDTOEx(payment), invoiceId, getCallerId());
     }
 
@@ -1590,6 +1629,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @return payment authorization from the payment processor
      */
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId) {
+        // apply validations for refund payment
+        if(payment.getIsRefund() == 1) {
+            // check for validations
+            if(!PaymentBL.validateRefund(payment)){
+                throw new SessionInternalError("Either refund payment was not linked to any payment or the refund amount is different from the linked payment",
+                        new String[] {"PaymentWS,paymentId,validation.error.apply.without.payment.or.different.linked.payment.amount"});
+            }
+        }
         if (payment == null && invoiceId != null)
             return payInvoice(invoiceId);
 

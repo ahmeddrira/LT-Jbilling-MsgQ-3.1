@@ -41,6 +41,8 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import com.sapienter.jbilling.server.user.db.CustomerDTO
 import com.sapienter.jbilling.server.customer.CustomerBL
 import com.sapienter.jbilling.server.user.db.UserDTO
+import com.sapienter.jbilling.server.payment.db.PaymentDAS
+import com.sapienter.jbilling.server.payment.PaymentBL
 
 /**
  * PaymentController 
@@ -175,11 +177,17 @@ class PaymentController {
      */
     @Secured(["PAYMENT_32"])
     def delete = {
+        println "params id ${params.id}"
         if (params.id) {
-            webServicesSession.deletePayment(params.int('id'))
-
+            try {
+                webServicesSession.deletePayment(params.int('id'))
+            } catch(SessionInternalError e) {
+                log.error("Problem deleteing payment since this payment has been refunded.", e);
+                viewUtils.resolveException(flash, session.local, e)
+                list()
+                return
+            }
             log.debug("Deleted payment ${params.id}.")
-
             flash.message = 'payment.deleted'
             flash.args = [ params.id ]
         }
@@ -292,7 +300,12 @@ class PaymentController {
 
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'))
 
-        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId') ]
+        //send all the payments of the current user as well which are not normal payments with a balance greater than zero
+//        List<PaymentDTO> paymentDTOList = new PaymentDAS().findAllPaymentByBaseUserAndIsRefund(user.getUserId(), 0)
+        List<PaymentDTO> refundablePayments = new PaymentDAS().getRefundablePayments(user.getUserId())
+        log.debug "invoices are ${invoices}"
+        log.debug "payments are ${refundablePayments}"
+        [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundablePayments: refundablePayments, refundPaymentId: params.int('payment?.paymentId') ]
     }
 
     def getUnpaidInvoices(Integer userId) {
@@ -313,7 +326,6 @@ class PaymentController {
         bindPayment(payment, params)
 
         session['user_payment']= payment
-        
         // make sure the user still exists before
         def users
         try {
@@ -334,16 +346,22 @@ class PaymentController {
         // validate before showing the confirmation page
         try {
             webServicesValidationAdvice.validateObject(payment)
-
+            if(payment.isRefund) {
+                if(!PaymentBL.validateRefund(payment)){
+                String [] errors = ["PaymentWS,paymentId,validation.error.apply.without.payment.or.different.linked.payment.amount"]
+                throw new SessionInternalError("Either refund payment was not linked to any payment or the refund amount is different from the linked payment",
+                        errors);
+                }
+            }
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.local, e)
-            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId') ]
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundPaymentId: params.int('payment?.paymentId') ]
             return
         }
 
         // validation passed, render the confirmation page
         def processNow = params.processNow ? true : false
-        [ payment: payment, user: user, invoices: invoices, currencies: currencies, processNow: processNow, invoiceId: params.invoiceId ]
+        [ payment: payment, user: user, invoices: invoices, currencies: currencies, processNow: processNow, invoiceId: params.invoiceId, refundPaymentId: params?.payment?.paymentId ]
     }
 
     /**
@@ -351,7 +369,7 @@ class PaymentController {
      */
     @Secured(["hasAnyRole('PAYMENT_30', 'PAYMENT_31')"])
     def save = {
-        
+
         /* Reuse the same payment that was bound earlier during confirm */
         def payment = session['user_payment'];
         //new PaymentWS()
@@ -466,7 +484,6 @@ class PaymentController {
             params.payment.isRefund = 0
         }
         bindData(payment, params, 'payment')
-        log.debug "params.isRefund after binding data is ----> ${payment}"
 
         // bind credit card object if parameters present
         if (params.creditCard.any { key, value -> value }) {

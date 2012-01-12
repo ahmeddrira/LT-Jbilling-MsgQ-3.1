@@ -1,21 +1,17 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
+ JBILLING CONFIDENTIAL
+ _____________________
 
- This file is part of jbilling.
+ [2003] - [2012] Enterprise jBilling Software Ltd.
+ All Rights Reserved.
 
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ NOTICE:  All information contained herein is, and remains
+ the property of Enterprise jBilling Software.
+ The intellectual and technical concepts contained
+ herein are proprietary to Enterprise jBilling Software
+ and are protected by trade secret or copyright law.
+ Dissemination of this information or reproduction of this material
+ is strictly forbidden.
  */
 
 package com.sapienter.jbilling.server.task;
@@ -55,7 +51,7 @@ public class SimpleTaxCompositionTaskTest extends TestCase {
 
     private static final Integer SIMPLE_TAX_PLUGIN_TYPE_ID = 86;
 
-    private final static String PLUGIN_PARAM_TAX_ITEM_ID= "charge_carrying_item_id";
+    private final static String PLUGIN_PARAM_TAX_ITEM_ID= "tax_item_id";
     private final static String PLUGIN_PARAM_EXEMPT_ITEM_CATEGORY_ID= "item_exempt_category_id";
 
     private static final Integer TAX_EXEMPT_ITEM_TYPE_ID = 2200;
@@ -146,7 +142,7 @@ public class SimpleTaxCompositionTaskTest extends TestCase {
 
             // tax is a flat fee, not affected by the price of the invoice
             if (invoiceLine.getItemId().equals(item.getId())) {
-                assertEquals("tax item", "Tax", invoiceLine.getDescription());
+                assertEquals("tax item", "Tax line with flat price for tax item " + item.getId(), invoiceLine.getDescription());
                 assertEquals("tax $10", new BigDecimal("10"), invoiceLine.getAmountAsDecimal());
                 foundTaxItem = true;
             }
@@ -261,7 +257,7 @@ public class SimpleTaxCompositionTaskTest extends TestCase {
             // tax, %10 of taxable item total ($35 x 0.10 = $3.5)
             // excludes $50 from the tax exempt line
             if (invoiceLine.getItemId().equals(item.getId())) {
-                assertEquals("tax item", "Tax", invoiceLine.getDescription());
+                assertEquals("tax item", "Tax line for percentage tax item " + item.getId(), invoiceLine.getDescription());
                 assertEquals("tax $3.5", new BigDecimal("3.5"), invoiceLine.getAmountAsDecimal());
                 foundTaxItem = true;
             }
@@ -363,7 +359,7 @@ public class SimpleTaxCompositionTaskTest extends TestCase {
             // tax, but no taxable items on order
             // value of tax should be $0
             if (invoiceLine.getItemId().equals(item.getId())) {
-                assertEquals("tax item", "Tax", invoiceLine.getDescription());
+                assertEquals("tax item", "Tax line for percentage tax item " + item.getId(), invoiceLine.getDescription());
                 assertEquals("tax $0", new BigDecimal("0"), invoiceLine.getAmountAsDecimal());
                 foundTaxItem = true;
             }

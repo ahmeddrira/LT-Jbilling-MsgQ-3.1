@@ -56,6 +56,7 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
+
 import javax.sql.rowset.CachedRowSet;
 
 import javax.persistence.EntityNotFoundException;
@@ -83,6 +84,26 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     public PaymentBL(Integer paymentId) {
         init();
         set(paymentId);
+    }
+
+    /**
+     * Validates that a refund payment must be linked to a payment and the amount of the refund payment should
+     * be equal to the linked payment
+     * @param refundPayment
+     * @return
+     */
+    public static Boolean validateRefund(PaymentWS refundPayment) {
+        if(refundPayment.getPaymentId() == null) {
+            LOG.debug("There is no linked payment with this refund");
+            return false;
+        }
+        // fetch the linked payment from database
+        PaymentDTO linkedPayment =  new PaymentBL(refundPayment.getPaymentId()).getEntity();
+        if(linkedPayment.getAmount().compareTo(refundPayment.getAmountAsDecimal()) !=0 ) {
+            LOG.debug("The linked payment amount is different than the refund value amount");
+            return false;
+        }
+        return true;
     }
 
     public PaymentBL() {
@@ -170,8 +191,11 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         if (dto.getIsRefund() == 1) {
             payment.setIsRefund(new Integer(1));
             // now all refunds have balance = 0
+            // todo refund balance is always set to ZERO
             payment.setBalance(BigDecimal.ZERO);
+            LOG.debug("dto of paymentDTOEX contains "+dto);
             if (dto.getPayment() != null) {
+                LOG.debug("Refund is linked to some payment "+dto.getPayment());
                 // this refund is link to a payment
                 PaymentBL linkedPayment = new PaymentBL(dto.getPayment().getId());
                 payment.setPayment(linkedPayment.getEntity());
@@ -425,6 +449,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         dto.setIsRefund(payment.getIsRefund());
         if (payment.getPayment() != null && payment.getId() != payment.getPayment().getId()) {
             PaymentBL linkedPayment = new PaymentBL(payment.getPayment().getId());
+            //#1890 - linking it to a payment
             dto.setPayment(linkedPayment.getDTOEx(language));
         }
 
@@ -593,6 +618,47 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     }
 
     /**
+     * Validates the deletion of a payment
+     * @param
+     * @return  boolean
+     */
+    
+    public static boolean ifRefunded(PaymentDTO payment) {
+
+        LOG.debug("The payment id to be checked is "+payment.getId());
+        // get all Refunded payments
+        List<PaymentDTO> refundedPayments = new PaymentDAS().findAllPaymentIsRefund(1);
+        // iterate over them
+        Iterator iterator = refundedPayments.iterator();
+        while(iterator.hasNext()) {
+            // check whether the payment provided has been refunded
+            PaymentDTO refund = (PaymentDTO)iterator.next();
+            // just to avoid NPE for now
+            if(refund.getPayment()!=null) {
+                if(refund.getPayment().getId()== payment.getId()) {
+                    LOG.debug("This payment has been refunded");
+                    LOG.debug("The refund linked payment id is "+refund.getPayment().getId());
+                    return true;
+                }
+            }
+            else {
+                // todo block only needed due to inconsistent db state
+                LOG.debug("There is no linked payment for this refund ");
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean ifRefunded(Integer paymentId) {
+        // fetch payment from db
+        LOG.debug("fetching paymentdto of id "+paymentId+" from database");
+        PaymentDTO payment = new PaymentBL(paymentId).getEntity();
+        return ifRefunded(payment);
+    }
+
+
+    /**
      * Does the actual work of deleteing the payment
      *
      * @throws SessionInternalError
@@ -600,8 +666,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     public void delete() throws SessionInternalError {
 
         try {
-            LOG.debug("Deleting payment " + payment.getId());
 
+            LOG.debug("Deleting payment " + payment.getId());
             Integer entityId = payment.getBaseUser().getEntity().getId();
             EventManager.process(new PaymentDeletedEvent(entityId, payment));
 
@@ -836,23 +902,26 @@ public class PaymentBL extends ResultList implements PaymentSQL {
      */
     public void removeInvoiceLink(Integer mapId) {
         try {
+            // declare variables
+            InvoiceDTO invoice;
+
             // find the map
             PaymentInvoiceMapDTO map = mapDas.find(mapId);
-            // start returning the money to the payment's balance
-            BigDecimal amount = map.getAmount();
-            payment = map.getPayment();
-            amount = amount.add(payment.getBalance());
-            payment.setBalance(amount);
+                // start returning the money to the payment's balance
+                BigDecimal amount = map.getAmount();
+                payment = map.getPayment();
+                amount = amount.add(payment.getBalance());
+                payment.setBalance(amount);
 
-            // the balace of the invoice also increases
-            InvoiceDTO invoice = map.getInvoiceEntity();
-            amount = map.getAmount().add(invoice.getBalance());
-            invoice.setBalance(amount);
+                // the balace of the invoice also increases
+                invoice = map.getInvoiceEntity();
+                amount = map.getAmount().add(invoice.getBalance());
+                invoice.setBalance(amount);
 
-            // this invoice probably has to be paid now
-            if (Constants.BIGDECIMAL_ONE_CENT.compareTo(invoice.getBalance()) <= 0) {
-                invoice.setToProcess(1);
-            }
+                // this invoice probably has to be paid now
+                if (Constants.BIGDECIMAL_ONE_CENT.compareTo(invoice.getBalance()) <= 0) {
+                    invoice.setToProcess(1);
+                }
 
             // log that this was deleted, otherwise there will be no trace
             eLogger.info(invoice.getBaseUser().getEntity().getId(),
@@ -863,8 +932,6 @@ public class PaymentBL extends ResultList implements PaymentSQL {
 
             // get rid of the map all together
             mapDas.delete(map);
-
-
 
         } catch (EntityNotFoundException enfe) {
             LOG.error("Exception removing payment-invoice link: EntityNotFoundException", enfe);
@@ -905,4 +972,5 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         dto.setCurrencyId(map.getPayment().getCurrency().getId());
         return dto;
     }
+
 }

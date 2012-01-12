@@ -1,3 +1,4 @@
+<%@ page import="org.apache.commons.lang.StringUtils" %>
 
 %{--
   JBILLING CONFIDENTIAL
@@ -50,7 +51,7 @@
                     <tr id="product-${product.id}" class="${selectedProduct?.id == product.id ? 'active' : ''}">
                         <td>
                             <g:remoteLink class="cell double" action="show" id="${product.id}" params="['template': 'show', 'category': selectedCategoryId]" before="register(this);" onSuccess="render(data, next);">
-                                <strong>${product.getDescription(session['language_id'])}</strong>
+                                <strong>${StringUtils.abbreviate(product.getDescription(session['language_id']), 45).encodeAsHTML()}</strong>
                                 <em><g:message code="table.id.format" args="[product.id as String]"/></em>
                             </g:remoteLink>
                         </td>

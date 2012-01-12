@@ -181,15 +181,17 @@ class PaymentController {
         if (params.id) {
             try {
                 webServicesSession.deletePayment(params.int('id'))
-            } catch(SessionInternalError e) {
-                log.error("Problem deleteing payment since this payment has been refunded.", e);
+                log.debug("Deleted payment ${params.id}.")
+                flash.message = 'payment.deleted'
+                flash.args = [ params.id ]
+                
+            } catch (SessionInternalError e) {
                 viewUtils.resolveException(flash, session.local, e)
+                //redirect action: 'list', params: [ id: params.id ]
+                params.applyFilter = false
                 list()
                 return
             }
-            log.debug("Deleted payment ${params.id}.")
-            flash.message = 'payment.deleted'
-            flash.args = [ params.id ]
         }
 
         // render the partial payments list

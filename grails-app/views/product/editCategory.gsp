@@ -23,13 +23,15 @@
 <body>
 <div class="form-edit">
 
+    <g:set var="isNew" value="${!category || !category?.id || category?.id == 0}"/>
+
     <div class="heading">
         <strong>
-            <g:if test="${category}">
-                <g:message code="product.category.edit.title"/>
+            <g:if test="${isNew}">
+                <g:message code="product.category.add.title"/>
             </g:if>
             <g:else>
-                <g:message code="product.category.add.title"/>
+                <g:message code="product.category.edit.title"/>
             </g:else>
         </strong>
     </div>
@@ -42,8 +44,8 @@
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="product.category.id"/></content>
 
-                            <g:if test="${category}">${category?.id}</g:if>
-                            <g:else><em><g:message code="prompt.id.new"/></em></g:else>
+                            <g:if test="${isNew}"><em><g:message code="prompt.id.new"/></em></g:if>
+                            <g:else>${category?.id}</g:else>
 
                             <g:hiddenField name="id" value="${category?.id}"/>
                         </g:applyLayout>

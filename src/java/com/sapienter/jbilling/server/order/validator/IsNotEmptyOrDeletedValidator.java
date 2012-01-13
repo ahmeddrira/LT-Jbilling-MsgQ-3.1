@@ -35,31 +35,25 @@ import java.util.List;
  */
 public class IsNotEmptyOrDeletedValidator implements ConstraintValidator<IsNotEmptyOrDeleted, OrderLineWS[]> {
 
-    private static final Logger LOG = Logger.getLogger(DateBetweenValidator.class);
-
     public void initialize(IsNotEmptyOrDeleted isNotEmptyOrDeleted) {
     }
 
-    public boolean isValid(OrderLineWS[] orderLines, ConstraintValidatorContext constraintValidatorContext) {
-        try {
-            if (orderLines.length == 0) {
-                return false;
-            } else {
-                Integer deletedQty = 0;
-                for (OrderLineWS orderLine : orderLines) {
-                    deletedQty += orderLine.getDeleted();
-                }
-
-                if (deletedQty == orderLines.length) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        } catch (ClassCastException e) {
-            LOG.debug("Property does not contain a java.util.Date object.");
+    public boolean isValid(OrderLineWS[] lines, ConstraintValidatorContext constraintValidatorContext) {
+        if (lines.length == 0) {
+            return false;
         }
 
-        return false;
+        int deleted = 0;
+        for (OrderLineWS line : lines) {
+            if (line.getDeleted() == 1) {
+                deleted++;
+            }
+        }
+
+        if (deleted == lines.length) {
+            return false;
+        }
+
+        return true;
     }
 }

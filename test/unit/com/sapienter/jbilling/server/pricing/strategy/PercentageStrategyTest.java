@@ -42,7 +42,7 @@ public class PercentageStrategyTest extends BigDecimalTestCase {
     /**
      * Tests that a percentage can be applied to a previously determined price.
      */
-    public void testPercentage() {
+    public void testPositivePercentage() {
         PriceModelDTO planPrice = new PriceModelDTO();
         planPrice.setType(PriceModelStrategy.PERCENTAGE);
         planPrice.addAttribute("percentage", "0.80"); // %80
@@ -53,7 +53,24 @@ public class PercentageStrategyTest extends BigDecimalTestCase {
         // test that the price has been reduced by %80
         // $10 * 0.80 = $8
         planPrice.applyTo(null, result, null, null, null);
-        assertEquals(new BigDecimal("8.00"), result.getPrice());
+        assertEquals(new BigDecimal("18.00"), result.getPrice());
+    }
+
+    /**
+     * Tests that a percentage can be applied to a previously determined price.
+     */
+    public void testNegativePercentage() {
+        PriceModelDTO planPrice = new PriceModelDTO();
+        planPrice.setType(PriceModelStrategy.PERCENTAGE);
+        planPrice.addAttribute("percentage", "-0.80"); // %80
+
+        PricingResult result = new PricingResult(1, 2, 3);
+        result.setPrice(new BigDecimal("10.00"));
+
+        // test that the price has been reduced by %80
+        // $10 * 0.80 = $8
+        planPrice.applyTo(null, result, null, null, null);
+        assertEquals(new BigDecimal("2.00"), result.getPrice());
     }
 
     /**

@@ -84,10 +84,11 @@ class CustomerController {
                 offset: params.offset
         ) {
             createAlias("contact", "contact")
+            createAlias("customer", "customer")
             and {
                 filters.each { filter ->
                     //log.debug "Filter value: '${filter.field}'"
-                    if (filter.value) {
+                    if (filter.value != null) {
                         // handle user status separately from the other constraints
                         // we need to find the UserStatusDTO to compare to
                         if (filter.constraintType == FilterConstraint.STATUS) {
@@ -108,13 +109,10 @@ class CustomerController {
                         }
                     }
                 }
-                roles {
-                    eq('id', Constants.TYPE_CUSTOMER)
-                }
+                //check that the user is a customer
+                isNotNull('customer')
                 eq('company', new CompanyDTO(session['company_id']))
-                eq('deleted', 0)
             }
-
             // apply sorting
             SortableCriteria.sort(params, delegate)
         }

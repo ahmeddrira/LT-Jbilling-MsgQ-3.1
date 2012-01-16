@@ -458,6 +458,16 @@ hr {
 	padding:1px;
 	background:url(../images/bg-input02.gif) no-repeat;
 }
+.accordion li .slide .input-row .select-filter {
+	width:90px;
+	height:24px;
+	overflow:hidden;
+	float:right;
+	padding:1px;
+}
+.accordion li .slide .input-row .select-filter select {
+	width:91px;
+}
 .holder .input-bg input ,
 .accordion li .slide .input-bg input {
 	width:65px;

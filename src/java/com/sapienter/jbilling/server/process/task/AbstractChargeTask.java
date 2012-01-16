@@ -20,10 +20,6 @@
 
 package com.sapienter.jbilling.server.process.task;
 
-import java.math.BigDecimal;
-
-import org.apache.log4j.Logger;
-
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.item.ItemBL;
@@ -35,96 +31,93 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.process.PeriodOfTime;
 import com.sapienter.jbilling.server.util.Constants;
+import org.apache.log4j.Logger;
+
+import java.math.BigDecimal;
 
 /**
  * This plug-in calculates taxes for invoice.
- * 
+ * <p/>
  * Plug-in parameters:
- * 
+ * <p/>
  * charge_carrying_item_id (required) The item that will be added to an invoice with the
  * taxes
- * 
- * 
+ *
  * @author Vikas Bodani
  * @since 28-Jul-2011
- * 
  */
 public abstract class AbstractChargeTask extends PluggableTask implements InvoiceCompositionTask {
 
     private static final Logger LOG = Logger.getLogger(AbstractChargeTask.class);
-    
+
     //mandatory plugin parameters
-    protected static final ParameterDescription PARAM_TAX_ITEM_ID = 
-        new ParameterDescription("charge_carrying_item_id", true, ParameterDescription.Type.STR);
-    
+    protected static final ParameterDescription PARAM_TAX_ITEM_ID =
+            new ParameterDescription("charge_carrying_item_id", true, ParameterDescription.Type.STR);
+
     /**
-     * The tax item initialized via a plugin-parameter holds the charge that'll be applied 
+     * The tax item initialized via a plugin-parameter holds the charge that'll be applied
      * to the invoice provided other conditions are met. The price may be percetage or fixed rate.
      */
-    protected ItemDTO taxItem= null;
-    
+    protected ItemDTO taxItem = null;
+
     /**
      * The Invoice LIne Type of the Invoice Item added as a result of this charge task
      * Default initialized to a type Tax.
      */
-    protected Integer invoiceLineTypeId= Constants.INVOICE_LINE_TYPE_TAX;
-    
+    protected Integer invoiceLineTypeId = Constants.INVOICE_LINE_TYPE_TAX;
+
     // initializer for pluggable params
     {
         descriptions.add(PARAM_TAX_ITEM_ID);
     }
 
     /**
-     * 
+     *
      */
     public AbstractChargeTask() {
         super();
     }
-    
+
     public void apply(NewInvoiceDTO invoice, Integer userId) throws TaskException {
         LOG.debug("apply()");
         this.setPluginParameters();
-    
+
         if (!this.isTaxCalculationNeeded(invoice, userId)) {
             return;
         }
-    
-        BigDecimal taxOrPenaltyBaseAmnt= this.calculateAndApplyTax(invoice, userId);
-        
+
+        BigDecimal taxOrPenaltyBaseAmnt = this.calculateAndApplyTax(invoice, userId);
+
         this.applyCharge(invoice, userId, taxOrPenaltyBaseAmnt, invoiceLineTypeId);
     }
 
     /**
      * Apply the percetage or flat rate from the taxItem and apply it to the invoice.
+     *
      * @param invoice
      * @param userId
      */
     protected void applyCharge(NewInvoiceDTO invoice, Integer userId, BigDecimal taxOrPenaltyBaseAmt, Integer INVOICE_LINE_TYPE) {
         LOG.debug("applyCharge()");
-        BigDecimal taxOrPenaltyValue= null;
-        String itemDescription= taxItem.getDescription();
-        
+        BigDecimal taxOrPenaltyValue;
         if (taxItem.getPercentage() != null) {
             LOG.debug("Percentage: " + taxItem.getPercentage());
             LOG.debug("Calculating tax on = " + taxOrPenaltyBaseAmt);
             taxOrPenaltyValue = taxOrPenaltyBaseAmt.multiply(taxItem.getPercentage()).divide(
                     BigDecimal.valueOf(100L), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
-            //itemDescription= taxItem.getDescription() + " @ %" + new DecimalFormat("#0.##").format(taxItem.getPercentage().doubleValue());
         } else {
-            LOG.debug("Flat Price."); 
+            LOG.debug("Flat Price.");
             ItemBL itemBL = new ItemBL(taxItem);
-            taxOrPenaltyValue= itemBL.getPriceByCurrency(taxItem, userId, Integer.valueOf(invoice.getCurrency().getId()));
-            //itemDescription= taxItem.getDescription();
+            taxOrPenaltyValue = itemBL.getPriceByCurrency(invoice.getCreateDatetime(), taxItem, userId, invoice.getCurrency().getId());
         }
         LOG.debug("Adding Tax Or Penalty as additional Invoice Line");
-        //if (taxOrPenaltyValue != null && taxOrPenaltyValue.compareTo(BigDecimal.ZERO) != 0) {
+        String itemDescription = taxItem.getDescription();
         InvoiceLineDTO invoiceLine = new InvoiceLineDTO(null, itemDescription,
                 taxOrPenaltyValue, taxOrPenaltyValue, BigDecimal.ONE, INVOICE_LINE_TYPE, 0,
-                Integer.valueOf(taxItem.getId()), userId, null);
+                taxItem.getId(), userId, null);
         invoice.addResultLine(invoiceLine);
-        //}
     }
-    
+
     /**
      * Set all the current plugin params
      */
@@ -145,52 +138,44 @@ public abstract class AbstractChargeTask extends PluggableTask implements Invoic
             throw new TaskException(e);
         }
     }
-    
+
     /**
-     * 
      * @param invoice
      * @param userId
      * @return
-     */    
+     */
     protected abstract boolean isTaxCalculationNeeded(NewInvoiceDTO invoice, Integer userId);
-    
+
     /**
-     * 
      * @param invoice
      * @param userId
      */
     protected BigDecimal calculateAndApplyTax(NewInvoiceDTO invoice, Integer userId) {
-        
-        //calculate TOTAL to include result lines 
+
+        //calculate TOTAL to include result lines
         invoice.calculateTotal();
-        BigDecimal invoiceAmountSum= invoice.getTotal();
+        BigDecimal invoiceAmountSum = invoice.getTotal();
 
         //For a Flat Rate Charge, below calculation is not required.
         if (taxItem.getPercentage() != null) {
             //Remove CARRIED BALANCE from tax calculation to avoid double taxation
             LOG.debug("Percentage Price. Carried balance is " + invoice.getCarriedBalance());
-            if ( null != invoice.getCarriedBalance() ){
+            if (null != invoice.getCarriedBalance()) {
                 invoiceAmountSum = invoiceAmountSum.subtract(invoice.getCarriedBalance());
             }
-            
+
             // Remove TAX ITEMS from Invoice to avoid calculating tax on tax
             for (int i = 0; i < invoice.getResultLines().size(); i++) {
-                InvoiceLineDTO invoiceLine = (InvoiceLineDTO) invoice
-                        .getResultLines().get(i);
-    
-                if (null != invoiceLine.getInvoiceLineType()
-                        && invoiceLine.getInvoiceLineType().getId() == Constants.INVOICE_LINE_TYPE_TAX
-                                .intValue()) {
-    
-                    invoiceAmountSum = invoiceAmountSum.subtract(invoiceLine
-                            .getAmount());
+                InvoiceLineDTO invoiceLine = (InvoiceLineDTO) invoice.getResultLines().get(i);
+                if (null != invoiceLine.getInvoiceLineType() && invoiceLine.getInvoiceLineType().getId() == Constants.INVOICE_LINE_TYPE_TAX) {
+                    invoiceAmountSum = invoiceAmountSum.subtract(invoiceLine.getAmount());
                 }
             }
         }
-        
+
         return invoiceAmountSum;
     }
-    
+
     public BigDecimal calculatePeriodAmount(BigDecimal fullPrice, PeriodOfTime period) {
         LOG.debug("calculatePeriodAmount(). Throwing exception.");
         throw new UnsupportedOperationException("Can't call this method");

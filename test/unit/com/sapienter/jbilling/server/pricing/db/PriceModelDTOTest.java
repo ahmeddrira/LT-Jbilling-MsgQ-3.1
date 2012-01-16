@@ -1,25 +1,22 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package com.sapienter.jbilling.server.pricing.db;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.server.BigDecimalTestCase;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
@@ -29,8 +26,6 @@ import org.joda.time.DateMidnight;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -95,7 +90,7 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         planPrice.setRate(new BigDecimal("0.7"));
 
         PricingResult result = new PricingResult(1, 2, 3);
-        planPrice.applyTo(null, result, null, null, null);
+        planPrice.applyTo(null, null, result, null, null, null);
         assertEquals(planPrice.getRate(), result.getPrice());
     }
 
@@ -111,7 +106,7 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         planPrice.setNext(next);
 
         PricingResult result = new PricingResult(1, 2, 3);
-        planPrice.applyTo(null, result, null, null, null);
+        planPrice.applyTo(null, null, result, null, null, null);
         assertEquals(new BigDecimal("7.00"), result.getPrice());
     }
 
@@ -135,12 +130,12 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
 
         assertNotSame(ws.getAttributes(), dto.getAttributes());
         assertEquals(PriceModelDTO.ATTRIBUTE_WILDCARD, dto.getAttributes().get("null_attr"));
-        assertEquals("some value", dto.getAttributes().get("attr"));   
+        assertEquals("some value", dto.getAttributes().get("attr"));
     }
 
     public void testGetPriceForDate() {
         SortedMap<Date, PriceModelDTO> prices = new TreeMap<Date, PriceModelDTO>();
-        prices.put(PriceModelDTO.EPOCH_DATE, new PriceModelDTO(PriceModelStrategy.METERED, new BigDecimal("0.10"), null));
+        prices.put(CommonConstants.EPOCH_DATE, new PriceModelDTO(PriceModelStrategy.METERED, new BigDecimal("0.10"), null));
         prices.put(new DateMidnight(2011, 6, 1).toDate(), new PriceModelDTO(PriceModelStrategy.METERED, new BigDecimal("0.20"), null));
         prices.put(new DateMidnight(2011, 8, 1).toDate(), new PriceModelDTO(PriceModelStrategy.METERED, new BigDecimal("0.30"), null));
 

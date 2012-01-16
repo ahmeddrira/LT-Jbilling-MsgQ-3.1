@@ -18,7 +18,7 @@
         <fileset dir="${env.GRAILS_HOME}/lib/" includes="*.jar"/>
         <fileset dir="${env.GRAILS_HOME}/dist/" includes="*.jar"/>
     </path>
-        
+
     <path id="test.classpath">
         <!-- test classes and junit -->
         <pathelement location="${build.test.dir}"/>
@@ -41,9 +41,9 @@
 
     <path id="spring.classpath">
         <pathelement location="${source.spring.descriptor.dir}"/>
-    </path>    
+    </path>
 
-    
+
     <!--
          Testing targets
     -->
@@ -83,7 +83,7 @@
         <mkdir dir="${build.test-results.dir}/unit/xml"/>
         <junit errorproperty="test.failed" failureproperty="test.failed">
             <classpath refid="compile.classpath"/>
-            <classpath refid="test.classpath"/>                                    
+            <classpath refid="test.classpath"/>
 
             <batchtest todir="${build.test-results.dir}/unit/xml">
                 <formatter type="brief" usefile="false"/>
@@ -137,7 +137,7 @@
             <classpath refid="test.classpath"/>
 
             <formatter type="brief" usefile="false"/>
-            <formatter type="xml"/>            
+            <formatter type="xml"/>
 
         	<test name="com.sapienter.jbilling.server.order.WSTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.user.WSTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>
@@ -148,6 +148,7 @@
             <test name="com.sapienter.jbilling.server.pricing.WSTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.pricing.strategy.WSTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.user.PartnerWSTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>
+            <test name="com.sapienter.jbilling.server.payment.RefundTest" unless="test.class" todir="${build.test-results.dir}/ws/xml"/>
 
             <test name="${test.class}" if="test.class" todir="${build.test-results.dir}/ws/xml"/>
         </junit>
@@ -202,7 +203,7 @@
             <sysproperty key="mediation.errors.dir" value="${build.resources.dir}/mediation/errors"/>
 
             <classpath refid="compile.classpath"/>
-            <classpath refid="spring.classpath"/>            
+            <classpath refid="spring.classpath"/>
             <classpath refid="test.classpath"/>
 
             <formatter type="brief" usefile="false"/>
@@ -212,15 +213,16 @@
                 The tests need to run in a specific order (partners first). Don't use batchtest!
             <test name="com.sapienter.jbilling.server.user.PartnerTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             -->
+            <test name="com.sapienter.jbilling.server.item.CurrencyExchangeTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.process.BillingProcessTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.mediation.MediationTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.provisioning.ProvisioningTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
-            <test name="com.sapienter.jbilling.server.process.AgeingTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>  
-            <!-- must be last -->            
+            <test name="com.sapienter.jbilling.server.process.AgeingTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
+            <!-- must be last -->
             <test name="com.sapienter.jbilling.server.task.SimpleTaxCompositionTaskTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.task.CountryTaxCompositionTaskTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
             <test name="com.sapienter.jbilling.server.task.PaymentTermPenaltyTaskTest" unless="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
-            
+
             <!-- explicitly run a single test case if 'test.class' was set -->
             <test name="${test.class}" if="test.class" todir="${build.test-results.dir}/org-integration/xml"/>
         </junit>
@@ -351,7 +353,7 @@
                 <include name="**/*.vm"/>
                 <include name="**/*.xml"/>
             </fileset>
-        </copy>        
+        </copy>
 
         <!-- run the rules generator -->
         <java classname="com.sapienter.jbilling.tools.RulesGenerator" failonerror="true">

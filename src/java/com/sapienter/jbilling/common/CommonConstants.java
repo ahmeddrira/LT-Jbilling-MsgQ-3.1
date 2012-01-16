@@ -1,31 +1,33 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package com.sapienter.jbilling.common;
 
+import org.joda.time.DateMidnight;
+
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author Emil
  */
 public interface CommonConstants {
+
+    public static final Date EPOCH_DATE = new DateMidnight(1970, 1, 1).toDate();
+
     public static final String LIST_TYPE_ITEM_TYPE = "type";
     public static final String LIST_TYPE_CUSTOMER = "customer";
     public static final String LIST_TYPE_CUSTOMER_SIMPLE = "customerSimple";
@@ -44,18 +46,18 @@ public interface CommonConstants {
     public static final String LIST_TYPE_PROCESS = "process";
     public static final String LIST_TYPE_PROCESS_INVOICES = "processInvoices";
     public static final String LIST_TYPE_PROCESS_RUN_SUCCESSFULL_USERS = "processRunSuccessfullUsers";
-    public static final String LIST_TYPE_PROCESS_RUN_FAILED_USERS = "processRunFailedUsers";    
+    public static final String LIST_TYPE_PROCESS_RUN_FAILED_USERS = "processRunFailedUsers";
     public static final String LIST_TYPE_PROCESS_ORDERS= "processOrders";
     public static final String LIST_TYPE_NOTIFICATION_TYPE= "notificationType";
     public static final String LIST_TYPE_PARTNER = "partner";
     public static final String LIST_TYPE_PAYOUT = "payout";
     public static final String LIST_TYPE_INVOICE_ORDER = "invoicesOrder";
-    
+
     // results from payments
     // this has to by in synch with how the database is initialized
     public static final Integer RESULT_OK = new Integer(1);
     public static final Integer RESULT_FAIL = new Integer(2);
-    public static final Integer RESULT_UNAVAILABLE = new Integer(3);   
+    public static final Integer RESULT_UNAVAILABLE = new Integer(3);
     public static final Integer RESULT_ENTERED = new Integer(4);
     // a special one, to represent 'no result' (for filers, routers, etc)
     public static final Integer RESULT_NULL = new Integer(0);
@@ -89,7 +91,7 @@ public interface CommonConstants {
     public static final Integer REVIEW_STATUS_GENERATED = new Integer(1);
     public static final Integer REVIEW_STATUS_APPROVED = new Integer(2);
     public static final Integer REVIEW_STATUS_DISAPPROVED = new Integer(3);
-    
+
     // these are the preference's types. This has to be in synch with the DB
     //public static Integer PREFERENCE_PAYMENT_WITH_PROCESS = new Integer(1); obsolete
     public static Integer PREFERENCE_CSS_LOCATION = new Integer(2);
@@ -157,25 +159,25 @@ public interface CommonConstants {
     public static final Integer PROCESS_RUN_STATUS_RINNING = new Integer(1);
     public static final Integer PROCESS_RUN_STATUS_SUCCESS = new Integer(2);
     public static final Integer PROCESS_RUN_STATUS_FAILED = new Integer(3);
-    
+
     // invoice delivery method types
     public static final Integer D_METHOD_EMAIL = new Integer(1);
     public static final Integer D_METHOD_PAPER = new Integer(2);
     public static final Integer D_METHOD_EMAIL_AND_PAPER = new Integer(3);
-    
+
     // automatic payment methods
     // how a customer wants to pay in the automatic process
     public static final Integer AUTO_PAYMENT_TYPE_CC = new Integer(1);
     public static final Integer AUTO_PAYMENT_TYPE_ACH =  new Integer(2);
     public static final Integer AUTO_PAYMENT_TYPE_CHEQUE = new Integer(3);
-    
+
     // types of PDF batch generation
     public static final Integer OPERATION_TYPE_CUSTOMER = new Integer(1);
     public static final Integer OPERATION_TYPE_RANGE = new Integer(2);
     public static final Integer OPERATION_TYPE_PROCESS = new Integer(3);
     public static final Integer OPERATION_TYPE_DATE = new Integer(4);
     public static final Integer OPERATION_TYPE_NUMBER = new Integer(5);
-    
+
     /**
      * BigDecimal caculation constants <br/>
      * This value must be inline with underlying SQL data type

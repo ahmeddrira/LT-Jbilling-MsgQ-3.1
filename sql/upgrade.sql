@@ -1573,3 +1573,8 @@ insert into permission_role_map (role_id, permission_id) values (4, 93); -- paym
 
 update credit_card set cc_expiry = date_trunc('month', cc_expiry) + INTERVAL '1 month' - INTERVAL '1 day'; -- postgresql
 -- update credit_card set cc_expiry = last_day(cc_expiry); -- mysql
+
+-- 10-Jan-2011
+-- Redmine Issue: #1165
+-- Description: Credit Card that expires in the same month does not process automatically
+alter table currency_exchange add column valid_since timestamp not null default Date('1970-01-01');

@@ -1,29 +1,27 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package com.sapienter.jbilling.server.util;
 
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * CurrencyWS
@@ -41,6 +39,7 @@ public class CurrencyWS implements Serializable {
     private Boolean inUse;
     private String rate;
     private String sysRate;
+    private Date fromDate;
 
     private boolean defaultCurrency;
 
@@ -118,7 +117,11 @@ public class CurrencyWS implements Serializable {
     }
 
     public void setRate(String rate) {
-        this.rate = rate;
+        if(!StringUtils.isEmpty(rate)) {
+            this.rate = rate;
+        } else {
+            this.rate = null;
+        }
     }
 
     public void setRate(BigDecimal rate) {
@@ -161,6 +164,14 @@ public class CurrencyWS implements Serializable {
         this.defaultCurrency = defaultCurrency;
     }
 
+    public Date getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(Date fromDate) {
+        this.fromDate = fromDate;
+    }
+
     @Override
     public String toString() {
         return "CurrencyWS{"
@@ -172,6 +183,7 @@ public class CurrencyWS implements Serializable {
                + ", rate='" + rate + '\''
                + ", systemRate='" + sysRate + '\''
                + ", isDefaultCurrency=" + defaultCurrency
+               + ", fromDate=" + fromDate
                + '}';
     }
 }

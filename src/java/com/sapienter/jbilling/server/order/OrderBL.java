@@ -1,21 +1,17 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 package com.sapienter.jbilling.server.order;
 
@@ -183,8 +179,7 @@ public class OrderBL extends ResultList
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
 
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
-        for (Iterator it = order.getLines().iterator(); it.hasNext();) {
-            OrderLineDTO line = (OrderLineDTO) it.next();
+        for (OrderLineDTO line : order.getLines()) {
             if (line.getDeleted() == 0) {
                 lines.add(getOrderLineWS(line.getId()));
             }
@@ -386,8 +381,8 @@ public class OrderBL extends ResultList
 
             // add a log row for convenience
             if (userAgentId != null) {
-                eLogger.audit(userAgentId, order.getBaseUserByUserId().getId(), 
-                        Constants.TABLE_PUCHASE_ORDER, order.getId(), 
+                eLogger.audit(userAgentId, order.getBaseUserByUserId().getId(),
+                        Constants.TABLE_PUCHASE_ORDER, order.getId(),
                         EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
             } else {
                 eLogger.auditBySystem(entityId, order.getBaseUserByUserId().getId(),
@@ -985,8 +980,8 @@ public class OrderBL extends ResultList
         conn.close();
         return cachedResults;
     }
-    
-    public List<Integer> getOrdersByProcess(Integer processId) throws SQLException, Exception { 
+
+    public List<Integer> getOrdersByProcess(Integer processId) throws SQLException, Exception {
     	conn = ((DataSource) Context.getBean(Context.Name.DATA_SOURCE)).getConnection();
     	PreparedStatement stmt = conn.prepareStatement(OrderSQL.listByProcess);
 		stmt.setInt(1, processId.intValue());
@@ -1025,34 +1020,6 @@ public class OrderBL extends ResultList
         EventManager.process(event);
         order.setOrderStatus(new OrderStatusDAS().find(statusId));
 
-    }
-
-    /**
-     * To be called from the http api, this simply looks for lines
-     * in the order that lack some fields, it finds that info based
-     * in the item.
-     *
-     * @param dto order with lines to pricess
-     * @param entityId entity id
-     */
-    public void fillInLines(OrderDTO dto, Integer entityId) throws NamingException, SessionInternalError {
-        ItemBL itemBl = new ItemBL();
-
-        // iterate over order lines
-        for (OrderLineDTO line : dto.getLines()) {
-            itemBl.set(line.getItemId());
-            Integer languageId = itemBl.getEntity().getEntity().getLanguageId();
-
-            // populate the basic item price and item description
-            ItemDAS itemDas = new ItemDAS();
-            line.setItem(itemDas.find(line.getItemId()));
-            if (line.getPrice() == null) {
-                line.setPrice(itemBl.getPrice(dto.getUserId(), dto.getCurrencyId(), line.getQuantity(), entityId));
-            }
-            if (line.getDescription() == null) {
-                line.setDescription(itemBl.getEntity().getDescription(languageId));
-            }
-        }
     }
 
     private void audit(Integer executorId, Date date) {
@@ -1200,7 +1167,7 @@ public class OrderBL extends ResultList
                     continue;
                 }
 
-                set(new Integer(orderId));
+                set(orderId);
                 UserBL user = new UserBL(order.getBaseUserByUserId().getId());
                 try {
                     NotificationBL notification = new NotificationBL();
@@ -1208,15 +1175,14 @@ public class OrderBL extends ResultList
                     contact.set(user.getEntity().getUserId());
                     MessageDTO message = notification.getOrderNotification(
                             ent.getId(),
-                            new Integer(currentStep),
+                            currentStep,
                             user.getEntity().getLanguageIdField(),
                             order.getActiveSince(),
                             order.getActiveUntil(),
                             user.getEntity().getUserId(),
                             order.getTotal(), order.getCurrencyId());
                     // update the order record only if the message is sent
-                    if (notificationSess.notify(user.getEntity(), message).
-                            booleanValue()) {
+                    if (notificationSess.notify(user.getEntity(), message)) {
                         // if in the last step, turn the notification off, so
                         // it is skiped in the next process
                         if (currentStep >= totalSteps) {

@@ -27,12 +27,14 @@ import java.util.Calendar;
 
 import junit.framework.TestCase;
 
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.user.ContactWS;
+import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
@@ -59,7 +61,12 @@ public class RefundTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        api = JbillingAPIFactory.getAPI();
+        try {
+            api = JbillingAPIFactory.getAPI();
+        } catch (Exception e) { 
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     /**
@@ -67,12 +74,13 @@ public class RefundTest extends TestCase {
      */
     public void testRefundPayment() {
 
+        System.out.println("testRefundPayment().");
         try {
             //create user
             UserWS user= createUser(false, null, null);
             assertTrue(user.getUserId() > 0);
             System.out.println("User created successfully " + user.getUserId());
-            
+
             //make payment
             Integer paymentId= createPayment(api, "100.00", false, user.getUserId(), null);
             System.out.println("Created payment " + paymentId);
@@ -82,9 +90,9 @@ public class RefundTest extends TestCase {
             PaymentWS payment= api.getPayment(paymentId);
             assertNotNull(payment);
             assertEquals(payment.getAmountAsDecimal(), payment.getBalanceAsDecimal());
-            
+
             assertTrue(payment.getInvoiceIds().length == 0 );
-            
+
             //create refund for above payment, refund amount = payment amount
             Integer refundId= createPayment(api, "100.00", true, user.getUserId(), paymentId);
             System.out.println("Created refund " + refundId);
@@ -101,59 +109,62 @@ public class RefundTest extends TestCase {
         }
     }
 
-    /**
-     * 2. A refund should bring the User's balance to its Original value before payment
-     */
-    public void testRefundUserBalanceUnchanged() {
-        try {
-            //create user
-            UserWS user= createUser(false, null, null);
-            assertTrue(user.getUserId() > 0);
-            System.out.println("User created successfully " + user.getUserId());
-
-            user= api.getUserWS(user.getUserId());
-            assertEquals(user.getDynamicBalanceAsDecimal(), BigDecimal.ZERO);
-    
-            //make payment
-            Integer paymentId= createPayment(api, "100.00", false, user.getUserId(), null);
-            System.out.println("Created payment " + paymentId);
-            assertNotNull("Didn't get the payment id", paymentId);
-    
-            //check payment balance = payment amount
-            PaymentWS payment= api.getPayment(paymentId);
-            assertNotNull(payment);
-            assertEquals(payment.getAmountAsDecimal(), payment.getBalanceAsDecimal());
-    
-            //check user's balance
-            user= api.getUserWS(user.getUserId());
-            BigDecimal userBalance= user.getDynamicBalanceAsDecimal();
-            assertNotNull(userBalance);
-            assertTrue("User Balance should have been negetive", BigDecimal.ZERO.compareTo(userBalance) > 0);
-                       
-            assertTrue(payment.getInvoiceIds().length == 0 );
-    
-            //create refund for above payment, refund amount = payment amount
-            Integer refundId= createPayment(api, "100.00", true, user.getUserId(), paymentId);
-            System.out.println("Created refund " + refundId);
-            assertNotNull("Didn't get the payment id", refundId);
-    
-            //check user's balance = 0
-            user = api.getUserWS(user.getUserId());
-            assertNotNull(user);
-            assertEquals(BigDecimal.ZERO, user.getDynamicBalanceAsDecimal());
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail(e.getMessage());
-        }
-    }
+//    /**
+//     * 2. A refund should bring the User's balance to its Original value before payment
+//     */
+//   public void testRefundUserBalanceUnchanged() {
+//       System.out.println("testRefundUserBalanceUnchanged()");
+//        try {
+//            //create user
+//            UserWS user= createUser(false, null, null);
+//            assertTrue(user.getUserId() > 0);
+//            System.out.println("User created successfully " + user.getUserId());
+//
+//            user= api.getUserWS(user.getUserId());
+//            UserBL userBl= new UserBL(user.getUserId());
+//            assertNotNull("This should not be null",userBl);
+//            assertEquals(userBl.getBalance(user.getUserId()), BigDecimal.ZERO);
+//
+//            //make payment
+//            Integer paymentId= createPayment(api, "100.00", false, user.getUserId(), null);
+//            System.out.println("Created payment " + paymentId);
+//            assertNotNull("Didn't get the payment id", paymentId);
+//
+//            //check payment balance = payment amount
+//            PaymentWS payment= api.getPayment(paymentId);
+//            assertNotNull(payment);
+//            assertEquals(payment.getAmountAsDecimal(), payment.getBalanceAsDecimal());
+//
+//            //check user's balance
+//            user= api.getUserWS(user.getUserId());
+//            BigDecimal userBalance= userBl.getBalance(user.getUserId());
+//            assertNotNull(userBalance);
+//            assertTrue("User Balance should have been negetive", BigDecimal.ZERO.compareTo(userBalance) > 0);
+//
+//            assertTrue(payment.getInvoiceIds().length == 0 );
+//
+//            //create refund for above payment, refund amount = payment amount
+//            Integer refundId= createPayment(api, "100.00", true, user.getUserId(), paymentId);
+//            System.out.println("Created refund " + refundId);
+//            assertNotNull("Didn't get the payment id", refundId);
+//
+//            //check user's balance = 0
+//            user = api.getUserWS(user.getUserId());
+//            assertNotNull(user);
+//            assertEquals(BigDecimal.ZERO, userBl.getBalance(user.getUserId()));
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            fail(e.getMessage());
+//        }
+//   }
 
     /**
      * 3. A refund must link to a Payment ID (negetive)
      * because a refund is only issued against a surplus
      */
     public void testRefundFailWhenNoPaymentLinked() {
-
+        System.out.println("testRefundFailWhenNoPaymentLinked()");
         try {
             //create user
             UserWS user= createUser(false, null, null);
@@ -165,7 +176,7 @@ public class RefundTest extends TestCase {
                 Integer refundId= createPayment(api, "100.00", true, user.getUserId(), null);
                 System.out.println("Returned refund payment id." + refundId);
                 assertNull("Refund payment got created without linked payment id.", refundId);
-            } catch (Exception e) {
+            } catch (SessionInternalError e) {
                 //check for validation error
                 e.printStackTrace();
             }
@@ -177,11 +188,11 @@ public class RefundTest extends TestCase {
     }
 
     /**
-     * 4. Test payment balance unchanged when linked payment has linked invoices,
+     * 4. Test payment balance unchanged when linked payment has zero balance and linked invoices,
      * but invoice balance increased from previous balance
      */
-    public void testRefundPaymentWithInvoiceLinked() {
-
+   public void testRefundPaymentWithInvoiceLinked() {
+       System.out.println("testRefundPaymentWithInvoiceLinked()");
         try {
             //CREATE USER
             UserWS user= createUser(false, null, null);
@@ -191,12 +202,12 @@ public class RefundTest extends TestCase {
             //CREATE ORDER & INVOICE
             Integer invoiceId= createOrderAndInvoice(api, user.getUserId());
             assertNotNull(invoiceId);
-            
+
             //check invoice balance greater then zero
             InvoiceWS invoice= api.getLatestInvoice(user.getUserId());
             assertNotNull(invoice);
             assertTrue(invoice.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) > 0 );
-            
+
             //MAKE PAYMENT
             Integer paymentId= createPayment(api, "100.00", false, user.getUserId(), null);
             System.out.println("Created payment " + paymentId);
@@ -224,7 +235,7 @@ public class RefundTest extends TestCase {
             payment= api.getPayment(paymentId);
             assertNotNull(payment);
             assertEquals(BigDecimal.ZERO, payment.getBalanceAsDecimal());
-            
+
             //check invoice balance is greater than zero
             invoice= api.getInvoiceWS(invoice.getId());
             assertNotNull(invoice);
@@ -232,7 +243,7 @@ public class RefundTest extends TestCase {
 
             //invoice balance is equal to its total
             assertEquals(invoice.getBalanceAsDecimal(), invoice.getTotalAsDecimal());
-            
+
             System.out.println("Invoice balance is " + invoice.getBalance());
 
         } catch (Exception e) {
@@ -243,11 +254,11 @@ public class RefundTest extends TestCase {
 
     /**
      * Refund a payment that is linked to one invoice, paying it in full, but
-     * having some balance left. Result: payment balance is zero. Invoice
-     * balance is equal to its total (used to be zero).
+     * having some balance left. Result: payment balance is Refund amount less amount used to pay invoice originally.
+     * Invoice balance is equal to its total (used to be zero).
      */
     public void testRefundWithPaymentBalance() {
-
+        System.out.println("testRefundWithPaymentBalance()");
 
         try {
             //CREATE USER
@@ -258,12 +269,12 @@ public class RefundTest extends TestCase {
             //CREATE ORDER & INVOICE
             Integer invoiceId= createOrderAndInvoice(api, user.getUserId());
             assertNotNull(invoiceId);
-            
+
             //check invoice balance greater then zero
             InvoiceWS invoice= api.getLatestInvoice(user.getUserId());
             assertNotNull(invoice);
             assertTrue(invoice.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) > 0 );
-            
+
             //MAKE PAYMENT
             Integer paymentId= createPayment(api, "200.00", false, user.getUserId(), null);
             System.out.println("Created payment " + paymentId);
@@ -284,7 +295,7 @@ public class RefundTest extends TestCase {
             assertTrue(payment.getInvoiceIds().length > 0 );
 
             //CREATE REFUND for above payment, refund amount = payment amount
-            Integer refundId= createPayment(api, "100.00", true, user.getUserId(), paymentId);
+            Integer refundId= createPayment(api, "200.00", true, user.getUserId(), paymentId);
             System.out.println("Created refund " + refundId);
             assertNotNull("Didn't get the payment id", refundId);
 
@@ -292,15 +303,15 @@ public class RefundTest extends TestCase {
             payment= api.getPayment(paymentId);
             assertNotNull(payment);
             assertEquals(BigDecimal.ZERO, payment.getBalanceAsDecimal());
-            
+
             //check invoice balance is greater than zero
             invoice= api.getInvoiceWS(invoice.getId());
             assertNotNull(invoice);
             assertTrue(invoice.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) > 0);
 
             //invoice balance is equal to its total
-            assertEquals(invoice.getBalanceAsDecimal(), invoice.getTotalAsDecimal());
-            
+            assertEquals("Invoice balance should have been $100.00", invoice.getBalanceAsDecimal(), invoice.getTotalAsDecimal());
+
             System.out.println("Invoice balance is " + invoice.getBalance());
 
         } catch (Exception e) {
@@ -316,7 +327,7 @@ public class RefundTest extends TestCase {
      * paid by the payment.
      */
     public void testRefundPaymentLinkedManyInvoices() {
-
+        System.out.println("testRefundPaymentLinkedManyInvoices()");
 
         try {
             //CREATE USER
@@ -327,22 +338,22 @@ public class RefundTest extends TestCase {
             //CREATE ORDER & INVOICE 1
             Integer invoiceId= createOrderAndInvoice(api, user.getUserId());
             assertNotNull(invoiceId);
-            
+
             //2
             invoiceId= createOrderAndInvoice(api, user.getUserId());
             assertNotNull(invoiceId);
-            
+
             //3
             invoiceId= createOrderAndInvoice(api, user.getUserId());
             assertNotNull(invoiceId);
-            
+
             //check invoice balance greater then zero
             InvoiceWS invoice= api.getLatestInvoice(user.getUserId());
             assertNotNull(invoice);
             assertTrue(invoice.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) > 0 );
-            
+
             //MAKE PAYMENT
-            Integer paymentId= createPayment(api, "100.00", false, user.getUserId(), null);
+            Integer paymentId= createPayment(api, "300.00", false, user.getUserId(), null);
             System.out.println("Created payment " + paymentId);
             assertNotNull("Didn't get the payment id", paymentId);
 
@@ -357,10 +368,10 @@ public class RefundTest extends TestCase {
             assertEquals(BigDecimal.ZERO, payment.getBalanceAsDecimal());
 
             //payment has linked invoices
-            assertTrue(payment.getInvoiceIds().length > 0 );
+            assertTrue(payment.getInvoiceIds().length == 3 );
 
             //CREATE REFUND for above payment, refund amount = payment amount
-            Integer refundId= createPayment(api, "100.00", true, user.getUserId(), paymentId);
+            Integer refundId= createPayment(api, "300.00", true, user.getUserId(), paymentId);
             System.out.println("Created refund " + refundId);
             assertNotNull("Didn't get the payment id", refundId);
 
@@ -368,7 +379,7 @@ public class RefundTest extends TestCase {
             payment= api.getPayment(paymentId);
             assertNotNull(payment);
             assertEquals(BigDecimal.ZERO, payment.getBalanceAsDecimal());
-            
+
             //check invoice balance is greater than zero
             invoice= api.getInvoiceWS(invoice.getId());
             assertNotNull(invoice);
@@ -376,8 +387,14 @@ public class RefundTest extends TestCase {
 
             //invoice balance is equal to its total
             assertEquals(invoice.getBalanceAsDecimal(), invoice.getTotalAsDecimal());
-            
-            System.out.println("Invoice balance is " + invoice.getBalance());
+
+            InvoiceWS[] userInvoices= api.getAllInvoicesForUser(user.getUserId());
+
+            for (InvoiceWS inv: userInvoices) {
+                assertEquals("Should have been $100.00", new BigDecimal("100.00"), inv.getBalanceAsDecimal());
+            }
+
+            System.out.println("Invoice balance is.. " + invoice.getBalance());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -388,18 +405,18 @@ public class RefundTest extends TestCase {
     /*
      * Deleting a Payment that has been refunded must fail.
      */
-    
+
     /**
      * Cannot delete payment that has been refunded (negetive)
      */
     public void testDeletePaymentThatHasRefund() {
-
+        System.out.println("testDeletePaymentThatHasRefund()");
         try {
             //create user
             UserWS user= createUser(false, null, null);
             assertTrue(user.getUserId() > 0);
             System.out.println("User created successfully " + user.getUserId());
-            
+
             //make payment
             Integer paymentId= createPayment(api, "100.00", false, user.getUserId(), null);
             System.out.println("Created payment " + paymentId);
@@ -409,9 +426,9 @@ public class RefundTest extends TestCase {
             PaymentWS payment= api.getPayment(paymentId);
             assertNotNull(payment);
             assertEquals(payment.getAmountAsDecimal(), payment.getBalanceAsDecimal());
-            
+
             assertTrue(payment.getInvoiceIds().length == 0 );
-            
+
             //create refund for above payment, refund amount = payment amount
             Integer refundId= createPayment(api, "100.00", true, user.getUserId(), paymentId);
             System.out.println("Created refund " + refundId);
@@ -421,7 +438,7 @@ public class RefundTest extends TestCase {
             payment= api.getPayment(paymentId);
             assertNotNull(payment);
             assertEquals(BigDecimal.ZERO, payment.getBalanceAsDecimal());
-            
+
             try {
                 api.deletePayment(paymentId);
                 fail();
@@ -433,252 +450,10 @@ public class RefundTest extends TestCase {
             fail(e.getMessage());
         }
     }
-    
-    /*
-     * Delete Refund Scenarios
-     */
-    
-    /**
-     * Simple: Delete a simple refund of a Payment that has no linked invoices.
-     * Should increase linked payment's balance.
-     */
-    public void testDeleteRefund() {
 
-        try {
-            //create user
-            UserWS user= createUser(false, null, null);
-            assertTrue(user.getUserId() > 0);
-            System.out.println("User created successfully " + user.getUserId());
-            
-            //make payment
-            Integer paymentId= createPayment(api, "100.00", false, user.getUserId(), null);
-            System.out.println("Created payment " + paymentId);
-            assertNotNull("Didn't get the payment id", paymentId);
-
-            //check payment balance = payment amount
-            PaymentWS payment= api.getPayment(paymentId);
-            assertNotNull(payment);
-            assertEquals(payment.getAmountAsDecimal(), payment.getBalanceAsDecimal());
-            
-            assertTrue(payment.getInvoiceIds().length == 0 );
-            
-            //create refund for above payment, refund amount = payment amount
-            Integer refundId= createPayment(api, "100.00", true, user.getUserId(), paymentId);
-            System.out.println("Created refund " + refundId);
-            assertNotNull("Didn't get the payment id", refundId);
-
-            //check payment balance = 0
-            payment= api.getPayment(paymentId);
-            assertNotNull(payment);
-            assertEquals(BigDecimal.ZERO, payment.getBalanceAsDecimal());
-            
-            //delete refund
-            api.deletePayment(refundId);
-            
-            //payment balance should not be zero
-            payment= api.getPayment(paymentId);
-            assertNotNull(payment);
-            assertEquals(payment.getAmountAsDecimal(), payment.getBalanceAsDecimal());
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail(e.getMessage());
-        }
-    }
-    
-    /**
-     * Delete a Refund for a Payment that pays one or more Invoice in full and 
-     * has zero balance left.
-     */
-    public void testRefundForPaymentWithPaidInvoice() {
-        
-        try {
-            //CREATE USER
-            UserWS user= createUser(false, null, null);
-            assertTrue(user.getUserId() > 0);
-            System.out.println("User created successfully " + user.getUserId());
-
-            //CREATE ORDER & INVOICE
-            Integer invoiceId1= createOrderAndInvoice(api, user.getUserId());
-            assertNotNull(invoiceId1);
-            
-            //second order and invoice for $100
-            Integer invoiceId2= createOrderAndInvoice(api, user.getUserId());
-            assertNotNull(invoiceId2);
-            
-            //check invoice balance greater then zero
-            InvoiceWS invoice= api.getLatestInvoice(user.getUserId());
-            assertNotNull(invoice);
-            assertTrue(invoice.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) > 0 );
-            
-            //MAKE PAYMENT
-            Integer paymentId= createPayment(api, "200.00", false, user.getUserId(), null);
-            System.out.println("Created payment " + paymentId);
-            assertNotNull("Didn't get the payment id", paymentId);
-
-            //check invoice balance is zero
-            invoice= api.getInvoiceWS(invoice.getId());
-            assertNotNull(invoice);
-            assertEquals(invoice.getBalanceAsDecimal(), BigDecimal.ZERO );
-
-            //check payment balance = zero since invoice paid
-            PaymentWS payment= api.getPayment(paymentId);
-            assertNotNull(payment);
-            assertEquals(BigDecimal.ZERO, payment.getBalanceAsDecimal());
-
-            //payment has linked invoices
-            assertTrue(payment.getInvoiceIds().length == 2 );
-
-            //CREATE REFUND for above payment, refund amount = payment amount
-            Integer refundId= createPayment(api, "200.00", true, user.getUserId(), paymentId);
-            System.out.println("Created refund " + refundId);
-            assertNotNull("Didn't get the payment id.", refundId);
-
-            //check payment balance = 0
-            payment= api.getPayment(paymentId);
-            assertNotNull(payment);
-            assertEquals(BigDecimal.ZERO, payment.getBalanceAsDecimal());
-            
-            //check invoice balance is greater than zero, increased due to Refund
-            invoice= api.getInvoiceWS(invoice.getId());
-            assertNotNull(invoice);
-            assertTrue(invoice.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) > 0);
-            assertEquals(invoice.getBalanceAsDecimal(), new BigDecimal("100.00") );
-            
-            //invoice balance is equal to its total
-            assertEquals(invoice.getBalanceAsDecimal(), invoice.getTotalAsDecimal());
-            
-            System.out.println("Invoice balance is " + invoice.getBalance());
-            
-            //DELETE THIS REFUND
-            api.deletePayment(refundId);
-            System.out.println("Deleted refund " + refundId);
-            
-            //invoice balance should be reduced by the refund amount less balance from payment 
-            InvoiceWS inv= api.getInvoiceWS(invoiceId1);
-            assertNotNull(inv);
-            assertTrue(inv.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) == 0 );
-            
-            //other invoice
-            inv= api.getInvoiceWS(invoiceId2);
-            assertNotNull(inv);
-            assertTrue(inv.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) == 0 );
-            
-            //payment balance should be equal to its amount minus invoice amount
-            PaymentWS pym= api.getPayment(paymentId);
-            assertNotNull(pym);
-            System.out.println(pym.getBalance());
-            //payment balance should be zero
-            assertTrue(pym.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) == 0 );
-            
-            System.out.println("The delete refund successfully reversed the actions of the refund.");
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail(e.getMessage());
-        }
-    }
-    
-    /**
-     * Delete a Refund for a Payment that pays one or more Invoice in full and 
-     * still has non-zero positive balance left.
-     */
-    public void testDelRefundPaymentWithBalAndPaidInvoice() {
-        
-        try {
-
-            //CREATE USER
-            UserWS user= createUser(false, null, null);
-            assertTrue(user.getUserId() > 0);
-            System.out.println("User created successfully " + user.getUserId());
-
-            //CREATE ORDER & INVOICE
-            Integer invoiceId1= createOrderAndInvoice(api, user.getUserId());
-            assertNotNull(invoiceId1);
-            
-            //second order and invoice for $100
-            Integer invoiceId2= createOrderAndInvoice(api, user.getUserId());
-            assertNotNull(invoiceId2);
-            
-            //check invoice balance greater then zero
-            InvoiceWS invoice= api.getLatestInvoice(user.getUserId());
-            assertNotNull(invoice);
-            assertTrue(invoice.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) > 0 );
-            
-            //MAKE PAYMENT of $300, when due invoice(s) total $200
-            Integer paymentId= createPayment(api, "300.00", false, user.getUserId(), null);
-            System.out.println("Created payment " + paymentId);
-            assertNotNull("Didn't get the payment id", paymentId);
-
-            System.out.println("created a big payment of $300.00 with " +
-            		"balance (100), invoice(s) balance = 0, payment balance > 0");
-
-            //check invoice balance is zero
-            invoice= api.getInvoiceWS(invoice.getId());
-            assertNotNull(invoice);
-            assertEquals(invoice.getBalanceAsDecimal(), BigDecimal.ZERO );
-
-            //check payment balance = zero since invoice paid
-            PaymentWS payment= api.getPayment(paymentId);
-            assertNotNull(payment);
-            assertEquals(BigDecimal.ZERO, payment.getBalanceAsDecimal());
-
-            //payment has linked invoices
-            assertTrue(payment.getInvoiceIds().length == 2 );
-
-            //CREATE REFUND for above payment, refund amount = payment amount
-            Integer refundId= createPayment(api, "300.00", true, user.getUserId(), paymentId);
-            System.out.println("Created refund " + refundId);
-            System.out.println("create refund - increases the balance of Invoice(s), reduces the balance of Payment");
-            assertNotNull("Didn't get the payment id.", refundId);
-
-            //check payment balance = 0
-            payment= api.getPayment(paymentId);
-            assertNotNull(payment);
-            assertEquals(BigDecimal.ZERO, payment.getBalanceAsDecimal());
-            
-            //check invoice balance is greater than zero, increased due to Refund
-            invoice= api.getInvoiceWS(invoice.getId());
-            assertNotNull(invoice);
-            assertTrue(invoice.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) > 0);
-            assertEquals(invoice.getBalanceAsDecimal(), new BigDecimal("100.00") );
-            
-            //invoice balance is equal to its total
-            assertEquals(invoice.getBalanceAsDecimal(), invoice.getTotalAsDecimal());
-            
-            System.out.println("Invoice balance is " + invoice.getBalance());
-            
-            //DELETE THIS REFUND
-            System.out.println("delete refund reduces the balance of Invoice(s), increases the balance of Payment");
-            api.deletePayment(refundId);
-            System.out.println("Deleted refund " + refundId);
-            
-            //invoice balance should be reduced by the refund amount less balance from payment 
-            InvoiceWS inv= api.getInvoiceWS(invoiceId1);
-            assertNotNull(inv);
-            assertTrue(inv.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) == 0 );
-            
-            //other invoice
-            inv= api.getInvoiceWS(invoiceId2);
-            assertNotNull(inv);
-            assertTrue(inv.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) == 0 );
-            
-            //payment balance should be equal to its amount minus invoice amount
-            PaymentWS pym= api.getPayment(paymentId);
-            assertNotNull(pym);
-            System.out.println(pym.getBalance());
-            //payment balance should be greater than Zero
-            assertTrue(pym.getBalanceAsDecimal().compareTo(BigDecimal.ZERO) > 0 );
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail(e.getMessage());
-        }
-    }
-    
-    
     //Helper method to create user
     private static UserWS createUser(boolean goodCC, Integer parentId, Integer currencyId) throws JbillingAPIException, IOException {
+        System.out.println("createUser called");
         JbillingAPI api = JbillingAPIFactory.getAPI();
 
         /*
@@ -756,9 +531,9 @@ public class RefundTest extends TestCase {
 
     //Helper method to create order and invoice
     private static Integer createOrderAndInvoice(JbillingAPI api, Integer userId) {
-        
+
         Integer invoiceId= null;
-        
+
         try {
             OrderWS newOrder = new OrderWS();
             newOrder.setUserId(userId);
@@ -795,7 +570,7 @@ public class RefundTest extends TestCase {
         }
         return invoiceId;
     }
-    
+
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {
         assertEquals(null, expected, actual);
     }
@@ -805,5 +580,5 @@ public class RefundTest extends TestCase {
                 (Object) (expected == null ? null : expected.setScale(2, RoundingMode.HALF_UP)),
                 (Object) (actual == null ? null : actual.setScale(2, RoundingMode.HALF_UP)));
     }
-    
+
 }

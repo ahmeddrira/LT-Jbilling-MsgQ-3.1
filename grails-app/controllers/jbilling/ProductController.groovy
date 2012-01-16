@@ -1,21 +1,17 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package jbilling
@@ -42,6 +38,7 @@ import com.sapienter.jbilling.client.util.SortableCriteria
 
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import com.sapienter.jbilling.server.pricing.PriceModelBL
+import org.apache.commons.lang.StringUtils
 
 @Secured(["MENU_97"])
 class ProductController {
@@ -355,26 +352,46 @@ class ProductController {
         try {
             if (!category.id || category.id == 0) {
                 if (SpringSecurityUtils.ifAllGranted("PRODUCT_CATEGORY_50")) {
-                    log.debug("creating product category ${category}")
+                    if (category.description.trim()) {
+                        log.debug("creating product category ${category}")
 
-                    category.id = webServicesSession.createItemCategory(category)
+                        category.id = webServicesSession.createItemCategory(category)
 
-                    flash.message = 'product.category.created'
-                    flash.args = [ category.id as String ]
+                        flash.message = 'product.category.created'
+                        flash.args = [category.id as String]
+                    } else {
+                        log.debug("there was an error in the product category data.")
 
+                        category.description = StringUtils.EMPTY
+
+                        flash.error = message(code: 'product.category.error.name.blank')
+
+                        render view: "editCategory", params: [category: category]
+                        return
+                    }
                 } else {
                     render view: '/login/denied'
                     return
                 }
-
             } else {
                 if (SpringSecurityUtils.ifAllGranted("PRODUCT_CATEGORY_51")) {
-                    log.debug("saving changes to product category ${category.id}")
+                    if (category.description.trim()) {
+                        log.debug("saving changes to product category ${category.id}")
 
-                    webServicesSession.updateItemCategory(category)
+                        webServicesSession.updateItemCategory(category)
 
-                    flash.message = 'product.category.updated'
-                    flash.args = [ category.id as String ]
+                        flash.message = 'product.category.updated'
+                        flash.args = [category.id as String]
+                    } else {
+                        log.debug("there was an error in the product category data.")
+
+                        category.description = StringUtils.EMPTY
+
+                        flash.error = message(code: 'product.category.error.name.blank')
+
+                        render view: "editCategory", params: [category: category]
+                        return
+                    }
 
                 } else {
                     render view: '/login/denied'
@@ -384,11 +401,11 @@ class ProductController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
-            render view: 'editCategory', model: [ category : category ]
+            render view: 'editCategory', model: [category: category]
             return
         }
 
-        chain action: 'list', params: [ id: category.id ]
+        chain action: 'list', params: [id: category.id]
     }
 
     /**
@@ -576,17 +593,28 @@ class ProductController {
         def product = new ItemDTOEx()
         bindProduct(product, oldProduct, params)
 
-        try{
+        try {
             // save or update
             if (!product.id || product.id == 0) {
                 if (SpringSecurityUtils.ifAllGranted("PRODUCT_40")) {
-                    log.debug("creating product ${product}")
 
-                    product.id = webServicesSession.createItem(product)
+                    if (product.description.trim()) {
+                        log.debug("creating product ${product}")
 
-                    flash.message = 'product.created'
-                    flash.args = [ product.id ]
+                        product.id = webServicesSession.createItem(product)
 
+                        flash.message = 'product.created'
+                        flash.args = [product.id]
+                    } else {
+                        log.debug("there was an error in the product data.")
+
+                        product.description = StringUtils.EMPTY
+
+                        flash.error = message(code: 'product.error.name.blank')
+
+                        render view: "editProduct", model: [product: product, currencies: currencies, categories: getProductCategories(), category: params.selectedCategoryId]
+                        return
+                    }
                 } else {
                     render view: '/login/denied'
                     return;
@@ -594,12 +622,23 @@ class ProductController {
 
             } else {
                 if (SpringSecurityUtils.ifAllGranted("PRODUCT_41")) {
-                    log.debug("saving changes to product ${product.id}")
+                    if (product.description.trim()) {
+                        log.debug("saving changes to product ${product.id}")
 
-                    webServicesSession.updateItem(product)
+                        webServicesSession.updateItem(product)
 
-                    flash.message = 'product.updated'
-                    flash.args = [ product.id ]
+                        flash.message = 'product.updated'
+                        flash.args = [product.id]
+                    } else {
+                        log.debug("there was an error in the product data.")
+
+                        product.description = StringUtils.EMPTY
+
+                        flash.error = message(code: 'product.error.name.blank')
+
+                        render view: "editProduct", model: [product: product, currencies: currencies, categories: getProductCategories(), category: params.selectedCategoryId]
+                        return
+                    }
 
                 } else {
                     render view: '/login/denied'
@@ -609,11 +648,11 @@ class ProductController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
-            render view: 'editProduct', model: [ product: product, categories: getProductCategories(), currencies: currencies ]
+            render view: 'editProduct', model: [product: product, categories: getProductCategories(), currencies: currencies]
             return
         }
 
-        chain action: 'show', params: [ id: product.id ]
+        chain action: 'show', params: [id: product.id]
     }
 
     def bindProduct(ItemDTOEx product, ItemDTOEx oldProduct, GrailsParameterMap params) {

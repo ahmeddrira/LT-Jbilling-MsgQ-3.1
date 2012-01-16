@@ -1,21 +1,17 @@
 %{--
-  jBilling - The Enterprise Open Source Billing System
-  Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
+  JBILLING CONFIDENTIAL
+  _____________________
 
-  This file is part of jbilling.
+  [2003] - [2012] Enterprise jBilling Software Ltd.
+  All Rights Reserved.
 
-  jbilling is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  jbilling is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+  NOTICE:  All information contained herein is, and remains
+  the property of Enterprise jBilling Software.
+  The intellectual and technical concepts contained
+  herein are proprietary to Enterprise jBilling Software
+  and are protected by trade secret or copyright law.
+  Dissemination of this information or reproduction of this material
+  is strictly forbidden.
   --}%
 
 <%@ page import="com.sapienter.jbilling.common.Constants" contentType="text/html;charset=UTF-8" %>
@@ -70,10 +66,10 @@
                                         ${invoice.paymentAttempts}
                                     </td>
                                     <td class="innerContent">
-                                        <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
+                                        <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"/>
                                     </td>
                                     <td class="innerContent">
-                                        <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
+                                        <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"/>
                                     </td>
                                     <td class="innerContent">
                                         <g:formatDate date="${invoice.dueDate}"/>
@@ -167,6 +163,9 @@
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="payment.is.refund"/></content>
                             <g:formatBoolean boolean="${payment?.isRefund > 0}"/>
+                            %{--<g:if test="${refundPaymentId}">--}%
+                                %{--(${refundPaymentId})--}%
+                            %{--</g:if>--}%
                             <g:hiddenField name="isRefund" value="${payment?.isRefund}"/>
                         </g:applyLayout>
 
@@ -175,6 +174,16 @@
                             <g:formatBoolean boolean="${processNow}"/>
                             <g:hiddenField name="processNow" value="${processNow}"/>
                         </g:applyLayout>
+
+                        %{--show linked payment ID if present--}%
+                        <g:if test="${refundPaymentId}">
+                            <g:applyLayout name="form/text">
+                                <content tag="label"><g:message code="prompt.linked.payment"/></content>
+                                <em>${refundPaymentId} </em>
+                                <g:hiddenField name="payment_id" value="${refundPaymentId}"/>
+                            </g:applyLayout>
+                        </g:if>
+
                     </div>
                 </div>
 

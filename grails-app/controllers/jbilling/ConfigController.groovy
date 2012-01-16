@@ -1,45 +1,37 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package jbilling
 
 import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.common.Util
+import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.process.AgeingWS
-import com.sapienter.jbilling.server.user.contact.db.ContactDTO
-import com.sapienter.jbilling.server.user.contact.db.ContactMapDTO
-import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO
-import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.user.CompanyWS
+import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.server.util.Constants
+import com.sapienter.jbilling.server.util.CurrencyWS
 import com.sapienter.jbilling.server.util.PreferenceTypeWS
 import com.sapienter.jbilling.server.util.PreferenceWS
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO
-import com.sapienter.jbilling.common.Util
 import grails.plugins.springsecurity.Secured
-import com.sapienter.jbilling.server.util.db.CurrencyDTO
-import com.sapienter.jbilling.server.item.CurrencyBL
-import com.sapienter.jbilling.server.util.CurrencyWS
-import com.sapienter.jbilling.server.user.ContactWS
-import com.sapienter.jbilling.server.user.CompanyWS
+import com.sapienter.jbilling.common.CommonConstants
 
 /**
- * ConfigurationController 
+ * ConfigurationController
  *
  * @author Brian Cowdery
  * @since 03-Jan-2011
@@ -100,7 +92,7 @@ class ConfigController {
         Ageing configuration
      */
 
-	
+
 	def aging = {
 		log.debug "config.aging ${session['language_id']}"
 		AgeingWS[] array= webServicesSession.getAgeingConfiguration(session['language_id'] as Integer)
@@ -108,12 +100,12 @@ class ConfigController {
 		def gracePeriod= userSession.getEntityPreference(session['company_id'] as Integer, Constants.PREFERENCE_GRACE_PERIOD)
 		[ageingSteps: array, gracePeriod:gracePeriod]
 	}
-	
+
 	def saveAging = {
-		
+
 		def cnt = params.recCnt.toInteger()
 		log.debug "Records Count: ${cnt}"
-		
+
 		AgeingWS[] array= new AgeingWS[cnt]
 		for (int i=0; i < cnt; i++) {
 			log.debug "${params['obj[' + i + '].statusId']}"
@@ -121,8 +113,8 @@ class ConfigController {
 			bindData(ws, params["obj["+i+"]"])
 			array[i]= ws
 		}
-		
-		for (AgeingWS dto: array) { 
+
+		for (AgeingWS dto: array) {
 			log.debug "Printing: ${dto.toString()}"
 		}
 		try {
@@ -138,16 +130,16 @@ class ConfigController {
 	}
 
     /*
-        Company configuration    
+        Company configuration
      */
-    
+
 	def company = {
 		CompanyWS company = webServicesSession.getCompany()
 		breadcrumbService.addBreadcrumb(controllerName, actionName, null, null)
 
 		[ company: company ]
 	}
-	
+
 	def saveCompany= {
 		try {
 			CompanyWS company= new CompanyWS(session['company_id'].intValue())
@@ -159,7 +151,7 @@ class ConfigController {
             company.setContact(contact)
 
             webServicesSession.updateCompany(company)
-            
+
 			flash.message = 'config.company.save.success'
 
 		} catch (SessionInternalError e){
@@ -221,17 +213,13 @@ class ConfigController {
      */
 
     def currency = {
-        def currency = new CurrencyBL()
-
-        def entityCurrency = currency.getEntityCurrency(session['company_id'])
-        def currencies = currency.getCurrencies(session['language_id'], session['company_id'])
-
-
-        [ entityCurrency: entityCurrency, currencies: currencies ]
+        def startDate = params.startDate ? new Date().parse(message(code: 'date.format'), params.startDate) : getLastTimePointDate()
+        return generateCurrenciesFormModel(com.sapienter.jbilling.common.Util.truncateDate(startDate))
     }
 
     def saveCurrencies = {
         def defaultCurrencyId = params.int('defaultCurrencyId')
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
 
         // build a list of currencies
         def currencies = []
@@ -240,6 +228,7 @@ class ConfigController {
                 def currency = new CurrencyWS()
                 bindData(currency, v, ['_inUse'])
                 currency.defaultCurrency = (currency.id == defaultCurrencyId)
+                currency.fromDate = startDate
 
                 currencies << currency
             }
@@ -248,14 +237,51 @@ class ConfigController {
         // update all currencies
         try {
             webServicesSession.updateCurrencies((CurrencyWS[]) currencies)
-
             flash.message = 'currencies.updated'
-
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
         }
 
         redirect action: 'currency'
+    }
+
+    def addDatePoint = {
+        def startDate = com.sapienter.jbilling.common.Util.truncateDate(new Date())
+        def mdl = generateCurrenciesFormModel(startDate)
+        mdl.timePoints.add(startDate)
+
+        render template: 'currency/form', model: mdl
+    }
+
+    def editDatePoint = {
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+
+        render template: 'currency/form', model:  generateCurrenciesFormModel(startDate)
+    }
+
+    def removeDatePoint = {
+        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+        CurrencyBL.removeExchangeRatesForDate(session['company_id'], startDate)
+
+        render template: 'currency/form', model:  generateCurrenciesFormModel(getLastTimePointDate())
+    }
+
+    def generateCurrenciesFormModel = { date ->
+        def currency = new CurrencyBL()
+        def entityCurrency = currency.getEntityCurrency(session['company_id'])
+        def currencies = currency.getCurrenciesToDate(session['language_id'], session['company_id'], date)
+        def timePoints = currency.getUsedTimePoints(session['company_id'])
+
+        return [ entityCurrency: entityCurrency, currencies: currencies, startDate : date, timePoints : timePoints ]
+    }
+
+    def getLastTimePointDate = {
+        def timePoints = new CurrencyBL().getUsedTimePoints(session['company_id'])
+        def lastDate = CommonConstants.EPOCH_DATE;
+        if(timePoints.size() > 0) {
+            lastDate = timePoints.get(timePoints.size() - 1)
+        }
+        return lastDate
     }
 
     def editCurrency = {
@@ -273,7 +299,6 @@ class ConfigController {
 
             flash.message = 'currency.created'
             flash.args = [ currency.code ]
-
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
             chain action: 'currency', model: [ currency: currency ]

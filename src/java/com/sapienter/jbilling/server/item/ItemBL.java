@@ -1,25 +1,22 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package com.sapienter.jbilling.server.item;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
@@ -46,11 +43,9 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 public class ItemBL {
@@ -111,7 +106,7 @@ public class ItemBL {
             // Backwards compatible with the old ItemDTOEx Web Service API, use the
             // transient price field as the rate for a default pricing model.
             if (dto.getPrice() != null) {
-                dto.addDefaultPrice(PriceModelDTO.EPOCH_DATE, getDefaultPrice(dto.getPrice()));
+                dto.addDefaultPrice(CommonConstants.EPOCH_DATE, getDefaultPrice(dto.getPrice()));
             }
 
             // default currency for new prices (if currency is not explicitly set)
@@ -219,7 +214,7 @@ public class ItemBL {
                 item.getDefaultPrices().putAll(dto.getDefaultPrices());
 
             } else if (dto.getPrice() != null) {
-                item.addDefaultPrice(PriceModelDTO.EPOCH_DATE, getDefaultPrice(dto.getPrice()));
+                item.addDefaultPrice(CommonConstants.EPOCH_DATE, getDefaultPrice(dto.getPrice()));
             }
 
         } else {
@@ -273,9 +268,9 @@ public class ItemBL {
             item.getExcludedTypes().add(itemType.getEntity());
         }
     }
-    
+
     public void delete(Integer executorId) {
-        item.setDeleted(new Integer(1));
+        item.setDeleted(1);
 
         eLogger.audit(executorId, null, Constants.TABLE_ITEM, item.getId(),
                 EventLogger.MODULE_ITEM_MAINTENANCE,
@@ -302,14 +297,16 @@ public class ItemBL {
      * the users current usage in the pricing calculation.
      *
      * This method does not execute any pricing plug-ins and does not use quantity or usage
-     * values for {@link PriceModelDTO#applyTo(OrderDTO, PricingResult, List, BigDecimal, Usage)}
+     * values for {@link PriceModelDTO#applyTo(com.sapienter.jbilling.server.order.db.OrderDTO, java.math.BigDecimal,
+     * com.sapienter.jbilling.server.item.tasks.PricingResult, java.util.List}
      * price calculations.
      *
+     * @param date
      * @param item item to price
      * @param currencyId currency id of requested price
      * @return The price in the requested currency
      */
-    public BigDecimal getPriceByCurrency(ItemDTO item, Integer userId, Integer currencyId)  {
+    public BigDecimal getPriceByCurrency(Date date, ItemDTO item, Integer userId, Integer currencyId)  {
         if (item.getDefaultPrices() != null && !item.getDefaultPrices().isEmpty()) {
             // empty usage for default pricing
             Usage usage = new Usage();
@@ -320,11 +317,11 @@ public class ItemBL {
             PricingResult result = new PricingResult(item.getId(), userId, currencyId);
             List<PricingField> fields = Collections.emptyList();
 
-
             // price for today
-            PriceModelDTO price = item.getPrice(new Date());
-             if (price != null) {
-                 price.applyTo(null, result, fields, BigDecimal.ONE, usage);
+            PriceModelDTO priceModel = item.getPrice(new Date());
+
+             if (priceModel != null) {
+                 priceModel.applyTo(null, BigDecimal.ONE, result, fields, usage, date);
                  return result.getPrice();
              }
         }
@@ -357,9 +354,8 @@ public class ItemBL {
             throws SessionInternalError {
 
         if (currencyId == null || entityId == null) {
-            throw new SessionInternalError("Can't get a price with null parameters. "
-                                           + "currencyId = " + currencyId
-                                           + " entityId = " + entityId);
+            throw new SessionInternalError("Can't get a price with null parameters. currencyId = " + currencyId +
+                    " entityId = " + entityId);
         }
 
         CurrencyBL currencyBL;
@@ -371,7 +367,7 @@ public class ItemBL {
         }
 
         // default "simple" price
-        BigDecimal price = getPriceByCurrency(item, userId, currencyId);
+        BigDecimal price = getPriceByCurrency(order != null ? order.getPricingDate() : null, item, userId, currencyId);
 
         // run a plug-in with external logic (rules), if available
         try {
@@ -569,8 +565,7 @@ public class ItemBL {
         int index = 0;
         for (ItemDTO item: entity.getItems()) {
             set(item.getId());
-            items[index++] = getWS(getDTO(entity.getLanguageId(),
-                    null, entityId, entity.getCurrencyId()));
+            items[index++] = getWS(getDTO(entity.getLanguageId(), null, entityId, entity.getCurrencyId()));
         }
 
         return items;

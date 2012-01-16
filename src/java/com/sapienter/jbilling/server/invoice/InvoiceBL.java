@@ -1,43 +1,20 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package com.sapienter.jbilling.server.invoice;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import javax.sql.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
@@ -69,10 +46,16 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
-import com.sapienter.jbilling.server.util.Util;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
-import java.util.ArrayList;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
+
+import javax.sql.rowset.CachedRowSet;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.*;
 
 public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
 
@@ -117,14 +100,13 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
     }
 
     /**
-     * 
+     *
      * @param userId
      * @param newInvoice
      * @param process
      *            It can be null.
      */
-    public void create(Integer userId, NewInvoiceDTO newInvoice,
-            BillingProcessDTO process, Integer executorUserId) {
+    public void create(Integer userId, NewInvoiceDTO newInvoice, BillingProcessDTO process, Integer executorUserId) {
         // find out the entity id
         PreferenceBL pref = new PreferenceBL();
         UserBL user = null;
@@ -152,7 +134,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
 
                 } else {
                     // update the lastest date only if this is not a review
-                    if (newInvoice.getIsReview() == null || newInvoice.getIsReview().intValue() == 0) {
+                    if (newInvoice.getIsReview() == null || newInvoice.getIsReview() == 0) {
                         pref.createUpdateForEntity(entityId,
                                                    Constants.PREFERENCE_CONTINUOUS_DATE,
                                                    com.sapienter.jbilling.common.Util.parseDate(newInvoice.getBillingDate()));
@@ -220,7 +202,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
 
         // calculate/compose the number
         String numberStr = null;
-        if (newInvoice.getIsReview() != null && newInvoice.getIsReview().intValue() == 1) {
+        if (newInvoice.getIsReview() != null && newInvoice.getIsReview() == 1) {
             // invoices for review will be seen by the entity employees
             // so the entity locale will be used
             EntityBL entity = new EntityBL(entityId);
@@ -263,11 +245,11 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
 
         // add a log row for convenience
         if ( null != executorUserId ) {
-            eLogger.audit(executorUserId, userId, Constants.TABLE_INVOICE, 
+            eLogger.audit(executorUserId, userId, Constants.TABLE_INVOICE,
                     invoice.getId(), EventLogger.MODULE_INVOICE_MAINTENANCE,
                     EventLogger.ROW_CREATED, null, null, null);
-        } else { 
-            eLogger.auditBySystem(entityId, userId, Constants.TABLE_INVOICE, 
+        } else {
+            eLogger.auditBySystem(entityId, userId, Constants.TABLE_INVOICE,
                     invoice.getId(), EventLogger.MODULE_INVOICE_MAINTENANCE,
                     EventLogger.ROW_CREATED, null, null, null);
         }
@@ -282,18 +264,17 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         InvoiceLineDAS invoiceLineDas = new InvoiceLineDAS();
 
         // get the result DTO lines
-        Iterator dueInvoiceLines = newInvoice.getResultLines().iterator();
         // go over the DTO lines, creating one invoice line for each
 
-        while (dueInvoiceLines.hasNext()) {
-            InvoiceLineDTO lineToAdd = (InvoiceLineDTO) dueInvoiceLines.next();
+        for (Object o : newInvoice.getResultLines()) {
+            InvoiceLineDTO lineToAdd = (InvoiceLineDTO) o;
             // define if the line is a percentage or not
-            lineToAdd.setIsPercentage(new Integer(0));
+            lineToAdd.setIsPercentage(0);
             if (lineToAdd.getItem() != null) {
                 try {
                     ItemBL item = new ItemBL(lineToAdd.getItem());
                     if (item.getEntity().getPercentage() != null) {
-                        lineToAdd.setIsPercentage(new Integer(1));
+                        lineToAdd.setIsPercentage(1);
                     }
                 } catch (SessionInternalError e) {
                     LOG.error("Could not find item to create invoice line " + lineToAdd.getItem().getId());
@@ -319,7 +300,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         if (invoice == null) {
             throw new SessionInternalError("An invoice has to be set before delete");
         }
-        
+
         //prevent a delegated Invoice from being deleted
         if (invoice.getDelegatedInvoiceId() != null && invoice.getDelegatedInvoiceId().intValue() > 0 ) {
             SessionInternalError sie= new SessionInternalError("A carried forward Invoice cannot be deleted");
@@ -384,7 +365,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
 
         // log that this was deleted, otherwise there will be no trace
         if (executorId != null) {
-            eLogger.audit(executorId, invoice.getBaseUser().getId(), 
+            eLogger.audit(executorId, invoice.getBaseUser().getId(),
                     Constants.TABLE_INVOICE, invoice.getId(),
                     EventLogger.MODULE_INVOICE_MAINTENANCE,
                     EventLogger.ROW_DELETED, null, null, null);
@@ -404,7 +385,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                 getHome().save(delegate);
             }
         }
-        
+
         // now delete the invoice itself
         getHome().delete(invoice);
         getHome().flush();
@@ -616,24 +597,24 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         return retValue;
     }
 
-    public Integer getLastByUserAndItemType(Integer userId, Integer itemTypeId) 
+    public Integer getLastByUserAndItemType(Integer userId, Integer itemTypeId)
             throws SQLException {
 
         Integer retValue = null;
         if (userId == null) {
             return null;
-        }            
+        }
         prepareStatement(InvoiceSQL.lastIdbyUserAndItemType);
         cachedResults.setInt(1, userId.intValue());
         cachedResults.setInt(2, itemTypeId.intValue());
-        
+
         execute();
         if (cachedResults.next()) {
             int value = cachedResults.getInt(1);
             if (!cachedResults.wasNull()) {
                 retValue = new Integer(value);
             }
-        } 
+        }
         cachedResults.close();
         conn.close();
         return retValue;
@@ -670,7 +651,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         return result.toArray(new Integer[result.size()]);
     }
 
-    public Integer[] getUserInvoicesByDate(Integer userId, Date since, 
+    public Integer[] getUserInvoicesByDate(Integer userId, Date since,
             Date until) {
         // add a day to include the until date
         GregorianCalendar cal = new GregorianCalendar();
@@ -708,7 +689,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         return retValue;
     }
 
-    
+
 
     public void sendReminders(Date today) throws SQLException,
             SessionInternalError {
@@ -753,7 +734,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                                 invoice.getPublicNumber(), invoice.getTotal(),
                                 invoice.getCreateDatetime(), invoice.getCurrency().getId());
 
-                        INotificationSessionBean notificationSess = 
+                        INotificationSessionBean notificationSess =
                                 (INotificationSessionBean) Context.getBean(
                                 Context.Name.NOTIFICATION_SESSION);
 
@@ -805,7 +786,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         Integer delegatedInvoiceId = i.getInvoice() == null ? null : i.getInvoice().getId();
         Integer userId = i.getBaseUser().getId();
         Integer payments[] = new Integer[i.getPaymentMap().size()];
-        com.sapienter.jbilling.server.entity.InvoiceLineDTO invoiceLines[] = 
+        com.sapienter.jbilling.server.entity.InvoiceLineDTO invoiceLines[] =
                 new com.sapienter.jbilling.server.entity.InvoiceLineDTO[i.getInvoiceLines().size()];
         Integer orders[] = new Integer[i.getOrderProcesses().size()];
 
@@ -820,9 +801,9 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         }
         f = 0;
         for (InvoiceLineDTO line : i.getInvoiceLines()) {
-            invoiceLines[f++] = new com.sapienter.jbilling.server.entity.InvoiceLineDTO(line.getId(), 
-                    line.getDescription(), line.getAmount(), line.getPrice(), line.getQuantity(), 
-                    line.getDeleted(), line.getItem() == null ? null : line.getItem().getId(), 
+            invoiceLines[f++] = new com.sapienter.jbilling.server.entity.InvoiceLineDTO(line.getId(),
+                    line.getDescription(), line.getAmount(), line.getPrice(), line.getQuantity(),
+                    line.getDeleted(), line.getItem() == null ? null : line.getItem().getId(),
                     line.getSourceUserId(), line.getIsPercentage());
         }
 
@@ -836,7 +817,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
     }
 
     public InvoiceDTO getDTOEx(Integer languageId, boolean forDisplay) {
-        
+
         if (!forDisplay) {
             return invoice;
         }
@@ -846,7 +827,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         List<InvoiceLineDTO> orderdLines = new ArrayList<InvoiceLineDTO>(invoiceDTO.getInvoiceLines());
         Collections.sort(orderdLines, new InvoiceLineComparator());
         invoiceDTO.setInvoiceLines(orderdLines);
-        
+
         UserBL userBl = new UserBL(invoice.getBaseUser());
         Locale locale = userBl.getLocale();
         ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", locale);
@@ -878,7 +859,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
     /**
      * Will add lines with headers and footers to make an invoice with
      * subaccounts more readable. The lines have to be already sorted.
-     * 
+     *
      * @param lines
      */
     private void addHeadersFooters(List<InvoiceLineDTO> lines, ResourceBundle bundle) {
@@ -891,7 +872,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
 
         for (int idx = 0; idx < totalLines; idx++) {
             InvoiceLineDTO line = (InvoiceLineDTO) lines.get(idx);
-            
+
             if (line.getTypeId() == Constants.INVOICE_LINE_TYPE_SUB_ACCOUNT && !line.getSourceUserId().equals(nowProcessing)) {
                 // line break
                 nowProcessing = line.getSourceUserId();
@@ -1012,7 +993,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         ret.setToProcess(dto.getToProcess());
         ret.setTotal(dto.getTotal());
         ret.setUserId(dto.getUserId());
-        
+
         Integer payments[] = new Integer[dto.getPaymentMap().size()];
         Integer orders[] = new Integer[dto.getOrders().size()];
 
@@ -1027,18 +1008,18 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
             orders[f] = order.getId();
         }
         ret.setOrders(orders);
-        
-        com.sapienter.jbilling.server.entity.InvoiceLineDTO lines[] = 
+
+        com.sapienter.jbilling.server.entity.InvoiceLineDTO lines[] =
                 new com.sapienter.jbilling.server.entity.InvoiceLineDTO[dto.getInvoiceLines().size()];
-        
+
         f=0;
         for (InvoiceLineDTO line : dto.getInvoiceLines()) {
-            lines[f++] = new com.sapienter.jbilling.server.entity.InvoiceLineDTO(line.getId(), 
-                    line.getDescription(), line.getAmount(), line.getPrice(), line.getQuantity(), 
-                    line.getDeleted(), line.getItem() == null ? null : line.getItem().getId(), 
+            lines[f++] = new com.sapienter.jbilling.server.entity.InvoiceLineDTO(line.getId(),
+                    line.getDescription(), line.getAmount(), line.getPrice(), line.getQuantity(),
+                    line.getDeleted(), line.getItem() == null ? null : line.getItem().getId(),
                     line.getSourceUserId(), line.getIsPercentage());
         }
-        
+
         return ret;
     }
      * */

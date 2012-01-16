@@ -1,21 +1,17 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 /*
@@ -25,35 +21,6 @@
 package com.sapienter.jbilling.server.util;
 
 
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
-import grails.plugins.springsecurity.SpringSecurityService;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.naming.NamingException;
-import javax.sql.rowset.CachedRowSet;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.sapienter.jbilling.client.authentication.CompanyUserDetails;
 import com.sapienter.jbilling.common.InvalidArgumentException;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -62,17 +29,7 @@ import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.item.CurrencyBL;
-import com.sapienter.jbilling.server.item.IItemSessionBean;
-import com.sapienter.jbilling.server.item.ItemBL;
-import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.item.ItemTypeBL;
-import com.sapienter.jbilling.server.item.ItemTypeWS;
-import com.sapienter.jbilling.server.item.PlanBL;
-import com.sapienter.jbilling.server.item.PlanItemBL;
-import com.sapienter.jbilling.server.item.PlanItemWS;
-import com.sapienter.jbilling.server.item.PlanWS;
-import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.item.*;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.item.db.PlanDTO;
@@ -126,42 +83,18 @@ import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
-import com.sapienter.jbilling.server.process.AgeingBL;
-import com.sapienter.jbilling.server.process.AgeingDTOEx;
-import com.sapienter.jbilling.server.process.AgeingWS;
-import com.sapienter.jbilling.server.process.BillingProcessBL;
-import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
-import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
-import com.sapienter.jbilling.server.process.BillingProcessWS;
-import com.sapienter.jbilling.server.process.ConfigurationBL;
-import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
-import com.sapienter.jbilling.server.process.ProcessStatusWS;
+import com.sapienter.jbilling.server.process.*;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean;
 import com.sapienter.jbilling.server.rule.task.IRulesGenerator;
-import com.sapienter.jbilling.server.user.AchBL;
-import com.sapienter.jbilling.server.user.CardValidationWS;
-import com.sapienter.jbilling.server.user.CompanyWS;
-import com.sapienter.jbilling.server.user.ContactBL;
-import com.sapienter.jbilling.server.user.ContactDTOEx;
-import com.sapienter.jbilling.server.user.ContactTypeWS;
-import com.sapienter.jbilling.server.user.ContactWS;
-import com.sapienter.jbilling.server.user.CreateResponseWS;
-import com.sapienter.jbilling.server.user.CreditCardBL;
-import com.sapienter.jbilling.server.user.CustomerPriceBL;
-import com.sapienter.jbilling.server.user.EntityBL;
-import com.sapienter.jbilling.server.user.IUserSessionBean;
-import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
-import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.user.*;
 import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS;
 import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
@@ -182,17 +115,22 @@ import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
-import com.sapienter.jbilling.server.util.db.CurrencyDAS;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
-import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
-import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
-import com.sapienter.jbilling.server.util.db.JbillingTable;
-import com.sapienter.jbilling.server.util.db.JbillingTableDAS;
-import com.sapienter.jbilling.server.util.db.LanguageDAS;
-import com.sapienter.jbilling.server.util.db.LanguageDTO;
-import com.sapienter.jbilling.server.util.db.PreferenceDTO;
-import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
-import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
+import com.sapienter.jbilling.server.util.db.*;
+import grails.plugins.springsecurity.SpringSecurityService;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.naming.NamingException;
+import javax.sql.rowset.CachedRowSet;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.*;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -305,7 +243,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 	            Context.Name.NOTIFICATION_SESSION);
 	    return notificationSession.emailInvoice(invoiceId);
     }
-    
+
     public boolean notifyPaymentByEmail(Integer paymentId) {
         INotificationSessionBean notificationSession =
                 (INotificationSessionBean) Context.getBean(
@@ -442,6 +380,19 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public void removePaymentLink(Integer invoiceId, Integer paymentId) {
 		if (invoiceId == null || paymentId == null)
             return;
+
+        // check if the payment is a refund , if it is do not allow it
+        if(new PaymentBL(paymentId).getEntity().getIsRefund()==1) {
+            LOG.debug("This payment id "+paymentId+" is a refund so we cannot unlink it from the invoice");
+            throw new SessionInternalError("This payment is a refund and hence cannot be unlinked from any invoice",
+                        new String[] {"PaymentWS,unlink,validation.error.payment.unlink"});
+        }
+
+        // if the payment has been refunded
+        if(PaymentBL.ifRefunded(paymentId)) {
+            throw new SessionInternalError("This payment has been refunded and hence cannot be unlinked from the invoice",
+                        new String[] {"PaymentWS,unlink,validation.error.delete.refunded.payment"});
+        }
 
         boolean result= new PaymentBL(paymentId).unLinkFromInvoice(invoiceId);
         if (!result)
@@ -584,7 +535,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         if (invoiceId == null) {
             LOG.debug("Creating a new invoice for order " + order.getId());
             invoice = doCreateInvoice(order.getId());
-            if ( null == invoice) { 
+            if ( null == invoice) {
             	throw new SessionInternalError("Invoice could not be generated. The purchase order may not have any applicable periods to be invoiced.");
             }
         } else {
@@ -876,7 +827,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     		ContactFieldTypeDAS das= new ContactFieldTypeDAS();
             ContactFieldTypeDTO dto= ws.getDTO();
     			dto= das.save(dto);
-    			
+
             if ( ws.getDescriptions().size() > 0 ) {
                 InternationalDescriptionWS descrWs= (InternationalDescriptionWS)ws.getDescriptions().get(0);
                 dto.setDescription( descrWs.getContent(), descrWs.getLanguageId() );
@@ -888,14 +839,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     		throw new SessionInternalError(e);
     	}
     }
-    
+
     @Deprecated
     private Integer[] getByCCNumber(Integer entityId, String number) {
         List<Integer> usersIds = new CreditCardDAS().findByLastDigits(entityId, number);
-        
+
         Integer[] ids = new Integer[usersIds.size()];
         return usersIds.toArray(ids);
-        
+
     }
 
     /**
@@ -903,7 +854,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer[] getUsersByCreditCard(String number) throws SessionInternalError {
         Integer entityId = getCallerCompanyId();
-        
+
         Integer[] ret = getByCCNumber(entityId, number);
         return ret;
     }
@@ -1015,10 +966,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public Integer createPartner(UserWS newUser, PartnerWS partner) throws SessionInternalError {
-        
+
         UserBL bl = new UserBL();
         newUser.setUserId(0);
-        
+
         Integer entityId = getCallerCompanyId();
         if (bl.exists(newUser.getUserName(), entityId)) {
             throw new SessionInternalError("User already exists with username " + newUser.getUserName(),
@@ -1029,16 +980,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         UserDTOEx dto = new UserDTOEx(newUser, entityId);
         dto.setPartner(partnerDto);
         Integer userId = bl.create(dto, getCallerId());
-        
+
         if (newUser.getContact() != null) {
             newUser.getContact().setId(0);
             cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId, getCallerId());
         }
-        
+
         return bl.getDto().getPartner().getId();
-        
+
     }
-    
+
     public void updatePartner(UserWS user, PartnerWS partner) throws SessionInternalError {
         Integer entityId = getCallerCompanyId();
         IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
@@ -1053,12 +1004,12 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             userSession.updatePartner(getCallerId(), partnerDto);
         }
     }
-    
+
     public void deletePartner (Integer partnerId) throws SessionInternalError {
         PartnerBL bl= new PartnerBL(partnerId);
         bl.delete(getCallerId());
     }
-    
+
     /**
      * Pays given invoice, using the first credit card available for invoice'd
      * user.
@@ -1375,8 +1326,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     /**
-     * Returns the current order (order collecting current one-time charges) for the 
-     * period of the given date and the given user. 
+     * Returns the current order (order collecting current one-time charges) for the
+     * period of the given date and the given user.
      * Returns null for users with no main subscription order.
      */
     public OrderWS getCurrentOrder(Integer userId, Date date) {
@@ -1417,8 +1368,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
             // pricing fields
             List<Record> records = null;
-            PricingField[] fieldsArray = PricingField.getPricingFieldsValue(
-                    pricing);
+            PricingField[] fieldsArray = PricingField.getPricingFieldsValue(pricing);
             if (fieldsArray != null) {
                 Record record = new Record();
                 for (PricingField field : fieldsArray) {
@@ -1459,7 +1409,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 MediationResult result = new MediationResult("WS", true);
                 result.setUserId(userId);
                 result.setEventDate(date);
-                ArrayList results = new ArrayList(1);
+                List results = new ArrayList(1);
                 results.add(result);
                 processTask.process(records, results, "WS");
                 diffLines = result.getDiffLines();
@@ -1529,7 +1479,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 		for (OrderPeriodWS periodWS: orderPeriods) {
 			if ( null != periodWS.getId()) {
 				periodDto= periodDas.find(periodWS.getId());
-			} 
+			}
 			if ( null == periodDto ) {
 				periodDto= new OrderPeriodDTO();
 				periodDto.setCompany(new CompanyDAS().find(getCallerCompanyId()));
@@ -1584,7 +1534,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         periodDas.clear();
         return true;
     }
-    
+
     public boolean deleteOrderPeriod(Integer periodId) throws SessionInternalError {
         try {
             // now get the order
@@ -1594,7 +1544,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throw new SessionInternalError(e);
         }
     }
-    
+
     /*
      * PAYMENT
      */
@@ -1608,8 +1558,25 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         new PaymentBL(payment.getId()).update(getCallerId(), dto);
     }
 
-    public void deletePayment(Integer paymentId) {
-        new PaymentBL(paymentId).delete();
+    public void deletePayment(Integer paymentId) throws SessionInternalError {
+
+        PaymentBL paymentBL = new PaymentBL(paymentId);
+
+        // check if the payment is a refund , if it is do not allow it
+        if(paymentBL.getEntity().getIsRefund() == 1) {
+            LOG.debug("This payment " + paymentId
+                    + " is a refund so we cannot delete it.");
+            throw new SessionInternalError("A Refund cannot be deleted",
+                        new String[] {"PaymentWS,isRefund,validation.error.delete.refund.payment"});
+        }
+
+        // check if payment has been refunded
+        if( PaymentBL.ifRefunded(paymentId) ) {
+            throw new SessionInternalError("This payment has been refunded and hence cannot be deleted.",
+            new String[] {"PaymentWS,id,validation.error.delete.refunded.payment"});
+        }
+
+        paymentBL.delete();
     }
 
     /**
@@ -1627,7 +1594,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
             throws SessionInternalError {
-        payment.setIsRefund(0);
+//        payment.setIsRefund(0);
+
+        // apply validations for refund payments
+        if(payment.getIsRefund() == 1) {
+            // check for validations
+            if(!PaymentBL.validateRefund(payment)){
+                throw new SessionInternalError("Either refund payment was not linked to any payment or the refund amount is different from the linked payment",
+                        new String[] {"PaymentWS,paymentId,validation.error.apply.without.payment.or.different.linked.payment.amount"});
+            }
+        }
 
         if (payment.getMethodId() == null) {
             throw new SessionInternalError("Cannot apply a payment without a payment method.",
@@ -1635,6 +1611,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
+        LOG.debug("payment has "+payment);
         return session.applyPayment(new PaymentDTOEx(payment), invoiceId, getCallerId());
     }
 
@@ -1653,6 +1630,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @return payment authorization from the payment processor
      */
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment, Integer invoiceId) {
+        // apply validations for refund payment
+        if(payment.getIsRefund() == 1) {
+            // check for validations
+            if(!PaymentBL.validateRefund(payment)){
+                throw new SessionInternalError("Either refund payment was not linked to any payment or the refund amount is different from the linked payment",
+                        new String[] {"PaymentWS,paymentId,validation.error.apply.without.payment.or.different.linked.payment.amount"});
+            }
+        }
         if (payment == null && invoiceId != null)
             return payInvoice(invoiceId);
 
@@ -1685,9 +1670,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         // populate payment method based on the payment instrument
-        if (dto.getCreditCard() != null) {    
+        if (dto.getCreditCard() != null) {
             dto.setPaymentMethod(new PaymentMethodDTO(dto.getCreditCard().getCcType()));
-        } else if (dto.getAch() != null) { 
+        } else if (dto.getAch() != null) {
             dto.setPaymentMethod(new PaymentMethodDTO(Constants.PAYMENT_METHOD_ACH));
         }
 
@@ -2049,6 +2034,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         dto.setEntity(new CompanyDTO(entityId));
 
         ItemTypeBL itemTypeBL = new ItemTypeBL();
+
+        //Check if the category already exists to throw an error to the user.
+        if (itemTypeBL.exists(dto.getDescription())) {
+            throw new SessionInternalError("The product category already exists with name " + dto.getDescription(),
+                    new String[]{"ItemTypeWS,name,validation.error.category.already.exists"});
+        }
+
         itemTypeBL.create(dto);
         return itemTypeBL.getEntity().getId();
     }
@@ -2062,6 +2054,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         ItemTypeDTO dto = new ItemTypeDTO();
         dto.setDescription(itemType.getDescription());
         dto.setOrderLineTypeId(itemType.getOrderLineTypeId());
+
+        // make sure that item category names are unique. If the name was changed, then check
+        // that the new name isn't a duplicate of an existing category.
+        if (!itemTypeBL.getEntity().getDescription().equals(itemType.getDescription())
+            && itemTypeBL.exists(dto.getDescription())) {
+            throw new SessionInternalError("The product category already exists with name " + dto.getDescription(),
+                    new String[]{"ItemTypeWS,name,validation.error.category.already.exists"});
+        }
 
         itemTypeBL.update(executorId, dto);
     }
@@ -2660,7 +2660,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public AgeingWS[] getAgeingConfiguration(Integer languageId) throws SessionInternalError {
 	    try {
-		    IBillingProcessSessionBean processSession = 
+		    IBillingProcessSessionBean processSession =
 		    	(IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
 		    AgeingDTOEx[] dtoArr= processSession.getAgeingSteps(getCallerCompanyId(), getCallerLanguageId(), languageId);
 		    AgeingWS[] wsArr= new AgeingWS[dtoArr.length];
@@ -2674,23 +2674,23 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 	    }
     }
 
-    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError { 
+    public void saveAgeingConfiguration(AgeingWS[] steps, Integer gracePeriod, Integer languageId) throws SessionInternalError {
     	AgeingBL bl= new AgeingBL();
     	AgeingDTOEx[] dtoList= new AgeingDTOEx[steps.length];
 	    for (int i = 0; i < steps.length; i++) {
 	    	dtoList[i]= bl.getDTOEx(steps[i]);
 		}
-	    IBillingProcessSessionBean processSession = 
+	    IBillingProcessSessionBean processSession =
 	    (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
 	    processSession.setAgeingSteps (getCallerCompanyId(), languageId, bl.validate(dtoList));
-	
+
 	    // update the grace period in another call
 	    IUserSessionBean userSession = (IUserSessionBean) Context.getBean(Context.Name.USER_SESSION);
 	    userSession.setEntityParameter(getCallerCompanyId(),
                                        Constants.PREFERENCE_GRACE_PERIOD,
                                        (gracePeriod != null ? gracePeriod.toString() : null));
     }
-    
+
     /*
         Billing process
      */
@@ -2703,10 +2703,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 		    	 processBean.trigger(runDate);
 		    }
 	    });
-	 
+
 	    t.start();
     }
-    
+
     public boolean triggerBilling(Date runDate) {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
         return processBean.trigger(runDate);
@@ -2968,14 +2968,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public void deleteMediationConfiguration(Integer cfgId) throws SessionInternalError {
-        
+
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
         try {
             mediationBean.delete(getCallerId(), cfgId);
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-        
+
     }
 
 
@@ -3097,17 +3097,22 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         // update currency
         CurrencyBL currencyBl = new CurrencyBL(currency.getId());
-        currencyBl.update(currency, getCallerCompanyId());
+        final Integer entityId = getCallerCompanyId();
+        currencyBl.update(currency, entityId);
 
         // set as entity currency if flagged as default
         if (ws.isDefaultCurrency()) {
-            currencyBl.setEntityCurrency(getCallerCompanyId(), currency.getId());
+            CurrencyBL.setEntityCurrency(entityId, currency.getId());
         }
 
         // update the description if its changed
         if ((ws.getDescription() != null && !ws.getDescription().equals(currency.getDescription()))) {
             currency.setDescription(ws.getDescription(), getCallerLanguageId());
         }
+
+        // update exchange rates for date
+        final Date fromDate = ws.getFromDate();
+        currencyBl.setOrUpdateExchangeRate(ws.getRateAsDecimal(), entityId, fromDate);
     }
 
     public Integer createCurrency(CurrencyWS ws) {
@@ -3115,12 +3120,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         // save new currency
         CurrencyBL currencyBl = new CurrencyBL(currency.getId());
-        currencyBl.create(currency, getCallerCompanyId());
+        final Integer entityId = getCallerCompanyId();
+        currencyBl.create(currency, entityId);
+        if(ws.getRate() != null) {
+            currencyBl.setOrUpdateExchangeRate(ws.getRateAsDecimal(), entityId, new Date());
+        }
         currency = currencyBl.getEntity();
 
         // set as entity currency if flagged as default
         if (ws.isDefaultCurrency()) {
-            currencyBl.setEntityCurrency(getCallerCompanyId(), currency.getId());
+            currencyBl.setEntityCurrency(entityId, currency.getId());
         }
 
         // set description
@@ -3136,7 +3145,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         LOG.debug(company);
         return new CompanyWS(company);
     }
-    
+
     public void updateCompany(CompanyWS companyWS) {
         new EntityBL().updateEntityAndContact(companyWS, getCallerCompanyId(), getCallerId());
     }

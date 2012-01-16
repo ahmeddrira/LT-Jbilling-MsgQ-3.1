@@ -1,21 +1,17 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 /*
@@ -23,6 +19,22 @@
  *
  */
 package com.sapienter.jbilling.server.pluggableTask;
+
+import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.drools.KnowledgeBase;
+import org.drools.agent.KnowledgeAgent;
+import org.drools.agent.KnowledgeAgentFactory;
+import org.drools.io.ResourceChangeScannerConfiguration;
+import org.drools.io.ResourceFactory;
+import org.drools.io.impl.ByteArrayResource;
+import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.FactHandle;
 
 import java.io.File;
 import java.text.ParseException;
@@ -36,23 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.drools.KnowledgeBase;
-import org.drools.agent.KnowledgeAgent;
-import org.drools.agent.KnowledgeAgentFactory;
-import org.drools.io.ResourceChangeScannerConfiguration;
-import org.drools.io.ResourceFactory;
-import org.drools.io.impl.ByteArrayResource;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.FactHandle;
-
-import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
-
 
 public abstract class PluggableTask {
 
@@ -65,7 +60,7 @@ public abstract class PluggableTask {
     protected StatefulKnowledgeSession session = null;
     private static final Logger LOG = Logger.getLogger(PluggableTask.class);
 
-    private static HashMap<Integer, KnowledgeAgent> knowledgeBasesCache = new HashMap<Integer, KnowledgeAgent>();
+    private static Map<Integer, KnowledgeAgent> knowledgeBasesCache = new HashMap<Integer, KnowledgeAgent>();
     private static AtomicBoolean isRulesChangeScanerStarted = new AtomicBoolean(false);
 
 
@@ -93,8 +88,7 @@ public abstract class PluggableTask {
         parameters = new HashMap<String, String>();
         entityId = task.getEntityId();
         this.task = task;
-        if (DBparameters.size() <
-                task.getType().getMinParameters().intValue()) {
+        if (DBparameters.size() < task.getType().getMinParameters()) {
             throw new PluggableTaskException("Type [" + task.getType().getClassName() + "] requires at least " +
                     task.getType().getMinParameters() + " parameters." +
                     DBparameters.size() + " found.");

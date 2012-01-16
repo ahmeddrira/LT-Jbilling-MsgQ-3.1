@@ -1,46 +1,41 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 package com.sapienter.jbilling.server.payment.db;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
-import com.sapienter.jbilling.common.CommonConstants;
-import com.sapienter.jbilling.common.Constants;
-import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
-import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import com.sapienter.jbilling.common.CommonConstants;
+import com.sapienter.jbilling.common.Constants;
+import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
-
-import java.math.BigDecimal;
 
 public class PaymentDAS extends AbstractDAS<PaymentDTO> {
 
@@ -238,5 +233,68 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
         query.setParameter("end", end);
 
         return query.list();
+    }
+
+    public List<PaymentDTO> findAllPaymentByBaseUserAndIsRefund(Integer userId, Integer isRefund) {
+
+        UserDTO user = new UserDAS().find(userId);
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("baseUser", user));
+        criteria.add(Restrictions.eq("isRefund",isRefund));
+        criteria.add(Restrictions.eq("deleted", 0));
+
+        return criteria.list();
+
+    }
+
+    public List<PaymentDTO> getRefundablePayments(Integer userId) {
+
+        UserDTO user = new UserDAS().find(userId);
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("baseUser", user));
+        criteria.add(Restrictions.eq("isRefund",0));
+        criteria.add(Restrictions.eq("deleted", 0));
+
+        // all payments of the given user which are not refund payments
+        List<PaymentDTO> allPayments =  criteria.list();
+
+        Iterator<PaymentDTO> iterator = allPayments.iterator();
+        while(iterator.hasNext()) {
+            PaymentDTO payment = (PaymentDTO)iterator.next();
+            if(PaymentBL.ifRefunded(payment)) {
+                // remove this from original list as the payment has already been refunded
+//                allPayments.remove(payment);
+                iterator.remove();
+            }
+        }
+        return allPayments;
+    }
+
+    /**
+     * Returns all  refund or non refund payments
+     * @param isRefund
+     * @return
+     */
+    public List<PaymentDTO> findAllPaymentIsRefund(Integer isRefund) {
+
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("isRefund", isRefund));
+
+        return criteria.list();
+    }
+
+
+    /**
+     *  Checks
+     * @param isRefund
+     * @return
+     */
+
+    public PaymentDTO findByIsRefund(Integer isRefund) {
+
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("isRefund",isRefund));
+
+        return (criteria.uniqueResult() == null ? null: (PaymentDTO)criteria.uniqueResult());
     }
 }

@@ -1,21 +1,17 @@
 %{--
-  jBilling - The Enterprise Open Source Billing System
-  Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
+  JBILLING CONFIDENTIAL
+  _____________________
 
-  This file is part of jbilling.
+  [2003] - [2012] Enterprise jBilling Software Ltd.
+  All Rights Reserved.
 
-  jbilling is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  jbilling is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+  NOTICE:  All information contained herein is, and remains
+  the property of Enterprise jBilling Software.
+  The intellectual and technical concepts contained
+  herein are proprietary to Enterprise jBilling Software
+  and are protected by trade secret or copyright law.
+  Dissemination of this information or reproduction of this material
+  is strictly forbidden.
   --}%
 
 <%@ page import="com.sapienter.jbilling.common.Constants" contentType="text/html;charset=UTF-8" %>
@@ -49,6 +45,27 @@
             $('#payment\\.amountAsDecimal').val('');
         }
 
+        function storeValues(index) {
+            // update the value of amount
+            var amount = $("#payment-amount-"+index).attr('value');
+            $("#payment_amountAsDecimal").attr({value:amount,disabled:true});
+            // ensure the value is passed to server
+            $("#payment_amountAsDecimal_hidden").attr('value',amount);
+            $('#refund_cb').attr({checked:true});
+            $("#invoicesContainer").slideUp(1000);
+        }
+
+        function clearPaymentSelection() {
+            // clear the selected payment
+            // reset the amount back to zero
+            $("#payment_amountAsDecimal").attr({value:'',disabled:false});
+            $('#refund_cb').attr({checked:false, disabled:false});
+            $(".paymentRadio").each(function(){
+                $(this).attr('checked',false);
+            });
+            $("#invoicesContainer").slideDown(1000);
+        }
+
         <g:if test="${isNew}">
         $(document).ready(function() {
             // populate payment amount with selected invoice balance
@@ -58,6 +75,13 @@
                 $('#payment\\.currencyId :selected').removeAttr('selected');
                 $('#payment\\.currencyId option[value='+ currid +']').attr('selected','selected');
             });
+
+//            $(".payment-radio").checked(function(){
+//               var current_payment_id = $(this).attr('value');
+//               alert('payment id selected is '+current_payment_id);
+//               // update the value of amount
+//
+//            });
         });
         </g:if>
     </script>
@@ -86,6 +110,7 @@
             <fieldset>
 
                 <!-- invoices to pay -->
+            <div id="invoicesContainer">
                 <g:if test="${invoices}">
                     <div id="invoices" class="box-cards box-cards-open">
                         <div class="box-cards-title">
@@ -114,7 +139,7 @@
                                     <tr>
                                         <td class="innerContent">
                                             <g:applyLayout name="form/radio">
-                                                <g:radio id="invoice-${invoice.id}" name="invoiceId" value="${invoice.id}" checked="${invoice.id == invoiceId}"/>
+                                                <g:radio id="invoice-${invoice.id}" name="invoiceId" value="${invoice.id}" checked="${invoice.id == invoiceId}" />
                                                 <label for="invoice-${invoice.id}" class="rb">
                                                     <g:message code= "payment.link.invoice" args="[invoice.number]"/>
                                                 </label>
@@ -122,14 +147,14 @@
                                         </td>
                                         <td class="innerContent">
                                             ${invoice.paymentAttempts}
-                                            <g:hiddenField name="invoice-${invoice.id}-curid" value="${currency.id}"/>
+                                            <g:hiddenField name="invoice-${invoice.id}-curid" value="${currency?.id}"/>
                                         </td>
                                         <td class="innerContent">
-                                            <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
+                                            <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"/>
                                             <g:hiddenField name="invoice-${invoice.id}-amount" value="${formatNumber(number: invoice.total, formatName: 'money.format')}"/>
                                         </td>
                                         <td class="innerContent">
-                                            <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>
+                                            <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencySymbol="${currency?.symbol}"/>
                                             <g:hiddenField name="invoice-${invoice.id}-balance" value="${formatNumber(number: invoice.balance, formatName: 'money.format')}"/>
                                         </td>
                                         <td class="innerContent">
@@ -152,6 +177,79 @@
                         </div>
                     </div>
                 </g:if>
+            </div>
+
+            %{--Payments made --}%
+            <div id="paymentContainer">
+            <g:if test="${refundablePayments}">
+                    <div id="invoices" class="box-cards box-cards-open">
+                        <div class="box-cards-title">
+                            <a class="btn-open"><span><g:message code="payment.paid.title"/></span></a>
+                        </div>
+                        <div class="box-card-hold">
+
+                            <table cellpadding="0" cellspacing="0" class="innerTable">
+                                <thead class="innerHeader">
+                                <tr>
+                                    <th><g:message code="payment.id"/></th>
+                                    <th><g:message code="payment.date"/></th>
+                                    <th><g:message code="payment.amount"/></th>
+                                    <th><g:message code="payment.method"/></th>
+                                    <th><g:message code="payment.notes"/></th>
+                                    <th><!-- action --> &nbsp;</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <g:set var="selectedPaymentCurrencyId" value=""/>
+                                <g:each var="payment" in="${refundablePayments}" status="counter">
+                                    <g:set var="currency" value="${currencies.find { it.id == payment?.getCurrency()?.getId()}}"/>
+                                    <g:if test="${payment?.id == refundPaymentId}">
+                                        <g:set var="selectedPaymentCurrencyId" value="${payment?.getCurrency()?.getId()}"/>
+                                    </g:if>
+                                    <tr>
+                                        <td class="innerContent">
+                                            <g:applyLayout name="form/radio">
+                                                <g:radio id="payment-${payment.id}" class="paymentRadio" name="payment.paymentId" value="${payment.id}" onclick="storeValues(${counter});" />
+                                                <label for="payment-${payment.id}" class="rb">
+                                                    ${payment.id}
+                                                </label>
+                                            </g:applyLayout>
+                                        </td>
+                                        <td class="innerContent">
+                                           <g:formatDate date="${payment.getCreateDatetime()}"/>
+                                            <g:hiddenField name="payment-${payment.id}-curid" value="${currency.id}"/>
+                                        </td>
+                                        <td class="innerContent">
+                                            <g:formatNumber number="${payment.getAmount()}" type="currency" currencySymbol="${currency.symbol}"/>
+                                            <g:hiddenField id="payment-amount-${counter}" name="payment-amount-${counter}" value="${formatNumber(number: payment.getAmount(), formatName: 'money.format')}"/>
+                                        </td>
+                                        <td class="innerContent">
+                                            %{--<g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencySymbol="${currency.symbol}"/>--}%
+                                            ${payment?.getPaymentMethod()?.getDescription()}
+                                            %{--<g:hiddenField name="invoice-${invoice.id}-balance" value="${formatNumber(number: invoice.balance, formatName: 'money.format')}"/>--}%
+                                        </td>
+                                        <td class="innerContent">
+                                            ${payment.getPaymentNotes()}
+                                            %{--<g:formatDate date="${invoice.dueDate}"/>--}%
+                                        </td>
+                                        %{--<td class="innerContent">--}%
+                                            %{--<g:link controller="invoice" action="list" id="${invoice.id}">--}%
+                                                %{--<g:message code= "payment.link.view.invoice" args="[invoice.number]"/>--}%
+                                            %{--</g:link>--}%
+                                        %{--</td>--}%
+                                    </tr>
+                                </g:each>
+                                </tbody>
+                            </table>
+
+                            <div class="btn-row">
+                                <a onclick="clearPaymentSelection();" class="submit delete"><span><g:message code="button.clear"/></span></a>
+                            </div>
+
+                        </div>
+                    </div>
+            </g:if>
+            </div>
 
                 <!-- payment details  -->
                 <div class="form-columns">
@@ -187,8 +285,8 @@
                                 <content tag="label"><g:message code="prompt.user.currency"/></content>
                                 <content tag="label.for">payment.currencyId</content>
                                 <g:select name="payment.currencyId"
-                                          from="${currencies}" 
-                                          value="${selectedInvoiceCurrencyId}" 
+                                          from="${currencies}"
+                                          value="${selectedInvoiceCurrencyId}"
                                           optionKey="id"
                                           optionValue="${{it.getDescription(session['language_id'])}}"/>
                             </g:applyLayout>
@@ -198,7 +296,8 @@
                             <content tag="label"><g:message code="payment.amount"/></content>
                             <content tag="label.for">payment.amountAsDecimal</content>
                             <g:set var="paymentAmount" value="${payment?.amount ?: invoices?.find{ it.id == invoiceId }?.balance }"/>
-                            <g:textField class="field" name="payment.amountAsDecimal" value="${formatNumber(number: paymentAmount, formatName: 'money.format')}"/>
+                            <g:textField class="field" id="payment_amountAsDecimal" name="payment.amountAsDecimal" value="${formatNumber(number: paymentAmount, formatName: 'money.format')}"/>
+                            <g:hiddenField name="payment.amountAsDecimal" id="payment_amountAsDecimal_hidden" value=""/>
                         </g:applyLayout>
 
                         <g:applyLayout name="form/date">
@@ -212,7 +311,8 @@
                             <g:applyLayout name="form/checkbox">
                                 <content tag="label"><g:message code="payment.is.refund.payment"/></content>
                                 <content tag="label.for">isRefund</content>
-                                <g:checkBox class="cb checkbox" name="isRefund" checked="${payment?.isRefund > 0}"/>
+                                <g:checkBox id="refund_cb" class="cb checkbox" name="isRefund" checked="${payment?.isRefund > 0}"/>
+                                %{--<g:hiddenField id="refund_cb_hidden" name="isRefund" value=""/>--}%
                             </g:applyLayout>
                         </g:if>
                         <g:else>

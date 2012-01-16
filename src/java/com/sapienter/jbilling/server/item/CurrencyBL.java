@@ -1,31 +1,29 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package com.sapienter.jbilling.server.item;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.Util;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyExchangeDAS;
@@ -39,9 +37,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -52,6 +50,8 @@ public class CurrencyBL {
 
 
     private static final Integer SYSTEM_RATE_ENTITY_ID = 0;
+    private static final Integer SYSTEM_CURRENCY_ID = 1;
+    private static final BigDecimal SYSTEM_CURRENCY_RATE_DEFAULT = new BigDecimal("1.0");
 
     private CurrencyDAS currencyDas = null;
     private CurrencyExchangeDAS exchangeDas = null;
@@ -59,11 +59,12 @@ public class CurrencyBL {
     private CurrencyDTO currency = null;
 
     public CurrencyBL() {
-        init();
+        currencyDas = new CurrencyDAS();
+        exchangeDas = new CurrencyExchangeDAS();
     }
 
     public CurrencyBL(Integer currencyId) {
-        init();
+        this();
         set(currencyId);
     }
 
@@ -72,12 +73,7 @@ public class CurrencyBL {
         this.exchangeDas = exchangeDas;
     }
 
-    private void init() {
-        currencyDas = new CurrencyDAS();
-        exchangeDas = new CurrencyExchangeDAS();
-    }
-
-    public void set(Integer id)  {
+    public void set(Integer id) {
         currency = currencyDas.find(id);
     }
 
@@ -87,32 +83,19 @@ public class CurrencyBL {
 
     public Integer create(CurrencyDTO dto, Integer entityId) {
         if (dto != null) {
-
             /*
                 Simplify currency creation; Set exchange rates from transient CurrencyDTO#getRate() and
                 CurrencyDTO#getSysRate() if no currency exchanges have been mapped.
              */
             if (dto.getCurrencyExchanges().isEmpty()) {
-                // set optional exchange rate
-                if (dto.getRate() != null) {
-                    CurrencyExchangeDTO exchangeRate = new CurrencyExchangeDTO();
-                    exchangeRate.setEntityId(entityId);
-                    exchangeRate.setCurrency(dto);
-                    exchangeRate.setRate(dto.getRateAsDecimal());
-                    exchangeRate.setCreateDatetime(new Date());
-
-                    dto.getCurrencyExchanges().add(exchangeRate);
-                }
-
                 // set system rate
                 CurrencyExchangeDTO sysRate = new CurrencyExchangeDTO();
                 sysRate.setEntityId(SYSTEM_RATE_ENTITY_ID);
-                sysRate.setCurrency(dto);
                 sysRate.setRate(dto.getSysRate() != null ? dto.getSysRate() : BigDecimal.ONE);
-                sysRate.setCreateDatetime(new Date());
+                sysRate.setValidSince(com.sapienter.jbilling.common.Util.truncateDate(CommonConstants.EPOCH_DATE));
+                sysRate.setCurrency(dto);
 
                 dto.getCurrencyExchanges().add(sysRate);
-
             }
 
             this.currency = currencyDas.save(dto);
@@ -136,28 +119,11 @@ public class CurrencyBL {
             currency.setCode(dto.getCode());
             currency.setCountryCode(dto.getCountryCode());
 
-            currency.getCurrencyExchanges().clear();
-
-            // set optional exchange rate
-            if (dto.getRate() != null) {
-                CurrencyExchangeDTO exchangeRate = new CurrencyExchangeDTO();
-                exchangeRate.setEntityId(entityId);
-                exchangeRate.setCurrency(currency);
-                exchangeRate.setRate(dto.getRateAsDecimal());
-                exchangeRate.setCreateDatetime(new Date());
-
-                currency.getCurrencyExchanges().add(exchangeRate);
-            }
-
             // set system rate
-            CurrencyExchangeDTO sysRate = new CurrencyExchangeDTO();
-            sysRate.setEntityId(SYSTEM_RATE_ENTITY_ID);
-            sysRate.setCurrency(currency);
-            sysRate.setRate(dto.getSysRate() != null ? dto.getSysRate() : BigDecimal.ONE);
-            sysRate.setCreateDatetime(new Date());
-
-            currency.getCurrencyExchanges().add(sysRate);
-
+            if (dto.getSysRate() != null) {
+                final CurrencyExchangeDTO systemExchangeRate = findExchange(SYSTEM_RATE_ENTITY_ID, currency.getId(), new Date());
+                systemExchangeRate.setRate(dto.getSysRate());
+            }
 
             // add active currencies to the company map
             CompanyDTO company = new CompanyDAS().find(entityId);
@@ -166,42 +132,62 @@ public class CurrencyBL {
             } else {
                 company.getCurrencies().remove(currency);
             }
-
         } else {
             LOG.error("Cannot update, CurrencyDTO not found or not set!");
         }
     }
 
-    public Integer getEntityCurrency(Integer entityId) {
-        CompanyDTO entity = new CompanyDAS().find(entityId);
-        return entity.getCurrencyId();
-    }
+    public CurrencyExchangeDTO setOrUpdateExchangeRate(BigDecimal amount, Integer entityId, Date dateFrom) {
+        final Date truncatedToDay = com.sapienter.jbilling.common.Util.truncateDate(dateFrom);
+        CurrencyExchangeDTO exchangeRate = exchangeDas.getExchangeRateForRange(entityId, currency.getId(), truncatedToDay, dateFrom);
 
-    public void setEntityCurrency(Integer entityId, Integer currencyId) {
-        CompanyDTO entity = new CompanyDAS().find(entityId);
-        entity.setCurrency(new CurrencyDAS().find(currencyId));
+        if(amount == null) {
+            if(exchangeRate != null) {
+                // remove record
+                exchangeDas.delete(exchangeRate);
+                currency.getCurrencyExchanges().remove(exchangeRate);
+            }
+            return null;
+        }
+
+        if (exchangeRate == null) {
+            exchangeRate = new CurrencyExchangeDTO();
+            exchangeRate.setEntityId(entityId);
+            exchangeRate.setValidSince(truncatedToDay);
+            exchangeRate.setCurrency(currency);
+            currency.getCurrencyExchanges().add(exchangeRate);
+        }
+
+        exchangeRate.setRate(amount);
+        return exchangeRate;
     }
 
     @SuppressWarnings("unchecked")
     public CurrencyDTO[] getCurrencies(Integer languageId, Integer entityId) throws NamingException, SQLException {
+        final List<CurrencyDTO> currencies = getCurrenciesToDate(languageId, entityId, new Date());
+        return currencies.toArray(new CurrencyDTO[currencies.size()]);
+    }
 
-        CurrencyDTO[] currencies = getSymbols();
+    public List<CurrencyDTO> getCurrenciesToDate(Integer languageId, Integer entityId, Date to) throws NamingException, SQLException {
+        List<CurrencyDTO> currencies = new CurrencyDAS().findAll();
 
         for (CurrencyDTO currency : currencies) {
             set(currency.getId());
             currency.setName(this.currency.getDescription(languageId));
 
             // find system rate
-            if (currency.getId() == 1) {
-                currency.setSysRate(new BigDecimal("1.0"));
+            if (currency.getId() == SYSTEM_CURRENCY_ID) {
+                currency.setSysRate(SYSTEM_CURRENCY_RATE_DEFAULT);
             } else {
-                currency.setSysRate(exchangeDas.findExchange(0, currency.getId()).getRate());
+                final CurrencyExchangeDTO exchangeRateForDate = findExchange(SYSTEM_RATE_ENTITY_ID, currency.getId(), to);
+                currency.setSysRate(exchangeRateForDate.getRate());
             }
 
             // find entity specific rate
-            CurrencyExchangeDTO exchange = exchangeDas.findExchange(entityId, currency.getId());
-            if (exchange != null)
+            CurrencyExchangeDTO exchange = exchangeDas.getExchangeRateForDate(entityId, currency.getId(), to);
+            if (exchange != null) {
                 currency.setRate(exchange.getRate().toString());
+            }
 
             // set in-use flag
             currency.setInUse(entityHasCurrency(entityId, currency.getId()));
@@ -209,79 +195,79 @@ public class CurrencyBL {
 
         return currencies;
     }
-    
+
     public void setCurrencies(Integer entityId, CurrencyDTO[] currencies) throws NamingException, ParseException {
         EntityBL entity = new EntityBL(entityId);
 
         // start by wiping out the existing data for this entity
         entity.getEntity().getCurrencies().clear();
-        for (Iterator it = exchangeDas.findByEntity(entityId).iterator(); it.hasNext(); ) {
-            CurrencyExchangeDTO exchange = (CurrencyExchangeDTO) it.next();
+        for (CurrencyExchangeDTO exchange : exchangeDas.findByEntity(entityId)) {
             exchangeDas.delete(exchange);
         }
 
-        for (int f = 0; f < currencies.length; f++) {
-            if (currencies[f].getInUse()) {
-                set(currencies[f].getId());
+        for (CurrencyDTO currency : currencies) {
+            if (currency.getInUse()) {
+                set(currency.getId());
+                entity.getEntity().getCurrencies().add(new CurrencyDAS().find(this.currency.getId()));
 
-                entity.getEntity().getCurrencies().add(new CurrencyDAS().find(currency.getId()));
-
-                if (currencies[f].getRate() != null) {
-                    CurrencyExchangeDTO exchange = new CurrencyExchangeDTO();
-                    exchange.setCreateDatetime(Calendar.getInstance().getTime());
-                    exchange.setCurrency(new CurrencyDAS().find(currencies[f].getId()));
-                    exchange.setEntityId(entityId);
-                    exchange.setRate(currencies[f].getRateAsDecimal());
+                if (currency.getRate() != null) {
+                    CurrencyExchangeDTO exchange = setOrUpdateExchangeRate(currency.getRateAsDecimal(), entityId, new Date());
                     exchangeDas.save(exchange);
                 }
             }
         }
     }
 
-    public CurrencyDTO[] getSymbols() throws NamingException, SQLException {
-        List<CurrencyDTO> currencies = new CurrencyDAS().findAll();
-        return currencies.toArray(new CurrencyDTO[currencies.size()]);
+    public static List<Date> getUsedTimePoints(Integer entityId) {
+        List<Date> result = new ArrayList<Date>();
+        final List<CurrencyExchangeDTO> companyExchanges = new CurrencyExchangeDAS().findByEntity(entityId);
+        for (CurrencyExchangeDTO exchange : companyExchanges) {
+            if (entityId.equals(exchange.getEntityId())) {
+                final Date validSince = exchange.getValidSince();
+                final Date validSinceRoundedToDate = com.sapienter.jbilling.common.Util.truncateDate(validSince);
+                if(!result.contains(validSinceRoundedToDate)) {
+                    result.add(validSinceRoundedToDate);
+                }
+            }
+        }
+        Collections.sort(result);
+        return result;
     }
 
     /**
-     * Ok, this is cheating, but heck is easy and fast.
-     * @param entityId
-     * @param currencyId
-     * @return
-     * @throws SQLException
-     * @throws NamingException
+     * Removes exchange data for specified date
      */
-    private boolean entityHasCurrency(Integer entityId, Integer currencyId) throws SQLException, NamingException {
-        boolean retValue = false;
-        JNDILookup jndi = JNDILookup.getFactory();
-        Connection conn = jndi.lookUpDataSource().getConnection();
-        PreparedStatement stmt = conn.prepareStatement(
-                "select 1 " +
-                "  from currency_entity_map " +
-                " where currency_id = ? " +
-                "   and entity_id = ?");
+    public static void removeExchangeRatesForDate(Integer entityId, Date date) {
+        final Date dayStart = com.sapienter.jbilling.common.Util.truncateDate(date);
 
-        stmt.setInt(1, currencyId);
-        stmt.setInt(2, entityId);
-        ResultSet result = stmt.executeQuery();
-
-        if (result.next()) {
-            retValue = true;
+        final CurrencyExchangeDAS exchangeDAS = new CurrencyExchangeDAS();
+        final List<CurrencyExchangeDTO> companyExchanges = exchangeDAS.findByEntity(entityId);
+        for (CurrencyExchangeDTO exchange : companyExchanges) {
+            if (entityId.equals(exchange.getEntityId())) {
+                final Date validSince = exchange.getValidSince();
+                if (dayStart.equals(com.sapienter.jbilling.common.Util.truncateDate(validSince))) {
+                    exchangeDAS.delete(exchange);
+                }
+            }
         }
-        
-        result.close();
-        stmt.close();
-        conn.close();
-        
-        return retValue;
+        /* @todo Konstantin Kulagin this should be in controller	*/
+        exchangeDAS.flush();
     }
 
+    public static Integer getEntityCurrency(Integer entityId) {
+        CompanyDTO entity = new CompanyDAS().find(entityId);
+        return entity.getCurrencyId();
+    }
+
+    public static void setEntityCurrency(Integer entityId, Integer currencyId) {
+        CompanyDTO entity = new CompanyDAS().find(entityId);
+        entity.setCurrency(new CurrencyDAS().find(currencyId));
+    }
 
     /*
         Currency conversion
      */
-
-    public BigDecimal convert(Integer fromCurrencyId, Integer toCurrencyId, BigDecimal amount, Integer entityId)
+    public BigDecimal convert(Integer fromCurrencyId, Integer toCurrencyId, BigDecimal amount, Date toDate, Integer entityId)
             throws SessionInternalError {
 
         LOG.debug("Converting " + fromCurrencyId + " to " + toCurrencyId + " am " + amount + " en " + entityId);
@@ -290,48 +276,79 @@ public class CurrencyBL {
         }
 
         // make the conversions
-        return convertPivotToCurrency(toCurrencyId, convertToPivot(fromCurrencyId, amount, entityId), entityId);
+        final BigDecimal pivotAmount = convertToPivot(fromCurrencyId, amount, toDate, entityId);
+        return convertPivotToCurrency(toCurrencyId, pivotAmount, toDate, entityId);
     }
 
-    public BigDecimal convertToPivot(Integer currencyId, BigDecimal amount, Integer entityId)
-            throws SessionInternalError {
-
-        if (currencyId.equals(1)) {
+    private BigDecimal convertToPivot(Integer currencyId, BigDecimal amount, Date toDate, Integer entityId) throws SessionInternalError {
+        if (currencyId.equals(SYSTEM_CURRENCY_ID)) {
             return amount; // this is already in the pivot
         }
 
         // make the conversion itself
-        CurrencyExchangeDTO exchange = findExchange(entityId, currencyId);
+        CurrencyExchangeDTO exchange = findExchange(entityId, currencyId, toDate);
         return amount.divide(exchange.getRate(), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
     }
 
-    public BigDecimal convertPivotToCurrency(Integer currencyId, BigDecimal amount, Integer entityId)
-            throws SessionInternalError {
-
-        if (currencyId.equals(1)) {
+    private BigDecimal convertPivotToCurrency(Integer currencyId, BigDecimal amount, Date toDate,
+                                              Integer entityId) throws SessionInternalError {
+        if (currencyId.equals(SYSTEM_CURRENCY_ID)) {
             return amount; // this is already in the pivot
         }
-        if ( amount.compareTo(BigDecimal.ZERO) == 0) {
-        	return BigDecimal.ZERO;
+        if (amount.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
         }
 
-        CurrencyExchangeDTO exchange = findExchange(entityId, currencyId);
+        CurrencyExchangeDTO exchange = findExchange(entityId, currencyId, toDate);
 
         // make the conversion itself
         return amount.multiply(exchange.getRate());
     }
 
-    public CurrencyExchangeDTO findExchange(Integer entityId, Integer currencyId) throws SessionInternalError {
-        CurrencyExchangeDTO exchange = exchangeDas.findExchange(entityId, currencyId);
+    private CurrencyExchangeDTO findExchange(Integer entityId, Integer currencyId, Date toDate) throws SessionInternalError {
+        CurrencyExchangeDTO exchange = exchangeDas.getExchangeRateForDate(entityId, currencyId, toDate);
         if (exchange == null) {
             // this entity doesn't have this exchange defined
             // 0 is the default, don't try to use null, it won't work
-            exchange = exchangeDas.findExchange(0, currencyId);
+            exchange = exchangeDas.findExchange(SYSTEM_RATE_ENTITY_ID, currencyId);
             if (exchange == null) {
-                throw new SessionInternalError("Currency " + currencyId + " doesn't have a defualt exchange");
+                throw new SessionInternalError("Currency " + currencyId + " doesn't have a default exchange");
             }
         }
 
         return exchange;
+    }
+
+    /**
+     * Ok, this is cheating, but heck is easy and fast.
+     *
+     * @param entityId
+     * @param currencyId
+     * @return
+     * @throws SQLException
+     * @throws NamingException
+     */
+    private static boolean entityHasCurrency(Integer entityId, Integer currencyId) throws SQLException, NamingException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet result = null;
+        try {
+            JNDILookup jndi = JNDILookup.getFactory();
+            conn = jndi.lookUpDataSource().getConnection();
+            stmt = conn.prepareStatement(
+                    "select 1 " +
+                            "  from currency_entity_map " +
+                            " where currency_id = ? " +
+                            "   and entity_id = ?");
+
+            stmt.setInt(1, currencyId);
+            stmt.setInt(2, entityId);
+            result = stmt.executeQuery();
+            return result.next();
+        } finally {
+            Util.closeQuietly(result);
+            Util.closeQuietly(stmt);
+            Util.closeQuietly(conn);
+        }
     }
 }

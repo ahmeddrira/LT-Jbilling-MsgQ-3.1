@@ -1,21 +1,17 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package com.sapienter.jbilling.server.payment.db;
@@ -24,6 +20,8 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import java.math.BigDecimal;
@@ -60,4 +58,32 @@ public class PaymentInvoiceMapDAS extends AbstractDAS<PaymentInvoiceMapDTO> {
             }
         }
     }
+
+    public BigDecimal getLinkedInvoiceAmount(PaymentDTO payment, InvoiceDTO invoice) {
+
+        Criteria criteria = getSession().createCriteria(PaymentInvoiceMapDTO.class);
+        criteria.add(Restrictions.eq("payment", payment));
+        criteria.add(Restrictions.eq("invoiceEntity", invoice));
+        criteria.setProjection(Projections.sum("amount"));
+        return criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult();
+
+    }
+
+    public PaymentInvoiceMapDTO getRow(PaymentDTO payment, InvoiceDTO invoice) {
+
+        Criteria criteria = getSession().createCriteria(PaymentInvoiceMapDTO.class);
+        criteria.add(Restrictions.eq("payment", payment));
+        criteria.add(Restrictions.eq("invoiceEntity", invoice));
+
+        return criteria.uniqueResult() == null ? null : (PaymentInvoiceMapDTO) criteria.uniqueResult();
+    }
+
+    public PaymentInvoiceMapDTO getRow(Integer id) {
+
+        Criteria criteria = getSession().createCriteria(PaymentInvoiceMapDTO.class);
+        criteria.add(Restrictions.eq("id", id));
+
+        return criteria.uniqueResult() == null ? null : (PaymentInvoiceMapDTO) criteria.uniqueResult();
+    }
+
 }

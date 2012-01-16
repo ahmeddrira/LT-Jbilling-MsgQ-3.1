@@ -1,21 +1,17 @@
 %{--
-  jBilling - The Enterprise Open Source Billing System
-  Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
+  JBILLING CONFIDENTIAL
+  _____________________
 
-  This file is part of jbilling.
+  [2003] - [2012] Enterprise jBilling Software Ltd.
+  All Rights Reserved.
 
-  jbilling is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  jbilling is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+  NOTICE:  All information contained herein is, and remains
+  the property of Enterprise jBilling Software.
+  The intellectual and technical concepts contained
+  herein are proprietary to Enterprise jBilling Software
+  and are protected by trade secret or copyright law.
+  Dissemination of this information or reproduction of this material
+  is strictly forbidden.
   --}%
 
 <%@ page import="com.sapienter.jbilling.server.user.db.UserStatusDAS" %>
@@ -30,7 +26,7 @@
 <div id="${filter.name}">
     <span class="title <g:if test='${filter.value}'>active</g:if>"><g:message code="filters.${filter.field}.title"/></span>
     <g:remoteLink class="delete" controller="filter" action="remove" params="[name: filter.name]" update="filters"/>
-    
+
     <div class="slide">
         <fieldset>
             <div class="input-row">
@@ -38,7 +34,7 @@
                     <g:select name="filters.${filter.name}.integerValue"
                             value="${filter.integerValue}"
                             from="${new UserStatusDAS().findAll()}"
-                            optionKey="statusValue" optionValue="description"
+                            optionKey="id" optionValue="description"
                             noSelection="['': message(code: 'filters.status.empty')]" />
 
                 </div>

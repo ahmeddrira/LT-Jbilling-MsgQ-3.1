@@ -1,34 +1,28 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package com.sapienter.jbilling.server.pricing;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.PlanItemBundleWS;
 import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.item.PlanWS;
-import com.sapienter.jbilling.server.order.OrderLineBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
-import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -36,13 +30,10 @@ import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
-import junit.framework.TestCase;
 import org.joda.time.DateMidnight;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * @author Brian Cowdery
@@ -181,7 +172,7 @@ public class WSTest extends PricingTestCase {
         line.setUseItem(true);
         line.setQuantity(1);
         order.setOrderLines(new OrderLineWS[] { line });
-        
+
         order.setId(api.createOrder(order)); // create order
         order = api.getOrder(order.getId());
         assertNotNull("order created", order.getId());
@@ -210,7 +201,7 @@ public class WSTest extends PricingTestCase {
         assertEquals("Affected item should be discounted.", new BigDecimal("0.50"), price.getModel().getRateAsDecimal());
 
         // cleanup
-        api.deleteOrder(order.getId());                
+        api.deleteOrder(order.getId());
         api.deleteUser(user.getUserId());
     }
 
@@ -291,7 +282,7 @@ public class WSTest extends PricingTestCase {
 
         // cleanup
         api.deleteOrder(order.getId());
-        api.deleteUser(user.getUserId());        
+        api.deleteUser(user.getUserId());
     }
 
     /**
@@ -336,7 +327,7 @@ public class WSTest extends PricingTestCase {
         // create plan
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
-        callPrice.getModels().put(PriceModelWS.EPOCH_DATE,
+        callPrice.getModels().put(CommonConstants.EPOCH_DATE,
                                   new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         PlanWS plan = new PlanWS();
@@ -363,7 +354,7 @@ public class WSTest extends PricingTestCase {
         // update the description and add a price for the generic LD item
         PlanItemWS genericPrice = new PlanItemWS();
         genericPrice.setItemId(LONG_DISTANCE_CALL_GENERIC);
-        genericPrice.getModels().put(PriceModelWS.EPOCH_DATE,
+        genericPrice.getModels().put(CommonConstants.EPOCH_DATE,
                                      new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.25"), 1));
 
         fetchedPlan.setDescription("Updated description.");
@@ -409,7 +400,7 @@ public class WSTest extends PricingTestCase {
         // create plan
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
-        callPrice.getModels().put(PriceModelWS.EPOCH_DATE,
+        callPrice.getModels().put(CommonConstants.EPOCH_DATE,
                                   new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         PlanWS plan = new PlanWS();
@@ -591,7 +582,7 @@ public class WSTest extends PricingTestCase {
         // includes 10 bundled "long distance call" items
         PlanItemWS callPrice = new PlanItemWS();
         callPrice.setItemId(LONG_DISTANCE_CALL);
-        callPrice.getModels().put(PriceModelDTO.EPOCH_DATE,
+        callPrice.getModels().put(CommonConstants.EPOCH_DATE,
                                   new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         PlanItemBundleWS bundle = new PlanItemBundleWS();
@@ -792,7 +783,7 @@ public class WSTest extends PricingTestCase {
         planItem.setItemId(LONG_DISTANCE_CALL);
 
         // price starting at epoch date - used as default when no other prices set in timeline
-        planItem.addModel(PriceModelWS.EPOCH_DATE,
+        planItem.addModel(CommonConstants.EPOCH_DATE,
                           new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("0.10"), 1));
 
         // price for june
@@ -961,7 +952,7 @@ public class WSTest extends PricingTestCase {
         // addPlanPrice
         PlanItemWS addPlanPrice = new PlanItemWS();
         addPlanPrice.setItemId(BAD_ITEM_ID);
-        addPlanPrice.getModels().put(PriceModelDTO.EPOCH_DATE,
+        addPlanPrice.getModels().put(CommonConstants.EPOCH_DATE,
                                      new PriceModelWS(PriceModelStrategy.METERED.name(), new BigDecimal("1.00"), 1));
 
         try {

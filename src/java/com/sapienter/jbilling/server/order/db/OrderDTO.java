@@ -1,28 +1,23 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 package com.sapienter.jbilling.server.order.db;
 
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -45,13 +40,9 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
-import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.util.csv.Exportable;
 import org.apache.log4j.Logger;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CollectionOfElements;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OrderBy;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -122,7 +113,7 @@ public class OrderDTO implements Serializable, Exportable {
 
     public OrderDTO() {
     }
-    
+
     public OrderDTO(OrderDTO other) {
         init(other);
     }
@@ -132,7 +123,7 @@ public class OrderDTO implements Serializable, Exportable {
         this.baseUserByUserId = other.getBaseUserByUserId();
         this.baseUserByCreatedBy = other.getBaseUserByCreatedBy();
         this.currencyDTO = other.getCurrency();
-        this.orderStatusDTO = other.getOrderStatus(); 
+        this.orderStatusDTO = other.getOrderStatus();
         this.orderPeriodDTO = other.getOrderPeriod();
         this.orderBillingTypeDTO = other.getOrderBillingType();
         this.activeSince = other.getActiveSince();
@@ -159,7 +150,7 @@ public class OrderDTO implements Serializable, Exportable {
         this.cycleStarts = other.getCycleStarts();
         this.pricingFields = other.getPricingFields();
     }
-    
+
     public OrderDTO(int id, UserDTO baseUserByCreatedBy, CurrencyDTO currencyDTO, OrderStatusDTO orderStatusDTO, OrderBillingTypeDTO orderBillingTypeDTO, Date createDatetime, Integer deleted) {
         this.id = id;
         this.baseUserByCreatedBy = baseUserByCreatedBy;
@@ -169,12 +160,12 @@ public class OrderDTO implements Serializable, Exportable {
         this.createDate = createDatetime;
         this.deleted = deleted;
     }
-    public OrderDTO(int id, UserDTO baseUserByUserId, UserDTO baseUserByCreatedBy, CurrencyDTO currencyDTO, 
-            OrderStatusDTO orderStatusDTO, OrderPeriodDTO orderPeriodDTO, 
-            OrderBillingTypeDTO orderBillingTypeDTO, Date activeSince, Date activeUntil, Date createDatetime, 
-            Date nextBillableDay, Integer deleted, Integer notify, Date lastNotified, Integer notificationStep, 
-            Integer dueDateUnitId, Integer dueDateValue, Integer dfFm, Integer anticipatePeriods, 
-            Integer ownInvoice, String notes, Integer notesInInvoice, Set<OrderProcessDTO> orderProcesses, 
+    public OrderDTO(int id, UserDTO baseUserByUserId, UserDTO baseUserByCreatedBy, CurrencyDTO currencyDTO,
+            OrderStatusDTO orderStatusDTO, OrderPeriodDTO orderPeriodDTO,
+            OrderBillingTypeDTO orderBillingTypeDTO, Date activeSince, Date activeUntil, Date createDatetime,
+            Date nextBillableDay, Integer deleted, Integer notify, Date lastNotified, Integer notificationStep,
+            Integer dueDateUnitId, Integer dueDateValue, Integer dfFm, Integer anticipatePeriods,
+            Integer ownInvoice, String notes, Integer notesInInvoice, Set<OrderProcessDTO> orderProcesses,
             List<OrderLineDTO> orderLineDTOs, Integer isCurrent) {
        this.id = id;
        this.baseUserByUserId = baseUserByUserId;
@@ -202,17 +193,17 @@ public class OrderDTO implements Serializable, Exportable {
        this.lines = orderLineDTOs;
        this.isCurrent = isCurrent;
     }
-   
+
     @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="purchase_order_GEN")
     @Column(name="id", unique=true, nullable=false)
     public Integer getId() {
         return this.id;
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
-    
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id", nullable=false)
     public UserDTO getBaseUserByUserId() {
@@ -221,13 +212,13 @@ public class OrderDTO implements Serializable, Exportable {
     public void setBaseUserByUserId(UserDTO baseUserByUserId) {
         this.baseUserByUserId = baseUserByUserId;
     }
-    
+
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="created_by")
     public UserDTO getBaseUserByCreatedBy() {
         return this.baseUserByCreatedBy;
     }
-    
+
     public void setBaseUserByCreatedBy(UserDTO baseUserByCreatedBy) {
         this.baseUserByCreatedBy = baseUserByCreatedBy;
     }
@@ -236,7 +227,7 @@ public class OrderDTO implements Serializable, Exportable {
     public CurrencyDTO getCurrency() {
         return this.currencyDTO;
     }
-    
+
     public void setCurrency(CurrencyDTO currencyDTO) {
         this.currencyDTO = currencyDTO;
     }
@@ -245,11 +236,11 @@ public class OrderDTO implements Serializable, Exportable {
     public OrderStatusDTO getOrderStatus() {
         return this.orderStatusDTO;
     }
-    
+
     public void setOrderStatus(OrderStatusDTO orderStatusDTO) {
         this.orderStatusDTO = orderStatusDTO;
     }
-    
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="period_id")
     public OrderPeriodDTO getOrderPeriod() {
@@ -258,7 +249,7 @@ public class OrderDTO implements Serializable, Exportable {
     public void setOrderPeriod(OrderPeriodDTO orderPeriodDTO) {
         this.orderPeriodDTO = orderPeriodDTO;
     }
-    
+
     public void setOrderPeriodId(Integer id) {
         if (id != null) {
             setOrderPeriod(new OrderPeriodDAS().find(id));
@@ -266,13 +257,13 @@ public class OrderDTO implements Serializable, Exportable {
             setOrderPeriod(null);
         }
     }
-    
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="billing_type_id", nullable=false)
     public OrderBillingTypeDTO getOrderBillingType() {
         return this.orderBillingTypeDTO;
     }
-    
+
     public void setOrderBillingType(OrderBillingTypeDTO orderBillingTypeDTO) {
         this.orderBillingTypeDTO = orderBillingTypeDTO;
     }
@@ -280,11 +271,11 @@ public class OrderDTO implements Serializable, Exportable {
     public Date getActiveSince() {
         return this.activeSince;
     }
-    
+
     public void setActiveSince(Date activeSince) {
         this.activeSince = activeSince;
     }
-    
+
     @Column(name="cycle_start")
     public Date getCycleStarts() {
         return cycleStarts;
@@ -298,7 +289,7 @@ public class OrderDTO implements Serializable, Exportable {
     public Date getActiveUntil() {
         return this.activeUntil;
     }
-    
+
     public void setActiveUntil(Date activeUntil) {
         this.activeUntil = activeUntil;
     }
@@ -306,7 +297,7 @@ public class OrderDTO implements Serializable, Exportable {
     public Date getCreateDate() {
         return this.createDate;
     }
-    
+
     public void setCreateDate(Date createDatetime) {
         this.createDate = createDatetime;
     }
@@ -314,25 +305,25 @@ public class OrderDTO implements Serializable, Exportable {
     public Date getNextBillableDay() {
         return this.nextBillableDay;
     }
-    
+
     public void setNextBillableDay(Date nextBillableDay) {
         this.nextBillableDay = nextBillableDay;
     }
-    
+
     @Column(name="deleted", nullable=false)
     public int getDeleted() {
         return this.deleted;
     }
-    
+
     public void setDeleted(int deleted) {
         this.deleted = deleted;
     }
-    
+
     @Column(name="notify")
     public Integer getNotify() {
         return this.notify;
     }
-    
+
     public void setNotify(Integer notify) {
         this.notify = notify;
     }
@@ -340,89 +331,89 @@ public class OrderDTO implements Serializable, Exportable {
     public Date getLastNotified() {
         return this.lastNotified;
     }
-    
+
     public void setLastNotified(Date lastNotified) {
         this.lastNotified = lastNotified;
     }
-    
+
     @Column(name="notification_step")
     public Integer getNotificationStep() {
         return this.notificationStep;
     }
-    
+
     public void setNotificationStep(Integer notificationStep) {
         this.notificationStep = notificationStep;
     }
-    
+
     @Column(name="due_date_unit_id")
     public Integer getDueDateUnitId() {
         return this.dueDateUnitId;
     }
-    
+
     public void setDueDateUnitId(Integer dueDateUnitId) {
         this.dueDateUnitId = dueDateUnitId;
     }
-    
+
     @Column(name="due_date_value")
     public Integer getDueDateValue() {
         return this.dueDateValue;
     }
-    
+
     public void setDueDateValue(Integer dueDateValue) {
         this.dueDateValue = dueDateValue;
     }
-    
+
     @Column(name="df_fm")
     public Integer getDfFm() {
         return this.dfFm;
     }
-    
+
     public void setDfFm(Integer dfFm) {
         this.dfFm = dfFm;
     }
-    
+
     @Column(name="anticipate_periods")
     public Integer getAnticipatePeriods() {
         return this.anticipatePeriods;
     }
-    
+
     public void setAnticipatePeriods(Integer anticipatePeriods) {
         this.anticipatePeriods = anticipatePeriods;
     }
-    
+
     @Column(name="own_invoice")
     public Integer getOwnInvoice() {
         return this.ownInvoice;
     }
-    
+
     public void setOwnInvoice(Integer ownInvoice) {
         this.ownInvoice = ownInvoice;
     }
-    
+
     @Column(name="notes", length=200)
     public String getNotes() {
         return this.notes;
     }
-    
+
     public void setNotes(String notes) {
         // make sure this is fits in the DB
-        if (notes == null || notes.length() <= 200) { 
+        if (notes == null || notes.length() <= 200) {
             this.notes = notes;
         } else {
             this.notes = notes.substring(0, 200);
             LOG.warn("Trimming notes to 200 lenght: from " + notes + " to " + this.notes);
         }
     }
-    
+
     @Column(name="notes_in_invoice")
     public Integer getNotesInInvoice() {
         return this.notesInInvoice;
     }
-    
+
     public void setNotesInInvoice(Integer notesInInvoice) {
         this.notesInInvoice = notesInInvoice;
     }
-    
+
     /*
      * There might potentially hundreds of process records, but they are not read by the app.
      * They are only taken for display, and then all are needed
@@ -435,17 +426,17 @@ public class OrderDTO implements Serializable, Exportable {
     public Set<OrderProcessDTO> getOrderProcesses() {
         return this.orderProcesses;
     }
-    
+
     public void setOrderProcesses(Set<OrderProcessDTO> orderProcesses) {
         this.orderProcesses = orderProcesses;
     }
-    
+
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="purchaseOrder")
     @OrderBy(clause="id")
     public List<OrderLineDTO> getLines() {
         return this.lines;
     }
-    
+
     public void setLines(List<OrderLineDTO> orderLineDTOs) {
         this.lines = orderLineDTOs;
     }
@@ -457,7 +448,7 @@ public class OrderDTO implements Serializable, Exportable {
     public void setIsCurrent(Integer isCurrent) {
         this.isCurrent = isCurrent;
     }
-    
+
     @Version
     @Column(name="OPTLOCK")
     public Integer getVersionNum() {
@@ -514,12 +505,12 @@ public class OrderDTO implements Serializable, Exportable {
             setCurrency(currency);
         }
     }
-    
+
     @Transient
     public UserDTO getUser() {
         return getBaseUserByUserId();
     }
-    
+
     @Transient
     public BigDecimal getTotal() {
         if (total != null) {
@@ -547,9 +538,9 @@ public class OrderDTO implements Serializable, Exportable {
     @Transient
     public Collection<InvoiceDTO> getInvoices() {
         return invoices;
-        
+
     }
-    
+
     @Transient
     public String getPeriodStr() {
         return periodStr;
@@ -570,12 +561,12 @@ public class OrderDTO implements Serializable, Exportable {
     public String getStatusStr() {
         return statusStr;
     }
-    
+
     @Transient
     public String getTimeUnitStr() {
         return timeUnitStr;
     }
-    
+
     @Transient
     public String getCurrencyName() {
         return currencyName;
@@ -585,45 +576,45 @@ public class OrderDTO implements Serializable, Exportable {
     public String getCurrencySymbol() {
         return currencySymbol;
     }
-    
+
     public void addExtraFields(Integer languageId) {
         invoices = new ArrayList<InvoiceDTO>();
         billingProcesses = new ArrayList<BillingProcessDTO>();
         nonReviewPeriods = new ArrayList<OrderProcessDTO>();
-        
+
         for (OrderProcessDTO process: getOrderProcesses()) {
             if (process.getIsReview() == 1) continue;
             nonReviewPeriods.add(process);
-            
+
             try {
                 InvoiceBL invoiceBl = new InvoiceBL(process.getInvoice().getId());
                 invoices.add(invoiceBl.getDTO());
             } catch (Exception e) {
                 throw new SessionInternalError(e);
-            } 
-            
+            }
+
             billingProcesses.add(process.getBillingProcess());
         }
-        
+
         periodStr = getOrderPeriod().getDescription(languageId);
         billingTypeStr = getOrderBillingType().getDescription(languageId);
         statusStr = getOrderStatus().getDescription(languageId);
         timeUnitStr = Util.getPeriodUnitStr(
                 getDueDateUnitId(), languageId);
-        
+
         currencySymbol = getCurrency().getSymbol();
         currencyName = getCurrency().getDescription(languageId);
 
         for (OrderLineDTO line : getLines()) {
             line.addExtraFields(languageId);
-        } 
+        }
     }
-    
+
     @Transient
     public Integer getPeriodId() {
         return getOrderPeriod().getId();
     }
-    
+
     @Transient
     public Integer getUserId() {
         return (getBaseUserByUserId() == null) ? null : getBaseUserByUserId().getId();
@@ -641,10 +632,10 @@ public class OrderDTO implements Serializable, Exportable {
                 return line;
             }
         }
-        
+
         return null;
     }
-    
+
     @Transient
     public void removeLine(Integer itemId) {
         OrderLineDTO line = getLine(itemId);
@@ -657,7 +648,7 @@ public class OrderDTO implements Serializable, Exportable {
     public boolean isEmpty() {
         return lines.isEmpty();
     }
-    
+
     @Transient
     public int getNumberOfLines() {
         int count = 0;
@@ -700,7 +691,7 @@ public class OrderDTO implements Serializable, Exportable {
      */
     public void touch() {
         getActiveSince();
-        if (getBaseUserByUserId() != null) 
+        if (getBaseUserByUserId() != null)
             getBaseUserByUserId().getCreateDatetime();
         if (getBaseUserByCreatedBy() != null)
             getBaseUserByCreatedBy().getCreateDatetime();
@@ -724,7 +715,7 @@ public class OrderDTO implements Serializable, Exportable {
     @Override
     public String toString() {
         StringBuffer str = new StringBuffer("Order = " +
-         "id=" + id + "," + 
+         "id=" + id + "," +
          "baseUserByUserId=" + ((baseUserByUserId == null) ? null : baseUserByUserId.getId()) + "," +
          "baseUserByCreatedBy=" + ((baseUserByCreatedBy== null) ? null : baseUserByCreatedBy.getId()) + "," +
          "currencyDTO=" + currencyDTO + "," +
@@ -750,7 +741,7 @@ public class OrderDTO implements Serializable, Exportable {
          "isCurrent=" + isCurrent + "," +
          "versionNum=" + versionNum +
          " lines:[");
-        
+
         for (OrderLineDTO line: getLines()) {
             str.append(line.toString() + "-");
         }
@@ -848,6 +839,15 @@ public class OrderDTO implements Serializable, Exportable {
         }
 
         return values.toArray(new Object[values.size()][]);
+    }
+
+    @Transient
+    public Date getPricingDate() {
+        Date billingDate = getActiveSince();
+        if (billingDate == null) {
+            billingDate = getCreateDate();
+        }
+        return billingDate;
     }
 }
 

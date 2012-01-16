@@ -1,39 +1,35 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package com.sapienter.jbilling.server.order;
 
 import com.sapienter.jbilling.common.CommonConstants;
-import org.apache.log4j.Logger;
-
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.UserBL;
+import org.apache.log4j.Logger;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -60,7 +56,7 @@ public class OrderLineBL {
                     return new Integer(a.getId()).compareTo(b.getId());
                 }
             });
-            
+
             if (index >= 0) {
                 // existing line
                 OrderLineDTO diffLine = new OrderLineDTO(lines1.get(index));
@@ -101,8 +97,8 @@ public class OrderLineBL {
             oldLine = new OrderLineDTO(oldLine);
         }
 
-        addItem(line.getItemId(), line.getQuantity(), user.getLanguage(), order.getUserId(),
-                user.getEntity().getEntity().getId(), order.getCurrencyId(), order, line, persist);
+        addItem(line.getItemId(), line.getQuantity(), user.getLanguage(), order.getUserId(), order.getCurrencyId(),
+                order, line, persist);
 
         if (persist) {
             // generate NewQuantityEvent
@@ -116,8 +112,7 @@ public class OrderLineBL {
             newLines.add(newLine);
             LOG.debug("Old line: " + oldLine);
             LOG.debug("New line: " + newLine);
-            orderBl.checkOrderLineQuantities(oldLines, newLines, 
-                    user.getEntity().getEntity().getId(), order.getId(), true);
+            orderBl.checkOrderLineQuantities(oldLines, newLines, user.getEntity().getEntity().getId(), order.getId(), true);
         }
     }
 
@@ -171,7 +166,7 @@ public class OrderLineBL {
         line.setItemId(itemId);
         line.setQuantity(quantity);
         line.setPrice(price);
-        addItem(itemId, new BigDecimal(quantity), user.getLanguage(), order.getUserId(), user.getEntity().getEntity().getId(),
+        addItem(itemId, new BigDecimal(quantity), user.getLanguage(), order.getUserId(),
                 order.getCurrencyId(), order, line, false);
     }
 
@@ -210,12 +205,13 @@ public class OrderLineBL {
      */
     public static void addItem(OrderDTO order, Integer itemId, BigDecimal quantity, boolean persist) {
         UserBL user = new UserBL(order.getUserId());
-        addItem(itemId, quantity, user.getLanguage(), order.getUserId(), user.getEntity().getEntity().getId(),
+        addItem(itemId, quantity, user.getLanguage(), order.getUserId(),
                 order.getCurrencyId(), order, null, persist);
     }
 
-    public static void addItem(Integer itemID, BigDecimal quantity, Integer language, Integer userId, Integer entityId,
-                               Integer currencyId, OrderDTO newOrder, OrderLineDTO myLine, boolean persist) {
+
+    private static void addItem(Integer itemID, BigDecimal quantity, Integer language, Integer userId,
+                                Integer currencyId, OrderDTO newOrder, OrderLineDTO myLine, boolean persist) {
 
         if (persist) throw new IllegalArgumentException("persist is oboleted"); // TODO remove the argument
         // check if the item is already in the order
@@ -228,7 +224,7 @@ public class OrderLineBL {
             myLine.setItem(item);
             myLine.setQuantity(quantity);
         }
-        populateWithSimplePrice(language, userId, entityId, currencyId, itemID, myLine, CommonConstants.BIGDECIMAL_SCALE);
+        populateWithSimplePrice(newOrder, myLine, language, userId, currencyId, itemID, CommonConstants.BIGDECIMAL_SCALE);
         myLine.setDefaults();
 
         // create a new line if an existing line does not exist
@@ -256,15 +252,16 @@ public class OrderLineBL {
     /**
      * Returns an order line with everything correctly
      * initialized. It does not call plug-ins to set the price
+     *
+     * @param order
      * @param language
      * @param userId
-     * @param entityId
      * @param currencyId
      * @param precision
      * @return
      */
-    public static void populateWithSimplePrice(Integer language, Integer userId, Integer entityId, Integer currencyId,
-                                               Integer itemId, OrderLineDTO line, Integer precision) {
+    private static void populateWithSimplePrice(OrderDTO order, OrderLineDTO line, Integer language, Integer userId, Integer currencyId,
+                                                Integer itemId, Integer precision) {
 
         ItemBL itemBl = new ItemBL(itemId);
         ItemDTO item = itemBl.getEntity();
@@ -283,20 +280,21 @@ public class OrderLineBL {
         }
 
         if (line.getPrice() == null) {
-            line.setPrice((item.getPercentage() == null)
-                          ? itemBl.getPriceByCurrency(item, userId, currencyId) // basic price, ignoring current usage and
-                          : item.getPercentage());                              // and quantity purchased for price calculations
+            BigDecimal price = item.getPercentage();
+            if(price == null) {
+                Date pricingDate = order != null ? order.getPricingDate() : null;
+                price = itemBl.getPriceByCurrency(pricingDate, item, userId, currencyId); // basic price, ignoring current usage and
+                // and quantity purchased for price calculations
+            }
+            line.setPrice(price);
         }
 
         if (line.getAmount() == null) {
-            BigDecimal additionAmount = null;               
-            if (item.getPercentage() == null) {
+            BigDecimal additionAmount = item.getPercentage();   // percentage ignores the quantity
+            if (additionAmount == null) {
                 // normal price, multiply by quantity
                 additionAmount = line.getPrice();
                 additionAmount = additionAmount.multiply(line.getQuantity());
-            } else {
-                // percentage ignores the quantity
-                additionAmount = item.getPercentage();
             }
             line.setAmount(additionAmount.setScale(precision, CommonConstants.BIGDECIMAL_ROUND));
         }

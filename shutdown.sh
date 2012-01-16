@@ -1,5 +1,20 @@
 #!/bin/bash
 #
+# JBILLING CONFIDENTIAL
+# _____________________
+#
+# [2003] - [2012] Enterprise jBilling Software Ltd.
+# All Rights Reserved.
+#
+# NOTICE:  All information contained herein is, and remains
+# the property of Enterprise jBilling Software.
+# The intellectual and technical concepts contained
+# herein are proprietary to Enterprise jBilling Software
+# and are protected by trade secret or copyright law.
+# Dissemination of this information or reproduction of this material
+# is strictly forbidden.
+
+
 # Shutdown script for jBilling under Cruise Control. This script kills the
 # jBilling instance identified by the process ID from the 'jbilling.pid' file
 # created by the startup script.

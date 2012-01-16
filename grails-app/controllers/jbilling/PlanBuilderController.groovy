@@ -1,47 +1,37 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package jbilling
 
-import grails.plugins.springsecurity.Secured
-import com.sapienter.jbilling.server.item.db.ItemDTO
-import com.sapienter.jbilling.server.user.db.CompanyDTO
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import com.sapienter.jbilling.client.pricing.util.PlanHelper
+import com.sapienter.jbilling.common.CommonConstants
 import com.sapienter.jbilling.common.SessionInternalError
-import com.sapienter.jbilling.server.item.PlanWS
-import com.sapienter.jbilling.server.item.PlanItemWS
-import com.sapienter.jbilling.server.pricing.PriceModelWS
 import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.server.item.ItemDTOEx
-import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
-import com.sapienter.jbilling.server.pricing.util.AttributeUtils
-import com.sapienter.jbilling.server.item.ItemTypeBL
-import com.sapienter.jbilling.server.pricing.PriceModelBL
-import com.sapienter.jbilling.server.pricing.db.PriceModelDTO
-import com.sapienter.jbilling.server.order.db.OrderPeriodDTO
-import com.sapienter.jbilling.server.util.Constants
-import com.sapienter.jbilling.client.pricing.util.PlanHelper
 import com.sapienter.jbilling.server.item.PlanItemBundleWS
-import com.sapienter.jbilling.server.item.db.PlanItemBundleDTO
+import com.sapienter.jbilling.server.item.PlanItemWS
+import com.sapienter.jbilling.server.item.PlanWS
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO
+import com.sapienter.jbilling.server.pricing.PriceModelBL
+import com.sapienter.jbilling.server.pricing.PriceModelWS
+import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
+import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.util.Constants
+import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import java.util.Map.Entry
 
 /**
  * Plan builder controller
@@ -150,7 +140,7 @@ class PlanBuilderController {
                     priceModel.rate = BigDecimal.ZERO
                     priceModel.currencyId = session['currency_id']
 
-                    product.defaultPrices.put(PriceModelWS.EPOCH_DATE, priceModel)
+                    product.defaultPrices.put(CommonConstants.EPOCH_DATE, priceModel)
                 }
 
                 // subscription product uses a METERED price model
@@ -171,12 +161,12 @@ class PlanBuilderController {
                 def pricingDates = collectPricingDates(plan.planItems)
                 def startDate
                 if (!product.id || product.id == 0) {
-                    startDate = PriceModelWS.EPOCH_DATE
+                    startDate = CommonConstants.EPOCH_DATE
                 } else {
                     if (pricingDates) {
                         startDate = pricingDates.asList().last()
                     } else {
-                        startDate = PriceModelWS.EPOCH_DATE
+                        startDate = CommonConstants.EPOCH_DATE
                     }
                 }
 

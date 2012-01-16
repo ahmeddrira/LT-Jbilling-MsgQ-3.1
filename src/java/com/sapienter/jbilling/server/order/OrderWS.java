@@ -1,37 +1,34 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 package com.sapienter.jbilling.server.order;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.order.validator.DateBetween;
 import com.sapienter.jbilling.server.order.validator.DateRange;
+import com.sapienter.jbilling.server.order.validator.IsNotEmptyOrDeleted;
 import com.sapienter.jbilling.server.security.WSSecured;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Date;
 
 /**
  * @author Emil
@@ -54,6 +51,7 @@ public class OrderWS implements WSSecured, Serializable {
     private Date createDate;
     private Integer createdBy;
     @NotNull(message = "validation.error.null.activeSince")
+    @DateBetween(start = "01/01/1901", end = "12/31/9999")
     private Date activeSince;
     private Date activeUntil;
     private Date cycleStarts;
@@ -70,6 +68,7 @@ public class OrderWS implements WSSecured, Serializable {
     private String notes;
     private Integer notesInInvoice;
     @NotEmpty(message = "validation.error.empty.lines") @Valid
+    @IsNotEmptyOrDeleted
     private OrderLineWS orderLines[] = null;
     private String pricingFields = null;
     private InvoiceWS[] generatedInvoices= null;

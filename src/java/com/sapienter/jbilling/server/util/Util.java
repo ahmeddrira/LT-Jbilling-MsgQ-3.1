@@ -1,21 +1,17 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
-
- This file is part of jbilling.
-
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ * JBILLING CONFIDENTIAL
+ * _____________________
+ *
+ * [2003] - [2012] Enterprise jBilling Software Ltd.
+ * All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Enterprise jBilling Software.
+ * The intellectual and technical concepts contained
+ * herein are proprietary to Enterprise jBilling Software
+ * and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden.
  */
 
 /*
@@ -23,7 +19,18 @@
  */
 package com.sapienter.jbilling.server.util;
 
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.item.CurrencyBL;
+import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
+import org.apache.log4j.Logger;
+
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -36,23 +43,12 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 
-
-import org.apache.log4j.Logger;
-
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.item.CurrencyBL;
-import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
-import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
-import java.math.RoundingMode;
-
-
 /**
  * @author Emil
  */
 public class Util {
 
-    
+
     public static final String[] hexLookupTable = {
         "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
         "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f",
@@ -72,8 +68,7 @@ public class Util {
         "f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "fa", "fb", "fc", "fd", "fe", "ff"
       };
 
-    public static String formatDate(Date date, Integer userId) 
-            throws SessionInternalError {
+    public static String formatDate(Date date, Integer userId) throws SessionInternalError {
         Locale locale;
         try {
             UserBL user = new UserBL(userId);
@@ -81,19 +76,18 @@ public class Util {
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-        ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", 
+        ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications",
                 locale);
         SimpleDateFormat df = new SimpleDateFormat(
                 bundle.getString("format.date"));
         return df.format(date);
     }
-    
+
     public static String formatDate(Date date, Locale locale) {
-    	if (null == date) 
-    	{
+    	if (null == date) {
     		return "";
     	}
-    	ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", 
+    	ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications",
                 locale);
         SimpleDateFormat df = new SimpleDateFormat(
                 bundle.getString("format.date"));
@@ -136,24 +130,24 @@ public class Util {
         }
     }
 
-    public static String formatMoney(Float number, Integer userId, 
-            Integer currencyId, boolean forEmail) 
+    public static String formatMoney(Float number, Integer userId,
+            Integer currencyId, boolean forEmail)
             throws SessionInternalError {
         Locale locale;
         try {
             // find first the right format for the number
             UserBL user = new UserBL(userId);
             locale = user.getLocale();
-            ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", 
+            ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications",
                     locale);
             NumberFormat format = NumberFormat.getNumberInstance(locale);
             ((DecimalFormat) format).applyPattern(bundle.getString(
                     "format.float"));
-            
+
             // now the symbol of the currency
             CurrencyBL currency = new CurrencyBL(currencyId);
             String symbol = currency.getEntity().getSymbol();
-            if (symbol.length() >= 4 && symbol.charAt(0) == '&' && 
+            if (symbol.length() >= 4 && symbol.charAt(0) == '&' &&
                     symbol.charAt(1) == '#') {
                 if (!forEmail) {
                     // this is an html symbol
@@ -162,8 +156,7 @@ public class Util {
                     // remove the last digit (;)
                     symbol = symbol.substring(0, symbol.length() - 1);
                     // convert to a single char
-                    Character ch = new Character((char) 
-                            Integer.valueOf(symbol).intValue());
+                    Character ch = new Character((char) Integer.valueOf(symbol).intValue());
                     symbol = ch.toString();
                 } else {
                     symbol = currency.getEntity().getCode();
@@ -174,22 +167,22 @@ public class Util {
             throw new SessionInternalError(e);
         }
     }
-    
+
     public static String getPeriodUnitStr(Integer id, Integer language) {
         Logger log = Logger.getLogger(Util.class);
         InternationalDescriptionDTO inter = ((InternationalDescriptionDAS)
                 Context.getBean(Context.Name.DESCRIPTION_DAS)).findIt(Constants.TABLE_PERIOD_UNIT, id,
                 "description", language);
-        
+
        if (inter == null) {
            log.debug("Description not set for period unit " + id + " language" +
                    " " + language);
-           return null;   
+           return null;
        }
 
         return inter.getContent();
     }
-    
+
     public static double round(double val, int places) {
         long factor = (long) Math.pow(10, places);
 
@@ -204,7 +197,7 @@ public class Util {
         //         back to the left.
         return (double) tmp / factor;
     }
-    
+
     public static float round(float val, int places) {
         return (float) round((double) val, places);
     }
@@ -226,13 +219,13 @@ public class Util {
         return float2string(new Float(arg), loc);
     }
 
-    public static Float string2float (String arg, Locale loc) 
+    public static Float string2float (String arg, Locale loc)
         throws ParseException {
         if (arg == null) {
             return null;
         }
         NumberFormat nf = NumberFormat.getInstance(loc);
-        return new Float(nf.parse(arg).floatValue());
+        return nf.parse(arg).floatValue();
     }
 
     public static String binaryToString(byte[] string) {
@@ -243,7 +236,7 @@ public class Util {
         }
         return hexData.toString();
     }
-    
+
     public static byte[] stringToBinary(String string) {
         byte retValue[] = new byte[string.length()/2];
         for (int i=0; i < retValue.length; i++) {
@@ -255,16 +248,13 @@ public class Util {
         return retValue;
     }
 
-    public static ResourceBundle getEntityNotificationsBundle(Integer userId) 
-            throws SessionInternalError {
-        UserBL userBL;
+    public static ResourceBundle getEntityNotificationsBundle(Integer userId) throws SessionInternalError {
         ResourceBundle bundle;
         try {
-            userBL = new UserBL(userId);
-            bundle = ResourceBundle.getBundle("entityNotifications", 
-                    userBL.getLocale());
+            UserBL userBL = new UserBL(userId);
+            bundle = ResourceBundle.getBundle("entityNotifications", userBL.getLocale());
         } catch (Exception e) {
-            throw new SessionInternalError("Error getting user info or resource bundle", 
+            throw new SessionInternalError("Error getting user info or resource bundle",
                     Util.class, e);
         }
         return bundle;
@@ -337,6 +327,33 @@ public class Util {
         return builder.toString();
     }
 
+    public static void closeQuietly(PreparedStatement stmt) {
+        if (stmt != null) {
+            try {
+                stmt.close();
+            } catch (SQLException ignored) {
+            }
+        }
+    }
+
+    public static void closeQuietly(ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException ignored) {
+            }
+        }
+    }
+
+    public static void closeQuietly(Connection conn) {
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException ignored) {
+            }
+        }
+    }
+
     private static String escapeStringForCsvFormat(String str, String fieldSeparator) {
         if (str == null) return "";
         //is escaping fieldSeparators and line separators by quotes needed
@@ -353,6 +370,8 @@ public class Util {
         }
         if (inQuotes) builder.append('\"');
         return builder.toString();
-    }    
+    }
+
+
 
 }

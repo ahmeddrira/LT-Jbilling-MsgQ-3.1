@@ -331,7 +331,7 @@
     <div class="btn-box">
         <sec:ifAllGranted roles="INVOICE_70">
             <g:preferenceEquals preferenceId="${Constants.PREFERENCE_INVOICE_DELETE}" value="1">
-                <g:if test="${selected.id}">
+                <g:if test="${selected.id && selected.isReview == 0}">
                     <a onclick="showConfirm('delete-'+${selected.id});" class="submit delete">
                         <span><g:message code="button.delete.invoice"/></span>
                     </a>

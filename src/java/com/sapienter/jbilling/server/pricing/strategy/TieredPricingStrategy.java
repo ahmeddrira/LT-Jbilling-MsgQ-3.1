@@ -95,7 +95,7 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
         // parse pricing tiers
         SortedMap<Integer, BigDecimal> tiers = getTiers(planPrice.getAttributes());
         LOG.debug("Tiered pricing: " + tiers);
-        LOG.debug("Selecting tier price for usage level " + usage.getQuantity());
+        LOG.debug("Calculating tiered price for purchase quantity " + quantity + ", and " + existing + " existing.");
 
         if (!tiers.isEmpty()) {
             // calculate price for entire quantity across all orders, and the price for all previously

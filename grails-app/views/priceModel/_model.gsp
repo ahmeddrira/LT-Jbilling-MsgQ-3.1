@@ -35,7 +35,7 @@
             <g:render template="/priceModel/strategy/${templateName}" model="[model: model, type: type, modelIndex: modelIndex, types: types, currencies: currencies]"/>
         </div>
         <div class="column">
-            <g:render template="/priceModel/attributes" model="[model: model, type: type, modelIndex: modelIndex]"/>
+            <g:render template="/priceModel/attributes" model="[model: model, type: type, modelIndex: modelIndex, templateName: templateName]"/>
         </div>
     </div>
 

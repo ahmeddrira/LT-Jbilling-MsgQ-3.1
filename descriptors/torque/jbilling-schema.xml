@@ -1392,7 +1392,8 @@
         </foreign-key>
     </table>
     <table name="mediation_record">
-        <column name="id_key" primaryKey="true" type="VARCHAR" size="100" required="true"/>
+        <column name="id" primaryKey="true" type="INTEGER" required="true"/>
+        <column name="id_key" type="VARCHAR" size="100" required="true"/>
         <column name="start_datetime" required="true" type="TIMESTAMP"/>
         <column name="mediation_process_id" type="INTEGER" required="false"/>
         <column name="status_id" required="true" type="INTEGER"/>
@@ -1418,7 +1419,7 @@
         <column name="description" type="VARCHAR" required="false" size="200"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="mediation_record">
-            <reference foreign="id_key" local="mediation_record_id"/>
+            <reference foreign="id" local="mediation_record_id"/>
         </foreign-key>
         <foreign-key foreignTable="order_line">
             <reference foreign="id" local="order_line_id"/>

@@ -59,6 +59,7 @@ public class PaymentWS implements WSSecured, Serializable {
     private String amount;
     @NotNull(message="validation.error.notnull")
     private Integer isRefund;
+    @NotNull(message="validation.error.notnull")
     private Integer paymentMethodId;
     @NotNull(message="validation.error.notnull")
     private Date paymentDate;

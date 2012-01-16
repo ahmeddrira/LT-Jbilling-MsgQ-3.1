@@ -308,12 +308,17 @@ public class UserBL extends ResultList implements UserSQL {
             // link the partner
             PartnerBL partner = null;
             if (dto.getCustomer().getPartner() != null) {
-                partner = new PartnerBL(dto.getCustomer().
-                        getPartner().getId());
-                // see that this partner is valid
-                if (partner.getEntity().getUser().getEntity().getId() != dto.getEntityId() ||
-                        partner.getEntity().getUser().getDeleted() == 1) {
-                    partner = null;
+                try {
+                    partner = new PartnerBL(dto.getCustomer().
+                            getPartner().getId());
+                    // see that this partner is valid
+                    if (partner.getEntity().getUser().getEntity().getId() != dto.getEntityId() ||
+                            partner.getEntity().getUser().getDeleted() == 1) {
+                        partner = null;
+                    }
+                } catch (Exception ex) {
+                    throw new SessionInternalError("It doesn't exist a partner with the supplied id.",
+                            new String[]{"UserWS,partnerId,validation.error.partner.does.not.exist"});
                 }
             }
             newId = create(dto.getEntityId(), dto.getUserName(),

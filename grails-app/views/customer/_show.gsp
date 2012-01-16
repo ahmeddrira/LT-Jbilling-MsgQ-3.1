@@ -36,6 +36,9 @@
                 ${selected.userName}
             </g:else>
             <em><g:if test="${contact}">${contact.organizationName}</g:if></em>
+            <g:if test="${selected.deleted}">
+                <span style="color: #ff0000;">(${selected.userStatus.description})</span>
+            </g:if>
         </strong>
     </div>
     <div class="box edit">
@@ -313,30 +316,32 @@
     </g:if>
 
     <div class="btn-box">
-        <div class="row">
-            <sec:ifAllGranted roles="ORDER_20">
-                <g:link controller="orderBuilder" action="edit" params="[userId: selected.id]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>
-            </sec:ifAllGranted>
+        <g:if test="${!selected.deleted}">
+            <div class="row">
+                <sec:ifAllGranted roles="ORDER_20">
+                    <g:link controller="orderBuilder" action="edit" params="[userId: selected.id]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>
+                </sec:ifAllGranted>
 
-            <sec:ifAllGranted roles="PAYMENT_30">
-                <g:link controller="payment" action="edit" params="[userId: selected.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
-            </sec:ifAllGranted>
-        </div>
-        <div class="row">
-            <sec:ifAllGranted roles="CUSTOMER_11">
-                <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
-            </sec:ifAllGranted>
+                <sec:ifAllGranted roles="PAYMENT_30">
+                    <g:link controller="payment" action="edit" params="[userId: selected.id]" class="submit payment"><span><g:message code="button.make.payment"/></span></g:link>
+                </sec:ifAllGranted>
+            </div>
+            <div class="row">
+                <sec:ifAllGranted roles="CUSTOMER_11">
+                    <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+                </sec:ifAllGranted>
 
-            <sec:ifAllGranted roles="CUSTOMER_12">
-                <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
-            </sec:ifAllGranted>
+                <sec:ifAllGranted roles="CUSTOMER_12">
+                    <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
+                </sec:ifAllGranted>
 
-            <sec:ifAllGranted roles="CUSTOMER_10">
-                <g:if test="${customer?.isParent > 0}">
-                    <g:link action="edit" params="[parentId: selected.id]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
-                </g:if>
-            </sec:ifAllGranted>
-        </div>
+                <sec:ifAllGranted roles="CUSTOMER_10">
+                    <g:if test="${customer?.isParent > 0}">
+                        <g:link action="edit" params="[parentId: selected.id]" class="submit add"><span><g:message code="customer.add.subaccount.button"/></span></g:link>
+                    </g:if>
+                </sec:ifAllGranted>
+            </div>
+        </g:if>
     </div>
 
     <g:render template="/confirm"

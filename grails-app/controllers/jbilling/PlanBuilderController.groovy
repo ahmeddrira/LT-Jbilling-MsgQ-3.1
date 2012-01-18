@@ -266,6 +266,7 @@ class PlanBuilderController {
                 def planItem = conversation.plan.planItems[index]
 
                 bindData(planItem, params, 'price')
+                bindData(planItem.bundle, params['bundle'])
                 planItem.model = PlanHelper.bindPriceModel(params)
 
                 params.newLineIndex = index

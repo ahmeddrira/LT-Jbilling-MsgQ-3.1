@@ -82,6 +82,7 @@
 <script type="text/javascript">
     $(function() {
         setTimeout(function() {
+            $('#confirm-dialog-${name}.ui-dialog-content').remove();
             $('#confirm-dialog-${name}').dialog({
                 autoOpen: false,
                 height: 200,

@@ -354,8 +354,10 @@
                 <!-- box text -->
                 <div class="box-text">
                     <label><g:message code="payment.notes"/></label>
-                    <ul>
-                        <li><p class="paymentConfirm">${payment?.paymentNotes}</p></li>
+                    <ul style="padding: 0 0 10px 10px !important;">
+                        <li><g:textArea style="padding: 0 !important; width: 474px !important; color: black;"
+                                        name="paymentNotes" value="${payment?.paymentNotes}" rows="5" cols="60"
+                                        disabled="disabled"/></li>
                     </ul>
                     <g:hiddenField name="payment.paymentNotes" value="${payment?.paymentNotes}"/>
                 </div>

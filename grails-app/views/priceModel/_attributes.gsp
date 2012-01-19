@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.pricing.db.PriceModelStrategy; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy" %>
+<%@ page import="com.sapienter.jbilling.server.item.db.ItemDTO; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;" %>
 
 <%--
   Editor form for price model attributes.
@@ -36,13 +36,27 @@
 
     <g:set var="attribute" value="${attributes.remove(definition.name)}"/>
 
-    <g:applyLayout name="form/input">
-        <content tag="label"><g:message code="${definition.name}"/></content>
-        <content tag="label.for">model.${modelIndex}.attribute.${attributeIndex}.value</content>
-
+    <g:if test="${templateName == 'pooled' && definition.name== 'pool_item_id'}">
         <g:hiddenField name="model.${modelIndex}.attribute.${attributeIndex}.name" value="${definition.name}"/>
-        <g:textField class="field" name="model.${modelIndex}.attribute.${attributeIndex}.value" value="${attribute}"/>
-    </g:applyLayout>
+        <g:applyLayout name="form/select">
+            <content tag="label"><g:message code="${definition.name}"/></content>
+            <content tag="label.for">model.${modelIndex}.attribute.${attributeIndex}.value</content>
+            <g:select name="model.${modelIndex}.attribute.${attributeIndex}.value" class="model-type" from="${ItemDTO.list([sort: 'id'])}"
+                      optionKey="id" optionValue="description" value="${attribute}"/>
+        </g:applyLayout>
+
+    </g:if>
+
+    <g:else>
+        <g:applyLayout name="form/input">
+            <content tag="label"><g:message code="${definition.name}"/></content>
+            <content tag="label.for">model.${modelIndex}.attribute.${attributeIndex}.value</content>
+
+            <g:hiddenField name="model.${modelIndex}.attribute.${attributeIndex}.name" value="${definition.name}"/>
+            <g:textField class="field" name="model.${modelIndex}.attribute.${attributeIndex}.value"
+                         value="${attribute}"/>
+        </g:applyLayout>
+    </g:else>
 </g:each>
 
 <!-- remaining user-defined attributes -->
@@ -61,7 +75,7 @@
         </content>
 
         <a onclick="removeModelAttribute(this, ${modelIndex}, ${attributeIndex})">
-            <img src="${resource(dir:'images', file:'cross.png')}" alt="remove"/>
+            <img src="${resource(dir: 'images', file: 'cross.png')}" alt="remove"/>
         </a>
     </g:applyLayout>
 </g:each>

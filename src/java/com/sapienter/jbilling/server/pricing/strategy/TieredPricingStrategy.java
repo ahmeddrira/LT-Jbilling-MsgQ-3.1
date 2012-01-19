@@ -29,155 +29,162 @@ import com.sapienter.jbilling.server.pricing.util.AttributeUtils;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
+
+import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.*;
 
 /**
-* Tiered pricing strategy.
-*
-* Price set on bands of usage.
-*
-* @author Vikas Bodani
-* @since 15-03-2011
-*/
+ * Tiered pricing strategy.
+ *
+ * @author Brian Cowdery
+ * @since 16-Jan-2012
+ */
 public class TieredPricingStrategy extends AbstractPricingStrategy {
-	
-	private static final Logger LOG = Logger.getLogger(TieredPricingStrategy.class);
 
-   public TieredPricingStrategy() {
-       setAttributeDefinitions(
-               //new AttributeDefinition("", DECIMAL, true)
-       );
+    private static final Logger LOG = Logger.getLogger(TieredPricingStrategy.class);
 
-       setChainPositions(
-               ChainPosition.START
-       );
+    public TieredPricingStrategy() {
+        setAttributeDefinitions(
+                new AttributeDefinition("0", DECIMAL, true)
+        );
 
-       setRequiresUsage(true);
-   }
+        setChainPositions(
+                ChainPosition.START
+        );
 
-   /**
-    * Sets the price per minute the price defined against the usage band.
-    * 
-    * This method applies the purchased quantity to the usage and uses the aggregate 
-    * to determine the right band in which the total usage falls. It uses the quantity amount equal to or lower than the 
-    * band max value and multiplies with the price of the determined 
-    * band to set the price for current usage. If part of the usage falls in a higher band also,
-    * that part will be set at the higher band price. A weighted average is then used to 
-    * determine the price
-    *
-    * <code>
-    *      total_qty = (purchased_qty + current usage)
-    *      totalCost += price (total_qty >= max band value) * max band quantity 
-    *      qty1 =  Max (priceBand) 
-    *      qty2 = (total_qty - Max (priceBand))
-    * </code>
-    *
-    * @param pricingOrder target order for this pricing request (not used by this strategy)
-    * @param result pricing result to apply pricing to
-    * @param fields pricing fields (not used by this strategy)
-    * @param planPrice the plan price to apply
-    * @param quantity quantity of item being priced
-    * @param usage total item usage for this billing period
-    */
-   public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
-                       PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
+        setRequiresUsage(true);
+    }
 
-       if (usage == null || usage.getQuantity() == null)
-           throw new IllegalArgumentException("Usage quantity cannot be null for TieredPricingStrategy.");
+    /**
+     * Calculates a price based on the amount being purchased. Prices are organized into "tiers", where
+     * the price calculated depends on how much of the quantity purchased falls into each tier.
+     *
+     * Example:
+     *  0 - 500    @ $2
+     *  500 - 1000 @ $1
+     *  > 1000     @ $0.5
+     *
+     *  The first 500 purchased would be at $2/unit, the next 500 would be priced at $1/unit, and
+     *  the remaining quantity over 1000 would be priced at $0.5/unit.
+     *
+     *  The final price is an aggregated total of the quantity priced in each tier.
+     *
+     * @param pricingOrder target order for this pricing request (may be null)
+     * @param result pricing result to apply pricing to
+     * @param fields pricing fields
+     * @param planPrice the plan price to apply
+     * @param quantity quantity of item being priced
+     * @param usage total item usage for this billing period
+     */
+    public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
+                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
 
-       //This may need to be done on 'Tiered Based on Time'
-       BigDecimal total = quantity.add(usage.getQuantity());
-       LOG.debug("Total: " + quantity + " + " + usage.getQuantity() + " = " + total);
-       BigDecimal toRateQty= BigDecimal.ZERO;
-       BigDecimal totalCost= BigDecimal.ZERO;
-       /**
-        * 1. if no attributes, setPrice to BigDecimal.ZERO
-        * 2. if attributes, check price band for total usage
-        *    getAttributes(), order by maxQty ascending
-        *    
+        if (usage == null || usage.getQuantity() == null)
+            throw new IllegalArgumentException("Usage quantity cannot be null for TieredPricingStrategy.");
+
+        /*
+           Usage quantity normally includes the quantity being purchased because we roll in the order
+           lines. If there is no pricing order (populating a single ItemDTO price), add the quantity
+           being purchased to the usage calc to get the total quantity.
         */
-       LOG.debug("planPrice.getAttributes().size(): " + planPrice.getAttributes().size());
-       
-       if (null == planPrice.getAttributes() || planPrice.getAttributes().size() == 0 ) {
-    	   //no bands specified, default behaviour of no price
-    	   result.setPrice(BigDecimal.ZERO);
-    	   LOG.debug("Setting price to BigDecimal.ZERO");
-       } else {
-    	   
-    	   Map<String, String> map = planPrice.getAttributes();
-           Map<BigDecimal, BigDecimal> priceMap= new HashMap<BigDecimal, BigDecimal>();
-           for (Map.Entry<String, String> entry : map.entrySet()) {
-               BigDecimal tier = AttributeUtils.parseDecimal(entry.getKey());
-               BigDecimal price = AttributeUtils.parseDecimal(entry.getValue());
-               if (tier != null && price != null) {
-                   priceMap.put(tier, price);
-               }
-           }     
-           ArrayList<BigDecimal> maxValues= new ArrayList<BigDecimal>(priceMap.keySet());
-           Collections.sort(maxValues);
-           boolean priceSet= false;
-           LOG.debug("Run bandMax.compareTo(" + total + ")");
-           
-           BigDecimal availableQty= total;
-           //iterating bands with ascending order
-           for (int iter=0 ; iter < maxValues.size(); iter++ ) {
-        	   
-        	   //BigDecimal b= (BigDecimal) maxValues.get(iter);
-        	   BigDecimal currentTierQty= null;
-        	   BigDecimal tierCumulativQty= (BigDecimal) maxValues.get(iter);
-        	   currentTierQty= (iter == 0) ? tierCumulativQty : tierCumulativQty.subtract(((BigDecimal) maxValues.get(iter - 1 ))); 
+        BigDecimal total = pricingOrder == null ?  usage.getQuantity().add(quantity) : usage.getQuantity();
+        BigDecimal existing = pricingOrder == null ? usage.getQuantity() : usage.getQuantity().subtract(quantity);
 
-        	   if (availableQty.compareTo(BigDecimal.ZERO) > 0) {
-        		   //quantity to rate is either equal to total if lower than band max value, 
-        		   //else it is equal to the band max value
-        		   BigDecimal useQty=null;
-        		   if (availableQty.compareTo(currentTierQty) < 0) {
-        			   useQty= availableQty;
-        			   availableQty= BigDecimal.ZERO;
-        		   } else {
-        			   useQty= currentTierQty;
-        			   availableQty= availableQty.subtract(useQty); 
-        		   }
-        		   totalCost= totalCost.add(((BigDecimal)priceMap.get(tierCumulativQty)).multiply(useQty));
-        		   toRateQty= toRateQty.add(useQty);
-        		   LOG.debug("Use Qty: " + useQty + " Price: " + priceMap.get(tierCumulativQty));
-        		   priceSet= true;
-        	   }
-        	   
-        	   //if total usage falls under or equivalent to the max value of this band, use it
-        	   /*if (!priceSet && b.compareTo(total) >= 0) {
-        		   result.setPrice(priceMap.get(b));
-        		   LOG.debug("Setting price to: " + priceMap.get(b));
-        		   priceSet= true;
-        		   break;
-        	   }*/
-           }
-           //on any remaining quantity, if quantity was greater than max tier
-           //therefore, the last tier quantity acts as 'under max or more'
-           if (maxValues.size() > 0 && availableQty.compareTo(BigDecimal.ZERO) > 0) {
-        	   BigDecimal extraQty=  total.subtract(toRateQty);
-        	   totalCost= totalCost.add(((BigDecimal)priceMap.get(maxValues.get((maxValues.size()-1)))).multiply(extraQty));
-        	   toRateQty= toRateQty.add(availableQty);
-    		   LOG.debug("Extra Qty: " + extraQty + ", Available Qty: " + availableQty);
-           }
-           LOG.debug("totalCost: " + totalCost + " total: " + total + " toRateQty: " + toRateQty + ", and is equal to total " + (toRateQty.compareTo(total)== 0) );
-           LOG.debug("priceSet: " + priceSet);
-           
-           if ( priceSet) {
-        	   LOG.debug("result.setPrice=" + totalCost.divide(total, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
-        	   result.setPrice(totalCost.divide(total, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
-           } else {
-        	   result.setPrice(BigDecimal.ZERO);
-        	   LOG.debug("Setting price to BigDecimal.ZERO");
-/*               if (total.compareTo(maxValues.get((maxValues.size()-1))) > 0 ) {
-            	   result.setPrice(priceMap.get( maxValues.get((maxValues.size()-1)) ));
-            	   LOG.debug("Setting price to: " + result.getPrice());
-               }*/
-           }
-       }
-   }
+        assert existing.add(quantity).equals(total);
+
+        // parse pricing tiers
+        SortedMap<Integer, BigDecimal> tiers = getTiers(planPrice.getAttributes());
+        LOG.debug("Tiered pricing: " + tiers);
+        LOG.debug("Calculating tiered price for purchase quantity " + quantity + ", and " + existing + " existing.");
+
+        if (!tiers.isEmpty()) {
+            // calculate price for entire quantity across all orders, and the price for all previously
+            // existing orders. The difference is the price of the quantity being purchased now.
+            BigDecimal totalPrice = getTotalForQuantity(tiers, total);
+            BigDecimal existingPrice = getTotalForQuantity(tiers, existing);
+
+            // calculate price per unit from the total
+            BigDecimal price = totalPrice.subtract(existingPrice).divide(quantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+            result.setPrice(price);
+
+        } else {
+            // no pricing tiers given
+            result.setPrice(BigDecimal.ZERO);
+        }
+    }
+
+    /**
+     * Calculates the total dollar value (quantity * price) of the given quantity for the
+     * given pricing tiers.
+     *
+     * @param tiers pricing tiers
+     * @param quantity quantity to calculate total for
+     * @return total dollar value of purchased quantity
+     */
+    public BigDecimal getTotalForQuantity(SortedMap<Integer, BigDecimal> tiers, BigDecimal quantity) {
+        // sort through each tier, adding up the price for the full quantity purchased.
+        BigDecimal totalPrice = BigDecimal.ZERO;
+
+        Integer lower = null;
+        for (Integer upper : tiers.keySet()) {
+            if (lower == null) {
+                lower = upper;
+                continue;
+            }
+
+            // the total quantity in this tier that gets a price
+            BigDecimal tier = new BigDecimal(upper - lower);
+            BigDecimal price = tiers.get(lower);
+
+            // quantity less than total number of units in tier
+            // totalPrice = totalPrice + (quantity * price)
+            // break from loop
+            if (quantity.compareTo(tier) < 0) {
+                totalPrice = totalPrice.add(quantity.multiply(price));
+                quantity = BigDecimal.ZERO;
+                break;
+            }
+
+            // quantity is more than, or equal to, total number of units
+            // subtract tier quantity from quantity being priced
+            // totalPrice = totalPrice + (tier quantity * price)
+            if (quantity.compareTo(tier) >= 0) {
+                totalPrice = totalPrice.add(tier.multiply(price));
+                quantity = quantity.subtract(tier);
+            }
+
+            // move up to the next tier and handle the
+            // remaining quantity in the next pass.
+            lower = upper;
+        }
+
+
+        // last tier
+        // all remaining quantity > tier priced at a fixed rate
+        BigDecimal price = tiers.get(lower);
+        if (!quantity.equals(BigDecimal.ZERO)) {
+            totalPrice = totalPrice.add(quantity.multiply(price));
+        }
+
+        return totalPrice;
+    }
+
+    /**
+     * Parses the price model attributes and returns a map of tier quantities and corresponding
+     * prices for each tier. The map is sorted in ascending order by quantity (smallest first).
+     *
+     * @param attributes attributes to parse
+     * @return tiers of quantities and prices
+     */
+    protected SortedMap<Integer, BigDecimal> getTiers(Map<String, String> attributes) {
+        SortedMap<Integer, BigDecimal> tiers = new TreeMap<Integer, BigDecimal>();
+
+        for (Map.Entry<String, String> entry : attributes.entrySet()) {
+            if (entry.getKey().matches("^\\d+$")) {
+                tiers.put(AttributeUtils.parseInteger(entry.getKey()), AttributeUtils.parseDecimal(entry.getValue()));
+            }
+        }
+
+        return tiers;
+    }
 }

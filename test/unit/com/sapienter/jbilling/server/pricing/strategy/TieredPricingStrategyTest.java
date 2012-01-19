@@ -56,49 +56,98 @@ public class TieredPricingStrategyTest extends BigDecimalTestCase {
         PriceModelDTO planPrice = new PriceModelDTO();
         planPrice.setType(PriceModelStrategy.TIERED);
 
-        BigDecimal rate = new BigDecimal("0.07");
-        //planPrice.setRate(rate);
-
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(10), getUsage(new BigDecimal(1000))); // 10 purchased, 1000 usage
 
+        // 10 purchased, 1000 usage... but no tiers defined, price should be zero
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(10), getUsage(new BigDecimal(1000)));
         assertEquals(BigDecimal.ZERO, result.getPrice());
     }
 
-    public void testApplyToMiddleTier() throws Exception {
+    public void testTieredNoUsage() throws Exception {
         PriceModelDTO planPrice = new PriceModelDTO();
         planPrice.setType(PriceModelStrategy.TIERED);
 
-        BigDecimal rate = new BigDecimal("0.07");
-        //planPrice.setRate(rate);
-        planPrice.addAttribute("500",  "3");
-        planPrice.addAttribute("1000", "2");
-        planPrice.addAttribute("1500", "1");
+        planPrice.addAttribute("0",  "4.00");   // 0 - 500     = 500 @ $4
+        planPrice.addAttribute("500",  "3.00"); // 500 - 1000  = 500 @ $3
+        planPrice.addAttribute("1000", "2.00"); // 1000 - 1500 = 500 @ $2
+        planPrice.addAttribute("1500", "1.00"); // > 1500 @ $1
 
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(500), getUsage(BigDecimal.ZERO)); // 500 purchased, 0 usage
-        assertEquals(new BigDecimal("3"), result.getPrice());
+
+        // entire quantity in first tier
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(500), getUsage(BigDecimal.ZERO));
+        assertEquals(new BigDecimal("4"), result.getPrice());
+
+        // quantity falls into middle tier
+        // 500 * $4 = $2000
+        // 250 * $3 = $750
+        // $2750 total, or $3.66666/unit
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(750), getUsage(BigDecimal.ZERO));
+        assertEquals(new BigDecimal("3.67"), result.getPrice());
+
+        // quantity exceeds max
+        // 500 * $4 = $2000
+        // 500 * $3 = $1500
+        // 500 * $2 = $1000
+        // 500 * $1 = $500
+        // $5000 total, or 2.50/unit
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(2000), getUsage(BigDecimal.ZERO));
+        assertEquals(new BigDecimal("2.50"), result.getPrice());
     }
 
-    public void testApplyToTierNoMatch() throws Exception {
+    public void testTieredWithUsage() throws Exception {
         PriceModelDTO planPrice = new PriceModelDTO();
         planPrice.setType(PriceModelStrategy.TIERED);
 
-        BigDecimal rate = new BigDecimal("1.00"); // round numbers for easy math :)
-        //planPrice.setRate(rate);
-        planPrice.addAttribute("500",  "3");
-        planPrice.addAttribute("1500", "2");
-        planPrice.addAttribute("3000", "1");
-        planPrice.addAttribute("5000", "0.5");
+        planPrice.addAttribute("0",  "4.00");   // 0 - 500     = 500 @ $4
+        planPrice.addAttribute("500",  "3.00"); // 500 - 1500  = 1000 @ $3
+        planPrice.addAttribute("1500", "2.00"); // 1500 - 3000 = 1500 @ $2
+        planPrice.addAttribute("3000", "1.00"); // 3000 - 5000 = 2000 @ $1
+        planPrice.addAttribute("5000", "0.05"); // > 5000 @ $0.05
 
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(1000), getUsage(new BigDecimal(2200)));
 
-        assertEquals(new BigDecimal("1.59"), result.getPrice());
+        // first 1500 units exist in previous usage, 100 purchased now
+        // 500 * $4  = $2000
+        // 1000 * $3 = $3000
+        // existing $5000 total, or $3.333333/unit
+        // -------------------------------------
+        // 100 * $2 = $200
+        // $200 total, or $2/unit
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(100), getUsage(new BigDecimal(1500)));
+        assertEquals(new BigDecimal("2.00"), result.getPrice());
 
-        PricingResult result2 = new PricingResult(1, 2, 3);
-        strategy.applyTo(null, result2, null, planPrice, new BigDecimal(100), getUsage(new BigDecimal(5000)));
+        // first 500 units exist in previous usage, 2000 purchased now (hits multiple tiers)
+        // 500 * $4  = $2000
+        // existing $2000 total, or $4.00/unit
+        // -------------------------------------
+        // 1000 * $3 = $3000
+        // 1000 * $2 = $2000
+        // $5000 total, or $2.50/unit
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(2000), getUsage(new BigDecimal(500)));
+        assertEquals(new BigDecimal("2.50"), result.getPrice());
 
-        assertEquals(new BigDecimal("1.19"), result2.getPrice());
+        // half of a tier covered by previous usage, 2000 purchased now (hits multiple tiers)
+        // 500 * $4 = $2000
+        // 200 * $3 = $600
+        // existing $2600 total, or $3.714/unit
+        // -------------------------------------
+        // 800 * $3 = $2400   (800 + existing 200 fills the tier)
+        // 1200 * $2 = $2400
+        // $4800 total, or $2.40/unit
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(2000), getUsage(new BigDecimal(700)));
+        assertEquals(new BigDecimal("2.40"), result.getPrice());
+
+        // existing quantity already exceeds max
+        // 500 * $4  = $2000
+        // 1000 * $3 = $3000
+        // 1500 * $2 = $3000
+        // 2000 * $1 = $2000
+        // existing $10000 total, or $2.00/unit
+        // -------------------------------------
+        // 500 * $0.05 = $25
+        // $25 total, or $0.05/unit
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(500), getUsage(new BigDecimal(5000)));
+        assertEquals(new BigDecimal("0.05"), result.getPrice());
     }
 }

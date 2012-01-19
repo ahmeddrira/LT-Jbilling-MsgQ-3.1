@@ -24,9 +24,9 @@ package com.sapienter.jbilling.server.user;
 
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.api.validation.EntitySignupValidationGroup;
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
@@ -71,7 +71,7 @@ public class ContactWS implements Serializable {
     private Integer faxAreaCode;
     private String faxNumber;
     @NotEmpty(message = "validation.error.notnull")
-    @Email(message = "validation.error.email")
+    @Pattern(regexp = "[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z\\.]+", message = "validation.error.email")
     private String email;
     private Date createDate;
     private int deleted;
@@ -101,7 +101,7 @@ public class ContactWS implements Serializable {
             this.countryCode = countryCode;
             this.deleted = deleted;
         }
-    
+
     public ContactWS(Integer id, String organizationName, String address1,
                      String address2, String city, String stateProvince,
                      String postalCode, String countryCode, String lastName,

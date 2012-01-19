@@ -67,7 +67,7 @@ public class OrderWS implements WSSecured, Serializable {
     private Integer ownInvoice;
     private String notes;
     private Integer notesInInvoice;
-    @NotEmpty(message = "validation.error.empty.lines") @Valid
+    @Valid
     @IsNotEmptyOrDeleted
     private OrderLineWS orderLines[] = null;
     private String pricingFields = null;

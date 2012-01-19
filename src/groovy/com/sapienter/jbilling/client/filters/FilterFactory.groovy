@@ -84,6 +84,7 @@ class FilterFactory {
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.IS_NOT_NULL, field: 'customer.parent', template: 'customer/child', visible: true),
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.EQ, field: 'customer.isParent', template: 'trueOrFalse', visible: true),
             new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.EQ, field: 'customer.partner.id', template: 'id', visible: false),
+            new Filter(type: FilterType.CUSTOMER, constraintType: FilterConstraint.EQ, field: 'deleted', template: 'customer/deleted', visible: true, integerValue: 0),                
         ],
         PARTNER: [
             new Filter(type: FilterType.PARTNER, constraintType: FilterConstraint.LIKE, field: 'contact.firstName', template: 'value', visible: false),

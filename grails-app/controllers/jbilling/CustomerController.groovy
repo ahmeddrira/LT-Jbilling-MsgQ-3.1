@@ -20,10 +20,8 @@ import com.sapienter.jbilling.client.ViewUtils
 import com.sapienter.jbilling.client.user.UserHelper
 import com.sapienter.jbilling.client.util.DownloadHelper
 import com.sapienter.jbilling.client.util.SortableCriteria
-import com.sapienter.jbilling.common.Constants
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.server.item.CurrencyBL
-import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO
@@ -100,9 +98,8 @@ class CustomerController {
                         }
                     }
                 }
-                roles {
-                    eq('id', Constants.TYPE_CUSTOMER)
-                }
+                //check that the user is a customer
+                isNotNull('customer')
                 eq('company', new CompanyDTO(session['company_id']))
                 eq('deleted', 0)
 

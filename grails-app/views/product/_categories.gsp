@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@page import="com.sapienter.jbilling.server.order.db.OrderLineTypeDTO"%>
+<%@page import="org.apache.commons.lang.StringUtils; com.sapienter.jbilling.server.order.db.OrderLineTypeDTO"%>
 
 <%--
   Categories list
@@ -39,7 +39,7 @@
                     <tr id="category-${category.id}" class="${selectedCategoryId == category.id ? 'active' : ''}">
                         <td>
                             <g:remoteLink class="cell double" action="products" id="${category.id}" before="register(this);" onSuccess="render(data, next);">
-                                <strong>${category.description.encodeAsHTML()}</strong>
+                                <strong>${StringUtils.abbreviate(category.description, 45).encodeAsHTML()}</strong>
                                 <em><g:message code="table.id.format" args="[category.id as String]"/></em>
                             </g:remoteLink>
                         </td>

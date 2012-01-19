@@ -94,7 +94,7 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         assertEquals(planPrice.getRate(), result.getPrice());
     }
 
-    public void testChaining() {
+    public void testPositiveChaining() {
         PriceModelDTO planPrice = new PriceModelDTO();
         planPrice.setType(PriceModelStrategy.METERED);
         planPrice.setRate(new BigDecimal("10.00"));
@@ -107,7 +107,23 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
 
         PricingResult result = new PricingResult(1, 2, 3);
         planPrice.applyTo(null, null, result, null, null, null);
-        assertEquals(new BigDecimal("7.00"), result.getPrice());
+        assertEquals(new BigDecimal("17.00"), result.getPrice());
+    }
+
+    public void testNegativeChaining() {
+        PriceModelDTO planPrice = new PriceModelDTO();
+        planPrice.setType(PriceModelStrategy.METERED);
+        planPrice.setRate(new BigDecimal("10.00"));
+
+        PriceModelDTO next = new PriceModelDTO();
+        next.setType(PriceModelStrategy.PERCENTAGE);
+        next.addAttribute("percentage", "-0.70");
+
+        planPrice.setNext(next);
+
+        PricingResult result = new PricingResult(1, 2, 3);
+        planPrice.applyTo(null, null, result, null, null, null);
+        assertEquals(new BigDecimal("3.00"), result.getPrice());
     }
 
     public void testFromWS() {

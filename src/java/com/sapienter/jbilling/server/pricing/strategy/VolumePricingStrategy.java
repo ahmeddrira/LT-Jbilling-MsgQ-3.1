@@ -35,7 +35,7 @@ import java.util.TreeMap;
 import static com.sapienter.jbilling.server.pricing.db.AttributeDefinition.Type.*;
 
 /**
- * VolumePricingStrategy
+ * Volume pricing strategy.
  *
  * @author Brian Cowdery
  * @since 14/07/11
@@ -46,7 +46,7 @@ public class VolumePricingStrategy extends AbstractPricingStrategy {
 
     public VolumePricingStrategy() {
         setAttributeDefinitions(
-                new AttributeDefinition("0", DECIMAL, false)
+                new AttributeDefinition("0", DECIMAL, true)
         );
 
         setChainPositions(
@@ -56,6 +56,26 @@ public class VolumePricingStrategy extends AbstractPricingStrategy {
         setRequiresUsage(true);
     }
 
+    /**
+     * Calculates a price based on the total volume being purchased. The price per unit is selected
+     * from the defined pricing tiers based on the total quantity purchased.
+     *
+     * Example:
+     *  0 - 500    @ $2
+     *  500 - 1000 @ $1
+     *  > 1000     @ $0.5
+     *
+     *  If 0 - 500 units are purchased, the price would be $2/unit
+     *  If 500 - 1000 units are purchased, the price would be $1/unit
+     *  If greater than 1000 units are purchased the price would be $0.05/unit
+     *
+     * @param pricingOrder target order for this pricing request (may be null)
+     * @param result pricing result to apply pricing to
+     * @param fields pricing fields
+     * @param planPrice the plan price to apply
+     * @param quantity quantity of item being priced
+     * @param usage total item usage for this billing period
+     */
     public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
                         PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
 
@@ -68,6 +88,9 @@ public class VolumePricingStrategy extends AbstractPricingStrategy {
         LOG.debug("Selecting volume price for usage level " + usage.getQuantity());
 
         // find matching tier
+        // the usage quantity already includes the quantity being purchased as it rolls in the
+        // lines from the order being worked on. In this case we only care about the TOTAL quantity, not
+        // the individual amount being purchased for this one order.
         BigDecimal price = tiers.get(0);
         for (Integer tier : tiers.keySet()) {
             if (usage.getQuantity().compareTo(new BigDecimal(tier)) >= 0) {

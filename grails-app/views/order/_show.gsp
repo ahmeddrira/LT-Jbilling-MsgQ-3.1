@@ -226,7 +226,7 @@
                                 </sec:noAccess>
                             </td>
                             <td class="innerContent">
-                                <g:formatDate format="dd-MMM-yyyy HH:mm:ss a" date="${invoice?.createDateTime}"/>
+                                <g:formatDate format="dd-MMM-yyyy" date="${invoice?.createDateTime}"/>
                             </td>
                             <td class="innerContent">
                                 <g:formatNumber number="${invoice.totalAsDecimal}" type="currency" currencySymbol="${currency.symbol}"/>

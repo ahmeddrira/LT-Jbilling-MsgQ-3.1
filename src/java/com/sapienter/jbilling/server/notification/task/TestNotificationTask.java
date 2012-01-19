@@ -15,6 +15,7 @@
  */
 package com.sapienter.jbilling.server.notification.task;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,7 +50,7 @@ public class TestNotificationTask extends PluggableTask implements NotificationT
             throws TaskException {
         String directory = Util.getSysProp("base_dir");
         try {
-            FileWriter writer = new FileWriter(directory + "/emails_sent.txt", true);
+            FileWriter writer = new FileWriter(directory + File.separator + "emails_sent.txt", true);
             
             // find the address
             ContactBL contact = new ContactBL();

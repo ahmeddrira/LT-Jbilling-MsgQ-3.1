@@ -177,26 +177,27 @@ public class Util {
     static public Integer getPaymentMethod(String creditCardNumber) {
         Integer type = null;
 
-        switch (creditCardNumber.charAt(0)) {
-        case '4':
-            type = Constants.PAYMENT_METHOD_VISA;
-            break;
-        case '5':
-            type = Constants.PAYMENT_METHOD_MASTERCARD;
-            break;
-        case '3':
-            // both diners and american express start with a 3
-            if (creditCardNumber.charAt(1) == '7') {
-                type = Constants.PAYMENT_METHOD_AMEX;
-            } else if (creditCardNumber.charAt(1) == '8') {
-                type = Constants.PAYMENT_METHOD_DINERS;
+        if (creditCardNumber.length() > 0) {
+            switch (creditCardNumber.charAt(0)) {
+                case '4':
+                    type = Constants.PAYMENT_METHOD_VISA;
+                    break;
+                case '5':
+                    type = Constants.PAYMENT_METHOD_MASTERCARD;
+                    break;
+                case '3':
+                    // both diners and american express start with a 3
+                    if (creditCardNumber.charAt(1) == '7') {
+                        type = Constants.PAYMENT_METHOD_AMEX;
+                    } else if (creditCardNumber.charAt(1) == '8') {
+                        type = Constants.PAYMENT_METHOD_DINERS;
+                    }
+                    break;
+                case '6':
+                    type = Constants.PAYMENT_METHOD_DISCOVERY;
+                    break;
             }
-            break;
-        case '6':
-            type = Constants.PAYMENT_METHOD_DISCOVERY;
-            break;
         }
-
         /*
             This isn't 100% accurate as obscured credit card numbers may not always mean that a gateway key
             is present. We should be checking CreditCardDTO to ensure that gatewayKey is not null when an

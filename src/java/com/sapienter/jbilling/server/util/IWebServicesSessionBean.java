@@ -351,6 +351,7 @@ public interface IWebServicesSessionBean {
      */
 
     public PlanWS getPlanWS(Integer planId);
+    public List<PlanWS> getAllPlans();
     public Integer createPlan(PlanWS plan);
     public void updatePlan(PlanWS plan);
     public void deletePlan(Integer planId);

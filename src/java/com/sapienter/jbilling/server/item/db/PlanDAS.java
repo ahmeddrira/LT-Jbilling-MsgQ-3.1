@@ -87,4 +87,17 @@ public class PlanDAS extends AbstractDAS<PlanDTO> {
         return query.list();
     }
 
+    /**
+     * Fetch all plans for the given entity (company) id.
+     *
+     * @param entityId entity id
+     * @return list of plans, empty if none found
+     */
+    @SuppressWarnings("unchecked")
+    public List<PlanDTO> findAll(Integer entityId) {
+        Query query = getSession().getNamedQuery("PlanDTO.findAllByEntity");
+        query.setParameter("entity_id", entityId);
+
+        return query.list();
+    }
 }

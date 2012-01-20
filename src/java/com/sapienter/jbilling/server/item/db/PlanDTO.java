@@ -84,7 +84,12 @@ import java.util.List;
                     query = "select plan "
                             + " from PlanDTO plan "
                             + " inner join plan.planItems planItems "
-                            + " where planItems.item.id = :affected_item_id")
+                            + " where planItems.item.id = :affected_item_id"),
+
+        @NamedQuery(name = "PlanDTO.findAllByEntity",
+                    query = "select plan "
+                            + " from PlanDTO plan "
+                            + " where plan.item.entity.id = :entity_id")
 })
 // todo: cache config
 public class PlanDTO implements Serializable {

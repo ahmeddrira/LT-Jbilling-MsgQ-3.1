@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -100,6 +101,23 @@ public class PlanBL {
         }
         return null;
     }
+
+    /**
+     * Returns the given list of PlanDTO entities as WS objects.
+     *
+     * @param dtos list of PlanDTO to convert
+     * @return plans as WS objects, or an empty list if source list is empty.
+     */
+    public static List<PlanWS> getWS(List<PlanDTO> dtos) {
+        if (dtos == null)
+            return Collections.emptyList();
+
+        List<PlanWS> ws = new ArrayList<PlanWS>(dtos.size());
+        for (PlanDTO plan : dtos)
+            ws.add(getWS(plan));
+        return ws;
+    }
+
 
     /**
      * Convert a given PlanWS web-service object into a PlanDTO

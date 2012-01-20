@@ -725,6 +725,10 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getPlanWS(planId);
     }
 
+    public List<PlanWS> getAllPlans() {
+        return webServicesSession.getAllPlans();
+    }
+
     public Integer createPlan(PlanWS plan) {
         return webServicesSession.createPlan(plan);
     }

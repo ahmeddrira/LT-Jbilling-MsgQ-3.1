@@ -32,6 +32,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.*;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
+import com.sapienter.jbilling.server.item.db.PlanDAS;
 import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
@@ -3206,6 +3207,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public PlanWS getPlanWS(Integer planId) {
         PlanBL bl = new PlanBL(planId);
         return PlanBL.getWS(bl.getEntity());
+    }
+
+    public List<PlanWS> getAllPlans() {
+        List<PlanDTO> plans = new PlanDAS().findAll(getCallerCompanyId());
+        return PlanBL.getWS(plans);
     }
 
     public Integer createPlan(PlanWS plan) {

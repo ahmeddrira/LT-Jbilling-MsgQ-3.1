@@ -690,6 +690,10 @@ public class SpringAPI implements JbillingAPI {
         return session.getPlanWS(planId);
     }
 
+    public List<PlanWS> getAllPlans() {
+        return session.getAllPlans();
+    }
+
     public Integer createPlan(PlanWS plan) {
         return session.createPlan(plan);
     }

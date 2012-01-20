@@ -23,6 +23,7 @@ import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -34,6 +35,7 @@ import org.joda.time.DateMidnight;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Brian Cowdery
@@ -62,6 +64,32 @@ public class WSTest extends PricingTestCase {
         super(name);
     }
 
+    /**
+     * Tests that the get all plans API method only returns plans for the caller company with
+     * all of the fields and values intact.
+     *
+     * @throws Exception possible api exception
+     */
+    public void testGetAllPlans() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        List<PlanWS> plans = api.getAllPlans();
+        assertNotNull("plans is not null", plans);
+        assertEquals("only one plan in the list", 1, plans.size());
+
+        PlanWS plan = plans.get(0);
+        assertEquals(PLAN_ID, plan.getId());
+        assertEquals(PLAN_ITEM_ID, plan.getItemId());
+        assertEquals("Discount lemonade", plan.getDescription());
+        assertEquals(2, plan.getPeriodId().intValue());
+
+        PlanItemWS planItem = plan.getPlanItems().get(0);
+        assertEquals(PLAN_AFFECTED_ITEM_ID, planItem.getAffectedItemId());
+
+        PriceModelWS model = planItem.getModel();
+        assertEquals("METERED", model.getType());
+        assertEquals(new BigDecimal("0.5"), model.getRateAsDecimal());
+    }
 
     /**
      * Tests subscription / un-subscription to a plan by creating and deleting an order

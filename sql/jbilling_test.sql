@@ -10769,6 +10769,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 17	1	description	1	One time
 17	2	description	1	Monthly
 17	3	description	1	Monthly
+17	4	description	1	Every 3 months
 18	1	description	1	Items
 18	2	description	1	Tax
 18	3	description	1	Penalty

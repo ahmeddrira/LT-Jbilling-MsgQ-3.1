@@ -2806,12 +2806,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     /*Secured via WSSecurityMethodMapper entry.*/
     public void saveCustomerNotes(Integer userId, String notes) {
-    	CustomerDTO cust= UserBL.getUserEntity(userId).getCustomer();
-    	if ( null != cust ) {
-    		cust.setNotes(notes);
-    	} else {
-    		throw new SessionInternalError("Not a customer");
-    	}
+        CustomerDTO cust = UserBL.getUserEntity(userId).getCustomer();
+        if (notes.length() > 1000) {
+            throw new SessionInternalError("Customer notes cannot be null", new String[] {"CustomerWS,notes,customer.error.notes.length.exceeded"});
+        } else if (null != cust) {
+            cust.setNotes(notes);
+        } else {
+            throw new SessionInternalError("Not a customer");
+        }
     }
 
 

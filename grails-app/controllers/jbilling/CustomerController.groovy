@@ -216,16 +216,22 @@ class CustomerController {
     @Secured(["CUSTOMER_11"])
     def saveNotes = {
         if (params.id) {
-            webServicesSession.saveCustomerNotes(params.int('id'), params.notes)
+            try {
+                webServicesSession.saveCustomerNotes(params.int('id'), params.notes)
 
-            log.debug("Updating notes for user ${params.id}.")
+                log.debug("Updating notes for user ${params.id}.")
 
-            flash.message = 'customer.notes'
-            flash.args = [ params.id as String ]
+                flash.message = 'customer.notes'
+                flash.args = [params.id as String]
+            } catch (SessionInternalError e) {
+                log.error("Could not save the customer's notes", e)
+
+                viewUtils.resolveException(flash, session.locale, e)
+            }
         }
 
         // render user list with selected id
-        list()
+        redirect action: "list", id: params.id
     }
 
     /**

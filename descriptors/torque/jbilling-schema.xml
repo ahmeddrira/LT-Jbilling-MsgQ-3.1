@@ -1411,7 +1411,7 @@
     </table>
     <table name="mediation_record_line">
         <column name="id" primaryKey="true" type="INTEGER" required="true"/>
-        <column name="mediation_record_id" type="VARCHAR" size="100" required="true"/>
+        <column name="mediation_record_id" type="INTEGER" required="true"/>
         <column name="order_line_id" required="true" type="INTEGER"/>
         <column name="event_date" required="true" type="TIMESTAMP"/>
         <column name="amount" required="true" type="NUMERIC" size="22" scale="10"/>

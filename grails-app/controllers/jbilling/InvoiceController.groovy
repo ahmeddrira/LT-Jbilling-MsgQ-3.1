@@ -207,7 +207,7 @@ class InvoiceController {
             } catch (Exception e) {
                 log.error("Exception occurred sending invoice email", e)
                 flash.error = 'invoice.prompt.failure.email.invoice'
-                flash.args = params.id
+                flash.args = [params.id]
             }
         }
 

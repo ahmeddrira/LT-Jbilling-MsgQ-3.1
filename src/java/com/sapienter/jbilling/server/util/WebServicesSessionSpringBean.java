@@ -296,7 +296,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     	INotificationSessionBean notificationSession =
 	            (INotificationSessionBean) Context.getBean(
 	            Context.Name.NOTIFICATION_SESSION);
-	    return notificationSession.emailInvoice(invoiceId);
+        
+        boolean emailInvoice;
+        try{
+            emailInvoice = notificationSession.emailInvoice(invoiceId); 
+        } catch (Exception e){
+            LOG.warn("Exception in web service: notifying invoice by email "
+                    + e);
+            emailInvoice = false;
+        }
+        return emailInvoice;
     }
     
     public boolean notifyPaymentByEmail(Integer paymentId) {

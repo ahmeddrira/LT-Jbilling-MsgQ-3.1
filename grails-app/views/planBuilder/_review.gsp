@@ -50,7 +50,7 @@
             <div class="column">
                 <h2 class="right">
                     <g:set var="currency" value="${currencies.find{ it.id == product.defaultPrice.currencyId }}"/>
-                    <g:set var="price" value="${formatNumber(number: product.defaultPrice.getRateAsDecimal(), type: 'currency', currencySymbol: currency.symbol)}"/>
+                    <g:set var="price" value="${formatNumber(number: product.defaultPrice.getRateAsDecimal(), type: 'currency', currencySymbol: currency?.symbol)}"/>
 
                     <g:if test="${plan.periodId == Constants.ORDER_PERIOD_ONCE}">
                         <g:message code="plan.review.onetime.price" args="[price]"/>

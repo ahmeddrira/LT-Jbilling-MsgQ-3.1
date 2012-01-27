@@ -1624,6 +1624,7 @@ CREATE TABLE meta_field_name
     is_mandatory BOOLEAN,
     display_order INTEGER,
     default_value_id INTEGER,
+    OPTLOCK INTEGER NOT NULL,
     PRIMARY KEY (id)
 );
 ALTER TABLE meta_field_name ADD CONSTRAINT meta_field_name_FK_1 FOREIGN KEY (default_value_id) REFERENCES meta_field_value (id);
@@ -1721,7 +1722,7 @@ create table payment_meta_field_map (
 
 INSERT INTO meta_field_name(
             id, "name", entity_type, data_type, is_disabled, is_mandatory,
-            display_order, default_value_id)
+            display_order, default_value_id, optlock)
 select id, prompt_key, 'CUSTOMER',
    case data_type
     when 'string' then 'STRING'
@@ -1731,7 +1732,7 @@ select id, prompt_key, 'CUSTOMER',
     when 'decimal' then 'DECIMAL'
     else 'STRING'
    END,
-   false, false, id, NULL
+   false, false, id, NULL, 0
 from contact_field_type;
 
 -- MySQL or other DB

@@ -125,7 +125,7 @@ class PlanBuilderController {
                     def priceModel = new PriceModelWS()
                     priceModel.type = PriceModelStrategy.METERED
                     priceModel.rate = BigDecimal.ZERO
-                    priceModel.currencyId = session['currency_id']
+                    priceModel.currencyId = (currencies.find{ it.id == session['currency_id']} ?: company.currency).id
 
                     product.defaultPrice = priceModel
                 }

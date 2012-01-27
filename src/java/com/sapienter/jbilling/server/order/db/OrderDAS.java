@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -96,8 +98,16 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
                     .add(Restrictions.eq("u.id", userId))
                 .addOrder(Order.asc("nextBillableDay"));
 
-        List results = criteria.list();
-        return results.isEmpty() ? null : results.get(0);
+        // this can be a very large result. Let's avoid bringing this into memory
+        // when I only need the first one
+        ScrollableResults result = criteria.scroll(ScrollMode.FORWARD_ONLY); // it is safer to use fwd only
+        OrderDTO retValue = null;
+        if (result.next()) { // I can't use 'first' because it is fwd only, but next will do fine.
+        	retValue = (OrderDTO) result.get()[0];
+        } 
+        
+        result.close(); // Yes, the world ends if you forget to close a cursor.
+        return retValue;
     }
     
     public List<OrderDTO> findByUser_Status(Integer userId,Integer statusId) {

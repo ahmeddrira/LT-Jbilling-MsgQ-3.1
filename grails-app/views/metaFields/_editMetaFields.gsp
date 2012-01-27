@@ -108,7 +108,7 @@
         <g:if test="${field.getDataType() == DataType.ENUMERATION}">
             <g:set var="enumValues" value="${null}"/>
             <%
-                for (EnumerationDTO dto : EnumerationDTO.findByCompany(new CompanyDTO(session['company_id']))) {
+                for (EnumerationDTO dto : EnumerationDTO.findByEntity(new CompanyDTO(session['company_id']))) {
                     if (dto.name == field.getName()) {
                         enumValues= []
                         enumValues.addAll(dto.values.collect {it.value})

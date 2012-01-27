@@ -425,7 +425,6 @@ public class OrderDTO implements Serializable, Exportable {
      */
     @CollectionOfElements
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="purchaseOrder")
-    @Fetch ( FetchMode.SUBSELECT)
     @OrderBy (
         clause = "id desc"
     )
@@ -438,7 +437,6 @@ public class OrderDTO implements Serializable, Exportable {
     }
     
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="purchaseOrder")
-    @Fetch (FetchMode.SUBSELECT)
     @OrderBy(clause="id")
     public List<OrderLineDTO> getLines() {
         return this.lines;

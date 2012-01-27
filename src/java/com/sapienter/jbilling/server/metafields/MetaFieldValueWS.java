@@ -23,7 +23,10 @@ package com.sapienter.jbilling.server.metafields;
 import com.sapienter.jbilling.server.metafields.db.DataType;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * @author Alexander Aksenov
@@ -38,22 +41,27 @@ public class MetaFieldValueWS implements Serializable {
     private Object defaultValue;
 
     private Integer id;
-    private Object value;
+
+    private String stringValue;
+    private Date dateValue;
+    private Boolean booleanValue;
+    private String decimalValue;
+    private Integer integerValue;
 
     public MetaFieldValueWS() {
     }
 
     public MetaFieldValueWS(MetaFieldValue metaFieldValue) {
-        this.id = metaFieldValue.getId();
-        this.value = metaFieldValue.getValue();
-
         if (metaFieldValue.getField() != null) {
             this.fieldName = metaFieldValue.getField().getName();
             this.disabled = metaFieldValue.getField().isDisabled();
             this.mandatory = metaFieldValue.getField().isMandatory();
             this.dataType = metaFieldValue.getField().getDataType();
-            this.defaultValue = metaFieldValue.getField().getDefaultValue() != null ? metaFieldValue.getField().getDefaultValue().getValue() : null;
+            setDefaultValue(metaFieldValue.getField().getDefaultValue() != null ? metaFieldValue.getField().getDefaultValue().getValue() : null);
         }
+
+        this.id = metaFieldValue.getId();
+        this.setValue(metaFieldValue.getValue());
     }
 
     public String getFieldName() {
@@ -72,12 +80,43 @@ public class MetaFieldValueWS implements Serializable {
         this.id = id;
     }
 
+    @XmlTransient
     public Object getValue() {
-        return value;
+        if (getStringValue() != null) {
+            return getStringValue();
+        } else if (getDateValue() != null) {
+            return getDateValue();
+        } else if (getBooleanValue() != null) {
+            return getBooleanValue();
+        } else if (getDecimalValue() != null) {
+            return getDecimalValueAsDecimal();
+        } else if (getIntegerValue() != null) {
+            return getIntegerValue();
+        }
+
+        return null;
     }
 
     public void setValue(Object value) {
-        this.value = value;
+        setStringValue(null);
+        setDateValue(null);
+        setBooleanValue(null);
+        setDecimalValue(null);
+        setIntegerValue(null);
+
+        if (value == null) return;
+
+        if (value instanceof String) {
+            setStringValue((String) value);
+        } else if (value instanceof Date) {
+            setDateValue((Date) value);
+        } else if (value instanceof Boolean) {
+            setBooleanValue((Boolean) value);
+        } else if (value instanceof BigDecimal) {
+            setBigDecimalValue((BigDecimal) value);
+        } else if (value instanceof Integer) {
+            setIntegerValue((Integer) value);
+        }
     }
 
     public boolean isDisabled() {
@@ -109,6 +148,64 @@ public class MetaFieldValueWS implements Serializable {
     }
 
     public void setDefaultValue(Object defaultValue) {
-        this.defaultValue = defaultValue;
+        if (defaultValue != null && defaultValue instanceof Collection) {
+            // default value is the first in list
+            if (((Collection) defaultValue).isEmpty()) {
+                this.defaultValue = null;
+            } else {
+                this.defaultValue = ((Collection) defaultValue).iterator().next();
+            }
+        } else {
+            this.defaultValue = defaultValue;
+        }
+    }
+
+    public String getStringValue() {
+        return stringValue;
+    }
+
+    public void setStringValue(String stringValue) {
+        this.stringValue = stringValue;
+    }
+
+    public Date getDateValue() {
+        return dateValue;
+    }
+
+    public void setDateValue(Date dateValue) {
+        this.dateValue = dateValue;
+    }
+
+    public Boolean getBooleanValue() {
+        return booleanValue;
+    }
+
+    public void setBooleanValue(Boolean booleanValue) {
+        this.booleanValue = booleanValue;
+    }
+
+    public String getDecimalValue() {
+        return decimalValue;
+    }
+
+    public BigDecimal getDecimalValueAsDecimal() {
+        return decimalValue != null ? new BigDecimal(decimalValue) : null;
+    }
+
+
+    public void setDecimalValue(String decimalValue) {
+        this.decimalValue = decimalValue;
+    }
+
+    public void setBigDecimalValue(BigDecimal decimalValue) {
+        this.decimalValue = decimalValue != null ? decimalValue.toPlainString() : null;
+    }
+
+    public Integer getIntegerValue() {
+        return integerValue;
+    }
+
+    public void setIntegerValue(Integer integerValue) {
+        this.integerValue = integerValue;
     }
 }

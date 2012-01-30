@@ -98,7 +98,23 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
 
         return findFirst(criteria);
     }
-    
+
+    /**
+     * Returns a scrollable result set of orders with a specific status belonging to a user.
+     *
+     * You MUST close the result set after iterating through the results to close the database
+     * connection and discard the cursor!
+     *
+     * <code>
+     *     ScrollableResults orders = new OrderDAS().findByUser_Status(123, 1);
+     *     // do something
+     *     orders.close();
+     * </code>
+     *
+     * @param userId user ID
+     * @param statusId order status to include
+     * @return scrollable results for found orders.
+     */
     public ScrollableResults findByUser_Status(Integer userId,Integer statusId) {
         // I need to access an association, so I can't use the parent helper class
         Criteria criteria = getSession().createCriteria(OrderDTO.class)

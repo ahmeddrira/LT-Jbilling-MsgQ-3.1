@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
@@ -53,8 +52,7 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
                 .addOrder(Order.asc("id"))
                 .setMaxResults(1);
 
-        List<OrderDTO> results = criteria.list();
-        return !results.isEmpty() ? results.get(0) : null;
+        return findFirst(criteria);
     }
 
     public OrderProcessDTO findProcessByEndDate(Integer id, Date myDate) {
@@ -98,19 +96,10 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
                     .add(Restrictions.eq("u.id", userId))
                 .addOrder(Order.asc("nextBillableDay"));
 
-        // this can be a very large result. Let's avoid bringing this into memory
-        // when I only need the first one
-        ScrollableResults result = criteria.scroll(ScrollMode.FORWARD_ONLY); // it is safer to use fwd only
-        OrderDTO retValue = null;
-        if (result.next()) { // I can't use 'first' because it is fwd only, but next will do fine.
-        	retValue = (OrderDTO) result.get()[0];
-        } 
-        
-        result.close(); // Yes, the world ends if you forget to close a cursor.
-        return retValue;
+        return findFirst(criteria);
     }
     
-    public List<OrderDTO> findByUser_Status(Integer userId,Integer statusId) {
+    public ScrollableResults findByUser_Status(Integer userId,Integer statusId) {
         // I need to access an association, so I can't use the parent helper class
         Criteria criteria = getSession().createCriteria(OrderDTO.class)
                 .add(Restrictions.eq("deleted", 0))
@@ -119,7 +108,7 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
                 .createAlias("orderStatus", "s")
                     .add(Restrictions.eq("s.id", statusId));
         
-        return criteria.list();
+        return criteria.scroll();
     }
 
     // used for the web services call to get the latest X orders

@@ -63,6 +63,7 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import org.apache.log4j.Logger;
+import org.hibernate.ScrollableResults;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.sql.rowset.CachedRowSet;
@@ -521,11 +522,12 @@ public class BillingProcessBL extends ResultList
 
         // get the orders that might be processable for this user
         OrderDAS orderDas = new OrderDAS();
-        Collection<OrderDTO> orders = orderDas.findByUser_Status(userId,
-                Constants.ORDER_STATUS_ACTIVE);
+        ScrollableResults orders = orderDas.findByUser_Status(userId, Constants.ORDER_STATUS_ACTIVE);
 
         // go through each of them, and update the DTO if it applies
-        for (OrderDTO order : orders) {
+        while (orders.next()) {
+            OrderDTO order = (OrderDTO) orders.get()[0];
+
             LOG.debug("Processing order :" + order.getId());
             // apply any order processing filter pluggable task
             try {
@@ -620,7 +622,10 @@ public class BillingProcessBL extends ResultList
                 throw new SessionInternalError(
                         "Problems executing order filter task.");
             }
-        } // for - all the orders for this user
+        }
+
+        // close cursor for the user orders list
+        orders.close();
 
         // see if there is any subaccounts to include in this invoice
         while (subAccountsIt != null) {  // until there are no more subaccounts (subAccountsIt != null) {

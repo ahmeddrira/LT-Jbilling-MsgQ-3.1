@@ -20,9 +20,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
@@ -33,7 +35,6 @@ import org.hibernate.LockMode;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-
 
 public abstract class AbstractDAS<T> extends HibernateDaoSupport {
 
@@ -198,6 +199,22 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
         crit.setCacheable(queriesCached);
         return (T) crit.uniqueResult();
    }
+
+    @SuppressWarnings("unchecked")
+    public T findFirst(Query query) {
+        query.setFirstResult(0).setMaxResults(1);
+        return (T) query.uniqueResult();
+    }
+
+    @SuppressWarnings("unchecked")
+    public T findFirst(Criteria criteria) {
+        ScrollableResults results = criteria.scroll(ScrollMode.FORWARD_ONLY);
+
+        T result = results.next() ? (T) results.get()[0] : null;
+        results.close();
+        return result;
+
+    }
 
     protected void useCache() {
         queriesCached = true;

@@ -46,6 +46,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
+import org.hibernate.ScrollableResults;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.naming.NamingException;
@@ -339,26 +340,34 @@ public class BasicAgeingTask extends PluggableTask implements IAgeingTask {
         // suspend customer orders
         if (couldLogin && status.getCanLogin() == 0) {
             LOG.debug("User " + user.getId() + " cannot log-in to the system. Suspending active orders.");
-            OrderBL orderBL = new OrderBL();
-            List<OrderDTO> orders = new OrderDAS().findByUser_Status(user.getId(), Constants.ORDER_STATUS_ACTIVE);
 
-            for (OrderDTO order : orders) {
+            OrderBL orderBL = new OrderBL();
+            ScrollableResults orders = new OrderDAS().findByUser_Status(user.getId(), Constants.ORDER_STATUS_ACTIVE);
+
+            while (orders.next()) {
+                OrderDTO order = (OrderDTO) orders.get()[0];
                 orderBL.set(order);
                 orderBL.setStatus(executorId, Constants.ORDER_STATUS_SUSPENDED_AGEING);
             }
+
+            orders.close();
         }
 
         // status changed from suspended to active
         // re-active suspended customer orders
         if (!couldLogin && status.getCanLogin() == 1) {
             LOG.debug("User " + user.getId() + " can now log-in to the system. Activating previously suspended orders.");
-            OrderBL orderBL = new OrderBL();
-            List<OrderDTO> orders = new OrderDAS().findByUser_Status(user.getId(), Constants.ORDER_STATUS_SUSPENDED_AGEING);
 
-            for (OrderDTO order : orders) {
+            OrderBL orderBL = new OrderBL();
+            ScrollableResults orders = new OrderDAS().findByUser_Status(user.getId(), Constants.ORDER_STATUS_SUSPENDED_AGEING);
+
+            while (orders.next()) {
+                OrderDTO order = (OrderDTO) orders.get()[0];
                 orderBL.set(order);
                 orderBL.setStatus(executorId, Constants.ORDER_STATUS_ACTIVE);
             }
+
+            orders.close();
         }
 
         // perform callbacks and notifications

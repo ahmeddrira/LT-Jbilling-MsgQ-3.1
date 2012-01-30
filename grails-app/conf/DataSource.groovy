@@ -30,7 +30,7 @@ dataSource {
     dialect = "org.hibernate.dialect.PostgreSQLDialect"
     driverClassName = "org.postgresql.Driver"
     username = "jbilling"
-    password = "jbilling"
+    password = ""
     url = "jdbc:postgresql://localhost:5432/jbilling_test"
 
     /*

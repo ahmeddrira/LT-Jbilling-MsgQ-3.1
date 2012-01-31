@@ -1311,3 +1311,9 @@ update credit_card set cc_expiry = date_trunc('month', cc_expiry) + INTERVAL '1 
 -- Redmine Issue: #1575
 -- Description: Cannot add Line Percentage to a Plan
 alter table plan_item alter column price_model_id drop not null;
+
+
+-- Date: 30-Jan-2011
+-- Description: Missing event log message for customer 'invoice if child' flag changes.
+insert into event_log_message values (34);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (47, 34, 'description', 1, 'The invoice if child flag has changed');

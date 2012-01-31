@@ -11,7 +11,7 @@
             u.user_name,
             o.active_since,
             o.create_datetime,
-            sum(l.quantity) quantity
+            sum(l.quantity) as quantity
         from
             order_line l
             inner join purchase_order o on o.id = l.order_id

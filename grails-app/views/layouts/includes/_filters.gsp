@@ -47,7 +47,9 @@
     <!-- filter controls -->
     <div class="btn-hold">
         <!-- apply filters -->
-        <a class="submit apply" onclick="$('#filters-form').submit();"><span><g:message code="filters.apply.button"/></span></a>
+        <a class="submit apply" onclick="submitApply();">
+            <span><g:message code="filters.apply.button"/></span>
+        </a>
 
         <!-- add another filter -->
         <g:if test="${filters.find { !it.visible }}">
@@ -120,6 +122,12 @@
                     });
                 });
             });
+
+            function submitApply () {
+                if ($('#filters-form .error').size() < 1) {
+                    $('#filters-form').submit();
+                }
+            }
         </script>
     </div>
 </div>

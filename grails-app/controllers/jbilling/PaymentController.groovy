@@ -214,9 +214,12 @@ class PaymentController {
                 return
             }
 
+        } else if (!payment) {
+            flash.warn = 'payment.not.exists'
+            flash.args = [payment.id, params.invoiceId]
         } else {
-            flash.warn = 'payment.link.failed'
-            flash.args = [ payment.id, params.invoiceId ]
+            flash.warn = 'invoice.not.selected'
+            flash.args = [payment.id, params.invoiceId]
         }
 
         redirect action: list, id: payment.id

@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL;" %>
+<%@ page import="com.sapienter.jbilling.server.invoice.db.InvoiceStatusDTO; com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL;" %>
 
 <%--
   Shows details of a selected user.
@@ -145,24 +145,21 @@
         <strong><g:message code="customer.detail.payment.title"/></strong>
     </div>
     <div class="box">
-        <!-- show most recent order, invoice and payment -->
-        <g:set var="order" value="${selected.orders ? selected.orders.asList().sort{ it.createDate }.last() : null}"/>
-        <g:set var="invoice" value="${selected.invoices ? selected.invoices.asList().sort{ it.createDatetime }.reverse().find{ it.isReview == 0 } : null}"/>
-        <g:set var="payment" value="${selected.payments ? selected.payments.asList().sort{ it.paymentDate ?: it.createDatetime }.last() : null}"/>
 
+        <!-- show most recent order, invoice and payment -->
         <table class="dataTable" cellspacing="0" cellpadding="0">
             <tbody>
             <tr>
-                <td>Last Order Date</td>
+                <td><g:message code="customer.detail.payment.order.date"/></td>
 
                 <td class="value">
                     <sec:access url="/order/show">
-                        <g:remoteLink controller="order" action="show" id="${order?.id}" before="register(this);" onSuccess="render(data, next);">
-                            <g:formatDate date="${order?.createDate}" formatName="date.pretty.format"/>
+                        <g:remoteLink controller="order" action="show" id="${latestOrder?.id}" before="register(this);" onSuccess="render(data, next);">
+                            <g:formatDate date="${latestOrder?.createDate}" formatName="date.pretty.format"/>
                         </g:remoteLink>
                     </sec:access>
                     <sec:noAccess url="/order/show">
-                        <g:formatDate date="${order?.createDate}" formatName="date.pretty.format"/>
+                        <g:formatDate date="${latestOrder?.createDate}" formatName="date.pretty.format"/>
                     </sec:noAccess>
                 </td>
                 <td class="value">
@@ -177,12 +174,12 @@
                     <td><g:message code="customer.detail.payment.invoiced.date"/></td>
                     <td class="value">
                         <sec:access url="/invoice/show">
-                            <g:remoteLink controller="invoice" action="show" id="${invoice?.id}" before="register(this);" onSuccess="render(data, next);">
-                                <g:formatDate date="${invoice?.createDatetime}" formatName="date.pretty.format"/>
+                            <g:remoteLink controller="invoice" action="show" id="${latestInvoice?.id}" before="register(this);" onSuccess="render(data, next);">
+                                <g:formatDate date="${latestInvoice?.createDateTime}" formatName="date.pretty.format"/>
                             </g:remoteLink>
                         </sec:access>
                         <sec:noAccess url="/invoice/show">
-                            <g:formatDate date="${invoice?.createDatetime}" formatName="date.pretty.format"/>
+                            <g:formatDate date="${latestInvoice?.createDateTime}" formatName="date.pretty.format"/>
                         </sec:noAccess>
                     </td>
                     <td class="value">
@@ -197,12 +194,12 @@
                     <td><g:message code="customer.detail.payment.paid.date"/></td>
                     <td class="value">
                         <sec:access url="/payment/show">
-                            <g:remoteLink controller="payment" action="show" id="${payment?.id}" before="register(this);" onSuccess="render(data, next);">
-                                <g:formatDate date="${payment?.paymentDate ?: payment?.createDatetime}" formatName="date.pretty.format"/>
+                            <g:remoteLink controller="payment" action="show" id="${latestPayment?.id}" before="register(this);" onSuccess="render(data, next);">
+                                <g:formatDate date="${latestPayment?.paymentDate ?: latestPayment?.createDatetime}" formatName="date.pretty.format"/>
                             </g:remoteLink>
                         </sec:access>
                         <sec:noAccess url="/payment/show">
-                            <g:formatDate date="${payment?.paymentDate ?: payment?.createDatetime}" formatName="date.pretty.format"/>
+                            <g:formatDate date="${latestPayment?.paymentDate ?: latestPayment?.createDatetime}" formatName="date.pretty.format"/>
                         </sec:noAccess>
                     </td>
                     <td class="value">
@@ -215,22 +212,23 @@
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.due.date"/></td>
-                    <td class="value"><g:formatDate date="${invoice?.dueDate}" formatName="date.pretty.format"/></td>
+                    <td class="value"><g:formatDate date="${latestInvoice?.dueDate}" formatName="date.pretty.format"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="customer.detail.payment.invoiced.amount"/></td>
-                    <td class="value"><g:formatNumber number="${invoice?.total}" type="currency" currencySymbol="${selected.currency.symbol}"/></td>
+                    <td class="value"><g:formatNumber number="${latestInvoice?.totalAsDecimal}" type="currency" currencySymbol="${selected.currency.symbol}"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="invoice.label.status"/></td>
                     <td class="value">
-                        <g:if test="${invoice?.invoiceStatus?.id == Constants.INVOICE_STATUS_UNPAID}">
-                            <g:link controller="payment" action="edit" params="[userId: selected.id, invoiceId: invoice.id]" title="${message(code: 'invoice.pay.link')}">
-                                ${invoice.invoiceStatus.getDescription(session['language_id'])}
+                        <g:set var="invoiceStatus" value="${InvoiceStatusDTO.get(latestInvoice?.statusId)}"/>
+                        <g:if test="${latestInvoice?.statusId == Constants.INVOICE_STATUS_UNPAID}">
+                            <g:link controller="payment" action="edit" params="[userId: selected.id, invoiceId: latestInvoice.id]" title="${message(code: 'invoice.pay.link')}">
+                                ${invoiceStatus.getDescription(session['language_id'])}
                             </g:link>
                         </g:if>
                         <g:else>
-                            ${invoice?.invoiceStatus?.getDescription(session['language_id'])}
+                            ${invoiceStatus?.getDescription(session['language_id'])}
                         </g:else>
                     </td>
                 </tr>

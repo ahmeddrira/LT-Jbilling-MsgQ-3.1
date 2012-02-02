@@ -206,21 +206,6 @@
 
                         <g:if test="${isNew}">
                             <g:applyLayout name="form/checkbox">
-                                <content tag="label"><g:message code="payment.is.refund.payment"/></content>
-                                <content tag="label.for">isRefund</content>
-                                <g:checkBox class="cb checkbox" name="isRefund" checked="${payment?.isRefund > 0}"/>
-                            </g:applyLayout>
-                        </g:if>
-                        <g:else>
-                            <g:applyLayout name="form/text">
-                                <content tag="label"><g:message code="payment.is.refund.payment"/></content>
-                                <span><g:formatBoolean boolean="${payment?.isRefund > 0}"/></span>
-                                <g:hiddenField name="payment.isRefund" value="${payment?.isRefund?.intValue()}"/>
-                            </g:applyLayout>
-                        </g:else>
-
-                        <g:if test="${isNew}">
-                            <g:applyLayout name="form/checkbox">
                                 <content tag="label"><g:message code="payment.process.realtime"/></content>
                                 <content tag="label.for">processNow</content>
                                 <g:checkBox class="cb checkbox" name="processNow" value="${processNow}"/>

@@ -16198,8 +16198,8 @@ COPY report_parameter (id, report_id, dtype, name) FROM stdin;
 17	10	string	plan_description
 18	11	date	start_date
 19	11	date	end_date
-20	12	date	start_date
-21	12	date	end_date
+20	12	string	start_year
+21	12	string	end_year
 \.
 
 

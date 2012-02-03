@@ -1602,7 +1602,7 @@ insert into entity_report_map(report_id, entity_id) values(11, 1);
 
 --Add report.
 insert into report(id, type_id, name, file_name) values (12, 4, 'total_invoiced_per_customer_over_years', 'total_invoiced_per_customer_over_years.jasper');
-insert into report_parameter(id, report_id, dtype, name) values(20, 12, 'date', 'start_date');
-insert into report_parameter(id, report_id, dtype, name) values(21, 12, 'date', 'end_date');
+insert into report_parameter(id, report_id, dtype, name) values(20, 12, 'string', 'start_year');
+insert into report_parameter(id, report_id, dtype, name) values(21, 12, 'string', 'end_year');
 insert into international_description(table_id, foreign_id, psudo_column, language_id, content) values(100, 12, 'description', 1, 'Total invoiced per customer over years grouped by year.');
 insert into entity_report_map(report_id, entity_id) values(12, 1);

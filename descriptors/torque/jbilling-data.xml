@@ -2103,8 +2103,8 @@
     <ReportParameter Id="19" ReportId="11" Dtype="date" Name="end_date"/>
 
     <Report Id="12" TypeId="4" Name="total_invoiced_per_customer_over_years" FileName="total_invoiced_per_customer_over_years.jasper" Optlock="0"/>
-    <ReportParameter Id="20" ReportId="12" Dtype="date" Name="start_date"/>
-    <ReportParameter Id="21" ReportId="12" Dtype="date" Name="end_date"/>
+    <ReportParameter Id="20" ReportId="12" Dtype="string" Name="start_year"/>
+    <ReportParameter Id="21" ReportId="12" Dtype="string" Name="end_year"/>
 
     <Role Id="2"/>
     <Role Id="3"/>

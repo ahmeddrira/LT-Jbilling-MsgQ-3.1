@@ -79,3 +79,12 @@
     </g:form>
 </div>
 
+<script type="text/javascript">
+    $(setTimeout(
+        function() {
+            var validator = $('#run-report-form').validate();
+            validator.init();
+            validator.hideErrors();
+        }, 500)
+    );
+</script>

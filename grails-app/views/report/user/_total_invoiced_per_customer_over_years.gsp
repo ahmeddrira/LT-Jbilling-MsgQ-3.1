@@ -24,15 +24,15 @@
 --%>
 
 <div class="form-columns">
-    <g:applyLayout name="form/date">
-        <content tag="label"><g:message code="start_date"/></content>
+    <g:applyLayout name="form/text">
+        <content tag="label"><g:message code="start_year"/></content>
         <content tag="label.for">start_date</content>
-        <g:textField class="field" name="start_date" value="${formatDate(date: new DateMidnight().minusMonths(1).toDate(), formatName: 'datepicker.format')}"/>
+        <g:textField class="{validate:{required:true, digits: true, minlength: 4, maxlength: 4}}" name="start_year"/>
     </g:applyLayout>
 
-    <g:applyLayout name="form/date">
-        <content tag="label"><g:message code="end_date"/></content>
+    <g:applyLayout name="form/text">
+        <content tag="label"><g:message code="end_year"/></content>
         <content tag="label.for">end_date</content>
-        <g:textField class="field" name="end_date" value="${formatDate(date: new Date(), formatName: 'datepicker.format')}"/>
+        <g:textField class="{validate:{required:true, digits: true, minlength: 4, maxlength: 4}}" name="end_year"/>
     </g:applyLayout>
 </div>

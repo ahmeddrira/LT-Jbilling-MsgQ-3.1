@@ -1284,6 +1284,7 @@
     <InternationalDescription TableId="100" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="General ledger summary of all invoiced charges for the given day, grouped by item type."/>
     <InternationalDescription TableId="100" ForeignId="10" PsudoColumn="description" LanguageId="1" Content="Plan pricing history for all plan products and start dates."/>
     <InternationalDescription TableId="100" ForeignId="11" PsudoColumn="description" LanguageId="1" Content="Total invoiced per customer grouped by product category."/>
+    <InternationalDescription TableId="100" ForeignId="12" PsudoColumn="description" LanguageId="1" Content="Total invoiced per customer over years grouped by year."/>
     <InternationalDescription TableId="104" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Invoices"/>
     <InternationalDescription TableId="104" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Orders"/>
     <InternationalDescription TableId="104" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Payments"/>
@@ -2098,8 +2099,12 @@
     <ReportParameter Id="17" ReportId="10" Dtype="string" Name="plan_description"/>
 
     <Report Id="11" TypeId="4" Name="total_invoiced_per_customer" FileName="total_invoiced_per_customer.jasper" Optlock="0"/>
-    <ReportParameter Id="18" ReportId="10" Dtype="date" Name="start_date"/>
-    <ReportParameter Id="19" ReportId="10" Dtype="date" Name="end_date"/>
+    <ReportParameter Id="18" ReportId="11" Dtype="date" Name="start_date"/>
+    <ReportParameter Id="19" ReportId="11" Dtype="date" Name="end_date"/>
+
+    <Report Id="12" TypeId="4" Name="total_invoiced_per_customer_over_years" FileName="total_invoiced_per_customer_over_years.jasper" Optlock="0"/>
+    <ReportParameter Id="20" ReportId="12" Dtype="date" Name="start_date"/>
+    <ReportParameter Id="21" ReportId="12" Dtype="date" Name="end_date"/>
 
     <Role Id="2"/>
     <Role Id="3"/>

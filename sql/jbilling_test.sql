@@ -9909,6 +9909,8 @@ COPY entity_report_map (report_id, entity_id) FROM stdin;
 8	1
 9	1
 10	1
+11	1
+12	1
 \.
 
 
@@ -11367,6 +11369,9 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 100	7	description	1	Simple accounts receivable report showing current account balances.
 100	8	description	1	General ledger details of all invoiced charges for the given day.
 100	9	description	1	General ledger summary of all invoiced charges for the given day, grouped by item type.
+100	10	description	1	Plan pricing history for all plan products and start dates.
+100	11	description	1	Total invoiced per customer grouped by product category.
+100	12	description	1	Total invoiced per customer over years grouped by year.
 50	28	description	1	Paypal account.
 50	29	description	1	Paypal button URL.
 50	30	description	1	URL for HTTP ageing callback.
@@ -16165,6 +16170,7 @@ COPY report (id, type_id, name, file_name, optlock) FROM stdin;
 9	1	gl_summary	gl_summary.jasper	0
 10	5	plan_history	plan_history.jasper	0
 11	4	total_invoiced_per_customer	total_invoiced_per_customer.jasper	0
+12	4	total_invoiced_per_customer_over_years	total_invoiced_per_customer_over_years.jasper	0
 \.
 
 
@@ -16192,6 +16198,8 @@ COPY report_parameter (id, report_id, dtype, name) FROM stdin;
 17	10	string	plan_description
 18	11	date	start_date
 19	11	date	end_date
+20	12	date	start_date
+21	12	date	end_date
 \.
 
 

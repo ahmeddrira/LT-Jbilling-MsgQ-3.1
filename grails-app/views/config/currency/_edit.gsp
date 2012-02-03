@@ -68,7 +68,7 @@
                 <g:applyLayout name="form/input">
                     <content tag="label"><g:message code="currency.config.label.sysRate"/></content>
                     <content tag="label.for">sysRate</content>
-                    <g:textField name="sysRate" class="field" value="${formatNumber(number: currency?.sysRate ?: BigDecimal.ONE, formatName: 'decimal.format')}"/>
+                    <g:textField name="sysRate" class="field" value="${currency?.sysRate ?: formatNumber(number: BigDecimal.ONE, formatName: 'decimal.format')}"/>
                 </g:applyLayout>
 
                 <g:applyLayout name="form/checkbox">

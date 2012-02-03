@@ -80,6 +80,7 @@
                                         %{-- USD always has a rate of 1.00 --}%
                                         <strong>
                                             <g:formatNumber number="${currency.sysRate}" type="currency" currencySymbol="${currency.symbol}"/>
+                                            <g:hiddenField name="currencies.${currency.id}.sysRate" value="${currency.sysRate}"/>
                                         </strong>
                                     </g:else>
 

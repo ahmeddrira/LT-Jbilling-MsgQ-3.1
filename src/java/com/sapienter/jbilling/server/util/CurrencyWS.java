@@ -16,8 +16,13 @@
 
 package com.sapienter.jbilling.server.util;
 
+import com.sapienter.jbilling.server.util.api.validation.CreateValidationGroup;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -30,12 +35,23 @@ import java.math.BigDecimal;
 public class CurrencyWS implements Serializable {
 
     private Integer id;
+
+    @NotNull(message = "validation.error.notnull", groups = CreateValidationGroup.class)
+    @NotEmpty(message = "validation.error.notnull", groups = CreateValidationGroup.class)
     private String description;
+    @NotNull(message = "validation.error.notnull")
+    @Size(min = 1, max = 10, message = "validation.error.size,1,10")
     private String symbol;
+    @NotNull(message = "validation.error.notnull")
+    @Size(min = 1, max = 3, message = "validation.error.size,1,3")
     private String code;
+    @NotNull(message = "validation.error.notnull")
+    @Size(min = 2, max = 2, message = "validation.error.size.exact,2")
     private String countryCode;
     private Boolean inUse;
     private String rate;
+    @NotNull(message = "validation.error.notnull")
+    @Digits(integer = 10, fraction = 4, message = "validation.error.invalid.number.or.fraction")
     private String sysRate;
 
     private boolean defaultCurrency;

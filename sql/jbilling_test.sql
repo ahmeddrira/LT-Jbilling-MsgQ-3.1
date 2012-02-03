@@ -11359,7 +11359,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 100	4	description	1	Total payment amount received grouped by period.
 101	2	description	1	Order Reports
 101	3	description	1	Payment Reports
-101	4	description	1	User Reports
+101	4	description	1	Customer Reports
 100	3	description	1	Number of users subscribed to a specific product.
 100	5	description	1	Number of customers created within a period.
 100	6	description	1	Total revenue (sum of received payments) per customer.
@@ -16164,6 +16164,7 @@ COPY report (id, type_id, name, file_name, optlock) FROM stdin;
 8	1	gl_detail	gl_detail.jasper	0
 9	1	gl_summary	gl_summary.jasper	0
 10	5	plan_history	plan_history.jasper	0
+11	4	total_invoiced_per_customer	total_invoiced_per_customer.jasper	0
 \.
 
 
@@ -16189,6 +16190,8 @@ COPY report_parameter (id, report_id, dtype, name) FROM stdin;
 15	10	integer	plan_id
 16	10	string	plan_code
 17	10	string	plan_description
+18	11	date	start_date
+19	11	date	end_date
 \.
 
 

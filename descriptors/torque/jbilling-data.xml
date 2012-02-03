@@ -1272,7 +1272,7 @@
     <InternationalDescription TableId="101" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Invoice Reports"/>
     <InternationalDescription TableId="101" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Order Reports"/>
     <InternationalDescription TableId="101" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Payment Reports"/>
-    <InternationalDescription TableId="101" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="User Reports"/>
+    <InternationalDescription TableId="101" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Customer Reports"/>
     <InternationalDescription TableId="100" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Total amount invoiced grouped by period."/>
     <InternationalDescription TableId="100" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Detailed balance ageing report. Shows the age of outstanding customer balances."/>
     <InternationalDescription TableId="100" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Number of users subscribed to a specific product."/>
@@ -1282,6 +1282,8 @@
     <InternationalDescription TableId="100" ForeignId="7" PsudoColumn="description" LanguageId="1" Content="Simple accounts receivable report showing current account balances."/>
     <InternationalDescription TableId="100" ForeignId="8" PsudoColumn="description" LanguageId="1" Content="General ledger details of all invoiced charges for the given day."/>
     <InternationalDescription TableId="100" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="General ledger summary of all invoiced charges for the given day, grouped by item type."/>
+    <InternationalDescription TableId="100" ForeignId="10" PsudoColumn="description" LanguageId="1" Content="Plan pricing history for all plan products and start dates."/>
+    <InternationalDescription TableId="100" ForeignId="11" PsudoColumn="description" LanguageId="1" Content="Total invoiced per customer grouped by product category."/>
     <InternationalDescription TableId="104" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Invoices"/>
     <InternationalDescription TableId="104" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Orders"/>
     <InternationalDescription TableId="104" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Payments"/>
@@ -2089,6 +2091,15 @@
 
     <Report Id="9" TypeId="1" Name="gl_summary" FileName="gl_summary.jasper" Optlock="0"/>
     <ReportParameter Id="14" ReportId="9" Dtype="date" Name="date"/>
+
+    <Report Id="10" TypeId="4" Name="plan_history" FileName="plan_history.jasper" Optlock="0"/>
+    <ReportParameter Id="15" ReportId="10" Dtype="integer" Name="plan_id"/>
+    <ReportParameter Id="16" ReportId="10" Dtype="string" Name="plan_code"/>
+    <ReportParameter Id="17" ReportId="10" Dtype="string" Name="plan_description"/>
+
+    <Report Id="11" TypeId="4" Name="total_invoiced_per_customer" FileName="total_invoiced_per_customer.jasper" Optlock="0"/>
+    <ReportParameter Id="18" ReportId="10" Dtype="date" Name="start_date"/>
+    <ReportParameter Id="19" ReportId="10" Dtype="date" Name="end_date"/>
 
     <Role Id="2"/>
     <Role Id="3"/>

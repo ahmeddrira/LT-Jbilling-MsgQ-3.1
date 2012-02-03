@@ -1578,3 +1578,15 @@ update credit_card set cc_expiry = date_trunc('month', cc_expiry) + INTERVAL '1 
 -- Redmine Issue: #1165
 -- Description: Credit Card that expires in the same month does not process automatically
 alter table currency_exchange add column valid_since timestamp not null default Date('1970-01-01');
+
+--Change User Reports to Customer Reports
+update international_description
+set content = 'Customer Reports'
+where table_id = 101
+and foreign_id = 4;
+
+insert into report(id, type_id, name, file_name) values (11, 4, 'total_invoiced_per_customer', 'total_invoiced_per_customer.jasper');
+insert into report_parameter(id, report_id, dtype, name) values(18, 11, 'date', 'start_date');
+insert into report_parameter(id, report_id, dtype, name) values(19, 11, 'date', 'end_date');
+insert into international_description(table_id, foreign_id, psudo_column, language_id, content) values(100, 11, 'description', 1, 'Total invoiced per customer grouped by product category.');
+insert into entity_report_map(report_id, entity_id) values(11, 1);

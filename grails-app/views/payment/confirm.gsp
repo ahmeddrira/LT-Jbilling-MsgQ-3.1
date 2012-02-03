@@ -160,11 +160,6 @@
                         </g:if>
 
 
-                        <g:applyLayout name="form/text">
-                            <content tag="label"><g:message code="payment.is.refund"/></content>
-                            <g:formatBoolean boolean="${payment?.isRefund > 0}"/>
-                            <g:hiddenField name="isRefund" value="${payment?.isRefund}"/>
-                        </g:applyLayout>
 
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="payment.label.process.realtime"/></content>

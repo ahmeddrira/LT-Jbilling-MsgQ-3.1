@@ -63,11 +63,6 @@
                             <g:message code="payment.th.date"/>
                         </g:remoteSort>
                     </th>
-                    <th class="tiny">
-                        <g:remoteSort action="list" sort="isRefund" update="column1">
-                            <g:message code="payment.th.payment.or.refund"/>
-                        </g:remoteSort>
-                    </th>
                     <th class="small">
                         <g:remoteSort action="list" sort="amount" update="column1">
                             <g:message code="payment.th.amount"/>
@@ -114,16 +109,6 @@
                     <td class="medium">
                         <g:remoteLink class="cell" action="show" id="${payment.id}" before="register(this);" onSuccess="render(data, next);">
                             <span><g:formatDate date="${payment.paymentDate}" formatName="date.pretty.format"/></span>
-                        </g:remoteLink>
-                    </td>
-                    <td class="tiny">
-                        <g:remoteLink class="cell" action="show" id="${payment.id}" before="register(this);" onSuccess="render(data, next);">
-                            <g:if test="${payment.isRefund > 0}">
-                                <span>R</span>
-                            </g:if>
-                            <g:else>
-                                <span>P</span>
-                            </g:else>
                         </g:remoteLink>
                     </td>
                     <td class="small">

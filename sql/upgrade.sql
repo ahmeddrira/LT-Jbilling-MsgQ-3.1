@@ -1590,7 +1590,7 @@ where table_id = 101
 and foreign_id = 4;
 
 --Add report.
-insert into report(id, type_id, name, file_name) values (11, 4, 'total_invoiced_per_customer', 'total_invoiced_per_customer.jasper');
+insert into report(id, type_id, name, file_name, optlock) values (11, 4, 'total_invoiced_per_customer', 'total_invoiced_per_customer.jasper', 1);
 insert into report_parameter(id, report_id, dtype, name) values(18, 11, 'date', 'start_date');
 insert into report_parameter(id, report_id, dtype, name) values(19, 11, 'date', 'end_date');
 insert into international_description(table_id, foreign_id, psudo_column, language_id, content) values(100, 11, 'description', 1, 'Total invoiced per customer grouped by product category.');
@@ -1601,7 +1601,7 @@ insert into entity_report_map(report_id, entity_id) values(11, 1);
 -- Description: New Report: Total Invoiced per Customer, comparison over years.
 
 --Add report.
-insert into report(id, type_id, name, file_name) values (12, 4, 'total_invoiced_per_customer_over_years', 'total_invoiced_per_customer_over_years.jasper');
+insert into report(id, type_id, name, file_name, optlock) values (12, 4, 'total_invoiced_per_customer_over_years', 'total_invoiced_per_customer_over_years.jasper', 1);
 insert into report_parameter(id, report_id, dtype, name) values(20, 12, 'string', 'start_year');
 insert into report_parameter(id, report_id, dtype, name) values(21, 12, 'string', 'end_year');
 insert into international_description(table_id, foreign_id, psudo_column, language_id, content) values(100, 12, 'description', 1, 'Total invoiced per customer over years grouped by year.');

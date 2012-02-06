@@ -1,3 +1,4 @@
+<%@ page import="org.apache.commons.lang.StringUtils" %>
 %{--
   JBILLING CONFIDENTIAL
   _____________________
@@ -30,7 +31,7 @@
                     <tr id="filterset-${filterset.id}" class="${selected?.id == filterset.id ? 'active' : ''}">
                         <td>
                             <g:remoteLink class="cell double" controller="filter" action="edit" id="${filterset.id}" update="filterset-edit">
-                                <strong>${filterset.name}</strong>
+                                <strong>${StringUtils.abbreviate(filterset.name, 35).encodeAsHTML()}</strong>
                                 <em><g:message code="table.id.format" args="[filterset.id]"/></em>
                             </g:remoteLink>
                         </td>

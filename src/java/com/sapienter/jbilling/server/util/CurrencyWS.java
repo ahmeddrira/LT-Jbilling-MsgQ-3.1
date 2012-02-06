@@ -49,6 +49,8 @@ public class CurrencyWS implements Serializable {
     @Size(min = 2, max = 2, message = "validation.error.size.exact,2")
     private String countryCode;
     private Boolean inUse;
+
+    @Digits(integer = 10, fraction = 4, message = "validation.error.invalid.number.or.fraction")
     private String rate;
     @NotNull(message = "validation.error.notnull")
     @Digits(integer = 10, fraction = 4, message = "validation.error.invalid.number.or.fraction")

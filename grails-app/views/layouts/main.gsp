@@ -27,6 +27,7 @@
     <div id="main">
         <g:render template="/layouts/includes/breadcrumbs"/>
         <g:render template="/layouts/includes/messages"/>
+        <g:render template="/layouts/includes/errors"/>
         <g:layoutBody />
     </div>
 </div>

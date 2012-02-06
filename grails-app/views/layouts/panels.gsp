@@ -71,6 +71,7 @@
         <!-- content columns -->
         <div class="columns-holder">
             <g:render template="/layouts/includes/messages"/>
+            <g:render template="/layouts/includes/errors"/>
 
             <!-- viewport of visible columns -->
             <div id="viewport">

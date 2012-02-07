@@ -31,7 +31,7 @@
                     <tr id="filterset-${filterset.id}" class="${selected?.id == filterset.id ? 'active' : ''}">
                         <td>
                             <g:remoteLink class="cell double" controller="filter" action="edit" id="${filterset.id}" update="filterset-edit">
-                                <strong>${StringUtils.abbreviate(filterset.name, 35).encodeAsHTML()}</strong>
+                                <strong>${StringUtils.abbreviate(filterset.name, 30).encodeAsHTML()}</strong>
                                 <em><g:message code="table.id.format" args="[filterset.id]"/></em>
                             </g:remoteLink>
                         </td>

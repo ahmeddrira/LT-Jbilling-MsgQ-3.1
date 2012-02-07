@@ -221,15 +221,17 @@
                 <tr>
                     <td><g:message code="invoice.label.status"/></td>
                     <td class="value">
-                        <g:set var="invoiceStatus" value="${InvoiceStatusDTO.get(latestInvoice?.statusId)}"/>
-                        <g:if test="${latestInvoice?.statusId == Constants.INVOICE_STATUS_UNPAID}">
-                            <g:link controller="payment" action="edit" params="[userId: selected.id, invoiceId: latestInvoice.id]" title="${message(code: 'invoice.pay.link')}">
-                                ${invoiceStatus.getDescription(session['language_id'])}
-                            </g:link>
+                        <g:if test="${latestInvoice}">
+                            <g:set var="invoiceStatus" value="${InvoiceStatusDTO.findById(latestInvoice?.statusId)}"/>
+                            <g:if test="${latestInvoice?.statusId == Constants.INVOICE_STATUS_UNPAID}">
+                                <g:link controller="payment" action="edit" params="[userId: selected.id, invoiceId: latestInvoice.id]" title="${message(code: 'invoice.pay.link')}">
+                                    ${invoiceStatus.getDescription(session['language_id'])}
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                ${invoiceStatus?.getDescription(session['language_id'])}
+                            </g:else>
                         </g:if>
-                        <g:else>
-                            ${invoiceStatus?.getDescription(session['language_id'])}
-                        </g:else>
                     </td>
                 </tr>
                 <tr>

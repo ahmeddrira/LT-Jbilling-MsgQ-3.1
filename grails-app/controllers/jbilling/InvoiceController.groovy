@@ -66,9 +66,9 @@ class InvoiceController {
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
 
         if (params.applyFilter || params.partial) {
-            render template: 'invoices', model: [ invoices: invoices, filters: filters, selected: selected ]
+            render template: 'invoices', model: [ invoices: invoices, filters: filters, selected: selected, currencies: currencies ]
         } else {
-            [ invoices: invoices, filters: filters, selected: selected ]
+            [ invoices: invoices, filters: filters, selected: selected, currencies: currencies ]
         }
     }
 

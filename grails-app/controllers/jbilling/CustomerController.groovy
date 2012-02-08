@@ -126,26 +126,39 @@ class CustomerController {
     def list = {
         def filters = filterService.getFilters(FilterType.CUSTOMER, params)
         def statuses = new UserStatusDAS().findAll()
-        def selected = params.id ? UserDTO.get(params.int("id")) : null
         def users = []
+
+        // if logged in as a customer, you can only view yourself
         if (SpringSecurityUtils.ifNotGranted("MENU_90")) {
-            log.debug "Customer , so you will view only yourself."
             users << UserDTO.get(springSecurityService.principal.id)
-            selected = users[0]
-        }
-        else {
-            log.debug "Super user , so you can view anything"
+        } else {
             users = getList(filters, statuses, params)
         }
-        def contact = selected ? ContactDTO.findByUserId(selected.id) : null
+
+        def selected = params.id ? UserDTO.get(params.int("id")) : null
+        def contact = null
+        def revenue = null
+        def latestOrder = null
+        def latestPayment = null
+        def latestInvoice = null
+
+        if (selected) {
+            contact = ContactDTO.findByUserId(selected.id)
+            revenue = webServicesSession.getTotalRevenueByUser(selected.userId)
+            latestOrder = webServicesSession.getLatestOrder(selected.userId)
+            latestPayment = webServicesSession.getLatestPayment(selected.userId)
+            latestInvoice = webServicesSession.getLatestInvoice(selected.userId)
+        }
 
         def crumbDescription = selected ? UserHelper.getDisplayName(selected, contact) : null
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, selected?.id, crumbDescription)
 
         if (params.applyFilter || params.partial) {
-            render template: 'customers', model: [users: users, selected: selected, contact: contact, statuses: statuses, filters: filters ]
+            render template: 'customers', model: [  selected: selected, contact: contact, revenue: revenue, latestOrder: latestOrder, latestPayment: latestPayment, latestInvoice: latestInvoice,
+                                                    users: users, statuses: statuses, filters: filters ]
         } else {
-            render view: 'list', model: [ users: users, selected: selected, contact: contact, statuses: statuses, filters: filters ]
+            render view: 'list', model: [ selected: selected, contact: contact, revenue: revenue, latestOrder: latestOrder, latestPayment: latestPayment, latestInvoice: latestInvoice,
+                                          users: users, statuses: statuses, filters: filters ]
         }
     }
 
@@ -180,8 +193,8 @@ class CustomerController {
     def show = {
         def user = UserDTO.get(params.int('id'))
         def contact = new ContactDAS().findPrimaryContact(user.userId)
-        def revenue = webServicesSession.getTotalRevenueByUser(user.userId)
 
+        def revenue = webServicesSession.getTotalRevenueByUser(user.userId)
         def latestOrder = webServicesSession.getLatestOrder(user.userId)
         def latestPayment = webServicesSession.getLatestPayment(user.userId)
         def latestInvoice = webServicesSession.getLatestInvoice(user.userId)

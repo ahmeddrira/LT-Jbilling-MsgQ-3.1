@@ -114,8 +114,7 @@ class OrderController {
         def orders = getFilteredOrders (filters, params)
 
         def selected = params.id ? webServicesSession.getOrder(params.int("id")) : null
-        def user = params.id ? webServicesSession.getUserWS(selected.userId) : null
-        def currencies = params.id ? getCurrencies() : null
+        def user = selected ? webServicesSession.getUserWS(selected.userId) : null
 
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, selected?.id)
 

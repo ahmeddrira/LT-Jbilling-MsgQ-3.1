@@ -62,7 +62,7 @@ then
             usage = getCurrentUsage($result.getUserId(), $result.getItemId());
         }
 
-        model.applyTo($mediation.getCurrentOrder(), $result, null, $result.getQuantity(), usage);
+        model.applyTo($mediation.getCurrentOrder(), $result, null, $result.getQuantity(), usage, true);
         LOG.debug("Applying price model: " + model);
     }
 end

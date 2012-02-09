@@ -17,7 +17,6 @@
 package com.sapienter.jbilling.server.order;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -149,6 +148,11 @@ public class UsageBL {
         } else {
             LOG.debug("Cache hit for '" + getCacheKey() + "', usage period: " + usagePeriod);
         }
+
+        // no point in h
+        if (workingOrder.getLines().isEmpty()) {
+
+        }
     }
 
     public void calculateMonthlyUsagePeriod(OrderDTO periodOrder) {
@@ -174,7 +178,7 @@ public class UsageBL {
                 throw new SessionInternalError("Could not determine user's billing period!");
 
             // populate usage period object for cache
-            usagePeriod.setMainOrder(periodOrder);
+            usagePeriod.setPeriodOrder(periodOrder);
             usagePeriod.setCycleStartDate(cycleStartDate);
             usagePeriod.setCycleEndDate(cycleEndDate);
             usagePeriod.setBillingPeriods(billingPeriods);
@@ -207,7 +211,7 @@ public class UsageBL {
             cycleEndDate = calendar.getTime();
         }
 
-        usagePeriod.setMainOrder(mainSubscriptionOrder);
+        usagePeriod.setPeriodOrder(periodOrder);
         usagePeriod.setCycleStartDate(cycleStartDate);
         usagePeriod.setCycleEndDate(cycleEndDate);
 
@@ -257,8 +261,8 @@ public class UsageBL {
      * 
      * @return customers main subscription order.
      */
-    public OrderDTO getMainOrder() {
-        return usagePeriod.getMainOrder();
+    public OrderDTO getPeriodOrder() {
+        return usagePeriod.getPeriodOrder();
     }
 
     /**
@@ -360,7 +364,7 @@ public class UsageBL {
      */
     public Usage getItemUsage(Integer itemId) {
         Usage usage;
-        if (getMainOrder() != null) {
+        if (getPeriodOrder() != null) {
             Integer workingOrderId = getWorkingOrder() != null ? getWorkingOrder().getId() : null;
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();
@@ -386,7 +390,7 @@ public class UsageBL {
      */
     public Usage getSubAccountItemUsage(Integer itemId) {
         Usage usage;
-        if (getMainOrder() != null) {
+        if (getPeriodOrder() != null) {
             Integer workingOrderId = getWorkingOrder() != null ? getWorkingOrder().getId() : null;
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();
@@ -411,7 +415,7 @@ public class UsageBL {
      */
     public Usage getItemTypeUsage(Integer itemTypeId) {
         Usage usage;
-        if (getMainOrder() != null) {
+        if (getPeriodOrder() != null) {
             Integer workingOrderId = getWorkingOrder() != null ? getWorkingOrder().getId() : null;
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();
@@ -437,7 +441,7 @@ public class UsageBL {
      */
     public Usage getSubAccountItemTypeUsage(Integer itemTypeId) {
         Usage usage;
-        if (getMainOrder() != null) {
+        if (getPeriodOrder() != null) {
             Integer workingOrderId = getWorkingOrder() != null ? getWorkingOrder().getId() : null;
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();

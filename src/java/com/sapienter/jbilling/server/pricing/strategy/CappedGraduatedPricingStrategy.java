@@ -68,7 +68,7 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
      */
     @Override
     public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
-                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
+                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage, boolean singlePurchase) {
 
         if (usage == null || usage.getAmount() == null)
             throw new IllegalArgumentException("Usage amount cannot be null for CappedGraduatedPricingStrategy.");
@@ -76,7 +76,7 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
         BigDecimal maximum = AttributeUtils.getDecimal(planPrice.getAttributes(), "max");
         if (usage.getAmount().compareTo(maximum) <= 0) {
             // usage cap not yet reached, price normally
-            super.applyTo(pricingOrder, result, fields, planPrice, quantity, usage);
+            super.applyTo(pricingOrder, result, fields, planPrice, quantity, usage, singlePurchase);
         } else {
             // cap reached, price at zero
             result.setPrice(BigDecimal.ZERO);

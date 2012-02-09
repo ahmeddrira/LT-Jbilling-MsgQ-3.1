@@ -85,7 +85,8 @@ public class TieredPriceModelPricingTask extends PriceModelPricingTask {
                                Integer currencyId,
                                List<PricingField> fields,
                                BigDecimal defaultPrice,
-                               OrderDTO pricingOrder) throws TaskException {
+                               OrderDTO pricingOrder,
+                               boolean singlePurchase) throws TaskException {
 
         LOG.debug("Pricing item " + itemId + ", quantity " + quantity + " - for user " + userId);
 
@@ -129,7 +130,7 @@ public class TieredPriceModelPricingTask extends PriceModelPricingTask {
                 }
 
                 PricingResult result = new PricingResult(itemId, quantity, userId, currencyId);
-                model.applyTo(pricingOrder, result, fields, result.getQuantity(), usage);
+                model.applyTo(pricingOrder, result, fields, result.getQuantity(), usage, singlePurchase);
                 return result.getPrice();
             }
         }

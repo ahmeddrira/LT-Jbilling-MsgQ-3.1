@@ -275,7 +275,7 @@ public class ItemBL {
      * the users current usage in the pricing calculation.
      *
      * This method does not execute any pricing plug-ins and does not use quantity or usage
-     * values for {@link PriceModelDTO#applyTo(PricingResult, List, BigDecimal, Usage)}
+     * values for {@link PriceModelDTO#applyTo(OrderDTO, PricingResult, List, BigDecimal, Usage, boolean)}
      * price calculations.
      *
      * @param item item to price
@@ -292,7 +292,7 @@ public class ItemBL {
             // calculate default price from strategy
             PricingResult result = new PricingResult(item.getId(), userId, currencyId);
             List<PricingField> fields = Collections.emptyList();
-            item.getDefaultPrice().applyTo(null, result, fields, BigDecimal.ONE, usage);
+            item.getDefaultPrice().applyTo(null, result, fields, BigDecimal.ONE, usage, false);
             return result.getPrice();
         }
         return BigDecimal.ZERO;
@@ -301,12 +301,12 @@ public class ItemBL {
 
     public BigDecimal getPrice(Integer userId, BigDecimal quantity, Integer entityId) throws SessionInternalError {
         UserBL user = new UserBL(userId);
-        return getPrice(userId, user.getCurrencyId(), quantity, entityId, null);
+        return getPrice(userId, user.getCurrencyId(), quantity, entityId, null, false);
     }
 
     public BigDecimal getPrice(Integer userId, Integer currencyId, BigDecimal quantity, Integer entityId) throws SessionInternalError {
         UserBL user = new UserBL(userId);
-        return getPrice(userId, currencyId, quantity, entityId, null);
+        return getPrice(userId, currencyId, quantity, entityId, null, false);
     }
 
     /**
@@ -320,7 +320,7 @@ public class ItemBL {
      * @return The price in the requested currency. It always returns a price,
      * otherwise an exception for lack of pricing for an item
      */
-    public BigDecimal getPrice(Integer userId, Integer currencyId, BigDecimal quantity, Integer entityId, OrderDTO order)
+    public BigDecimal getPrice(Integer userId, Integer currencyId, BigDecimal quantity, Integer entityId, OrderDTO order, boolean singlePurchase)
             throws SessionInternalError {
 
         if (currencyId == null || entityId == null) {
@@ -347,7 +347,7 @@ public class ItemBL {
             IPricing myTask = taskManager.getNextClass();
 
             while(myTask != null) {
-                price = myTask.getPrice(item.getId(), quantity, userId, currencyId, pricingFields, price, order);
+                price = myTask.getPrice(item.getId(), quantity, userId, currencyId, pricingFields, price, order, singlePurchase);
                 myTask = taskManager.getNextClass();
             }
         } catch (Exception e) {
@@ -430,7 +430,7 @@ public class ItemBL {
         // calculate a true price using the pricing plug-in, pricing takes into
         // account plans, special prices and the quantity of the item being purchased.
         if (currencyId != null && dto.getPercentage() == null) {
-            dto.setPrice(getPrice(userId, currencyId, quantity, entityId, order));
+            dto.setPrice(getPrice(userId, currencyId, quantity, entityId, order, false));
         }
 
         // set the types

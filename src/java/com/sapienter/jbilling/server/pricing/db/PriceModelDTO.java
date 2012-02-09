@@ -206,13 +206,14 @@ public class PriceModelDTO implements Serializable {
      * @param result pricing result to apply pricing to
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
+     * @param singlePurchase true if pricing a single purchase/addition to an order, false if pricing a quantity that already exists on the pricingOrder.
      */
     @Transient
-    public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields, BigDecimal quantity, Usage usage) {
+    public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields, BigDecimal quantity, Usage usage, boolean singlePurchase) {
         // each model in the chain
         for (PriceModelDTO next = this; next != null; next = next.getNext()) {
             // apply pricing
-            next.getType().getStrategy().applyTo(pricingOrder, result, fields, next, quantity, usage);
+            next.getType().getStrategy().applyTo(pricingOrder, result, fields, next, quantity, usage, singlePurchase);
 
             // convert currency if necessary
             if (result.getUserId() != null

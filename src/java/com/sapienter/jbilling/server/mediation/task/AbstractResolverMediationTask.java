@@ -57,9 +57,6 @@ public abstract class AbstractResolverMediationTask extends PluggableTask implem
 
         LOG.debug("Processing " + results.size() + " result(s).");
 
-        // todo: as it stands right now we re-price each line and re-calculate the entire order total after each addition
-        // it would be more efficient to reprocess orders after the batch is complete
-
         int index = results.isEmpty() ? -1 : 0;
         for (Record record : records) {
 
@@ -77,6 +74,11 @@ public abstract class AbstractResolverMediationTask extends PluggableTask implem
             result.setRecordKey(record.getKey());
             resolve(result, record.getFields());
             results.add(result);
+
+            // done!
+            if (result.getUserId() != null && result.getCurrencyId() != null && result.getCurrentOrder() != null) {
+                complete(result, record.getFields());
+            }
         }
     }
 
@@ -108,15 +110,15 @@ public abstract class AbstractResolverMediationTask extends PluggableTask implem
      *
      * @param result result to complete
      */
-    protected void complete(MediationResult result) {
+    protected void complete(MediationResult result, List<PricingField> fields) {
         if (result.getCurrentOrder() != null) {
             // add resolved lines to current order
+            calculatePrices(result, fields);
             addLinesToOrder(result);
 
             // save order
             beforeSave(result);
             if (result.getPersist()) {
-                new OrderBL(result.getCurrentOrder()).recalculate(getEntityId());
                 new OrderDAS().save(result.getCurrentOrder());
             }
             afterSave(result);
@@ -126,6 +128,33 @@ public abstract class AbstractResolverMediationTask extends PluggableTask implem
         }
 
         result.setDone(true);
+    }
+
+    /**
+     * Calculate prices for mediated lines. Prices can be set during line creation, or they can
+     * be left blank to force the system to calculate the prices using the pricing engine.
+     *
+     * @param result mediation result with order lines
+     * @param fields pricing fields
+     */
+    protected void calculatePrices(MediationResult result, List<PricingField> fields) {
+        for (OrderLineDTO line : result.getLines()) {
+            if (line.getPrice() == null) {
+                LOG.debug("Calculating price for line " + line);
+
+                ItemBL itemService = new ItemBL(line.getItemId());
+                itemService.setPricingFields(fields);
+                BigDecimal price = itemService.getPrice(result.getUserId(),
+                                                        result.getCurrencyId(),
+                                                        line.getQuantity(),
+                                                        getEntityId(),
+                                                        result.getCurrentOrder(),
+                                                        true);
+                line.setPrice(price);
+            }
+
+            line.setAmount(line.getPrice().multiply(line.getQuantity()));
+        }
     }
 
     /**
@@ -142,17 +171,6 @@ public abstract class AbstractResolverMediationTask extends PluggableTask implem
         // update the lines in the current order
         for (OrderLineDTO line : result.getLines()) {
             OrderLineBL.addLine(result.getCurrentOrder(), line, false);
-        }
-
-        // re-calculate prices
-        for (OrderLineDTO line : result.getCurrentOrder().getLines()) {
-            LOG.debug("Calculating price for line: " + line);
-            BigDecimal price = new ItemBL(line.getItemId()).getPrice(result.getUserId(),
-                                                  result.getCurrencyId(),
-                                                  line.getQuantity(),
-                                                  getEntityId(),
-                                                  result.getCurrentOrder());
-            line.setPrice(price);
         }
     }
 

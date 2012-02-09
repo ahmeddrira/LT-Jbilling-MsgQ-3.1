@@ -243,6 +243,7 @@ public class OrderLineBL {
             line.setQuantity(line.getQuantity().add(quantity));
 
             // and also the total amount for this order line
+            line.setAmount(line.getAmount().setScale(CommonConstants.BIGDECIMAL_SCALE, CommonConstants.BIGDECIMAL_ROUND));
             line.setAmount(line.getAmount().add(myLine.getAmount()));
         }
 
@@ -286,7 +287,7 @@ public class OrderLineBL {
             BigDecimal additionAmount = null;               
             if (item.getPercentage() == null) {
                 // normal price, multiply by quantity
-                additionAmount = line.getPrice();
+                additionAmount = line.getPrice().setScale(precision, CommonConstants.BIGDECIMAL_ROUND);
                 additionAmount = additionAmount.multiply(line.getQuantity());
             } else {
                 // percentage ignores the quantity

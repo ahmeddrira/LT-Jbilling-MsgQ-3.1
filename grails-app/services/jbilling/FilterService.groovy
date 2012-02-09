@@ -123,6 +123,10 @@ class FilterService implements Serializable {
         return type ? getFilters(type, null) : null
     }
 
+    def FilterType getCurrentFilterType() {
+        return (FilterType) session[SESSION_CURRENT_FILTER_TYPE]
+    }
+
     /**
      * Loads the filters for the given FilterSet id, updating the filter list
      * in the session for current usage.
@@ -133,6 +137,19 @@ class FilterService implements Serializable {
     def Object loadFilters(Integer filterSetId) {
         def filterset = FilterSet.get(filterSetId)
         def type = (FilterType) session[SESSION_CURRENT_FILTER_TYPE]
+
+        if (filterset.filters.find{ it.type != FilterType.ALL && it.type != type }) {
+            session.error = 'filters.cannot.load.message'
+            return getCurrentFilters()
+        }
+
+        // always make the loaded filters visible
+        filterset.filters.each { filter->
+            if (filter.value) {
+                filter.visible = true
+            }
+        }
+
         session[getSessionKey(type)] = filterset.filters
         return filterset.filters
     }

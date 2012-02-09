@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.user.db.CompanyDTO; jbilling.FilterSet" %>
+<%@ page import="jbilling.FilterType; com.sapienter.jbilling.server.user.db.CompanyDTO; jbilling.FilterSet" %>
 
 <%--
   Filter side panel template. Prints all filters contained in the "filters" page variable.
@@ -26,6 +26,25 @@
 <g:set var="company" value="${CompanyDTO.get(session['company_id'])}"/>
 <g:set var="filters" value="${filters.sort{ it.field }}"/>
 <g:set var="filtersets" value="${FilterSet.findAllByUserId(session['user_id'])}"/>
+
+<%
+    filtersets = filtersets?.findAll{ filterset->
+        !filterset.filters.find{ it.type != FilterType.ALL && it.type != session['current_filter_type'] }
+    }
+%>
+
+
+%{--
+    filtersets = filtersets?.findAll{ filterset->
+        filterset.filters
+        if (filterset.filters && filterset.filters.asList().first().type != session['current_filter_type']) {
+            return false
+        }
+        return true
+    }
+--}%
+
+
 
 <div id="filters">
     <div class="heading">

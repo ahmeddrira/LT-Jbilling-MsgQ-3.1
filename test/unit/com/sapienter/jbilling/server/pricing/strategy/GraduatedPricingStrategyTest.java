@@ -62,7 +62,7 @@ public class GraduatedPricingStrategyTest extends BigDecimalTestCase {
 
         // included minutes already exceeded by current usage
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(10), getUsage(new BigDecimal(1000))); // 10 purchased, 1000 usage
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(10), getUsage(new BigDecimal(1000)), false); // 10 purchased, 1000 usage
 
         assertEquals(rate, result.getPrice());
     }
@@ -77,7 +77,7 @@ public class GraduatedPricingStrategyTest extends BigDecimalTestCase {
 
         // included minutes already exceeded by current usage
         PricingResult result = new PricingResult(1, 2, 3);
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(10), getUsage(BigDecimal.ZERO)); // 10 purchased, 0 usage
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(10), getUsage(BigDecimal.ZERO), false); // 10 purchased, 0 usage
 
         assertEquals(BigDecimal.ZERO, result.getPrice());
     }
@@ -93,14 +93,14 @@ public class GraduatedPricingStrategyTest extends BigDecimalTestCase {
         // half of the call exceeds the included minutes
         // rate should be 50% of the plan rate
         PricingResult result = new PricingResult(1, 2, 3);                                      // 20 purchased, 990 usage
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(20), getUsage(new BigDecimal(990))); // 10 minutes included, 10 minutes rated
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(20), getUsage(new BigDecimal(990)), false); // 10 minutes included, 10 minutes rated
 
         assertEquals(new BigDecimal("0.50"), result.getPrice());
 
         // 80% of the call exceeds the included minutes
         // rate should be 80% of the plan rate
         PricingResult result2 = new PricingResult(1, 2, 3);                                       // 100 purchased, 980 usage
-        strategy.applyTo(null, result2, null, planPrice, new BigDecimal(100), getUsage(new BigDecimal(980))); // 20 minutes included, 80 minutes rated
+        strategy.applyTo(null, result2, null, planPrice, new BigDecimal(100), getUsage(new BigDecimal(980)), false); // 20 minutes included, 80 minutes rated
 
         assertEquals(new BigDecimal("0.80"), result2.getPrice());
     }

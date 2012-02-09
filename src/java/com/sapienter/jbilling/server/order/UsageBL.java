@@ -148,11 +148,6 @@ public class UsageBL {
         } else {
             LOG.debug("Cache hit for '" + getCacheKey() + "', usage period: " + usagePeriod);
         }
-
-        // no point in h
-        if (workingOrder.getLines().isEmpty()) {
-
-        }
     }
 
     public void calculateMonthlyUsagePeriod(OrderDTO periodOrder) {

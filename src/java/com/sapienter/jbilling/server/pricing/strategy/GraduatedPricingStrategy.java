@@ -50,7 +50,9 @@ public class GraduatedPricingStrategy extends AbstractPricingStrategy {
         );
 
         setChainPositions(
-                ChainPosition.START
+                ChainPosition.START,
+                ChainPosition.MIDDLE,
+                ChainPosition.END
         );
 
         setRequiresUsage(true);

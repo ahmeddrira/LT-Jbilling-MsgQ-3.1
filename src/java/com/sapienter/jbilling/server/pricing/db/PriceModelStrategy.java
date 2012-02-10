@@ -16,6 +16,7 @@
 
 package com.sapienter.jbilling.server.pricing.db;
 
+import com.sapienter.jbilling.server.pricing.strategy.QuantityAddonPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.CappedGraduatedPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.FlatPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.GraduatedPricingStrategy;
@@ -78,7 +79,10 @@ public enum PriceModelStrategy {
     ITEM_SELECTOR               (new ItemSelectorStrategy()),
 
     /** Strategy that adds another item to the order based on the percentage used of one item type over another */
-    ITEM_PERCENTAGE_SELECTOR    (new ItemPercentageSelectorStrategy());
+    ITEM_PERCENTAGE_SELECTOR    (new ItemPercentageSelectorStrategy()),
+
+    /** START of chain pricing strategy that increases the "included" quantity of a Graduated price using other purchased add-on items */
+    QUANTITY_ADDON              (new QuantityAddonPricingStrategy());
 
 
     private final PricingStrategy strategy;

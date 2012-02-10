@@ -48,7 +48,9 @@ public class CappedGraduatedPricingStrategy extends GraduatedPricingStrategy {
         );
 
         setChainPositions(
-                ChainPosition.START
+                ChainPosition.START,
+                ChainPosition.MIDDLE,
+                ChainPosition.END
         );
 
         setRequiresUsage(true);

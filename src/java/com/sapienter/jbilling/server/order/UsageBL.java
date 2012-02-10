@@ -31,7 +31,9 @@ import com.sapienter.jbilling.server.process.PeriodOfTime;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
+
 import org.apache.log4j.Logger;
+import org.hibernate.ObjectNotFoundException;
 import org.joda.time.DateMidnight;
 import org.springmodules.cache.CachingModel;
 import org.springmodules.cache.FlushingModel;
@@ -121,15 +123,19 @@ public class UsageBL {
         if (usagePeriod == null) {
             OrderDTO mainSubscriptionOrder = null;
             Integer orderId = new OrderBL().getMainOrderId(userId);
-            if (orderId != null)
-                mainSubscriptionOrder = new OrderBL(orderId).getEntity();
+
+            try {
+                if (orderId != null)
+                    mainSubscriptionOrder = new OrderBL(orderId).getEntity();
+            } catch (ObjectNotFoundException e) {
+                /* ignore */
+            }
 
             if (mainSubscriptionOrder == null) {
                 usagePeriod = new UsagePeriod();
                 LOG.warn("User " + userId + " does not have main subscription order - all usage will be 0!");
                 return;
             }
-
 
             // calculate usage cycle start & end dates from the working order
             if (workingOrder != null) {
@@ -144,6 +150,9 @@ public class UsageBL {
             if (workingOrder == null) {
                 calculateMonthlyUsagePeriod(mainSubscriptionOrder);
             }
+
+            LOG.debug("Caching with key '" + getCacheKey() + "', usage period: " + usagePeriod);
+            cache.putInCache(getCacheKey(), cacheModel, usagePeriod);
 
         } else {
             LOG.debug("Cache hit for '" + getCacheKey() + "', usage period: " + usagePeriod);
@@ -162,10 +171,7 @@ public class UsageBL {
                 throw new SessionInternalError("OrderPeriodTask not configured!");
 
             Date cycleStartDate = periodTask.calculateStart(periodOrder);
-            Date cycleEndDate = periodTask.calculateEnd(periodOrder,
-                    new Date(),
-                    periods,
-                    cycleStartDate);
+            Date cycleEndDate = periodTask.calculateEnd(periodOrder, new Date(), periods, cycleStartDate);
 
             List<PeriodOfTime> billingPeriods = periodTask.getPeriods();
 
@@ -177,9 +183,6 @@ public class UsageBL {
             usagePeriod.setCycleStartDate(cycleStartDate);
             usagePeriod.setCycleEndDate(cycleEndDate);
             usagePeriod.setBillingPeriods(billingPeriods);
-
-            LOG.debug("Caching with key '" + getCacheKey() + "', usage period: " + usagePeriod);
-            cache.putInCache(getCacheKey(), cacheModel, usagePeriod);
 
         } catch (PluggableTaskException e) {
             throw new SessionInternalError("Exception occurred retrieving the configured OrderPeriodTask.", e);

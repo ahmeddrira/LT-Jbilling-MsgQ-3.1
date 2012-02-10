@@ -36,8 +36,6 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.event.DynamicBalanceChangeEvent;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import java.math.BigDecimal;
-
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import org.apache.log4j.Logger;
 
 /**
@@ -68,133 +66,46 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
     private BigDecimal determineAmount(Event event) {
         if (event instanceof PaymentSuccessfulEvent) {
             PaymentSuccessfulEvent payment = (PaymentSuccessfulEvent) event;
-            // get the amount
-            BigDecimal amount = payment.getPayment().getAmount();
-            // check if amount is ZERO
-            if(amount.equals(BigDecimal.ZERO)) {
-                LOG.debug("Amount is ZERO "+amount);
-                return BigDecimal.ZERO;
-            }
-            else {
-                // get currency in which payment was made
-                CurrencyDTO paymentCurrency =  payment.getPayment().getCurrency();
-                LOG.debug("Payment was made in currency "+paymentCurrency.getSymbol());
-                // get the user currency
-                CurrencyDTO userDefaultCurrency = new UserDAS().find(payment.getPayment().getUserId()).getCurrency();
-                LOG.debug("User's default currency is "+userDefaultCurrency.getSymbol());
-                // determine currency of user
-                if(paymentCurrency.getId()!=userDefaultCurrency.getId()) {
-                    // currency is different so convert the amount
-                    return new CurrencyBL().convert(paymentCurrency.getId(), userDefaultCurrency.getId(), amount, payment.getEntityId());
-                }
-                else {
-                    LOG.debug("Currencies are same");
-                    return payment.getPayment().getAmount();
-                }
-            }
+            BigDecimal retVal= payment.getPayment().getAmount();
+            return convertAmountToUsersCurrency(retVal, payment.getPayment().getCurrency().getId(),
+                    payment.getPayment().getUserId(), payment.getEntityId());
 
         } else if (event instanceof OrderDeletedEvent) {
             OrderDeletedEvent order = (OrderDeletedEvent) event;
-            // get the amount
-            BigDecimal amount = order.getOrder().getTotal();
-            if(amount.equals(BigDecimal.ZERO)) {
-                LOG.debug("Amount is ZERO "+amount);
-                return BigDecimal.ZERO;
-            }
-
-            CurrencyDTO orderCurrency = order.getOrder().getCurrency();
-            CurrencyDTO userDefaultCurrency = new UserDAS().find(order.getOrder().getUserId()).getCurrency();
             if (order.getOrder().getOrderPeriod().getId() ==  com.sapienter.jbilling.server.util.Constants.ORDER_PERIOD_ONCE) {
-                if(orderCurrency.getId() != userDefaultCurrency.getId()) {
-                    // currency is different so convert the amount
-                    return new CurrencyBL().convert(orderCurrency.getId(), userDefaultCurrency.getId(), amount, order.getEntityId());
-                }
-                else {
-                    LOG.debug("Currency is same in order");
-                    return order.getOrder().getTotal();
-                }
+                return order.getOrder().getTotal();
             } else {
                 return BigDecimal.ZERO;
             }
 
         } else if (event instanceof NewOrderEvent) {
             NewOrderEvent order = (NewOrderEvent) event;
-            // get the amount
-            BigDecimal amount = order.getOrder().getTotal();
-            if(amount.equals(BigDecimal.ZERO)) {
-                LOG.debug("Amount is ZERO in order "+order.getOrder().getId());
-                return BigDecimal.ZERO;
-            }
             if (order.getOrder().getOrderPeriod().getId() ==  com.sapienter.jbilling.server.util.Constants.ORDER_PERIOD_ONCE) {
-                CurrencyDTO orderCurrency = order.getOrder().getCurrency();
-                CurrencyDTO userDefaultCurrency = new UserDAS().find(order.getOrder().getUserId()).getCurrency();
-                if(orderCurrency.getId()!=userDefaultCurrency.getId()) {
-                    // currency is different so convert the amount
-                    return new CurrencyBL().convert(orderCurrency.getId(), userDefaultCurrency.getId(), amount, order.getEntityId()).multiply(new BigDecimal(-1));
-                }
-                else {
-                    LOG.debug("Currency is same in order");
-                    return order.getOrder().getTotal().multiply(new BigDecimal(-1));
-                }
+                return order.getOrder().getTotal().multiply(new BigDecimal(-1));
             } else {
                 return BigDecimal.ZERO;
             }
 
         } else if (event instanceof PaymentDeletedEvent) {
             PaymentDeletedEvent payment = (PaymentDeletedEvent) event;
-            // get the amount
-            BigDecimal amount = payment.getPayment().getAmount();
-            // check if amount is ZERO
-            if(amount.equals(BigDecimal.ZERO)) {
-                LOG.debug("Amount is ZERO "+amount);
-                return BigDecimal.ZERO;
-            }
+            BigDecimal retVal= payment.getPayment().getAmount().negate();
+            return convertAmountToUsersCurrency(retVal, payment.getPayment().getCurrency().getId(),
+                    payment.getPayment().getBaseUser().getId(), payment.getEntityId());
 
-            // get currency in which payment was made
-            CurrencyDTO paymentCurrency =  payment.getPayment().getCurrency();
-            LOG.debug("Payment was made in currency "+paymentCurrency.getSymbol());
-            // get the user currency
-            CurrencyDTO userDefaultCurrency = new UserDAS().find(payment.getPayment().getBaseUser().getUserId()).getCurrency();
-            LOG.debug("User's default currency is "+userDefaultCurrency.getSymbol());
-            // determine currency of user
-            if(paymentCurrency.getId()!= userDefaultCurrency.getId()) {
-                // currency is different so convert the amount
-                return new CurrencyBL().convert(paymentCurrency.getId(), userDefaultCurrency.getId(), amount, payment.getEntityId()).multiply(new BigDecimal(-1));
-            }
-            else {
-                LOG.debug("Currencies are same");
-                return payment.getPayment().getAmount().multiply(new BigDecimal(-1));
-            }
 
         } else if (event instanceof OrderAddedOnInvoiceEvent) {
 
-            LOG.debug("Instance of OrderAddedOnInvoiceEvent");
             OrderAddedOnInvoiceEvent orderOnInvoiceEvent = (OrderAddedOnInvoiceEvent) event;
             OrderAddedOnInvoiceEvent order = (OrderAddedOnInvoiceEvent) event;
-            // get the amount
-            BigDecimal amount = order.getOrder().getTotal();
-            if(amount.equals(BigDecimal.ZERO)) {
-                LOG.debug("Amount is ZERO in order "+order.getOrder().getId());
-                return BigDecimal.ZERO;
-            }
             if (order.getOrder().getOrderPeriod().getId() !=  com.sapienter.jbilling.server.util.Constants.ORDER_PERIOD_ONCE) {
-                CurrencyDTO orderCurrency = order.getOrder().getCurrency();
-                CurrencyDTO userDefaultCurrency = new UserDAS().find(order.getOrder().getUserId()).getCurrency();
-                if(orderCurrency.getId()!=userDefaultCurrency.getId()) {
-                    // currency is different so convert the amount
-                    return new CurrencyBL().convert(orderCurrency.getId(), userDefaultCurrency.getId(), amount, order.getEntityId()).multiply(new BigDecimal(-1));
-                }
-                else {
-                    LOG.debug("Currency is same in order");
-                    return order.getOrder().getTotal().multiply(new BigDecimal(-1));
-                }
+                return orderOnInvoiceEvent.getTotalInvoiced().multiply(new BigDecimal(-1));
             } else {
                 return BigDecimal.ZERO;
             }
 
         } else if (event instanceof NewQuantityEvent) {
             NewQuantityEvent nq = (NewQuantityEvent) event;
-            LOG.debug("Instance of NewQuantityEvent Event");
+
             if (new OrderDAS().find(nq.getOrderId()).getOrderPeriod().getId() ==
                     com.sapienter.jbilling.server.util.Constants.ORDER_PERIOD_ONCE) {
                 BigDecimal newTotal, oldTotal;
@@ -212,21 +123,8 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
                     oldTotal = nq.getOrderLine().getAmount();
                     newTotal = nq.getNewOrderLine().getAmount();
                 }
-                LOG.debug("Old order line's item is "+nq.getOrderLine().getItem());
-                // convert before returning
-                int oldOrderLineCurrencyId = nq.getOrderLine().getItem().getDefaultPrice().getCurrency().getId();
-                int newOrderLineCurrencyId = nq.getNewOrderLine().getItem().getDefaultPrice().getCurrency().getId();
-                LOG.debug("OLD order line currency is "+nq.getOrderLine().getItem().getDefaultPrice().getCurrency().getDescription());
-                LOG.debug("NEW order line currency is "+nq.getNewOrderLine().getItem().getDefaultPrice().getCurrency().getDescription());
-
-                // finding the current user's default currency id from the order
-                int currentUserCurrencyId = new OrderDAS().find(nq.getOrderId()).getCurrencyId();
-                // convert oldOrderLineCurrency and newOrderLineCurrency to userDefaultCurrency and then return
-                oldTotal = new CurrencyBL().convert(oldOrderLineCurrencyId, currentUserCurrencyId, oldTotal, nq.getEntityId());
-                newTotal = new CurrencyBL().convert(newOrderLineCurrencyId, currentUserCurrencyId, newTotal, nq.getEntityId());
-                // now return after converting operations
                 return newTotal.subtract(oldTotal).multiply(new BigDecimal(-1));
-
+                
             } else {
                 return BigDecimal.ZERO;
             }
@@ -236,6 +134,20 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
         }
     }
 
+    private BigDecimal convertAmountToUsersCurrency(BigDecimal amount, Integer amountCurrencyId, Integer userId, Integer entityId) {
+        //no need to convert zeros
+        if ( null != amount && ! (amount.compareTo(BigDecimal.ZERO) == 0) ) {
+            //non-zero return value, must be converted if
+            Integer userCurrencyId= new UserDAS().find(userId).getCurrencyId();
+            if ( amountCurrencyId != userCurrencyId ) {
+                //convert to user's currency
+                LOG.debug("Converting amount to User's specific currency");
+                amount= new CurrencyBL().convert(amountCurrencyId, userCurrencyId, amount, entityId);
+            }
+        }
+        return amount;
+    }
+    
     private int determineUserId(Event event) {
         if (event instanceof PaymentSuccessfulEvent) {
             PaymentSuccessfulEvent payment = (PaymentSuccessfulEvent) event;

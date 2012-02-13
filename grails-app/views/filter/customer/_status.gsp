@@ -34,7 +34,7 @@
                     <g:select name="filters.${filter.name}.integerValue"
                             value="${filter.integerValue}"
                             from="${new UserStatusDAS().findAll()}"
-                            optionKey="statusValue" optionValue="description"
+                            optionKey="id" optionValue="description"
                             noSelection="['': message(code: 'filters.status.empty')]" />
 
                 </div>

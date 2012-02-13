@@ -100,7 +100,7 @@ public class QuantityAddonPricingStrategy extends AbstractPricingStrategy {
             BigDecimal increase = quantityPerUnit.multiply(addonUsage.getQuantity());
 
             LOG.debug("Addon item " + addonUsage.getItemId() + "; " + quantityPerUnit
-                      + " x " + addonUsage.getQuantity() + " purchased =  +" + increase + " included");
+                      + " x " + addonUsage.getQuantity() + " purchased = +" + increase + " included");
 
             total = total.add(increase);
             LOG.debug("Total increase = " + total);

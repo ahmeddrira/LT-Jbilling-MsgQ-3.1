@@ -141,6 +141,10 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
                 PriceModelDTO model = PriceModelBL.getPriceForDate(models, pricingDate);
                 LOG.debug("Applying price model " + model);
 
+                // work with a copy as some price models can modify attributes of the chain and
+                // we don't want the run-time changes to be persisted by hibernate.
+                model = new PriceModelDTO(model);
+
                 // fetch current usage of the item if the pricing strategy requires it
                 Usage usage = null;
                 if (model.getStrategy().requiresUsage()) {

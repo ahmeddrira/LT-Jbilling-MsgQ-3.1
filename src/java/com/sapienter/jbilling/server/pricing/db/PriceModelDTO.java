@@ -103,6 +103,24 @@ public class PriceModelDTO implements Serializable {
         setCurrency(currency);
     }
 
+    /**
+     * Copy constructor.
+     *
+     * @param model model to copy
+     */
+    public PriceModelDTO(PriceModelDTO model) {
+        this.id = model.getId();
+        this.type = model.getType();
+        this.attributes = new TreeMap<String, String>(model.getAttributes());
+        this.rate = model.getRate();
+        this.currency = model.getCurrency();
+
+        if (model.getNext() != null) {
+            this.next = new PriceModelDTO(model.getNext());
+        }
+    }
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "price_model_GEN")
     @Column(name = "id", unique = true, nullable = false)

@@ -338,10 +338,6 @@
                 </g:if>
             </g:preferenceEquals>
         </sec:ifAllGranted>
-
-        <g:link class="submit show" controller="mediation" action="invoice" id="${selected.id}">
-            <span><g:message code="button.view.events" /></span>
-        </g:link>
     </div>
 </div>
 

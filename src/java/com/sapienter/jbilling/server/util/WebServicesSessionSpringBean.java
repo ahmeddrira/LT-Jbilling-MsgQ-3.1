@@ -1548,7 +1548,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         // process payment
         IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
-        Integer result = session.processAndUpdateInvoice(dto, null, entityId);
+        Integer result = session.processAndUpdateInvoice(dto, invoiceId, entityId);
         LOG.debug("paymentBean.processAndUpdateInvoice() Id=" + result);
 
         PaymentAuthorizationDTOEx auth = null;

@@ -229,7 +229,9 @@ public class InvoiceSessionBean implements IInvoiceSessionBean {
 
     public Set<InvoiceDTO> getAllInvoices(Integer userId) {
         Set<InvoiceDTO>  ret = new UserBL(userId).getEntity().getInvoices();
-        ret.iterator().next().getDueDate(); // touch
+        if (ret.size() > 0 ) {
+            ret.iterator().next().getDueDate(); // touch
+        }
         return ret;
     }
 }    

@@ -25,7 +25,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -73,6 +75,7 @@ public class PaymentWS implements WSSecured, Serializable {
     private Date updateDatetime;
     private int deleted;
     private Integer resultId;
+    @Size(min = 0, max = 500, message = "validation.error.size,0,500")
     private String paymentNotes = null;
     private Integer paymentPeriod;
     

@@ -1813,3 +1813,21 @@ alter table blacklist add constraint blacklist_fk_4
 -- drop old contact custom fields
 DROP TABLE contact_field;
 DROP TABLE contact_field_type;
+
+
+-- Date: 16-Feb-2012
+-- Redmine Issue: #1785
+-- Description: Rate cards
+drop table if exists rate_card;
+create table rate_card (
+    id int not null unique,
+    name varchar(255) not null,
+    table_name varchar(255) not null unique,
+    entity_id int,
+    primary key (id)
+);
+
+alter table rate_card add constraint rate_card_entity_id_FK foreign key (entity_id)  references entity;
+
+insert into jbilling_seqs (name, next_id) values ('rate_card', 1);
+

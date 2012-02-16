@@ -16,6 +16,8 @@
 
 package com.sapienter.jbilling.server.util.sql;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -172,18 +174,7 @@ public class JDBCUtils {
      * @return database object name
      */
     public static String toDatabaseObjectName(String text) {
-        StringBuilder column = new StringBuilder();
-
-        String[] tokens = text.replaceAll("[_. ]", "").split("[A-Z]");
-        for (Iterator<String> it = Arrays.asList(tokens).iterator(); it.hasNext();) {
-            String token = it.next();
-
-            column.append(token.toLowerCase().replaceAll("[^a-z0-9]", ""));
-
-            if (it.hasNext())
-                column.append("_");
-        }
-
-        return column.toString();
+        String[] tokens = StringUtils.splitByCharacterTypeCamelCase(text.replaceAll("[_. ]", ""));
+        return StringUtils.join(tokens, "_").toLowerCase();
     }
 }

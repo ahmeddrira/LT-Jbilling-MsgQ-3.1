@@ -16,16 +16,24 @@
 
 package com.sapienter.jbilling.server.pricing.db;
 
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.sql.JDBCUtils;
 import com.sapienter.jbilling.server.util.sql.TableGenerator;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Table(name = "rate_card")
@@ -42,15 +50,17 @@ public class RateCardDTO implements Serializable {
 
     public static final String TABLE_PREFIX = "rate_";
 
-    public static final TableGenerator.Column[] TABLE_COLUMNS = new TableGenerator.Column[] {
+    public static final List<TableGenerator.Column> TABLE_COLUMNS = Arrays.asList(
             new TableGenerator.Column("match", "varchar(20)", false),
             new TableGenerator.Column("comment", "varchar(255)", true),
             new TableGenerator.Column("rate", "numeric(22,10)", false)
-    };
+    );
 
     private Integer id;
     private String name;
     private String tableName;
+    private CompanyDTO company;
+    private int versionNum;
 
     public RateCardDTO() {
     }
@@ -77,11 +87,11 @@ public class RateCardDTO implements Serializable {
 
     @Column(name = "table_name", nullable = false, unique = true)
     public String getTableName() {
-        if (tableName == null && name != null) {
+        if (StringUtils.isBlank(tableName) && StringUtils.isNotBlank(name)) {
             tableName = JDBCUtils.toDatabaseObjectName(name);
         }
 
-        if (tableName != null && !tableName.startsWith(TABLE_PREFIX)) {
+        if (StringUtils.isNotBlank(tableName) && !tableName.startsWith(TABLE_PREFIX)) {
             tableName = TABLE_PREFIX + tableName;
         }
 
@@ -90,5 +100,35 @@ public class RateCardDTO implements Serializable {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entity_id")
+    public CompanyDTO getCompany() {
+        return company;
+    }
+
+    public void setCompany(CompanyDTO company) {
+        this.company = company;
+    }
+
+    @Version
+    @Column(name = "OPTLOCK")
+    public Integer getVersionNum() {
+        return versionNum;
+    }
+
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
+    }
+
+    @Override
+    public String toString() {
+        return "RateCardDTO{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", tableName='" + tableName + '\'' +
+                ", company=" + company +
+                '}';
     }
 }

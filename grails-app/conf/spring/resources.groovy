@@ -20,6 +20,7 @@
 
 import com.mchange.v2.c3p0.ComboPooledDataSource
 import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
+import org.springframework.jdbc.core.JdbcTemplate
 
 beans = {
 
@@ -59,6 +60,10 @@ beans = {
          */
         // unreturnedConnectionTimeout = 10
         // debugUnreturnedConnectionStackTraces = true
+    }
+
+    jdbcTemplate(JdbcTemplate) {
+        dataSource = ref('dataSource')
     }
 
     /*

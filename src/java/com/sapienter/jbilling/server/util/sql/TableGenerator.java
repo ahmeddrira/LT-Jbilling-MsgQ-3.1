@@ -17,6 +17,7 @@
 package com.sapienter.jbilling.server.util.sql;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -87,17 +88,38 @@ public class TableGenerator {
     private List<Column> columns = new ArrayList<Column>();
     private String tableName;
 
+    public TableGenerator() {
+    }
+
     public TableGenerator(String tableName, List<Column> columns) {
         this.tableName = tableName;
         this.columns = columns;
     }
 
+    public void addColumns(Column ...columns) {
+        List<Column> list = Arrays.asList(columns);
+        this.columns.addAll(list);
+    }
+
+    public void addColumns(List<Column> columns) {
+        this.columns.addAll(columns);
+    }
+
+    public List<Column> getColumns() {
+        return columns;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+
     /**
-     * Produces the DDL statements to create a schema with the set columns.
+     * Produces the DDL statements to create a table with the set columns.
      *
-     * @return schema DDL
+     * @return table creation DDL statement
      */
-    public String buildSchemaCreationDDL() {
+    public String buildCreateTableSQL() {
         StringBuilder ddl = new StringBuilder();
         ddl.append("create table ").append(tableName).append(" (");
 
@@ -109,6 +131,9 @@ public class TableGenerator {
         for (Iterator<Column> it = columns.iterator(); it.hasNext();) {
             Column column = it.next();
             ddl.append(column);
+
+            if (column.isNullable())
+                ddl.append(" not null");
 
             if (column.isPrimaryKey()) {
                 if (primaryKeys > 0)
@@ -132,12 +157,20 @@ public class TableGenerator {
     }
 
     /**
-     * Produces a prepared statement SQL template for the set columns. The prepared
-     * statement produced is meant to be used with a JDBCTemplate using named parameters.
+     * Produces the DDL statement to drop a table from the schema.
+     *
+     * @return drop table DDL statement
+     */
+    public String buildDropTableSQL() {
+        return "drop table if exists " + tableName + ";";
+    }
+
+    /**
+     * Produces a prepared statement SQL template for the set columns.
      *
      * Example:
      * <code>
-     *     insert into table_name (col1, col2) values (:value1, :value2);
+     *     insert into table_name (col1, col2) values (?, ?);
      * </code>
      *
      * @return prepared statement SQL template
@@ -153,7 +186,7 @@ public class TableGenerator {
             Column column = it.next();
 
             insert.append(column.getName());
-            values.append(":").append(column.getName());
+            values.append("?");
 
             if (it.hasNext()) {
                 insert.append(", ");

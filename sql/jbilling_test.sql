@@ -15,6 +15,7 @@ ALTER TABLE ONLY public.user_role_map DROP CONSTRAINT user_role_map_fk_2;
 ALTER TABLE ONLY public.user_role_map DROP CONSTRAINT user_role_map_fk_1;
 ALTER TABLE ONLY public.entity_report_map DROP CONSTRAINT report_map_report_id_fk;
 ALTER TABLE ONLY public.entity_report_map DROP CONSTRAINT report_map_entity_id_fk;
+ALTER TABLE ONLY public.rate_card DROP CONSTRAINT rate_card_entity_id_fk;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_5;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_4;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_3;
@@ -40,8 +41,7 @@ ALTER TABLE ONLY public.pluggable_task_parameter DROP CONSTRAINT pluggable_task_
 ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_fk_2;
 ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_fk_1;
 ALTER TABLE ONLY public.plan DROP CONSTRAINT plan_period_id_fk;
-ALTER TABLE ONLY public.plan_item_price_timeline DROP CONSTRAINT plan_item_timeline_price_mode_id_fk;
-ALTER TABLE ONLY public.plan_item_price_timeline DROP CONSTRAINT plan_item_timeline_plan_item_id_fk;
+ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_price_model_id_fk;
 ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_plan_id_fk;
 ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_item_id_fk;
 ALTER TABLE ONLY public.plan DROP CONSTRAINT plan_item_id_fk;
@@ -92,8 +92,6 @@ ALTER TABLE ONLY public.item_type_map DROP CONSTRAINT item_type_map_fk_1;
 ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_fk_1;
 ALTER TABLE ONLY public.item_type_exclude_map DROP CONSTRAINT item_type_exclude_type_id_fk;
 ALTER TABLE ONLY public.item_type_exclude_map DROP CONSTRAINT item_type_exclude_item_id_fk;
-ALTER TABLE ONLY public.item_price_timeline DROP CONSTRAINT item_pm_map_price_model_id_fk;
-ALTER TABLE ONLY public.item_price_timeline DROP CONSTRAINT item_pm_map_item_id_fk;
 ALTER TABLE ONLY public.item DROP CONSTRAINT item_fk_1;
 ALTER TABLE ONLY public.invoice_line DROP CONSTRAINT invoice_line_fk_3;
 ALTER TABLE ONLY public.invoice_line DROP CONSTRAINT invoice_line_fk_2;
@@ -110,7 +108,6 @@ ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_4;
 ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_3;
 ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_2;
 ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_1;
-ALTER TABLE ONLY public.enumeration_values DROP CONSTRAINT enumeration_values_fk_1;
 ALTER TABLE ONLY public.entity_payment_method_map DROP CONSTRAINT entity_payment_method_map_fk_2;
 ALTER TABLE ONLY public.entity_payment_method_map DROP CONSTRAINT entity_payment_method_map_fk_1;
 ALTER TABLE ONLY public.entity DROP CONSTRAINT entity_fk_2;
@@ -213,6 +210,8 @@ ALTER TABLE ONLY public.report_type DROP CONSTRAINT report_type_pkey;
 ALTER TABLE ONLY public.report DROP CONSTRAINT report_pkey;
 ALTER TABLE ONLY public.report_parameter DROP CONSTRAINT report_parameter_pkey;
 ALTER TABLE ONLY public.recent_item DROP CONSTRAINT recent_item_pkey;
+ALTER TABLE ONLY public.rate_card DROP CONSTRAINT rate_card_table_name_key;
+ALTER TABLE ONLY public.rate_card DROP CONSTRAINT rate_card_pkey;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_pkey;
 ALTER TABLE ONLY public.promotion DROP CONSTRAINT promotion_pkey;
 ALTER TABLE ONLY public.process_run_user DROP CONSTRAINT process_run_user_pkey;
@@ -228,8 +227,6 @@ ALTER TABLE ONLY public.pluggable_task_type_category DROP CONSTRAINT pluggable_t
 ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_pkey;
 ALTER TABLE ONLY public.pluggable_task_parameter DROP CONSTRAINT pluggable_task_parameter_pkey;
 ALTER TABLE ONLY public.plan DROP CONSTRAINT plan_pkey;
-ALTER TABLE ONLY public.plan_item_price_timeline DROP CONSTRAINT plan_item_price_timeline_price_model_id_key;
-ALTER TABLE ONLY public.plan_item_price_timeline DROP CONSTRAINT plan_item_price_timeline_pkey;
 ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_pkey;
 ALTER TABLE ONLY public.plan_item_bundle DROP CONSTRAINT plan_item_bundle_pkey;
 ALTER TABLE ONLY public.permission_user DROP CONSTRAINT permission_user_pkey;
@@ -267,8 +264,6 @@ ALTER TABLE ONLY public.language DROP CONSTRAINT language_pkey;
 ALTER TABLE ONLY public.jbilling_table DROP CONSTRAINT jbilling_table_pkey;
 ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_pkey;
 ALTER TABLE ONLY public.item_type_exclude_map DROP CONSTRAINT item_type_exclude_map_pkey;
-ALTER TABLE ONLY public.item_price_timeline DROP CONSTRAINT item_price_timeline_price_model_id_key;
-ALTER TABLE ONLY public.item_price_timeline DROP CONSTRAINT item_price_timeline_pkey;
 ALTER TABLE ONLY public.item DROP CONSTRAINT item_pkey;
 ALTER TABLE ONLY public.invoice DROP CONSTRAINT invoice_pkey;
 ALTER TABLE ONLY public.invoice_line_type DROP CONSTRAINT invoice_line_type_pkey;
@@ -282,8 +277,6 @@ ALTER TABLE ONLY public.filter DROP CONSTRAINT filter_pkey;
 ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_pkey;
 ALTER TABLE ONLY public.event_log_module DROP CONSTRAINT event_log_module_pkey;
 ALTER TABLE ONLY public.event_log_message DROP CONSTRAINT event_log_message_pkey;
-ALTER TABLE ONLY public.enumeration_values DROP CONSTRAINT enumeration_values_pkey;
-ALTER TABLE ONLY public.enumeration DROP CONSTRAINT enumeration_pkey;
 ALTER TABLE ONLY public.entity DROP CONSTRAINT entity_pkey;
 ALTER TABLE ONLY public.customer_price DROP CONSTRAINT customer_price_pkey;
 ALTER TABLE ONLY public.customer DROP CONSTRAINT customer_pkey;
@@ -312,6 +305,7 @@ DROP TABLE public.report_type;
 DROP TABLE public.report_parameter;
 DROP TABLE public.report;
 DROP TABLE public.recent_item;
+DROP TABLE public.rate_card;
 DROP TABLE public.purchase_order;
 DROP TABLE public.promotion_user_map;
 DROP TABLE public.promotion;
@@ -327,7 +321,6 @@ DROP TABLE public.pluggable_task_type_category;
 DROP TABLE public.pluggable_task_type;
 DROP TABLE public.pluggable_task_parameter;
 DROP TABLE public.pluggable_task;
-DROP TABLE public.plan_item_price_timeline;
 DROP TABLE public.plan_item_bundle;
 DROP TABLE public.plan_item;
 DROP TABLE public.plan;
@@ -370,7 +363,6 @@ DROP TABLE public.jbilling_seqs;
 DROP TABLE public.item_type_map;
 DROP TABLE public.item_type_exclude_map;
 DROP TABLE public.item_type;
-DROP TABLE public.item_price_timeline;
 DROP TABLE public.item;
 DROP TABLE public.invoice_line_type;
 DROP TABLE public.invoice_line;
@@ -385,8 +377,6 @@ DROP TABLE public.filter;
 DROP TABLE public.event_log_module;
 DROP TABLE public.event_log_message;
 DROP TABLE public.event_log;
-DROP TABLE public.enumeration_values;
-DROP TABLE public.enumeration;
 DROP TABLE public.entity_report_map;
 DROP TABLE public.entity_payment_method_map;
 DROP TABLE public.entity_delivery_method_map;
@@ -652,7 +642,38 @@ CREATE TABLE contact (
 ALTER TABLE public.contact OWNER TO jbilling;
 
 --
--- Name: contact_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: contact_field; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE contact_field (
+    id integer NOT NULL,
+    type_id integer,
+    contact_id integer,
+    content character varying(100) NOT NULL,
+    optlock integer NOT NULL
+);
+
+
+ALTER TABLE public.contact_field OWNER TO jbilling;
+
+--
+-- Name: contact_field_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE contact_field_type (
+    id integer NOT NULL,
+    entity_id integer,
+    prompt_key character varying(50) NOT NULL,
+    data_type character varying(10) NOT NULL,
+    customer_readonly smallint,
+    optlock integer NOT NULL
+);
+
+
+ALTER TABLE public.contact_field_type OWNER TO jbilling;
+
+--
+-- Name: contact_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE contact_map (
@@ -749,8 +770,7 @@ CREATE TABLE currency_exchange (
     currency_id integer,
     rate numeric(22,10) NOT NULL,
     create_datetime timestamp without time zone NOT NULL,
-    optlock integer NOT NULL,
-    valid_since timestamp without time zone DEFAULT '1970-01-01'::date NOT NULL
+    optlock integer NOT NULL
 );
 
 
@@ -780,8 +800,7 @@ CREATE TABLE customer (
     balance_type integer NOT NULL,
     dynamic_balance numeric(22,10),
     credit_limit numeric(22,10),
-    auto_recharge numeric(22,10),
-    use_parent_pricing boolean NOT NULL
+    auto_recharge numeric(22,10)
 );
 
 
@@ -852,34 +871,6 @@ CREATE TABLE entity_report_map (
 
 
 ALTER TABLE public.entity_report_map OWNER TO jbilling;
-
---
--- Name: enumeration; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE enumeration (
-    id integer NOT NULL,
-    entity_id integer NOT NULL,
-    name character varying(50) NOT NULL,
-    optlock integer NOT NULL
-);
-
-
-ALTER TABLE public.enumeration OWNER TO jbilling;
-
---
--- Name: enumeration_values; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE enumeration_values (
-    id integer NOT NULL,
-    enumeration_id integer NOT NULL,
-    value character varying(50) NOT NULL,
-    optlock integer NOT NULL
-);
-
-
-ALTER TABLE public.enumeration_values OWNER TO jbilling;
 
 --
 -- Name: event_log; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -1108,24 +1099,12 @@ CREATE TABLE item (
     deleted smallint DEFAULT 0 NOT NULL,
     has_decimals smallint DEFAULT 0 NOT NULL,
     optlock integer NOT NULL,
+    price_model_id integer,
     gl_code character varying(50)
 );
 
 
 ALTER TABLE public.item OWNER TO jbilling;
-
---
--- Name: item_price_timeline; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE item_price_timeline (
-    item_id integer NOT NULL,
-    price_model_id integer NOT NULL,
-    start_date timestamp without time zone NOT NULL
-);
-
-
-ALTER TABLE public.item_price_timeline OWNER TO jbilling;
 
 --
 -- Name: item_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -1311,43 +1290,6 @@ CREATE TABLE mediation_record_line (
 
 
 ALTER TABLE public.mediation_record_line OWNER TO jbilling;
-
---
--- Name: meta_field_name; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
---
-
-CREATE TABLE meta_field_name (
-    id integer NOT NULL,
-    name character varying(100) NOT NULL,
-    entity_type character varying(25) NOT NULL,
-    data_type character varying(25) NOT NULL,
-    display_order integer,
-    default_value_id integer,
-    is_disabled boolean,
-    is_mandatory boolean,
-    optlock integer NOT NULL
-);
-
-
-ALTER TABLE public.meta_field_name OWNER TO jbilling;
-
---
--- Name: meta_field_value; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE meta_field_value (
-    id integer NOT NULL,
-    meta_field_name_id integer NOT NULL,
-    dtype character varying(10) NOT NULL,
-    boolean_value boolean,
-    date_value timestamp without time zone,
-    decimal_value numeric(22,10),
-    integer_value integer,
-    string_value character varying(1000)
-);
-
-
-ALTER TABLE public.meta_field_value OWNER TO jbilling;
 
 --
 -- Name: notification_category; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -1802,6 +1744,7 @@ CREATE TABLE plan_item (
     id integer NOT NULL,
     plan_id integer,
     item_id integer NOT NULL,
+    price_model_id integer,
     precedence integer NOT NULL,
     plan_item_bundle_id integer
 );
@@ -1823,19 +1766,6 @@ CREATE TABLE plan_item_bundle (
 
 
 ALTER TABLE public.plan_item_bundle OWNER TO jbilling;
-
---
--- Name: plan_item_price_timeline; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE plan_item_price_timeline (
-    plan_item_id integer NOT NULL,
-    price_model_id integer NOT NULL,
-    start_date timestamp without time zone NOT NULL
-);
-
-
-ALTER TABLE public.plan_item_price_timeline OWNER TO jbilling;
 
 --
 -- Name: pluggable_task; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -2084,6 +2014,20 @@ CREATE TABLE purchase_order (
 ALTER TABLE public.purchase_order OWNER TO jbilling;
 
 --
+-- Name: rate_card; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE rate_card (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    table_name character varying(255) NOT NULL,
+    entity_id integer
+);
+
+
+ALTER TABLE public.rate_card OWNER TO jbilling;
+
+--
 -- Name: recent_item; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -2221,6 +2165,7 @@ COPY ageing_entity_step (id, entity_id, status_id, days, optlock) FROM stdin;
 
 COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscriber_status, currency_id, create_datetime, last_status_change, last_login, user_name, failed_attempts, optlock) FROM stdin;
 2	1	6a204bd89f3c8348afd5c77c717a097a	0	1	1	9	1	2006-07-26 09:29:19.596	\N	\N	gandalf	0	1
+12	2	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2006-12-07 00:00:00	\N	2007-08-16 14:56:18.752	mordor	0	1
 13	2	9369e99369e9	0	1	1	9	1	2006-12-07 14:56:32.79	\N	\N	orc1	0	1
 23	1	9369e99369e9	0	1	5	9	1	2007-01-12 15:41:42.382	2007-01-12 15:41:59.907	\N	inactive	0	1
 33	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2007-02-10 10:56:43.359	\N	\N	authuser	0	1
@@ -3255,8 +3200,6 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 10781	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:39:09.731	\N	\N	mediation-batch-test-15	0	1
 1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2010-05-25 12:27:12.217	admin	0	18
 10790	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2011-06-01 10:36:25.441	\N	\N	ageing-test-01	0	1
-12	2	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2006-12-07 00:00:00	\N	2007-08-16 14:56:18.752	mordor	0	2
-10800	2	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2011-10-31 15:26:59.445	\N	\N	saurman	0	1
 \.
 
 
@@ -3306,11 +3249,6 @@ COPY breadcrumb (id, user_id, controller, action, name, object_id, version, desc
 12	1	plugin	plugins	\N	18	0	\N
 13	1	plugin	show	\N	530	0	\N
 14	1	plugin	edit	\N	530	0	\N
-15	12	customer	list	\N	\N	0	\N
-16	12	partner	list	\N	\N	0	\N
-17	12	config	index	\N	\N	0	\N
-18	12	user	list	\N	\N	0	\N
-19	12	partner	list	\N	\N	0	\N
 \.
 
 
@@ -4378,7 +4316,6 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 113010	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-14@test.com	2009-12-17 13:38:54.151	0	1	10780	1
 113011	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-15@test.com	2009-12-17 13:39:09.738	0	1	10781	1
 113100							CA			\N	\N	\N	\N		\N	\N	\N	test@test.com	2011-06-01 10:36:25.546	0	0	10790	1
-113200	Isengard Inc.						CA	The White	Saurman	\N	\N	\N	\N		\N	\N	\N	saurman@isengard.com	2011-10-31 15:26:59.482	0	0	10800	1
 \.
 
 
@@ -6429,10 +6366,10 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 -- Data for Name: contact_field_type; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY contact_field_type (id, entity_id, prompt_key, data_type, customer_readonly, display_in_view, optlock) FROM stdin;
-1	1	partner.prompt.fee	string	1	0	0
-2	1	ccf.payment_processor	integer	1	0	0
-3	1	ccf.ip_address	string	1	0	0
+COPY contact_field_type (id, entity_id, prompt_key, data_type, customer_readonly, optlock) FROM stdin;
+1	1	partner.prompt.fee	string	1	0
+2	1	ccf.payment_processor	integer	1	0
+3	1	ccf.ip_address	string	1	0
 \.
 
 
@@ -7485,8 +7422,7 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 790910	113010	2	10	10780	1
 790911	113011	2	10	10781	1
 791000	113100	2	10	10790	1
-791100	113200	3	10	10800	1
-791101	112603	2	10	10743	1
+791001	112603	2	10	10743	1
 \.
 
 
@@ -7752,1014 +7688,1014 @@ COPY country (id, code) FROM stdin;
 --
 
 COPY credit_card (id, cc_number, cc_number_plain, cc_expiry, name, cc_type, deleted, gateway_key, optlock) FROM stdin;
-1	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	5b33bc3de451b536128d58a67e34cc69	2	0	\N	1
-2	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	5b33bc3de451b536128d58a67e34cc69	2	0	\N	1
-3	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	5b33bc3de451b536128d58a67e34cc69	2	0	\N	1
-13	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-14	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-15	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-16	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-17	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-18	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-19	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-20	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-21	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-22	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-23	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-24	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-25	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-26	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-27	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-28	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-29	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-30	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-31	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-32	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-33	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-34	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-35	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-36	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-37	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-38	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-39	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-40	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-41	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-42	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-43	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-44	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-45	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-46	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-47	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-48	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-49	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-50	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-51	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-52	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-53	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-54	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-55	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-56	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-57	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-58	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-59	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-60	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-61	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-62	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-63	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-64	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-65	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-66	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-67	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-68	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-69	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-70	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-71	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-72	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-73	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-74	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-75	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-76	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-77	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-78	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-79	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-80	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-81	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-82	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-83	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-84	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-85	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-86	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-87	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-88	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-89	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-90	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-91	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-92	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-93	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-94	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-95	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-96	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-97	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-98	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-99	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-100	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-101	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-102	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-103	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-104	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-105	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-106	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-107	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-108	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-109	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-110	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-111	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-112	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-113	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-114	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-115	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-116	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-117	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-118	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-119	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-120	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-121	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-122	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-123	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-124	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-125	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-126	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-127	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-128	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-129	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-130	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-131	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-132	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-133	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-134	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-135	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-136	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-137	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-138	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-139	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-140	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-141	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-142	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-143	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-144	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-145	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-146	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-147	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-148	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-149	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-150	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-151	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-152	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-153	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-154	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-155	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-156	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-157	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-158	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-159	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-160	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-161	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-162	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-163	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-164	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-165	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-166	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-167	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-168	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-169	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-170	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-171	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-172	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-173	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-174	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-175	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-176	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-177	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-178	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-179	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-180	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-181	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-182	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-183	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-184	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-185	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-186	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-187	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-188	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-189	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-190	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-191	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-192	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-193	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-194	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-195	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-196	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-197	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-198	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-199	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-200	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-201	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-202	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-203	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-204	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-205	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-206	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-207	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-208	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-209	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-210	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-211	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-212	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-213	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-214	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-215	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-216	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-217	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-218	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-219	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-220	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-221	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-222	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-223	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-224	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-225	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-226	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-227	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-228	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-229	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-230	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-231	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-232	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-233	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-234	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-235	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-236	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-237	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-238	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-239	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-240	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-241	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-242	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-243	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-244	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-245	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-246	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-247	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-248	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-249	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-250	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-251	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-252	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-253	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-254	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-255	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-256	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-257	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-258	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-259	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-260	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-261	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-262	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-263	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-264	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-265	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-266	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-267	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-268	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-269	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-270	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-271	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-272	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-273	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-274	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-275	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-276	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-277	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-278	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-279	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-280	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-281	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-282	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-283	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-284	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-285	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-286	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-287	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-288	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-289	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-290	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-291	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-292	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-293	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-294	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-295	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-296	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-297	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-298	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-299	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-300	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-31	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-301	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-302	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-303	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-304	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-305	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-306	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-307	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-308	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-309	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-310	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-311	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-312	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-313	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-314	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-315	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-316	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-317	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-318	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-319	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-320	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-321	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-322	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-323	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-324	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-325	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-326	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-327	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-328	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-329	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-330	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-331	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-332	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-333	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-334	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-335	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-336	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-337	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-338	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-339	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-340	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-341	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-342	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-343	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-344	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-345	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-346	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-347	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-348	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-349	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-350	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-351	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-352	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-353	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-354	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-355	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-356	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-357	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-358	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-359	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-360	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-361	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-362	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-363	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-364	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-365	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-366	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-367	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-368	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-369	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-370	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-371	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-372	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-373	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-374	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-375	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-376	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-377	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-378	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-379	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-380	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-381	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-382	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-383	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-384	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-385	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-386	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-387	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-388	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-389	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-390	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-391	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-392	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-393	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-394	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-395	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-396	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-397	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-398	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-399	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-400	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-401	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-402	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-403	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-404	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-405	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-406	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-407	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-408	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-409	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-410	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-411	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-412	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-413	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-414	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-415	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-416	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-417	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-418	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-419	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-420	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-421	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-422	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-423	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-424	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-425	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-426	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-427	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-428	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-429	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-430	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-431	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-432	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-433	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-434	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-435	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-436	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-437	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-438	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-439	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-440	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-441	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-442	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-443	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-444	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-445	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-446	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-447	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-448	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-449	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-450	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-451	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-452	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-453	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-454	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-455	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-456	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-457	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-458	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-459	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-460	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-461	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-462	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-463	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-464	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-465	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-466	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-467	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-468	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-469	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-470	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-471	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-472	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-473	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-474	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-475	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-476	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-477	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-478	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-479	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-480	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-481	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-482	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-483	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-484	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-485	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-486	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-487	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-488	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-489	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-490	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-491	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-492	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-493	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-494	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-495	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-496	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-497	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-498	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-499	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-500	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-501	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-502	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-503	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-504	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-505	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-506	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-507	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-508	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-509	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-510	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-511	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-512	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-513	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-514	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-515	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-516	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-517	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-518	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-519	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-520	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-521	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-522	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-523	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-524	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-525	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-526	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-527	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-528	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-529	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-530	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-531	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-532	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-533	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-534	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-535	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-536	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-537	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-538	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-539	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-540	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-541	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-542	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-543	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-544	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-545	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-546	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-547	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-548	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-549	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-550	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-551	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-552	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-553	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-554	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-555	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-556	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-557	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-558	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-559	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-560	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-561	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-562	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-563	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-564	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-565	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-566	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-567	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-568	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-569	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-570	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-571	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-572	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-573	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-574	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-575	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-576	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-577	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-578	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-579	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-580	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-581	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-582	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-583	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-584	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-585	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-586	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-587	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-588	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-589	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-590	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-591	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-592	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-593	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-594	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-595	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-596	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-597	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-598	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-599	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-600	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-601	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-602	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-603	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-604	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-605	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-606	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-607	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-608	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-609	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-610	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-611	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-612	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-613	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-614	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-615	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-616	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-617	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-618	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-619	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-620	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-621	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-622	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-623	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-624	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-625	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-626	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-627	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-628	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-629	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-630	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-631	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-632	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-633	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-634	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-635	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-636	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-637	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-638	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-639	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-640	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-641	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-642	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-643	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-644	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-645	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-646	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-647	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-648	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-649	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-650	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-651	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-652	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-653	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-654	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-655	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-656	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-657	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-658	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-659	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-660	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-661	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-662	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-663	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-664	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-665	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-666	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-667	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-668	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-669	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-670	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-671	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-672	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-673	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-674	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-675	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-676	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-677	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-678	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-679	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-680	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-681	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-682	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-683	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-684	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-685	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-686	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-687	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-688	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-689	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-690	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-691	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-692	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-693	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-694	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-695	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-696	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-697	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-698	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-699	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-700	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-701	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-702	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-703	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-704	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-705	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-706	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-707	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-708	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-709	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-710	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-711	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-712	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-713	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-714	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-715	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-716	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-717	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-718	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-719	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-720	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-721	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-722	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-723	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-724	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-725	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-726	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-727	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-728	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-729	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-730	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-731	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-732	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-733	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-734	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-735	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-736	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-737	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-738	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-739	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-740	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-741	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-742	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-743	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-744	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-745	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-746	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-747	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-748	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-749	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-750	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-751	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-752	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-753	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-754	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-755	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-756	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-757	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-758	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-759	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-760	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-761	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-762	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-763	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-764	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-765	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-766	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-767	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-768	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-769	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-770	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-771	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-772	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-773	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-774	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-775	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-776	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-777	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-778	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-779	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-780	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-781	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-782	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-783	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-784	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-785	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-786	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-787	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-788	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-789	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-790	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-791	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-792	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-793	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-794	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-795	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-796	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-797	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-798	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-799	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-800	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-801	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-802	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-803	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-804	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-805	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-806	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-807	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-808	a14159733ae22ce59f51625df2bd1c0649788742506e5046	1152	2100-09-30	4e176666a76ca846f70bcfb531675281	2	0	\N	2
-809	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-810	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-811	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-812	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-813	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-814	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-815	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-816	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-817	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-818	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-819	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-820	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-821	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-822	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-823	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-824	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-825	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-826	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-827	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-828	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-829	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-830	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-831	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-832	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-833	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-834	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-835	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-836	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-837	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-838	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-839	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-840	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-841	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-842	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-843	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-844	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-845	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-846	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-847	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-848	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-849	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-850	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-851	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-852	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-853	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-854	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-855	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-856	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-857	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-858	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-859	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-860	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-861	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-862	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-863	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-864	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-865	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-866	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-867	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-868	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-869	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-870	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-871	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-872	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-873	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-874	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-875	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-876	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-877	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-878	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-879	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-880	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-881	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-882	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-883	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-884	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-885	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-886	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-887	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-888	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-889	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-890	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-891	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-892	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-893	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-894	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-895	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-896	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-897	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-898	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-899	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-900	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-901	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-902	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-903	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-904	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-905	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-906	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-907	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-908	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-909	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-910	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-911	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-912	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-913	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-914	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-915	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-916	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-917	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-918	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-919	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-920	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-921	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-922	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-923	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-924	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-925	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-926	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-927	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-928	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-929	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-930	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-931	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-932	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-933	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-934	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-935	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-936	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-937	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-938	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-939	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-940	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-941	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-942	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-943	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-944	1411cc96f356985d8d08b6b6a0e64c3b898f4d626891ac18	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-945	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-946	f82a46e8a554c7fcd8ce7d60ced0b87f8f33d12d36d2b62d	5100	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	3
-947	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-948	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-949	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-950	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-951	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-952	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-953	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-954	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-955	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-956	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-957	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-958	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-959	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-960	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-961	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-962	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-963	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-964	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-965	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-966	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-967	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-968	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-969	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-970	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-971	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-972	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-973	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-974	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-975	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-976	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-977	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-978	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-979	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-980	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-981	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-982	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-983	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-984	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-985	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-986	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-987	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-988	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-989	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-990	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-991	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-992	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-993	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-994	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-995	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-996	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-997	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-998	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-999	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1000	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1001	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1002	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1003	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1004	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1005	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1006	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1007	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1008	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1009	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1010	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1011	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1012	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-30	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
-1013	1411cc96f356985d8d08b6b6a0e64c3b898f4d626891ac18	\N	2100-09-30	\N	2	0	\N	1
-101300	9cda913406c15ad25dc3601f8e1baf66	2222	2100-12-31	5064e904bdf462834a9a6ae961d7f8cfdb7296a638472486	2	0	\N	0
-101301	9cda913406c15ad25dc3601f8e1baf66	2222	2100-12-31	5064e904bdf462834a9a6ae961d7f8cf6dfff96e1e08386c	2	0	\N	0
-101400	a14159733ae22ce59f51625df2bd1c0649788742506e5046	1152	2100-09-30	09a86cc260cf65aa620eebea721886a0	2	0	\N	0
-101401	a14159733ae22ce59f51625df2bd1c0649788742506e5046	1152	2100-09-30	e8b96c5abe318acf5c4e84e2b8452c25	2	0	\N	0
+1	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	5b33bc3de451b536128d58a67e34cc69	2	0	\N	1
+2	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	5b33bc3de451b536128d58a67e34cc69	2	0	\N	1
+3	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	5b33bc3de451b536128d58a67e34cc69	2	0	\N	1
+13	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+14	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+15	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+16	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+17	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+18	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+19	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+20	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+21	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+22	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+23	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+24	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+25	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+26	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+27	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+28	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+29	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+30	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+31	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+32	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+33	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+34	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+35	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+36	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+37	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+38	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+39	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+40	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+41	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+42	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+43	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+44	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+45	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+46	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+47	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+48	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+49	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+50	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+51	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+52	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+53	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+54	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+55	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+56	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+57	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+58	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+59	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+60	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+61	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+62	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+63	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+64	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+65	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+66	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+67	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+68	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+69	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+70	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+71	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+72	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+73	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+74	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+75	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+76	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+77	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+78	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+79	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+80	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+81	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+82	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+83	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+84	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+85	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+86	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+87	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+88	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+89	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+90	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+91	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+92	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+93	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+94	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+95	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+96	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+97	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+98	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+99	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+100	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+101	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+102	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+103	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+104	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+105	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+106	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+107	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+108	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+109	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+110	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+111	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+112	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+113	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+114	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+115	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+116	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+117	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+118	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+119	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+120	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+121	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+122	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+123	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+124	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+125	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+126	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+127	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+128	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+129	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+130	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+131	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+132	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+133	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+134	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+135	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+136	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+137	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+138	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+139	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+140	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+141	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+142	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+143	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+144	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+145	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+146	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+147	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+148	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+149	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+150	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+151	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+152	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+153	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+154	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+155	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+156	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+157	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+158	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+159	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+160	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+161	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+162	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+163	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+164	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+165	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+166	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+167	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+168	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+169	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+170	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+171	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+172	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+173	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+174	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+175	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+176	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+177	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+178	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+179	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+180	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+181	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+182	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+183	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+184	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+185	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+186	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+187	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+188	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+189	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+190	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+191	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+192	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+193	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+194	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+195	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+196	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+197	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+198	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+199	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+200	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+201	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+202	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+203	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+204	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+205	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+206	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+207	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+208	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+209	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+210	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+211	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+212	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+213	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+214	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+215	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+216	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+217	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+218	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+219	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+220	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+221	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+222	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+223	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+224	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+225	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+226	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+227	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+228	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+229	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+230	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+231	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+232	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+233	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+234	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+235	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+236	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+237	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+238	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+239	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+240	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+241	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+242	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+243	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+244	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+245	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+246	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+247	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+248	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+249	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+250	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+251	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+252	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+253	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+254	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+255	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+256	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+257	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+258	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+259	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+260	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+261	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+262	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+263	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+264	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+265	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+266	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+267	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+268	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+269	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+270	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+271	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+272	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+273	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+274	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+275	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+276	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+277	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+278	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+279	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+280	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+281	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+282	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+283	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+284	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+285	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+286	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+287	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+288	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+289	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+290	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+291	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+292	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+293	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+294	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+295	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+296	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+297	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+298	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+299	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+300	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2000-10-10	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+301	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+302	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+303	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+304	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+305	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+306	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+307	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+308	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+309	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+310	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+311	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+312	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+313	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+314	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+315	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+316	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+317	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+318	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+319	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+320	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+321	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+322	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+323	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+324	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+325	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+326	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+327	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+328	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+329	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+330	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+331	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+332	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+333	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+334	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+335	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+336	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+337	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+338	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+339	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+340	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+341	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+342	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+343	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+344	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+345	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+346	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+347	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+348	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+349	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+350	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+351	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+352	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+353	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+354	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+355	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+356	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+357	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+358	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+359	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+360	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+361	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+362	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+363	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+364	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+365	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+366	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+367	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+368	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+369	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+370	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+371	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+372	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+373	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+374	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+375	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+376	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+377	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+378	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+379	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+380	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+381	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+382	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+383	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+384	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+385	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+386	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+387	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+388	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+389	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+390	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+391	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+392	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+393	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+394	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+395	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+396	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+397	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+398	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+399	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+400	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+401	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+402	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+403	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+404	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+405	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+406	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+407	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+408	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+409	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+410	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+411	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+412	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+413	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+414	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+415	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+416	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+417	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+418	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+419	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+420	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+421	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+422	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+423	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+424	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+425	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+426	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+427	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+428	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+429	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+430	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+431	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+432	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+433	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+434	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+435	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+436	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+437	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+438	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+439	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+440	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+441	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+442	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+443	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+444	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+445	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+446	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+447	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+448	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+449	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+450	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+451	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+452	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+453	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+454	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+455	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+456	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+457	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+458	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+459	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+460	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+461	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+462	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+463	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+464	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+465	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+466	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+467	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+468	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+469	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+470	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+471	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+472	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+473	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+474	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+475	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+476	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+477	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+478	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+479	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+480	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+481	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+482	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+483	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+484	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+485	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+486	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+487	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+488	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+489	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+490	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+491	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+492	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+493	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+494	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+495	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+496	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+497	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+498	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+499	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+500	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+501	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+502	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+503	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+504	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+505	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+506	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+507	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+508	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+509	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+510	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+511	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+512	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+513	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+514	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+515	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+516	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+517	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+518	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+519	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+520	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+521	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+522	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+523	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+524	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+525	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+526	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+527	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+528	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+529	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+530	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+531	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+532	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+533	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+534	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+535	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+536	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+537	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+538	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+539	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+540	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+541	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+542	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+543	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+544	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+545	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+546	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+547	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+548	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+549	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+550	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+551	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+552	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+553	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+554	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+555	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+556	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+557	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+558	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+559	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+560	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+561	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+562	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+563	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+564	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+565	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+566	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+567	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+568	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+569	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+570	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+571	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+572	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+573	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+574	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+575	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+576	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+577	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+578	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+579	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+580	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+581	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+582	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+583	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+584	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+585	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+586	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+587	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+588	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+589	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+590	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+591	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+592	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+593	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+594	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+595	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+596	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+597	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+598	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+599	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+600	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+601	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+602	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+603	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+604	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+605	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+606	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+607	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+608	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+609	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+610	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+611	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+612	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+613	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+614	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+615	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+616	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+617	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+618	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+619	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+620	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+621	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+622	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+623	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+624	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+625	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+626	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+627	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+628	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+629	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+630	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+631	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+632	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+633	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+634	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+635	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+636	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+637	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+638	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+639	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+640	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+641	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+642	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+643	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+644	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+645	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+646	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+647	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+648	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+649	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+650	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+651	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+652	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+653	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+654	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+655	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+656	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+657	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+658	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+659	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+660	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+661	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+662	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+663	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+664	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+665	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+666	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+667	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+668	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+669	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+670	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+671	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+672	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+673	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+674	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+675	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+676	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+677	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+678	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+679	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+680	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+681	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+682	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+683	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+684	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+685	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+686	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+687	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+688	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+689	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+690	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+691	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+692	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+693	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+694	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+695	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+696	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+697	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+698	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+699	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+700	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+701	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+702	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+703	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+704	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+705	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+706	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+707	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+708	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+709	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+710	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+711	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+712	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+713	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+714	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+715	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+716	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+717	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+718	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+719	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+720	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+721	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+722	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+723	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+724	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+725	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+726	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+727	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+728	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+729	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+730	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+731	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+732	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+733	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+734	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+735	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+736	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+737	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+738	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+739	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+740	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+741	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+742	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+743	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+744	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+745	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+746	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+747	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+748	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+749	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+750	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+751	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+752	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+753	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+754	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+755	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+756	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+757	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+758	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+759	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+760	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+761	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+762	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+763	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+764	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+765	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+766	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+767	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+768	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+769	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+770	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+771	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+772	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+773	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+774	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+775	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+776	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+777	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+778	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+779	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+780	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+781	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+782	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+783	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+784	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+785	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+786	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+787	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+788	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+789	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+790	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+791	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+792	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+793	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+794	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+795	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+796	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+797	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+798	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+799	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+800	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+801	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+802	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+803	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+804	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+805	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+806	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+807	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+808	a14159733ae22ce59f51625df2bd1c0649788742506e5046	1152	2100-09-12	4e176666a76ca846f70bcfb531675281	2	0	\N	2
+809	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+810	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+811	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+812	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+813	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+814	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+815	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+816	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+817	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+818	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+819	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+820	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+821	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+822	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+823	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+824	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+825	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+826	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+827	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+828	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+829	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+830	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+831	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+832	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+833	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+834	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+835	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+836	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+837	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+838	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+839	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+840	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+841	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+842	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+843	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+844	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+845	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+846	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+847	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+848	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+849	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+850	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+851	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+852	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+853	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+854	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+855	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+856	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+857	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+858	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+859	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+860	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+861	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+862	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+863	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+864	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+865	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+866	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+867	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+868	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+869	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+870	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+871	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+872	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+873	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+874	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+875	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+876	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+877	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+878	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+879	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+880	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+881	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+882	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+883	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+884	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+885	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+886	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+887	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+888	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+889	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+890	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+891	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+892	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+893	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+894	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+895	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+896	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+897	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+898	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+899	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+900	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+901	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+902	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+903	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+904	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+905	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+906	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+907	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+908	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+909	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+910	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+911	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+912	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+913	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+914	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+915	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+916	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+917	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+918	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+919	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+920	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+921	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+922	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+923	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+924	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+925	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+926	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+927	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+928	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+929	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+930	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+931	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+932	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+933	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+934	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+935	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+936	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+937	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+938	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+939	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+940	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+941	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+942	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+943	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+944	1411cc96f356985d8d08b6b6a0e64c3b898f4d626891ac18	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+945	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+946	f82a46e8a554c7fcd8ce7d60ced0b87f8f33d12d36d2b62d	5100	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	3
+947	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+948	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+949	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+950	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+951	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+952	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+953	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+954	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+955	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+956	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+957	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+958	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+959	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+960	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+961	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+962	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+963	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+964	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+965	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+966	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+967	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+968	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+969	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+970	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+971	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+972	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+973	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+974	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+975	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+976	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+977	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+978	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+979	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+980	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+981	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+982	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+983	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+984	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+985	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+986	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+987	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+988	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+989	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+990	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+991	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+992	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+993	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+994	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+995	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+996	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+997	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+998	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+999	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1000	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1001	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1002	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1003	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1004	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1005	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1006	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1007	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1008	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1009	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1010	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1011	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1012	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
+1013	1411cc96f356985d8d08b6b6a0e64c3b898f4d626891ac18	\N	2100-09-12	\N	2	0	\N	1
+101300	9cda913406c15ad25dc3601f8e1baf66	2222	2100-12-01	5064e904bdf462834a9a6ae961d7f8cfdb7296a638472486	2	0	\N	0
+101301	9cda913406c15ad25dc3601f8e1baf66	2222	2100-12-01	5064e904bdf462834a9a6ae961d7f8cf6dfff96e1e08386c	2	0	\N	0
+101400	a14159733ae22ce59f51625df2bd1c0649788742506e5046	1152	2100-09-01	09a86cc260cf65aa620eebea721886a0	2	0	\N	0
+101401	a14159733ae22ce59f51625df2bd1c0649788742506e5046	1152	2100-09-01	e8b96c5abe318acf5c4e84e2b8452c25	2	0	\N	0
 \.
 
 
@@ -8797,18 +8733,18 @@ COPY currency_entity_map (currency_id, entity_id) FROM stdin;
 -- Data for Name: currency_exchange; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY currency_exchange (id, entity_id, currency_id, rate, create_datetime, optlock, valid_since) FROM stdin;
-1	0	2	1.3250000000	2004-03-09 00:00:00	1	1970-01-01 00:00:00
-2	0	3	0.8118000000	2004-03-09 00:00:00	1	1970-01-01 00:00:00
-3	0	4	111.4000000000	2004-03-09 00:00:00	1	1970-01-01 00:00:00
-4	0	5	0.5479000000	2004-03-09 00:00:00	1	1970-01-01 00:00:00
-5	0	6	1171.0000000000	2004-03-09 00:00:00	1	1970-01-01 00:00:00
-6	0	7	1.2300000000	2004-07-06 00:00:00	1	1970-01-01 00:00:00
-7	0	8	7.4700000000	2004-07-06 00:00:00	1	1970-01-01 00:00:00
-10	0	9	1.6800000000	2004-10-12 00:00:00	1	1970-01-01 00:00:00
-11	0	10	3.8000000000	2004-10-12 00:00:00	1	1970-01-01 00:00:00
-25	0	11	1.2880000000	2007-01-25 00:00:00	1	1970-01-01 00:00:00
-250	1	11	1.5000000000	2008-11-28 14:32:16.652	0	1970-01-01 00:00:00
+COPY currency_exchange (id, entity_id, currency_id, rate, create_datetime, optlock) FROM stdin;
+1	0	2	1.3250000000	2004-03-09 00:00:00	1
+2	0	3	0.8118000000	2004-03-09 00:00:00	1
+3	0	4	111.4000000000	2004-03-09 00:00:00	1
+4	0	5	0.5479000000	2004-03-09 00:00:00	1
+5	0	6	1171.0000000000	2004-03-09 00:00:00	1
+6	0	7	1.2300000000	2004-07-06 00:00:00	1
+7	0	8	7.4700000000	2004-07-06 00:00:00	1
+10	0	9	1.6800000000	2004-10-12 00:00:00	1
+11	0	10	3.8000000000	2004-10-12 00:00:00	1
+25	0	11	1.2880000000	2007-01-25 00:00:00	1
+250	1	11	1.5000000000	2008-11-28 14:32:16.652	0
 \.
 
 
@@ -8816,1038 +8752,1038 @@ COPY currency_exchange (id, entity_id, currency_id, rate, create_datetime, optlo
 -- Data for Name: customer; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_method_id, notes, auto_payment_type, due_date_unit_id, due_date_value, df_fm, parent_id, is_parent, exclude_aging, invoice_child, current_order_id, optlock, balance_type, dynamic_balance, credit_limit, auto_recharge, use_parent_pricing) FROM stdin;
-65	76	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-66	77	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-67	78	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-68	79	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-69	80	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-70	81	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-71	82	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-72	83	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-73	84	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-74	85	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-75	86	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-76	87	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-77	88	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-78	89	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-79	90	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-80	91	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-81	92	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-82	93	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-83	94	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-84	95	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-85	96	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-86	97	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-87	98	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-88	99	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-89	100	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-90	101	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-91	102	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-92	103	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-93	104	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-94	105	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-95	106	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-96	107	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-97	108	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-98	109	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-99	110	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-100	111	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-101	112	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-102	113	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-103	114	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-104	115	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-105	116	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-106	117	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-107	118	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-108	119	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-109	120	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-111	122	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-112	123	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-113	124	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-114	125	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-116	127	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-117	128	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-118	129	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-119	130	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-120	131	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-121	132	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-122	133	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-123	134	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-124	135	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-125	136	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-126	137	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-127	138	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-128	139	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-129	140	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-130	141	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-131	142	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-132	143	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-133	144	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-134	145	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-135	146	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-136	147	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-137	148	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-138	149	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-139	150	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-140	151	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-141	152	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-142	153	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-143	154	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-144	155	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-145	156	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-146	157	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-147	158	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-148	159	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-149	160	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-150	161	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-151	162	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-152	163	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-153	164	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-154	165	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-155	166	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-156	167	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-157	168	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-158	169	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-159	170	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-160	171	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-161	172	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-162	173	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-163	174	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-164	175	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-165	176	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-166	177	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-167	178	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-168	179	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-169	180	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-170	181	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-171	182	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-172	183	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-173	184	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-115	126	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	\N	f
-110	121	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	\N	f
-174	185	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-175	186	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-176	187	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-177	188	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-178	189	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-179	190	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-180	191	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-181	192	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-182	193	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-183	194	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-184	195	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-185	196	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-186	197	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-187	198	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-188	199	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-189	200	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-190	201	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-191	202	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-192	203	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-193	204	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-194	205	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-195	206	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-196	207	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-197	208	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-198	209	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-199	210	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-200	211	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-201	212	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-202	213	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-203	214	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-204	215	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-205	216	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-206	217	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-207	218	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-208	219	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-209	220	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-210	221	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-211	222	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-212	223	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-213	224	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-214	225	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-215	226	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-216	227	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-217	228	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-218	229	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-219	230	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-220	231	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-221	232	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-222	233	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-223	234	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-224	235	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-225	236	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-226	237	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-227	238	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-228	239	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-229	240	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-230	241	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-231	242	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-232	243	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-233	244	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-234	245	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-235	246	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-236	247	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-237	248	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-238	249	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-239	250	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-240	251	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-241	252	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-242	253	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-243	254	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-244	255	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-245	256	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-246	257	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-247	258	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-248	259	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-249	260	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-250	261	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-251	262	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-252	263	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-253	264	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-254	265	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-255	266	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-256	267	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-257	268	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-258	269	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-259	270	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-260	271	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-261	272	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-262	273	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-263	274	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-264	275	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-265	276	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-266	277	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-267	278	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-268	279	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-269	280	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-270	281	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-271	282	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-272	283	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-273	284	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-274	285	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-275	286	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-276	287	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-277	288	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-278	289	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-279	290	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-280	291	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-281	292	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-282	293	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-283	294	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-284	295	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-285	296	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-286	297	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-287	298	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-288	299	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-289	300	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-290	301	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-291	302	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-292	303	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-293	304	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-294	305	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-295	306	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-296	307	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-297	308	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-298	309	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-299	310	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-300	311	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-301	312	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-302	313	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-303	314	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-304	315	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-305	316	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-306	317	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-307	318	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-308	319	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-309	320	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-310	321	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-311	322	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-312	323	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-313	324	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-314	325	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-315	326	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-316	327	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-317	328	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-318	329	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-319	330	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-320	331	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-321	332	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-322	333	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-323	334	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-324	335	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-325	336	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-326	337	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-327	338	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-328	339	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-329	340	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-330	341	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-331	342	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-332	343	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-333	344	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-334	345	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-335	346	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-336	347	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-337	348	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-338	349	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-339	350	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-340	351	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-341	352	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-342	353	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-343	354	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-344	355	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-345	356	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-346	357	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-347	358	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-348	359	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-349	360	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-350	361	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-351	362	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-352	363	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-353	364	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-354	365	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-355	366	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-356	367	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-357	368	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-358	369	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-359	370	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-360	371	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-361	372	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-362	373	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-363	374	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-364	375	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-365	376	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-366	377	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-367	378	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-368	379	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-369	380	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-370	381	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-371	382	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-372	383	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-373	384	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-374	385	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-375	386	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-376	387	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-377	388	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-378	389	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-379	390	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-380	391	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-381	392	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-382	393	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-383	394	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-384	395	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-385	396	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-386	397	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-387	398	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-388	399	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-389	400	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-390	401	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-391	402	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-392	403	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-393	404	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-394	405	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-395	406	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-396	407	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-397	408	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-398	409	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-399	410	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-400	411	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-401	412	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-402	413	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-403	414	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-404	415	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-405	416	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-406	417	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-407	418	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-408	419	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-409	420	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-410	421	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-411	422	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-412	423	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-413	424	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-414	425	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-415	426	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-416	427	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-417	428	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-418	429	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-419	430	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-420	431	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-421	432	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-422	433	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-423	434	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-424	435	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-425	436	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-426	437	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-427	438	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-428	439	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-429	440	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-430	441	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-431	442	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-432	443	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-433	444	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-434	445	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-435	446	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-436	447	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-437	448	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-438	449	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-439	450	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-440	451	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-441	452	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-442	453	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-443	454	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-444	455	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-445	456	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-446	457	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-447	458	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-448	459	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-449	460	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-450	461	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-451	462	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-452	463	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-453	464	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-454	465	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-455	466	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-456	467	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-457	468	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-458	469	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-459	470	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-460	471	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-461	472	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-462	473	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-463	474	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-464	475	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-465	476	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-466	477	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-467	478	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-468	479	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-469	480	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-470	481	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-471	482	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-472	483	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-473	484	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-474	485	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-475	486	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-476	487	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-477	488	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-478	489	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-479	490	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-480	491	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-481	492	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-482	493	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-483	494	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-484	495	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-485	496	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-486	497	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-487	498	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-488	499	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-489	500	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-490	501	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-491	502	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-492	503	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-493	504	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-494	505	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-495	506	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-496	507	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-497	508	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-498	509	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-499	510	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-500	511	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-501	512	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-502	513	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-503	514	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-504	515	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-505	516	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-506	517	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-507	518	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-508	519	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-509	520	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-510	521	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-511	522	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-512	523	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-513	524	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-514	525	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-515	526	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-516	527	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-517	528	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-518	529	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-519	530	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-520	531	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-521	532	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-522	533	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-523	534	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-524	535	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-525	536	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-526	537	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-527	538	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-528	539	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-529	540	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-530	541	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-531	542	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-532	543	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-533	544	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-534	545	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-535	546	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-536	547	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-537	548	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-538	549	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-539	550	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-540	551	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-541	552	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-542	553	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-543	554	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-544	555	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-545	556	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-546	557	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-547	558	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-548	559	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-549	560	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-550	561	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-551	562	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-552	563	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-553	564	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-554	565	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-555	566	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-556	567	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-557	568	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-558	569	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-559	570	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-560	571	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-561	572	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-562	573	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-563	574	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-564	575	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-565	576	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-566	577	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-567	578	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-568	579	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-569	580	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-570	581	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-571	582	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-572	583	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-573	584	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-574	585	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-575	586	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-576	587	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-577	588	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-578	589	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-579	590	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-580	591	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-581	592	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-582	593	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-583	594	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-584	595	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-585	596	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-586	597	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-587	598	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-588	599	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-589	600	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-590	601	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-591	602	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-592	603	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-593	604	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-594	605	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-595	606	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-596	607	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-597	608	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-598	609	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-599	610	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-600	611	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-601	612	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-602	613	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-603	614	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-604	615	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-605	616	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-606	617	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-607	618	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-608	619	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-609	620	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-610	621	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-611	622	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-612	623	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-613	624	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-614	625	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-615	626	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-616	627	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-617	628	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-618	629	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-619	630	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-620	631	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-621	632	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-622	633	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-623	634	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-624	635	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-625	636	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-626	637	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-627	638	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-628	639	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-629	640	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-630	641	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-631	642	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-632	643	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-633	644	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-634	645	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-635	646	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-636	647	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-637	648	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-638	649	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-639	650	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-640	651	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-641	652	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-642	653	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-643	654	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-644	655	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-645	656	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-646	657	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-647	658	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-648	659	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-649	660	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-650	661	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-651	662	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-652	663	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-653	664	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-654	665	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-655	666	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-656	667	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-657	668	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-658	669	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-659	670	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-660	671	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-661	672	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-662	673	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-663	674	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-664	675	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-665	676	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-666	677	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-667	678	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-668	679	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-669	680	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-670	681	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-671	682	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-672	683	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-673	684	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-674	685	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-675	686	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-676	687	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-677	688	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-678	689	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-679	690	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-680	691	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-681	692	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-682	693	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-683	694	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-684	695	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-685	696	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-686	697	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-687	698	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-688	699	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-689	700	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-690	701	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-691	702	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-692	703	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-693	704	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-694	705	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-695	706	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-696	707	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-697	708	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-698	709	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-699	710	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-700	711	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-701	712	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-702	713	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-703	714	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-704	715	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-705	716	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-706	717	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-707	718	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-708	719	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-709	720	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-710	721	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-711	722	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-712	723	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-713	724	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-714	725	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-715	726	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-716	727	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-717	728	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-718	729	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-719	730	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-720	731	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-721	732	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-722	733	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-723	734	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-724	735	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-725	736	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-726	737	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-727	738	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-728	739	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-729	740	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-730	741	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-731	742	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-732	743	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-733	744	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-734	745	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-735	746	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-736	747	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-737	748	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-738	749	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-739	750	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-740	751	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-741	752	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-742	753	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-743	754	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-744	755	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-745	756	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-746	757	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-747	758	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-748	759	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-749	760	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-750	761	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-751	762	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-752	763	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-753	764	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-754	765	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-755	766	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-756	767	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-757	768	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-758	769	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-759	770	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-760	771	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-761	772	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-762	773	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-763	774	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-764	775	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-765	776	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-766	777	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-767	778	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-768	779	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-769	780	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-770	781	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-771	782	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-772	783	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-773	784	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-774	785	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-775	786	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-776	787	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-777	788	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-778	789	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-779	790	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-780	791	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-781	792	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-782	793	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-783	794	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-784	795	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-785	796	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-786	797	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-787	798	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-788	799	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-789	800	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-790	801	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-791	802	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-792	803	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-793	804	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-794	805	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-795	806	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-796	807	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-797	808	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-798	809	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-799	810	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-800	811	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-801	812	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-802	813	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-803	814	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-804	815	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-805	816	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-806	817	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-807	818	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-808	819	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-809	820	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-810	821	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-811	822	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-812	823	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-813	824	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-814	825	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-815	826	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-816	827	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-817	828	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-818	829	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-819	830	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-820	831	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-821	832	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-822	833	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-823	834	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-824	835	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-825	836	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-826	837	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-827	838	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-828	839	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-829	840	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-830	841	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-831	842	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-832	843	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-833	844	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-834	845	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-835	846	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-836	847	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-837	848	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-838	849	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-839	850	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-840	851	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-841	852	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-842	853	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-843	854	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-844	855	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-845	856	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-846	857	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-847	858	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-848	859	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-849	860	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-850	861	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-851	862	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-852	863	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-853	864	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-854	865	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-855	866	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-856	867	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-857	868	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-858	869	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-859	870	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-860	871	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-861	872	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-862	873	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-863	874	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-864	875	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-865	876	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-866	877	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-867	878	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-868	879	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-869	880	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-870	881	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-871	882	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-872	883	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-873	884	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-874	885	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-875	886	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-876	887	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-877	888	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-878	889	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-879	890	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-880	891	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-881	892	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-882	893	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-883	894	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-884	895	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-885	896	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-886	897	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-887	898	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-888	899	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-889	900	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-890	901	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-891	902	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-892	903	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-893	904	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-894	905	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-895	906	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-896	907	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-897	908	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-898	909	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-899	910	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-900	911	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-901	912	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-902	913	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-903	914	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-904	915	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-905	916	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-906	917	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-907	918	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-908	919	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-909	920	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-910	921	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-911	922	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-912	923	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-913	924	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-914	925	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-915	926	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-916	927	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-917	928	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-918	929	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-919	930	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-920	931	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-921	932	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-922	933	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-923	934	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-924	935	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-925	936	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-926	937	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-927	938	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-928	939	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-929	940	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-930	941	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-931	942	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-932	943	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-933	944	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-934	945	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-935	946	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-936	947	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-937	948	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-938	949	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-939	950	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-940	951	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-941	952	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-942	953	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-943	954	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-944	955	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-945	956	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-946	957	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-947	958	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-948	959	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-949	960	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-950	961	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-951	962	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-952	963	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-953	964	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-954	965	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-955	966	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-956	967	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-957	968	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-958	969	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-959	970	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-960	971	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-961	972	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-962	973	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-963	974	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-964	975	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-965	976	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-966	977	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-967	978	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-968	979	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-969	980	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-970	981	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-971	982	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-972	983	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-973	984	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-974	985	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-975	986	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-976	987	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-977	988	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-978	989	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-979	990	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-980	991	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-981	992	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-982	993	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-983	994	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-984	995	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-985	996	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-986	997	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-987	998	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-988	999	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-990	1001	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-991	1002	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-992	1003	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-993	1004	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-994	1005	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-995	1006	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-996	1007	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-997	1008	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-998	1009	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-999	1010	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1000	1011	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1001	1012	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1002	1013	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1003	1014	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1004	1015	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1005	1016	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1006	1017	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1007	1018	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1008	1019	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1009	1020	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1010	1021	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1011	1022	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1012	1023	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1013	1024	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1014	1025	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1015	1026	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1016	1027	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1017	1028	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1018	1029	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1019	1030	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1020	1031	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1021	1032	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1022	1033	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1023	1034	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1024	1035	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1025	1036	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1026	1037	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1027	1038	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1028	1039	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1030	1041	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1031	1042	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1032	1043	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1033	1044	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1034	1045	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1035	1046	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1036	1047	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1037	1048	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1038	1049	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1039	1050	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1040	1051	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1041	1052	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1042	1053	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1043	1054	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1045	1056	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1046	1057	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1047	1058	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1048	1059	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1049	1060	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1050	1061	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1051	1062	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1052	1063	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1053	1064	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1054	1065	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1055	1066	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1056	1067	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1057	1068	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1058	1069	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1059	1070	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1060	1071	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1061	1072	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1062	10730	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2	1	\N	\N	\N	f
-1063	10731	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2	1	\N	\N	\N	f
-1064	10746	10	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N	\N	f
-1065	10747	11	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N	\N	f
-1066	10748	12	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N	\N	f
-1067	10743	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1068	10744	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N	f
-1044	1055	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	1065	2	1	0.0000000000	0.0000000000	\N	f
-1029	1040	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	\N	f
-106700	10750	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	\N	f
-989	1000	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000	f
-106800	10760	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107700	3	1	0.0000000000	0.0000000000	0.0000000000	f
-106801	10761	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107701	3	1	0.0000000000	0.0000000000	0.0000000000	f
-106802	10762	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107702	3	1	0.0000000000	0.0000000000	0.0000000000	f
-106900	10770	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107800	3	1	0.0000000000	0.0000000000	0.0000000000	f
-106901	10771	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107801	3	1	0.0000000000	0.0000000000	0.0000000000	f
-106902	10772	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107802	3	1	0.0000000000	0.0000000000	0.0000000000	f
-106903	10773	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107803	3	1	0.0000000000	0.0000000000	0.0000000000	f
-106904	10774	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107804	3	1	0.0000000000	0.0000000000	0.0000000000	f
-106905	10775	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107805	3	1	0.0000000000	0.0000000000	0.0000000000	f
-106906	10776	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107806	2	1	0.0000000000	0.0000000000	0.0000000000	f
-106907	10777	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107807	3	1	0.0000000000	0.0000000000	0.0000000000	f
-106908	10778	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107808	3	1	0.0000000000	0.0000000000	0.0000000000	f
-106909	10779	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107809	3	1	0.0000000000	0.0000000000	0.0000000000	f
-106910	10780	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107810	2	1	0.0000000000	0.0000000000	0.0000000000	f
-106911	10781	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107811	2	1	0.0000000000	0.0000000000	0.0000000000	f
-1	2	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	1055	3	1	0.0000000000	0.0000000000	0.0000000000	f
-12	23	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000	f
-22	33	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000	f
-32	43	\N	0	1	\N	1	\N	\N	\N	\N	1	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000	f
-42	53	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000	f
-52	63	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000	f
-62	73	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000	f
-63	74	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000	f
-64	75	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000	f
-107000	10790	\N	\N	1		\N	\N	\N	\N	\N	0	0	\N	\N	1	1	0.0000000000	0.0000000000	0.0000000000	f
-2	13	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000	f
+COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_method_id, notes, auto_payment_type, due_date_unit_id, due_date_value, df_fm, parent_id, is_parent, exclude_aging, invoice_child, current_order_id, optlock, balance_type, dynamic_balance, credit_limit, auto_recharge) FROM stdin;
+2	13	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N	\N
+65	76	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+66	77	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+67	78	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+68	79	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+69	80	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+70	81	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+71	82	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+72	83	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+73	84	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+74	85	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+75	86	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+76	87	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+77	88	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+78	89	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+79	90	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+80	91	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+81	92	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+82	93	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+83	94	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+84	95	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+85	96	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+86	97	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+87	98	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+88	99	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+89	100	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+90	101	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+91	102	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+92	103	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+93	104	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+94	105	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+95	106	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+96	107	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+97	108	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+98	109	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+99	110	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+100	111	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+101	112	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+102	113	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+103	114	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+104	115	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+105	116	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+106	117	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+107	118	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+108	119	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+109	120	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+111	122	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+112	123	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+113	124	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+114	125	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+116	127	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+117	128	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+118	129	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+119	130	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+120	131	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+121	132	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+122	133	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+123	134	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+124	135	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+125	136	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+126	137	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+127	138	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+128	139	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+129	140	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+130	141	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+131	142	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+132	143	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+133	144	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+134	145	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+135	146	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+136	147	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+137	148	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+138	149	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+139	150	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+140	151	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+141	152	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+142	153	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+143	154	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+144	155	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+145	156	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+146	157	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+147	158	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+148	159	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+149	160	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+150	161	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+151	162	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+152	163	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+153	164	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+154	165	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+155	166	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+156	167	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+157	168	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+158	169	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+159	170	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+160	171	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+161	172	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+162	173	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+163	174	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+164	175	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+165	176	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+166	177	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+167	178	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+168	179	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+169	180	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+170	181	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+171	182	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+172	183	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+173	184	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+115	126	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	\N
+110	121	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	\N
+174	185	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+175	186	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+176	187	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+177	188	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+178	189	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+179	190	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+180	191	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+181	192	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+182	193	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+183	194	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+184	195	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+185	196	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+186	197	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+187	198	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+188	199	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+189	200	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+190	201	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+191	202	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+192	203	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+193	204	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+194	205	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+195	206	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+196	207	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+197	208	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+198	209	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+199	210	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+200	211	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+201	212	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+202	213	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+203	214	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+204	215	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+205	216	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+206	217	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+207	218	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+208	219	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+209	220	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+210	221	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+211	222	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+212	223	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+213	224	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+214	225	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+215	226	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+216	227	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+217	228	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+218	229	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+219	230	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+220	231	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+221	232	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+222	233	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+223	234	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+224	235	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+225	236	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+226	237	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+227	238	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+228	239	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+229	240	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+230	241	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+231	242	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+232	243	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+233	244	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+234	245	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+235	246	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+236	247	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+237	248	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+238	249	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+239	250	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+240	251	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+241	252	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+242	253	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+243	254	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+244	255	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+245	256	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+246	257	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+247	258	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+248	259	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+249	260	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+250	261	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+251	262	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+252	263	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+253	264	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+254	265	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+255	266	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+256	267	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+257	268	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+258	269	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+259	270	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+260	271	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+261	272	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+262	273	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+263	274	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+264	275	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+265	276	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+266	277	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+267	278	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+268	279	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+269	280	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+270	281	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+271	282	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+272	283	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+273	284	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+274	285	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+275	286	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+276	287	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+277	288	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+278	289	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+279	290	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+280	291	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+281	292	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+282	293	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+283	294	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+284	295	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+285	296	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+286	297	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+287	298	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+288	299	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+289	300	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+290	301	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+291	302	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+292	303	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+293	304	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+294	305	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+295	306	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+296	307	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+297	308	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+298	309	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+299	310	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+300	311	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+301	312	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+302	313	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+303	314	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+304	315	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+305	316	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+306	317	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+307	318	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+308	319	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+309	320	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+310	321	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+311	322	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+312	323	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+313	324	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+314	325	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+315	326	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+316	327	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+317	328	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+318	329	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+319	330	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+320	331	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+321	332	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+322	333	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+323	334	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+324	335	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+325	336	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+326	337	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+327	338	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+328	339	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+329	340	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+330	341	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+331	342	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+332	343	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+333	344	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+334	345	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+335	346	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+336	347	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+337	348	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+338	349	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+339	350	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+340	351	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+341	352	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+342	353	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+343	354	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+344	355	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+345	356	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+346	357	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+347	358	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+348	359	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+349	360	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+350	361	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+351	362	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+352	363	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+353	364	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+354	365	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+355	366	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+356	367	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+357	368	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+358	369	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+359	370	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+360	371	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+361	372	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+362	373	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+363	374	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+364	375	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+365	376	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+366	377	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+367	378	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+368	379	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+369	380	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+370	381	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+371	382	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+372	383	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+373	384	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+374	385	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+375	386	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+376	387	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+377	388	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+378	389	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+379	390	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+380	391	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+381	392	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+382	393	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+383	394	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+384	395	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+385	396	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+386	397	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+387	398	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+388	399	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+389	400	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+390	401	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+391	402	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+392	403	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+393	404	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+394	405	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+395	406	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+396	407	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+397	408	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+398	409	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+399	410	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+400	411	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+401	412	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+402	413	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+403	414	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+404	415	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+405	416	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+406	417	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+407	418	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+408	419	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+409	420	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+410	421	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+411	422	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+412	423	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+413	424	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+414	425	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+415	426	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+416	427	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+417	428	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+418	429	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+419	430	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+420	431	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+421	432	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+422	433	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+423	434	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+424	435	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+425	436	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+426	437	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+427	438	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+428	439	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+429	440	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+430	441	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+431	442	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+432	443	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+433	444	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+434	445	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+435	446	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+436	447	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+437	448	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+438	449	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+439	450	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+440	451	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+441	452	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+442	453	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+443	454	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+444	455	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+445	456	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+446	457	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+447	458	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+448	459	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+449	460	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+450	461	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+451	462	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+452	463	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+453	464	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+454	465	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+455	466	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+456	467	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+457	468	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+458	469	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+459	470	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+460	471	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+461	472	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+462	473	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+463	474	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+464	475	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+465	476	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+466	477	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+467	478	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+468	479	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+469	480	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+470	481	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+471	482	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+472	483	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+473	484	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+474	485	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+475	486	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+476	487	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+477	488	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+478	489	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+479	490	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+480	491	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+481	492	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+482	493	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+483	494	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+484	495	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+485	496	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+486	497	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+487	498	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+488	499	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+489	500	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+490	501	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+491	502	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+492	503	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+493	504	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+494	505	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+495	506	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+496	507	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+497	508	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+498	509	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+499	510	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+500	511	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+501	512	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+502	513	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+503	514	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+504	515	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+505	516	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+506	517	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+507	518	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+508	519	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+509	520	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+510	521	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+511	522	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+512	523	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+513	524	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+514	525	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+515	526	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+516	527	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+517	528	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+518	529	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+519	530	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+520	531	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+521	532	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+522	533	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+523	534	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+524	535	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+525	536	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+526	537	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+527	538	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+528	539	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+529	540	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+530	541	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+531	542	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+532	543	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+533	544	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+534	545	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+535	546	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+536	547	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+537	548	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+538	549	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+539	550	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+540	551	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+541	552	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+542	553	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+543	554	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+544	555	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+545	556	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+546	557	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+547	558	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+548	559	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+549	560	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+550	561	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+551	562	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+552	563	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+553	564	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+554	565	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+555	566	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+556	567	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+557	568	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+558	569	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+559	570	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+560	571	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+561	572	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+562	573	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+563	574	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+564	575	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+565	576	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+566	577	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+567	578	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+568	579	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+569	580	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+570	581	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+571	582	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+572	583	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+573	584	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+574	585	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+575	586	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+576	587	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+577	588	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+578	589	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+579	590	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+580	591	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+581	592	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+582	593	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+583	594	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+584	595	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+585	596	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+586	597	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+587	598	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+588	599	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+589	600	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+590	601	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+591	602	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+592	603	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+593	604	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+594	605	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+595	606	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+596	607	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+597	608	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+598	609	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+599	610	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+600	611	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+601	612	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+602	613	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+603	614	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+604	615	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+605	616	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+606	617	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+607	618	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+608	619	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+609	620	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+610	621	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+611	622	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+612	623	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+613	624	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+614	625	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+615	626	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+616	627	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+617	628	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+618	629	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+619	630	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+620	631	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+621	632	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+622	633	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+623	634	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+624	635	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+625	636	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+626	637	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+627	638	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+628	639	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+629	640	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+630	641	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+631	642	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+632	643	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+633	644	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+634	645	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+635	646	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+636	647	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+637	648	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+638	649	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+639	650	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+640	651	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+641	652	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+642	653	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+643	654	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+644	655	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+645	656	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+646	657	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+647	658	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+648	659	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+649	660	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+650	661	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+651	662	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+652	663	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+653	664	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+654	665	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+655	666	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+656	667	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+657	668	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+658	669	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+659	670	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+660	671	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+661	672	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+662	673	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+663	674	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+664	675	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+665	676	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+666	677	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+667	678	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+668	679	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+669	680	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+670	681	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+671	682	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+672	683	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+673	684	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+674	685	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+675	686	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+676	687	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+677	688	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+678	689	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+679	690	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+680	691	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+681	692	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+682	693	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+683	694	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+684	695	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+685	696	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+686	697	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+687	698	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+688	699	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+689	700	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+690	701	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+691	702	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+692	703	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+693	704	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+694	705	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+695	706	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+696	707	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+697	708	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+698	709	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+699	710	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+700	711	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+701	712	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+702	713	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+703	714	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+704	715	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+705	716	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+706	717	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+707	718	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+708	719	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+709	720	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+710	721	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+711	722	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+712	723	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+713	724	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+714	725	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+715	726	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+716	727	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+717	728	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+718	729	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+719	730	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+720	731	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+721	732	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+722	733	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+723	734	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+724	735	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+725	736	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+726	737	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+727	738	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+728	739	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+729	740	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+730	741	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+731	742	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+732	743	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+733	744	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+734	745	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+735	746	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+736	747	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+737	748	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+738	749	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+739	750	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+740	751	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+741	752	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+742	753	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+743	754	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+744	755	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+745	756	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+746	757	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+747	758	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+748	759	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+749	760	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+750	761	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+751	762	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+752	763	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+753	764	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+754	765	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+755	766	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+756	767	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+757	768	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+758	769	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+759	770	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+760	771	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+761	772	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+762	773	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+763	774	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+764	775	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+765	776	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+766	777	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+767	778	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+768	779	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+769	780	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+770	781	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+771	782	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+772	783	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+773	784	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+774	785	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+775	786	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+776	787	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+777	788	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+778	789	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+779	790	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+780	791	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+781	792	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+782	793	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+783	794	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+784	795	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+785	796	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+786	797	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+787	798	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+788	799	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+789	800	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+790	801	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+791	802	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+792	803	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+793	804	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+794	805	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+795	806	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+796	807	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+797	808	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+798	809	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+799	810	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+800	811	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+801	812	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+802	813	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+803	814	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+804	815	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+805	816	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+806	817	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+807	818	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+808	819	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+809	820	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+810	821	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+811	822	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+812	823	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+813	824	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+814	825	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+815	826	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+816	827	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+817	828	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+818	829	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+819	830	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+820	831	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+821	832	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+822	833	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+823	834	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+824	835	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+825	836	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+826	837	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+827	838	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+828	839	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+829	840	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+830	841	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+831	842	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+832	843	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+833	844	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+834	845	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+835	846	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+836	847	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+837	848	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+838	849	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+839	850	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+840	851	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+841	852	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+842	853	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+843	854	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+844	855	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+845	856	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+846	857	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+847	858	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+848	859	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+849	860	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+850	861	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+851	862	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+852	863	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+853	864	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+854	865	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+855	866	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+856	867	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+857	868	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+858	869	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+859	870	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+860	871	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+861	872	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+862	873	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+863	874	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+864	875	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+865	876	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+866	877	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+867	878	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+868	879	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+869	880	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+870	881	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+871	882	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+872	883	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+873	884	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+874	885	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+875	886	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+876	887	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+877	888	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+878	889	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+879	890	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+880	891	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+881	892	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+882	893	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+883	894	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+884	895	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+885	896	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+886	897	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+887	898	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+888	899	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+889	900	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+890	901	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+891	902	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+892	903	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+893	904	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+894	905	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+895	906	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+896	907	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+897	908	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+898	909	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+899	910	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+900	911	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+901	912	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+902	913	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+903	914	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+904	915	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+905	916	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+906	917	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+907	918	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+908	919	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+909	920	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+910	921	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+911	922	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+912	923	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+913	924	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+914	925	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+915	926	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+916	927	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+917	928	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+918	929	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+919	930	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+920	931	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+921	932	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+922	933	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+923	934	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+924	935	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+925	936	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+926	937	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+927	938	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+928	939	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+929	940	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+930	941	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+931	942	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+932	943	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+933	944	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+934	945	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+935	946	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+936	947	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+937	948	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+938	949	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+939	950	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+940	951	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+941	952	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+942	953	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+943	954	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+944	955	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+945	956	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+946	957	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+947	958	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+948	959	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+949	960	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+950	961	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+951	962	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+952	963	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+953	964	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+954	965	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+955	966	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+956	967	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+957	968	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+958	969	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+959	970	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+960	971	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+961	972	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+962	973	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+963	974	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+964	975	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+965	976	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+966	977	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+967	978	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+968	979	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+969	980	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+970	981	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+971	982	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+972	983	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+973	984	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+974	985	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+975	986	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+976	987	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+977	988	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+978	989	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+979	990	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+980	991	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+981	992	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+982	993	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+983	994	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+984	995	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+985	996	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+986	997	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+987	998	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+988	999	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+990	1001	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+991	1002	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+992	1003	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+993	1004	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+994	1005	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+995	1006	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+996	1007	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+997	1008	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+998	1009	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+999	1010	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1000	1011	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1001	1012	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1002	1013	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1003	1014	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1004	1015	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1005	1016	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1006	1017	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1007	1018	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1008	1019	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1009	1020	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1010	1021	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1011	1022	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1012	1023	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1013	1024	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1014	1025	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1015	1026	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1016	1027	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1017	1028	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1018	1029	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1019	1030	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1020	1031	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1021	1032	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1022	1033	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1023	1034	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1024	1035	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1025	1036	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1026	1037	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1027	1038	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1028	1039	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1030	1041	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1031	1042	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1032	1043	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1033	1044	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1034	1045	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1035	1046	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1036	1047	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1037	1048	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1038	1049	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1039	1050	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1040	1051	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1041	1052	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1042	1053	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1043	1054	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1045	1056	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1046	1057	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1047	1058	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1048	1059	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1049	1060	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1050	1061	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1051	1062	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1052	1063	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1053	1064	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1054	1065	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1055	1066	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1056	1067	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1057	1068	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1058	1069	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1059	1070	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1060	1071	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1061	1072	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1062	10730	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2	1	\N	\N	\N
+1063	10731	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2	1	\N	\N	\N
+1064	10746	10	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N	\N
+1065	10747	11	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N	\N
+1066	10748	12	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N	\N
+1067	10743	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1068	10744	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1044	1055	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	1065	2	1	0.0000000000	0.0000000000	\N
+1029	1040	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	\N
+106700	10750	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	\N
+989	1000	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+106800	10760	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107700	3	1	0.0000000000	0.0000000000	0.0000000000
+106801	10761	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107701	3	1	0.0000000000	0.0000000000	0.0000000000
+106802	10762	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107702	3	1	0.0000000000	0.0000000000	0.0000000000
+106900	10770	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107800	3	1	0.0000000000	0.0000000000	0.0000000000
+106901	10771	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107801	3	1	0.0000000000	0.0000000000	0.0000000000
+106902	10772	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107802	3	1	0.0000000000	0.0000000000	0.0000000000
+106903	10773	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107803	3	1	0.0000000000	0.0000000000	0.0000000000
+106904	10774	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107804	3	1	0.0000000000	0.0000000000	0.0000000000
+106905	10775	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107805	3	1	0.0000000000	0.0000000000	0.0000000000
+106906	10776	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107806	2	1	0.0000000000	0.0000000000	0.0000000000
+106907	10777	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107807	3	1	0.0000000000	0.0000000000	0.0000000000
+106908	10778	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107808	3	1	0.0000000000	0.0000000000	0.0000000000
+106909	10779	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107809	3	1	0.0000000000	0.0000000000	0.0000000000
+106910	10780	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107810	2	1	0.0000000000	0.0000000000	0.0000000000
+106911	10781	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107811	2	1	0.0000000000	0.0000000000	0.0000000000
+1	2	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	1055	3	1	0.0000000000	0.0000000000	0.0000000000
+12	23	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+22	33	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+32	43	\N	0	1	\N	1	\N	\N	\N	\N	1	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+42	53	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+52	63	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+62	73	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+63	74	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+64	75	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+107000	10790	\N	\N	1		\N	\N	\N	\N	\N	0	0	\N	\N	1	1	0.0000000000	0.0000000000	0.0000000000
 \.
 
 
@@ -9913,25 +9849,6 @@ COPY entity_report_map (report_id, entity_id) FROM stdin;
 7	1
 8	1
 9	1
-10	1
-11	1
-12	1
-\.
-
-
---
--- Data for Name: enumeration; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY enumeration (id, entity_id, name, optlock) FROM stdin;
-\.
-
-
---
--- Data for Name: enumeration_values; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY enumeration_values (id, enumeration_id, value, optlock) FROM stdin;
 \.
 
 
@@ -10579,8 +10496,6 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 468000	1	\N	10	10790	2011-06-01 10:36:25.494	2	2	25	\N	\N	\N	0	10790
 468001	\N	\N	27	113100	2011-06-01 10:36:25.665	2	2	25	\N	\N	\N	0	\N
 469000	1	1	25	530	2011-06-01 17:15:48.842	2	11	9	\N	\N	\N	0	\N
-470000	2	12	10	10800	2011-10-31 15:26:59.465	2	2	25	\N	\N	\N	0	10800
-470001	2	12	27	113200	2011-10-31 15:26:59.51	2	2	25	\N	\N	\N	0	\N
 \.
 
 
@@ -10776,7 +10691,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 17	1	description	1	One time
 17	2	description	1	Monthly
 17	3	description	1	Monthly
-17	4	description	1	Every 3 months
 18	1	description	1	Items
 18	2	description	1	Tax
 18	3	description	1	Penalty
@@ -11336,10 +11250,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	79	description	1	A scheduled task to execute the Mediation Process.
 24	80	title	1	Billing Process Task
 24	80	description	1	A scheduled task to execute the Billing Process.
-24	90	title	1	Country Tax Invoice Composition Task
-24	90	description	1	A pluggable task of the type SimpleTaxCompositionTask to apply tax item to the Invoice if the Partner's country code is matching.
-24	91	title	1	Payment Terms Penalty Task
-24	91	description	1	A pluggable task of the type AbstractChargeTask to apply a Penalty to an Invoice having a due date beyond a configurable days period.
 99	1	description	1	Referral Fee
 99	2	description	1	Payment Processor
 99	3	description	1	IP Address
@@ -11366,7 +11276,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 100	4	description	1	Total payment amount received grouped by period.
 101	2	description	1	Order Reports
 101	3	description	1	Payment Reports
-101	4	description	1	Customer Reports
+101	4	description	1	User Reports
 100	3	description	1	Number of users subscribed to a specific product.
 100	5	description	1	Number of customers created within a period.
 100	6	description	1	Total revenue (sum of received payments) per customer.
@@ -11374,9 +11284,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 100	7	description	1	Simple accounts receivable report showing current account balances.
 100	8	description	1	General ledger details of all invoiced charges for the given day.
 100	9	description	1	General ledger summary of all invoiced charges for the given day, grouped by item type.
-100	10	description	1	Plan pricing history for all plan products and start dates.
-100	11	description	1	Total invoiced per customer grouped by product category.
-100	12	description	1	Total invoiced per customer over years grouped by year.
 50	28	description	1	Paypal account.
 50	29	description	1	Paypal button URL.
 50	30	description	1	URL for HTTP ageing callback.
@@ -11429,8 +11336,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 50	38	instruction	1	Set to '1' to change the subscription status of a user when the user ages. '0' to disable.
 50	39	instruction	1	The number of retries to allow before locking the user account. A locked user account will have their password changed to the value of lockout_password in the jbilling.properties configuration file.
 50	40	instruction	1	If greater than zero, it represents the number of days that a password is valid. After those days, the password is expired and the user is forced to change it.
-59	101	description	1	Create partner
-59	102	description	1	Edit partner
 50	41	instruction	1	Set to '1' to allow the usage of the 'main subscription' flag for orders This flag is read only by the mediation process when determining where to place charges coming from external events.
 50	42	instruction	1	Set to '1' to allow the use of pro-rating to invoice fractions of a period. Shows the 'cycle' attribute of an order. Note that you need to configure the corresponding plug-ins for this feature to be fully functional.
 50	43	instruction	1	If the payment blacklist feature is used, this is set to the id of the configuration of the PaymentFilterTask plug-in. See the Blacklist section of the documentation.
@@ -11505,20 +11410,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	28	description	1	View all customers
 59	36	description	1	View all customers
 59	74	description	1	View all customers
-101	5	description	1	Plan
-100	10	description	1	Plan pricing history for all plan products and start dates.
 50	50	description	1	Invoice decimal rounding.
 50	50	instruction	1	The number of decimal places to be shown on the invoice. Defaults to 2.
-59	110	description	1	Switch to sub-account
-59	111	description	1	Switch to any user
-59	17	description	1	View all customers
-59	18	description	1	View customer sub-accounts
-59	29	description	1	View customer sub-accounts
-59	37	description	1	View customer sub-accounts
-59	75	description	1	View customer sub-accounts
-59	100	description	1	Show partner menu
-59	103	description	1	Delete partner
-59	104	description	1	View partner details
 \.
 
 
@@ -11597,54 +11490,27 @@ COPY invoice_line_type (id, description, order_position) FROM stdin;
 -- Data for Name: item; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, optlock, gl_code) FROM stdin;
-14	J-01	1	-10.0000000000	0	0	1	\N
-1	DP-1	1	\N	0	0	3	\N
-2	DP-2	1	\N	0	0	1	\N
-3	DP-3	1	\N	0	0	1	\N
-4	01	2	\N	0	0	1	\N
-24	F-1	1	\N	0	0	1	\N
-250	PL-01	1	\N	0	0	2	\N
-251	ST-01	1	\N	0	0	2	\N
-270	FE-01	1	\N	0	0	2	\N
-2600	DR-01	1	\N	0	0	2	\N
-2601	DR--02	1	\N	0	0	2	\N
-2602	DR-03	1	\N	0	0	2	\N
-2700	LD-A	1	\N	0	0	5	\N
-2701	LD-B	1	\N	0	0	4	\N
-2702	LD-1000	1	\N	0	0	4	\N
-2800	CALL-LD	1	\N	0	1	4	\N
-2801	CALL-LD-INCLUDE	1	\N	0	1	4	\N
-2900	CALL-LD-GEN	1	\N	0	0	2	\N
-3000	PL-02	1	\N	0	0	4	\N
-240	DP-4	1	\N	0	0	2	\N
-\.
-
-
---
--- Data for Name: item_price_timeline; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY item_price_timeline (item_id, price_model_id, start_date) FROM stdin;
-1	1	1970-01-01 00:00:00
-2	2	1970-01-01 00:00:00
-3	3	1970-01-01 00:00:00
-4	4	1970-01-01 00:00:00
-24	14	1970-01-01 00:00:00
-250	150	1970-01-01 00:00:00
-251	151	1970-01-01 00:00:00
-270	152	1970-01-01 00:00:00
-2600	1600	1970-01-01 00:00:00
-2601	1601	1970-01-01 00:00:00
-2602	1602	1970-01-01 00:00:00
-2700	1701	1970-01-01 00:00:00
-2701	1703	1970-01-01 00:00:00
-2702	1705	1970-01-01 00:00:00
-2800	1801	1970-01-01 00:00:00
-2801	1803	1970-01-01 00:00:00
-2900	1900	1970-01-01 00:00:00
-3000	2001	1970-01-01 00:00:00
-240	2003	1970-01-01 00:00:00
+COPY item (id, internal_number, entity_id, percentage, deleted, has_decimals, optlock, price_model_id, gl_code) FROM stdin;
+14	J-01	1	-10.0000000000	0	0	1	\N	\N
+1	DP-1	1	\N	0	0	3	1	\N
+2	DP-2	1	\N	0	0	1	2	\N
+3	DP-3	1	\N	0	0	1	3	\N
+4	01	2	\N	0	0	1	4	\N
+24	F-1	1	\N	0	0	1	14	\N
+250	PL-01	1	\N	0	0	2	150	\N
+251	ST-01	1	\N	0	0	2	151	\N
+270	FE-01	1	\N	0	0	2	152	\N
+2600	DR-01	1	\N	0	0	2	1600	\N
+2601	DR--02	1	\N	0	0	2	1601	\N
+2602	DR-03	1	\N	0	0	2	1602	\N
+2700	LD-A	1	\N	0	0	5	1701	\N
+2701	LD-B	1	\N	0	0	4	1703	\N
+2702	LD-1000	1	\N	0	0	4	1705	\N
+2800	CALL-LD	1	\N	0	1	4	1801	\N
+2801	CALL-LD-INCLUDE	1	\N	0	1	4	1803	\N
+2900	CALL-LD-GEN	1	\N	0	0	2	1900	\N
+3000	PL-02	1	\N	0	0	4	2001	\N
+240	DP-4	1	\N	0	0	2	2003	\N
 \.
 
 
@@ -11745,6 +11611,7 @@ billing_process_configuration	1
 order_period	1
 report	1
 partner_range	2
+partner	2
 entity	1
 contact_type	1
 payment_info_cheque	17
@@ -11787,22 +11654,20 @@ filter_set	1
 shortcut	1
 report_parameter	1
 pluggable_task	607
+base_user	1080
 customer	1071
+contact_map	7911
+contact	1132
 contact_field	2027
+breadcrumb	15
 recent_item	2
 pluggable_task_parameter	8314
+event_log	470
 permission_user	10
 permission_user	1
 permission_user	1
 permission_user	1
-enumeration	1
-enumeration_values	1
-base_user	1081
-event_log	471
-partner	3
-contact_map	7912
-contact	1133
-breadcrumb	20
+rate_card	1
 \.
 
 
@@ -11903,8 +11768,6 @@ COPY jbilling_table (id, name) FROM stdin;
 102	report_parameter
 103	plan_item_bundle
 104	notification_category
-105	enumeration
-106	enumeration_values
 \.
 
 
@@ -11968,2048 +11831,6 @@ COPY mediation_record (id_key, start_datetime, mediation_process_id, optlock, st
 --
 
 COPY mediation_record_line (id, order_line_id, event_date, amount, quantity, description, optlock, mediation_record_id) FROM stdin;
-\.
-
-
---
--- Data for Name: meta_field_name; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY meta_field_name (id, name, entity_type, data_type, display_order, default_value_id, is_disabled, is_mandatory, optlock) FROM stdin;
-1	partner.prompt.fee	CUSTOMER	STRING	1	\N	f	f	1
-3	ccf.ip_address	CUSTOMER	STRING	3	\N	f	f	1
-2	ccf.payment_processor	CUSTOMER	STRING	2	\N	f	f	1
-\.
-
-
---
--- Data for Name: meta_field_value; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY meta_field_value (id, meta_field_name_id, dtype, boolean_value, date_value, decimal_value, integer_value, string_value) FROM stdin;
-1	2	string	\N	\N	\N	\N	FAKE_2
-2	1	string	\N	\N	\N	\N	255.255.255.0
-13	3	string	\N	\N	\N	\N	255.255.255.2
-21	2	string	\N	\N	\N	\N	FAKE_2
-22	1	string	\N	\N	\N	\N	serial-from-ws
-23	2	string	\N	\N	\N	\N	FAKE_2
-24	1	string	\N	\N	\N	\N	serial-from-ws
-25	2	string	\N	\N	\N	\N	FAKE_2
-26	1	string	\N	\N	\N	\N	serial-from-ws
-27	2	string	\N	\N	\N	\N	FAKE_2
-28	1	string	\N	\N	\N	\N	serial-from-ws
-29	2	string	\N	\N	\N	\N	FAKE_2
-30	1	string	\N	\N	\N	\N	serial-from-ws
-31	2	string	\N	\N	\N	\N	FAKE_2
-32	1	string	\N	\N	\N	\N	serial-from-ws
-33	2	string	\N	\N	\N	\N	FAKE_2
-34	1	string	\N	\N	\N	\N	serial-from-ws
-35	2	string	\N	\N	\N	\N	FAKE_2
-36	1	string	\N	\N	\N	\N	serial-from-ws
-37	2	string	\N	\N	\N	\N	FAKE_2
-38	1	string	\N	\N	\N	\N	serial-from-ws
-39	2	string	\N	\N	\N	\N	FAKE_2
-40	1	string	\N	\N	\N	\N	serial-from-ws
-41	2	string	\N	\N	\N	\N	FAKE_2
-42	1	string	\N	\N	\N	\N	serial-from-ws
-43	2	string	\N	\N	\N	\N	FAKE_2
-44	1	string	\N	\N	\N	\N	serial-from-ws
-45	2	string	\N	\N	\N	\N	FAKE_2
-46	1	string	\N	\N	\N	\N	serial-from-ws
-47	2	string	\N	\N	\N	\N	FAKE_2
-48	1	string	\N	\N	\N	\N	serial-from-ws
-49	2	string	\N	\N	\N	\N	FAKE_2
-50	1	string	\N	\N	\N	\N	serial-from-ws
-51	2	string	\N	\N	\N	\N	FAKE_2
-52	1	string	\N	\N	\N	\N	serial-from-ws
-53	2	string	\N	\N	\N	\N	FAKE_2
-54	1	string	\N	\N	\N	\N	serial-from-ws
-55	2	string	\N	\N	\N	\N	FAKE_2
-56	1	string	\N	\N	\N	\N	serial-from-ws
-57	2	string	\N	\N	\N	\N	FAKE_2
-58	1	string	\N	\N	\N	\N	serial-from-ws
-59	2	string	\N	\N	\N	\N	FAKE_2
-60	1	string	\N	\N	\N	\N	serial-from-ws
-61	2	string	\N	\N	\N	\N	FAKE_2
-62	1	string	\N	\N	\N	\N	serial-from-ws
-63	2	string	\N	\N	\N	\N	FAKE_2
-64	1	string	\N	\N	\N	\N	serial-from-ws
-65	2	string	\N	\N	\N	\N	FAKE_2
-66	1	string	\N	\N	\N	\N	serial-from-ws
-67	2	string	\N	\N	\N	\N	FAKE_2
-68	1	string	\N	\N	\N	\N	serial-from-ws
-69	2	string	\N	\N	\N	\N	FAKE_2
-70	1	string	\N	\N	\N	\N	serial-from-ws
-71	2	string	\N	\N	\N	\N	FAKE_2
-72	1	string	\N	\N	\N	\N	serial-from-ws
-73	2	string	\N	\N	\N	\N	FAKE_2
-74	1	string	\N	\N	\N	\N	serial-from-ws
-75	2	string	\N	\N	\N	\N	FAKE_2
-76	1	string	\N	\N	\N	\N	serial-from-ws
-77	2	string	\N	\N	\N	\N	FAKE_2
-78	1	string	\N	\N	\N	\N	serial-from-ws
-79	2	string	\N	\N	\N	\N	FAKE_2
-80	1	string	\N	\N	\N	\N	serial-from-ws
-81	2	string	\N	\N	\N	\N	FAKE_2
-82	1	string	\N	\N	\N	\N	serial-from-ws
-83	2	string	\N	\N	\N	\N	FAKE_2
-84	1	string	\N	\N	\N	\N	serial-from-ws
-85	2	string	\N	\N	\N	\N	FAKE_2
-86	1	string	\N	\N	\N	\N	serial-from-ws
-87	2	string	\N	\N	\N	\N	FAKE_2
-88	1	string	\N	\N	\N	\N	serial-from-ws
-89	2	string	\N	\N	\N	\N	FAKE_2
-90	1	string	\N	\N	\N	\N	serial-from-ws
-91	2	string	\N	\N	\N	\N	FAKE_2
-92	1	string	\N	\N	\N	\N	serial-from-ws
-93	2	string	\N	\N	\N	\N	FAKE_2
-94	1	string	\N	\N	\N	\N	serial-from-ws
-95	2	string	\N	\N	\N	\N	FAKE_2
-96	1	string	\N	\N	\N	\N	serial-from-ws
-97	2	string	\N	\N	\N	\N	FAKE_2
-98	1	string	\N	\N	\N	\N	serial-from-ws
-99	2	string	\N	\N	\N	\N	FAKE_2
-100	1	string	\N	\N	\N	\N	serial-from-ws
-101	2	string	\N	\N	\N	\N	FAKE_2
-102	1	string	\N	\N	\N	\N	serial-from-ws
-103	2	string	\N	\N	\N	\N	FAKE_2
-104	1	string	\N	\N	\N	\N	serial-from-ws
-105	2	string	\N	\N	\N	\N	FAKE_2
-106	1	string	\N	\N	\N	\N	serial-from-ws
-107	2	string	\N	\N	\N	\N	FAKE_2
-108	1	string	\N	\N	\N	\N	serial-from-ws
-109	2	string	\N	\N	\N	\N	FAKE_2
-110	1	string	\N	\N	\N	\N	serial-from-ws
-111	2	string	\N	\N	\N	\N	FAKE_2
-112	1	string	\N	\N	\N	\N	serial-from-ws
-113	2	string	\N	\N	\N	\N	FAKE_2
-114	1	string	\N	\N	\N	\N	serial-from-ws
-115	2	string	\N	\N	\N	\N	FAKE_2
-116	1	string	\N	\N	\N	\N	serial-from-ws
-117	2	string	\N	\N	\N	\N	FAKE_2
-118	1	string	\N	\N	\N	\N	serial-from-ws
-119	2	string	\N	\N	\N	\N	FAKE_2
-120	1	string	\N	\N	\N	\N	serial-from-ws
-121	2	string	\N	\N	\N	\N	FAKE_2
-122	1	string	\N	\N	\N	\N	serial-from-ws
-123	2	string	\N	\N	\N	\N	FAKE_2
-124	1	string	\N	\N	\N	\N	serial-from-ws
-125	2	string	\N	\N	\N	\N	FAKE_2
-126	1	string	\N	\N	\N	\N	serial-from-ws
-127	2	string	\N	\N	\N	\N	FAKE_2
-128	1	string	\N	\N	\N	\N	serial-from-ws
-129	2	string	\N	\N	\N	\N	FAKE_2
-130	1	string	\N	\N	\N	\N	serial-from-ws
-131	2	string	\N	\N	\N	\N	FAKE_2
-132	1	string	\N	\N	\N	\N	serial-from-ws
-133	2	string	\N	\N	\N	\N	FAKE_2
-134	1	string	\N	\N	\N	\N	serial-from-ws
-135	2	string	\N	\N	\N	\N	FAKE_2
-136	1	string	\N	\N	\N	\N	serial-from-ws
-137	2	string	\N	\N	\N	\N	FAKE_2
-138	1	string	\N	\N	\N	\N	serial-from-ws
-139	2	string	\N	\N	\N	\N	FAKE_2
-140	1	string	\N	\N	\N	\N	serial-from-ws
-141	2	string	\N	\N	\N	\N	FAKE_2
-142	1	string	\N	\N	\N	\N	serial-from-ws
-143	2	string	\N	\N	\N	\N	FAKE_2
-144	1	string	\N	\N	\N	\N	serial-from-ws
-145	2	string	\N	\N	\N	\N	FAKE_2
-146	1	string	\N	\N	\N	\N	serial-from-ws
-147	2	string	\N	\N	\N	\N	FAKE_2
-148	1	string	\N	\N	\N	\N	serial-from-ws
-149	2	string	\N	\N	\N	\N	FAKE_2
-150	1	string	\N	\N	\N	\N	serial-from-ws
-151	2	string	\N	\N	\N	\N	FAKE_2
-152	1	string	\N	\N	\N	\N	serial-from-ws
-153	2	string	\N	\N	\N	\N	FAKE_2
-154	1	string	\N	\N	\N	\N	serial-from-ws
-155	2	string	\N	\N	\N	\N	FAKE_2
-156	1	string	\N	\N	\N	\N	serial-from-ws
-157	2	string	\N	\N	\N	\N	FAKE_2
-158	1	string	\N	\N	\N	\N	serial-from-ws
-159	2	string	\N	\N	\N	\N	FAKE_2
-160	1	string	\N	\N	\N	\N	serial-from-ws
-161	2	string	\N	\N	\N	\N	FAKE_2
-162	1	string	\N	\N	\N	\N	serial-from-ws
-163	2	string	\N	\N	\N	\N	FAKE_2
-164	1	string	\N	\N	\N	\N	serial-from-ws
-165	2	string	\N	\N	\N	\N	FAKE_2
-166	1	string	\N	\N	\N	\N	serial-from-ws
-167	2	string	\N	\N	\N	\N	FAKE_2
-168	1	string	\N	\N	\N	\N	serial-from-ws
-169	2	string	\N	\N	\N	\N	FAKE_2
-170	1	string	\N	\N	\N	\N	serial-from-ws
-171	2	string	\N	\N	\N	\N	FAKE_2
-172	1	string	\N	\N	\N	\N	serial-from-ws
-173	2	string	\N	\N	\N	\N	FAKE_2
-174	1	string	\N	\N	\N	\N	serial-from-ws
-175	2	string	\N	\N	\N	\N	FAKE_2
-176	1	string	\N	\N	\N	\N	serial-from-ws
-177	2	string	\N	\N	\N	\N	FAKE_2
-178	1	string	\N	\N	\N	\N	serial-from-ws
-179	2	string	\N	\N	\N	\N	FAKE_2
-180	1	string	\N	\N	\N	\N	serial-from-ws
-181	2	string	\N	\N	\N	\N	FAKE_2
-182	1	string	\N	\N	\N	\N	serial-from-ws
-183	2	string	\N	\N	\N	\N	FAKE_2
-184	1	string	\N	\N	\N	\N	serial-from-ws
-185	2	string	\N	\N	\N	\N	FAKE_2
-186	1	string	\N	\N	\N	\N	serial-from-ws
-187	2	string	\N	\N	\N	\N	FAKE_2
-188	1	string	\N	\N	\N	\N	serial-from-ws
-189	2	string	\N	\N	\N	\N	FAKE_2
-190	1	string	\N	\N	\N	\N	serial-from-ws
-191	2	string	\N	\N	\N	\N	FAKE_2
-192	1	string	\N	\N	\N	\N	serial-from-ws
-193	2	string	\N	\N	\N	\N	FAKE_2
-194	1	string	\N	\N	\N	\N	serial-from-ws
-195	2	string	\N	\N	\N	\N	FAKE_2
-196	1	string	\N	\N	\N	\N	serial-from-ws
-197	2	string	\N	\N	\N	\N	FAKE_2
-198	1	string	\N	\N	\N	\N	serial-from-ws
-199	2	string	\N	\N	\N	\N	FAKE_2
-200	1	string	\N	\N	\N	\N	serial-from-ws
-201	2	string	\N	\N	\N	\N	FAKE_2
-202	1	string	\N	\N	\N	\N	serial-from-ws
-203	2	string	\N	\N	\N	\N	FAKE_2
-204	1	string	\N	\N	\N	\N	serial-from-ws
-205	2	string	\N	\N	\N	\N	FAKE_2
-206	1	string	\N	\N	\N	\N	serial-from-ws
-207	2	string	\N	\N	\N	\N	FAKE_2
-208	1	string	\N	\N	\N	\N	serial-from-ws
-209	2	string	\N	\N	\N	\N	FAKE_2
-210	1	string	\N	\N	\N	\N	serial-from-ws
-211	2	string	\N	\N	\N	\N	FAKE_2
-212	1	string	\N	\N	\N	\N	serial-from-ws
-213	2	string	\N	\N	\N	\N	FAKE_2
-214	1	string	\N	\N	\N	\N	serial-from-ws
-215	2	string	\N	\N	\N	\N	FAKE_2
-216	1	string	\N	\N	\N	\N	serial-from-ws
-217	2	string	\N	\N	\N	\N	FAKE_2
-218	1	string	\N	\N	\N	\N	serial-from-ws
-219	2	string	\N	\N	\N	\N	FAKE_2
-220	1	string	\N	\N	\N	\N	serial-from-ws
-221	2	string	\N	\N	\N	\N	FAKE_2
-222	1	string	\N	\N	\N	\N	serial-from-ws
-223	2	string	\N	\N	\N	\N	FAKE_2
-224	1	string	\N	\N	\N	\N	serial-from-ws
-225	2	string	\N	\N	\N	\N	FAKE_2
-226	1	string	\N	\N	\N	\N	serial-from-ws
-227	2	string	\N	\N	\N	\N	FAKE_2
-228	1	string	\N	\N	\N	\N	serial-from-ws
-229	2	string	\N	\N	\N	\N	FAKE_2
-230	1	string	\N	\N	\N	\N	serial-from-ws
-231	2	string	\N	\N	\N	\N	FAKE_2
-232	1	string	\N	\N	\N	\N	serial-from-ws
-233	2	string	\N	\N	\N	\N	FAKE_2
-234	1	string	\N	\N	\N	\N	serial-from-ws
-235	2	string	\N	\N	\N	\N	FAKE_2
-236	1	string	\N	\N	\N	\N	serial-from-ws
-237	2	string	\N	\N	\N	\N	FAKE_2
-238	1	string	\N	\N	\N	\N	serial-from-ws
-239	2	string	\N	\N	\N	\N	FAKE_2
-240	1	string	\N	\N	\N	\N	serial-from-ws
-241	2	string	\N	\N	\N	\N	FAKE_2
-242	1	string	\N	\N	\N	\N	serial-from-ws
-243	2	string	\N	\N	\N	\N	FAKE_2
-244	1	string	\N	\N	\N	\N	serial-from-ws
-245	2	string	\N	\N	\N	\N	FAKE_2
-246	1	string	\N	\N	\N	\N	serial-from-ws
-247	2	string	\N	\N	\N	\N	FAKE_2
-248	1	string	\N	\N	\N	\N	serial-from-ws
-249	2	string	\N	\N	\N	\N	FAKE_2
-250	1	string	\N	\N	\N	\N	serial-from-ws
-251	2	string	\N	\N	\N	\N	FAKE_2
-252	1	string	\N	\N	\N	\N	serial-from-ws
-253	2	string	\N	\N	\N	\N	FAKE_2
-254	1	string	\N	\N	\N	\N	serial-from-ws
-255	2	string	\N	\N	\N	\N	FAKE_2
-256	1	string	\N	\N	\N	\N	serial-from-ws
-257	2	string	\N	\N	\N	\N	FAKE_2
-258	1	string	\N	\N	\N	\N	serial-from-ws
-259	2	string	\N	\N	\N	\N	FAKE_2
-260	1	string	\N	\N	\N	\N	serial-from-ws
-261	2	string	\N	\N	\N	\N	FAKE_2
-262	1	string	\N	\N	\N	\N	serial-from-ws
-263	2	string	\N	\N	\N	\N	FAKE_2
-264	1	string	\N	\N	\N	\N	serial-from-ws
-265	2	string	\N	\N	\N	\N	FAKE_2
-266	1	string	\N	\N	\N	\N	serial-from-ws
-267	2	string	\N	\N	\N	\N	FAKE_2
-268	1	string	\N	\N	\N	\N	serial-from-ws
-269	2	string	\N	\N	\N	\N	FAKE_2
-270	1	string	\N	\N	\N	\N	serial-from-ws
-271	2	string	\N	\N	\N	\N	FAKE_2
-272	1	string	\N	\N	\N	\N	serial-from-ws
-273	2	string	\N	\N	\N	\N	FAKE_2
-274	1	string	\N	\N	\N	\N	serial-from-ws
-275	2	string	\N	\N	\N	\N	FAKE_2
-276	1	string	\N	\N	\N	\N	serial-from-ws
-277	2	string	\N	\N	\N	\N	FAKE_2
-278	1	string	\N	\N	\N	\N	serial-from-ws
-279	2	string	\N	\N	\N	\N	FAKE_2
-280	1	string	\N	\N	\N	\N	serial-from-ws
-281	2	string	\N	\N	\N	\N	FAKE_2
-282	1	string	\N	\N	\N	\N	serial-from-ws
-283	2	string	\N	\N	\N	\N	FAKE_2
-284	1	string	\N	\N	\N	\N	serial-from-ws
-285	2	string	\N	\N	\N	\N	FAKE_2
-286	1	string	\N	\N	\N	\N	serial-from-ws
-287	2	string	\N	\N	\N	\N	FAKE_2
-288	1	string	\N	\N	\N	\N	serial-from-ws
-289	2	string	\N	\N	\N	\N	FAKE_2
-290	1	string	\N	\N	\N	\N	serial-from-ws
-291	2	string	\N	\N	\N	\N	FAKE_2
-292	1	string	\N	\N	\N	\N	serial-from-ws
-293	2	string	\N	\N	\N	\N	FAKE_2
-294	1	string	\N	\N	\N	\N	serial-from-ws
-295	2	string	\N	\N	\N	\N	FAKE_2
-296	1	string	\N	\N	\N	\N	serial-from-ws
-297	2	string	\N	\N	\N	\N	FAKE_2
-298	1	string	\N	\N	\N	\N	serial-from-ws
-299	2	string	\N	\N	\N	\N	FAKE_2
-300	1	string	\N	\N	\N	\N	serial-from-ws
-301	2	string	\N	\N	\N	\N	FAKE_2
-302	1	string	\N	\N	\N	\N	serial-from-ws
-303	2	string	\N	\N	\N	\N	FAKE_2
-304	1	string	\N	\N	\N	\N	serial-from-ws
-305	2	string	\N	\N	\N	\N	FAKE_2
-306	1	string	\N	\N	\N	\N	serial-from-ws
-307	2	string	\N	\N	\N	\N	FAKE_2
-308	1	string	\N	\N	\N	\N	serial-from-ws
-309	2	string	\N	\N	\N	\N	FAKE_2
-310	1	string	\N	\N	\N	\N	serial-from-ws
-311	2	string	\N	\N	\N	\N	FAKE_2
-312	1	string	\N	\N	\N	\N	serial-from-ws
-313	2	string	\N	\N	\N	\N	FAKE_2
-314	1	string	\N	\N	\N	\N	serial-from-ws
-315	2	string	\N	\N	\N	\N	FAKE_2
-316	1	string	\N	\N	\N	\N	serial-from-ws
-317	2	string	\N	\N	\N	\N	FAKE_2
-318	1	string	\N	\N	\N	\N	serial-from-ws
-319	2	string	\N	\N	\N	\N	FAKE_2
-320	1	string	\N	\N	\N	\N	serial-from-ws
-321	2	string	\N	\N	\N	\N	FAKE_2
-322	1	string	\N	\N	\N	\N	serial-from-ws
-323	2	string	\N	\N	\N	\N	FAKE_2
-324	1	string	\N	\N	\N	\N	serial-from-ws
-325	2	string	\N	\N	\N	\N	FAKE_2
-326	1	string	\N	\N	\N	\N	serial-from-ws
-327	2	string	\N	\N	\N	\N	FAKE_2
-328	1	string	\N	\N	\N	\N	serial-from-ws
-329	2	string	\N	\N	\N	\N	FAKE_2
-330	1	string	\N	\N	\N	\N	serial-from-ws
-331	2	string	\N	\N	\N	\N	FAKE_2
-332	1	string	\N	\N	\N	\N	serial-from-ws
-333	2	string	\N	\N	\N	\N	FAKE_2
-334	1	string	\N	\N	\N	\N	serial-from-ws
-335	2	string	\N	\N	\N	\N	FAKE_2
-336	1	string	\N	\N	\N	\N	serial-from-ws
-337	2	string	\N	\N	\N	\N	FAKE_2
-338	1	string	\N	\N	\N	\N	serial-from-ws
-339	2	string	\N	\N	\N	\N	FAKE_2
-340	1	string	\N	\N	\N	\N	serial-from-ws
-341	2	string	\N	\N	\N	\N	FAKE_2
-342	1	string	\N	\N	\N	\N	serial-from-ws
-343	2	string	\N	\N	\N	\N	FAKE_2
-344	1	string	\N	\N	\N	\N	serial-from-ws
-345	2	string	\N	\N	\N	\N	FAKE_2
-346	1	string	\N	\N	\N	\N	serial-from-ws
-347	2	string	\N	\N	\N	\N	FAKE_2
-348	1	string	\N	\N	\N	\N	serial-from-ws
-349	2	string	\N	\N	\N	\N	FAKE_2
-350	1	string	\N	\N	\N	\N	serial-from-ws
-351	2	string	\N	\N	\N	\N	FAKE_2
-352	1	string	\N	\N	\N	\N	serial-from-ws
-353	2	string	\N	\N	\N	\N	FAKE_2
-354	1	string	\N	\N	\N	\N	serial-from-ws
-355	2	string	\N	\N	\N	\N	FAKE_2
-356	1	string	\N	\N	\N	\N	serial-from-ws
-357	2	string	\N	\N	\N	\N	FAKE_2
-358	1	string	\N	\N	\N	\N	serial-from-ws
-359	2	string	\N	\N	\N	\N	FAKE_2
-360	1	string	\N	\N	\N	\N	serial-from-ws
-361	2	string	\N	\N	\N	\N	FAKE_2
-362	1	string	\N	\N	\N	\N	serial-from-ws
-363	2	string	\N	\N	\N	\N	FAKE_2
-364	1	string	\N	\N	\N	\N	serial-from-ws
-365	2	string	\N	\N	\N	\N	FAKE_2
-366	1	string	\N	\N	\N	\N	serial-from-ws
-367	2	string	\N	\N	\N	\N	FAKE_2
-368	1	string	\N	\N	\N	\N	serial-from-ws
-369	2	string	\N	\N	\N	\N	FAKE_2
-370	1	string	\N	\N	\N	\N	serial-from-ws
-371	2	string	\N	\N	\N	\N	FAKE_2
-372	1	string	\N	\N	\N	\N	serial-from-ws
-373	2	string	\N	\N	\N	\N	FAKE_2
-374	1	string	\N	\N	\N	\N	serial-from-ws
-375	2	string	\N	\N	\N	\N	FAKE_2
-376	1	string	\N	\N	\N	\N	serial-from-ws
-377	2	string	\N	\N	\N	\N	FAKE_2
-378	1	string	\N	\N	\N	\N	serial-from-ws
-379	2	string	\N	\N	\N	\N	FAKE_2
-380	1	string	\N	\N	\N	\N	serial-from-ws
-381	2	string	\N	\N	\N	\N	FAKE_2
-382	1	string	\N	\N	\N	\N	serial-from-ws
-383	2	string	\N	\N	\N	\N	FAKE_2
-384	1	string	\N	\N	\N	\N	serial-from-ws
-385	2	string	\N	\N	\N	\N	FAKE_2
-386	1	string	\N	\N	\N	\N	serial-from-ws
-387	2	string	\N	\N	\N	\N	FAKE_2
-388	1	string	\N	\N	\N	\N	serial-from-ws
-389	2	string	\N	\N	\N	\N	FAKE_2
-390	1	string	\N	\N	\N	\N	serial-from-ws
-391	2	string	\N	\N	\N	\N	FAKE_2
-392	1	string	\N	\N	\N	\N	serial-from-ws
-393	2	string	\N	\N	\N	\N	FAKE_2
-394	1	string	\N	\N	\N	\N	serial-from-ws
-395	2	string	\N	\N	\N	\N	FAKE_2
-396	1	string	\N	\N	\N	\N	serial-from-ws
-397	2	string	\N	\N	\N	\N	FAKE_2
-398	1	string	\N	\N	\N	\N	serial-from-ws
-399	2	string	\N	\N	\N	\N	FAKE_2
-400	1	string	\N	\N	\N	\N	serial-from-ws
-401	2	string	\N	\N	\N	\N	FAKE_2
-402	1	string	\N	\N	\N	\N	serial-from-ws
-403	2	string	\N	\N	\N	\N	FAKE_2
-404	1	string	\N	\N	\N	\N	serial-from-ws
-405	2	string	\N	\N	\N	\N	FAKE_2
-406	1	string	\N	\N	\N	\N	serial-from-ws
-407	2	string	\N	\N	\N	\N	FAKE_2
-408	1	string	\N	\N	\N	\N	serial-from-ws
-409	2	string	\N	\N	\N	\N	FAKE_2
-410	1	string	\N	\N	\N	\N	serial-from-ws
-411	2	string	\N	\N	\N	\N	FAKE_2
-412	1	string	\N	\N	\N	\N	serial-from-ws
-413	2	string	\N	\N	\N	\N	FAKE_2
-414	1	string	\N	\N	\N	\N	serial-from-ws
-415	2	string	\N	\N	\N	\N	FAKE_2
-416	1	string	\N	\N	\N	\N	serial-from-ws
-417	2	string	\N	\N	\N	\N	FAKE_2
-418	1	string	\N	\N	\N	\N	serial-from-ws
-419	2	string	\N	\N	\N	\N	FAKE_2
-420	1	string	\N	\N	\N	\N	serial-from-ws
-421	2	string	\N	\N	\N	\N	FAKE_2
-422	1	string	\N	\N	\N	\N	serial-from-ws
-423	2	string	\N	\N	\N	\N	FAKE_2
-424	1	string	\N	\N	\N	\N	serial-from-ws
-425	2	string	\N	\N	\N	\N	FAKE_2
-426	1	string	\N	\N	\N	\N	serial-from-ws
-427	2	string	\N	\N	\N	\N	FAKE_2
-428	1	string	\N	\N	\N	\N	serial-from-ws
-429	2	string	\N	\N	\N	\N	FAKE_2
-430	1	string	\N	\N	\N	\N	serial-from-ws
-431	2	string	\N	\N	\N	\N	FAKE_2
-432	1	string	\N	\N	\N	\N	serial-from-ws
-433	2	string	\N	\N	\N	\N	FAKE_2
-434	1	string	\N	\N	\N	\N	serial-from-ws
-435	2	string	\N	\N	\N	\N	FAKE_2
-436	1	string	\N	\N	\N	\N	serial-from-ws
-437	2	string	\N	\N	\N	\N	FAKE_2
-438	1	string	\N	\N	\N	\N	serial-from-ws
-439	2	string	\N	\N	\N	\N	FAKE_2
-440	1	string	\N	\N	\N	\N	serial-from-ws
-441	2	string	\N	\N	\N	\N	FAKE_2
-442	1	string	\N	\N	\N	\N	serial-from-ws
-443	2	string	\N	\N	\N	\N	FAKE_2
-444	1	string	\N	\N	\N	\N	serial-from-ws
-445	2	string	\N	\N	\N	\N	FAKE_2
-446	1	string	\N	\N	\N	\N	serial-from-ws
-447	2	string	\N	\N	\N	\N	FAKE_2
-448	1	string	\N	\N	\N	\N	serial-from-ws
-449	2	string	\N	\N	\N	\N	FAKE_2
-450	1	string	\N	\N	\N	\N	serial-from-ws
-451	2	string	\N	\N	\N	\N	FAKE_2
-452	1	string	\N	\N	\N	\N	serial-from-ws
-453	2	string	\N	\N	\N	\N	FAKE_2
-454	1	string	\N	\N	\N	\N	serial-from-ws
-455	2	string	\N	\N	\N	\N	FAKE_2
-456	1	string	\N	\N	\N	\N	serial-from-ws
-457	2	string	\N	\N	\N	\N	FAKE_2
-458	1	string	\N	\N	\N	\N	serial-from-ws
-459	2	string	\N	\N	\N	\N	FAKE_2
-460	1	string	\N	\N	\N	\N	serial-from-ws
-461	2	string	\N	\N	\N	\N	FAKE_2
-462	1	string	\N	\N	\N	\N	serial-from-ws
-463	2	string	\N	\N	\N	\N	FAKE_2
-464	1	string	\N	\N	\N	\N	serial-from-ws
-465	2	string	\N	\N	\N	\N	FAKE_2
-466	1	string	\N	\N	\N	\N	serial-from-ws
-467	2	string	\N	\N	\N	\N	FAKE_2
-468	1	string	\N	\N	\N	\N	serial-from-ws
-469	2	string	\N	\N	\N	\N	FAKE_2
-470	1	string	\N	\N	\N	\N	serial-from-ws
-471	2	string	\N	\N	\N	\N	FAKE_2
-472	1	string	\N	\N	\N	\N	serial-from-ws
-473	2	string	\N	\N	\N	\N	FAKE_2
-474	1	string	\N	\N	\N	\N	serial-from-ws
-475	2	string	\N	\N	\N	\N	FAKE_2
-476	1	string	\N	\N	\N	\N	serial-from-ws
-477	2	string	\N	\N	\N	\N	FAKE_2
-478	1	string	\N	\N	\N	\N	serial-from-ws
-479	2	string	\N	\N	\N	\N	FAKE_2
-480	1	string	\N	\N	\N	\N	serial-from-ws
-481	2	string	\N	\N	\N	\N	FAKE_2
-482	1	string	\N	\N	\N	\N	serial-from-ws
-483	2	string	\N	\N	\N	\N	FAKE_2
-484	1	string	\N	\N	\N	\N	serial-from-ws
-485	2	string	\N	\N	\N	\N	FAKE_2
-486	1	string	\N	\N	\N	\N	serial-from-ws
-487	2	string	\N	\N	\N	\N	FAKE_2
-488	1	string	\N	\N	\N	\N	serial-from-ws
-489	2	string	\N	\N	\N	\N	FAKE_2
-490	1	string	\N	\N	\N	\N	serial-from-ws
-491	2	string	\N	\N	\N	\N	FAKE_2
-492	1	string	\N	\N	\N	\N	serial-from-ws
-493	2	string	\N	\N	\N	\N	FAKE_2
-494	1	string	\N	\N	\N	\N	serial-from-ws
-495	2	string	\N	\N	\N	\N	FAKE_2
-496	1	string	\N	\N	\N	\N	serial-from-ws
-497	2	string	\N	\N	\N	\N	FAKE_2
-498	1	string	\N	\N	\N	\N	serial-from-ws
-499	2	string	\N	\N	\N	\N	FAKE_2
-500	1	string	\N	\N	\N	\N	serial-from-ws
-501	2	string	\N	\N	\N	\N	FAKE_2
-502	1	string	\N	\N	\N	\N	serial-from-ws
-503	2	string	\N	\N	\N	\N	FAKE_2
-504	1	string	\N	\N	\N	\N	serial-from-ws
-505	2	string	\N	\N	\N	\N	FAKE_2
-506	1	string	\N	\N	\N	\N	serial-from-ws
-507	2	string	\N	\N	\N	\N	FAKE_2
-508	1	string	\N	\N	\N	\N	serial-from-ws
-509	2	string	\N	\N	\N	\N	FAKE_2
-510	1	string	\N	\N	\N	\N	serial-from-ws
-511	2	string	\N	\N	\N	\N	FAKE_2
-512	1	string	\N	\N	\N	\N	serial-from-ws
-513	2	string	\N	\N	\N	\N	FAKE_2
-514	1	string	\N	\N	\N	\N	serial-from-ws
-515	2	string	\N	\N	\N	\N	FAKE_2
-516	1	string	\N	\N	\N	\N	serial-from-ws
-517	2	string	\N	\N	\N	\N	FAKE_2
-518	1	string	\N	\N	\N	\N	serial-from-ws
-519	2	string	\N	\N	\N	\N	FAKE_2
-520	1	string	\N	\N	\N	\N	serial-from-ws
-521	2	string	\N	\N	\N	\N	FAKE_2
-522	1	string	\N	\N	\N	\N	serial-from-ws
-523	2	string	\N	\N	\N	\N	FAKE_2
-524	1	string	\N	\N	\N	\N	serial-from-ws
-525	2	string	\N	\N	\N	\N	FAKE_2
-526	1	string	\N	\N	\N	\N	serial-from-ws
-527	2	string	\N	\N	\N	\N	FAKE_2
-528	1	string	\N	\N	\N	\N	serial-from-ws
-529	2	string	\N	\N	\N	\N	FAKE_2
-530	1	string	\N	\N	\N	\N	serial-from-ws
-531	2	string	\N	\N	\N	\N	FAKE_2
-532	1	string	\N	\N	\N	\N	serial-from-ws
-533	2	string	\N	\N	\N	\N	FAKE_2
-534	1	string	\N	\N	\N	\N	serial-from-ws
-535	2	string	\N	\N	\N	\N	FAKE_2
-536	1	string	\N	\N	\N	\N	serial-from-ws
-537	2	string	\N	\N	\N	\N	FAKE_2
-538	1	string	\N	\N	\N	\N	serial-from-ws
-539	2	string	\N	\N	\N	\N	FAKE_2
-540	1	string	\N	\N	\N	\N	serial-from-ws
-541	2	string	\N	\N	\N	\N	FAKE_2
-542	1	string	\N	\N	\N	\N	serial-from-ws
-543	2	string	\N	\N	\N	\N	FAKE_2
-544	1	string	\N	\N	\N	\N	serial-from-ws
-545	2	string	\N	\N	\N	\N	FAKE_2
-546	1	string	\N	\N	\N	\N	serial-from-ws
-547	2	string	\N	\N	\N	\N	FAKE_2
-548	1	string	\N	\N	\N	\N	serial-from-ws
-549	2	string	\N	\N	\N	\N	FAKE_2
-550	1	string	\N	\N	\N	\N	serial-from-ws
-551	2	string	\N	\N	\N	\N	FAKE_2
-552	1	string	\N	\N	\N	\N	serial-from-ws
-553	2	string	\N	\N	\N	\N	FAKE_2
-554	1	string	\N	\N	\N	\N	serial-from-ws
-555	2	string	\N	\N	\N	\N	FAKE_2
-556	1	string	\N	\N	\N	\N	serial-from-ws
-557	2	string	\N	\N	\N	\N	FAKE_2
-558	1	string	\N	\N	\N	\N	serial-from-ws
-559	2	string	\N	\N	\N	\N	FAKE_2
-560	1	string	\N	\N	\N	\N	serial-from-ws
-561	2	string	\N	\N	\N	\N	FAKE_2
-562	1	string	\N	\N	\N	\N	serial-from-ws
-563	2	string	\N	\N	\N	\N	FAKE_2
-564	1	string	\N	\N	\N	\N	serial-from-ws
-565	2	string	\N	\N	\N	\N	FAKE_2
-566	1	string	\N	\N	\N	\N	serial-from-ws
-567	2	string	\N	\N	\N	\N	FAKE_2
-568	1	string	\N	\N	\N	\N	serial-from-ws
-569	2	string	\N	\N	\N	\N	FAKE_2
-570	1	string	\N	\N	\N	\N	serial-from-ws
-571	2	string	\N	\N	\N	\N	FAKE_2
-572	1	string	\N	\N	\N	\N	serial-from-ws
-573	2	string	\N	\N	\N	\N	FAKE_2
-574	1	string	\N	\N	\N	\N	serial-from-ws
-575	2	string	\N	\N	\N	\N	FAKE_2
-576	1	string	\N	\N	\N	\N	serial-from-ws
-577	2	string	\N	\N	\N	\N	FAKE_2
-578	1	string	\N	\N	\N	\N	serial-from-ws
-579	2	string	\N	\N	\N	\N	FAKE_2
-580	1	string	\N	\N	\N	\N	serial-from-ws
-581	2	string	\N	\N	\N	\N	FAKE_2
-582	1	string	\N	\N	\N	\N	serial-from-ws
-583	2	string	\N	\N	\N	\N	FAKE_2
-584	1	string	\N	\N	\N	\N	serial-from-ws
-585	2	string	\N	\N	\N	\N	FAKE_2
-586	1	string	\N	\N	\N	\N	serial-from-ws
-587	2	string	\N	\N	\N	\N	FAKE_2
-588	1	string	\N	\N	\N	\N	serial-from-ws
-589	2	string	\N	\N	\N	\N	FAKE_2
-590	1	string	\N	\N	\N	\N	serial-from-ws
-591	2	string	\N	\N	\N	\N	FAKE_2
-592	1	string	\N	\N	\N	\N	serial-from-ws
-593	2	string	\N	\N	\N	\N	FAKE_2
-594	1	string	\N	\N	\N	\N	serial-from-ws
-595	2	string	\N	\N	\N	\N	FAKE_2
-596	1	string	\N	\N	\N	\N	serial-from-ws
-597	2	string	\N	\N	\N	\N	FAKE_2
-598	1	string	\N	\N	\N	\N	serial-from-ws
-599	2	string	\N	\N	\N	\N	FAKE_2
-600	1	string	\N	\N	\N	\N	serial-from-ws
-601	2	string	\N	\N	\N	\N	FAKE_2
-602	1	string	\N	\N	\N	\N	serial-from-ws
-603	2	string	\N	\N	\N	\N	FAKE_2
-604	1	string	\N	\N	\N	\N	serial-from-ws
-605	2	string	\N	\N	\N	\N	FAKE_2
-606	1	string	\N	\N	\N	\N	serial-from-ws
-607	2	string	\N	\N	\N	\N	FAKE_2
-608	1	string	\N	\N	\N	\N	serial-from-ws
-609	2	string	\N	\N	\N	\N	FAKE_2
-610	1	string	\N	\N	\N	\N	serial-from-ws
-611	2	string	\N	\N	\N	\N	FAKE_2
-612	1	string	\N	\N	\N	\N	serial-from-ws
-613	2	string	\N	\N	\N	\N	FAKE_2
-614	1	string	\N	\N	\N	\N	serial-from-ws
-615	2	string	\N	\N	\N	\N	FAKE_2
-616	1	string	\N	\N	\N	\N	serial-from-ws
-617	2	string	\N	\N	\N	\N	FAKE_2
-618	1	string	\N	\N	\N	\N	serial-from-ws
-619	2	string	\N	\N	\N	\N	FAKE_2
-620	1	string	\N	\N	\N	\N	serial-from-ws
-621	2	string	\N	\N	\N	\N	FAKE_2
-622	1	string	\N	\N	\N	\N	serial-from-ws
-623	2	string	\N	\N	\N	\N	FAKE_2
-624	1	string	\N	\N	\N	\N	serial-from-ws
-625	2	string	\N	\N	\N	\N	FAKE_2
-626	1	string	\N	\N	\N	\N	serial-from-ws
-627	2	string	\N	\N	\N	\N	FAKE_2
-628	1	string	\N	\N	\N	\N	serial-from-ws
-629	2	string	\N	\N	\N	\N	FAKE_2
-630	1	string	\N	\N	\N	\N	serial-from-ws
-631	2	string	\N	\N	\N	\N	FAKE_2
-632	1	string	\N	\N	\N	\N	serial-from-ws
-633	2	string	\N	\N	\N	\N	FAKE_2
-634	1	string	\N	\N	\N	\N	serial-from-ws
-635	2	string	\N	\N	\N	\N	FAKE_2
-636	1	string	\N	\N	\N	\N	serial-from-ws
-637	2	string	\N	\N	\N	\N	FAKE_2
-638	1	string	\N	\N	\N	\N	serial-from-ws
-639	2	string	\N	\N	\N	\N	FAKE_2
-640	1	string	\N	\N	\N	\N	serial-from-ws
-641	2	string	\N	\N	\N	\N	FAKE_2
-642	1	string	\N	\N	\N	\N	serial-from-ws
-643	2	string	\N	\N	\N	\N	FAKE_2
-644	1	string	\N	\N	\N	\N	serial-from-ws
-645	2	string	\N	\N	\N	\N	FAKE_2
-646	1	string	\N	\N	\N	\N	serial-from-ws
-647	2	string	\N	\N	\N	\N	FAKE_2
-648	1	string	\N	\N	\N	\N	serial-from-ws
-649	2	string	\N	\N	\N	\N	FAKE_2
-650	1	string	\N	\N	\N	\N	serial-from-ws
-651	2	string	\N	\N	\N	\N	FAKE_2
-652	1	string	\N	\N	\N	\N	serial-from-ws
-653	2	string	\N	\N	\N	\N	FAKE_2
-654	1	string	\N	\N	\N	\N	serial-from-ws
-655	2	string	\N	\N	\N	\N	FAKE_2
-656	1	string	\N	\N	\N	\N	serial-from-ws
-657	2	string	\N	\N	\N	\N	FAKE_2
-658	1	string	\N	\N	\N	\N	serial-from-ws
-659	2	string	\N	\N	\N	\N	FAKE_2
-660	1	string	\N	\N	\N	\N	serial-from-ws
-661	2	string	\N	\N	\N	\N	FAKE_2
-662	1	string	\N	\N	\N	\N	serial-from-ws
-663	2	string	\N	\N	\N	\N	FAKE_2
-664	1	string	\N	\N	\N	\N	serial-from-ws
-665	2	string	\N	\N	\N	\N	FAKE_2
-666	1	string	\N	\N	\N	\N	serial-from-ws
-667	2	string	\N	\N	\N	\N	FAKE_2
-668	1	string	\N	\N	\N	\N	serial-from-ws
-669	2	string	\N	\N	\N	\N	FAKE_2
-670	1	string	\N	\N	\N	\N	serial-from-ws
-671	2	string	\N	\N	\N	\N	FAKE_2
-672	1	string	\N	\N	\N	\N	serial-from-ws
-673	2	string	\N	\N	\N	\N	FAKE_2
-674	1	string	\N	\N	\N	\N	serial-from-ws
-675	2	string	\N	\N	\N	\N	FAKE_2
-676	1	string	\N	\N	\N	\N	serial-from-ws
-677	2	string	\N	\N	\N	\N	FAKE_2
-678	1	string	\N	\N	\N	\N	serial-from-ws
-679	2	string	\N	\N	\N	\N	FAKE_2
-680	1	string	\N	\N	\N	\N	serial-from-ws
-681	2	string	\N	\N	\N	\N	FAKE_2
-682	1	string	\N	\N	\N	\N	serial-from-ws
-683	2	string	\N	\N	\N	\N	FAKE_2
-684	1	string	\N	\N	\N	\N	serial-from-ws
-685	2	string	\N	\N	\N	\N	FAKE_2
-686	1	string	\N	\N	\N	\N	serial-from-ws
-687	2	string	\N	\N	\N	\N	FAKE_2
-688	1	string	\N	\N	\N	\N	serial-from-ws
-689	2	string	\N	\N	\N	\N	FAKE_2
-690	1	string	\N	\N	\N	\N	serial-from-ws
-691	2	string	\N	\N	\N	\N	FAKE_2
-692	1	string	\N	\N	\N	\N	serial-from-ws
-693	2	string	\N	\N	\N	\N	FAKE_2
-694	1	string	\N	\N	\N	\N	serial-from-ws
-695	2	string	\N	\N	\N	\N	FAKE_2
-696	1	string	\N	\N	\N	\N	serial-from-ws
-697	2	string	\N	\N	\N	\N	FAKE_2
-698	1	string	\N	\N	\N	\N	serial-from-ws
-699	2	string	\N	\N	\N	\N	FAKE_2
-700	1	string	\N	\N	\N	\N	serial-from-ws
-701	2	string	\N	\N	\N	\N	FAKE_2
-702	1	string	\N	\N	\N	\N	serial-from-ws
-703	2	string	\N	\N	\N	\N	FAKE_2
-704	1	string	\N	\N	\N	\N	serial-from-ws
-705	2	string	\N	\N	\N	\N	FAKE_2
-706	1	string	\N	\N	\N	\N	serial-from-ws
-707	2	string	\N	\N	\N	\N	FAKE_2
-708	1	string	\N	\N	\N	\N	serial-from-ws
-709	2	string	\N	\N	\N	\N	FAKE_2
-710	1	string	\N	\N	\N	\N	serial-from-ws
-711	2	string	\N	\N	\N	\N	FAKE_2
-712	1	string	\N	\N	\N	\N	serial-from-ws
-713	2	string	\N	\N	\N	\N	FAKE_2
-714	1	string	\N	\N	\N	\N	serial-from-ws
-715	2	string	\N	\N	\N	\N	FAKE_2
-716	1	string	\N	\N	\N	\N	serial-from-ws
-717	2	string	\N	\N	\N	\N	FAKE_2
-718	1	string	\N	\N	\N	\N	serial-from-ws
-719	2	string	\N	\N	\N	\N	FAKE_2
-720	1	string	\N	\N	\N	\N	serial-from-ws
-721	2	string	\N	\N	\N	\N	FAKE_2
-722	1	string	\N	\N	\N	\N	serial-from-ws
-723	2	string	\N	\N	\N	\N	FAKE_2
-724	1	string	\N	\N	\N	\N	serial-from-ws
-725	2	string	\N	\N	\N	\N	FAKE_2
-726	1	string	\N	\N	\N	\N	serial-from-ws
-727	2	string	\N	\N	\N	\N	FAKE_2
-728	1	string	\N	\N	\N	\N	serial-from-ws
-729	2	string	\N	\N	\N	\N	FAKE_2
-730	1	string	\N	\N	\N	\N	serial-from-ws
-731	2	string	\N	\N	\N	\N	FAKE_2
-732	1	string	\N	\N	\N	\N	serial-from-ws
-733	2	string	\N	\N	\N	\N	FAKE_2
-734	1	string	\N	\N	\N	\N	serial-from-ws
-735	2	string	\N	\N	\N	\N	FAKE_2
-736	1	string	\N	\N	\N	\N	serial-from-ws
-737	2	string	\N	\N	\N	\N	FAKE_2
-738	1	string	\N	\N	\N	\N	serial-from-ws
-739	2	string	\N	\N	\N	\N	FAKE_2
-740	1	string	\N	\N	\N	\N	serial-from-ws
-741	2	string	\N	\N	\N	\N	FAKE_2
-742	1	string	\N	\N	\N	\N	serial-from-ws
-743	2	string	\N	\N	\N	\N	FAKE_2
-744	1	string	\N	\N	\N	\N	serial-from-ws
-745	2	string	\N	\N	\N	\N	FAKE_2
-746	1	string	\N	\N	\N	\N	serial-from-ws
-747	2	string	\N	\N	\N	\N	FAKE_2
-748	1	string	\N	\N	\N	\N	serial-from-ws
-749	2	string	\N	\N	\N	\N	FAKE_2
-750	1	string	\N	\N	\N	\N	serial-from-ws
-751	2	string	\N	\N	\N	\N	FAKE_2
-752	1	string	\N	\N	\N	\N	serial-from-ws
-753	2	string	\N	\N	\N	\N	FAKE_2
-754	1	string	\N	\N	\N	\N	serial-from-ws
-755	2	string	\N	\N	\N	\N	FAKE_2
-756	1	string	\N	\N	\N	\N	serial-from-ws
-757	2	string	\N	\N	\N	\N	FAKE_2
-758	1	string	\N	\N	\N	\N	serial-from-ws
-759	2	string	\N	\N	\N	\N	FAKE_2
-760	1	string	\N	\N	\N	\N	serial-from-ws
-761	2	string	\N	\N	\N	\N	FAKE_2
-762	1	string	\N	\N	\N	\N	serial-from-ws
-763	2	string	\N	\N	\N	\N	FAKE_2
-764	1	string	\N	\N	\N	\N	serial-from-ws
-765	2	string	\N	\N	\N	\N	FAKE_2
-766	1	string	\N	\N	\N	\N	serial-from-ws
-767	2	string	\N	\N	\N	\N	FAKE_2
-768	1	string	\N	\N	\N	\N	serial-from-ws
-769	2	string	\N	\N	\N	\N	FAKE_2
-770	1	string	\N	\N	\N	\N	serial-from-ws
-771	2	string	\N	\N	\N	\N	FAKE_2
-772	1	string	\N	\N	\N	\N	serial-from-ws
-773	2	string	\N	\N	\N	\N	FAKE_2
-774	1	string	\N	\N	\N	\N	serial-from-ws
-775	2	string	\N	\N	\N	\N	FAKE_2
-776	1	string	\N	\N	\N	\N	serial-from-ws
-777	2	string	\N	\N	\N	\N	FAKE_2
-778	1	string	\N	\N	\N	\N	serial-from-ws
-779	2	string	\N	\N	\N	\N	FAKE_2
-780	1	string	\N	\N	\N	\N	serial-from-ws
-781	2	string	\N	\N	\N	\N	FAKE_2
-782	1	string	\N	\N	\N	\N	serial-from-ws
-783	2	string	\N	\N	\N	\N	FAKE_2
-784	1	string	\N	\N	\N	\N	serial-from-ws
-785	2	string	\N	\N	\N	\N	FAKE_2
-786	1	string	\N	\N	\N	\N	serial-from-ws
-787	2	string	\N	\N	\N	\N	FAKE_2
-788	1	string	\N	\N	\N	\N	serial-from-ws
-789	2	string	\N	\N	\N	\N	FAKE_2
-790	1	string	\N	\N	\N	\N	serial-from-ws
-791	2	string	\N	\N	\N	\N	FAKE_2
-792	1	string	\N	\N	\N	\N	serial-from-ws
-793	2	string	\N	\N	\N	\N	FAKE_2
-794	1	string	\N	\N	\N	\N	serial-from-ws
-795	2	string	\N	\N	\N	\N	FAKE_2
-796	1	string	\N	\N	\N	\N	serial-from-ws
-797	2	string	\N	\N	\N	\N	FAKE_2
-798	1	string	\N	\N	\N	\N	serial-from-ws
-799	2	string	\N	\N	\N	\N	FAKE_2
-800	1	string	\N	\N	\N	\N	serial-from-ws
-801	2	string	\N	\N	\N	\N	FAKE_2
-802	1	string	\N	\N	\N	\N	serial-from-ws
-803	2	string	\N	\N	\N	\N	FAKE_2
-804	1	string	\N	\N	\N	\N	serial-from-ws
-805	2	string	\N	\N	\N	\N	FAKE_2
-806	1	string	\N	\N	\N	\N	serial-from-ws
-807	2	string	\N	\N	\N	\N	FAKE_2
-808	1	string	\N	\N	\N	\N	serial-from-ws
-809	2	string	\N	\N	\N	\N	FAKE_2
-810	1	string	\N	\N	\N	\N	serial-from-ws
-811	2	string	\N	\N	\N	\N	FAKE_2
-812	1	string	\N	\N	\N	\N	serial-from-ws
-813	2	string	\N	\N	\N	\N	FAKE_2
-814	1	string	\N	\N	\N	\N	serial-from-ws
-815	2	string	\N	\N	\N	\N	FAKE_2
-816	1	string	\N	\N	\N	\N	serial-from-ws
-817	2	string	\N	\N	\N	\N	FAKE_2
-818	1	string	\N	\N	\N	\N	serial-from-ws
-819	2	string	\N	\N	\N	\N	FAKE_2
-820	1	string	\N	\N	\N	\N	serial-from-ws
-821	2	string	\N	\N	\N	\N	FAKE_2
-822	1	string	\N	\N	\N	\N	serial-from-ws
-823	2	string	\N	\N	\N	\N	FAKE_2
-824	1	string	\N	\N	\N	\N	serial-from-ws
-825	2	string	\N	\N	\N	\N	FAKE_2
-826	1	string	\N	\N	\N	\N	serial-from-ws
-827	2	string	\N	\N	\N	\N	FAKE_2
-828	1	string	\N	\N	\N	\N	serial-from-ws
-829	2	string	\N	\N	\N	\N	FAKE_2
-830	1	string	\N	\N	\N	\N	serial-from-ws
-831	2	string	\N	\N	\N	\N	FAKE_2
-832	1	string	\N	\N	\N	\N	serial-from-ws
-833	2	string	\N	\N	\N	\N	FAKE_2
-834	1	string	\N	\N	\N	\N	serial-from-ws
-835	2	string	\N	\N	\N	\N	FAKE_2
-836	1	string	\N	\N	\N	\N	serial-from-ws
-837	2	string	\N	\N	\N	\N	FAKE_2
-838	1	string	\N	\N	\N	\N	serial-from-ws
-839	2	string	\N	\N	\N	\N	FAKE_2
-840	1	string	\N	\N	\N	\N	serial-from-ws
-841	2	string	\N	\N	\N	\N	FAKE_2
-842	1	string	\N	\N	\N	\N	serial-from-ws
-843	2	string	\N	\N	\N	\N	FAKE_2
-844	1	string	\N	\N	\N	\N	serial-from-ws
-845	2	string	\N	\N	\N	\N	FAKE_2
-846	1	string	\N	\N	\N	\N	serial-from-ws
-847	2	string	\N	\N	\N	\N	FAKE_2
-848	1	string	\N	\N	\N	\N	serial-from-ws
-849	2	string	\N	\N	\N	\N	FAKE_2
-850	1	string	\N	\N	\N	\N	serial-from-ws
-851	2	string	\N	\N	\N	\N	FAKE_2
-852	1	string	\N	\N	\N	\N	serial-from-ws
-853	2	string	\N	\N	\N	\N	FAKE_2
-854	1	string	\N	\N	\N	\N	serial-from-ws
-855	2	string	\N	\N	\N	\N	FAKE_2
-856	1	string	\N	\N	\N	\N	serial-from-ws
-857	2	string	\N	\N	\N	\N	FAKE_2
-858	1	string	\N	\N	\N	\N	serial-from-ws
-859	2	string	\N	\N	\N	\N	FAKE_2
-860	1	string	\N	\N	\N	\N	serial-from-ws
-861	2	string	\N	\N	\N	\N	FAKE_2
-862	1	string	\N	\N	\N	\N	serial-from-ws
-863	2	string	\N	\N	\N	\N	FAKE_2
-864	1	string	\N	\N	\N	\N	serial-from-ws
-865	2	string	\N	\N	\N	\N	FAKE_2
-866	1	string	\N	\N	\N	\N	serial-from-ws
-867	2	string	\N	\N	\N	\N	FAKE_2
-868	1	string	\N	\N	\N	\N	serial-from-ws
-869	2	string	\N	\N	\N	\N	FAKE_2
-870	1	string	\N	\N	\N	\N	serial-from-ws
-871	2	string	\N	\N	\N	\N	FAKE_2
-872	1	string	\N	\N	\N	\N	serial-from-ws
-873	2	string	\N	\N	\N	\N	FAKE_2
-874	1	string	\N	\N	\N	\N	serial-from-ws
-875	2	string	\N	\N	\N	\N	FAKE_2
-876	1	string	\N	\N	\N	\N	serial-from-ws
-877	2	string	\N	\N	\N	\N	FAKE_2
-878	1	string	\N	\N	\N	\N	serial-from-ws
-879	2	string	\N	\N	\N	\N	FAKE_2
-880	1	string	\N	\N	\N	\N	serial-from-ws
-881	2	string	\N	\N	\N	\N	FAKE_2
-882	1	string	\N	\N	\N	\N	serial-from-ws
-883	2	string	\N	\N	\N	\N	FAKE_2
-884	1	string	\N	\N	\N	\N	serial-from-ws
-885	2	string	\N	\N	\N	\N	FAKE_2
-886	1	string	\N	\N	\N	\N	serial-from-ws
-887	2	string	\N	\N	\N	\N	FAKE_2
-888	1	string	\N	\N	\N	\N	serial-from-ws
-889	2	string	\N	\N	\N	\N	FAKE_2
-890	1	string	\N	\N	\N	\N	serial-from-ws
-891	2	string	\N	\N	\N	\N	FAKE_2
-892	1	string	\N	\N	\N	\N	serial-from-ws
-893	2	string	\N	\N	\N	\N	FAKE_2
-894	1	string	\N	\N	\N	\N	serial-from-ws
-895	2	string	\N	\N	\N	\N	FAKE_2
-896	1	string	\N	\N	\N	\N	serial-from-ws
-897	2	string	\N	\N	\N	\N	FAKE_2
-898	1	string	\N	\N	\N	\N	serial-from-ws
-899	2	string	\N	\N	\N	\N	FAKE_2
-900	1	string	\N	\N	\N	\N	serial-from-ws
-901	2	string	\N	\N	\N	\N	FAKE_2
-902	1	string	\N	\N	\N	\N	serial-from-ws
-903	2	string	\N	\N	\N	\N	FAKE_2
-904	1	string	\N	\N	\N	\N	serial-from-ws
-905	2	string	\N	\N	\N	\N	FAKE_2
-906	1	string	\N	\N	\N	\N	serial-from-ws
-907	2	string	\N	\N	\N	\N	FAKE_2
-908	1	string	\N	\N	\N	\N	serial-from-ws
-909	2	string	\N	\N	\N	\N	FAKE_2
-910	1	string	\N	\N	\N	\N	serial-from-ws
-911	2	string	\N	\N	\N	\N	FAKE_2
-912	1	string	\N	\N	\N	\N	serial-from-ws
-913	2	string	\N	\N	\N	\N	FAKE_2
-914	1	string	\N	\N	\N	\N	serial-from-ws
-915	2	string	\N	\N	\N	\N	FAKE_2
-916	1	string	\N	\N	\N	\N	serial-from-ws
-917	2	string	\N	\N	\N	\N	FAKE_2
-918	1	string	\N	\N	\N	\N	serial-from-ws
-919	2	string	\N	\N	\N	\N	FAKE_2
-920	1	string	\N	\N	\N	\N	serial-from-ws
-921	2	string	\N	\N	\N	\N	FAKE_2
-922	1	string	\N	\N	\N	\N	serial-from-ws
-923	2	string	\N	\N	\N	\N	FAKE_2
-924	1	string	\N	\N	\N	\N	serial-from-ws
-925	2	string	\N	\N	\N	\N	FAKE_2
-926	1	string	\N	\N	\N	\N	serial-from-ws
-927	2	string	\N	\N	\N	\N	FAKE_2
-928	1	string	\N	\N	\N	\N	serial-from-ws
-929	2	string	\N	\N	\N	\N	FAKE_2
-930	1	string	\N	\N	\N	\N	serial-from-ws
-931	2	string	\N	\N	\N	\N	FAKE_2
-932	1	string	\N	\N	\N	\N	serial-from-ws
-933	2	string	\N	\N	\N	\N	FAKE_2
-934	1	string	\N	\N	\N	\N	serial-from-ws
-935	2	string	\N	\N	\N	\N	FAKE_2
-936	1	string	\N	\N	\N	\N	serial-from-ws
-937	2	string	\N	\N	\N	\N	FAKE_2
-938	1	string	\N	\N	\N	\N	serial-from-ws
-939	2	string	\N	\N	\N	\N	FAKE_2
-940	1	string	\N	\N	\N	\N	serial-from-ws
-941	2	string	\N	\N	\N	\N	FAKE_2
-942	1	string	\N	\N	\N	\N	serial-from-ws
-943	2	string	\N	\N	\N	\N	FAKE_2
-944	1	string	\N	\N	\N	\N	serial-from-ws
-945	2	string	\N	\N	\N	\N	FAKE_2
-946	1	string	\N	\N	\N	\N	serial-from-ws
-947	2	string	\N	\N	\N	\N	FAKE_2
-948	1	string	\N	\N	\N	\N	serial-from-ws
-949	2	string	\N	\N	\N	\N	FAKE_2
-950	1	string	\N	\N	\N	\N	serial-from-ws
-951	2	string	\N	\N	\N	\N	FAKE_2
-952	1	string	\N	\N	\N	\N	serial-from-ws
-953	2	string	\N	\N	\N	\N	FAKE_2
-954	1	string	\N	\N	\N	\N	serial-from-ws
-955	2	string	\N	\N	\N	\N	FAKE_2
-956	1	string	\N	\N	\N	\N	serial-from-ws
-957	2	string	\N	\N	\N	\N	FAKE_2
-958	1	string	\N	\N	\N	\N	serial-from-ws
-959	2	string	\N	\N	\N	\N	FAKE_2
-960	1	string	\N	\N	\N	\N	serial-from-ws
-961	2	string	\N	\N	\N	\N	FAKE_2
-962	1	string	\N	\N	\N	\N	serial-from-ws
-963	2	string	\N	\N	\N	\N	FAKE_2
-964	1	string	\N	\N	\N	\N	serial-from-ws
-965	2	string	\N	\N	\N	\N	FAKE_2
-966	1	string	\N	\N	\N	\N	serial-from-ws
-967	2	string	\N	\N	\N	\N	FAKE_2
-968	1	string	\N	\N	\N	\N	serial-from-ws
-969	2	string	\N	\N	\N	\N	FAKE_2
-970	1	string	\N	\N	\N	\N	serial-from-ws
-971	2	string	\N	\N	\N	\N	FAKE_2
-972	1	string	\N	\N	\N	\N	serial-from-ws
-973	2	string	\N	\N	\N	\N	FAKE_2
-974	1	string	\N	\N	\N	\N	serial-from-ws
-975	2	string	\N	\N	\N	\N	FAKE_2
-976	1	string	\N	\N	\N	\N	serial-from-ws
-977	2	string	\N	\N	\N	\N	FAKE_2
-978	1	string	\N	\N	\N	\N	serial-from-ws
-979	2	string	\N	\N	\N	\N	FAKE_2
-980	1	string	\N	\N	\N	\N	serial-from-ws
-981	2	string	\N	\N	\N	\N	FAKE_2
-982	1	string	\N	\N	\N	\N	serial-from-ws
-983	2	string	\N	\N	\N	\N	FAKE_2
-984	1	string	\N	\N	\N	\N	serial-from-ws
-985	2	string	\N	\N	\N	\N	FAKE_2
-986	1	string	\N	\N	\N	\N	serial-from-ws
-987	2	string	\N	\N	\N	\N	FAKE_2
-988	1	string	\N	\N	\N	\N	serial-from-ws
-989	2	string	\N	\N	\N	\N	FAKE_2
-990	1	string	\N	\N	\N	\N	serial-from-ws
-991	2	string	\N	\N	\N	\N	FAKE_2
-992	1	string	\N	\N	\N	\N	serial-from-ws
-993	2	string	\N	\N	\N	\N	FAKE_2
-994	1	string	\N	\N	\N	\N	serial-from-ws
-995	2	string	\N	\N	\N	\N	FAKE_2
-996	1	string	\N	\N	\N	\N	serial-from-ws
-997	2	string	\N	\N	\N	\N	FAKE_2
-998	1	string	\N	\N	\N	\N	serial-from-ws
-999	2	string	\N	\N	\N	\N	FAKE_2
-1000	1	string	\N	\N	\N	\N	serial-from-ws
-1001	2	string	\N	\N	\N	\N	FAKE_2
-1002	1	string	\N	\N	\N	\N	serial-from-ws
-1003	2	string	\N	\N	\N	\N	FAKE_2
-1004	1	string	\N	\N	\N	\N	serial-from-ws
-1005	2	string	\N	\N	\N	\N	FAKE_2
-1006	1	string	\N	\N	\N	\N	serial-from-ws
-1007	2	string	\N	\N	\N	\N	FAKE_2
-1008	1	string	\N	\N	\N	\N	serial-from-ws
-1009	2	string	\N	\N	\N	\N	FAKE_2
-1010	1	string	\N	\N	\N	\N	serial-from-ws
-1011	2	string	\N	\N	\N	\N	FAKE_2
-1012	1	string	\N	\N	\N	\N	serial-from-ws
-1013	2	string	\N	\N	\N	\N	FAKE_2
-1014	1	string	\N	\N	\N	\N	serial-from-ws
-1015	2	string	\N	\N	\N	\N	FAKE_2
-1016	1	string	\N	\N	\N	\N	serial-from-ws
-1017	2	string	\N	\N	\N	\N	FAKE_2
-1018	1	string	\N	\N	\N	\N	serial-from-ws
-1019	2	string	\N	\N	\N	\N	FAKE_2
-1020	1	string	\N	\N	\N	\N	serial-from-ws
-1021	2	string	\N	\N	\N	\N	FAKE_2
-1022	1	string	\N	\N	\N	\N	serial-from-ws
-1023	2	string	\N	\N	\N	\N	FAKE_2
-1024	1	string	\N	\N	\N	\N	serial-from-ws
-1025	2	string	\N	\N	\N	\N	FAKE_2
-1026	1	string	\N	\N	\N	\N	serial-from-ws
-1027	2	string	\N	\N	\N	\N	FAKE_2
-1028	1	string	\N	\N	\N	\N	serial-from-ws
-1029	2	string	\N	\N	\N	\N	FAKE_2
-1030	1	string	\N	\N	\N	\N	serial-from-ws
-1031	2	string	\N	\N	\N	\N	FAKE_2
-1032	1	string	\N	\N	\N	\N	serial-from-ws
-1033	2	string	\N	\N	\N	\N	FAKE_2
-1034	1	string	\N	\N	\N	\N	serial-from-ws
-1035	2	string	\N	\N	\N	\N	FAKE_2
-1036	1	string	\N	\N	\N	\N	serial-from-ws
-1037	2	string	\N	\N	\N	\N	FAKE_2
-1038	1	string	\N	\N	\N	\N	serial-from-ws
-1039	2	string	\N	\N	\N	\N	FAKE_2
-1040	1	string	\N	\N	\N	\N	serial-from-ws
-1041	2	string	\N	\N	\N	\N	FAKE_2
-1042	1	string	\N	\N	\N	\N	serial-from-ws
-1043	2	string	\N	\N	\N	\N	FAKE_2
-1044	1	string	\N	\N	\N	\N	serial-from-ws
-1045	2	string	\N	\N	\N	\N	FAKE_2
-1046	1	string	\N	\N	\N	\N	serial-from-ws
-1047	2	string	\N	\N	\N	\N	FAKE_2
-1048	1	string	\N	\N	\N	\N	serial-from-ws
-1049	2	string	\N	\N	\N	\N	FAKE_2
-1050	1	string	\N	\N	\N	\N	serial-from-ws
-1051	2	string	\N	\N	\N	\N	FAKE_2
-1052	1	string	\N	\N	\N	\N	serial-from-ws
-1053	2	string	\N	\N	\N	\N	FAKE_2
-1054	1	string	\N	\N	\N	\N	serial-from-ws
-1055	2	string	\N	\N	\N	\N	FAKE_2
-1056	1	string	\N	\N	\N	\N	serial-from-ws
-1057	2	string	\N	\N	\N	\N	FAKE_2
-1058	1	string	\N	\N	\N	\N	serial-from-ws
-1059	2	string	\N	\N	\N	\N	FAKE_2
-1060	1	string	\N	\N	\N	\N	serial-from-ws
-1061	2	string	\N	\N	\N	\N	FAKE_2
-1062	1	string	\N	\N	\N	\N	serial-from-ws
-1063	2	string	\N	\N	\N	\N	FAKE_2
-1064	1	string	\N	\N	\N	\N	serial-from-ws
-1065	2	string	\N	\N	\N	\N	FAKE_2
-1066	1	string	\N	\N	\N	\N	serial-from-ws
-1067	2	string	\N	\N	\N	\N	FAKE_2
-1068	1	string	\N	\N	\N	\N	serial-from-ws
-1069	2	string	\N	\N	\N	\N	FAKE_2
-1070	1	string	\N	\N	\N	\N	serial-from-ws
-1071	2	string	\N	\N	\N	\N	FAKE_2
-1072	1	string	\N	\N	\N	\N	serial-from-ws
-1073	2	string	\N	\N	\N	\N	FAKE_2
-1074	1	string	\N	\N	\N	\N	serial-from-ws
-1075	2	string	\N	\N	\N	\N	FAKE_2
-1076	1	string	\N	\N	\N	\N	serial-from-ws
-1077	2	string	\N	\N	\N	\N	FAKE_2
-1078	1	string	\N	\N	\N	\N	serial-from-ws
-1079	2	string	\N	\N	\N	\N	FAKE_2
-1080	1	string	\N	\N	\N	\N	serial-from-ws
-1081	2	string	\N	\N	\N	\N	FAKE_2
-1082	1	string	\N	\N	\N	\N	serial-from-ws
-1083	2	string	\N	\N	\N	\N	FAKE_2
-1084	1	string	\N	\N	\N	\N	serial-from-ws
-1085	2	string	\N	\N	\N	\N	FAKE_2
-1086	1	string	\N	\N	\N	\N	serial-from-ws
-1087	2	string	\N	\N	\N	\N	FAKE_2
-1088	1	string	\N	\N	\N	\N	serial-from-ws
-1089	2	string	\N	\N	\N	\N	FAKE_2
-1090	1	string	\N	\N	\N	\N	serial-from-ws
-1091	2	string	\N	\N	\N	\N	FAKE_2
-1092	1	string	\N	\N	\N	\N	serial-from-ws
-1093	2	string	\N	\N	\N	\N	FAKE_2
-1094	1	string	\N	\N	\N	\N	serial-from-ws
-1095	2	string	\N	\N	\N	\N	FAKE_2
-1096	1	string	\N	\N	\N	\N	serial-from-ws
-1097	2	string	\N	\N	\N	\N	FAKE_2
-1098	1	string	\N	\N	\N	\N	serial-from-ws
-1099	2	string	\N	\N	\N	\N	FAKE_2
-1100	1	string	\N	\N	\N	\N	serial-from-ws
-1101	2	string	\N	\N	\N	\N	FAKE_2
-1102	1	string	\N	\N	\N	\N	serial-from-ws
-1103	2	string	\N	\N	\N	\N	FAKE_2
-1104	1	string	\N	\N	\N	\N	serial-from-ws
-1105	2	string	\N	\N	\N	\N	FAKE_2
-1106	1	string	\N	\N	\N	\N	serial-from-ws
-1107	2	string	\N	\N	\N	\N	FAKE_2
-1108	1	string	\N	\N	\N	\N	serial-from-ws
-1109	2	string	\N	\N	\N	\N	FAKE_2
-1110	1	string	\N	\N	\N	\N	serial-from-ws
-1111	2	string	\N	\N	\N	\N	FAKE_2
-1112	1	string	\N	\N	\N	\N	serial-from-ws
-1113	2	string	\N	\N	\N	\N	FAKE_2
-1114	1	string	\N	\N	\N	\N	serial-from-ws
-1115	2	string	\N	\N	\N	\N	FAKE_2
-1116	1	string	\N	\N	\N	\N	serial-from-ws
-1117	2	string	\N	\N	\N	\N	FAKE_2
-1118	1	string	\N	\N	\N	\N	serial-from-ws
-1119	2	string	\N	\N	\N	\N	FAKE_2
-1120	1	string	\N	\N	\N	\N	serial-from-ws
-1121	2	string	\N	\N	\N	\N	FAKE_2
-1122	1	string	\N	\N	\N	\N	serial-from-ws
-1123	2	string	\N	\N	\N	\N	FAKE_2
-1124	1	string	\N	\N	\N	\N	serial-from-ws
-1125	2	string	\N	\N	\N	\N	FAKE_2
-1126	1	string	\N	\N	\N	\N	serial-from-ws
-1127	2	string	\N	\N	\N	\N	FAKE_2
-1128	1	string	\N	\N	\N	\N	serial-from-ws
-1129	2	string	\N	\N	\N	\N	FAKE_2
-1130	1	string	\N	\N	\N	\N	serial-from-ws
-1131	2	string	\N	\N	\N	\N	FAKE_2
-1132	1	string	\N	\N	\N	\N	serial-from-ws
-1133	2	string	\N	\N	\N	\N	FAKE_2
-1134	1	string	\N	\N	\N	\N	serial-from-ws
-1135	2	string	\N	\N	\N	\N	FAKE_2
-1136	1	string	\N	\N	\N	\N	serial-from-ws
-1137	2	string	\N	\N	\N	\N	FAKE_2
-1138	1	string	\N	\N	\N	\N	serial-from-ws
-1139	2	string	\N	\N	\N	\N	FAKE_2
-1140	1	string	\N	\N	\N	\N	serial-from-ws
-1141	2	string	\N	\N	\N	\N	FAKE_2
-1142	1	string	\N	\N	\N	\N	serial-from-ws
-1143	2	string	\N	\N	\N	\N	FAKE_2
-1144	1	string	\N	\N	\N	\N	serial-from-ws
-1145	2	string	\N	\N	\N	\N	FAKE_2
-1146	1	string	\N	\N	\N	\N	serial-from-ws
-1147	2	string	\N	\N	\N	\N	FAKE_2
-1148	1	string	\N	\N	\N	\N	serial-from-ws
-1149	2	string	\N	\N	\N	\N	FAKE_2
-1150	1	string	\N	\N	\N	\N	serial-from-ws
-1151	2	string	\N	\N	\N	\N	FAKE_2
-1152	1	string	\N	\N	\N	\N	serial-from-ws
-1153	2	string	\N	\N	\N	\N	FAKE_2
-1154	1	string	\N	\N	\N	\N	serial-from-ws
-1155	2	string	\N	\N	\N	\N	FAKE_2
-1156	1	string	\N	\N	\N	\N	serial-from-ws
-1157	2	string	\N	\N	\N	\N	FAKE_2
-1158	1	string	\N	\N	\N	\N	serial-from-ws
-1159	2	string	\N	\N	\N	\N	FAKE_2
-1160	1	string	\N	\N	\N	\N	serial-from-ws
-1161	2	string	\N	\N	\N	\N	FAKE_2
-1162	1	string	\N	\N	\N	\N	serial-from-ws
-1163	2	string	\N	\N	\N	\N	FAKE_2
-1164	1	string	\N	\N	\N	\N	serial-from-ws
-1165	2	string	\N	\N	\N	\N	FAKE_2
-1166	1	string	\N	\N	\N	\N	serial-from-ws
-1167	2	string	\N	\N	\N	\N	FAKE_2
-1168	1	string	\N	\N	\N	\N	serial-from-ws
-1169	2	string	\N	\N	\N	\N	FAKE_2
-1170	1	string	\N	\N	\N	\N	serial-from-ws
-1171	2	string	\N	\N	\N	\N	FAKE_2
-1172	1	string	\N	\N	\N	\N	serial-from-ws
-1173	2	string	\N	\N	\N	\N	FAKE_2
-1174	1	string	\N	\N	\N	\N	serial-from-ws
-1175	2	string	\N	\N	\N	\N	FAKE_2
-1176	1	string	\N	\N	\N	\N	serial-from-ws
-1177	2	string	\N	\N	\N	\N	FAKE_2
-1178	1	string	\N	\N	\N	\N	serial-from-ws
-1179	2	string	\N	\N	\N	\N	FAKE_2
-1180	1	string	\N	\N	\N	\N	serial-from-ws
-1181	2	string	\N	\N	\N	\N	FAKE_2
-1182	1	string	\N	\N	\N	\N	serial-from-ws
-1183	2	string	\N	\N	\N	\N	FAKE_2
-1184	1	string	\N	\N	\N	\N	serial-from-ws
-1185	2	string	\N	\N	\N	\N	FAKE_2
-1186	1	string	\N	\N	\N	\N	serial-from-ws
-1187	2	string	\N	\N	\N	\N	FAKE_2
-1188	1	string	\N	\N	\N	\N	serial-from-ws
-1189	2	string	\N	\N	\N	\N	FAKE_2
-1190	1	string	\N	\N	\N	\N	serial-from-ws
-1191	2	string	\N	\N	\N	\N	FAKE_2
-1192	1	string	\N	\N	\N	\N	serial-from-ws
-1193	2	string	\N	\N	\N	\N	FAKE_2
-1194	1	string	\N	\N	\N	\N	serial-from-ws
-1195	2	string	\N	\N	\N	\N	FAKE_2
-1196	1	string	\N	\N	\N	\N	serial-from-ws
-1197	2	string	\N	\N	\N	\N	FAKE_2
-1198	1	string	\N	\N	\N	\N	serial-from-ws
-1199	2	string	\N	\N	\N	\N	FAKE_2
-1200	1	string	\N	\N	\N	\N	serial-from-ws
-1201	2	string	\N	\N	\N	\N	FAKE_2
-1202	1	string	\N	\N	\N	\N	serial-from-ws
-1203	2	string	\N	\N	\N	\N	FAKE_2
-1204	1	string	\N	\N	\N	\N	serial-from-ws
-1205	2	string	\N	\N	\N	\N	FAKE_2
-1206	1	string	\N	\N	\N	\N	serial-from-ws
-1207	2	string	\N	\N	\N	\N	FAKE_2
-1208	1	string	\N	\N	\N	\N	serial-from-ws
-1209	2	string	\N	\N	\N	\N	FAKE_2
-1210	1	string	\N	\N	\N	\N	serial-from-ws
-1211	2	string	\N	\N	\N	\N	FAKE_2
-1212	1	string	\N	\N	\N	\N	serial-from-ws
-1213	2	string	\N	\N	\N	\N	FAKE_2
-1214	1	string	\N	\N	\N	\N	serial-from-ws
-1215	2	string	\N	\N	\N	\N	FAKE_2
-1216	1	string	\N	\N	\N	\N	serial-from-ws
-1217	2	string	\N	\N	\N	\N	FAKE_2
-1218	1	string	\N	\N	\N	\N	serial-from-ws
-1219	2	string	\N	\N	\N	\N	FAKE_2
-1220	1	string	\N	\N	\N	\N	serial-from-ws
-1221	2	string	\N	\N	\N	\N	FAKE_2
-1222	1	string	\N	\N	\N	\N	serial-from-ws
-1223	2	string	\N	\N	\N	\N	FAKE_2
-1224	1	string	\N	\N	\N	\N	serial-from-ws
-1225	2	string	\N	\N	\N	\N	FAKE_2
-1226	1	string	\N	\N	\N	\N	serial-from-ws
-1227	2	string	\N	\N	\N	\N	FAKE_2
-1228	1	string	\N	\N	\N	\N	serial-from-ws
-1229	2	string	\N	\N	\N	\N	FAKE_2
-1230	1	string	\N	\N	\N	\N	serial-from-ws
-1231	2	string	\N	\N	\N	\N	FAKE_2
-1232	1	string	\N	\N	\N	\N	serial-from-ws
-1233	2	string	\N	\N	\N	\N	FAKE_2
-1234	1	string	\N	\N	\N	\N	serial-from-ws
-1235	2	string	\N	\N	\N	\N	FAKE_2
-1236	1	string	\N	\N	\N	\N	serial-from-ws
-1237	2	string	\N	\N	\N	\N	FAKE_2
-1238	1	string	\N	\N	\N	\N	serial-from-ws
-1239	2	string	\N	\N	\N	\N	FAKE_2
-1240	1	string	\N	\N	\N	\N	serial-from-ws
-1241	2	string	\N	\N	\N	\N	FAKE_2
-1242	1	string	\N	\N	\N	\N	serial-from-ws
-1243	2	string	\N	\N	\N	\N	FAKE_2
-1244	1	string	\N	\N	\N	\N	serial-from-ws
-1245	2	string	\N	\N	\N	\N	FAKE_2
-1246	1	string	\N	\N	\N	\N	serial-from-ws
-1247	2	string	\N	\N	\N	\N	FAKE_2
-1248	1	string	\N	\N	\N	\N	serial-from-ws
-1249	2	string	\N	\N	\N	\N	FAKE_2
-1250	1	string	\N	\N	\N	\N	serial-from-ws
-1251	2	string	\N	\N	\N	\N	FAKE_2
-1252	1	string	\N	\N	\N	\N	serial-from-ws
-1253	2	string	\N	\N	\N	\N	FAKE_2
-1254	1	string	\N	\N	\N	\N	serial-from-ws
-1255	2	string	\N	\N	\N	\N	FAKE_2
-1256	1	string	\N	\N	\N	\N	serial-from-ws
-1257	2	string	\N	\N	\N	\N	FAKE_2
-1258	1	string	\N	\N	\N	\N	serial-from-ws
-1259	2	string	\N	\N	\N	\N	FAKE_2
-1260	1	string	\N	\N	\N	\N	serial-from-ws
-1261	2	string	\N	\N	\N	\N	FAKE_2
-1262	1	string	\N	\N	\N	\N	serial-from-ws
-1263	2	string	\N	\N	\N	\N	FAKE_2
-1264	1	string	\N	\N	\N	\N	serial-from-ws
-1265	2	string	\N	\N	\N	\N	FAKE_2
-1266	1	string	\N	\N	\N	\N	serial-from-ws
-1267	2	string	\N	\N	\N	\N	FAKE_2
-1268	1	string	\N	\N	\N	\N	serial-from-ws
-1269	2	string	\N	\N	\N	\N	FAKE_2
-1270	1	string	\N	\N	\N	\N	serial-from-ws
-1271	2	string	\N	\N	\N	\N	FAKE_2
-1272	1	string	\N	\N	\N	\N	serial-from-ws
-1273	2	string	\N	\N	\N	\N	FAKE_2
-1274	1	string	\N	\N	\N	\N	serial-from-ws
-1275	2	string	\N	\N	\N	\N	FAKE_2
-1276	1	string	\N	\N	\N	\N	serial-from-ws
-1277	2	string	\N	\N	\N	\N	FAKE_2
-1278	1	string	\N	\N	\N	\N	serial-from-ws
-1279	2	string	\N	\N	\N	\N	FAKE_2
-1280	1	string	\N	\N	\N	\N	serial-from-ws
-1281	2	string	\N	\N	\N	\N	FAKE_2
-1282	1	string	\N	\N	\N	\N	serial-from-ws
-1283	2	string	\N	\N	\N	\N	FAKE_2
-1284	1	string	\N	\N	\N	\N	serial-from-ws
-1285	2	string	\N	\N	\N	\N	FAKE_2
-1286	1	string	\N	\N	\N	\N	serial-from-ws
-1287	2	string	\N	\N	\N	\N	FAKE_2
-1288	1	string	\N	\N	\N	\N	serial-from-ws
-1289	2	string	\N	\N	\N	\N	FAKE_2
-1290	1	string	\N	\N	\N	\N	serial-from-ws
-1291	2	string	\N	\N	\N	\N	FAKE_2
-1292	1	string	\N	\N	\N	\N	serial-from-ws
-1293	2	string	\N	\N	\N	\N	FAKE_2
-1294	1	string	\N	\N	\N	\N	serial-from-ws
-1295	2	string	\N	\N	\N	\N	FAKE_2
-1296	1	string	\N	\N	\N	\N	serial-from-ws
-1297	2	string	\N	\N	\N	\N	FAKE_2
-1298	1	string	\N	\N	\N	\N	serial-from-ws
-1299	2	string	\N	\N	\N	\N	FAKE_2
-1300	1	string	\N	\N	\N	\N	serial-from-ws
-1301	2	string	\N	\N	\N	\N	FAKE_2
-1302	1	string	\N	\N	\N	\N	serial-from-ws
-1303	2	string	\N	\N	\N	\N	FAKE_2
-1304	1	string	\N	\N	\N	\N	serial-from-ws
-1305	2	string	\N	\N	\N	\N	FAKE_2
-1306	1	string	\N	\N	\N	\N	serial-from-ws
-1307	2	string	\N	\N	\N	\N	FAKE_2
-1308	1	string	\N	\N	\N	\N	serial-from-ws
-1309	2	string	\N	\N	\N	\N	FAKE_2
-1310	1	string	\N	\N	\N	\N	serial-from-ws
-1311	2	string	\N	\N	\N	\N	FAKE_2
-1312	1	string	\N	\N	\N	\N	serial-from-ws
-1313	2	string	\N	\N	\N	\N	FAKE_2
-1314	1	string	\N	\N	\N	\N	serial-from-ws
-1315	2	string	\N	\N	\N	\N	FAKE_2
-1316	1	string	\N	\N	\N	\N	serial-from-ws
-1317	2	string	\N	\N	\N	\N	FAKE_2
-1318	1	string	\N	\N	\N	\N	serial-from-ws
-1319	2	string	\N	\N	\N	\N	FAKE_2
-1320	1	string	\N	\N	\N	\N	serial-from-ws
-1321	2	string	\N	\N	\N	\N	FAKE_2
-1322	1	string	\N	\N	\N	\N	serial-from-ws
-1323	2	string	\N	\N	\N	\N	FAKE_2
-1324	1	string	\N	\N	\N	\N	serial-from-ws
-1325	2	string	\N	\N	\N	\N	FAKE_2
-1326	1	string	\N	\N	\N	\N	serial-from-ws
-1327	2	string	\N	\N	\N	\N	FAKE_2
-1328	1	string	\N	\N	\N	\N	serial-from-ws
-1329	2	string	\N	\N	\N	\N	FAKE_2
-1330	1	string	\N	\N	\N	\N	serial-from-ws
-1331	2	string	\N	\N	\N	\N	FAKE_2
-1332	1	string	\N	\N	\N	\N	serial-from-ws
-1333	2	string	\N	\N	\N	\N	FAKE_2
-1334	1	string	\N	\N	\N	\N	serial-from-ws
-1335	2	string	\N	\N	\N	\N	FAKE_2
-1336	1	string	\N	\N	\N	\N	serial-from-ws
-1337	2	string	\N	\N	\N	\N	FAKE_2
-1338	1	string	\N	\N	\N	\N	serial-from-ws
-1339	2	string	\N	\N	\N	\N	FAKE_2
-1340	1	string	\N	\N	\N	\N	serial-from-ws
-1341	2	string	\N	\N	\N	\N	FAKE_2
-1342	1	string	\N	\N	\N	\N	serial-from-ws
-1343	2	string	\N	\N	\N	\N	FAKE_2
-1344	1	string	\N	\N	\N	\N	serial-from-ws
-1345	2	string	\N	\N	\N	\N	FAKE_2
-1346	1	string	\N	\N	\N	\N	serial-from-ws
-1347	2	string	\N	\N	\N	\N	FAKE_2
-1348	1	string	\N	\N	\N	\N	serial-from-ws
-1349	2	string	\N	\N	\N	\N	FAKE_2
-1350	1	string	\N	\N	\N	\N	serial-from-ws
-1351	2	string	\N	\N	\N	\N	FAKE_2
-1352	1	string	\N	\N	\N	\N	serial-from-ws
-1353	2	string	\N	\N	\N	\N	FAKE_2
-1354	1	string	\N	\N	\N	\N	serial-from-ws
-1355	2	string	\N	\N	\N	\N	FAKE_2
-1356	1	string	\N	\N	\N	\N	serial-from-ws
-1357	2	string	\N	\N	\N	\N	FAKE_2
-1358	1	string	\N	\N	\N	\N	serial-from-ws
-1359	2	string	\N	\N	\N	\N	FAKE_2
-1360	1	string	\N	\N	\N	\N	serial-from-ws
-1361	2	string	\N	\N	\N	\N	FAKE_2
-1362	1	string	\N	\N	\N	\N	serial-from-ws
-1363	2	string	\N	\N	\N	\N	FAKE_2
-1364	1	string	\N	\N	\N	\N	serial-from-ws
-1365	2	string	\N	\N	\N	\N	FAKE_2
-1366	1	string	\N	\N	\N	\N	serial-from-ws
-1367	2	string	\N	\N	\N	\N	FAKE_2
-1368	1	string	\N	\N	\N	\N	serial-from-ws
-1369	2	string	\N	\N	\N	\N	FAKE_2
-1370	1	string	\N	\N	\N	\N	serial-from-ws
-1371	2	string	\N	\N	\N	\N	FAKE_2
-1372	1	string	\N	\N	\N	\N	serial-from-ws
-1373	2	string	\N	\N	\N	\N	FAKE_2
-1374	1	string	\N	\N	\N	\N	serial-from-ws
-1375	2	string	\N	\N	\N	\N	FAKE_2
-1376	1	string	\N	\N	\N	\N	serial-from-ws
-1377	2	string	\N	\N	\N	\N	FAKE_2
-1378	1	string	\N	\N	\N	\N	serial-from-ws
-1379	2	string	\N	\N	\N	\N	FAKE_2
-1380	1	string	\N	\N	\N	\N	serial-from-ws
-1381	2	string	\N	\N	\N	\N	FAKE_2
-1382	1	string	\N	\N	\N	\N	serial-from-ws
-1383	2	string	\N	\N	\N	\N	FAKE_2
-1384	1	string	\N	\N	\N	\N	serial-from-ws
-1385	2	string	\N	\N	\N	\N	FAKE_2
-1386	1	string	\N	\N	\N	\N	serial-from-ws
-1387	2	string	\N	\N	\N	\N	FAKE_2
-1388	1	string	\N	\N	\N	\N	serial-from-ws
-1389	2	string	\N	\N	\N	\N	FAKE_2
-1390	1	string	\N	\N	\N	\N	serial-from-ws
-1391	2	string	\N	\N	\N	\N	FAKE_2
-1392	1	string	\N	\N	\N	\N	serial-from-ws
-1393	2	string	\N	\N	\N	\N	FAKE_2
-1394	1	string	\N	\N	\N	\N	serial-from-ws
-1395	2	string	\N	\N	\N	\N	FAKE_2
-1396	1	string	\N	\N	\N	\N	serial-from-ws
-1397	2	string	\N	\N	\N	\N	FAKE_2
-1398	1	string	\N	\N	\N	\N	serial-from-ws
-1399	2	string	\N	\N	\N	\N	FAKE_2
-1400	1	string	\N	\N	\N	\N	serial-from-ws
-1401	2	string	\N	\N	\N	\N	FAKE_2
-1402	1	string	\N	\N	\N	\N	serial-from-ws
-1403	2	string	\N	\N	\N	\N	FAKE_2
-1404	1	string	\N	\N	\N	\N	serial-from-ws
-1405	2	string	\N	\N	\N	\N	FAKE_2
-1406	1	string	\N	\N	\N	\N	serial-from-ws
-1407	2	string	\N	\N	\N	\N	FAKE_2
-1408	1	string	\N	\N	\N	\N	serial-from-ws
-1409	2	string	\N	\N	\N	\N	FAKE_2
-1410	1	string	\N	\N	\N	\N	serial-from-ws
-1411	2	string	\N	\N	\N	\N	FAKE_2
-1412	1	string	\N	\N	\N	\N	serial-from-ws
-1413	2	string	\N	\N	\N	\N	FAKE_2
-1414	1	string	\N	\N	\N	\N	serial-from-ws
-1415	2	string	\N	\N	\N	\N	FAKE_2
-1416	1	string	\N	\N	\N	\N	serial-from-ws
-1417	2	string	\N	\N	\N	\N	FAKE_2
-1418	1	string	\N	\N	\N	\N	serial-from-ws
-1419	2	string	\N	\N	\N	\N	FAKE_2
-1420	1	string	\N	\N	\N	\N	serial-from-ws
-1421	2	string	\N	\N	\N	\N	FAKE_2
-1422	1	string	\N	\N	\N	\N	serial-from-ws
-1423	2	string	\N	\N	\N	\N	FAKE_2
-1424	1	string	\N	\N	\N	\N	serial-from-ws
-1425	2	string	\N	\N	\N	\N	FAKE_2
-1426	1	string	\N	\N	\N	\N	serial-from-ws
-1427	2	string	\N	\N	\N	\N	FAKE_2
-1428	1	string	\N	\N	\N	\N	serial-from-ws
-1429	2	string	\N	\N	\N	\N	FAKE_2
-1430	1	string	\N	\N	\N	\N	serial-from-ws
-1431	2	string	\N	\N	\N	\N	FAKE_2
-1432	1	string	\N	\N	\N	\N	serial-from-ws
-1433	2	string	\N	\N	\N	\N	FAKE_2
-1434	1	string	\N	\N	\N	\N	serial-from-ws
-1435	2	string	\N	\N	\N	\N	FAKE_2
-1436	1	string	\N	\N	\N	\N	serial-from-ws
-1437	2	string	\N	\N	\N	\N	FAKE_2
-1438	1	string	\N	\N	\N	\N	serial-from-ws
-1439	2	string	\N	\N	\N	\N	FAKE_2
-1440	1	string	\N	\N	\N	\N	serial-from-ws
-1441	2	string	\N	\N	\N	\N	FAKE_2
-1442	1	string	\N	\N	\N	\N	serial-from-ws
-1443	2	string	\N	\N	\N	\N	FAKE_2
-1444	1	string	\N	\N	\N	\N	serial-from-ws
-1445	2	string	\N	\N	\N	\N	FAKE_2
-1446	1	string	\N	\N	\N	\N	serial-from-ws
-1447	2	string	\N	\N	\N	\N	FAKE_2
-1448	1	string	\N	\N	\N	\N	serial-from-ws
-1449	2	string	\N	\N	\N	\N	FAKE_2
-1450	1	string	\N	\N	\N	\N	serial-from-ws
-1451	2	string	\N	\N	\N	\N	FAKE_2
-1452	1	string	\N	\N	\N	\N	serial-from-ws
-1453	2	string	\N	\N	\N	\N	FAKE_2
-1454	1	string	\N	\N	\N	\N	serial-from-ws
-1455	2	string	\N	\N	\N	\N	FAKE_2
-1456	1	string	\N	\N	\N	\N	serial-from-ws
-1457	2	string	\N	\N	\N	\N	FAKE_2
-1458	1	string	\N	\N	\N	\N	serial-from-ws
-1459	2	string	\N	\N	\N	\N	FAKE_2
-1460	1	string	\N	\N	\N	\N	serial-from-ws
-1461	2	string	\N	\N	\N	\N	FAKE_2
-1462	1	string	\N	\N	\N	\N	serial-from-ws
-1463	2	string	\N	\N	\N	\N	FAKE_2
-1464	1	string	\N	\N	\N	\N	serial-from-ws
-1465	2	string	\N	\N	\N	\N	FAKE_2
-1466	1	string	\N	\N	\N	\N	serial-from-ws
-1467	2	string	\N	\N	\N	\N	FAKE_2
-1468	1	string	\N	\N	\N	\N	serial-from-ws
-1469	2	string	\N	\N	\N	\N	FAKE_2
-1470	1	string	\N	\N	\N	\N	serial-from-ws
-1471	2	string	\N	\N	\N	\N	FAKE_2
-1472	1	string	\N	\N	\N	\N	serial-from-ws
-1473	2	string	\N	\N	\N	\N	FAKE_2
-1474	1	string	\N	\N	\N	\N	serial-from-ws
-1475	2	string	\N	\N	\N	\N	FAKE_2
-1476	1	string	\N	\N	\N	\N	serial-from-ws
-1477	2	string	\N	\N	\N	\N	FAKE_2
-1478	1	string	\N	\N	\N	\N	serial-from-ws
-1479	2	string	\N	\N	\N	\N	FAKE_2
-1480	1	string	\N	\N	\N	\N	serial-from-ws
-1481	2	string	\N	\N	\N	\N	FAKE_2
-1482	1	string	\N	\N	\N	\N	serial-from-ws
-1483	2	string	\N	\N	\N	\N	FAKE_2
-1484	1	string	\N	\N	\N	\N	serial-from-ws
-1485	2	string	\N	\N	\N	\N	FAKE_2
-1486	1	string	\N	\N	\N	\N	serial-from-ws
-1487	2	string	\N	\N	\N	\N	FAKE_2
-1488	1	string	\N	\N	\N	\N	serial-from-ws
-1489	2	string	\N	\N	\N	\N	FAKE_2
-1490	1	string	\N	\N	\N	\N	serial-from-ws
-1491	2	string	\N	\N	\N	\N	FAKE_2
-1492	1	string	\N	\N	\N	\N	serial-from-ws
-1493	2	string	\N	\N	\N	\N	FAKE_2
-1494	1	string	\N	\N	\N	\N	serial-from-ws
-1495	2	string	\N	\N	\N	\N	FAKE_2
-1496	1	string	\N	\N	\N	\N	serial-from-ws
-1497	2	string	\N	\N	\N	\N	FAKE_2
-1498	1	string	\N	\N	\N	\N	serial-from-ws
-1499	2	string	\N	\N	\N	\N	FAKE_2
-1500	1	string	\N	\N	\N	\N	serial-from-ws
-1501	2	string	\N	\N	\N	\N	FAKE_2
-1502	1	string	\N	\N	\N	\N	serial-from-ws
-1503	2	string	\N	\N	\N	\N	FAKE_2
-1504	1	string	\N	\N	\N	\N	serial-from-ws
-1505	2	string	\N	\N	\N	\N	FAKE_2
-1506	1	string	\N	\N	\N	\N	serial-from-ws
-1507	2	string	\N	\N	\N	\N	FAKE_2
-1508	1	string	\N	\N	\N	\N	serial-from-ws
-1509	2	string	\N	\N	\N	\N	FAKE_2
-1510	1	string	\N	\N	\N	\N	serial-from-ws
-1511	2	string	\N	\N	\N	\N	FAKE_2
-1512	1	string	\N	\N	\N	\N	serial-from-ws
-1513	2	string	\N	\N	\N	\N	FAKE_2
-1514	1	string	\N	\N	\N	\N	serial-from-ws
-1515	2	string	\N	\N	\N	\N	FAKE_2
-1516	1	string	\N	\N	\N	\N	serial-from-ws
-1517	2	string	\N	\N	\N	\N	FAKE_2
-1518	1	string	\N	\N	\N	\N	serial-from-ws
-1519	2	string	\N	\N	\N	\N	FAKE_2
-1520	1	string	\N	\N	\N	\N	serial-from-ws
-1521	2	string	\N	\N	\N	\N	FAKE_2
-1522	1	string	\N	\N	\N	\N	serial-from-ws
-1523	2	string	\N	\N	\N	\N	FAKE_2
-1524	1	string	\N	\N	\N	\N	serial-from-ws
-1525	2	string	\N	\N	\N	\N	FAKE_2
-1526	1	string	\N	\N	\N	\N	serial-from-ws
-1527	2	string	\N	\N	\N	\N	FAKE_2
-1528	1	string	\N	\N	\N	\N	serial-from-ws
-1529	2	string	\N	\N	\N	\N	FAKE_2
-1530	1	string	\N	\N	\N	\N	serial-from-ws
-1531	2	string	\N	\N	\N	\N	FAKE_2
-1532	1	string	\N	\N	\N	\N	serial-from-ws
-1533	2	string	\N	\N	\N	\N	FAKE_2
-1534	1	string	\N	\N	\N	\N	serial-from-ws
-1535	2	string	\N	\N	\N	\N	FAKE_2
-1536	1	string	\N	\N	\N	\N	serial-from-ws
-1537	2	string	\N	\N	\N	\N	FAKE_2
-1538	1	string	\N	\N	\N	\N	serial-from-ws
-1539	2	string	\N	\N	\N	\N	FAKE_2
-1540	1	string	\N	\N	\N	\N	serial-from-ws
-1541	2	string	\N	\N	\N	\N	FAKE_2
-1542	1	string	\N	\N	\N	\N	serial-from-ws
-1543	2	string	\N	\N	\N	\N	FAKE_2
-1544	1	string	\N	\N	\N	\N	serial-from-ws
-1545	2	string	\N	\N	\N	\N	FAKE_2
-1546	1	string	\N	\N	\N	\N	serial-from-ws
-1547	2	string	\N	\N	\N	\N	FAKE_2
-1548	1	string	\N	\N	\N	\N	serial-from-ws
-1549	2	string	\N	\N	\N	\N	FAKE_2
-1550	1	string	\N	\N	\N	\N	serial-from-ws
-1551	2	string	\N	\N	\N	\N	FAKE_2
-1552	1	string	\N	\N	\N	\N	serial-from-ws
-1553	2	string	\N	\N	\N	\N	FAKE_2
-1554	1	string	\N	\N	\N	\N	serial-from-ws
-1555	2	string	\N	\N	\N	\N	FAKE_2
-1556	1	string	\N	\N	\N	\N	serial-from-ws
-1557	2	string	\N	\N	\N	\N	FAKE_2
-1558	1	string	\N	\N	\N	\N	serial-from-ws
-1559	2	string	\N	\N	\N	\N	FAKE_2
-1560	1	string	\N	\N	\N	\N	serial-from-ws
-1561	2	string	\N	\N	\N	\N	FAKE_2
-1562	1	string	\N	\N	\N	\N	serial-from-ws
-1563	2	string	\N	\N	\N	\N	FAKE_2
-1564	1	string	\N	\N	\N	\N	serial-from-ws
-1565	2	string	\N	\N	\N	\N	FAKE_2
-1566	1	string	\N	\N	\N	\N	serial-from-ws
-1567	2	string	\N	\N	\N	\N	FAKE_2
-1568	1	string	\N	\N	\N	\N	serial-from-ws
-1569	2	string	\N	\N	\N	\N	FAKE_2
-1570	1	string	\N	\N	\N	\N	serial-from-ws
-1571	2	string	\N	\N	\N	\N	FAKE_2
-1572	1	string	\N	\N	\N	\N	serial-from-ws
-1573	2	string	\N	\N	\N	\N	FAKE_2
-1574	1	string	\N	\N	\N	\N	serial-from-ws
-1575	2	string	\N	\N	\N	\N	FAKE_2
-1576	1	string	\N	\N	\N	\N	serial-from-ws
-1577	2	string	\N	\N	\N	\N	FAKE_2
-1578	1	string	\N	\N	\N	\N	serial-from-ws
-1579	2	string	\N	\N	\N	\N	FAKE_2
-1580	1	string	\N	\N	\N	\N	serial-from-ws
-1581	2	string	\N	\N	\N	\N	FAKE_2
-1582	1	string	\N	\N	\N	\N	serial-from-ws
-1583	2	string	\N	\N	\N	\N	FAKE_2
-1584	1	string	\N	\N	\N	\N	serial-from-ws
-1585	2	string	\N	\N	\N	\N	FAKE_2
-1586	1	string	\N	\N	\N	\N	serial-from-ws
-1587	2	string	\N	\N	\N	\N	FAKE_2
-1588	1	string	\N	\N	\N	\N	serial-from-ws
-1589	2	string	\N	\N	\N	\N	FAKE_2
-1590	1	string	\N	\N	\N	\N	serial-from-ws
-1591	2	string	\N	\N	\N	\N	FAKE_2
-1592	1	string	\N	\N	\N	\N	serial-from-ws
-1593	2	string	\N	\N	\N	\N	FAKE_2
-1594	1	string	\N	\N	\N	\N	serial-from-ws
-1595	2	string	\N	\N	\N	\N	FAKE_2
-1596	1	string	\N	\N	\N	\N	serial-from-ws
-1597	2	string	\N	\N	\N	\N	FAKE_2
-1598	1	string	\N	\N	\N	\N	serial-from-ws
-1599	2	string	\N	\N	\N	\N	FAKE_2
-1600	1	string	\N	\N	\N	\N	serial-from-ws
-1601	2	string	\N	\N	\N	\N	FAKE_2
-1602	1	string	\N	\N	\N	\N	serial-from-ws
-1603	2	string	\N	\N	\N	\N	FAKE_2
-1604	1	string	\N	\N	\N	\N	serial-from-ws
-1605	2	string	\N	\N	\N	\N	FAKE_2
-1606	1	string	\N	\N	\N	\N	serial-from-ws
-1607	2	string	\N	\N	\N	\N	FAKE_2
-1608	1	string	\N	\N	\N	\N	serial-from-ws
-1609	2	string	\N	\N	\N	\N	FAKE_2
-1610	1	string	\N	\N	\N	\N	serial-from-ws
-1611	2	string	\N	\N	\N	\N	FAKE_2
-1612	1	string	\N	\N	\N	\N	serial-from-ws
-1613	2	string	\N	\N	\N	\N	FAKE_2
-1614	1	string	\N	\N	\N	\N	serial-from-ws
-1615	2	string	\N	\N	\N	\N	FAKE_2
-1616	1	string	\N	\N	\N	\N	serial-from-ws
-1617	2	string	\N	\N	\N	\N	FAKE_2
-1618	1	string	\N	\N	\N	\N	serial-from-ws
-1619	2	string	\N	\N	\N	\N	FAKE_2
-1620	1	string	\N	\N	\N	\N	serial-from-ws
-1621	2	string	\N	\N	\N	\N	FAKE_2
-1622	1	string	\N	\N	\N	\N	serial-from-ws
-1623	2	string	\N	\N	\N	\N	FAKE_2
-1624	1	string	\N	\N	\N	\N	serial-from-ws
-1625	2	string	\N	\N	\N	\N	FAKE_2
-1626	1	string	\N	\N	\N	\N	serial-from-ws
-1627	2	string	\N	\N	\N	\N	FAKE_2
-1628	1	string	\N	\N	\N	\N	serial-from-ws
-1629	2	string	\N	\N	\N	\N	FAKE_2
-1630	1	string	\N	\N	\N	\N	serial-from-ws
-1631	2	string	\N	\N	\N	\N	FAKE_2
-1632	1	string	\N	\N	\N	\N	serial-from-ws
-1633	2	string	\N	\N	\N	\N	FAKE_2
-1634	1	string	\N	\N	\N	\N	serial-from-ws
-1635	2	string	\N	\N	\N	\N	FAKE_2
-1636	1	string	\N	\N	\N	\N	serial-from-ws
-1637	2	string	\N	\N	\N	\N	FAKE_2
-1638	1	string	\N	\N	\N	\N	serial-from-ws
-1639	2	string	\N	\N	\N	\N	FAKE_2
-1640	1	string	\N	\N	\N	\N	serial-from-ws
-1641	2	string	\N	\N	\N	\N	FAKE_2
-1642	1	string	\N	\N	\N	\N	serial-from-ws
-1643	2	string	\N	\N	\N	\N	FAKE_2
-1644	1	string	\N	\N	\N	\N	serial-from-ws
-1645	2	string	\N	\N	\N	\N	FAKE_2
-1646	1	string	\N	\N	\N	\N	serial-from-ws
-1647	2	string	\N	\N	\N	\N	FAKE_2
-1648	1	string	\N	\N	\N	\N	serial-from-ws
-1649	2	string	\N	\N	\N	\N	FAKE_2
-1650	1	string	\N	\N	\N	\N	serial-from-ws
-1651	2	string	\N	\N	\N	\N	FAKE_2
-1652	1	string	\N	\N	\N	\N	serial-from-ws
-1653	2	string	\N	\N	\N	\N	FAKE_2
-1654	1	string	\N	\N	\N	\N	serial-from-ws
-1655	2	string	\N	\N	\N	\N	FAKE_2
-1656	1	string	\N	\N	\N	\N	serial-from-ws
-1657	2	string	\N	\N	\N	\N	FAKE_2
-1658	1	string	\N	\N	\N	\N	serial-from-ws
-1659	2	string	\N	\N	\N	\N	FAKE_2
-1660	1	string	\N	\N	\N	\N	serial-from-ws
-1661	2	string	\N	\N	\N	\N	FAKE_2
-1662	1	string	\N	\N	\N	\N	serial-from-ws
-1663	2	string	\N	\N	\N	\N	FAKE_2
-1664	1	string	\N	\N	\N	\N	serial-from-ws
-1665	2	string	\N	\N	\N	\N	FAKE_2
-1666	1	string	\N	\N	\N	\N	serial-from-ws
-1667	2	string	\N	\N	\N	\N	FAKE_2
-1668	1	string	\N	\N	\N	\N	serial-from-ws
-1669	2	string	\N	\N	\N	\N	FAKE_2
-1670	1	string	\N	\N	\N	\N	serial-from-ws
-1671	2	string	\N	\N	\N	\N	FAKE_2
-1672	1	string	\N	\N	\N	\N	serial-from-ws
-1673	2	string	\N	\N	\N	\N	FAKE_2
-1674	1	string	\N	\N	\N	\N	serial-from-ws
-1675	2	string	\N	\N	\N	\N	FAKE_2
-1676	1	string	\N	\N	\N	\N	serial-from-ws
-1677	2	string	\N	\N	\N	\N	FAKE_2
-1678	1	string	\N	\N	\N	\N	serial-from-ws
-1679	2	string	\N	\N	\N	\N	FAKE_2
-1680	1	string	\N	\N	\N	\N	serial-from-ws
-1681	2	string	\N	\N	\N	\N	FAKE_2
-1682	1	string	\N	\N	\N	\N	serial-from-ws
-1683	2	string	\N	\N	\N	\N	FAKE_2
-1684	1	string	\N	\N	\N	\N	serial-from-ws
-1685	2	string	\N	\N	\N	\N	FAKE_2
-1686	1	string	\N	\N	\N	\N	serial-from-ws
-1687	2	string	\N	\N	\N	\N	FAKE_2
-1688	1	string	\N	\N	\N	\N	serial-from-ws
-1689	2	string	\N	\N	\N	\N	FAKE_2
-1690	1	string	\N	\N	\N	\N	serial-from-ws
-1691	2	string	\N	\N	\N	\N	FAKE_2
-1692	1	string	\N	\N	\N	\N	serial-from-ws
-1693	2	string	\N	\N	\N	\N	FAKE_2
-1694	1	string	\N	\N	\N	\N	serial-from-ws
-1695	2	string	\N	\N	\N	\N	FAKE_2
-1696	1	string	\N	\N	\N	\N	serial-from-ws
-1697	2	string	\N	\N	\N	\N	FAKE_2
-1698	1	string	\N	\N	\N	\N	serial-from-ws
-1699	2	string	\N	\N	\N	\N	FAKE_2
-1700	1	string	\N	\N	\N	\N	serial-from-ws
-1701	2	string	\N	\N	\N	\N	FAKE_2
-1702	1	string	\N	\N	\N	\N	serial-from-ws
-1703	2	string	\N	\N	\N	\N	FAKE_2
-1704	1	string	\N	\N	\N	\N	serial-from-ws
-1705	2	string	\N	\N	\N	\N	FAKE_2
-1706	1	string	\N	\N	\N	\N	serial-from-ws
-1707	2	string	\N	\N	\N	\N	FAKE_2
-1708	1	string	\N	\N	\N	\N	serial-from-ws
-1709	2	string	\N	\N	\N	\N	FAKE_2
-1710	1	string	\N	\N	\N	\N	serial-from-ws
-1711	2	string	\N	\N	\N	\N	FAKE_2
-1712	1	string	\N	\N	\N	\N	serial-from-ws
-1713	2	string	\N	\N	\N	\N	FAKE_2
-1714	1	string	\N	\N	\N	\N	serial-from-ws
-1715	2	string	\N	\N	\N	\N	FAKE_2
-1716	1	string	\N	\N	\N	\N	serial-from-ws
-1717	2	string	\N	\N	\N	\N	FAKE_2
-1718	1	string	\N	\N	\N	\N	serial-from-ws
-1719	2	string	\N	\N	\N	\N	FAKE_2
-1720	1	string	\N	\N	\N	\N	serial-from-ws
-1721	2	string	\N	\N	\N	\N	FAKE_2
-1722	1	string	\N	\N	\N	\N	serial-from-ws
-1723	2	string	\N	\N	\N	\N	FAKE_2
-1724	1	string	\N	\N	\N	\N	serial-from-ws
-1725	2	string	\N	\N	\N	\N	FAKE_2
-1726	1	string	\N	\N	\N	\N	serial-from-ws
-1727	2	string	\N	\N	\N	\N	FAKE_2
-1728	1	string	\N	\N	\N	\N	serial-from-ws
-1729	2	string	\N	\N	\N	\N	FAKE_2
-1730	1	string	\N	\N	\N	\N	serial-from-ws
-1731	2	string	\N	\N	\N	\N	FAKE_2
-1732	1	string	\N	\N	\N	\N	serial-from-ws
-1733	2	string	\N	\N	\N	\N	FAKE_2
-1734	1	string	\N	\N	\N	\N	serial-from-ws
-1735	2	string	\N	\N	\N	\N	FAKE_2
-1736	1	string	\N	\N	\N	\N	serial-from-ws
-1737	2	string	\N	\N	\N	\N	FAKE_2
-1738	1	string	\N	\N	\N	\N	serial-from-ws
-1739	2	string	\N	\N	\N	\N	FAKE_2
-1740	1	string	\N	\N	\N	\N	serial-from-ws
-1741	2	string	\N	\N	\N	\N	FAKE_2
-1742	1	string	\N	\N	\N	\N	serial-from-ws
-1743	2	string	\N	\N	\N	\N	FAKE_2
-1744	1	string	\N	\N	\N	\N	serial-from-ws
-1745	2	string	\N	\N	\N	\N	FAKE_2
-1746	1	string	\N	\N	\N	\N	serial-from-ws
-1747	2	string	\N	\N	\N	\N	FAKE_2
-1748	1	string	\N	\N	\N	\N	serial-from-ws
-1749	2	string	\N	\N	\N	\N	FAKE_2
-1750	1	string	\N	\N	\N	\N	serial-from-ws
-1751	2	string	\N	\N	\N	\N	FAKE_2
-1752	1	string	\N	\N	\N	\N	serial-from-ws
-1753	2	string	\N	\N	\N	\N	FAKE_2
-1754	1	string	\N	\N	\N	\N	serial-from-ws
-1755	2	string	\N	\N	\N	\N	FAKE_2
-1756	1	string	\N	\N	\N	\N	serial-from-ws
-1757	2	string	\N	\N	\N	\N	FAKE_2
-1758	1	string	\N	\N	\N	\N	serial-from-ws
-1759	2	string	\N	\N	\N	\N	FAKE_2
-1760	1	string	\N	\N	\N	\N	serial-from-ws
-1761	2	string	\N	\N	\N	\N	FAKE_2
-1762	1	string	\N	\N	\N	\N	serial-from-ws
-1763	2	string	\N	\N	\N	\N	FAKE_2
-1764	1	string	\N	\N	\N	\N	serial-from-ws
-1765	2	string	\N	\N	\N	\N	FAKE_2
-1766	1	string	\N	\N	\N	\N	serial-from-ws
-1767	2	string	\N	\N	\N	\N	FAKE_2
-1768	1	string	\N	\N	\N	\N	serial-from-ws
-1769	2	string	\N	\N	\N	\N	FAKE_2
-1770	1	string	\N	\N	\N	\N	serial-from-ws
-1771	2	string	\N	\N	\N	\N	FAKE_2
-1772	1	string	\N	\N	\N	\N	serial-from-ws
-1773	2	string	\N	\N	\N	\N	FAKE_2
-1774	1	string	\N	\N	\N	\N	serial-from-ws
-1775	2	string	\N	\N	\N	\N	FAKE_2
-1776	1	string	\N	\N	\N	\N	serial-from-ws
-1777	2	string	\N	\N	\N	\N	FAKE_2
-1778	1	string	\N	\N	\N	\N	serial-from-ws
-1779	2	string	\N	\N	\N	\N	FAKE_2
-1780	1	string	\N	\N	\N	\N	serial-from-ws
-1781	2	string	\N	\N	\N	\N	FAKE_2
-1782	1	string	\N	\N	\N	\N	serial-from-ws
-1783	2	string	\N	\N	\N	\N	FAKE_2
-1784	1	string	\N	\N	\N	\N	serial-from-ws
-1785	2	string	\N	\N	\N	\N	FAKE_2
-1786	1	string	\N	\N	\N	\N	serial-from-ws
-1787	2	string	\N	\N	\N	\N	FAKE_2
-1788	1	string	\N	\N	\N	\N	serial-from-ws
-1789	2	string	\N	\N	\N	\N	FAKE_2
-1790	1	string	\N	\N	\N	\N	serial-from-ws
-1791	2	string	\N	\N	\N	\N	FAKE_2
-1792	1	string	\N	\N	\N	\N	serial-from-ws
-1793	2	string	\N	\N	\N	\N	FAKE_2
-1794	1	string	\N	\N	\N	\N	serial-from-ws
-1795	2	string	\N	\N	\N	\N	FAKE_2
-1796	1	string	\N	\N	\N	\N	serial-from-ws
-1797	2	string	\N	\N	\N	\N	FAKE_2
-1798	1	string	\N	\N	\N	\N	serial-from-ws
-1799	2	string	\N	\N	\N	\N	FAKE_2
-1800	1	string	\N	\N	\N	\N	serial-from-ws
-1801	2	string	\N	\N	\N	\N	FAKE_2
-1802	1	string	\N	\N	\N	\N	serial-from-ws
-1803	2	string	\N	\N	\N	\N	FAKE_2
-1804	1	string	\N	\N	\N	\N	serial-from-ws
-1805	2	string	\N	\N	\N	\N	FAKE_2
-1806	1	string	\N	\N	\N	\N	serial-from-ws
-1807	2	string	\N	\N	\N	\N	FAKE_2
-1808	1	string	\N	\N	\N	\N	serial-from-ws
-1809	2	string	\N	\N	\N	\N	FAKE_2
-1810	1	string	\N	\N	\N	\N	serial-from-ws
-1811	2	string	\N	\N	\N	\N	FAKE_2
-1812	1	string	\N	\N	\N	\N	serial-from-ws
-1813	2	string	\N	\N	\N	\N	FAKE_2
-1814	1	string	\N	\N	\N	\N	serial-from-ws
-1815	2	string	\N	\N	\N	\N	FAKE_2
-1816	1	string	\N	\N	\N	\N	serial-from-ws
-1817	2	string	\N	\N	\N	\N	FAKE_2
-1818	1	string	\N	\N	\N	\N	serial-from-ws
-1819	2	string	\N	\N	\N	\N	FAKE_2
-1820	1	string	\N	\N	\N	\N	serial-from-ws
-1821	2	string	\N	\N	\N	\N	FAKE_2
-1822	1	string	\N	\N	\N	\N	serial-from-ws
-1823	2	string	\N	\N	\N	\N	FAKE_2
-1824	1	string	\N	\N	\N	\N	serial-from-ws
-1825	2	string	\N	\N	\N	\N	FAKE_2
-1826	1	string	\N	\N	\N	\N	serial-from-ws
-1827	2	string	\N	\N	\N	\N	FAKE_2
-1828	1	string	\N	\N	\N	\N	serial-from-ws
-1829	2	string	\N	\N	\N	\N	FAKE_2
-1830	1	string	\N	\N	\N	\N	serial-from-ws
-1831	2	string	\N	\N	\N	\N	FAKE_2
-1832	1	string	\N	\N	\N	\N	serial-from-ws
-1833	2	string	\N	\N	\N	\N	FAKE_2
-1834	1	string	\N	\N	\N	\N	serial-from-ws
-1835	2	string	\N	\N	\N	\N	FAKE_2
-1836	1	string	\N	\N	\N	\N	serial-from-ws
-1837	2	string	\N	\N	\N	\N	FAKE_2
-1838	1	string	\N	\N	\N	\N	serial-from-ws
-1839	2	string	\N	\N	\N	\N	FAKE_2
-1840	1	string	\N	\N	\N	\N	serial-from-ws
-1841	2	string	\N	\N	\N	\N	FAKE_2
-1842	1	string	\N	\N	\N	\N	serial-from-ws
-1843	2	string	\N	\N	\N	\N	FAKE_2
-1844	1	string	\N	\N	\N	\N	serial-from-ws
-1845	2	string	\N	\N	\N	\N	FAKE_2
-1846	1	string	\N	\N	\N	\N	serial-from-ws
-1847	2	string	\N	\N	\N	\N	FAKE_2
-1848	1	string	\N	\N	\N	\N	serial-from-ws
-1849	2	string	\N	\N	\N	\N	FAKE_2
-1850	1	string	\N	\N	\N	\N	serial-from-ws
-1851	2	string	\N	\N	\N	\N	FAKE_2
-1852	1	string	\N	\N	\N	\N	serial-from-ws
-1853	2	string	\N	\N	\N	\N	FAKE_2
-1854	1	string	\N	\N	\N	\N	serial-from-ws
-1855	2	string	\N	\N	\N	\N	FAKE_2
-1856	1	string	\N	\N	\N	\N	serial-from-ws
-1857	2	string	\N	\N	\N	\N	FAKE_2
-1858	1	string	\N	\N	\N	\N	serial-from-ws
-1859	2	string	\N	\N	\N	\N	FAKE_2
-1860	1	string	\N	\N	\N	\N	serial-from-ws
-1861	2	string	\N	\N	\N	\N	FAKE_2
-1862	1	string	\N	\N	\N	\N	serial-from-ws
-1863	2	string	\N	\N	\N	\N	FAKE_2
-1864	1	string	\N	\N	\N	\N	serial-from-ws
-1865	2	string	\N	\N	\N	\N	FAKE_2
-1866	1	string	\N	\N	\N	\N	serial-from-ws
-1867	2	string	\N	\N	\N	\N	FAKE_2
-1868	1	string	\N	\N	\N	\N	serial-from-ws
-1869	2	string	\N	\N	\N	\N	FAKE_2
-1870	1	string	\N	\N	\N	\N	serial-from-ws
-1871	2	string	\N	\N	\N	\N	FAKE_2
-1872	1	string	\N	\N	\N	\N	serial-from-ws
-1873	2	string	\N	\N	\N	\N	FAKE_2
-1874	1	string	\N	\N	\N	\N	serial-from-ws
-1875	2	string	\N	\N	\N	\N	FAKE_2
-1876	1	string	\N	\N	\N	\N	serial-from-ws
-1877	2	string	\N	\N	\N	\N	FAKE_2
-1878	1	string	\N	\N	\N	\N	serial-from-ws
-1879	2	string	\N	\N	\N	\N	FAKE_2
-1880	1	string	\N	\N	\N	\N	serial-from-ws
-1881	2	string	\N	\N	\N	\N	FAKE_2
-1882	1	string	\N	\N	\N	\N	serial-from-ws
-1883	2	string	\N	\N	\N	\N	FAKE_2
-1884	1	string	\N	\N	\N	\N	serial-from-ws
-1885	2	string	\N	\N	\N	\N	FAKE_2
-1886	1	string	\N	\N	\N	\N	serial-from-ws
-1887	2	string	\N	\N	\N	\N	FAKE_2
-1888	1	string	\N	\N	\N	\N	serial-from-ws
-1889	2	string	\N	\N	\N	\N	FAKE_2
-1890	1	string	\N	\N	\N	\N	serial-from-ws
-1891	2	string	\N	\N	\N	\N	FAKE_2
-1892	1	string	\N	\N	\N	\N	serial-from-ws
-1893	2	string	\N	\N	\N	\N	FAKE_2
-1894	1	string	\N	\N	\N	\N	serial-from-ws
-1895	2	string	\N	\N	\N	\N	FAKE_2
-1896	1	string	\N	\N	\N	\N	serial-from-ws
-1897	2	string	\N	\N	\N	\N	FAKE_2
-1898	1	string	\N	\N	\N	\N	serial-from-ws
-1899	2	string	\N	\N	\N	\N	FAKE_2
-1900	1	string	\N	\N	\N	\N	serial-from-ws
-1901	2	string	\N	\N	\N	\N	FAKE_2
-1902	1	string	\N	\N	\N	\N	serial-from-ws
-1903	2	string	\N	\N	\N	\N	FAKE_2
-1904	1	string	\N	\N	\N	\N	serial-from-ws
-1905	2	string	\N	\N	\N	\N	FAKE_2
-1906	1	string	\N	\N	\N	\N	serial-from-ws
-1907	2	string	\N	\N	\N	\N	FAKE_2
-1908	1	string	\N	\N	\N	\N	serial-from-ws
-1909	2	string	\N	\N	\N	\N	FAKE_2
-1910	1	string	\N	\N	\N	\N	serial-from-ws
-1911	2	string	\N	\N	\N	\N	FAKE_2
-1912	1	string	\N	\N	\N	\N	serial-from-ws
-1913	2	string	\N	\N	\N	\N	FAKE_2
-1914	1	string	\N	\N	\N	\N	serial-from-ws
-1915	2	string	\N	\N	\N	\N	FAKE_2
-1916	1	string	\N	\N	\N	\N	serial-from-ws
-1917	2	string	\N	\N	\N	\N	FAKE_2
-1918	1	string	\N	\N	\N	\N	serial-from-ws
-1919	2	string	\N	\N	\N	\N	FAKE_2
-1920	1	string	\N	\N	\N	\N	serial-from-ws
-1921	2	string	\N	\N	\N	\N	FAKE_2
-1922	1	string	\N	\N	\N	\N	serial-from-ws
-1923	2	string	\N	\N	\N	\N	FAKE_2
-1924	1	string	\N	\N	\N	\N	serial-from-ws
-1925	2	string	\N	\N	\N	\N	FAKE_2
-1926	1	string	\N	\N	\N	\N	serial-from-ws
-1927	2	string	\N	\N	\N	\N	FAKE_2
-1928	1	string	\N	\N	\N	\N	serial-from-ws
-1929	2	string	\N	\N	\N	\N	FAKE_2
-1930	1	string	\N	\N	\N	\N	serial-from-ws
-1931	2	string	\N	\N	\N	\N	FAKE_2
-1932	1	string	\N	\N	\N	\N	serial-from-ws
-1933	2	string	\N	\N	\N	\N	FAKE_2
-1934	1	string	\N	\N	\N	\N	serial-from-ws
-1935	2	string	\N	\N	\N	\N	FAKE_2
-1936	1	string	\N	\N	\N	\N	serial-from-ws
-1937	2	string	\N	\N	\N	\N	FAKE_2
-1938	1	string	\N	\N	\N	\N	serial-from-ws
-1939	2	string	\N	\N	\N	\N	FAKE_2
-1940	1	string	\N	\N	\N	\N	serial-from-ws
-1941	2	string	\N	\N	\N	\N	FAKE_2
-1942	1	string	\N	\N	\N	\N	serial-from-ws
-1943	2	string	\N	\N	\N	\N	FAKE_2
-1944	1	string	\N	\N	\N	\N	serial-from-ws
-1945	2	string	\N	\N	\N	\N	FAKE_2
-1946	1	string	\N	\N	\N	\N	serial-from-ws
-1947	2	string	\N	\N	\N	\N	FAKE_2
-1948	1	string	\N	\N	\N	\N	serial-from-ws
-1949	2	string	\N	\N	\N	\N	FAKE_2
-1950	1	string	\N	\N	\N	\N	serial-from-ws
-1951	2	string	\N	\N	\N	\N	FAKE_2
-1952	1	string	\N	\N	\N	\N	serial-from-ws
-1953	2	string	\N	\N	\N	\N	FAKE_2
-1954	1	string	\N	\N	\N	\N	serial-from-ws
-1955	2	string	\N	\N	\N	\N	FAKE_2
-1956	1	string	\N	\N	\N	\N	serial-from-ws
-1957	2	string	\N	\N	\N	\N	FAKE_2
-1958	1	string	\N	\N	\N	\N	serial-from-ws
-1959	2	string	\N	\N	\N	\N	FAKE_2
-1960	1	string	\N	\N	\N	\N	serial-from-ws
-1961	2	string	\N	\N	\N	\N	FAKE_2
-1962	1	string	\N	\N	\N	\N	serial-from-ws
-1963	2	string	\N	\N	\N	\N	FAKE_2
-1964	1	string	\N	\N	\N	\N	serial-from-ws
-1965	2	string	\N	\N	\N	\N	FAKE_2
-1966	1	string	\N	\N	\N	\N	serial-from-ws
-1967	2	string	\N	\N	\N	\N	FAKE_2
-1968	1	string	\N	\N	\N	\N	serial-from-ws
-1969	2	string	\N	\N	\N	\N	FAKE_2
-1970	1	string	\N	\N	\N	\N	serial-from-ws
-1971	2	string	\N	\N	\N	\N	FAKE_2
-1972	1	string	\N	\N	\N	\N	serial-from-ws
-1973	2	string	\N	\N	\N	\N	FAKE_2
-1974	1	string	\N	\N	\N	\N	serial-from-ws
-1975	2	string	\N	\N	\N	\N	FAKE_2
-1976	1	string	\N	\N	\N	\N	serial-from-ws
-1977	2	string	\N	\N	\N	\N	FAKE_2
-1978	1	string	\N	\N	\N	\N	serial-from-ws
-1979	2	string	\N	\N	\N	\N	FAKE_2
-1980	1	string	\N	\N	\N	\N	serial-from-ws
-1981	2	string	\N	\N	\N	\N	FAKE_2
-1982	1	string	\N	\N	\N	\N	serial-from-ws
-1983	2	string	\N	\N	\N	\N	FAKE_2
-1984	1	string	\N	\N	\N	\N	serial-from-ws
-1985	2	string	\N	\N	\N	\N	FAKE_2
-1986	1	string	\N	\N	\N	\N	serial-from-ws
-1987	2	string	\N	\N	\N	\N	FAKE_2
-1988	1	string	\N	\N	\N	\N	serial-from-ws
-1989	2	string	\N	\N	\N	\N	FAKE_2
-1990	1	string	\N	\N	\N	\N	serial-from-ws
-1991	2	string	\N	\N	\N	\N	FAKE_2
-1992	1	string	\N	\N	\N	\N	serial-from-ws
-1993	2	string	\N	\N	\N	\N	FAKE_2
-1994	1	string	\N	\N	\N	\N	serial-from-ws
-1995	2	string	\N	\N	\N	\N	FAKE_2
-1996	1	string	\N	\N	\N	\N	serial-from-ws
-1997	2	string	\N	\N	\N	\N	FAKE_2
-1998	1	string	\N	\N	\N	\N	serial-from-ws
-1999	2	string	\N	\N	\N	\N	FAKE_2
-2000	1	string	\N	\N	\N	\N	serial-from-ws
-2001	2	string	\N	\N	\N	\N	FAKE_2
-2002	1	string	\N	\N	\N	\N	serial-from-ws
-2003	2	string	\N	\N	\N	\N	FAKE_2
-2004	1	string	\N	\N	\N	\N	serial-from-ws
-2005	2	string	\N	\N	\N	\N	FAKE_2
-2006	1	string	\N	\N	\N	\N	serial-from-ws
-2007	2	string	\N	\N	\N	\N	FAKE_2
-2008	1	string	\N	\N	\N	\N	serial-from-ws
-2009	2	string	\N	\N	\N	\N	FAKE_2
-2010	1	string	\N	\N	\N	\N	serial-from-ws
-2011	2	string	\N	\N	\N	\N	FAKE_2
-2012	1	string	\N	\N	\N	\N	serial-from-ws
-2013	2	string	\N	\N	\N	\N	FAKE_2
-2014	1	string	\N	\N	\N	\N	serial-from-ws
-2015	2	string	\N	\N	\N	\N	FAKE_2
-2016	1	string	\N	\N	\N	\N	serial-from-ws
-2017	2	string	\N	\N	\N	\N	FAKE_2
-2018	1	string	\N	\N	\N	\N	serial-from-ws
-2019	2	string	\N	\N	\N	\N	FAKE_2
-2020	1	string	\N	\N	\N	\N	serial-from-ws
-2047	3	string	\N	\N	\N	\N	123.123.123.123
-2049	3	string	\N	\N	\N	\N	124.124.124.124
-202100	3	string	\N	\N	\N	\N	255.255.255.3
-202101	2	string	\N	\N	\N	\N	CURRENCY_ROUTER
-202102	1	string	\N	\N	\N	\N	
-202103	3	string	\N	\N	\N	\N	255.255.255.4
-202104	2	string	\N	\N	\N	\N	CURRENCY_ROUTER
-202105	1	string	\N	\N	\N	\N	
-202500	3	string	\N	\N	\N	\N	
-202501	2	string	\N	\N	\N	\N	
-202502	1	string	\N	\N	\N	\N	
-202503	3	string	\N	\N	\N	\N	
-202504	2	string	\N	\N	\N	\N	
-202505	1	string	\N	\N	\N	\N	
-202506	3	string	\N	\N	\N	\N	
-202507	2	string	\N	\N	\N	\N	
-202508	1	string	\N	\N	\N	\N	
-202600	3	string	\N	\N	\N	\N	
-202601	2	string	\N	\N	\N	\N	
-202602	1	string	\N	\N	\N	\N	
 \.
 
 
@@ -16286,7 +14107,6 @@ COPY partner (id, user_id, balance, total_payments, total_refunds, total_payouts
 10	10740	0.0000000000	0.0000000000	0.0000000000	0.0000000000	10.0000000000	0.0000000000	1	0	1	1	2009-04-01	0.0000000000	1	1	1
 12	10742	0.0000000000	0.0000000000	0.0000000000	0.0000000000	10.0000000000	0.0000000000	1	0	3	10	2009-03-15	0.0000000000	1	1	1
 11	10741	0.0000000000	0.0000000000	0.0000000000	0.0000000000	0.0000000000	1.0000000000	1	1	1	1	2009-03-01	0.0000000000	0	1	2
-20	10800	0.0000000000	0.0000000000	0.0000000000	0.0000000000	5.0000000000	10.0000000000	1	0	1	1	2011-11-01	0.0000000000	0	12	1
 \.
 
 
@@ -16436,6 +14256,7 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 97	9	\N
 98	9	\N
 99	9	\N
+120	10	\N
 23	2	\N
 71	7	\N
 13	1	\N
@@ -16456,19 +14277,6 @@ COPY permission (id, type_id, foreign_id) FROM stdin;
 28	2	\N
 36	3	\N
 74	7	\N
-110	11	\N
-111	11	\N
-17	1	\N
-18	1	\N
-29	2	\N
-37	3	\N
-75	7	\N
-100	9	\N
-120	12	\N
-101	10	\N
-102	10	\N
-103	10	\N
-104	10	\N
 \.
 
 
@@ -16593,45 +14401,6 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 28	3
 36	3
 74	3
-111	2
-24	5
-34	5
-72	5
-91	5
-92	5
-93	5
-30	5
-17	2
-17	3
-90	5
-15	5
-18	5
-29	5
-37	5
-75	5
-100	2
-101	2
-102	2
-103	2
-104	2
-100	3
-101	3
-102	3
-103	3
-104	3
-15	4
-10	4
-11	4
-24	4
-20	4
-21	4
-34	4
-30	4
-72	4
-90	4
-91	4
-92	4
-93	4
 \.
 
 
@@ -16649,9 +14418,7 @@ COPY permission_type (id, description) FROM stdin;
 7	Invoice
 8	Billing
 9	Menu
-11	User Switching
-12	API
-10	Partner
+10	API
 \.
 
 
@@ -16677,8 +14444,8 @@ COPY plan (id, item_id, description, period_id) FROM stdin;
 -- Data for Name: plan_item; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY plan_item (id, plan_id, item_id, precedence, plan_item_bundle_id) FROM stdin;
-1	1	2602	-1	\N
+COPY plan_item (id, plan_id, item_id, price_model_id, precedence, plan_item_bundle_id) FROM stdin;
+1	1	2602	2004	-1	\N
 \.
 
 
@@ -16687,15 +14454,6 @@ COPY plan_item (id, plan_id, item_id, precedence, plan_item_bundle_id) FROM stdi
 --
 
 COPY plan_item_bundle (id, quantity, period_id, target_customer, add_if_exists) FROM stdin;
-\.
-
-
---
--- Data for Name: plan_item_price_timeline; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY plan_item_price_timeline (plan_item_id, price_model_id, start_date) FROM stdin;
-1	2004	1970-01-01 00:00:00
 \.
 
 
@@ -16933,14 +14691,13 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 81	22	com.sapienter.jbilling.server.mediation.task.MediationProcessTask	0
 82	22	com.sapienter.jbilling.server.billing.task.BillingProcessTask	1
 79	14	com.sapienter.jbilling.server.pricing.tasks.PriceModelPricingTask	0
+80	14	com.sapienter.jbilling.server.pricing.tasks.TieredPriceModelPricingTask	0
 84	17	com.sapienter.jbilling.server.payment.tasks.SaveACHExternallyTask	1
 85	20	com.sapienter.jbilling.server.process.task.BillableUserOrdersBillingProcessFilterTask	0
 86	4	com.sapienter.jbilling.server.process.task.SimpleTaxCompositionTask	1
 87	24	com.sapienter.jbilling.server.process.task.BasicAgeingTask	0
 88	22	com.sapienter.jbilling.server.process.task.AgeingProcessTask	0
 89	24	com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask	0
-90	4	com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask	2
-91	4	com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask	2
 \.
 
 
@@ -18193,6 +15950,14 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 
 
 --
+-- Data for Name: rate_card; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY rate_card (id, name, table_name, entity_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: recent_item; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -18215,9 +15980,6 @@ COPY report (id, type_id, name, file_name, optlock) FROM stdin;
 7	1	accounts_receivable	accounts_receivable.jasper	0
 8	1	gl_detail	gl_detail.jasper	0
 9	1	gl_summary	gl_summary.jasper	0
-10	5	plan_history	plan_history.jasper	0
-11	4	total_invoiced_per_customer	total_invoiced_per_customer.jasper	0
-12	4	total_invoiced_per_customer_over_years	total_invoiced_per_customer_over_years.jasper	0
 \.
 
 
@@ -18240,13 +16002,6 @@ COPY report_parameter (id, report_id, dtype, name) FROM stdin;
 12	6	date	end_date
 13	8	date	date
 14	9	date	date
-15	10	integer	plan_id
-16	10	string	plan_code
-17	10	string	plan_description
-18	11	date	start_date
-19	11	date	end_date
-20	12	string	start_year
-21	12	string	end_year
 \.
 
 
@@ -18259,7 +16014,6 @@ COPY report_type (id, name, optlock) FROM stdin;
 2	order	0
 3	payment	0
 4	user	0
-5	plan	0
 \.
 
 
@@ -18271,7 +16025,6 @@ COPY role (id) FROM stdin;
 2
 3
 5
-4
 \.
 
 
@@ -20334,10 +18087,9 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 10780	5
 10781	5
 10790	5
-10740	4
-10741	4
-10742	4
-10800	4
+10740	3
+10741	3
+10742	3
 \.
 
 
@@ -20502,22 +18254,6 @@ ALTER TABLE ONLY entity
 
 
 --
--- Name: enumeration_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY enumeration
-    ADD CONSTRAINT enumeration_pkey PRIMARY KEY (id);
-
-
---
--- Name: enumeration_values_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY enumeration_values
-    ADD CONSTRAINT enumeration_values_pkey PRIMARY KEY (id);
-
-
---
 -- Name: event_log_message_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -20619,22 +18355,6 @@ ALTER TABLE ONLY invoice
 
 ALTER TABLE ONLY item
     ADD CONSTRAINT item_pkey PRIMARY KEY (id);
-
-
---
--- Name: item_price_timeline_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY item_price_timeline
-    ADD CONSTRAINT item_price_timeline_pkey PRIMARY KEY (item_id, start_date);
-
-
---
--- Name: item_price_timeline_price_model_id_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY item_price_timeline
-    ADD CONSTRAINT item_price_timeline_price_model_id_key UNIQUE (price_model_id);
 
 
 --
@@ -20934,22 +18654,6 @@ ALTER TABLE ONLY plan_item
 
 
 --
--- Name: plan_item_price_timeline_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY plan_item_price_timeline
-    ADD CONSTRAINT plan_item_price_timeline_pkey PRIMARY KEY (plan_item_id, start_date);
-
-
---
--- Name: plan_item_price_timeline_price_model_id_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY plan_item_price_timeline
-    ADD CONSTRAINT plan_item_price_timeline_price_model_id_key UNIQUE (price_model_id);
-
-
---
 -- Name: plan_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -21067,6 +18771,22 @@ ALTER TABLE ONLY promotion
 
 ALTER TABLE ONLY purchase_order
     ADD CONSTRAINT purchase_order_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rate_card_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY rate_card
+    ADD CONSTRAINT rate_card_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rate_card_table_name_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY rate_card
+    ADD CONSTRAINT rate_card_table_name_key UNIQUE (table_name);
 
 
 --
@@ -21824,14 +19544,6 @@ ALTER TABLE ONLY entity_payment_method_map
 
 
 --
--- Name: enumeration_values_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY enumeration_values
-    ADD CONSTRAINT enumeration_values_fk_1 FOREIGN KEY (enumeration_id) REFERENCES enumeration(id);
-
-
---
 -- Name: event_log_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
 --
 
@@ -21957,22 +19669,6 @@ ALTER TABLE ONLY invoice_line
 
 ALTER TABLE ONLY item
     ADD CONSTRAINT item_fk_1 FOREIGN KEY (entity_id) REFERENCES entity(id);
-
-
---
--- Name: item_pm_map_item_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY item_price_timeline
-    ADD CONSTRAINT item_pm_map_item_id_fk FOREIGN KEY (item_id) REFERENCES item(id);
-
-
---
--- Name: item_pm_map_price_model_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY item_price_timeline
-    ADD CONSTRAINT item_pm_map_price_model_id_fk FOREIGN KEY (price_model_id) REFERENCES price_model(id);
 
 
 --
@@ -22376,19 +20072,11 @@ ALTER TABLE ONLY plan_item
 
 
 --
--- Name: plan_item_timeline_plan_item_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+-- Name: plan_item_price_model_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
 --
 
-ALTER TABLE ONLY plan_item_price_timeline
-    ADD CONSTRAINT plan_item_timeline_plan_item_id_fk FOREIGN KEY (plan_item_id) REFERENCES plan_item(id);
-
-
---
--- Name: plan_item_timeline_price_mode_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY plan_item_price_timeline
-    ADD CONSTRAINT plan_item_timeline_price_mode_id_fk FOREIGN KEY (price_model_id) REFERENCES price_model(id);
+ALTER TABLE ONLY plan_item
+    ADD CONSTRAINT plan_item_price_model_id_fk FOREIGN KEY (price_model_id) REFERENCES price_model(id);
 
 
 --
@@ -22589,6 +20277,14 @@ ALTER TABLE ONLY purchase_order
 
 ALTER TABLE ONLY purchase_order
     ADD CONSTRAINT purchase_order_fk_5 FOREIGN KEY (created_by) REFERENCES base_user(id);
+
+
+--
+-- Name: rate_card_entity_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY rate_card
+    ADD CONSTRAINT rate_card_entity_id_fk FOREIGN KEY (entity_id) REFERENCES entity(id);
 
 
 --

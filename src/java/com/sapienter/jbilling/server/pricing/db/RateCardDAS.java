@@ -29,8 +29,4 @@ import java.io.File;
  */
 public class RateCardDAS extends AbstractDAS<RateCardDTO> {
 
-    public void update(Integer rateCardId, File csv) {
-        // todo: read file, generate prepared statement, drop existing, read stream and perform batch inserts.
-    }
-
 }

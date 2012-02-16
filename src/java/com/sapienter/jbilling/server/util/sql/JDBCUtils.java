@@ -14,12 +14,14 @@
  * is strictly forbidden.
  */
 
-package com.sapienter.jbilling.server.mediation.task;
+package com.sapienter.jbilling.server.util.sql;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -152,5 +154,36 @@ public class JDBCUtils {
         rs.close();
 
         return columns;
+    }
+
+
+    /**
+     * Converts a given piece of text into a proper, all-lowercase database object name. All
+     * non-alphanumeric characters are removed and spaces or CamelCase delimited strings are
+     * converted to underscores.
+     *
+     * Examples:
+     * <literal>
+     *     "somePropertyName" = "some_property_name"
+     *      "A bit of text."  = "a_bit_of_text"
+     * </literal>
+     *      *
+     * @param text text to convert
+     * @return database object name
+     */
+    public static String toDatabaseObjectName(String text) {
+        StringBuilder column = new StringBuilder();
+
+        String[] tokens = text.replaceAll("[_. ]", "").split("[A-Z]");
+        for (Iterator<String> it = Arrays.asList(tokens).iterator(); it.hasNext();) {
+            String token = it.next();
+
+            column.append(token.toLowerCase().replaceAll("[^a-z0-9]", ""));
+
+            if (it.hasNext())
+                column.append("_");
+        }
+
+        return column.toString();
     }
 }

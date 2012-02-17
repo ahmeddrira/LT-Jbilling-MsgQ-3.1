@@ -39,6 +39,7 @@ public class MetaFieldValueWS implements Serializable {
     private boolean mandatory;
     private DataType dataType;
     private Object defaultValue;
+    private Integer displayOrder;
 
     private Integer id;
 
@@ -57,6 +58,7 @@ public class MetaFieldValueWS implements Serializable {
             this.disabled = metaFieldValue.getField().isDisabled();
             this.mandatory = metaFieldValue.getField().isMandatory();
             this.dataType = metaFieldValue.getField().getDataType();
+            this.displayOrder = metaFieldValue.getField().getDisplayOrder();
             setDefaultValue(metaFieldValue.getField().getDefaultValue() != null ? metaFieldValue.getField().getDefaultValue().getValue() : null);
         }
 
@@ -158,6 +160,14 @@ public class MetaFieldValueWS implements Serializable {
         } else {
             this.defaultValue = defaultValue;
         }
+    }
+
+    public Integer getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
     }
 
     public String getStringValue() {

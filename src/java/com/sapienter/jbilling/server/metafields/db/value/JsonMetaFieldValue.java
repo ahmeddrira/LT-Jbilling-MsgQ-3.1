@@ -63,7 +63,7 @@ public class JsonMetaFieldValue extends MetaFieldValue<String> {
             return null;
 
         try {
-            return (JSONObject) new JSONParser(new StringReader(json)).parse();
+            return json != null ? (JSONObject) new JSONParser(new StringReader(json)).parse() : null;
         } catch (ParseException e) {
             LOG.error("Could not parse string as JSON object.", e);
             return null;

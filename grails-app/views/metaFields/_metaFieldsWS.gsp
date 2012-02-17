@@ -48,7 +48,7 @@
   @since 25-Oct-2011
 --%>
 
-<g:each var="metaField" in="${metaFields?.sort{ it.field.displayOrder }}">
+<g:each var="metaField" in="${metaFields?.sort{ it.displayOrder }}">
     <g:if test="${!metaField.disabled}">
         <g:set var="fieldValue" value="${metaField.getValue()}"/>
 

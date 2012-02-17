@@ -16,8 +16,9 @@
 
 package com.sapienter.jbilling.server.util.sql;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,6 +30,8 @@ import java.util.List;
  * @since 15-Feb-2012
  */
 public class TableGenerator {
+    private static final Logger LOG = Logger.getLogger(TableGenerator.class);
+
 
     /**
      * Columns of the table schema.
@@ -93,12 +96,11 @@ public class TableGenerator {
 
     public TableGenerator(String tableName, List<Column> columns) {
         this.tableName = tableName;
-        this.columns = columns;
+        this.columns = new ArrayList<Column>(columns); // safety first kids!
     }
 
-    public void addColumns(Column ...columns) {
-        List<Column> list = Arrays.asList(columns);
-        this.columns.addAll(list);
+    public void addColumn(Column column) {
+        this.columns.add(column);
     }
 
     public void addColumns(List<Column> columns) {
@@ -111,6 +113,10 @@ public class TableGenerator {
 
     public String getTableName() {
         return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
 
@@ -153,6 +159,7 @@ public class TableGenerator {
 
         ddl.append(");");
 
+        LOG.debug("Generated create table SQL [" + ddl + "]");
         return ddl.toString();
     }
 
@@ -162,7 +169,23 @@ public class TableGenerator {
      * @return drop table DDL statement
      */
     public String buildDropTableSQL() {
-        return "drop table if exists " + tableName + ";";
+        String drop = "drop table if exists " + tableName + ";";
+        LOG.debug("Generated drop table SQL [" + drop + "]");
+
+        return drop;
+    }
+
+    /**
+     * Produces the DDL statement to rename a a table;.
+     *
+     * @param newTableName new table name
+     * @return alter table DDL statement
+     */
+    public String buildRenameTableSQL(String newTableName) {
+        String alter = "alter table " + tableName + " rename to " + newTableName + ";";
+        LOG.debug("Generated rename table SQL [" + alter + "]");
+
+        return alter;
     }
 
     /**
@@ -199,6 +222,7 @@ public class TableGenerator {
 
         insert.append(values);
 
+        LOG.debug("Generated insert statement [" + insert + "]");
         return insert.toString();
     }
 

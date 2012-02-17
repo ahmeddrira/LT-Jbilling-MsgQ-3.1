@@ -760,6 +760,15 @@
             <reference foreign="id" local="user_id"/>
         </foreign-key>
     </table>
+    <table name="rate_card">
+        <column name="id" primaryKey="true" requred="true" type="INTEGER"/>
+        <column name="name" required="true" size="255" type="VARCHAR"/>
+        <column name="table_name" required="true" unique="true" size="255" type="VARCHAR"/>
+        <column name="entity_id" required="true" type="INTEGER"/>
+        <foreign-key foreignTable="company">
+            <reference foreign="id" local="entity_id"/>
+        </foreign-key>
+    </table>
     <table name="jbilling_table">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="name" required="true" size="50" type="VARCHAR"/>

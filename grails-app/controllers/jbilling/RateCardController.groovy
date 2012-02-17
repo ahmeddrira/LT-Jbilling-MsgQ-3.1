@@ -21,7 +21,9 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.pricing.RateCardBL
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.client.ViewUtils
+import grails.plugins.springsecurity.Secured
 
+@Secured(["MENU_99"])
 class RateCardController {
 
     static pagination = [ max: 10, offset: 0 ]
@@ -70,9 +72,7 @@ class RateCardController {
         }
 
         // re-render the list of rate cards
-        params.id = null
-        params.partial = true
-        list()
+        redirect action: 'list', params: [ id: null, partial: true]
     }
 
     def edit = {
@@ -92,29 +92,41 @@ class RateCardController {
     def save = {
         def rateCard = new RateCardDTO();
         bindData(rateCard, params)
-
         rateCard.company = new CompanyDTO(session['company_id'])
+
+        // save uploaded file
+        def rates = request.getFile("rates")
+        def temp = null
+
+        if (!rates.empty) {
+            temp = File.createTempFile(rateCard.tableName, '.csv')
+            rates.transferTo(temp)
+            log.debug("rate card csv saved to: " + temp?.getAbsolutePath());
+        }
 
         try {
             // save or update
             if (!rateCard.id) {
-                rateCard.id = new RateCardBL().create(rateCard, null)
+                rateCard.id = new RateCardBL().create(rateCard, temp)
 
                 flash.message = 'rate.card.created'
                 flash.args = [rateCard.id as String]
 
             } else {
-                new RateCardBL().update(rateCard, null);
+                new RateCardBL(rateCard.id).update(rateCard, temp);
 
                 flash.message = 'rate.card.updated'
                 flash.args = [rateCard.id as String]
             }
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            render view: 'edit', model: [ rateCard: rateCard ]
+            chain action: 'list', model: [ selected: rateCard ]
             return
+
+        } finally {
+            temp?.delete()
         }
 
-        chain action: 'list', params: [id: rateCard.id]
+        chain action: 'list', params: [ id: rateCard.id ]
     }
 }

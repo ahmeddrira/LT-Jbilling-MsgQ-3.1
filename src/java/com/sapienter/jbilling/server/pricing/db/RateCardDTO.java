@@ -60,7 +60,6 @@ public class RateCardDTO implements Serializable {
     private String name;
     private String tableName;
     private CompanyDTO company;
-    private int versionNum;
 
     public RateCardDTO() {
     }
@@ -110,16 +109,6 @@ public class RateCardDTO implements Serializable {
 
     public void setCompany(CompanyDTO company) {
         this.company = company;
-    }
-
-    @Version
-    @Column(name = "OPTLOCK")
-    public Integer getVersionNum() {
-        return versionNum;
-    }
-
-    public void setVersionNum(Integer versionNum) {
-        this.versionNum = versionNum;
     }
 
     @Override

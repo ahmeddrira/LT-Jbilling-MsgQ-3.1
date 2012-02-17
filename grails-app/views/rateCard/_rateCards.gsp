@@ -27,8 +27,8 @@
     <table id="rateCards" cellspacing="0" cellpadding="0">
         <thead>
             <tr>
-                <th>Name</th>
-                <th class="medium">Table Name</th>
+                <th><g:message code="rate.card.name"/></th>
+                <th class="medium"><g:message code="rate.card.table.name"/></th>
             </tr>
         </thead>
 

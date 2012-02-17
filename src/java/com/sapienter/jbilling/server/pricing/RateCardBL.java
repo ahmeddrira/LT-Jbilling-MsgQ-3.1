@@ -22,6 +22,7 @@ import com.sapienter.jbilling.server.pricing.db.RateCardDAS;
 import com.sapienter.jbilling.server.pricing.db.RateCardDTO;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.sql.TableGenerator;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,8 +31,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.String;
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Business Logic for RateCardDTO crud, and for creating and updating the rating tables
@@ -44,6 +49,7 @@ public class RateCardBL {
     private static final Logger LOG = Logger.getLogger(RateCardBL.class);
 
     private static final int BATCH_SIZE = 10;
+    private static final String DEFAULT_DATA_TYPE = "varchar(255)";
 
 
     private RateCardDAS rateCardDas;
@@ -86,12 +92,17 @@ public class RateCardBL {
         if (rateCard != null) {
             LOG.debug("Saving new rate card " + rateCard);
             this.rateCard = rateCardDas.save(rateCard);
+            this.tableGenerator = new TableGenerator(this.rateCard.getTableName(), RateCardDTO.TABLE_COLUMNS);
 
+            LOG.debug("Creating a new rate table & saving rating data");
             if (rates != null) {
                 try {
                     setRates(rates);
                 } catch (IOException e) {
                     throw new SessionInternalError("Could not load rating table", e, new String[] { "RateCarDTO,rates,cannot.read.file" });
+                } catch (SessionInternalError e) {
+                    dropRates();
+                    throw e;
                 }
 
                 registerPricingFinderBean();
@@ -112,14 +123,8 @@ public class RateCardBL {
      */
     public void update(RateCardDTO rateCard, File rates) {
         if (this.rateCard != null) {
-            // do update
-            this.rateCard.setName(rateCard.getName());
-            this.rateCard.setTableName(rateCard.getTableName());
-
-            LOG.debug("Saving updates to rate card " + rateCard.getId());
-            this.rateCard = rateCardDas.save(rateCard);
-
-            // recreate the rating table
+            // re-create the rating table
+            LOG.debug("Re-creating the rate table & saving updated rating data");
             if (rates != null) {
                 dropRates();
 
@@ -130,8 +135,44 @@ public class RateCardBL {
                 }
             }
 
+            // prepare SQL to rename the table if the table name has changed
+            String originalTableName = this.rateCard.getTableName();
+            String alterTableSql = null;
+
+            if (!originalTableName.equals(rateCard.getTableName())) {
+                alterTableSql = this.tableGenerator.buildRenameTableSQL(rateCard.getTableName());
+            }
+
+
+            // do update
+            this.rateCard.setName(rateCard.getName());
+            this.rateCard.setTableName(rateCard.getTableName());
+
+            LOG.debug("Saving updates to rate card " + rateCard.getId());
+            this.rateCard = rateCardDas.save(rateCard);
+            this.tableGenerator = new TableGenerator(this.rateCard.getTableName(), RateCardDTO.TABLE_COLUMNS);
+
+            // do rename after saving the new table name
+            if (alterTableSql != null) {
+                LOG.debug("Renaming the rate table");
+                jdbcTemplate.execute(alterTableSql);
+            }
+
         } else {
             LOG.error("Cannot update, RateCardDTO not found or not set!");
+        }
+    }
+
+    /**
+     * Deletes the current rate card managed by this class.
+     */
+    public void delete() {
+        if (rateCard != null) {
+            rateCardDas.delete(rateCard);
+            dropRates();
+
+        } else {
+            LOG.error("Cannot delete, RateCardDTO not found or not set!");
         }
     }
 
@@ -148,54 +189,99 @@ public class RateCardBL {
      * the given CSF file of rates.
      *
      * @param rates file handle of the CSV on disk containing the rates.
+     * @throws IOException if file does not exist or is not readable
      */
     public void setRates(File rates) throws IOException {
         CSVReader reader = new CSVReader(new FileReader(rates));
         String[] line = reader.readNext();
-
         validateCsvHeader(line);
 
         // parse the header and read out the extra columns.
         // ignore the default rate card table columns as they should ALWAYS exist
         int start = RateCardDTO.TABLE_COLUMNS.size();
-        TableGenerator.Column[] columns = new TableGenerator.Column[line.length - start];
-
-        for (int i = start; i < line.length; i++) {
-            columns[i] = new TableGenerator.Column(line[i], "varchar (255)", true);
+        for (int i = start; i <line.length; i++) {
+            tableGenerator.addColumn(new TableGenerator.Column(line[i], DEFAULT_DATA_TYPE, true));
         }
-
-        tableGenerator.addColumns(columns);
 
         // create rate table
         String createSql = tableGenerator.buildCreateTableSQL();
-        LOG.debug("Create rating table SQL: " + createSql);
         jdbcTemplate.execute(createSql);
 
         // load rating data in batches
         String insertSql = tableGenerator.buildInsertPreparedStatementSQL();
+        List<List<String>> rows = new ArrayList<List<String>>();
+        for (int i = 1; i <= BATCH_SIZE; i++) {
+            // add row to insert batch
+            line = reader.readNext();
+            if (line != null) rows.add(Arrays.asList(line));
 
-        LOG.debug("Insert SQL: " + insertSql);
+            // end of file
+            if (line == null) {
+                executeBatchInsert(insertSql, rows);
+                break; // done
+            }
 
-//        while ((line = reader.readNext()) != null) {
-//
-//        }
+            // reached batch limit
+            if (i == BATCH_SIZE) {
+                executeBatchInsert(insertSql, rows);
+                i = 1; rows.clear(); // next batch
+            }
+        }
     }
 
-    private void validateCsvHeader(String[] header) {
+    /**
+     * Validates that the uploaded CSV file starts with the expected columns from {@link RateCardDTO#TABLE_COLUMNS}.
+     * If the column names don't match or are in an incorrect order a SessionInternalError will be throw.
+     *
+     * @param header header line to validate
+     * @throws SessionInternalError thrown if errors found in header data
+     */
+    public void validateCsvHeader(String[] header) throws SessionInternalError {
+        List<String> errors = new ArrayList<String>();
 
+        List<TableGenerator.Column> columns = RateCardDTO.TABLE_COLUMNS;
+        for (int i = 0; i < columns.size(); i++) {
+            String columnName = header[i].trim();
+            String expected = columns.get(i).getName();
+
+            if (!expected.equalsIgnoreCase(columnName)) {
+                errors.add("RateCardDTO,rates,rate.card.unexpected.header.value," + expected + "," + columnName);
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            throw new SessionInternalError("Rate card CSV has errors in the order of columns, or is missing required columns",
+                    errors.toArray(new String[errors.size()]));
+        }
     }
 
-    private void executeInsert(String insertSql, final String[][] rows) {
+    /**
+     * Inserts a batch of records into the database.
+     *
+     * @param insertSql prepared statement SQL
+     * @param rows list of rows to insert
+     */
+    private void executeBatchInsert(String insertSql, final List<List<String>> rows) {
+        LOG.debug("Inserting " + rows.size() + " records:");
+        LOG.debug(rows);
+
         jdbcTemplate.batchUpdate(insertSql, new BatchPreparedStatementSetter() {
             public void setValues(PreparedStatement preparedStatement, int batch) throws SQLException {
-                String[] values = rows[batch];
-                for (int i = 0; i < values.length; i++) {
-                    preparedStatement.setObject(i, values[i]);
+                List<String> values = rows.get(batch);
+                for (int i = 0; i < values.size(); i++) {
+                    String value = values.get(i);
+                    switch (i) {
+                        case 2:  // rate card rate
+                            preparedStatement.setBigDecimal(i + 1, StringUtils.isNotBlank(value) ? new BigDecimal(value) : BigDecimal.ZERO);
+                            break;
+                        default: // everything else
+                            preparedStatement.setObject(i + 1, value);
+                    }
                 }
             }
 
             public int getBatchSize() {
-                return rows.length;
+                return rows.size();
             }
         });
     }
@@ -207,18 +293,4 @@ public class RateCardBL {
     public void registerPricingFinderBean() {
         // todo: get application context, create finder beans and register.
     }
-
-    /**
-     * Deletes the current rate card managed by this class.
-     */
-    public void delete() {
-        if (rateCard != null) {
-            rateCardDas.delete(rateCard);
-            dropRates();
-
-        } else {
-            LOG.error("Cannot delete, RateCardDTO not found or not set!");
-        }
-    }
-
 }

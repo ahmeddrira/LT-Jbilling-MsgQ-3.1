@@ -1823,7 +1823,7 @@ create table rate_card (
     id int not null unique,
     name varchar(255) not null,
     table_name varchar(255) not null unique,
-    entity_id int,
+    entity_id int not null,
     primary key (id)
 );
 

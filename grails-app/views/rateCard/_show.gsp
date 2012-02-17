@@ -34,12 +34,12 @@
         <fieldset>
             <div class="form-columns">
                 <g:applyLayout name="form/text">
-                    <content tag="label">Name</content>
+                    <content tag="label"><g:message code="rate.card.name"/></content>
                     ${selected.name}
                 </g:applyLayout>
 
                 <g:applyLayout name="form/text">
-                    <content tag="label">Table Name</content>
+                    <content tag="label"><g:message code="rate.card.table.name"/></content>
                     ${selected.tableName}
                 </g:applyLayout>
             </div>
@@ -49,7 +49,9 @@
 
     <div class="btn-box">
         <div class="row">
-            <g:link action="edit" id="${selected.id}" class="submit edit"><span><g:message code="button.edit"/></span></g:link>
+            <g:remoteLink action="edit" id="${selected.id}" class="submit edit" before="register(this);" onSuccess="render(data, second);">
+                <span><g:message code="button.edit"/></span>
+            </g:remoteLink>
             <a onclick="showConfirm('delete-${selected.id}');" class="submit delete"><span><g:message code="button.delete"/></span></a>
         </div>
     </div>

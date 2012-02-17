@@ -24,11 +24,18 @@
 --%>
 
 <div class="column-hold">
+    <g:set var="isNew" value="${!rateCard || !rateCard?.id || rateCard?.id == 0}"/>
+
     <div class="heading">
-        <strong>New Rate Card</strong>
+        <g:if test="${isNew}">
+            <strong><g:message code="rate.card.add.title"/></strong>
+        </g:if>
+        <g:else>
+            <strong><g:message code="rate.card.edit.title"/></strong>
+        </g:else>
     </div>
 
-    <g:form id="rate-card-form" name="rate-card-form" url="[action: 'save']">
+    <g:uploadForm id="rate-card-form" name="rate-card-form" url="[action: 'save']">
 
     <div class="box">
         <fieldset>
@@ -36,21 +43,28 @@
                 <g:hiddenField name="id" value="${rateCard?.id}"/>
 
                 <g:applyLayout name="form/input">
-                    <content tag="label">Name</content>
+                    <content tag="label"><g:message code="rate.card.name"/></content>
                     <content tag="label.for">name</content>
                     <g:textField class="field" name="name" value="${rateCard?.name}"/>
                 </g:applyLayout>
 
-                <g:applyLayout name="form/input">
-                    <content tag="label">Table Name</content>
-                    <content tag="label.for">tableName</content>
-                    <g:textField class="field" name="tableName" value="${rateCard?.tableName}"/>
+                <g:if test="${!isNew}">
+                    <g:applyLayout name="form/text">
+                        <content tag="label"><g:message code="rate.card.table.name"/></content>
+                        <content tag="label.for">tableName</content>
+                        <g:textField class="field" name="tableName" value="${rateCard?.tableName}"/>
+                    </g:applyLayout>
+                </g:if>
+
+                <g:applyLayout name="form/text">
+                    <content tag="label"><g:message code="rate.card.csv.file"/></content>
+                    <input type="file" name="rates"/>
                 </g:applyLayout>
             </div>
         </fieldset>
     </div>
 
-    </g:form>
+    </g:uploadForm>
 
     <div class="btn-box buttons">
         <ul>

@@ -107,5 +107,11 @@
 </div>
 
 <div class="btn-box">
-    <div class="row"></div>
+    <div class="row">
+        <sec:ifAllGranted roles="ROLE_CUSTOMER">
+            <sec:ifAllGranted roles="ORDER_20">
+                <g:link controller="orderBuilder" action="edit" params="[userId: session['user_id']]" class="submit order"><span><g:message code="button.create.order"/></span></g:link>
+            </sec:ifAllGranted>
+        </sec:ifAllGranted>
+    </div>
 </div>

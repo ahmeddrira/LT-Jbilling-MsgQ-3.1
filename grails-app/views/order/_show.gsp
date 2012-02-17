@@ -139,7 +139,7 @@
             <table class="innerTable" >
                 <thead class="innerHeader">
                      <tr>
-                        <th><g:message code="order.label.line.item"/></th>
+                        <th style="min-width: 75px;"><g:message code="order.label.line.item"/></th>
                         <th><g:message code="order.label.line.descr"/></th>
                         <th><g:message code="order.label.line.qty"/></th>
                         <th><g:message code="order.label.line.price"/></th>

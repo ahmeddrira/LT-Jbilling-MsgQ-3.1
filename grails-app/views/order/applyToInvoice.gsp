@@ -77,6 +77,7 @@
                             </thead>
                             <tbody>
                             <g:each var="invoice" in="${invoices}">
+                                <g:if test="${!invoice.orders.find{ it == orderId as Integer}}">
                                 <g:set var="currency" value="${currencies.find { it.id == invoice.currencyId }}"/>
 
                                 <tr>
@@ -108,6 +109,7 @@
                                         </g:link>
                                     </td>
                                 </tr>
+                                </g:if>
                             </g:each>
                             </tbody>
                         </table>

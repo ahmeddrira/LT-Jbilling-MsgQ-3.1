@@ -70,6 +70,8 @@ public class Context {
 
         // HSQLDB data loader cache
         MEMCACHE_DATASOURCE                 ("memcacheDataSource"),
+        MEMCACHE_JDBC_TEMPLATE              ("memcacheJdbcTemplate"),
+        MEMCACHE_TX_TEMPLATE                ("memcacheTransactionTemplate"),
         PRICING_FINDER                      ("pricingFinder"),
         NANPA_CALL_IDENTIFICATION_FINDER    ("callIdentificationFinder"),
 

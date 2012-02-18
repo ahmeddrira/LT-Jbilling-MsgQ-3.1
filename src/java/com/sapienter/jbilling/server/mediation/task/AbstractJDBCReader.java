@@ -98,6 +98,7 @@ public abstract class AbstractJDBCReader extends AbstractReader {
 
     public enum MarkMethod { LAST_ID, TIMESTAMP }
 
+    private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
 
     private String databaseName;
@@ -132,11 +133,13 @@ public abstract class AbstractJDBCReader extends AbstractReader {
      */
     private void init() {
         // data source
-        this.databaseName = getParameter(PARAM_DATABASE_NAME.getName(), DATABASE_NAME_DEFAULT);
-        this.url = getParameter(PARAM_URL.getName(), "jdbc:hsqldb:" + MEDIATION_DIR + this.databaseName + ";shutdown=true");
-        this.username = getParameter(PARAM_USERNAME.getName(), USERNAME_DEFAULT);
-        this.password = getParameter(PARAM_PASSWORD.getName(), PASSWORD_DEFAULT);
-        this.driverClassName = getParameter(PARAM_DRIVER.getName(), DRIVER_DEFAULT);
+        if (dataSource == null) {
+            this.databaseName = getParameter(PARAM_DATABASE_NAME.getName(), DATABASE_NAME_DEFAULT);
+            this.url = getParameter(PARAM_URL.getName(), "jdbc:hsqldb:" + MEDIATION_DIR + this.databaseName + ";shutdown=true");
+            this.username = getParameter(PARAM_USERNAME.getName(), USERNAME_DEFAULT);
+            this.password = getParameter(PARAM_PASSWORD.getName(), PASSWORD_DEFAULT);
+            this.driverClassName = getParameter(PARAM_DRIVER.getName(), DRIVER_DEFAULT);
+        }
 
         // briefly create a connection to determine case-corrected table and column names
         // then terminate and discard connection as soon as it's not needed.
@@ -174,7 +177,9 @@ public abstract class AbstractJDBCReader extends AbstractReader {
         this.useLowercaseNames = getParameter(PARAM_LOWERCASE_COLUMN_NAME.getName(), LOWERCASE_COLUMN_NAME_DEFAULT);
 
         // build a Spring JdbcTemplate
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        if (this.jdbcTemplate == null) {
+            this.jdbcTemplate = new JdbcTemplate(dataSource);
+        }
         this.jdbcTemplate.setMaxRows(getBatchSize());
     }
 
@@ -206,12 +211,20 @@ public abstract class AbstractJDBCReader extends AbstractReader {
         return driverClassName;
     }
 
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     public DataSource getDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(getDriverClassName());
-        dataSource.setUrl(getUrl());
-        dataSource.setUsername(getUsername());
-        dataSource.setPassword(getPassword());
+        if (this.dataSource == null) {
+            DriverManagerDataSource dataSource = new DriverManagerDataSource();
+            dataSource.setDriverClassName(getDriverClassName());
+            dataSource.setUrl(getUrl());
+            dataSource.setUsername(getUsername());
+            dataSource.setPassword(getPassword());
+
+            this.dataSource = dataSource;
+        }
 
         return dataSource;
     }

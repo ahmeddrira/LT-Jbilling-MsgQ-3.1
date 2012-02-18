@@ -18,6 +18,9 @@ package com.sapienter.jbilling.server.pricing;
 
 import au.com.bytecode.opencsv.CSVReader;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.mediation.cache.IFinder;
+import com.sapienter.jbilling.server.mediation.cache.ILoader;
+import com.sapienter.jbilling.server.mediation.task.IMediationReader;
 import com.sapienter.jbilling.server.pricing.db.RateCardDAS;
 import com.sapienter.jbilling.server.pricing.db.RateCardDTO;
 import com.sapienter.jbilling.server.util.Context;
@@ -48,9 +51,8 @@ import java.util.List;
 public class RateCardBL {
     private static final Logger LOG = Logger.getLogger(RateCardBL.class);
 
-    private static final int BATCH_SIZE = 10;
-    private static final String DEFAULT_DATA_TYPE = "varchar(255)";
-
+    public static final int BATCH_SIZE = 10;
+    public static final String DEFAULT_DATA_TYPE = "varchar(255)";
 
     private RateCardDAS rateCardDas;
     private JdbcTemplate jdbcTemplate;
@@ -291,6 +293,24 @@ public class RateCardBL {
      * cache and look-up prices from the rating table
      */
     public void registerPricingFinderBean() {
+        RateCardBeanFactory factory = new RateCardBeanFactory(rateCard);
+
+        IMediationReader reader = factory.getReaderInstance(rateCard.getCompany().getId());
+        ILoader loader = factory.getCacheLoaderInstance(reader);
+        IFinder finder = factory.getCacheFinderInstance(loader);
+
         // todo: get application context, create finder beans and register.
+    }
+
+    public String getReaderBeanName() {
+        return null;
+    }
+
+    public String getLoaderBeanName() {
+        return null;
+    }
+
+    public String getFinderBeanName() {
+        return null;
     }
 }

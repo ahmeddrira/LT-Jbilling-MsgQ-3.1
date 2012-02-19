@@ -87,6 +87,10 @@ public class RateCardBL {
         this.jdbcTemplate = Context.getBean(Context.Name.JDBC_TEMPLATE);
     }
 
+    /**
+     * Returns the RateCardDTO object being managed by this BL class.
+     * @return rate card object
+     */
     public RateCardDTO getEntity() {
         return rateCard;
     }
@@ -291,6 +295,8 @@ public class RateCardBL {
                 List<String> values = rows.get(batch);
                 for (int i = 0; i < values.size(); i++) {
                     String value = values.get(i);
+
+                    // todo: come up with a better solution for this... we shouldn't need to hard-code the datatype of the default rate card columns
                     switch (i) {
                         case 2:  // rate card rate
                             preparedStatement.setBigDecimal(i + 1, StringUtils.isNotBlank(value) ? new BigDecimal(value) : BigDecimal.ZERO);
@@ -310,7 +316,7 @@ public class RateCardBL {
 
 
     /*
-            Spring Beans
+            Spring Beans stuff
      */
 
     /**
@@ -318,15 +324,15 @@ public class RateCardBL {
      * of pricing from the rating tables.
      */
     public void registerSpringBeans() {
-        RateCardBeanFactory factory = new RateCardBeanFactory(rateCard);
+        RateCardBeanFactory factory = getBeanFactory();
 
-        String readerBeanName = getReaderBeanName();
+        String readerBeanName = factory.getReaderBeanName();
         BeanDefinition readerBeanDef = factory.getReaderBeanDefinition(rateCard.getCompany().getId());
 
-        String loaderBeanName = getLoaderBeanName();
+        String loaderBeanName = factory.getLoaderBeanName();
         BeanDefinition loaderBeanDef = factory.getLoaderBeanDefinition(readerBeanName);
 
-        String finderBeanName = getFinderBeanName();
+        String finderBeanName = factory.getFinderBeanName();
         BeanDefinition finderBeanDef = factory.getFinderBeanDefinition(loaderBeanName);
 
         LOG.debug("Registering beans: " + readerBeanName + ", " + loaderBeanName + ", " + finderBeanName);
@@ -342,9 +348,11 @@ public class RateCardBL {
      * Removes registered spring beans from the application context.
      */
     public void removeSpringBeans() {
-        String readerBeanName = getReaderBeanName();
-        String loaderBeanName = getLoaderBeanName();
-        String finderBeanName = getFinderBeanName();
+        RateCardBeanFactory factory = getBeanFactory();
+
+        String readerBeanName = factory.getReaderBeanName();
+        String loaderBeanName = factory.getLoaderBeanName();
+        String finderBeanName = factory.getFinderBeanName();
 
         LOG.debug("Removing beans: " + readerBeanName + ", " + loaderBeanName + ", " + finderBeanName);
 
@@ -354,48 +362,13 @@ public class RateCardBL {
         ctx.removeBeanDefinition(finderBeanName);
     }
 
-    public String getReaderBeanName() {
-        return toBeanName(rateCard.getTableName()) + "Reader";
-    }
-
-    public IMediationReader getReaderInstance() {
-        return Context.getBean(getReaderBeanName());
-    }
-
-    public String getLoaderBeanName() {
-        return toBeanName(rateCard.getTableName()) + "Loader";
-    }
-
-    public ILoader getLoaderInstance() {
-        return Context.getBean(getLoaderBeanName());
-    }
-
-    public String getFinderBeanName() {
-        return toBeanName(rateCard.getTableName()) + "Finder";
-    }
-
-    public IFinder getFinderInstance() {
-        return Context.getBean(getFinderBeanName());
-    }
-
     /**
-     * Converts a rate card table name to a camelCase bean name to use registering
-     * rating spring beans.
+     * Returns an instance of the {@link RateCardBeanFactory} for producing rate card beans
+     * used for pricing.
      *
-     * @param tableName rate card table name
+     * @return rate card bean factory
      */
-    private static String toBeanName(String tableName) {
-        StringBuilder builder = new StringBuilder();
-
-        String[] tokens = tableName.split("_");
-        for (int i = 0; i < tokens.length; i++) {
-            if (i == 0) {
-                builder.append(tokens[i]);
-            } else {
-                builder.append(StringUtils.capitalize(tokens[i]));
-            }
-        }
-
-        return builder.toString();
+    public RateCardBeanFactory getBeanFactory() {
+        return new RateCardBeanFactory(rateCard);
     }
 }

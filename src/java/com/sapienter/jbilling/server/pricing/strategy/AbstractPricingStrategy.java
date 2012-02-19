@@ -16,6 +16,7 @@
 
 package com.sapienter.jbilling.server.pricing.strategy;
 
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.order.Usage;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
@@ -75,5 +76,20 @@ public abstract class AbstractPricingStrategy implements PricingStrategy {
           return usage.getQuantity();
       }
       return usage.getQuantity().subtract(quantity);
+    }
+
+    /**
+     * Looks for a pricing field by name.
+     *
+     * @param fields fields passed to the pricing engine
+     * @param fieldName field name to search for
+     * @return pricing field if found, null if not
+     */
+    public static PricingField find(List<PricingField> fields, String fieldName) {
+        for (PricingField field : fields) {
+            if (field.getName().equals(fieldName))
+                return field;
+        }
+        return null;
     }
 }

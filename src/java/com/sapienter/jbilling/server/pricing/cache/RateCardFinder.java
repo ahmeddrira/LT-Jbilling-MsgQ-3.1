@@ -14,9 +14,13 @@
  * is strictly forbidden.
  */
 
-package com.sapienter.jbilling.server.mediation.cache;
+package com.sapienter.jbilling.server.pricing.cache;
 
+import com.sapienter.jbilling.server.mediation.cache.AbstractFinder;
+import com.sapienter.jbilling.server.mediation.cache.ILoader;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.math.BigDecimal;
 
 /**
  * RateCardFinder
@@ -34,5 +38,8 @@ public class RateCardFinder extends AbstractFinder {
         // noop
     }
 
+    public BigDecimal getPrice(MatchType matchType, String searchValue) {
 
+        return null;
+    }
 }

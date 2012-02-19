@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.pricing.strategy.MeteredPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PercentageStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PooledPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
+import com.sapienter.jbilling.server.pricing.strategy.RateCardPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPercentageStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TimeOfDayPricingStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.TieredPricingStrategy;
@@ -82,7 +83,10 @@ public enum PriceModelStrategy {
     ITEM_PERCENTAGE_SELECTOR    (new ItemPercentageSelectorStrategy()),
 
     /** START of chain pricing strategy that increases the "included" quantity of a Graduated price using other purchased add-on items */
-    QUANTITY_ADDON              (new QuantityAddonPricingStrategy());
+    QUANTITY_ADDON              (new QuantityAddonPricingStrategy()),
+
+    /** Pricing strategy that queries the price from a cached rating table using the value from a provided pricing field. */
+    RATE_CARD                   (new RateCardPricingStrategy());
 
 
     private final PricingStrategy strategy;

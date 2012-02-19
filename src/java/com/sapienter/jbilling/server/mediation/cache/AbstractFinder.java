@@ -28,4 +28,7 @@ public abstract class AbstractFinder implements IFinder {
         this.loader = loader;
     }
 
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
+    }
 }

@@ -17,21 +17,16 @@
 package com.sapienter.jbilling.server.pricing;
 
 import com.sapienter.jbilling.server.mediation.cache.BasicLoaderImpl;
-import com.sapienter.jbilling.server.mediation.cache.IFinder;
 import com.sapienter.jbilling.server.mediation.cache.ILoader;
-import com.sapienter.jbilling.server.mediation.cache.RateCardFinder;
 import com.sapienter.jbilling.server.mediation.task.IMediationReader;
 import com.sapienter.jbilling.server.mediation.task.StatelessJDBCReader;
+import com.sapienter.jbilling.server.pricing.cache.RateCardFinder;
 import com.sapienter.jbilling.server.pricing.db.RateCardDTO;
 import com.sapienter.jbilling.server.util.Context;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.context.ApplicationContext;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,6 +59,13 @@ public class RateCardBeanFactory {
 
         return beanDef.getBeanDefinition();
     }
+    public String getReaderBeanName() {
+        return toBeanName(rateCard.getTableName()) + "Reader";
+    }
+
+    public IMediationReader getReaderInstance() {
+        return Context.getBean(getReaderBeanName());
+    }
 
     public AbstractBeanDefinition getLoaderBeanDefinition(String readerBeanName) {
         BeanDefinitionBuilder beanDef = BeanDefinitionBuilder.rootBeanDefinition(BasicLoaderImpl.class);
@@ -81,6 +83,14 @@ public class RateCardBeanFactory {
         return beanDef.getBeanDefinition();
     }
 
+    public String getLoaderBeanName() {
+        return toBeanName(rateCard.getTableName()) + "Loader";
+    }
+
+    public ILoader getLoaderInstance() {
+        return Context.getBean(getLoaderBeanName());
+    }
+
     public AbstractBeanDefinition getFinderBeanDefinition(String loaderBeanName) {
         BeanDefinitionBuilder beanDef = BeanDefinitionBuilder.rootBeanDefinition(RateCardFinder.class);
         beanDef.setLazyInit(true);
@@ -90,5 +100,34 @@ public class RateCardBeanFactory {
         beanDef.addConstructorArgReference(loaderBeanName);
 
         return beanDef.getBeanDefinition();
+    }
+
+    public String getFinderBeanName() {
+        return toBeanName(rateCard.getTableName()) + "Finder";
+    }
+
+    public RateCardFinder getFinderInstance() {
+        return Context.getBean(getFinderBeanName());
+    }
+
+    /**
+     * Converts a rate card table name to a camelCase bean name to use registering
+     * rating spring beans.
+     *
+     * @param tableName rate card table name
+     */
+    private static String toBeanName(String tableName) {
+        StringBuilder builder = new StringBuilder();
+
+        String[] tokens = tableName.split("_");
+        for (int i = 0; i < tokens.length; i++) {
+            if (i == 0) {
+                builder.append(tokens[i]);
+            } else {
+                builder.append(StringUtils.capitalize(tokens[i]));
+            }
+        }
+
+        return builder.toString();
     }
 }

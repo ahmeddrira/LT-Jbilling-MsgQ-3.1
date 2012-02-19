@@ -27,6 +27,8 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.sql.TableGenerator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -69,6 +71,12 @@ public class RateCardBL {
         set(rateCardId);
     }
 
+    public RateCardBL(RateCardDTO rateCard) {
+        _init();
+        this.rateCard = rateCard;
+        this.tableGenerator = new TableGenerator(rateCard.getTableName(), RateCardDTO.TABLE_COLUMNS);
+    }
+
     public void set(Integer rateCardId) {
         this.rateCard = rateCardDas.find(rateCardId);
         this.tableGenerator = new TableGenerator(rateCard.getTableName(), RateCardDTO.TABLE_COLUMNS);
@@ -99,7 +107,7 @@ public class RateCardBL {
             LOG.debug("Creating a new rate table & saving rating data");
             if (rates != null) {
                 try {
-                    setRates(rates);
+                    saveRates(rates);
                 } catch (IOException e) {
                     throw new SessionInternalError("Could not load rating table", e, new String[] { "RateCarDTO,rates,cannot.read.file" });
                 } catch (SessionInternalError e) {
@@ -107,7 +115,7 @@ public class RateCardBL {
                     throw e;
                 }
 
-                registerPricingFinderBean();
+                registerSpringBeans();
             }
 
             return this.rateCard.getId();
@@ -131,7 +139,7 @@ public class RateCardBL {
                 dropRates();
 
                 try {
-                    setRates(rates);
+                    saveRates(rates);
                 } catch (IOException e) {
                     throw new SessionInternalError("Could not load rating table", e, new String[] { "RateCarDTO,rates,cannot.read.file" });
                 }
@@ -145,7 +153,6 @@ public class RateCardBL {
                 alterTableSql = this.tableGenerator.buildRenameTableSQL(rateCard.getTableName());
             }
 
-
             // do update
             this.rateCard.setName(rateCard.getName());
             this.rateCard.setTableName(rateCard.getTableName());
@@ -158,6 +165,12 @@ public class RateCardBL {
             if (alterTableSql != null) {
                 LOG.debug("Renaming the rate table");
                 jdbcTemplate.execute(alterTableSql);
+            }
+
+            // re-register spring beans if rates were updated
+            if (rates != null) {
+                removeSpringBeans();
+                registerSpringBeans();
             }
 
         } else {
@@ -178,6 +191,12 @@ public class RateCardBL {
         }
     }
 
+
+
+    /*
+            Rate Table Database Stuff
+     */
+
     /**
      * Drop the rate table of a rate card.
      */
@@ -193,7 +212,7 @@ public class RateCardBL {
      * @param rates file handle of the CSV on disk containing the rates.
      * @throws IOException if file does not exist or is not readable
      */
-    public void setRates(File rates) throws IOException {
+    public void saveRates(File rates) throws IOException {
         CSVReader reader = new CSVReader(new FileReader(rates));
         String[] line = reader.readNext();
         validateCsvHeader(line);
@@ -238,7 +257,7 @@ public class RateCardBL {
      * @param header header line to validate
      * @throws SessionInternalError thrown if errors found in header data
      */
-    public void validateCsvHeader(String[] header) throws SessionInternalError {
+    private void validateCsvHeader(String[] header) throws SessionInternalError {
         List<String> errors = new ArrayList<String>();
 
         List<TableGenerator.Column> columns = RateCardDTO.TABLE_COLUMNS;
@@ -288,29 +307,95 @@ public class RateCardBL {
         });
     }
 
-    /**
-     * Register a pricing finder bean that can be used by the {@link RateCardPricingStrategy} to
-     * cache and look-up prices from the rating table
+
+
+    /*
+            Spring Beans
      */
-    public void registerPricingFinderBean() {
+
+    /**
+     * Registers spring beans with the application context so support caching and look-up
+     * of pricing from the rating tables.
+     */
+    public void registerSpringBeans() {
         RateCardBeanFactory factory = new RateCardBeanFactory(rateCard);
 
-        IMediationReader reader = factory.getReaderInstance(rateCard.getCompany().getId());
-        ILoader loader = factory.getCacheLoaderInstance(reader);
-        IFinder finder = factory.getCacheFinderInstance(loader);
+        String readerBeanName = getReaderBeanName();
+        BeanDefinition readerBeanDef = factory.getReaderBeanDefinition(rateCard.getCompany().getId());
 
-        // todo: get application context, create finder beans and register.
+        String loaderBeanName = getLoaderBeanName();
+        BeanDefinition loaderBeanDef = factory.getLoaderBeanDefinition(readerBeanName);
+
+        String finderBeanName = getFinderBeanName();
+        BeanDefinition finderBeanDef = factory.getFinderBeanDefinition(loaderBeanName);
+
+        LOG.debug("Registering beans: " + readerBeanName + ", " + loaderBeanName + ", " + finderBeanName);
+
+        // register spring beans!
+        GenericApplicationContext ctx = (GenericApplicationContext) Context.getApplicationContext();
+        ctx.registerBeanDefinition(readerBeanName, readerBeanDef);
+        ctx.registerBeanDefinition(loaderBeanName, loaderBeanDef);
+        ctx.registerBeanDefinition(finderBeanName, finderBeanDef);
+    }
+
+    /**
+     * Removes registered spring beans from the application context.
+     */
+    public void removeSpringBeans() {
+        String readerBeanName = getReaderBeanName();
+        String loaderBeanName = getLoaderBeanName();
+        String finderBeanName = getFinderBeanName();
+
+        LOG.debug("Removing beans: " + readerBeanName + ", " + loaderBeanName + ", " + finderBeanName);
+
+        GenericApplicationContext ctx = (GenericApplicationContext) Context.getApplicationContext();
+        ctx.removeBeanDefinition(readerBeanName);
+        ctx.removeBeanDefinition(loaderBeanName);
+        ctx.removeBeanDefinition(finderBeanName);
     }
 
     public String getReaderBeanName() {
-        return null;
+        return toBeanName(rateCard.getTableName()) + "Reader";
+    }
+
+    public IMediationReader getReaderInstance() {
+        return Context.getBean(getReaderBeanName());
     }
 
     public String getLoaderBeanName() {
-        return null;
+        return toBeanName(rateCard.getTableName()) + "Loader";
+    }
+
+    public ILoader getLoaderInstance() {
+        return Context.getBean(getLoaderBeanName());
     }
 
     public String getFinderBeanName() {
-        return null;
+        return toBeanName(rateCard.getTableName()) + "Finder";
+    }
+
+    public IFinder getFinderInstance() {
+        return Context.getBean(getFinderBeanName());
+    }
+
+    /**
+     * Converts a rate card table name to a camelCase bean name to use registering
+     * rating spring beans.
+     *
+     * @param tableName rate card table name
+     */
+    private static String toBeanName(String tableName) {
+        StringBuilder builder = new StringBuilder();
+
+        String[] tokens = tableName.split("_");
+        for (int i = 0; i < tokens.length; i++) {
+            if (i == 0) {
+                builder.append(tokens[i]);
+            } else {
+                builder.append(StringUtils.capitalize(tokens[i]));
+            }
+        }
+
+        return builder.toString();
     }
 }

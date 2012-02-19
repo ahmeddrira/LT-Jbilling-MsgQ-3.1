@@ -24,6 +24,9 @@ import com.sapienter.jbilling.server.mediation.task.IMediationReader;
 import com.sapienter.jbilling.server.mediation.task.StatelessJDBCReader;
 import com.sapienter.jbilling.server.pricing.db.RateCardDTO;
 import com.sapienter.jbilling.server.util.Context;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -46,45 +49,46 @@ public class RateCardBeanFactory {
         this.rateCard = rateCard;
     }
 
-    public IMediationReader getReaderInstance(Integer entityId) {
+    public AbstractBeanDefinition getReaderBeanDefinition(Integer entityId) {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("table_name", rateCard.getTableName());
         parameters.put("batch_size", String.valueOf(RateCardBL.BATCH_SIZE));
 
-        DataSource dataSource = Context.getBean(Context.Name.DATA_SOURCE);
-        JdbcTemplate jdbcTemplate = Context.getBean(Context.Name.JDBC_TEMPLATE);
+        BeanDefinitionBuilder beanDef = BeanDefinitionBuilder.rootBeanDefinition(StatelessJDBCReader.class);
+        beanDef.setLazyInit(true);
 
-        StatelessJDBCReader reader = new StatelessJDBCReader();
-        reader.setParameters(parameters);
-        reader.setDataSource(dataSource);
-        reader.setJdbcTemplate(jdbcTemplate);
-        reader.setEntityId(entityId);
+        beanDef.addPropertyReference("jdbcTemplate", Context.Name.JDBC_TEMPLATE.getName());
+        beanDef.addPropertyReference("dataSource", Context.Name.DATA_SOURCE.getName());
+        beanDef.addPropertyValue("parameters", parameters);
+        beanDef.addPropertyValue("entityId", entityId);
 
-        return reader;
+        return beanDef.getBeanDefinition();
     }
 
-    public ILoader getCacheLoaderInstance(IMediationReader reader) {
-        JdbcTemplate memcacheJdbcTemplate = Context.getBean(Context.Name.MEMCACHE_JDBC_TEMPLATE);
-        TransactionTemplate memcacheTxTemplate = Context.getBean(Context.Name.MEMCACHE_TX_TEMPLATE);
+    public AbstractBeanDefinition getLoaderBeanDefinition(String readerBeanName) {
+        BeanDefinitionBuilder beanDef = BeanDefinitionBuilder.rootBeanDefinition(BasicLoaderImpl.class);
+        beanDef.setLazyInit(true);
+        beanDef.setInitMethodName("init");
+        beanDef.setDestroyMethodName("destroy");
 
-        BasicLoaderImpl loader = new BasicLoaderImpl();
-        loader.setJdbcTemplate(memcacheJdbcTemplate);
-        loader.setTransactionTemplate(memcacheTxTemplate);
-        loader.setReader(reader);
-        loader.setTableName(rateCard.getTableName());
-        loader.setIndexName(rateCard.getTableName() + "_idx");
-        loader.setIndexColumnNames("match");
+        beanDef.addPropertyReference("jdbcTemplate", Context.Name.MEMCACHE_JDBC_TEMPLATE.getName());
+        beanDef.addPropertyReference("transactionTemplate", Context.Name.MEMCACHE_TX_TEMPLATE.getName());
+        beanDef.addPropertyReference("reader", readerBeanName);
+        beanDef.addPropertyValue("tableName", rateCard.getTableName());
+        beanDef.addPropertyValue("indexName", rateCard.getTableName() + "_idx");
+        beanDef.addPropertyValue("indexColumnNames", "match");
 
-        loader.init();
-        return loader;
+        return beanDef.getBeanDefinition();
     }
 
-    public IFinder getCacheFinderInstance(ILoader loader) {
-        JdbcTemplate memcacheJdbcTemplate = Context.getBean(Context.Name.MEMCACHE_JDBC_TEMPLATE);
+    public AbstractBeanDefinition getFinderBeanDefinition(String loaderBeanName) {
+        BeanDefinitionBuilder beanDef = BeanDefinitionBuilder.rootBeanDefinition(RateCardFinder.class);
+        beanDef.setLazyInit(true);
+        beanDef.setInitMethodName("init");
 
-        RateCardFinder finder = new RateCardFinder(memcacheJdbcTemplate, loader);
-        finder.init();
+        beanDef.addConstructorArgReference(Context.Name.MEMCACHE_JDBC_TEMPLATE.getName());
+        beanDef.addConstructorArgReference(loaderBeanName);
 
-        return finder;
+        return beanDef.getBeanDefinition();
     }
 }

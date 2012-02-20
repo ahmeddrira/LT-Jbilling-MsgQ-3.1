@@ -234,6 +234,8 @@ public class RateCardBL {
 
         // load rating data in batches
         String insertSql = tableGenerator.buildInsertPreparedStatementSQL();
+
+        int id = 1;
         List<List<String>> rows = new ArrayList<List<String>>();
         for (int i = 1; i <= BATCH_SIZE; i++) {
             // add row to insert batch
@@ -242,13 +244,13 @@ public class RateCardBL {
 
             // end of file
             if (line == null) {
-                executeBatchInsert(insertSql, rows);
+                id += executeBatchInsert(insertSql, rows, id);
                 break; // done
             }
 
             // reached batch limit
             if (i == BATCH_SIZE) {
-                executeBatchInsert(insertSql, rows);
+                id += executeBatchInsert(insertSql, rows, id);
                 i = 1; rows.clear(); // next batch
             }
         }
@@ -265,9 +267,9 @@ public class RateCardBL {
         List<String> errors = new ArrayList<String>();
 
         List<TableGenerator.Column> columns = RateCardDTO.TABLE_COLUMNS;
-        for (int i = 0; i < columns.size(); i++) {
-            String columnName = header[i].trim();
-            String expected = columns.get(i).getName();
+        for (int i = 1; i < columns.size(); i++) {
+            String columnName = header[i - 1].trim();    // id column will be missing from the header
+            String expected = columns.get(i).getName();  // because the id value is generated
 
             if (!expected.equalsIgnoreCase(columnName)) {
                 errors.add("RateCardDTO,rates,rate.card.unexpected.header.value," + expected + "," + columnName);
@@ -286,23 +288,27 @@ public class RateCardBL {
      * @param insertSql prepared statement SQL
      * @param rows list of rows to insert
      */
-    private void executeBatchInsert(String insertSql, final List<List<String>> rows) {
+    private int executeBatchInsert(String insertSql, final List<List<String>> rows, final int lastId) {
         LOG.debug("Inserting " + rows.size() + " records:");
         LOG.debug(rows);
 
         jdbcTemplate.batchUpdate(insertSql, new BatchPreparedStatementSetter() {
             public void setValues(PreparedStatement preparedStatement, int batch) throws SQLException {
                 List<String> values = rows.get(batch);
+
+                // incremented id
+                preparedStatement.setInt(1, lastId + batch);
+
+                // values read from the csv file
                 for (int i = 0; i < values.size(); i++) {
                     String value = values.get(i);
-
-                    // todo: come up with a better solution for this... we shouldn't need to hard-code the datatype of the default rate card columns
                     switch (i) {
                         case 2:  // rate card rate
-                            preparedStatement.setBigDecimal(i + 1, StringUtils.isNotBlank(value) ? new BigDecimal(value) : BigDecimal.ZERO);
+                            preparedStatement.setBigDecimal(i + 2, StringUtils.isNotBlank(value) ? new BigDecimal(value) : BigDecimal.ZERO);
                             break;
+
                         default: // everything else
-                            preparedStatement.setObject(i + 1, value);
+                            preparedStatement.setObject(i + 2, value);
                     }
                 }
             }
@@ -311,6 +317,8 @@ public class RateCardBL {
                 return rows.size();
             }
         });
+
+        return lastId + rows.size();
     }
 
 

@@ -36,7 +36,7 @@
 
     <g:set var="attribute" value="${attributes.remove(definition.name)}"/>
 
-    <g:if test="${templateName == 'pooled' && definition.name== 'pool_item_id'}">
+    <g:if test="${definition.name== 'pool_item_id'}">
         <g:hiddenField name="model.${modelIndex}.attribute.${attributeIndex}.name" value="${definition.name}"/>
         <g:applyLayout name="form/select">
             <content tag="label"><g:message code="${definition.name}"/></content>
@@ -44,8 +44,31 @@
             <g:select name="model.${modelIndex}.attribute.${attributeIndex}.value" class="model-type" from="${ItemDTO.list([sort: 'id'])}"
                       optionKey="id" optionValue="${{it.id + ' - ' + it.description}}" value="${attribute}"/>
         </g:applyLayout>
-
     </g:if>
+
+    <g:elseif test="${definition.name == 'rate_card_id'}">
+        <g:hiddenField name="model.${modelIndex}.attribute.${attributeIndex}.name" value="${definition.name}"/>
+        <g:applyLayout name="form/select">
+            <content tag="label"><g:message code="${definition.name}"/></content>
+            <content tag="label.for">model.${modelIndex}.attribute.${attributeIndex}.value</content>
+            <g:select name="model.${modelIndex}.attribute.${attributeIndex}.value"
+                      from="${RateCardDTO.findByCompany(new CompanyDTO(session['company_id']), [sort: 'id'])}"
+                      optionKey="id" optionValue="${{it.name}}"
+                      value="${attribute}"/>
+        </g:applyLayout>
+    </g:elseif>
+
+    <g:elseif test="${definition.name == 'match_type'}">
+        <g:hiddenField name="model.${modelIndex}.attribute.${attributeIndex}.name" value="${definition.name}"/>
+        <g:applyLayout name="form/select">
+            <content tag="label"><g:message code="${definition.name}"/></content>
+            <content tag="label.for">model.${modelIndex}.attribute.${attributeIndex}.value</content>
+            <g:select name="model.${modelIndex}.attribute.${attributeIndex}.value"
+                      valueMessagePrefix="best_match"
+                      optionKey="${{it.name()}}" optionValue="${{it.name()}}"
+                      from="${MatchType.values()}" value="${attribute}"/>
+        </g:applyLayout>
+    </g:elseif>
 
     <g:else>
         <g:applyLayout name="form/input">

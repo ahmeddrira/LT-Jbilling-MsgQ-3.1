@@ -38,7 +38,12 @@ public class RateCardFinder extends AbstractFinder {
         // noop
     }
 
-    public BigDecimal getPrice(MatchType matchType, String searchValue) {
+    public BigDecimal findPrice(MatchType matchType, String searchValue) {
+        String sql = "select rate from " + loader.getTableName() + " where match = ?";
+
+        if (matchType != null) {
+            return matchType.findPrice(getJdbcTemplate(), sql, searchValue);
+        }
 
         return null;
     }

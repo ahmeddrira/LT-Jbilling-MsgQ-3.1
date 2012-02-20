@@ -77,7 +77,7 @@ public class RateCardPricingStrategy extends AbstractPricingStrategy {
 
         // rate cards can exist in a chain, but we don't want to bother with another lookup
         // if a price was found earlier
-        if (result.getPrice() == null || result.getPrice().compareTo(BigDecimal.ZERO) == 0) {
+        if (result.getPrice() != null && result.getPrice().compareTo(BigDecimal.ZERO) == 0) {
             LOG.debug("Price already found, skipping rate card lookup.");
             return;
         }
@@ -89,9 +89,8 @@ public class RateCardPricingStrategy extends AbstractPricingStrategy {
 
         if (lookupField == null) {
             LOG.debug("Lookup field not found, not running in mediation or fields don't match configuration.");
-            return;
+            result.setPrice(BigDecimal.ZERO);
         }
-
 
         // fetch the finder bean from spring
         // and do the pricing lookup
@@ -99,7 +98,7 @@ public class RateCardPricingStrategy extends AbstractPricingStrategy {
             RateCardBL rateCard = new RateCardBL(rateCardId);
             RateCardFinder pricingFinder = rateCard.getBeanFactory().getFinderInstance();
 
-            BigDecimal price = pricingFinder.getPrice(matchType, lookupField.getStrValue());
+            BigDecimal price = pricingFinder.findPrice(matchType, lookupField.getStrValue());
             result.setPrice(price);
 
         } catch (ObjectNotFoundException e) {

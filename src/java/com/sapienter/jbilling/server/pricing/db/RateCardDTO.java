@@ -51,9 +51,10 @@ public class RateCardDTO implements Serializable {
     public static final String TABLE_PREFIX = "rate_";
 
     public static final List<TableGenerator.Column> TABLE_COLUMNS = Arrays.asList(
-            new TableGenerator.Column("match", "varchar(20)", false),
-            new TableGenerator.Column("comment", "varchar(255)", true),
-            new TableGenerator.Column("rate", "numeric(22,10)", false)
+            new TableGenerator.Column("id", "int", false, true),
+            new TableGenerator.Column("match", "varchar(20)", false, false),
+            new TableGenerator.Column("comment", "varchar(255)", true, false),
+            new TableGenerator.Column("rate", "numeric(22,10)", false, false)
     );
 
     private Integer id;

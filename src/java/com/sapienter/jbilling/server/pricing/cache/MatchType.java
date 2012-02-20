@@ -16,6 +16,11 @@
 
 package com.sapienter.jbilling.server.pricing.cache;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+
+import java.math.BigDecimal;
+
 /**
  * MatchType specifies the logic used by {@link RateCardFinder} when determining if a pricing
  * field from mediation matches the 'match' column of the rating table when looking for a price.
@@ -25,12 +30,51 @@ package com.sapienter.jbilling.server.pricing.cache;
  */
 public enum MatchType {
 
-    /** Returns prices from the rate table only when the value EXACTLY matches */
-    EXACT,
+    /**
+     * Searches for an entry in the rating table where the entry exactly matches the search value
+     */
+    EXACT {
+        public BigDecimal findPrice(JdbcTemplate jdbcTemplate, String query, String searchValue) {
+            SqlRowSet rs = jdbcTemplate.queryForRowSet(query, searchValue);
 
-    /** Searches for a price using the search value as a prefix, trying to find the smallest possible prefix match */
-    SMALLEST_PREFIX,
+            if (rs.next())
+                return rs.getBigDecimal("rate");
 
-    /** Searches for a price using the search value as a prefix, trying to find the largest, most specific, match */
-    LARGEST_PREFIX,
+            return null;
+        }
+    },
+
+    /**
+     * Searches through the rating table looking for an entry using the search value as
+     * a prefix. The BEST_MATCH continually shortens the prefix being used in the search
+     * to find a match with the largest possible portion of the search string.
+     */
+    BEST_MATCH {
+        public BigDecimal findPrice(JdbcTemplate jdbcTemplate, String query, String searchValue) {
+            int length = 10;
+            searchValue = getCharacters(searchValue, length);
+
+            while (length >= 0) {
+                SqlRowSet rs = jdbcTemplate.queryForRowSet(query, searchValue);
+
+                if (rs.next()) {
+                    return rs.getBigDecimal("rate");
+                } else {
+                    length--;
+                    searchValue = getCharacters(searchValue, length);
+                }
+            }
+
+            return null;
+        }
+
+        public String getCharacters(String number, int length) {
+            if (length <= 0) return "*";
+            return number.length() > length ? number.substring(0, length) : number;
+        }
+    };
+
+
+
+    public abstract BigDecimal findPrice(JdbcTemplate jdbcTemplate, String query, String searchValue);
 }

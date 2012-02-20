@@ -154,6 +154,7 @@ public class TableGenerator {
         }
 
         if (primaryKeys > 0) {
+            pk.append(")");
             ddl.append(", ").append(pk);
         }
 

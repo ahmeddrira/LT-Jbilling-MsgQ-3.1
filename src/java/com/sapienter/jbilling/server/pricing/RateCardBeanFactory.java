@@ -47,6 +47,7 @@ public class RateCardBeanFactory {
     public AbstractBeanDefinition getReaderBeanDefinition(Integer entityId) {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("table_name", rateCard.getTableName());
+        parameters.put("key_column_name", "id");
         parameters.put("batch_size", String.valueOf(RateCardBL.BATCH_SIZE));
 
         BeanDefinitionBuilder beanDef = BeanDefinitionBuilder.rootBeanDefinition(StatelessJDBCReader.class);

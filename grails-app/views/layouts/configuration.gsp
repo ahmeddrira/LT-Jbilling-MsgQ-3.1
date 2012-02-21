@@ -88,7 +88,7 @@
                             <g:message code="configuration.menu.currencies"/>
                         </g:link>
                     </li>
-                    <li class="${pageProperty(name: 'page.menu.item') == 'rateCards' ? 'active' : ''}">
+                    <li class="${pageProperty(name: 'page.menu.item') == 'rateCard' ? 'active' : ''}">
                         <g:link controller="rateCard" action="list">
                             <g:message code="configuration.menu.rate.card"/>
                         </g:link>

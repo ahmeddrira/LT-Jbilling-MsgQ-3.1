@@ -60,6 +60,11 @@
                     <content tag="label"><g:message code="rate.card.csv.file"/></content>
                     <input type="file" name="rates"/>
                 </g:applyLayout>
+
+                <g:applyLayout name="form/text">
+                    <content tag="label">&nbsp;</content>
+                    <a href="${resource(dir:'examples', file:'example_rate_card.csv')}">example_rate_card.csv</a>
+                </g:applyLayout>
             </div>
         </fieldset>
     </div>

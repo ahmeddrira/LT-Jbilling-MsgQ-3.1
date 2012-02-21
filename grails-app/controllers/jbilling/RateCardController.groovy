@@ -22,6 +22,14 @@ import com.sapienter.jbilling.server.pricing.RateCardBL
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.client.ViewUtils
 import grails.plugins.springsecurity.Secured
+import org.springframework.jdbc.core.JdbcTemplate
+import com.sapienter.jbilling.server.util.sql.JDBCUtils
+import org.springframework.jdbc.datasource.DataSourceUtils
+import javax.sql.DataSource
+import com.sapienter.jbilling.server.pricing.db.RateCardDAS
+import au.com.bytecode.opencsv.CSVWriter
+import com.sapienter.jbilling.server.util.csv.CsvExporter
+import com.sapienter.jbilling.client.util.DownloadHelper
 
 @Secured(["MENU_99"])
 class RateCardController {
@@ -29,6 +37,7 @@ class RateCardController {
     static pagination = [ max: 10, offset: 0 ]
 
     ViewUtils viewUtils
+    DataSource dataSource
 
 
     def index = {
@@ -87,6 +96,64 @@ class RateCardController {
         }
 
         render template: 'edit', model: [ rateCard: rateCard ]
+    }
+
+    def rates = {
+        def RateCardDTO rateCard = params.id ? RateCardDTO.get(params.int('id')) : null
+
+        if (params.id && rateCard == null) {
+            flash.error = 'rate.card.not.found'
+            flash.args = [ params.id as String ]
+
+            redirect controller: 'rateCard', action: 'list'
+            return
+        }
+
+        // get column names for the table header
+        def rateCardService = new RateCardBL(rateCard)
+        def columns = rateCardService.getRateTableColumnNames()
+
+        // scrolling result set for reading the table contents
+        def resultSet = rateCardService.getRateTableRows()
+
+        render view: 'rates', model: [ rateCard: rateCard, columns: columns, resultSet: resultSet ]
+    }
+
+    def csv = {
+        def rateCard = params.id ? RateCardDTO.get(params.int('id')) : null
+
+        if (params.id && rateCard == null) {
+            flash.error = 'rate.card.not.found'
+            flash.args = [ params.id as String ]
+
+            redirect controller: 'rateCard', action: 'list'
+            return
+        }
+
+        def rateCardService = new RateCardBL(rateCard)
+
+
+        // outfile
+        def file = File.createTempFile(rateCard.tableName, '.csv')
+        CSVWriter writer = new CSVWriter(new FileWriter(file), ',' as char)
+
+        // write csv header
+        def columns = rateCardService.getRateTableColumnNames()
+        writer.writeNext(columns.toArray(new String[columns.size()]))
+
+        // read rows and write file
+        def exporter = CsvExporter.createExporter(RateCardDTO.class)
+        def resultSet = rateCardService.getRateTableRows()
+        while (resultSet.next()) {
+            writer.writeNext(exporter.convertToString(resultSet.get()))
+        }
+
+        writer.close()
+
+
+        // send file
+        DownloadHelper.setResponseHeader(response, "${rateCard.tableName}.csv")
+        render text: file.text, contentType: "text/csv"
     }
 
     def save = {

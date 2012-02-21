@@ -17,6 +17,8 @@
 package com.sapienter.jbilling.server.pricing.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import org.hibernate.Query;
+import org.hibernate.ScrollableResults;
 
 import java.io.File;
 
@@ -28,5 +30,10 @@ import java.io.File;
  * To change this template use File | Settings | File Templates.
  */
 public class RateCardDAS extends AbstractDAS<RateCardDTO> {
+
+    public ScrollableResults getRateTableRows(String tableName) {
+        Query query = getSession().createSQLQuery("select * from " + tableName);
+        return query.scroll();
+    }
 
 }

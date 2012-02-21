@@ -42,12 +42,24 @@
                     <content tag="label"><g:message code="rate.card.table.name"/></content>
                     ${selected.tableName}
                 </g:applyLayout>
+
+                <g:applyLayout name="form/text">
+                    <content tag="label"><g:message code="rate.card.csv.file"/></content>
+                    <g:link action="csv" id="${selected.id}">
+                        ${selected.tableName}.csv
+                    </g:link>
+                </g:applyLayout>
             </div>
         </fieldset>
     </div>
 
 
     <div class="btn-box">
+        <div class="row">
+            <g:link action="rates" id="${selected.id}" class="submit show">
+                <span><g:message code="button.view.rates"/></span>
+            </g:link>
+        </div>
         <div class="row">
             <g:remoteLink action="edit" id="${selected.id}" class="submit edit" before="register(this);" onSuccess="render(data, second);">
                 <span><g:message code="button.edit"/></span>

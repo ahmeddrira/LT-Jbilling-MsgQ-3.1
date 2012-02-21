@@ -18,29 +18,32 @@ package com.sapienter.jbilling.server.pricing;
 
 import au.com.bytecode.opencsv.CSVReader;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.mediation.cache.IFinder;
-import com.sapienter.jbilling.server.mediation.cache.ILoader;
-import com.sapienter.jbilling.server.mediation.task.IMediationReader;
 import com.sapienter.jbilling.server.pricing.db.RateCardDAS;
 import com.sapienter.jbilling.server.pricing.db.RateCardDTO;
 import com.sapienter.jbilling.server.util.Context;
+import com.sapienter.jbilling.server.util.sql.JDBCUtils;
 import com.sapienter.jbilling.server.util.sql.TableGenerator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.ScrollableResults;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.String;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -112,11 +115,16 @@ public class RateCardBL {
             if (rates != null) {
                 try {
                     saveRates(rates);
-                } catch (IOException e) {
-                    throw new SessionInternalError("Could not load rating table", e, new String[] { "RateCarDTO,rates,cannot.read.file" });
+
                 } catch (SessionInternalError e) {
                     dropRates();
                     throw e;
+                } catch (IOException e) {
+                    dropRates();
+                    throw new SessionInternalError("Could not load rating table", e, new String[] { "RateCarDTO,rates,cannot.read.file" });
+                } catch (SQLException e) {
+                    dropRates();
+                    throw new SessionInternalError("Exception saving rates to database", e, new String[] { "RateCarDTO,rates,cannot.save.rates.db.error" });
                 }
 
                 registerSpringBeans();
@@ -144,8 +152,13 @@ public class RateCardBL {
 
                 try {
                     saveRates(rates);
+
                 } catch (IOException e) {
+                    dropRates();
                     throw new SessionInternalError("Could not load rating table", e, new String[] { "RateCarDTO,rates,cannot.read.file" });
+                } catch (SQLException e) {
+                    dropRates();
+                    throw new SessionInternalError("Exception saving rates to database", e, new String[] { "RateCarDTO,rates,cannot.save.rates.db.error" });
                 }
             }
 
@@ -207,6 +220,7 @@ public class RateCardBL {
     public void dropRates() {
         String dropSql = tableGenerator.buildDropTableSQL();
         jdbcTemplate.execute(dropSql);
+        LOG.debug("Dropped table '" + rateCard.getTableName() + "'");
     }
 
     /**
@@ -216,7 +230,7 @@ public class RateCardBL {
      * @param rates file handle of the CSV on disk containing the rates.
      * @throws IOException if file does not exist or is not readable
      */
-    public void saveRates(File rates) throws IOException {
+    public void saveRates(File rates) throws IOException, SQLException {
         CSVReader reader = new CSVReader(new FileReader(rates));
         String[] line = reader.readNext();
         validateCsvHeader(line);
@@ -231,11 +245,10 @@ public class RateCardBL {
         // create rate table
         String createSql = tableGenerator.buildCreateTableSQL();
         jdbcTemplate.execute(createSql);
+        LOG.debug("Created table '" + rateCard.getTableName() + "'");
 
         // load rating data in batches
         String insertSql = tableGenerator.buildInsertPreparedStatementSQL();
-
-        int id = 1;
         List<List<String>> rows = new ArrayList<List<String>>();
         for (int i = 1; i <= BATCH_SIZE; i++) {
             // add row to insert batch
@@ -244,13 +257,13 @@ public class RateCardBL {
 
             // end of file
             if (line == null) {
-                id += executeBatchInsert(insertSql, rows, id);
+                executeBatchInsert(insertSql, rows);
                 break; // done
             }
 
             // reached batch limit
             if (i == BATCH_SIZE) {
-                id += executeBatchInsert(insertSql, rows, id);
+                executeBatchInsert(insertSql, rows);
                 i = 1; rows.clear(); // next batch
             }
         }
@@ -267,9 +280,9 @@ public class RateCardBL {
         List<String> errors = new ArrayList<String>();
 
         List<TableGenerator.Column> columns = RateCardDTO.TABLE_COLUMNS;
-        for (int i = 1; i < columns.size(); i++) {
-            String columnName = header[i - 1].trim();    // id column will be missing from the header
-            String expected = columns.get(i).getName();  // because the id value is generated
+        for (int i = 0; i < columns.size(); i++) {
+            String columnName = header[i].trim();
+            String expected = columns.get(i).getName();
 
             if (!expected.equalsIgnoreCase(columnName)) {
                 errors.add("RateCardDTO,rates,rate.card.unexpected.header.value," + expected + "," + columnName);
@@ -288,27 +301,28 @@ public class RateCardBL {
      * @param insertSql prepared statement SQL
      * @param rows list of rows to insert
      */
-    private int executeBatchInsert(String insertSql, final List<List<String>> rows, final int lastId) {
+    private void executeBatchInsert(String insertSql, final List<List<String>> rows) {
         LOG.debug("Inserting " + rows.size() + " records:");
         LOG.debug(rows);
 
         jdbcTemplate.batchUpdate(insertSql, new BatchPreparedStatementSetter() {
             public void setValues(PreparedStatement preparedStatement, int batch) throws SQLException {
                 List<String> values = rows.get(batch);
-
-                // incremented id
-                preparedStatement.setInt(1, lastId + batch);
-
-                // values read from the csv file
                 for (int i = 0; i < values.size(); i++) {
                     String value = values.get(i);
+
+                    // todo: we need a better solution here - maybe TableGenerator.Column should have a JDBC SQL Type?
                     switch (i) {
-                        case 2:  // rate card rate
-                            preparedStatement.setBigDecimal(i + 2, StringUtils.isNotBlank(value) ? new BigDecimal(value) : BigDecimal.ZERO);
+                        case 0:  // row id
+                            preparedStatement.setInt(i + 1, StringUtils.isNotBlank(value) ? Integer.valueOf(value) : 0);
+                            break;
+
+                        case 3:  // rate card rate
+                            preparedStatement.setBigDecimal(i + 1, StringUtils.isNotBlank(value) ? new BigDecimal(value) : BigDecimal.ZERO);
                             break;
 
                         default: // everything else
-                            preparedStatement.setObject(i + 2, value);
+                            preparedStatement.setObject(i + 1, value);
                     }
                 }
             }
@@ -317,8 +331,40 @@ public class RateCardBL {
                 return rows.size();
             }
         });
+    }
 
-        return lastId + rows.size();
+    /**
+     * Returns a list of column names read from the rate table in the database.
+     * @return column names
+     */
+    public List<String> getRateTableColumnNames() {
+        DataSource dataSource = jdbcTemplate.getDataSource();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+
+        List<String> columns = Collections.emptyList();
+
+        try {
+            columns = JDBCUtils.getAllColumnNames(connection, rateCard.getTableName());
+        } catch (SQLException e) {
+            throw new SessionInternalError("Could not read columns from rate card table.", e,
+                                           new String[] { "RateCardDTO,rates,rate.card.cannot.read.rating.table" });
+
+        } finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
+        }
+
+        return columns;
+    }
+
+    /**
+     * Returns a scrollable result set for reading the rate table rows.
+     *
+     * <strong>You MUST remember to close the result set when your done reading!</strong>
+     *
+     * @return scrollable result set
+     */
+    public ScrollableResults getRateTableRows() {
+        return rateCardDas.getRateTableRows(rateCard.getTableName());
     }
 
 

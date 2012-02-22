@@ -87,23 +87,27 @@ public class RateCardPricingStrategy extends AbstractPricingStrategy {
         MatchType matchType = MatchType.valueOf(planPrice.getAttributes().get("match_type"));
         PricingField lookupField = find(fields, "lookup_field");
 
-        if (lookupField == null) {
-            LOG.debug("Lookup field not found, not running in mediation or fields don't match configuration.");
-            result.setPrice(BigDecimal.ZERO);
-        }
-
         // fetch the finder bean from spring
         // and do the pricing lookup
-        try {
-            RateCardBL rateCard = new RateCardBL(rateCardId);
-            RateCardFinder pricingFinder = rateCard.getBeanFactory().getFinderInstance();
+        BigDecimal price = BigDecimal.ZERO;
 
-            BigDecimal price = pricingFinder.findPrice(matchType, lookupField.getStrValue());
-            result.setPrice(price);
+        if (lookupField != null) {
+            try {
+                RateCardBL rateCard = new RateCardBL(rateCardId);
+                RateCardFinder pricingFinder = rateCard.getBeanFactory().getFinderInstance();
 
-        } catch (ObjectNotFoundException e) {
-            throw new SessionInternalError("Rate card does not exist!", e,
-                                           new String[] { "RateCardPricingStrategy,rate_card_id,rate.card.not.found" });
+                if (pricingFinder != null)
+                    price = pricingFinder.findPrice(matchType, lookupField.getStrValue());
+
+            } catch (ObjectNotFoundException e) {
+                throw new SessionInternalError("Rate card does not exist!", e,
+                                               new String[] { "RateCardPricingStrategy,rate_card_id,rate.card.not.found" });
+            }
+
+        } else {
+            LOG.debug("Lookup field not found - not running in mediation or fields don't match configuration.");
         }
+
+        result.setPrice(price);
     }
 }

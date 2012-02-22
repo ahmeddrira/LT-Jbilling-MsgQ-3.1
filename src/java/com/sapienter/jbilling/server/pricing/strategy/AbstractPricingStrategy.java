@@ -86,9 +86,11 @@ public abstract class AbstractPricingStrategy implements PricingStrategy {
      * @return pricing field if found, null if not
      */
     public static PricingField find(List<PricingField> fields, String fieldName) {
-        for (PricingField field : fields) {
-            if (field.getName().equals(fieldName))
-                return field;
+        if (fieldName != null) {
+            for (PricingField field : fields) {
+                if (field.getName().equals(fieldName))
+                    return field;
+            }
         }
         return null;
     }

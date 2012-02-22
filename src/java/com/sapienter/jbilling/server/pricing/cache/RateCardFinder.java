@@ -18,6 +18,7 @@ package com.sapienter.jbilling.server.pricing.cache;
 
 import com.sapienter.jbilling.server.mediation.cache.AbstractFinder;
 import com.sapienter.jbilling.server.mediation.cache.ILoader;
+import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.math.BigDecimal;
@@ -30,6 +31,8 @@ import java.math.BigDecimal;
  */
 public class RateCardFinder extends AbstractFinder {
 
+    private static final Logger LOG = Logger.getLogger(RateCardFinder.class);
+
     public RateCardFinder(JdbcTemplate template, ILoader loader) {
         super(template, loader);
     }
@@ -39,12 +42,18 @@ public class RateCardFinder extends AbstractFinder {
     }
 
     public BigDecimal findPrice(MatchType matchType, String searchValue) {
-        String sql = "select rate from " + loader.getTableName() + " where match = ?";
+        LOG.debug("Rating '" + searchValue + "' using " + matchType);
+
+        // find price
+        BigDecimal price = BigDecimal.ZERO;
 
         if (matchType != null) {
-            return matchType.findPrice(getJdbcTemplate(), sql, searchValue);
+            String sql = "select rate from " + loader.getTableName() + " where match = ?";
+            price = matchType.findPrice(getJdbcTemplate(), sql, searchValue);
         }
 
-        return null;
+        LOG.debug(searchValue + " rated to $" + price + "/unit");
+
+        return price;
     }
 }

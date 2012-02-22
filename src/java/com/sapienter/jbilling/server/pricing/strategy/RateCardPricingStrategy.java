@@ -85,7 +85,9 @@ public class RateCardPricingStrategy extends AbstractPricingStrategy {
         // get and validate attributes
         Integer rateCardId = AttributeUtils.getInteger(planPrice.getAttributes(), "rate_card_id");
         MatchType matchType = MatchType.valueOf(planPrice.getAttributes().get("match_type"));
-        PricingField lookupField = find(fields, "lookup_field");
+
+        String lookupFieldName = planPrice.getAttributes().get("lookup_field");
+        PricingField lookupField = find(fields, lookupFieldName);
 
         // fetch the finder bean from spring
         // and do the pricing lookup

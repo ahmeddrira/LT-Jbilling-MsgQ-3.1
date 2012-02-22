@@ -16,6 +16,7 @@
 
 package com.sapienter.jbilling.server.pricing.cache;
 
+import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
@@ -35,6 +36,7 @@ public enum MatchType {
      */
     EXACT {
         public BigDecimal findPrice(JdbcTemplate jdbcTemplate, String query, String searchValue) {
+            LOG.debug("Searching for exact match '" + searchValue + "'");
             SqlRowSet rs = jdbcTemplate.queryForRowSet(query, searchValue);
 
             if (rs.next())
@@ -55,6 +57,7 @@ public enum MatchType {
             searchValue = getCharacters(searchValue, length);
 
             while (length >= 0) {
+                LOG.debug("Searching for prefix '" + searchValue + "'");
                 SqlRowSet rs = jdbcTemplate.queryForRowSet(query, searchValue);
 
                 if (rs.next()) {
@@ -75,6 +78,7 @@ public enum MatchType {
     };
 
 
+    private static final Logger LOG = Logger.getLogger(MatchType.class);
 
     public abstract BigDecimal findPrice(JdbcTemplate jdbcTemplate, String query, String searchValue);
 }

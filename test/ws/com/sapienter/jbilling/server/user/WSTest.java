@@ -31,8 +31,6 @@ import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentWS;
-import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.server.user.contact.ContactFieldWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIException;
@@ -376,16 +374,6 @@ public class WSTest extends TestCase {
             for (int f = 0; f < users.length; f++) {
                 System.out.println("Got user " + users[f]);
             }
-
-            /*
-             * Get list using a custom field
-             */
-            System.out.println("Getting by custom field...");
-            users = api.getUsersByCustomField(new Integer(1), new String("serial-from-ws"));
-
-            // the one from the megacall is not deleted and has the custom field
-            assertEquals(users.length, 1002);
-//            assertEquals(users[1000], mcRet.getUserId());
 
             System.out.println("Done");
         } catch (Exception e) {

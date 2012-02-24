@@ -1,21 +1,17 @@
 /*
- jBilling - The Enterprise Open Source Billing System
- Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
+ JBILLING CONFIDENTIAL
+ _____________________
 
- This file is part of jbilling.
+ [2003] - [2012] Enterprise jBilling Software Ltd.
+ All Rights Reserved.
 
- jbilling is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- jbilling is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ NOTICE:  All information contained herein is, and remains
+ the property of Enterprise jBilling Software.
+ The intellectual and technical concepts contained
+ herein are proprietary to Enterprise jBilling Software
+ and are protected by trade secret or copyright law.
+ Dissemination of this information or reproduction of this material
+ is strictly forbidden.
  */
 
 package com.sapienter.jbilling.server.payment;
@@ -25,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;
 
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import junit.framework.TestCase;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -471,19 +468,21 @@ public class RefundTest extends TestCase {
         newUser.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
         newUser.setInvoiceChild(new Boolean(false));
 
+        MetaFieldValueWS metaField1 = new MetaFieldValueWS();
+        metaField1.setFieldName("partner.prompt.fee");
+        metaField1.setValue("serial-from-ws");
+
+        MetaFieldValueWS metaField2 = new MetaFieldValueWS();
+        metaField2.setFieldName("ccf.payment_processor");
+        metaField2.setValue("FAKE_2"); // the plug-in parameter of the processor
+
+        newUser.setMetaFields(new MetaFieldValueWS[]{metaField1, metaField2});
+
         // add a contact
         ContactWS contact = new ContactWS();
         contact.setEmail("frodo@shire.com");
         contact.setFirstName("Frodo");
         contact.setLastName("Baggins");
-        Integer fields[] = new Integer[2];
-        fields[0] = 1;
-        fields[1] = 2; // the ID of the CCF for the processor
-        String fieldValues[] = new String[2];
-        fieldValues[0] = "serial-from-ws";
-        fieldValues[1] = "FAKE_2"; // the plug-in parameter of the processor
-        contact.setFieldIDs(fields);
-        contact.setFieldValues(fieldValues);
         newUser.setContact(contact);
 
         // add a credit card

@@ -1814,6 +1814,9 @@ alter table blacklist add constraint blacklist_fk_4
 DROP TABLE contact_field;
 DROP TABLE contact_field_type;
 
+insert into jbilling_seqs (name, next_id) values ('meta_field_name', 1);
+insert into jbilling_seqs (name, next_id) values ('meta_field_value', 1);
+
 
 -- Date: 16-Feb-2012
 -- Redmine Issue: #1785
@@ -1830,4 +1833,6 @@ create table rate_card (
 alter table rate_card add constraint rate_card_entity_id_FK foreign key (entity_id)  references entity;
 
 insert into jbilling_seqs (name, next_id) values ('rate_card', 1);
+
+
 

@@ -172,10 +172,6 @@ public class RemotingTest extends TestCase {
             assertNotNull(userIds);
             assertTrue(userIds.length > 0);
 
-            userIds = service.getUsersByCustomField(1, "serial-from-ws");
-            assertNotNull(userIds);
-            assertTrue(userIds.length > 0);
-
             invoice = service.getLatestInvoiceByItemType(USER_ID, 1);
             assertNotNull(invoice);
 

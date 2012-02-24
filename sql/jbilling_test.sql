@@ -143,6 +143,7 @@ ALTER TABLE ONLY public.contact_map DROP CONSTRAINT contact_map_fk_3;
 ALTER TABLE ONLY public.contact_map DROP CONSTRAINT contact_map_fk_2;
 ALTER TABLE ONLY public.contact_map DROP CONSTRAINT contact_map_fk_1;
 ALTER TABLE ONLY public.notification_message_type DROP CONSTRAINT category_id_fk_1;
+ALTER TABLE ONLY public.blacklist DROP CONSTRAINT blacklist_fk_4;
 ALTER TABLE ONLY public.blacklist DROP CONSTRAINT blacklist_fk_2;
 ALTER TABLE ONLY public.blacklist DROP CONSTRAINT blacklist_fk_1;
 ALTER TABLE ONLY public.billing_process DROP CONSTRAINT billing_process_fk_3;
@@ -579,7 +580,8 @@ CREATE TABLE blacklist (
     credit_card_id integer,
     contact_id integer,
     user_id integer,
-    optlock integer NOT NULL
+    optlock integer NOT NULL,
+    meta_field_value_id integer
 );
 
 
@@ -3373,13 +3375,13 @@ COPY billing_process_configuration (id, entity_id, next_run_date, generate_repor
 -- Data for Name: blacklist; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credit_card_id, contact_id, user_id, optlock) FROM stdin;
-1	1	2008-09-16 00:00:00	1	1	\N	\N	\N	1000	1
-2	1	2008-09-26 00:00:00	2	2	\N	\N	1125	\N	1
-3	1	2008-09-26 00:00:00	3	2	\N	1013	\N	\N	1
-4	1	2008-09-26 00:00:00	4	2	\N	\N	1126	\N	1
-5	1	2008-09-26 00:00:00	5	2	\N	\N	1128	\N	1
-6	1	2008-09-26 00:00:00	6	2	\N	\N	1127	\N	1
+COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credit_card_id, contact_id, user_id, optlock, meta_field_value_id) FROM stdin;
+1	1	2008-09-16 00:00:00	1	1	\N	\N	\N	1000	1	\N
+2	1	2008-09-26 00:00:00	2	2	\N	\N	1125	\N	1	\N
+3	1	2008-09-26 00:00:00	3	2	\N	1013	\N	\N	1	\N
+4	1	2008-09-26 00:00:00	4	2	\N	\N	1126	\N	1	\N
+5	1	2008-09-26 00:00:00	5	2	\N	\N	1128	\N	1	\N
+6	1	2008-09-26 00:00:00	6	2	\N	\N	1127	\N	1	\N
 \.
 
 
@@ -13907,6 +13909,8 @@ partner	3
 contact_map	7912
 contact	1133
 breadcrumb	20
+meta_field_name	1
+meta_field_value	1
 rate_card	1
 \.
 
@@ -23769,6 +23773,14 @@ ALTER TABLE ONLY blacklist
 
 ALTER TABLE ONLY blacklist
     ADD CONSTRAINT blacklist_fk_2 FOREIGN KEY (user_id) REFERENCES base_user(id);
+
+
+--
+-- Name: blacklist_fk_4; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY blacklist
+    ADD CONSTRAINT blacklist_fk_4 FOREIGN KEY (meta_field_value_id) REFERENCES meta_field_value(id);
 
 
 --

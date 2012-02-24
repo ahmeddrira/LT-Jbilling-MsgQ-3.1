@@ -68,9 +68,9 @@ class InvoiceController {
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
 
         if (params.applyFilter || params.partial) {
-            render template: 'invoices', model: [ invoices: invoices, filters: filters, selected: selected ]
+            render template: 'invoices', model: [ invoices: invoices, filters: filters, selected: selected, currencies: currencies ]
         } else {
-            [ invoices: invoices, filters: filters, selected: selected ]
+            [ invoices: invoices, filters: filters, selected: selected, currencies: currencies ]
         }
     }
 
@@ -148,7 +148,7 @@ class InvoiceController {
      * Convenience shortcut, this action shows all invoices for the given user id.
      */
     def user = {
-        def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUser.id', template: 'id', visible: true, integerValue: params.int('id'))
+        def filter = new Filter(type: FilterType.INVOICE, constraintType: FilterConstraint.EQ, field: 'baseUser.id', template: 'id', visible: true, integerValue: params.int('id'))
         filterService.setFilter(FilterType.INVOICE, filter)
 
         redirect action: 'list'
@@ -214,7 +214,7 @@ class InvoiceController {
             } catch (Exception e) {
                 log.error("Exception occurred sending invoice email", e)
                 flash.error = 'invoice.prompt.failure.email.invoice'
-                flash.args = params.id
+                flash.args = [params.id]
             }
         }
 

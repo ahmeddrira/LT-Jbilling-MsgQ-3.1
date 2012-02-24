@@ -473,13 +473,22 @@ hr {
 }
 .holder .input-bg input ,
 .accordion li .slide .input-bg input {
-	width:65px;
+	width:85px;
 	height:16px;
 	float:left;
 	border:none;
 	background:none;
 	padding:5px 0 3px 5px;
 	color:#383838;
+}
+.accordion li .slide .input-bg input.date-text {
+    width:65px;
+    height:16px;
+    float:left;
+    border:none;
+    background:none;
+    padding:5px 0 3px 5px;
+    color:#383838;
 }
 .holder .input-bg input.error ,
 .accordion li .slide .input-bg input.error {

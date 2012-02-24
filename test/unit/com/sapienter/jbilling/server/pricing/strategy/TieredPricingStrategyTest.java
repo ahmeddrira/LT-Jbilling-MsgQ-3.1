@@ -59,7 +59,7 @@ public class TieredPricingStrategyTest extends BigDecimalTestCase {
         PricingResult result = new PricingResult(1, 2, 3);
 
         // 10 purchased, 1000 usage... but no tiers defined, price should be zero
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(10), getUsage(new BigDecimal(1000)));
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(10), getUsage(new BigDecimal(1000)), false);
         assertEquals(BigDecimal.ZERO, result.getPrice());
     }
 
@@ -75,14 +75,14 @@ public class TieredPricingStrategyTest extends BigDecimalTestCase {
         PricingResult result = new PricingResult(1, 2, 3);
 
         // entire quantity in first tier
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(500), getUsage(BigDecimal.ZERO));
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(500), getUsage(BigDecimal.ZERO), false);
         assertEquals(new BigDecimal("4"), result.getPrice());
 
         // quantity falls into middle tier
         // 500 * $4 = $2000
         // 250 * $3 = $750
         // $2750 total, or $3.66666/unit
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(750), getUsage(BigDecimal.ZERO));
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(750), getUsage(BigDecimal.ZERO), false);
         assertEquals(new BigDecimal("3.67"), result.getPrice());
 
         // quantity exceeds max
@@ -91,7 +91,7 @@ public class TieredPricingStrategyTest extends BigDecimalTestCase {
         // 500 * $2 = $1000
         // 500 * $1 = $500
         // $5000 total, or 2.50/unit
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(2000), getUsage(BigDecimal.ZERO));
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(2000), getUsage(BigDecimal.ZERO), false);
         assertEquals(new BigDecimal("2.50"), result.getPrice());
     }
 
@@ -114,7 +114,7 @@ public class TieredPricingStrategyTest extends BigDecimalTestCase {
         // -------------------------------------
         // 100 * $2 = $200
         // $200 total, or $2/unit
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(100), getUsage(new BigDecimal(1500)));
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(100), getUsage(new BigDecimal(1500)), false);
         assertEquals(new BigDecimal("2.00"), result.getPrice());
 
         // first 500 units exist in previous usage, 2000 purchased now (hits multiple tiers)
@@ -124,7 +124,7 @@ public class TieredPricingStrategyTest extends BigDecimalTestCase {
         // 1000 * $3 = $3000
         // 1000 * $2 = $2000
         // $5000 total, or $2.50/unit
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(2000), getUsage(new BigDecimal(500)));
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(2000), getUsage(new BigDecimal(500)), false);
         assertEquals(new BigDecimal("2.50"), result.getPrice());
 
         // half of a tier covered by previous usage, 2000 purchased now (hits multiple tiers)
@@ -135,7 +135,7 @@ public class TieredPricingStrategyTest extends BigDecimalTestCase {
         // 800 * $3 = $2400   (800 + existing 200 fills the tier)
         // 1200 * $2 = $2400
         // $4800 total, or $2.40/unit
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(2000), getUsage(new BigDecimal(700)));
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(2000), getUsage(new BigDecimal(700)), false);
         assertEquals(new BigDecimal("2.40"), result.getPrice());
 
         // existing quantity already exceeds max
@@ -147,7 +147,7 @@ public class TieredPricingStrategyTest extends BigDecimalTestCase {
         // -------------------------------------
         // 500 * $0.05 = $25
         // $25 total, or $0.05/unit
-        strategy.applyTo(null, result, null, planPrice, new BigDecimal(500), getUsage(new BigDecimal(5000)));
+        strategy.applyTo(null, result, null, planPrice, new BigDecimal(500), getUsage(new BigDecimal(5000)), false);
         assertEquals(new BigDecimal("0.05"), result.getPrice());
     }
 }

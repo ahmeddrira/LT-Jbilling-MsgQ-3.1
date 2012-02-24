@@ -77,7 +77,7 @@ public class VolumePricingStrategy extends AbstractPricingStrategy {
      * @param usage total item usage for this billing period
      */
     public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
-                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
+                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage, boolean singlePurchase) {
 
         if (usage == null || usage.getQuantity() == null)
             throw new IllegalArgumentException("Usage quantity cannot be null for VolumePricingStrategy.");

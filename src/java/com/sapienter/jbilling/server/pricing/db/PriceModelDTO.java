@@ -34,7 +34,22 @@ import org.hibernate.annotations.MapKey;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -197,15 +212,16 @@ public class PriceModelDTO implements Serializable {
      * @param quantity quantity of item being priced
      * @param result pricing result to apply pricing to
      * @param usage total item usage for this billing period
-     * @param date
+     * @param singlePurchase true if pricing a single purchase/addition to an order, false if pricing a quantity that already exists on the pricingOrder.
+     * @param pricingDate pricing date 
      */
     @Transient
     public void applyTo(OrderDTO pricingOrder, BigDecimal quantity, PricingResult result, List<PricingField> fields,
-                        Usage usage, Date pricingDate) {
+                        Usage usage, boolean singlePurchase, Date pricingDate) {
         // each model in the chain
         for (PriceModelDTO next = this; next != null; next = next.getNext()) {
             // apply pricing
-            next.getType().getStrategy().applyTo(pricingOrder, result, fields, next, quantity, usage);
+            next.getType().getStrategy().applyTo(pricingOrder, result, fields, next, quantity, usage, singlePurchase);
 
             // convert currency if necessary
             if (result.getUserId() != null

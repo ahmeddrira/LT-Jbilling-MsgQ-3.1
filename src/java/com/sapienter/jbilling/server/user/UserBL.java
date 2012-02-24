@@ -193,10 +193,15 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setDueDateValue(dto.getCustomer().getDueDateValue());
             user.getCustomer().setDfFm(dto.getCustomer().getDfFm());
 
-            if (dto.getCustomer().getPartner() != null) {
-                user.getCustomer().setPartner(dto.getCustomer().getPartner());
-            } else {
-                user.getCustomer().setPartner(null);
+            try {
+                if (dto.getCustomer().getPartner() != null && dto.getCustomer().getPartner().getBaseUser().getEntity() != null) {
+                    user.getCustomer().setPartner(dto.getCustomer().getPartner());
+                } else {
+                    user.getCustomer().setPartner(null);
+                }
+            } catch (Exception ex) {
+                throw new SessionInternalError("It doesn't exist a partner with the supplied id.",
+                        new String[]{"UserWS,partnerId,validation.error.partner.does.not.exist"});
             }
 
             user.getCustomer().setExcludeAging(dto.getCustomer().getExcludeAging());

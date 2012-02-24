@@ -35,6 +35,7 @@ import java.math.RoundingMode
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.apache.commons.lang.StringUtils
+import com.sapienter.jbilling.server.item.CurrencyBL
 
 /**
  * OrderController
@@ -107,10 +108,14 @@ class OrderBuilderController {
                 def user = UserDTO.get(order?.userId ?: params.int('userId'))
                 def contact = ContactDTO.findByUserId(order?.userId ?: user.id)
 
+                def company = CompanyDTO.get(session['company_id'])
+                def currencies = new CurrencyBL().getCurrencies(session['language_id'], session['company_id'])
+                currencies = currencies.findAll{ it.inUse }
+
                 // set sensible defaults for new orders
                 if (!order.id || order.id == 0) {
                     order.userId        = user.id
-                    order.currencyId    = user.currency.id
+                    order.currencyId    = (currencies.find{ it.id == user.currency.id} ?: company.currency).id
                     order.statusId      = Constants.ORDER_STATUS_ACTIVE
                     order.period        = Constants.ORDER_PERIOD_ONCE
                     order.billingTypeId = Constants.ORDER_BILLING_POST_PAID
@@ -125,7 +130,6 @@ class OrderBuilderController {
                 }
 
                 // available order periods, statuses and order types
-                def company = CompanyDTO.get(session['company_id'])
                 def itemTypes = productService.getItemTypes()
                 def orderStatuses = OrderStatusDTO.list().findAll { it.id != Constants.ORDER_STATUS_SUSPENDED_AGEING }
                 def orderPeriods = company.orderPeriods.collect { new OrderPeriodDTO(it.id) } << new OrderPeriodDTO(Constants.ORDER_PERIOD_ONCE)

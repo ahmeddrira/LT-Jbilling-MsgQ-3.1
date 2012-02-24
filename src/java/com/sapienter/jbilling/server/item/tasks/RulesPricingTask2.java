@@ -42,7 +42,7 @@ public class RulesPricingTask2 extends RulesBaseTask implements IPricing {
     }
     
     public BigDecimal getPrice(Integer itemId, BigDecimal quantity, Integer userId, Integer currencyId,
-            List<PricingField> fields, BigDecimal defaultPrice, OrderDTO pricingOrder)
+            List<PricingField> fields, BigDecimal defaultPrice, OrderDTO pricingOrder, boolean singlePurchase)
             throws TaskException {
 
         // the result goes in the memory context

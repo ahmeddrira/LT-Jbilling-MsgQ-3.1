@@ -35,19 +35,19 @@ public class UsagePeriod implements Serializable {
 
     // extracted from UsageBL fields to provide an object that could be cached
 
-    private OrderDTO mainOrder;
+    private OrderDTO periodOrder;
     private Date cycleStartDate;
     private Date cycleEndDate;
     private List<PeriodOfTime> billingPeriods;
 
     public UsagePeriod() { }
 
-    public OrderDTO getMainOrder() {
-        return mainOrder;
+    public OrderDTO getPeriodOrder() {
+        return periodOrder;
     }
 
-    public void setMainOrder(OrderDTO mainOrder) {
-        this.mainOrder = mainOrder;
+    public void setPeriodOrder(OrderDTO periodOrder) {
+        this.periodOrder = periodOrder;
     }
 
     public Date getCycleStartDate() {
@@ -76,7 +76,7 @@ public class UsagePeriod implements Serializable {
 
     @Override public String toString() {
         return "UsagePeriod{"
-               + "mainOrder=" + (mainOrder != null ? mainOrder.getId() : null)
+               + "periodOrder=" + (periodOrder != null ? periodOrder.getId() : null)
                + ", cycleStartDate=" + cycleStartDate
                + ", cycleEndDate=" + cycleEndDate
                + ", billingPeriods=" + (billingPeriods != null ? billingPeriods.size() : null)

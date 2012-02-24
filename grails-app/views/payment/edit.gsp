@@ -75,13 +75,6 @@
                 $('#payment\\.currencyId :selected').removeAttr('selected');
                 $('#payment\\.currencyId option[value='+ currid +']').attr('selected','selected');
             });
-
-//            $(".payment-radio").checked(function(){
-//               var current_payment_id = $(this).attr('value');
-//               alert('payment id selected is '+current_payment_id);
-//               // update the value of amount
-//
-//            });
         });
         </g:if>
     </script>

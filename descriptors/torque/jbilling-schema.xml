@@ -67,6 +67,11 @@
         <foreign-key foreignTable="currency">
             <reference foreign="id" local="currency_id"/>
         </foreign-key>
+        <unique name="unique_username">
+            <unique-column name="entity_id"/>
+            <unique-column name="user_name"/>
+            <unique-column name="status_id"/>
+        </unique>
     </table>
     <table name="billing_process">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>

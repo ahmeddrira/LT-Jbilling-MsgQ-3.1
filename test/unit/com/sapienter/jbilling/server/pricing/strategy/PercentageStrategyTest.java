@@ -49,9 +49,9 @@ public class PercentageStrategyTest extends BigDecimalTestCase {
         PricingResult result = new PricingResult(1, 2, 3);
         result.setPrice(new BigDecimal("10.00"));
 
-        // test that the price has been increased by %80
-        // $10 + ($10 * 0.80) = $18
-        planPrice.applyTo(null, null, result, null, null, null);
+        // test that the price has been reduced by %80
+        // $10 * 0.80 = $8
+        planPrice.applyTo(null, null, result, null, null, false, null);
         assertEquals(new BigDecimal("18.00"), result.getPrice());
     }
 
@@ -67,8 +67,8 @@ public class PercentageStrategyTest extends BigDecimalTestCase {
         result.setPrice(new BigDecimal("10.00"));
 
         // test that the price has been reduced by %80
-        // $10 - ($10 * 0.80) = $2
-        planPrice.applyTo(null, null, result, null, null, null);
+        // $10 * 0.80 = $8
+        planPrice.applyTo(null, null, result, null, null, false, null);
         assertEquals(new BigDecimal("2.00"), result.getPrice());
     }
 
@@ -86,7 +86,7 @@ public class PercentageStrategyTest extends BigDecimalTestCase {
 
         // applying without a price shouldn't cause an exception
         // price should still be null
-        planPrice.applyTo(null, null, result, null, null, null);
+        planPrice.applyTo(null, null, result, null,  null, false, null);
         assertNull(result.getPrice());
     }
 }

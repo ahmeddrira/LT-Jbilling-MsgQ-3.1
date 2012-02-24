@@ -76,6 +76,12 @@
             wrapper: "li",
             meta: "validate"
         });
+
+        // minor bug with the filter input fields - this should happen automatically
+        // but the 'keyup' event doesn't always bind correctly from the validator itself
+        $('#filters-form').delegate('input', 'keyup', function() {
+            $('#filters-form').valid();
+        });
     })
 </script>
 

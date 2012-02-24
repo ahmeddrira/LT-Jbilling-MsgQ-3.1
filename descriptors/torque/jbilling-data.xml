@@ -1312,6 +1312,7 @@
     <InternationalDescription TableId="50" ForeignId="47" PsudoColumn="description" LanguageId="1" Content="Last read mediation record id."/>
     <InternationalDescription TableId="50" ForeignId="48" PsudoColumn="description" LanguageId="1" Content="Use provisioning."/>
     <InternationalDescription TableId="50" ForeignId="49" PsudoColumn="description" LanguageId="1" Content="Automatic customer recharge threshold."/>
+    <InternationalDescription TableId="50" ForeignId="50" PsudoColumn="description" LanguageId="1" Content="Invoice decimal rounding."/>
     <InternationalDescription TableId="50" ForeignId="4" PsudoColumn="instruction" LanguageId="1" Content="Grace period in days before ageing a customer with an overdue invoice."/>
     <InternationalDescription TableId="50" ForeignId="5" PsudoColumn="instruction" LanguageId="1" Content="Partner default percentage commission rate. See the Partner section of the documentation."/>
     <InternationalDescription TableId="50" ForeignId="6" PsudoColumn="instruction" LanguageId="1" Content="Partner default flat fee to be paid as commission. See the Partner section of the documentation."/>
@@ -1354,6 +1355,7 @@
     <InternationalDescription TableId="50" ForeignId="47" PsudoColumn="instruction" LanguageId="1" Content="ID of the last record read by the mediation process. This is used to determine what records are 'new' and need to be read."/>
     <InternationalDescription TableId="50" ForeignId="48" PsudoColumn="instruction" LanguageId="1" Content="Set to '1' to allow the use of provisioning. '0' to disable."/>
     <InternationalDescription TableId="50" ForeignId="49" PsudoColumn="instruction" LanguageId="1" Content="The threshold value for automatic payments. Pre-paid users with an automatic recharge value set will generate an automatic payment whenever the account balance falls below this threshold. Note that you need to configure the AutoRechargeTask plug-in for this feature to be fully functional."/>
+    <InternationalDescription TableId="50" ForeignId="50" PsudoColumn="instruction" LanguageId="1" Content="The number of decimal places to be shown on the invoice. Defaults to 2."/>
     <InternationalDescription TableId="90" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Paid"/>
     <InternationalDescription TableId="90" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Unpaid"/>
     <InternationalDescription TableId="90" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Carried"/>
@@ -2055,6 +2057,7 @@
     <PreferenceType Id="47" DefValue="0"/>
     <PreferenceType Id="48" DefValue="1"/>
     <PreferenceType Id="49"/>
+    <PreferenceType Id="50" DefValue="2"/>
 
     <ReportType Id="1" Name="invoice" Optlock="0"/>
     <ReportType Id="2" Name="order" Optlock="0"/>

@@ -587,7 +587,7 @@ public class BillingProcessBL extends ResultList
                         thisInvoice.setDueDatePeriod(orderDueDatePeriod);
 
                     } else {
-                        LOG.debug("invoice found for period " + orderDueDatePeriod);
+                        LOG.debug("invoice found for period " + dueDatePeriod);
                         if (!useProcessDateForInvoice) {
                             thisInvoice.setDate(orderBl.getInvoicingDate(),
                                     order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE);
@@ -624,7 +624,6 @@ public class BillingProcessBL extends ResultList
             }
         }
 
-        // close cursor for the user orders list
         orders.close();
 
         // see if there is any subaccounts to include in this invoice

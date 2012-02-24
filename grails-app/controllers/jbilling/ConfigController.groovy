@@ -226,7 +226,7 @@ class ConfigController {
         params.currencies.each { k, v ->
             if (v instanceof Map) {
                 def currency = new CurrencyWS()
-                bindData(currency, v, ['_inUse'])
+                bindData(currency, removeBlankParams(v), ['_inUse'])
                 currency.defaultCurrency = (currency.id == defaultCurrencyId)
                 currency.fromDate = startDate
 
@@ -292,7 +292,7 @@ class ConfigController {
 
     def saveCurrency = {
         def currency = new CurrencyWS()
-        bindData(currency, params)
+        bindData(currency, removeBlankParams(params))
 
         try {
             webServicesSession.createCurrency(currency)
@@ -306,6 +306,19 @@ class ConfigController {
         }
 
         redirect action: 'currency'
+    }
+
+    // remove blank strings '' from binding parameters so that
+    // we bind null for empty values
+    def Map removeBlankParams(Map params) {
+        def filtered = params.findAll{ k, v ->
+            if (!k.startsWith('_') && v instanceof String) {
+                return v.trim().length()
+            } else {
+                return true
+            }
+        }
+        return filtered
     }
 
 

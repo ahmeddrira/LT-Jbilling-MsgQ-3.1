@@ -163,9 +163,6 @@
                         <g:applyLayout name="form/text">
                             <content tag="label"><g:message code="payment.is.refund"/></content>
                             <g:formatBoolean boolean="${payment?.isRefund > 0}"/>
-                            %{--<g:if test="${refundPaymentId}">--}%
-                                %{--(${refundPaymentId})--}%
-                            %{--</g:if>--}%
                             <g:hiddenField name="isRefund" value="${payment?.isRefund}"/>
                         </g:applyLayout>
 
@@ -353,13 +350,8 @@
 
                 <!-- box text -->
                 <div class="box-text">
-                    <label><g:message code="payment.notes"/></label>
-                    <ul style="padding: 0 0 10px 10px !important;">
-                        <li><g:textArea style="padding: 0 !important; width: 474px !important; color: black;"
-                                        name="paymentNotes" value="${payment?.paymentNotes}" rows="5" cols="60"
-                                        disabled="disabled"/></li>
-                    </ul>
-                    <g:hiddenField name="payment.paymentNotes" value="${payment?.paymentNotes}"/>
+                    <label for="payment.paymentNotes"><g:message code="payment.notes"/></label>
+                    <g:textArea name="payment.paymentNotes" value="${payment?.paymentNotes}" rows="5" cols="60" readonly="true"/>
                 </div>
 
                 <div class="buttons">

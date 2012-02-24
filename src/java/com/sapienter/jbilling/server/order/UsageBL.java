@@ -21,6 +21,7 @@ import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.order.db.UsageDAS;
 import com.sapienter.jbilling.server.pluggableTask.OrderPeriodTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
@@ -29,16 +30,19 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.PeriodOfTime;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
+import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
+
 import org.apache.log4j.Logger;
+import org.hibernate.ObjectNotFoundException;
 import org.joda.time.DateMidnight;
 import org.springmodules.cache.CachingModel;
 import org.springmodules.cache.FlushingModel;
 import org.springmodules.cache.provider.CacheProviderFacade;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -85,8 +89,8 @@ public class UsageBL {
      */
     public UsageBL(Integer userId, OrderDTO order) {
         _init();
-        set(userId, CURRENT_PERIOD);
         setWorkingOrder(order);
+        set(userId, CURRENT_PERIOD);
     }
 
     /**
@@ -117,62 +121,107 @@ public class UsageBL {
 
         // could not load period from cache
         if (usagePeriod == null) {
-
-            // new usage period details
-            usagePeriod = new UsagePeriod();
-
-            // get main subscription order
-            OrderDTO mainOrder = null;
+            OrderDTO mainSubscriptionOrder = null;
             Integer orderId = new OrderBL().getMainOrderId(userId);
-            if (orderId != null)
-                mainOrder = new OrderBL(orderId).getEntity();
 
-            if (mainOrder == null)
+            try {
+                if (orderId != null)
+                    mainSubscriptionOrder = new OrderBL(orderId).getEntity();
+            } catch (ObjectNotFoundException e) {
+                /* ignore */
+            }
+
+            if (mainSubscriptionOrder == null) {
+                usagePeriod = new UsagePeriod();
                 LOG.warn("User " + userId + " does not have main subscription order - all usage will be 0!");
+                return;
+            }
 
-            // get billing cycle dates and billing periods for main order.
-            if (mainOrder != null) {
-                try {
-                    Integer entityId = mainOrder.getBaseUserByUserId().getCompany().getId();
-                    PluggableTaskManager manager = new PluggableTaskManager(entityId, Constants.PLUGGABLE_TASK_ORDER_PERIODS);
-                    OrderPeriodTask periodTask = (OrderPeriodTask) manager.getNextClass();
-
-                    if (periodTask == null)
-                        throw new SessionInternalError("OrderPeriodTask not configured!");
-
-                    Date cycleStartDate = periodTask.calculateStart(mainOrder);
-                    Date cycleEndDate = periodTask.calculateEnd(mainOrder,
-                                                                new Date(),
-                                                                periods,
-                                                                cycleStartDate);
-
-                    List<PeriodOfTime> billingPeriods = periodTask.getPeriods();
-
-                    if (billingPeriods.isEmpty())
-                        throw new SessionInternalError("Could not determine user's billing period!");
-
-                    // populate usage period object for cache
-                    usagePeriod.setMainOrder(mainOrder);
-                    usagePeriod.setCycleStartDate(cycleStartDate);
-                    usagePeriod.setCycleEndDate(cycleEndDate);
-                    usagePeriod.setBillingPeriods(billingPeriods);
-
-                    LOG.debug("Caching with key '" + getCacheKey() + "', usage period: " + usagePeriod);
-                    cache.putInCache(getCacheKey(), cacheModel, usagePeriod);
-
-                } catch (PluggableTaskException e) {
-                    throw new SessionInternalError("Exception occurred retrieving the configured OrderPeriodTask.", e);
-                } catch (TaskException e) {
-                    throw new SessionInternalError("Exception occurred calculating the customers billing periods.", e);
+            // calculate usage cycle start & end dates from the working order
+            if (workingOrder != null) {
+                if (workingOrder.getOrderPeriod().getId() == Constants.ORDER_PERIOD_ONCE) {
+                    calculateOneTimeUsagePeriod(workingOrder, mainSubscriptionOrder);
+                } else {
+                    calculateMonthlyUsagePeriod(workingOrder);
                 }
             }
+
+            // calculate usage cycle start & end dates from the main subscription order
+            if (workingOrder == null) {
+                calculateMonthlyUsagePeriod(mainSubscriptionOrder);
+            }
+
+            LOG.debug("Caching with key '" + getCacheKey() + "', usage period: " + usagePeriod);
+            cache.putInCache(getCacheKey(), cacheModel, usagePeriod);
+
         } else {
             LOG.debug("Cache hit for '" + getCacheKey() + "', usage period: " + usagePeriod);
         }
     }
 
+    public void calculateMonthlyUsagePeriod(OrderDTO periodOrder) {
+        usagePeriod = new UsagePeriod();
+
+        try {
+            Integer entityId = periodOrder.getBaseUserByUserId().getCompany().getId();
+            PluggableTaskManager manager = new PluggableTaskManager(entityId, Constants.PLUGGABLE_TASK_ORDER_PERIODS);
+            OrderPeriodTask periodTask = (OrderPeriodTask) manager.getNextClass();
+
+            if (periodTask == null)
+                throw new SessionInternalError("OrderPeriodTask not configured!");
+
+            Date cycleStartDate = periodTask.calculateStart(periodOrder);
+            Date cycleEndDate = periodTask.calculateEnd(periodOrder, new Date(), periods, cycleStartDate);
+
+            List<PeriodOfTime> billingPeriods = periodTask.getPeriods();
+
+            if (billingPeriods.isEmpty())
+                throw new SessionInternalError("Could not determine user's billing period!");
+
+            // populate usage period object for cache
+            usagePeriod.setPeriodOrder(periodOrder);
+            usagePeriod.setCycleStartDate(cycleStartDate);
+            usagePeriod.setCycleEndDate(cycleEndDate);
+            usagePeriod.setBillingPeriods(billingPeriods);
+
+        } catch (PluggableTaskException e) {
+            throw new SessionInternalError("Exception occurred retrieving the configured OrderPeriodTask.", e);
+        } catch (TaskException e) {
+            throw new SessionInternalError("Exception occurred calculating the customers billing periods.", e);
+        }
+    }
+
+    public void calculateOneTimeUsagePeriod(OrderDTO periodOrder, OrderDTO mainSubscriptionOrder) {
+        usagePeriod = new UsagePeriod();
+
+        Date cycleStartDate = periodOrder.getActiveSince() != null
+                                    ? periodOrder.getActiveSince()
+                                    : periodOrder.getCreateDate();
+
+        Date cycleEndDate = periodOrder.getActiveUntil();
+        if (cycleEndDate == null) {
+            OrderPeriodDTO period = mainSubscriptionOrder.getOrderPeriod();
+
+            Calendar calendar = GregorianCalendar.getInstance();
+            calendar.setTime(cycleStartDate);
+            calendar.add(MapPeriodToCalendar.map(period.getUnitId()), period.getValue());
+
+            cycleEndDate = calendar.getTime();
+        }
+
+        usagePeriod.setPeriodOrder(periodOrder);
+        usagePeriod.setCycleStartDate(cycleStartDate);
+        usagePeriod.setCycleEndDate(cycleEndDate);
+
+        periods = 1;
+    }
+
     private String getCacheKey() {
-        return "user " + userId + " periods " + periods;
+        if (workingOrder != null) {
+            return "user " + userId + " order " + workingOrder.getId() + " periods " + periods;
+        } else {
+            return "user " + userId + " main order periods " + periods;
+        }
     }
 
     public void invalidateCache() {
@@ -188,7 +237,7 @@ public class UsageBL {
      * denotes the current period, 2 is the current period + 1 etc.
      *
      * Example:
-     * <lieral>
+     * <literal>
      *      1 period:
      *      July 1st -> July 30th
      *
@@ -210,8 +259,8 @@ public class UsageBL {
      * 
      * @return customers main subscription order.
      */
-    public OrderDTO getMainOrder() {
-        return usagePeriod.getMainOrder();
+    public OrderDTO getPeriodOrder() {
+        return usagePeriod.getPeriodOrder();
     }
 
     /**
@@ -252,6 +301,11 @@ public class UsageBL {
      * @return usage period start date.
      */
     public Date getPeriodStart() {
+        // one usage periods for one-time orders have no distinct billing periods
+        if (usagePeriod.getBillingPeriods() == null) {
+            return usagePeriod.getCycleStartDate();
+        }
+
         // get the first period entry in the list - will be N number of periods in the past
         PeriodOfTime start = usagePeriod.getBillingPeriods().get(0);
         return start.getStart();
@@ -265,6 +319,11 @@ public class UsageBL {
      * @return current period end date
      */
     public Date getPeriodEnd() {
+        // one usage periods for one-time orders have no distinct billing periods
+        if (usagePeriod.getBillingPeriods() == null) {
+            return usagePeriod.getCycleEndDate();
+        }
+
         // get the last period entry in the list - will be the most recent period
         PeriodOfTime end = usagePeriod.getBillingPeriods().get(usagePeriod.getBillingPeriods().size() - 1);
 
@@ -303,7 +362,7 @@ public class UsageBL {
      */
     public Usage getItemUsage(Integer itemId) {
         Usage usage;
-        if (getMainOrder() != null) {
+        if (getPeriodOrder() != null) {
             Integer workingOrderId = getWorkingOrder() != null ? getWorkingOrder().getId() : null;
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();
@@ -329,7 +388,7 @@ public class UsageBL {
      */
     public Usage getSubAccountItemUsage(Integer itemId) {
         Usage usage;
-        if (getMainOrder() != null) {
+        if (getPeriodOrder() != null) {
             Integer workingOrderId = getWorkingOrder() != null ? getWorkingOrder().getId() : null;
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();
@@ -354,7 +413,7 @@ public class UsageBL {
      */
     public Usage getItemTypeUsage(Integer itemTypeId) {
         Usage usage;
-        if (getMainOrder() != null) {
+        if (getPeriodOrder() != null) {
             Integer workingOrderId = getWorkingOrder() != null ? getWorkingOrder().getId() : null;
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();
@@ -380,7 +439,7 @@ public class UsageBL {
      */
     public Usage getSubAccountItemTypeUsage(Integer itemTypeId) {
         Usage usage;
-        if (getMainOrder() != null) {
+        if (getPeriodOrder() != null) {
             Integer workingOrderId = getWorkingOrder() != null ? getWorkingOrder().getId() : null;
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();

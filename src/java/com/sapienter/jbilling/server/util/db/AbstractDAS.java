@@ -208,11 +208,8 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
 
     @SuppressWarnings("unchecked")
     public T findFirst(Criteria criteria) {
-        ScrollableResults results = criteria.scroll(ScrollMode.FORWARD_ONLY);
-
-        T result = results.next() ? (T) results.get()[0] : null;
-        results.close();
-        return result;
+        criteria.setFirstResult(0).setMaxResults(1);
+        return (T) criteria.uniqueResult();
 
     }
 

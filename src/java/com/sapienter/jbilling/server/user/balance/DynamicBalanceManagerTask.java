@@ -17,6 +17,7 @@
 package com.sapienter.jbilling.server.user.balance;
 
 import com.sapienter.jbilling.common.Constants;
+import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.event.NewOrderEvent;
 import com.sapienter.jbilling.server.order.event.NewQuantityEvent;
@@ -35,6 +36,8 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.event.DynamicBalanceChangeEvent;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import java.math.BigDecimal;
+import java.util.Date;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -65,7 +68,9 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
     private BigDecimal determineAmount(Event event) {
         if (event instanceof PaymentSuccessfulEvent) {
             PaymentSuccessfulEvent payment = (PaymentSuccessfulEvent) event;
-            return payment.getPayment().getAmount();
+            BigDecimal retVal= payment.getPayment().getAmount();
+            return convertAmountToUsersCurrency(retVal, payment.getPayment().getCurrency().getId(),
+                    payment.getPayment().getUserId(), payment.getPayment().getPaymentDate(), payment.getEntityId());
 
         } else if (event instanceof OrderDeletedEvent) {
             OrderDeletedEvent order = (OrderDeletedEvent) event;
@@ -85,7 +90,10 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
 
         } else if (event instanceof PaymentDeletedEvent) {
             PaymentDeletedEvent payment = (PaymentDeletedEvent) event;
-            return payment.getPayment().getAmount().multiply(new BigDecimal(-1));
+            BigDecimal retVal= payment.getPayment().getAmount().negate();
+            return convertAmountToUsersCurrency(retVal, payment.getPayment().getCurrency().getId(),
+                    payment.getPayment().getBaseUser().getId(), payment.getPayment().getPaymentDate(), payment.getEntityId());
+
 
         } else if (event instanceof OrderAddedOnInvoiceEvent) {
 
@@ -128,6 +136,20 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
         }
     }
 
+    private BigDecimal convertAmountToUsersCurrency(BigDecimal amount, Integer amountCurrencyId, Integer userId, Date date, Integer entityId) {
+        //no need to convert zeros
+        if ( null != amount && ! (amount.compareTo(BigDecimal.ZERO) == 0) ) {
+            //non-zero return value, must be converted if
+            Integer userCurrencyId= new UserDAS().find(userId).getCurrencyId();
+            if ( amountCurrencyId != userCurrencyId ) {
+                //convert to user's currency
+                LOG.debug("Converting amount to User's specific currency");
+                amount= new CurrencyBL().convert(amountCurrencyId, userCurrencyId, amount, date, entityId);
+            }
+        }
+        return amount;
+    }
+    
     private int determineUserId(Event event) {
         if (event instanceof PaymentSuccessfulEvent) {
             PaymentSuccessfulEvent payment = (PaymentSuccessfulEvent) event;

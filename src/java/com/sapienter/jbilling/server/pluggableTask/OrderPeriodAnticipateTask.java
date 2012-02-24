@@ -26,6 +26,7 @@ import java.util.GregorianCalendar;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.util.Constants;
 
 /**
  * @author Emil
@@ -39,6 +40,10 @@ public class OrderPeriodAnticipateTask extends BasicOrderPeriodTask {
     public Date calculateEnd(OrderDTO order, Date processDate,
             int maxPeriods, Date periodStarts) 
             throws TaskException {
+
+        if (order.getOrderPeriod().getId() ==  Constants.ORDER_PERIOD_ONCE) {
+            return null;
+        }
 
         viewLimit = getViewLimit(order.getOrderPeriod(), processDate);
 

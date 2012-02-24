@@ -99,7 +99,8 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
                                Integer currencyId,
                                List<PricingField> fields,
                                BigDecimal defaultPrice,
-                               OrderDTO pricingOrder) throws TaskException {
+                               OrderDTO pricingOrder,
+                               boolean singlePurchase) throws TaskException {
 
         LOG.debug("Calling PriceModelPricingTask with pricing order: " + pricingOrder);
         LOG.debug("Pricing item " + itemId + ", quantity " + quantity + " - for user " + userId);
@@ -154,7 +155,7 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
 
                 PricingResult result = new PricingResult(itemId, quantity, userId, currencyId);
 
-                model.applyTo(pricingOrder, result.getQuantity(), result, fields, usage, pricingDate);
+                model.applyTo(pricingOrder, result.getQuantity(), result, fields, usage, singlePurchase, pricingDate);
                 LOG.debug("Price discovered: " + result.getPrice());
                 return result.getPrice();
             }

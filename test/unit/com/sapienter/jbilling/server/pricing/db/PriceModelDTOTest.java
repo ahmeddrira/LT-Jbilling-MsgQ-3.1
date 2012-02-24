@@ -89,8 +89,8 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         planPrice.setType(PriceModelStrategy.METERED);
         planPrice.setRate(new BigDecimal("0.7"));
 
-        PricingResult result = new PricingResult(1, 2, 3);
-        planPrice.applyTo(null, null, result, null, null, null);
+        PricingResult result = new PricingResult(1, 2, 3);         // order, quantity, resutl, field, usage, false, date
+        planPrice.applyTo(null, null, result, null, null, false, null);
         assertEquals(planPrice.getRate(), result.getPrice());
     }
 
@@ -106,7 +106,7 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         planPrice.setNext(next);
 
         PricingResult result = new PricingResult(1, 2, 3);
-        planPrice.applyTo(null, null, result, null, null, null);
+        planPrice.applyTo(null, null, result, null, null, false, null);
         assertEquals(new BigDecimal("17.00"), result.getPrice());
     }
 
@@ -122,7 +122,7 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         planPrice.setNext(next);
 
         PricingResult result = new PricingResult(1, 2, 3);
-        planPrice.applyTo(null, null, result, null, null, null);
+        planPrice.applyTo(null, null, result, null, null, false, null);
         assertEquals(new BigDecimal("3.00"), result.getPrice());
     }
 

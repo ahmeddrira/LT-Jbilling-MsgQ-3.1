@@ -16,6 +16,7 @@ logs/
 .ant-targets*.xml
 TEST*.xml
 *.jasper
+*.BAK
 
 # external libraries
 libs/

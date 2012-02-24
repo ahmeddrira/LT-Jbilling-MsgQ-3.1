@@ -77,7 +77,7 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
      * @param usage total item usage for this billing period
      */
     public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
-                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
+                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage, boolean singlePurchase) {
 
         if (usage == null || usage.getQuantity() == null)
             throw new IllegalArgumentException("Usage quantity cannot be null for TieredPricingStrategy.");
@@ -87,8 +87,8 @@ public class TieredPricingStrategy extends AbstractPricingStrategy {
            lines. If there is no pricing order (populating a single ItemDTO price), add the quantity
            being purchased to the usage calc to get the total quantity.
         */
-        BigDecimal total = pricingOrder == null ?  usage.getQuantity().add(quantity) : usage.getQuantity();
-        BigDecimal existing = pricingOrder == null ? usage.getQuantity() : usage.getQuantity().subtract(quantity);
+        BigDecimal total = getTotalQuantity(pricingOrder, usage, quantity, singlePurchase);
+        BigDecimal existing = getExistingQuantity(pricingOrder, usage, quantity, singlePurchase);
 
         assert existing.add(quantity).equals(total);
 

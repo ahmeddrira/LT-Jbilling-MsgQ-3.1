@@ -85,7 +85,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
 
                 // sum of applicable item charges * percentage
                 BigDecimal total = getTotalForPercentage(order.getLines(), percentageItem.getExcludedTypes());
-                line.setAmount(line.getPrice().divide(ONE_HUNDRED, Constants.BIGDECIMAL_ROUND).multiply(total));
+                line.setAmount(line.getPrice().divide(ONE_HUNDRED, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND).multiply(total));
 
                 LOG.debug("percentage line total: %" + line.getPrice() + ";  "
                           + "( " + line.getPrice() + " / 100 ) x " + total  + " = " + line.getAmount());
@@ -109,7 +109,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
 
                 // sum of applicable item charges + fees * percentage
                 BigDecimal total = getTotalForTax(order.getLines(), taxItem.getExcludedTypes());
-                line.setAmount(line.getPrice().divide(ONE_HUNDRED, BigDecimal.ROUND_HALF_EVEN).multiply(total));
+                line.setAmount(line.getPrice().divide(ONE_HUNDRED, Constants.BIGDECIMAL_SCALE, BigDecimal.ROUND_HALF_EVEN).multiply(total));
 
                 LOG.debug("tax line total: %" + line.getPrice() + ";  "
                           + "( " + line.getPrice() + " / 100 ) x " + total  + " = " + line.getAmount());

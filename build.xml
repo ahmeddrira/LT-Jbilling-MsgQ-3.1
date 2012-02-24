@@ -262,6 +262,11 @@
         <antcall target="test-integration" inheritall="true"/>
     </target>
 
+    <target name="test-dynamic-balance">
+        <property name="test.class" value="com.sapienter.jbilling.server.task.DynamicBalanceManagerTaskTest"/>
+        <antcall target="test-integration" inheritall="true"/>
+    </target>
+
     <!--
         jBilling "official" release generation targets
     -->

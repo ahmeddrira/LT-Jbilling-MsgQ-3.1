@@ -115,11 +115,10 @@ class OrderController {
 
     def list = {
         def filters = filterService.getFilters(FilterType.ORDER, params)
-        def orders = getFilteredOrders (filters, params)
+        def orders = getFilteredOrders(filters, params)
 
         def selected = params.id ? webServicesSession.getOrder(params.int("id")) : null
-        def user = params.id ? webServicesSession.getUserWS(selected.userId) : null
-        def currencies = params.id ? getCurrencies() : null
+        def user = selected ? webServicesSession.getUserWS(selected.userId) : null
 
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, selected?.id)
 
@@ -167,7 +166,7 @@ class OrderController {
      * Convenience shortcut, this action shows all invoices for the given user id.
      */
     def user = {
-        def filter = new Filter(type: FilterType.ALL, constraintType: FilterConstraint.EQ, field: 'baseUserByUserId.id', template: 'id', visible: true, integerValue: params.int('id'))
+        def filter = new Filter(type: FilterType.ORDER, constraintType: FilterConstraint.EQ, field: 'baseUserByUserId.id', template: 'id', visible: true, integerValue: params.int('id'))
         filterService.setFilter(FilterType.ORDER, filter)
         redirect action: 'list'
     }

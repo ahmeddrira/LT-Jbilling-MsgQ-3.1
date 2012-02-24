@@ -16,6 +16,8 @@
 
 package com.sapienter.jbilling.server.pricing.strategy;
 
+import com.sapienter.jbilling.server.order.Usage;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.pricing.db.AttributeDefinition;
 import com.sapienter.jbilling.server.pricing.db.ChainPosition;
 
@@ -59,5 +61,19 @@ public abstract class AbstractPricingStrategy implements PricingStrategy {
 
     public void setRequiresUsage(boolean requiresUsage) {
         this.requiresUsage = requiresUsage;
+    }
+
+    public static BigDecimal getTotalQuantity(OrderDTO pricingOrder, Usage usage, BigDecimal quantity, boolean singlePurchase) {
+        if (singlePurchase || pricingOrder == null) {
+            return usage.getQuantity().add(quantity);
+        }
+        return usage.getQuantity();
+    }
+
+    public static BigDecimal getExistingQuantity(OrderDTO pricingOrder, Usage usage, BigDecimal quantity, boolean singlePurchase) {
+      if (singlePurchase || pricingOrder == null) {
+          return usage.getQuantity();
+      }
+      return usage.getQuantity().subtract(quantity);
     }
 }

@@ -52,7 +52,7 @@
                     <g:applyLayout name="form/input">
                         <content tag="label"><g:message code="filters.save.label.name"/></content>
                         <content tag="label.for">name</content>
-                        <g:textField class="field" name="name" value="${selected?.name}"/>
+                        <g:textField class="field" name="name" maxlength="30" value="${selected?.name}"/>
                     </g:applyLayout>
                 </g:else>
             </div>

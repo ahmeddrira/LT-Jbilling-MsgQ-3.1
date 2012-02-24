@@ -35,10 +35,11 @@ public interface IPricing {
      * @param fields pricing fields
      * @param defaultPrice default price if no other price could be determined.
      * @param pricingOrder target order for this pricing request (may be null)
+     * @param singlePurchase true if pricing a single purchase/addition to an order, false if pricing a quantity that already exists on the given order.
      * @return price
      * @throws TaskException checked exception if a problem occurs.
      */
     public BigDecimal getPrice(Integer itemId, BigDecimal quantity, Integer userId, Integer currencyId,
-                               List<PricingField> fields, BigDecimal defaultPrice, OrderDTO pricingOrder)
+                               List<PricingField> fields, BigDecimal defaultPrice, OrderDTO pricingOrder, boolean singlePurchase)
             throws TaskException;
 }

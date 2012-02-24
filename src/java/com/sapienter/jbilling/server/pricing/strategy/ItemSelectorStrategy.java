@@ -63,7 +63,7 @@ public class ItemSelectorStrategy extends AbstractPricingStrategy {
     }
 
     public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
-                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
+                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage, boolean singlePurchase) {
 
         // price of selector trigger item will be the set $/unit rate
         result.setPrice(planPrice.getRate());

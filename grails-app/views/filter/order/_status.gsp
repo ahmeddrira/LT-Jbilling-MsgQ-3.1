@@ -32,10 +32,10 @@
             <div class="input-row">
                 <div class="select-bg">
                     <g:select name="filters.${filter.name}.integerValue"
-                            value="${filter.integerValue}"
-                            from="${new OrderStatusDAS().findAll()}"
-                            optionKey="statusValue" optionValue="description"
-                            noSelection="['': message(code: 'filters.status.empty')]" />
+                              value="${filter.integerValue}"
+                              from="${new OrderStatusDAS().findAll()}"
+                              optionKey="id" optionValue="description"
+                              noSelection="['': message(code: 'filters.status.empty')]"/>
 
                 </div>
                 <label for="filters.${filter.name}.stringValue"><g:message code="filters.status.label"/></label>

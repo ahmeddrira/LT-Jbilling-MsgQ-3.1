@@ -67,7 +67,7 @@ public class TimeOfDayPercentageStrategy extends TimeOfDayPricingStrategy {
      */
     @Override
     public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
-                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage) {
+                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage, boolean singlePurchase) {
 
         if (result.getPrice() != null) {
             // parse time ranges and prices

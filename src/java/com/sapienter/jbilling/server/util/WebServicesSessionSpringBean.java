@@ -242,7 +242,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     	INotificationSessionBean notificationSession =
 	            (INotificationSessionBean) Context.getBean(
 	            Context.Name.NOTIFICATION_SESSION);
-	    return notificationSession.emailInvoice(invoiceId);
+        
+        boolean emailInvoice;
+        try{
+            emailInvoice = notificationSession.emailInvoice(invoiceId); 
+        } catch (Exception e){
+            LOG.warn("Exception in web service: notifying invoice by email "
+                    + e);
+            emailInvoice = false;
+        }
+        return emailInvoice;
     }
 
     public boolean notifyPaymentByEmail(Integer paymentId) {
@@ -1679,7 +1688,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         // process payment
         IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
-        Integer result = session.processAndUpdateInvoice(dto, null, entityId, getCallerId());
+        Integer result = session.processAndUpdateInvoice(dto, invoiceId, entityId, getCallerId());
         LOG.debug("paymentBean.processAndUpdateInvoice() Id=" + result);
 
         PaymentAuthorizationDTOEx auth = null;
@@ -3165,12 +3174,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     /*Secured via WSSecurityMethodMapper entry.*/
     public void saveCustomerNotes(Integer userId, String notes) {
-    	CustomerDTO cust= UserBL.getUserEntity(userId).getCustomer();
-    	if ( null != cust ) {
-    		cust.setNotes(notes);
-    	} else {
-    		throw new SessionInternalError("Not a customer");
-    	}
+        CustomerDTO cust = UserBL.getUserEntity(userId).getCustomer();
+        if (notes.length() > 1000) {
+            throw new SessionInternalError("Customer notes cannot be null", new String[] {"CustomerWS,notes,customer.error.notes.length.exceeded"});
+        } else if (null != cust) {
+            cust.setNotes(notes);
+        } else {
+            throw new SessionInternalError("Not a customer");
+        }
     }
 
 

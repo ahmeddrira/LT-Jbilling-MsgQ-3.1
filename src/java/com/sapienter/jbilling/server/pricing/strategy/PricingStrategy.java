@@ -71,8 +71,9 @@ public interface PricingStrategy {
      * @param planPrice the plan price to apply
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
+     * @param singlePurchase true if pricing a single purchase/addition to an order, false if pricing a quantity that already exists on the pricingOrder
      * @throws IllegalArgumentException if strategy requires usage, and usage was given as null
      */
     public void applyTo(OrderDTO pricingOrder, PricingResult result, List<PricingField> fields,
-                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage);
+                        PriceModelDTO planPrice, BigDecimal quantity, Usage usage, boolean singlePurchase);
 }

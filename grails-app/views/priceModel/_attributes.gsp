@@ -42,7 +42,7 @@
             <content tag="label"><g:message code="${definition.name}"/></content>
             <content tag="label.for">model.${modelIndex}.attribute.${attributeIndex}.value</content>
             <g:select name="model.${modelIndex}.attribute.${attributeIndex}.value" class="model-type" from="${ItemDTO.list([sort: 'id'])}"
-                      optionKey="id" optionValue="description" value="${attribute}"/>
+                      optionKey="id" optionValue="${{it.id + ' - ' + it.description}}" value="${attribute}"/>
         </g:applyLayout>
 
     </g:if>

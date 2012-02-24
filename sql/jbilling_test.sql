@@ -15,6 +15,7 @@ ALTER TABLE ONLY public.user_role_map DROP CONSTRAINT user_role_map_fk_2;
 ALTER TABLE ONLY public.user_role_map DROP CONSTRAINT user_role_map_fk_1;
 ALTER TABLE ONLY public.entity_report_map DROP CONSTRAINT report_map_report_id_fk;
 ALTER TABLE ONLY public.entity_report_map DROP CONSTRAINT report_map_entity_id_fk;
+ALTER TABLE ONLY public.rate_card DROP CONSTRAINT rate_card_entity_id_fk;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_5;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_4;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_3;
@@ -219,6 +220,8 @@ ALTER TABLE ONLY public.report_type DROP CONSTRAINT report_type_pkey;
 ALTER TABLE ONLY public.report DROP CONSTRAINT report_pkey;
 ALTER TABLE ONLY public.report_parameter DROP CONSTRAINT report_parameter_pkey;
 ALTER TABLE ONLY public.recent_item DROP CONSTRAINT recent_item_pkey;
+ALTER TABLE ONLY public.rate_card DROP CONSTRAINT rate_card_table_name_key;
+ALTER TABLE ONLY public.rate_card DROP CONSTRAINT rate_card_pkey;
 ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_pkey;
 ALTER TABLE ONLY public.promotion DROP CONSTRAINT promotion_pkey;
 ALTER TABLE ONLY public.process_run_user DROP CONSTRAINT process_run_user_pkey;
@@ -318,6 +321,7 @@ DROP TABLE public.report_type;
 DROP TABLE public.report_parameter;
 DROP TABLE public.report;
 DROP TABLE public.recent_item;
+DROP TABLE public.rate_card;
 DROP TABLE public.purchase_order;
 DROP TABLE public.promotion_user_map;
 DROP TABLE public.promotion;
@@ -2153,6 +2157,20 @@ CREATE TABLE purchase_order (
 
 
 ALTER TABLE public.purchase_order OWNER TO jbilling;
+
+--
+-- Name: rate_card; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE rate_card (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    table_name character varying(255) NOT NULL,
+    entity_id integer NOT NULL
+);
+
+
+ALTER TABLE public.rate_card OWNER TO jbilling;
 
 --
 -- Name: recent_item; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -13889,6 +13907,7 @@ partner	3
 contact_map	7912
 contact	1133
 breadcrumb	20
+rate_card	1
 \.
 
 
@@ -20295,6 +20314,14 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 
 
 --
+-- Data for Name: rate_card; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY rate_card (id, name, table_name, entity_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: recent_item; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -23172,6 +23199,22 @@ ALTER TABLE ONLY purchase_order
 
 
 --
+-- Name: rate_card_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY rate_card
+    ADD CONSTRAINT rate_card_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rate_card_table_name_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY rate_card
+    ADD CONSTRAINT rate_card_table_name_key UNIQUE (table_name);
+
+
+--
 -- Name: recent_item_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -24742,6 +24785,14 @@ ALTER TABLE ONLY purchase_order
 
 ALTER TABLE ONLY purchase_order
     ADD CONSTRAINT purchase_order_fk_5 FOREIGN KEY (created_by) REFERENCES base_user(id);
+
+
+--
+-- Name: rate_card_entity_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY rate_card
+    ADD CONSTRAINT rate_card_entity_id_fk FOREIGN KEY (entity_id) REFERENCES entity(id);
 
 
 --

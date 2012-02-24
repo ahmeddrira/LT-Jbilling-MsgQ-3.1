@@ -191,10 +191,6 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getUsersNotInStatus(statusId)
     }
 
-    public Integer[] getUsersByCustomField(Integer typeId, String value) {
-        return webServicesSession.getUsersByCustomField(typeId, value)
-    }
-
     public Integer[] getUsersByCreditCard(String number) {
         return webServicesSession.getUsersByCreditCard(number)
     }

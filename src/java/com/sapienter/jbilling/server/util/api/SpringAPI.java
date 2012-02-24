@@ -279,10 +279,6 @@ public class SpringAPI implements JbillingAPI {
         return session.getUserWS(userId);
     }
 
-    public Integer[] getUsersByCustomField(Integer typeId, String value) {
-        return session.getUsersByCustomField(typeId, value);
-    }
-
     public Integer[] getUsersByStatus(Integer statusId, boolean in) {
         return session.getUsersByStatus(statusId, in);
     }

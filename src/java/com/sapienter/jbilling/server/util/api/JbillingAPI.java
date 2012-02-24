@@ -87,7 +87,6 @@ public interface JbillingAPI {
     public Integer[] getUsersByStatus(Integer statusId, boolean in);
     public Integer[] getUsersInStatus(Integer statusId);
     public Integer[] getUsersNotInStatus(Integer statusId);
-    public Integer[] getUsersByCustomField(Integer typeId, String value);
     public Integer[] getUsersByCreditCard(String number);
 
     public Integer getUserId(String username);

@@ -781,31 +781,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return getUsersByStatus(statusId, false);
     }
 
-    /**
-     * Retrieves an array of users in the required status
-     */
-    public Integer[] getUsersByCustomField(Integer typeId, String value)
-            throws SessionInternalError {
-        try {
-            UserBL bl = new UserBL();
-            Integer entityId = getCallerCompanyId();
-
-            CachedRowSet users = bl.getByCustomField(entityId, typeId, value);
-            LOG.debug("got collection. Now converting");
-            Integer[] ret = new Integer[users.size()];
-            int f = 0;
-            while (users.next()) {
-                ret[f] = users.getInt(1);
-                f++;
-            }
-            users.close();
-            return ret;
-        } catch (Exception e) { // can't remove because of the SQL Exception :(
-            LOG.error("WS - getUsersByCustomField", e);
-            throw new SessionInternalError("Error getting users by custom field");
-        }
-    }
-
     @Deprecated
     private Integer[] getByCCNumber(Integer entityId, String number) {
         List<Integer> usersIds = new CreditCardDAS().findByLastDigits(entityId, number);

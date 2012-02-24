@@ -96,7 +96,6 @@ public interface IWebServicesSessionBean {
     public Integer[] getUsersByStatus(Integer statusId, boolean in) throws SessionInternalError;
     public Integer[] getUsersInStatus(Integer statusId) throws SessionInternalError;
     public Integer[] getUsersNotInStatus(Integer statusId) throws SessionInternalError;
-    public Integer[] getUsersByCustomField(Integer typeId, String value) throws SessionInternalError;
     public Integer[] getUsersByCreditCard(String number) throws SessionInternalError;
 
     public Integer getUserId(String username) throws SessionInternalError;

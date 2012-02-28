@@ -192,6 +192,11 @@ class CustomerController {
     @Secured(["CUSTOMER_15"])
     def show = {
         def user = UserDTO.get(params.int('id'))
+        if (!user) {
+            log.debug "redirecting to list"
+            redirect(action: 'list')
+            return
+        }
         def contact = new ContactDAS().findPrimaryContact(user.userId)
 
         def revenue = webServicesSession.getTotalRevenueByUser(user.userId)

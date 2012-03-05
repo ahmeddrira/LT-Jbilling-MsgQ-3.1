@@ -45,7 +45,7 @@ public class OrderPeriodAnticipateTask extends BasicOrderPeriodTask {
             return null;
         }
 
-        viewLimit = getViewLimit(order.getOrderPeriod(), processDate);
+        viewLimit = getViewLimit(order.getUser().getEntity().getId(), processDate);
 
         if (order.getAnticipatePeriods() != null &&
                 order.getAnticipatePeriods().intValue() > 0) {

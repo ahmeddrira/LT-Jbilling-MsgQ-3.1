@@ -20,6 +20,7 @@ import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderProcessWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
@@ -133,6 +134,56 @@ public class BillingProcessTest extends TestCase {
         api.deleteOrder(orderId);
         api.deleteUser(user.getUserId());
     }
+    
+    public void testViewLimit() throws Exception {
+        System.out.println("Running testViewLimit()");
+
+        // set the configuration to something we are sure about
+        
+        BillingProcessConfigurationWS configBackup = api.getBillingProcessConfiguration();
+        BillingProcessConfigurationWS config = api.getBillingProcessConfiguration();
+        
+        // just change it to a day
+        config.setPeriodUnitId(Constants.PERIOD_UNIT_DAY);
+        config.setPeriodValue(1);
+        config.setMaximumPeriods(100);
+
+        System.out.println("A - Setting config to: " + config);
+        api.createUpdateBillingProcessConfiguration(config);
+        
+
+        // user for tests
+        UserWS user = com.sapienter.jbilling.server.user.WSTest.createUser(true, null, null);
+        OrderWS order = com.sapienter.jbilling.server.order.WSTest.createMockOrder(user.getUserId(),
+                                                                                   1,
+                                                                                   new BigDecimal(60));
+        // active since a little bit more than a month than the current billing process
+        // When calling 'createInvoice' the billing process date is set to today, but the period is
+        // taken from the configuration (very odd, almost a bug. To fix it, add a parameter to 'createInvoice' with the date.
+        // if null, use today).
+        order.setActiveSince(new DateMidnight(new Date()).minusDays(40).toDate());
+        order.setPeriod(2); // monthly
+
+        Integer orderId = api.createUpdateOrder(order);
+        System.out.println("Order id: " + orderId);
+
+        // run the billing process. For this user only
+        Integer invoiceIds[] = api.createInvoice(user.getUserId(), false);
+
+        System.out.println("Invoice ids: " + Arrays.toString(invoiceIds));
+        InvoiceWS invoice = api.getInvoiceWS(invoiceIds[0]);
+        
+        assertEquals("New invoice should be 2 months, for a total of 120",
+                     new BigDecimal(120),
+                     invoice.getBalanceAsDecimal());
+
+        // clean up
+        api.deleteInvoice(invoice.getId());
+        api.deleteOrder(orderId);
+        api.deleteUser(user.getUserId());
+        api.createUpdateBillingProcessConfiguration(configBackup);
+    }
+    
 
     public void testRetry() throws Exception {
         System.out.println("Running testRetry()");

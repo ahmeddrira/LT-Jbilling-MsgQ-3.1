@@ -49,7 +49,8 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private PriceModelWS defaultPrice;
 
     // *** ItemDTOEx ***
-    @NotNull @Size (min=1,max=100, message="validation.error.size,1,100")
+    @NotNull(message = "validation.error.notnull")
+    @Size (min=1,max=100, message="validation.error.size,1,100")
     private String description = null;
     @ItemTypes
     private Integer[] types = null;

@@ -97,6 +97,9 @@ class ContactTypeConfigController {
         try {
             log.debug("creating new contact type ${contactType}")
             contactType.id = webServicesSession.createContactTypeWS(contactType)
+			
+			flash.message = 'contact.type.created'
+			flash.args = [  contactType.id as String ]
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)

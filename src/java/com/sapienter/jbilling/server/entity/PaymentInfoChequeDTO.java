@@ -21,6 +21,8 @@ package com.sapienter.jbilling.server.entity;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.sapienter.jbilling.server.order.validator.DateBetween;
+
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
@@ -40,6 +42,7 @@ public class PaymentInfoChequeDTO implements Serializable {
     private java.lang.String number;
     private boolean numberHasBeenSet = false;
     @NotNull(message="validation.error.notnull")
+    @DateBetween(start = "01/01/1901", end = "12/31/9999")
     private java.util.Date date;
     private boolean dateHasBeenSet = false;
 

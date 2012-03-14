@@ -66,7 +66,7 @@ public interface IWebServicesSessionBean {
     public Integer getCallerId();
     public Integer getCallerCompanyId();
     public Integer getCallerLanguageId();
-
+    public Integer getCallerCurrencyId();
 
     /*
         Users

@@ -74,6 +74,10 @@ class ApiService implements IWebServicesSessionBean {
     public Integer getCallerLanguageId() {
         return webServicesSession.getCallerLanguageId();
     }
+    
+    public Integer getCallerCurrencyId() {
+        return webServicesSession.getCallerCurrencyId();
+    }
 
     public InvoiceWS getInvoiceWS(Integer invoiceId) {
         return webServicesSession.getInvoiceWS(invoiceId)

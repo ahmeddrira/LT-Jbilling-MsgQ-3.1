@@ -31,6 +31,7 @@ import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.hibernate.FetchMode as FM
 
 @Secured(["MENU_99"])
 class UserController {
@@ -80,10 +81,10 @@ class UserController {
         def crumbDescription = selected ? UserHelper.getDisplayName(selected, contact) : null
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, selected?.id, crumbDescription)
 
-        if (params.applyFilter) {
+        if (params.applyFilter || params.partial) {
             render template: 'users', model: [ users: users, selected: selected, contact: contact ]
         } else {
-            render view: 'list', model: [ users: users, selected: selected, contact: contact ]
+            [ users: users, selected: selected, contact: contact ]
         }
     }
 
@@ -113,8 +114,11 @@ class UserController {
             redirect controller: 'user', action: 'list'
             return
         }
-
-        def company = CompanyDTO.get(session['company_id'])
+		
+		def company = CompanyDTO.createCriteria().get{
+			 eq("id", session['company_id'])
+			 fetchMode('contactFieldTypes', FM.JOIN)
+		}
 
         [ user: user, contacts: contacts, company: company ]
     }
@@ -128,7 +132,12 @@ class UserController {
         UserHelper.bindUser(user, params)
 
         def contacts = []
-        def company = CompanyDTO.get(session['company_id'])
+
+		def company = CompanyDTO.createCriteria().get{
+			 eq("id", session['company_id'])
+			 fetchMode('contactFieldTypes', FM.JOIN)
+		}
+		
         UserHelper.bindContacts(user, contacts, company, params)
 
         def oldUser = (user.userId && user.userId != 0) ? webServicesSession.getUserWS(user.userId) : null

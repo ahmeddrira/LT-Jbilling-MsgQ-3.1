@@ -83,7 +83,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="user" action="list" params="[applyFilter: true]" total="${users?.totalCount ?: 0}" update="column1"/>
+        <util:remotePaginate controller="user" action="list" params="${sortableParams(params: [partial: true])}" total="${users?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 

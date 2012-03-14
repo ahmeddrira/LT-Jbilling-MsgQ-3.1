@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.sapienter.jbilling.server.security.WSSecured;
 
@@ -36,6 +37,7 @@ public class PluggableTaskWS implements java.io.Serializable, WSSecured {
     @NotNull(message="validation.error.notnull")
     @Min(value = 1, message = "validation.error.min,1")
     private Integer processingOrder;
+    @Size(min=0, max = 1000, message = "validation.error.size,1,1000")
     private String notes;
     @NotNull(message="validation.error.notnull")
     private Integer typeId;

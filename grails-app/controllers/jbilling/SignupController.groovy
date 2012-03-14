@@ -81,6 +81,13 @@ class SignupController {
             return
         }
 
+        if(CompanyDTO.findByDescription(params['contact.organizationName'])) {
+            // show a error message and return
+            flash.error = 'company.already.exists'
+            flash.args = [params.contact.organizationName]
+            render view: 'index'
+            return
+        }
 
         /*
             Create the new entity, root user and basic contact information

@@ -61,7 +61,7 @@ class PlanHelper {
             }
 
             // clear type specific attributes after a change in strategy
-            if (modelParams.type != modelParams.oldType) {
+            if (!modelParams.oldType.isEmpty() && modelParams.type != modelParams.oldType) {
                 PriceModelStrategy oldType = PriceModelStrategy.valueOf(modelParams.oldType)
                 for (AttributeDefinition attribute : oldType.strategy.attributeDefinitions) {
                     model.attributes.remove(attribute.name)

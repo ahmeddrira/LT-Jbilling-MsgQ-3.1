@@ -157,7 +157,11 @@ class InvoiceController {
     @Secured(["INVOICE_72"])
     def show = {
         def invoice = InvoiceDTO.get(params.int('id'))
-
+        if (!invoice) {
+            log.debug("Redirecting to list")
+            redirect(action: 'list')
+            return
+        }
         recentItemService.addRecentItem(invoice.id, RecentItemType.INVOICE)
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, invoice.id, invoice.number)
 

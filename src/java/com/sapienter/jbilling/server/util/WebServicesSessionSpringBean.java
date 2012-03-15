@@ -175,6 +175,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
         return details.getLanguageId();
     }
+    
+    /**
+     * Returns the currency ID of the authenticated user account making the web service call.
+     *
+     * @return caller currency ID
+     */
+    public Integer getCallerCurrencyId() {
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
+        return details.getCurrencyId();
+    }
 
 
     // todo: reorganize methods and reformat code. should match the structure of the interface to make things readable.
@@ -1079,9 +1089,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             });
         }
 
-        UserBL bl = new UserBL(getCallerId());
-        Integer executorId = bl.getEntity().getUserId();
-        Integer languageId = bl.getEntity().getLanguageIdField();
+        UserBL bl = new UserBL();
+        Integer executorId = getCallerId();
+        Integer languageId = getCallerLanguageId();
 
         // do some transformation from WS to DTO :(
         ItemBL itemBL = new ItemBL();
@@ -1168,10 +1178,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             OrderDTO dto = orderBL.getDTO(order);
 
             // get the info from the caller
-            UserBL bl = new UserBL(getCallerId());
-            Integer executorId = bl.getEntity().getUserId();
-            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
-            Integer languageId = bl.getEntity().getLanguageIdField();
+            Integer executorId = getCallerId(); 
+            Integer entityId = getCallerCompanyId();
+            Integer languageId = getCallerLanguageId(); 
 
             // see if the related items should provide info
             processLines(dto, languageId, entityId, order.getUserId(), order.getCurrencyId(), order.getPricingFields());
@@ -1192,8 +1201,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public OrderWS getOrder(Integer orderId) throws SessionInternalError {
             // get the info from the caller
-        UserBL userbl = new UserBL(getCallerId());
-        Integer languageId = userbl.getEntity().getLanguageIdField();
+        Integer languageId = getCallerLanguageId();
 
         // now get the order. Avoid the proxy since this is for the client
         OrderDAS das = new OrderDAS();
@@ -1239,16 +1247,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throw new SessionInternalError("User id can not be null");
         }
         OrderWS retValue = null;
-        // get the info from the caller
-        UserBL userbl = new UserBL(getCallerId());
-        Integer languageId = userbl.getEntity().getLanguageIdField();
 
         // now get the order
         OrderBL bl = new OrderBL();
         Integer orderId = bl.getLatest(userId);
         if (orderId != null) {
             bl.set(orderId);
-            retValue = bl.getWS(languageId);
+            retValue = bl.getWS(getCallerLanguageId());
         }
         return retValue;
     }
@@ -1279,8 +1284,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public OrderWS getCurrentOrder(Integer userId, Date date) {
         OrderWS retValue = null;
         // get the info from the caller
-        UserBL userbl = new UserBL(getCallerId());
-        Integer languageId = userbl.getEntity().getLanguageIdField();
+        Integer languageId = getCallerLanguageId();
 
         // now get the current order
         OrderBL bl = new OrderBL();
@@ -1309,8 +1313,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             Integer currencyId = userbl.getCurrencyId();
 
             // get language from the caller
-            userbl.set(getCallerId());
-            Integer languageId = userbl.getEntity().getLanguageIdField();
+            Integer languageId = getCallerLanguageId(); 
 
             // pricing fields
             List<Record> records = null;
@@ -1724,8 +1727,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public PaymentWS getPayment(Integer paymentId)
             throws SessionInternalError {
         // get the info from the caller
-        UserBL userbl = new UserBL(getCallerId());
-        Integer languageId = userbl.getEntity().getLanguageIdField();
+        Integer languageId = getCallerLanguageId();
 
         PaymentBL bl = new PaymentBL(paymentId);
         return PaymentBL.getWS(bl.getDTOEx(languageId));
@@ -1734,8 +1736,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public PaymentWS getLatestPayment(Integer userId) throws SessionInternalError {
         PaymentWS retValue = null;
         // get the info from the caller
-        UserBL userbl = new UserBL(getCallerId());
-        Integer languageId = userbl.getEntity().getLanguageIdField();
+        Integer languageId = getCallerLanguageId();
 
         PaymentBL bl = new PaymentBL();
         Integer paymentId = bl.getLatest(userId);
@@ -1750,8 +1751,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         if (userId == null || number == null) {
             return null;
         }
-        UserBL userbl = new UserBL(getCallerId());
-        Integer languageId = userbl.getEntity().getLanguageIdField();
+        Integer languageId = getCallerLanguageId();
 
         PaymentBL payment = new PaymentBL();
         return payment.getManyWS(userId, number, languageId);
@@ -1800,9 +1800,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         dto.setDescription(null);
 
         // get the info from the caller
-        UserBL bl = new UserBL(getCallerId());
-        Integer languageId = bl.getEntity().getLanguageIdField();
-        Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
+        Integer languageId = getCallerLanguageId();
+        Integer entityId = getCallerCompanyId(); 
         dto.setEntity(new CompanyDTO(entityId));
 
         // call the creation
@@ -1935,16 +1934,15 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         if (fields != null) f.addAll(Arrays.asList(fields));
         helper.setPricingFields(f);
 
-        UserBL caller = new UserBL(getCallerId());
-        Integer callerId = caller.getEntity().getUserId();
-        Integer entityId = caller.getEntityId(callerId);
-        Integer languageId = caller.getEntity().getLanguageIdField();
+        Integer callerId = getCallerId(); 
+        Integer entityId = getCallerCompanyId(); 
+        Integer languageId = getCallerLanguageId(); 
 
         // use the currency of the given user if provided, otherwise
         // default to the currency of the caller (admin user)
         Integer currencyId = (userId != null
                               ? new UserBL(userId).getCurrencyId()
-                              : caller.getCurrencyId());
+                              : getCallerCurrencyId());
 
         ItemDTOEx retValue = helper.getWS(helper.getDTO(languageId, userId, entityId, currencyId));
         // get descriptions
@@ -2207,18 +2205,17 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         validateOrder(order);
         // get the info from the caller
-        UserBL bl = new UserBL(getCallerId());
-        Integer executorId = bl.getEntity().getUserId();
-        Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
-
-        // we'll need the langauge later
-        bl.set(order.getUserId());
-        Integer languageId = bl.getEntity().getLanguageIdField();
+        Integer executorId = getCallerId();
+        Integer entityId = getCallerCompanyId();
 
         // convert to a DTO
         OrderBL orderBL = new OrderBL();
         OrderDTO dto = orderBL.getDTO(order);
 
+        // we'll need the langauge later
+        UserBL bl = new UserBL(order.getUserId());
+        Integer languageId = bl.getEntity().getLanguageIdField();
+        
         // process the lines and let the items provide the order line details
         LOG.debug("Processing order lines");
         processLines(dto, languageId, entityId, order.getUserId(), order.getCurrencyId(), order.getPricingFields());
@@ -2360,8 +2357,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
         OrderWS retValue = null;
         // get the info from the caller
-        UserBL userbl = new UserBL(getCallerId());
-        Integer languageId = userbl.getEntity().getLanguageIdField();
+        Integer languageId = getCallerLanguageId(); 
 
         // now get the order
         OrderBL bl = new OrderBL();

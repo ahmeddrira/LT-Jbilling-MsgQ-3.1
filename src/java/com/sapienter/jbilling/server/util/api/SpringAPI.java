@@ -756,6 +756,10 @@ public class SpringAPI implements JbillingAPI {
         return session.getCallerLanguageId();
     }
 
+    public Integer getCallerCurrencyId() {
+        return session.getCallerCurrencyId();
+    }
+    
     public InvoiceWS[] getAllInvoicesForUser(Integer userId) {
         return session.getAllInvoicesForUser(userId);
     }

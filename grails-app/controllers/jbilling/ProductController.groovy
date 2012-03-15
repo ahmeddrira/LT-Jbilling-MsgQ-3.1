@@ -244,6 +244,11 @@ class ProductController {
     @Secured(["PRODUCT_43"])
     def show = {
         ItemDTO product = ItemDTO.get(params.int('id'))
+        if (!product) {
+            log.debug "redirecting to list"
+            redirect(action: 'list')
+            return
+        }
         recentItemService.addRecentItem(product?.id, RecentItemType.PRODUCT)
         breadcrumbService.addBreadcrumb(controllerName, actionName, null, params.int('id'), product?.internalNumber)
 

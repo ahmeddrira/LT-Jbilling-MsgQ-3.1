@@ -169,7 +169,7 @@
                                 <a onclick="$('#company-edit-form').submit()" class="submit save"><span><g:message code="button.save"/></span></a>
                             </li>
                             <li>
-                                <g:link action="list" class="submit cancel"><span><g:message code="button.cancel"/></span></g:link>
+                                <g:link controller="login" class="submit cancel"><span><g:message code="button.cancel"/></span></g:link>
                             </li>
                         </ul>
                     </div>

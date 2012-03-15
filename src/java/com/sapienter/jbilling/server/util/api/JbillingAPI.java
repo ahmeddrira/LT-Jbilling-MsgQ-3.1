@@ -346,6 +346,7 @@ public interface JbillingAPI {
     public Integer getCallerCompanyId();
     public Integer getCallerId();
     public Integer getCallerLanguageId();
+    public Integer getCallerCurrencyId();
     public InvoiceWS[] getAllInvoicesForUser(Integer userId);
     public OrderWS[] getUserSubscriptions(Integer userId);
     public boolean deleteOrderPeriod(Integer periodId);

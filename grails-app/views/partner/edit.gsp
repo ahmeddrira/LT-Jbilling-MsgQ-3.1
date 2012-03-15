@@ -179,13 +179,13 @@
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.partner.percentageRate"/></content>
                             <content tag="label.for">percentageRate</content>
-                            <g:textField class="field" name="percentageRate" value="${formatNumber(number: partner?.percentageRate, formatName: 'money.format')}"/>
+                            <g:textField class="field" name="percentageRateAsDecimal" value="${formatNumber(number: partner?.percentageRateAsDecimal, formatName: 'money.format')}"/>
                         </g:applyLayout>
                         
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.partner.referralFee"/></content>
                             <content tag="label.for">referralFee</content>
-                            <g:textField class="field" name="referralFee" value="${formatNumber(number: partner?.referralFee, formatName: 'money.format')}"/>
+                            <g:textField class="field" name="referralFeeAsDecimal" value="${formatNumber(number: partner?.referralFeeAsDecimal, formatName: 'money.format')}"/>
                         </g:applyLayout>
                         
                         <g:applyLayout name="form/select">
@@ -278,39 +278,6 @@
                                 <g:set var="contact" value="${contacts.find{ it.type == contactType.id }}"/>
                                 <g:render template="/customer/contact" model="[contactType: contactType, contact: contact]"/>
                             </g:if>
-                        </g:each>
-                        
-                        <!-- custom contact fields -->
-                        <g:each var="ccf" in="${company.contactFieldTypes.sort{ it.id }}">
-                            <g:set var="fieldIndex" value="${user?.contact?.fieldIDs?.findIndexOf{ it == ccf.id }}"/>
-                            <g:set var="fieldValue" value="${user?.contact?.fieldValues?.getAt(fieldIndex)}"/>
-
-                            <g:set var="enumValues" value="${null}"/>
-                            
-                            <g:each var="dto" in="${EnumerationDTO.list()}">
-                                <g:if test="${dto.name == ccf.dataType}">
-                                    <g:set var="enumValues" value="${[]}"/>
-                                    <g:set var="enumValues" value="${enumValues.addAll(dto.values.collect(it.value))}"/>
-                                </g:if>
-                            </g:each>
-
-                            <g:if test="${enumValues}">
-                                <g:applyLayout name="form/select">
-                                    <content tag="label"><g:message code="${ccf.getDescription(session['language_id'])}"/></content>
-                                    <g:select 
-                                        class="field" 
-                                        name="contactField.${ccf.id}" 
-                                        from="${enumValues}"
-                                        value="${fieldValue}" />
-                                </g:applyLayout>
-                            </g:if>
-                            <g:else>
-                                <g:applyLayout name="form/input">
-                                    <content tag="label"><g:message code="${ccf.getDescription(session['language_id'])}"/></content>
-                                    <g:textField class="field" name="contactField.${ccf.id}" value="${fieldValue}"/>
-                                </g:applyLayout>
-                            </g:else>
-                            
                         </g:each>
                         
                     </div>

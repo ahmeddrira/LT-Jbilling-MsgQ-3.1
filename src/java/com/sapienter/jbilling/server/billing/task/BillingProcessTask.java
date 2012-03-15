@@ -56,8 +56,8 @@ public class BillingProcessTask extends AbstractBackwardSimpleScheduledTask {
         IBillingProcessSessionBean billing = (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
 
         if (Util.getSysPropBooleanTrue(PROPERTY_RUN_BILLING)) {
-        LOG.info("Starting billing at " + new Date());
-            billing.trigger(new Date());
+        LOG.info("Starting billing at " + new Date() + " for " + getEntityId());
+            billing.trigger(new Date(), getEntityId());
             LOG.info("Ended billing at " + new Date());
         }
     }

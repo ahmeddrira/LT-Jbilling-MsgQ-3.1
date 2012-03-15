@@ -154,6 +154,11 @@ class PaymentController {
     @Secured(["PAYMENT_34"])
     def show = {
         PaymentDTO payment = PaymentDTO.get(params.int('id'))
+        if (!payment) {
+            log.debug "redirecting to list"
+            redirect(action: 'list')
+            return
+        }
         recentItemService.addRecentItem(params.int('id'), RecentItemType.PAYMENT)
         breadcrumbService.addBreadcrumb(controllerName, 'list', params.template ?: null, params.int('id'))
 

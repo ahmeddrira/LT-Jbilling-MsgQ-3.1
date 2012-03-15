@@ -22,6 +22,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.Size;
+
 /**
  * @author Brian Cowdery
  * @since 20-09-2010
@@ -31,6 +33,7 @@ public class PlanWS implements Serializable {
     private Integer id;
     private Integer itemId; // plan subscription item
     private Integer periodId; // plan item period
+    @Size (min=0,max=500, message="validation.error.size,1,500")
     private String description;
     private List<PlanItemWS> planItems = new ArrayList<PlanItemWS>();
 

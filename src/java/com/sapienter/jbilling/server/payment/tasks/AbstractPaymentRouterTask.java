@@ -67,7 +67,8 @@ public abstract class AbstractPaymentRouterTask extends PluggableTask
             // give them a chance
             LOG.error("ATTENTION! Could not find a process to delegate for " +
                     "user : " + paymentInfo.getUserId());
-            return false;
+            // TODO (pai) should call other processors when delegate is not found?
+            return true;
         }
 
         delegate.process(paymentInfo);
@@ -80,6 +81,12 @@ public abstract class AbstractPaymentRouterTask extends PluggableTask
     public boolean preAuth(PaymentDTOEx paymentInfo) 
             throws PluggableTaskException {
         PaymentTask delegate = selectDelegate(paymentInfo);
+        if (delegate == null) {
+            // give them a chance
+            LOG.error("ATTENTION! Could not find a process to delegate for " +
+                    "user : " + paymentInfo.getUserId());
+            return true;
+        }
         delegate.preAuth(paymentInfo);
 
         // they already used their chance
@@ -93,7 +100,7 @@ public abstract class AbstractPaymentRouterTask extends PluggableTask
             LOG.error("ATTENTION! Delegate is recently changed for user : " + 
                     paymentInfo.getUserId() + " with not captured transaction: " +
                     auth.getTransactionId());
-            return false;
+            return true;
         }
         delegate.confirmPreAuth(auth, paymentInfo);
         // they already used their chance

@@ -44,6 +44,14 @@ import org.hibernate.FetchMode
 import org.hibernate.criterion.MatchMode
 import org.hibernate.criterion.Restrictions
 import org.springframework.security.authentication.encoding.PasswordEncoder
+import org.hibernate.criterion.Criterion
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import com.sapienter.jbilling.server.user.ContactWS
+import com.sapienter.jbilling.server.user.contact.db.ContactDAS
+
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO
+import org.apache.commons.lang.StringUtils
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS
 
 @Secured(["MENU_90"])
 class CustomerController {
@@ -216,6 +224,11 @@ class CustomerController {
     @Secured(["CUSTOMER_15"])
     def show = {
         def user = UserDTO.get(params.int('id'))
+        if (!user) {
+            log.debug "redirecting to list"
+            redirect(action: 'list')
+            return
+        }
         def contact = new ContactDAS().findPrimaryContact(user.userId)
 
         def revenue = webServicesSession.getTotalRevenueByUser(user.userId)
@@ -349,6 +362,40 @@ class CustomerController {
     @Secured(["hasAnyRole('CUSTOMER_10', 'CUSTOMER_11')"])
     def save = {
         def user = new UserWS()
+        def contactFieldType = new ContactFieldTypeDAS();
+        params.contactField.each {field ->
+        if (contactFieldType.find(new Integer(field.key)).dataType == 'Decimal'){
+            try {
+            if(field.value)
+            Double.parseDouble(field.value)
+            }
+            catch(NumberFormatException e){
+            flash.error = 'custom.contact.field.decimal'
+            flash.args = [contactFieldType.find(new Integer(field.key)).description,'Decimal']
+             redirect action: 'edit' , params: [id : params.user.userId]
+            }
+        }
+        else if (contactFieldType.find(new Integer(field.key)).dataType == 'Integer'){
+            try {
+            if(field.value)
+            Long.parseLong(field.value)
+            }
+            catch(NumberFormatException e){
+            flash.error = 'custom.contact.field.integer'
+            flash.args = [contactFieldType.find(new Integer(field.key)).description,'Integer']
+            redirect action: 'edit' , params: [id : params.user.userId]
+            }
+        }
+        else if (contactFieldType.find(new Integer(field.key)).dataType == 'Boolean'){
+            if(field.value && !(field.value.equalsIgnoreCase('true') || field.value.equalsIgnoreCase('false')))
+            {
+            flash.error = 'custom.contact.field.boolean'
+            flash.args = [contactFieldType.find(new Integer(field.key)).description,'Boolean']
+            redirect action: 'edit' , params: [id : params.user.userId]
+            }
+        }
+        }
+
         UserHelper.bindUser(user, params)
 
         UserHelper.bindMetaFields(user, availableMetaFields, params)

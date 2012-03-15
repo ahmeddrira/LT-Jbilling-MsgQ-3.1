@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="com.sapienter.jbilling.server.item.db.ItemDTO; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;" %>
+<%@ page import="com.sapienter.jbilling.server.pricing.cache.MatchType; com.sapienter.jbilling.server.user.db.CompanyDTO; com.sapienter.jbilling.server.pricing.db.RateCardDTO; com.sapienter.jbilling.server.item.db.ItemDTO; com.sapienter.jbilling.server.pricing.db.PriceModelStrategy;" %>
 
 <%--
   Editor form for price model attributes.

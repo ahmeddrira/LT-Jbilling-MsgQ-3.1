@@ -124,8 +124,8 @@
                             <content tag="label.for">user.mainRoleId</content>
 
                             <g:select name="user.mainRoleId"
-                                      from="${RoleDTO.list()}"
-                                      optionKey="id"
+                                      from="${roles}"
+                                      optionKey="roleTypeId"
                                       optionValue="${{ it.getTitle(session['language_id']) }}"
                                       value="${user?.mainRoleId}"/>
                         </g:applyLayout>

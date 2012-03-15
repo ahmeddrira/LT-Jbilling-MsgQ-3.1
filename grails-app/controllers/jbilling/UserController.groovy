@@ -62,7 +62,7 @@ class UserController {
                 or {
                     isEmpty('roles')
                     roles {
-                        ne('id', Constants.TYPE_CUSTOMER)
+                        ne('roleTypeId', Constants.TYPE_CUSTOMER)
                     }
                 }
 
@@ -119,8 +119,13 @@ class UserController {
 			 eq("id", session['company_id'])
 			 fetchMode('contactFieldTypes', FM.JOIN)
 		}
+		
+		def roles = RoleDTO.createCriteria().list() {
+			eq('company', new CompanyDTO(session['company_id']))
+			order('id', 'asc')
+		}
 
-        [ user: user, contacts: contacts, company: company ]
+        [ user: user, contacts: contacts, company: company, roles: roles ]
     }
 
 

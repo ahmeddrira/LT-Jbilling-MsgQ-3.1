@@ -75,7 +75,7 @@ public class UserDAS extends AbstractDAS<UserDTO> {
             .add(Restrictions.eq("userName", username))
             .add(Restrictions.eq("deleted", 0))
             .createAlias("roles", "r")
-                .add(Restrictions.eq("r.id", CommonConstants.TYPE_ROOT));
+                .add(Restrictions.eq("r.roleTypeId", CommonConstants.TYPE_ROOT));
         
         criteria.setCacheable(true); // it will be called over an over again
         
@@ -92,7 +92,7 @@ public class UserDAS extends AbstractDAS<UserDTO> {
             .add(Restrictions.eq("userName", username))
             .add(Restrictions.eq("deleted", 0))
             .createAlias("roles", "r")
-                .add(Restrictions.eq("r.id", CommonConstants.TYPE_ROOT))
+                .add(Restrictions.eq("r.roleTypeId", CommonConstants.TYPE_ROOT))
             .createAlias("permissions", "p")
                 .add(Restrictions.eq("p.permission.id", 120));
         

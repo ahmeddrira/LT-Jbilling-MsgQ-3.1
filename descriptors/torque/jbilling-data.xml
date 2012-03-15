@@ -2022,9 +2022,9 @@
     <Report Id="9" TypeId="1" Name="gl_summary" FileName="gl_summary.jasper" Optlock="0"/>
     <ReportParameter Id="14" ReportId="9" Dtype="date" Name="date"/>
 
-    <Role Id="2"/>
-    <Role Id="3"/>
-    <Role Id="5"/>
+    <Role Id="2" EntityId="1" RoleTypeId="2"/>
+    <Role Id="3" EntityId="1" RoleTypeId="3"/>
+    <Role Id="5" EntityId="1" RoleTypeId="5"/>
 
     <GenericStatusType Id="order_line_provisioning_status"/>
     <GenericStatusType Id="order_status"/>

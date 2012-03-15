@@ -26,6 +26,8 @@ import com.sapienter.jbilling.server.user.db.UserStatusDAS
 import com.sapienter.jbilling.server.user.UserDTOEx
 import com.sapienter.jbilling.server.user.db.SubscriberStatusDAS
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO
+import com.sapienter.jbilling.server.user.permisson.db.RoleDAS
+import com.sapienter.jbilling.server.user.RoleBL
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO
 import com.sapienter.jbilling.server.user.contact.db.ContactMapDTO
 import com.sapienter.jbilling.server.util.db.JbillingTable
@@ -157,11 +159,55 @@ class SignupController {
         user.currency = currency
         user.company = company
         user.createDatetime = new Date()
-        user.roles << RoleDTO.get(Constants.TYPE_ROOT)
+
+		createDefaultRoles(language, company)
+
+		// get root role		
+        def rootRole = new RoleDAS().findByRoleTypeIdAndCompanyId(
+			Constants.TYPE_ROOT, company.id)
+
+        user.roles.add(rootRole);
         user.save()
 
         return user
     }
+	
+	/**
+	 * 	Creates default roles taken from another company
+	 * 
+	 * @param language
+	 * @param currency
+	 * @param company
+	 * @return
+	 */
+	def createDefaultRoles(language, company) {
+		
+		def defaultRoleList = [ Constants.TYPE_ROOT, Constants.TYPE_CLERK, Constants.TYPE_CUSTOMER ];
+
+		def defaultCompanyId = CompanyDTO.createCriteria().get {
+			projections {
+				min("id")
+			}
+		}
+		
+		def roleService = new RoleBL();
+		
+		defaultRoleList.each() {
+
+			def role = new RoleDAS().findByRoleTypeIdAndCompanyId(
+					it, defaultCompanyId)
+
+			def newRole = new RoleDTO();
+			newRole.permissions.addAll(role.permissions);
+			newRole.company = company;
+			newRole.roleTypeId = it
+
+			roleService.create(newRole)
+			roleService.setDescription(language.id, role.getDescription(language.id))
+			roleService.setTitle(language.id, role.getTitle(language.id))
+
+		}
+	}
 
     /**
      * Create the companies primary contact type.

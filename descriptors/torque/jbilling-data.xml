@@ -1251,6 +1251,8 @@
     <InternationalDescription TableId="24" ForeignId="91" PsudoColumn="description" LanguageId="1" Content="A pluggable task of the type AbstractChargeTask to apply tax item to the Invoice if the Partner's country code is matching."/>
     <InternationalDescription TableId="24" ForeignId="92" PsudoColumn="title" LanguageId="1" Content="Payment Terms Penalty Task"/>
     <InternationalDescription TableId="24" ForeignId="92" PsudoColumn="description" LanguageId="1" Content="A pluggable task of the type AbstractChargeTask to apply a Penalty to an Invoice having a due date beyond a configurable days period."/>
+    <InternationalDescription TableId="24" ForeignId="93" PsudoColumn="title" LanguageId="1" Content="Fees for early cancellation of a subscription"/>
+    <InternationalDescription TableId="24" ForeignId="93" PsudoColumn="description" LanguageId="1" Content="This plug-in will create a new order with a fee if a recurring order is cancelled too early"/>
     <InternationalDescription TableId="47" ForeignId="17" PsudoColumn="description" LanguageId="1" Content="The order line has been updated"/>
     <InternationalDescription TableId="47" ForeignId="18" PsudoColumn="description" LanguageId="1" Content="The order next billing date has been changed"/>
     <InternationalDescription TableId="47" ForeignId="19" PsudoColumn="description" LanguageId="1" Content="Last API call to get the the user subscription status transitions"/>
@@ -1987,6 +1989,7 @@
     <PluggableTaskType Id="90" CategoryId="4" ClassName="com.sapienter.jbilling.server.process.task.SimpleTaxCompositionTask" MinParameters="1"/>
     <PluggableTaskType Id="91" CategoryId="4" ClassName="com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask" MinParameters="2"/>
     <PluggableTaskType Id="92" CategoryId="4" ClassName="com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask" MinParameters="2"/>
+    <PluggableTaskType Id="93" CategoryId="17" ClassName="com.sapienter.jbilling.server.order.task.CancellationFeeTask" MinParameters="2"/>
 
     <PluggableTaskTypeCategory Id="1" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>

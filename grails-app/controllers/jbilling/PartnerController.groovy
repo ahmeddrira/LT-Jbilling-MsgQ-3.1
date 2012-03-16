@@ -187,7 +187,7 @@ class PartnerController {
                     partner.id = webServicesSession.createPartner(user, partner)
 
                     flash.message = 'partner.created'
-                    flash.args = [user.userId]
+                    flash.args = [partner.id]
 
                 } else {
                     render view: '/login/denied'
@@ -202,7 +202,7 @@ class PartnerController {
                     webServicesSession.updatePartner(user, partner)
 
                     flash.message = 'partner.updated'
-                    flash.args = [user.userId]
+                    flash.args = [partner.id]
 
                 } else {
                     render view: '/login/denied'

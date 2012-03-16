@@ -161,17 +161,6 @@
                         </g:each>
 
                         <br/>&nbsp;
-
-                        <!-- custom contact fields -->
-                        <g:each var="ccf" in="${company.contactFieldTypes.sort{ it.id }}">
-                            <g:set var="fieldIndex" value="${user?.contact?.fieldIDs?.findIndexOf{ it == ccf.id }}"/>
-                            <g:set var="fieldValue" value="${user?.contact?.fieldValues?.getAt(fieldIndex)}"/>
-
-                            <g:applyLayout name="form/input">
-                                <content tag="label"><g:message code="${ccf.getDescription(session['language_id'])}"/></content>
-                                <g:textField class="field" name="contactField.${ccf.id}" value="${fieldValue}"/>
-                            </g:applyLayout>
-                        </g:each>
                     </div>
                 </div>
 

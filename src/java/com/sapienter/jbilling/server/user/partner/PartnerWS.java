@@ -221,6 +221,10 @@ public class PartnerWS implements WSSecured, Serializable {
     public BigDecimal getPercentageRateAsDecimal() {
         return percentageRate != null ? new BigDecimal(percentageRate) : null;
     }
+    
+    public void setPercentageRateAsDecimal(BigDecimal percentageRate) {
+    	setPercentageRate(percentageRate);
+    }
 
     public void setPercentageRate(String percentageRate) {
         this.percentageRate = percentageRate;
@@ -241,9 +245,13 @@ public class PartnerWS implements WSSecured, Serializable {
     public void setReferralFee(String referralFee) {
         this.referralFee = referralFee;
     }
-
+    
     public void setReferralFee(BigDecimal referralFee) {
-        this.referralFee = (referralFee != null ? referralFee.toPlainString() : null);
+    	 this.referralFee = (referralFee != null ? referralFee.toPlainString() : null);
+    }
+
+    public void setReferralFeeAsDecimal(BigDecimal referralFee) {
+    	setReferralFee(referralFee);
     }
 
     public Boolean getOneTime() {

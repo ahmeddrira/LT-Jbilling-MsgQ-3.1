@@ -1834,5 +1834,14 @@ alter table rate_card add constraint rate_card_entity_id_FK foreign key (entity_
 
 insert into jbilling_seqs (name, next_id) values ('rate_card', 1);
 
+-- Date: 16-Mar-2012
+-- New plug-in for cancellation fees (without using rules)
+insert into pluggable_task_type (id, category_id, class_name, min_parameters)
+    values(92, 17, 'com.sapienter.jbilling.server.order.task.CancellationFeeTask', 2);
+insert into international_description(table_id, foreign_id, psudo_column, language_id, content)
+    values(24, 92, 'title', 1, 'Fees for early cancellation of a subscription');
+insert into international_description(table_id, foreign_id, psudo_column, language_id, content)
+    values(24, 92, 'description', 1, 'This plug-in will create a new order with a fee if a recurring order is cancelled too early');
+
 
 

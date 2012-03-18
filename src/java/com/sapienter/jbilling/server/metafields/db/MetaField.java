@@ -57,7 +57,7 @@ import java.io.Serializable;
     table = "jbilling_seqs",
     pkColumnName = "name",
     valueColumnName = "next_id",
-    pkColumnValue = "meta_field",
+    pkColumnValue = "meta_field_name",
     allocationSize = 10
 )
 public class MetaField implements Serializable {
@@ -73,9 +73,11 @@ public class MetaField implements Serializable {
     private MetaFieldValue defaultValue = null;
 
     private Integer versionNum;
+    
+    public MetaField() {
+	}
 
-
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "meta_field_GEN")
     @Column(name = "id", unique = true, nullable = false)
     public Integer getId() {

@@ -1298,7 +1298,7 @@ insert into pluggable_task_type values (90, 7, 'com.sapienter.jbilling.server.no
 -- insert new tax plugin to the database
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (90, 4, 'com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask', 2);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'title',1, 'Country Tax Invoice Composition Task');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply tax item to the Invoice if the Partner's country code is matching.');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  90, 'description', 1, 'A pluggable task of the type AbstractChargeTask to apply tax item to the Invoice if the Partner''s country code is matching.');
 
 -- insert new payment term penalty plugin
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (91, 4, 'com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask', 2);
@@ -1842,6 +1842,10 @@ insert into international_description(table_id, foreign_id, psudo_column, langua
     values(24, 92, 'title', 1, 'Fees for early cancellation of a subscription');
 insert into international_description(table_id, foreign_id, psudo_column, language_id, content)
     values(24, 92, 'description', 1, 'This plug-in will create a new order with a fee if a recurring order is cancelled too early');
+	
+-- Date 19-Mar-2012
+-- Set correct meta field values next_id value 
+update jbilling_seqs set next_id = coalesce((select round(max(id)/10)+1 from meta_field_value), 1) where name = 'meta_field_value';
 
 
 

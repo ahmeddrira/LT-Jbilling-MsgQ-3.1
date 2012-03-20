@@ -530,7 +530,7 @@ class OrderBuilderController {
     }
 
     def getAvailableMetaFields() {
-        return MetaFieldBL.getAvailableFieldsList(EntityType.ORDER);
+        return MetaFieldBL.getAvailableFieldsList(session['company_id'], EntityType.ORDER);
     }
 
     def bindMetaFields(OrderWS orderWS, GrailsParameterMap params) {

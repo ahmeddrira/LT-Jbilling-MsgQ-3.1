@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.metafields.db.value.DecimalMetaFieldValue;
 import com.sapienter.jbilling.server.metafields.db.value.IntegerMetaFieldValue;
 import com.sapienter.jbilling.server.metafields.db.value.JsonMetaFieldValue;
 import com.sapienter.jbilling.server.metafields.db.value.StringMetaFieldValue;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -37,6 +38,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -63,6 +65,7 @@ import java.io.Serializable;
 public class MetaField implements Serializable {
 
     private Integer id;
+    private CompanyDTO entity;
     private String name;
     private EntityType entityType;
     private DataType dataType;
@@ -86,6 +89,16 @@ public class MetaField implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entity_id")
+    public CompanyDTO getEntity() {
+        return this.entity;
+    }
+
+    public void setEntity(CompanyDTO entity) {
+        this.entity = entity;
     }
 
     @Column(name = "name", nullable = false)

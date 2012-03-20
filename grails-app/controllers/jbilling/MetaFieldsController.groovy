@@ -21,6 +21,7 @@
 package jbilling
 
 import com.sapienter.jbilling.server.metafields.MetaFieldBL
+import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.metafields.db.EntityType
 import com.sapienter.jbilling.server.metafields.db.MetaField
 import grails.plugins.springsecurity.Secured
@@ -46,7 +47,7 @@ class MetaFieldsController {
 
     def list = {
         EntityType entityType = EntityType.valueOf(params.get('id').toString())
-        def lstByCateg = MetaField.findAllByEntityType(entityType);
+        def lstByCateg = MetaFieldBL.getAvailableFieldsList(session['company_id'], entityType);
 
         if (params.template)
             render template: 'list', model: [lstByCategory: lstByCateg, selected: new MetaField()]
@@ -84,6 +85,7 @@ class MetaFieldsController {
         EntityType entityType = EntityType.valueOf(params.get('entityType').toString())
         bindData(metaField, params, 'metaField')
         metaField.setEntityType(entityType)
+		metaField.setEntity(new CompanyDTO(session['company_id']))
 
         def defaultValue = null;
         if (params.defaultValue) {

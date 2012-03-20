@@ -1508,6 +1508,7 @@
     <table name="meta_field_name">
         <column name="id" primaryKey="true" type="INTEGER" required="true"/>
         <column name="name" type="VARCHAR" size="100"/>
+        <column name="entity_id" type="INTEGER"/>
         <column name="entity_type" type="VARCHAR" size="25" required="true"/>
         <column name="data_type" type="VARCHAR" size="25" required="true"/>
         <column name="is_disabled" type="BIT" />
@@ -1518,6 +1519,10 @@
         <foreign-key foreignTable="meta_field_value">
             <reference foreign="id" local="default_value_id"/>
         </foreign-key>
+                
+        <foreign-key foreignTable="entity">
+            <reference foreign="id" local="entity_id"/>
+        </foreign-key> 
     </table>
     <table name="meta_field_value">
         <column name="id" primaryKey="true" type="INTEGER" required="true"/>

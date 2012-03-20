@@ -139,7 +139,7 @@ public final class UserDTOEx extends UserDTO {
         roles.add(mainRoleId);
         
         if (mainRoleId.equals(Constants.TYPE_CUSTOMER)) {
-            CustomerDTO customer = new CustomerDTO(dto);
+            CustomerDTO customer = new CustomerDTO(entityId, dto);
             setCustomer(customer);
         }
     }

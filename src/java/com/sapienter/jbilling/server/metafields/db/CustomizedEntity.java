@@ -91,8 +91,8 @@ public abstract class CustomizedEntity implements MetaContent, java.io.Serializa
      * @throws IllegalArgumentException thrown if field name does not exist, or if value is of an incorrect type.
      */
     @Transient
-    public void setMetaField(String name, Object value) throws IllegalArgumentException {
-        MetaFieldHelper.setMetaField(this, name, value);
+    public void setMetaField(Integer entityId, String name, Object value) throws IllegalArgumentException {
+        MetaFieldHelper.setMetaField(entityId, this, name, value);
     }
 
     /**
@@ -101,8 +101,8 @@ public abstract class CustomizedEntity implements MetaContent, java.io.Serializa
      * @param dto dto with new data
      */
     @Transient
-    public void updateMetaFieldsWithValidation(MetaContent dto) {
-        MetaFieldHelper.updateMetaFieldsWithValidation(this, dto);
+    public void updateMetaFieldsWithValidation(Integer entityId, MetaContent dto) {
+        MetaFieldHelper.updateMetaFieldsWithValidation(entityId, this, dto);
     }
 
 }

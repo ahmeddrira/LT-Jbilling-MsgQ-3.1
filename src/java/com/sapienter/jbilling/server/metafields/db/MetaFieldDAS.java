@@ -35,16 +35,18 @@ import java.util.List;
 public class MetaFieldDAS extends AbstractDAS<MetaField> {
 
     @SuppressWarnings("unchecked")
-    public List<MetaField> getAvailableFields(EntityType entityType) {
+    public List<MetaField> getAvailableFields(Integer entityId, EntityType entityType) {
         DetachedCriteria query = DetachedCriteria.forClass(MetaField.class);
+        query.add(Restrictions.eq("entity.id", entityId));
         query.add(Restrictions.eq("entityType", entityType));
         query.addOrder(Order.asc("displayOrder"));
         return getHibernateTemplate().findByCriteria(query);
     }
 
     @SuppressWarnings("unchecked")
-    public MetaField getFieldByName(EntityType entityType, String name) {
+    public MetaField getFieldByName(Integer entityId, EntityType entityType, String name) {
         DetachedCriteria query = DetachedCriteria.forClass(MetaField.class);
+        query.add(Restrictions.eq("entity.id", entityId));
         query.add(Restrictions.eq("entityType", entityType));
         query.add(Restrictions.eq("name", name));
         List<MetaField> fields = getHibernateTemplate().findByCriteria(query);

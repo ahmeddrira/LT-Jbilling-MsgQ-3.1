@@ -1847,5 +1847,10 @@ insert into international_description(table_id, foreign_id, psudo_column, langua
 -- Set correct meta field values next_id value 
 update jbilling_seqs set next_id = coalesce((select round(max(id)/10)+1 from meta_field_value), 1) where name = 'meta_field_value';
 
+-- Date 20-Mar-2012
+-- Bugs #2418 Metafields should be company wide instead of system wide
+alter table meta_field_name add entity_id integer default 1;
+alter table meta_field_name add constraint meta_field_entity_id_FK foreign key (entity_id) references entity (id); 
+
 
 

@@ -378,13 +378,13 @@ public class ItemDTO extends AbstractDescription implements MetaContent, Exporta
     }
 
     @Transient
-    public void setMetaField(String name, Object value) throws IllegalArgumentException {
-        MetaFieldHelper.setMetaField(this, name, value);
+    public void setMetaField(Integer entitId, String name, Object value) throws IllegalArgumentException {
+        MetaFieldHelper.setMetaField(entitId, this, name, value);
     }
 
     @Transient
-    public void updateMetaFieldsWithValidation(MetaContent dto) {
-        MetaFieldHelper.updateMetaFieldsWithValidation(this, dto);
+    public void updateMetaFieldsWithValidation(Integer entitId, MetaContent dto) {
+        MetaFieldHelper.updateMetaFieldsWithValidation(entitId, this, dto);
     }
 
     @Transient

@@ -27,6 +27,7 @@ import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
+import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
@@ -165,7 +166,8 @@ public class PaymentDTOEx extends PaymentDTO {
         }
 
         authorization = new PaymentAuthorizationDAS().find(dto.getAuthorizationId());
-        MetaFieldBL.fillMetaFieldsFromWS(this, dto.getMetaFields());
+        MetaFieldBL.fillMetaFieldsFromWS(new UserBL().getEntityId(userId), 
+        		this, dto.getMetaFields());
     }
     /**
      *

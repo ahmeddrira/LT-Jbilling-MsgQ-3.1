@@ -131,7 +131,7 @@ public class ItemBL {
 
         dto.setDeleted(0);
 
-        dto.updateMetaFieldsWithValidation(dto);
+        dto.updateMetaFieldsWithValidation(dto.getEntityId(), dto);
 
         item = itemDas.save(dto);
 
@@ -163,7 +163,7 @@ public class ItemBL {
         updateTypes(dto);
         updateExcludedTypes(dto);
 
-        item.updateMetaFieldsWithValidation(dto);
+        item.updateMetaFieldsWithValidation(dto.getEntityId(), dto);
 
         if (item.getPercentage() == null) {
             updateDefaultPrice(dto);
@@ -511,7 +511,7 @@ public class ItemBL {
         retValue.setPrice(other.getPriceAsDecimal());
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
 
-        MetaFieldBL.fillMetaFieldsFromWS(retValue, other.getMetaFields());
+        MetaFieldBL.fillMetaFieldsFromWS(retValue.getEntityId(), retValue, other.getMetaFields());
 
         // convert PriceModelWS to PriceModelDTO
         retValue.setDefaultPrices(PriceModelBL.getDTO(other.getDefaultPrices()));
@@ -540,7 +540,7 @@ public class ItemBL {
         retValue.setCurrencyId(other.getCurrencyId());
         retValue.setPrice(other.getPrice());
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
-        retValue.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(other));
+        retValue.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(other.getEntityId(), other));
 
         // convert PriceModelDTO to PriceModelWS
         retValue.setDefaultPrices(PriceModelBL.getWS(other.getDefaultPrices()));

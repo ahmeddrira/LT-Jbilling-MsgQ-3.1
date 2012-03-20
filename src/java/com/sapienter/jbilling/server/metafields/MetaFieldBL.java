@@ -38,8 +38,8 @@ import java.util.Map;
  */
 public class MetaFieldBL {
 
-    public static MetaField getFieldByName(EntityType entityType, String name) {
-        return new MetaFieldDAS().getFieldByName(entityType, name);
+    public static MetaField getFieldByName(Integer entityId, EntityType entityType, String name) {
+        return new MetaFieldDAS().getFieldByName(entityId, entityType, name);
     }
 
     /**
@@ -50,8 +50,8 @@ public class MetaFieldBL {
      * @param entityType entity type to query
      * @return map with available fields
      */
-    public static Map<String, MetaField> getAvailableFields(EntityType entityType) {
-        List<MetaField> entityFields = new MetaFieldDAS().getAvailableFields(entityType);
+    public static Map<String, MetaField> getAvailableFields(Integer entityId, EntityType entityType) {
+        List<MetaField> entityFields = new MetaFieldDAS().getAvailableFields(entityId, entityType);
         Map<String, MetaField> result = new LinkedHashMap<String, MetaField>();
         for (MetaField field : entityFields) {
             result.put(field.getName(), field);
@@ -59,12 +59,12 @@ public class MetaFieldBL {
         return result;
     }
 
-    public static List<MetaField> getAvailableFieldsList(EntityType entityType) {
-        return new MetaFieldDAS().getAvailableFields(entityType);
+    public static List<MetaField> getAvailableFieldsList(Integer entityId, EntityType entityType) {
+        return new MetaFieldDAS().getAvailableFields(entityId, entityType);
     }
 
-    public static void validateMetaFields(EntityType type, MetaFieldValueWS[] metaFields) {
-        for (MetaField field : new MetaFieldDAS().getAvailableFields(type)) {
+    public static void validateMetaFields(Integer entityId, EntityType type, MetaFieldValueWS[] metaFields) {
+        for (MetaField field : new MetaFieldDAS().getAvailableFields(entityId,type)) {
             MetaFieldValue value = field.createValue();
             for (MetaFieldValueWS valueWS : metaFields) {
                 if (field.getName().equals(valueWS.getFieldName())) {
@@ -81,8 +81,8 @@ public class MetaFieldBL {
      *
      * @param customizedEntity entity with meta fields for validation
      */
-    public static void validateMetaFields(MetaContent customizedEntity) {
-        List<MetaField> availableMetaFields = getAvailableFieldsList(customizedEntity.getCustomizedEntityType());
+    public static void validateMetaFields(Integer entityId, MetaContent customizedEntity) {
+        List<MetaField> availableMetaFields = getAvailableFieldsList(entityId, customizedEntity.getCustomizedEntityType());
         for (MetaField field : availableMetaFields) {
             MetaFieldValue value = customizedEntity.getMetaField(field.getName());
             MetaFieldBL.validateMetaField(field, value);
@@ -98,8 +98,8 @@ public class MetaFieldBL {
         }
     }
 
-    public static MetaFieldValueWS[] convertMetaFieldsToWS(MetaContent entity) {
-        List<MetaField> availableMetaFields = new MetaFieldDAS().getAvailableFields(entity.getCustomizedEntityType());
+    public static MetaFieldValueWS[] convertMetaFieldsToWS(Integer entityId, MetaContent entity) {
+        List<MetaField> availableMetaFields = new MetaFieldDAS().getAvailableFields(entityId, entity.getCustomizedEntityType());
         MetaFieldValueWS[] result = new MetaFieldValueWS[]{};
         if (availableMetaFields != null && !availableMetaFields.isEmpty()) {
             result = new MetaFieldValueWS[availableMetaFields.size()];
@@ -115,16 +115,17 @@ public class MetaFieldBL {
         return result;
     }
 
-    public static void fillMetaFieldsFromWS(MetaContent entity, MetaFieldValueWS[] metaFields) {
+    public static void fillMetaFieldsFromWS(Integer entityId, MetaContent entity, MetaFieldValueWS[] metaFields) {
         if (metaFields != null) {
             for (MetaFieldValueWS fieldValue : metaFields) {
-                entity.setMetaField(fieldValue.getFieldName(), fieldValue.getValue());
+                entity.setMetaField(entityId, fieldValue.getFieldName(), fieldValue.getValue());
             }
         }
     }
 
     public MetaField create(MetaField dto) {
         MetaField metaField = new MetaField();
+        metaField.setEntity(dto.getEntity());
         metaField.setEntityType(dto.getEntityType());
         metaField.setDataType(dto.getDataType());
         metaField.setName(dto.getName());

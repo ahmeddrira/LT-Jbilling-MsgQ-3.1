@@ -179,7 +179,8 @@ public class OrderBL extends ResultList
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
         retValue.setStatusStr(order.getOrderStatus().getDescription(languageId));
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
-        retValue.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(order));
+        retValue.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(
+        		new UserBL().getEntityId(order.getBaseUserByUserId().getId()), order));
 
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
         for (OrderLineDTO line : order.getLines()) {
@@ -362,7 +363,7 @@ public class OrderBL extends ResultList
                 addBundledItems(orderDto, lines, baseUser);
             }
             // update and validate meta fields
-            orderDto.updateMetaFieldsWithValidation(orderDto);
+            orderDto.updateMetaFieldsWithValidation(entityId, orderDto);
 
             order = orderDas.save(orderDto);
 
@@ -573,7 +574,8 @@ public class OrderBL extends ResultList
         updateNextBillableDay(executorId, dto.getNextBillableDay());
 
         // update and validate custom fields
-        order.updateMetaFieldsWithValidation(dto);
+        order.updateMetaFieldsWithValidation(
+        		order.getBaseUserByUserId().getCompany().getId(), dto);
 
         /*
          *  now proces the order lines
@@ -1630,7 +1632,8 @@ public class OrderBL extends ResultList
             retValue.setPricingFields(pf);
         }
 
-        MetaFieldBL.fillMetaFieldsFromWS(retValue, other.getMetaFields());
+        MetaFieldBL.fillMetaFieldsFromWS(
+        		retValue.getBaseUserByUserId().getCompany().getId(), retValue, other.getMetaFields());
 
         return retValue;
     }

@@ -693,7 +693,7 @@ class ProductController {
     }
 
     def getAvailableMetaFields() {
-        return MetaFieldBL.getAvailableFieldsList(EntityType.ITEM);
+        return MetaFieldBL.getAvailableFieldsList(session['company_id'], EntityType.ITEM);
     }
 
     def bindMetaFields(ItemDTOEx itemDto, GrailsParameterMap params) {

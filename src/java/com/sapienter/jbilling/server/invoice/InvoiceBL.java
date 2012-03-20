@@ -188,7 +188,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         }
 
         // update and validate meta fields
-        newInvoice.updateMetaFieldsWithValidation(newInvoice);
+        newInvoice.updateMetaFieldsWithValidation(entityId, newInvoice);
 
         // create the invoice row
         invoice = invoiceDas.create(userId, newInvoice, process);
@@ -437,7 +437,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         getHome().flush();
     }
 
-    public void update(NewInvoiceDTO addition) {
+    public void update(Integer entityId, NewInvoiceDTO addition) {
         // add the lines to the invoice first
         createLines(addition);
         // update the inoice record considering the new lines
@@ -451,7 +451,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         if (invoice.getBalance().compareTo(BigDecimal.ZERO) == 0) {
             invoice.setToProcess(new Integer(0));
         }
-        invoice.updateMetaFieldsWithValidation(addition);
+        invoice.updateMetaFieldsWithValidation(entityId, addition);
     }
 
     private BigDecimal calculateTotal() {
@@ -860,7 +860,8 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         retValue.setInvoiceLines(invoiceLines);
         retValue.setOrders(orders);
 
-        retValue.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(i));
+        retValue.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(
+        		new UserBL().getEntityId(userId), i));
 
         return retValue;
     }

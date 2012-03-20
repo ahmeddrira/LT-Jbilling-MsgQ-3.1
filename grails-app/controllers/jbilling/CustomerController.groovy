@@ -459,7 +459,7 @@ class CustomerController {
     }
 
     def getAvailableMetaFields() {
-        return MetaFieldBL.getAvailableFieldsList(EntityType.CUSTOMER);
+        return MetaFieldBL.getAvailableFieldsList(session["company_id"], EntityType.CUSTOMER);
     }
 
     def findMetaFieldType(Integer metaFieldId) {

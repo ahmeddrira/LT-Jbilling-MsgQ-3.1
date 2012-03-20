@@ -569,7 +569,7 @@ class PaymentController {
     }
 
     def getAvailableMetaFields() {
-        return MetaFieldBL.getAvailableFieldsList(EntityType.PAYMENT);
+        return MetaFieldBL.getAvailableFieldsList(session['company_id'], EntityType.PAYMENT);
     }
 
     def bindMetaFields(PaymentWS paymentWS, GrailsParameterMap params) {

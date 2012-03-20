@@ -14,7 +14,7 @@
   is strictly forbidden.
   --}%
 
-<%@ page import="org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils; com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL;" %>
+<%@ page import="org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils; com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS; com.sapienter.jbilling.server.customer.CustomerBL; com.sapienter.jbilling.common.Constants; com.sapienter.jbilling.server.user.UserBL;" %>
 
 <%--
   Shows details of a selected user.
@@ -291,7 +291,7 @@
                     <td><g:message code="invoice.label.status"/></td>
                     <td class="value">
                         <g:if test="${latestInvoice}">
-                            <g:set var="invoiceStatus" value="${InvoiceStatusDTO.findById(latestInvoice?.statusId)}"/>
+                            <g:set var="invoiceStatus" value="${new InvoiceStatusDAS().find(latestInvoice?.statusId)}"/>
                             <g:if test="${latestInvoice?.statusId == Constants.INVOICE_STATUS_UNPAID}">
                                 <g:link controller="payment" action="edit" params="[userId: selected.id, invoiceId: latestInvoice.id]" title="${message(code: 'invoice.pay.link')}">
                                     ${invoiceStatus.getDescription(session['language_id'])}

@@ -73,7 +73,7 @@ public interface MetaContent {
      * @param value field value
      * @throws IllegalArgumentException thrown if field name does not exist, or if value is of an incorrect type.
      */
-    public void setMetaField(String name, Object value) throws IllegalArgumentException;
+    public void setMetaField(Integer entityId, String name, Object value) throws IllegalArgumentException;
 
     /**
      * Usefull method for updating meta fields with validation before entity saving
@@ -81,7 +81,7 @@ public interface MetaContent {
      * @param dto dto with new data
      */
     @Transient
-    public void updateMetaFieldsWithValidation(MetaContent dto);
+    public void updateMetaFieldsWithValidation(Integer entityId, MetaContent dto);
 
     /**
      * Returns entity type, that defines available custom fields for entity

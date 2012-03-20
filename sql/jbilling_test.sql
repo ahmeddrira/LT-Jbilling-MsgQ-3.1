@@ -4,10 +4,9 @@
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
-SET standard_conforming_strings = off;
+SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-SET escape_string_warning = off;
 
 SET search_path = public, pg_catalog;
 
@@ -86,6 +85,7 @@ ALTER TABLE ONLY public.notification_message DROP CONSTRAINT notification_messag
 ALTER TABLE ONLY public.notification_message_arch_line DROP CONSTRAINT notif_mess_arch_line_fk_1;
 ALTER TABLE ONLY public.meta_field_value DROP CONSTRAINT meta_field_value_fk_1;
 ALTER TABLE ONLY public.meta_field_name DROP CONSTRAINT meta_field_name_fk_1;
+ALTER TABLE ONLY public.meta_field_name DROP CONSTRAINT meta_field_entity_id_fk;
 ALTER TABLE ONLY public.mediation_record_line DROP CONSTRAINT mediation_record_line_fk_2;
 ALTER TABLE ONLY public.mediation_record_line DROP CONSTRAINT mediation_record_line_fk_1;
 ALTER TABLE ONLY public.mediation_record DROP CONSTRAINT mediation_record_fk_2;
@@ -427,7 +427,7 @@ DROP TABLE public.billing_process;
 DROP TABLE public.base_user;
 DROP TABLE public.ageing_entity_step;
 DROP TABLE public.ach;
-DROP PROCEDURAL LANGUAGE plpgsql;
+DROP EXTENSION plpgsql;
 DROP SCHEMA public;
 --
 -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
@@ -446,13 +446,18 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 --
--- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: jbilling
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
-CREATE PROCEDURAL LANGUAGE plpgsql;
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
-ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO jbilling;
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
 
 SET search_path = public, pg_catalog;
 
@@ -1378,7 +1383,8 @@ CREATE TABLE meta_field_name (
     is_mandatory boolean,
     display_order integer,
     default_value_id integer,
-    optlock integer NOT NULL
+    optlock integer NOT NULL,
+    entity_id integer DEFAULT 1
 );
 
 
@@ -14084,10 +14090,10 @@ COPY mediation_record_line (id, order_line_id, event_date, amount, quantity, des
 -- Data for Name: meta_field_name; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY meta_field_name (id, name, entity_type, data_type, is_disabled, is_mandatory, display_order, default_value_id, optlock) FROM stdin;
-1	partner.prompt.fee	CUSTOMER	STRING	f	f	1	\N	0
-2	ccf.payment_processor	CUSTOMER	STRING	f	f	2	\N	0
-3	ccf.ip_address	CUSTOMER	STRING	f	f	3	\N	0
+COPY meta_field_name (id, name, entity_type, data_type, is_disabled, is_mandatory, display_order, default_value_id, optlock, entity_id) FROM stdin;
+1	partner.prompt.fee	CUSTOMER	STRING	f	f	1	\N	0	1
+2	ccf.payment_processor	CUSTOMER	STRING	f	f	2	\N	0	1
+3	ccf.ip_address	CUSTOMER	STRING	f	f	3	\N	0	1
 \.
 
 
@@ -24237,6 +24243,14 @@ ALTER TABLE ONLY mediation_record_line
 
 ALTER TABLE ONLY mediation_record_line
     ADD CONSTRAINT mediation_record_line_fk_2 FOREIGN KEY (order_line_id) REFERENCES order_line(id);
+
+
+--
+-- Name: meta_field_entity_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY meta_field_name
+    ADD CONSTRAINT meta_field_entity_id_fk FOREIGN KEY (entity_id) REFERENCES entity(id);
 
 
 --

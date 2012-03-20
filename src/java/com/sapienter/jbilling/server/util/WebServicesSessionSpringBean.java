@@ -1092,6 +1092,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         UserBL bl = new UserBL();
         Integer executorId = getCallerId();
         Integer languageId = getCallerLanguageId();
+        
+        item.setEntityId(getCallerCompanyId());
 
         // do some transformation from WS to DTO :(
         ItemBL itemBL = new ItemBL();
@@ -1792,6 +1794,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     "ItemDTOEx,descriptions,validation.error.is.required"
             });
         }
+        
+        item.setEntityId(getCallerCompanyId());
 
         ItemBL itemBL = new ItemBL();
         ItemDTO dto = itemBL.getDTO(item);
@@ -2074,7 +2078,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         // meta fields validation
-        MetaFieldBL.validateMetaFields(EntityType.ORDER, order.getMetaFields());
+        MetaFieldBL.validateMetaFields(getCallerCompanyId(), EntityType.ORDER, order.getMetaFields());
 
         order.setUserId(zero2null(order.getUserId()));
         order.setPeriod(zero2null(order.getPeriod()));
@@ -2283,7 +2287,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
         retValue.setTotal(order.getTotal());
 
-        retValue.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(order));
+        retValue.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(getCallerCompanyId(), order));
 
         List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
         for (Iterator<OrderLineDTO> it = order.getLines().iterator(); it.hasNext();) {

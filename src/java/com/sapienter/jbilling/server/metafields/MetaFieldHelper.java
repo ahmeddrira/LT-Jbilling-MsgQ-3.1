@@ -76,7 +76,7 @@ public class MetaFieldHelper {
      * @param value            field value
      * @throws IllegalArgumentException thrown if field name does not exist, or if value is of an incorrect type.
      */
-    public static void setMetaField(MetaContent customizedEntity, String name, Object value) throws IllegalArgumentException {
+    public static void setMetaField(Integer entityId, MetaContent customizedEntity, String name, Object value) throws IllegalArgumentException {
         MetaFieldValue fieldValue = customizedEntity.getMetaField(name);
         if (fieldValue != null) { // common case during editing
             try {
@@ -89,7 +89,7 @@ public class MetaFieldHelper {
             if (type == null) {
                 throw new IllegalArgumentException("Meta Fields could not be specified for current entity");
             }
-            MetaField fieldName = new MetaFieldDAS().getFieldByName(type, name);
+            MetaField fieldName = new MetaFieldDAS().getFieldByName(entityId, type, name);
             if (fieldName == null) {
                 throw new IllegalArgumentException("Meta Field with name " + name + " was not defined for current entity");
             }
@@ -108,15 +108,15 @@ public class MetaFieldHelper {
      * @param entity    target entity
      * @param dto       dto with new data
      */
-    public static void updateMetaFieldsWithValidation(MetaContent entity, MetaContent dto) {
-        Map<String, MetaField> availableMetaFields = MetaFieldBL.getAvailableFields(entity.getCustomizedEntityType());
+    public static void updateMetaFieldsWithValidation(Integer entityId, MetaContent entity, MetaContent dto) {
+        Map<String, MetaField> availableMetaFields = MetaFieldBL.getAvailableFields(entityId, entity.getCustomizedEntityType());
         for (String fieldName : availableMetaFields.keySet()) {
             MetaFieldValue newValue = dto.getMetaField(fieldName);
             if (newValue == null) { // try to search by id, may be temp fix
                 MetaField metaFieldName = availableMetaFields.get(fieldName);
                 newValue = dto.getMetaField(metaFieldName.getId());
             }
-            entity.setMetaField(fieldName, newValue != null ? newValue.getValue() : null);
+            entity.setMetaField(entityId, fieldName, newValue != null ? newValue.getValue() : null);
         }
         for (MetaFieldValue value : entity.getMetaFields()) {
             MetaFieldBL.validateMetaField(value.getField(), value);

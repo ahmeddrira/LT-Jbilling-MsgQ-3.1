@@ -162,7 +162,13 @@ public class UserWS implements WSSecured, Serializable {
             dueDateUnitId = dto.getCustomer().getDueDateUnitId();
             dueDateValue = dto.getCustomer().getDueDateValue();
 
-            this.metaFields = MetaFieldBL.convertMetaFieldsToWS(dto.getCustomer());
+            Integer entityId;
+            if (null == dto.getCompany()){
+            	entityId = new UserBL().getEntityId(dto.getCustomer().getId());
+            } else {
+            	entityId = dto.getCompany().getId();
+            }
+            this.metaFields = MetaFieldBL.convertMetaFieldsToWS(entityId, dto.getCustomer());
         }
 
         blacklistMatches = dto.getBlacklistMatches() != null ? dto.getBlacklistMatches().toArray(new String[dto.getBlacklistMatches().size()]) : null;

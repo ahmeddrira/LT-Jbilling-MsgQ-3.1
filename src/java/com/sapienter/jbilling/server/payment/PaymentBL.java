@@ -49,6 +49,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
+import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
@@ -216,7 +217,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
 
         // meta fields
-        payment.updateMetaFieldsWithValidation(dto);
+        payment.updateMetaFieldsWithValidation(
+        		new UserBL().getEntityId(dto.getUserId()), dto);
 
         dto.setId(payment.getId());
         dto.setCurrency(payment.getCurrency());
@@ -301,7 +303,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             payment.setPaymentNotes(dto.getPaymentNotes());
         }
 
-        payment.updateMetaFieldsWithValidation(dto);
+        payment.updateMetaFieldsWithValidation(
+        		new UserBL().getEntityId(dto.getUserId()), dto);
     }
 
     /**
@@ -504,7 +507,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         ws.setPaymentNotes(dto.getPaymentNotes());
         ws.setPaymentPeriod(dto.getPaymentPeriod());
 
-        ws.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(dto));
+        ws.setMetaFields(MetaFieldBL.convertMetaFieldsToWS(
+        		new UserBL().getEntityId(dto.getUserId()), dto));
 
         if (dto.getCurrency() != null)
             ws.setCurrencyId(dto.getCurrency().getId());
@@ -755,7 +759,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             PaymentDTOEx ex = new PaymentDTOEx(dto);
             retValue = validate(ex.getCheque());
         }
-        MetaFieldBL.validateMetaFields(EntityType.PAYMENT, dto.getMetaFields());
+        MetaFieldBL.validateMetaFields(new UserBL().getEntityId(dto.getUserId()), 
+        		EntityType.PAYMENT, dto.getMetaFields());
 
         return retValue;
     }

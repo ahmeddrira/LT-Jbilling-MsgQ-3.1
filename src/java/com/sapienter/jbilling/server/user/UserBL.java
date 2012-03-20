@@ -244,7 +244,8 @@ public class UserBL extends ResultList implements UserSQL {
             }
 
             // update custom fields, validation will be inside
-            user.getCustomer().updateMetaFieldsWithValidation(dto.getCustomer());
+            user.getCustomer().updateMetaFieldsWithValidation(
+            		dto.getEntityId(), dto.getCustomer());
         }
 
         eLogger.audit(executorId,
@@ -382,7 +383,7 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setAutoPaymentType(dto.getCustomer().getAutoPaymentType());
 
             //meta fields
-            user.getCustomer().updateMetaFieldsWithValidation(dto.getCustomer());
+            user.getCustomer().updateMetaFieldsWithValidation(dto.getEntityId(), dto.getCustomer());
 
         } else { // all the rest
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(),

@@ -24,6 +24,7 @@ import com.sapienter.jbilling.server.metafields.MetaFieldHelper;
 import com.sapienter.jbilling.server.metafields.db.CustomizedEntity;
 import com.sapienter.jbilling.server.metafields.db.EntityType;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
+import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerDAS;
@@ -124,7 +125,7 @@ public class CustomerDTO extends CustomizedEntity implements java.io.Serializabl
        this.currentOrderId = currentOrderId;
     }
 
-    public CustomerDTO(UserWS user) {
+    public CustomerDTO(Integer entityId, UserWS user) {
         setBaseUser(new UserDAS().find(user.getUserId()));
 
         if (user.getPartnerId() != null) {
@@ -171,7 +172,7 @@ public class CustomerDTO extends CustomizedEntity implements java.io.Serializabl
 
         setExcludeAging(user.getExcludeAgeing() != null && user.getExcludeAgeing() ? 1 : 0);
 
-        MetaFieldBL.fillMetaFieldsFromWS(this, user.getMetaFields());
+        MetaFieldBL.fillMetaFieldsFromWS(entityId, this, user.getMetaFields());
 
         LOG.debug("Customer created with auto-recharge: " + getAutoRecharge() + " incoming var, " + user.getAutoRecharge());
     }

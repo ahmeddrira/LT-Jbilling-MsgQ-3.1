@@ -226,7 +226,7 @@ public class BillingProcessBL extends ResultList
                 // it is an order going into an existing invoice
                 InvoiceBL invoice = new InvoiceBL(invoiceId);
                 boolean isUnpaid = invoice.getEntity().getToProcess() == 1;
-                invoice.update(newInvoice);
+                invoice.update(entityId, newInvoice);
                 retValue = invoice.getEntity();
                 createOrderProcess(newInvoice, retValue, null,
                         Constants.ORDER_PROCESS_ORIGIN_MANUAL);

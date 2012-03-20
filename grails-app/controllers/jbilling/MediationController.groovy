@@ -119,9 +119,12 @@ class MediationController {
 
         } else {
             def filters = filterService.getFilters(FilterType.MEDIATIONPROCESS, params)
-            def processes = getFilteredProcesses(filters, params)
+            def processes
+            def processValues
+            (processes, processValues) = getFilteredProcesses(filters, params)
 
-            render view: 'list', model: [selected: process, recordCount: recordCount, processes: processes, filters: filters]
+            render view: 'list', model: [selected: process, recordCount: recordCount, processes: processes,
+                    processValues: processValues, filters: filters]
         }
     }
 

@@ -132,12 +132,12 @@ public class ItemTypeBL {
      * @param description Description to use to find an existent category.
      * @return <b>true</b> if another category exists. <b>false</b> if no category with the same description exists.
      */
-    public boolean exists(String description) {
+    public boolean exists(Integer entityId, String description) {
         if (description == null) {
             LOG.error("exists is being call with a null description");
             return true;
         }
-        if (new ItemTypeDAS().findByDescription(description) == null) {
+        if (new ItemTypeDAS().findByDescription(entityId, description) == null) {
             return false;
         } else {
             return true;

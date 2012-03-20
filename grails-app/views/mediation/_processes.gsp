@@ -19,7 +19,7 @@
     	<table id="processes" cellspacing="0" cellpadding="0">
 			<thead>
 				<tr>
-					<th class="large">
+					<th class="large2">
                         <g:remoteSort action="list" sort="id" update="column1">
                             <g:message code="mediation.th.id" />
                         </g:remoteSort>
@@ -59,12 +59,12 @@
                         </td>
 						<td>
 							<g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
-                                <g:formatDate date="${proc.startDatetime}" formatName="date.timeSecs.format"/>
+                                <g:formatDate date="${proc.startDatetime}" formatName="date.timeSecsAMPM.format"/>
                             </g:remoteLink>
 						</td>
                         <td>
                             <g:remoteLink breadcrumb="id" class="cell" action="show" id="${proc.id}" params="['template': 'show']" before="register(this);" onSuccess="render(data, next);">
-                                <g:formatDate date="${proc.endDatetime}" formatName="date.timeSecs.format"/>
+                                <g:formatDate date="${proc.endDatetime}" formatName="date.timeSecsAMPM.format"/>
                             </g:remoteLink>
                         </td>
 						<td>

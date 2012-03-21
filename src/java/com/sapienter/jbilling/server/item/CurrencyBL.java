@@ -306,6 +306,12 @@ public class CurrencyBL {
     }
 
     private CurrencyExchangeDTO findExchange(Integer entityId, Integer currencyId, Date toDate) throws SessionInternalError {
+    	
+        // check for system currency exchange
+        if (currencyId == SYSTEM_CURRENCY_ID) {
+        	return new CurrencyExchangeDTO(0, currency, entityId, SYSTEM_CURRENCY_RATE_DEFAULT, new Date());
+        }
+    	
         CurrencyExchangeDTO exchange = exchangeDas.getExchangeRateForDate(entityId, currencyId, toDate);
         if (exchange == null) {
             // this entity doesn't have this exchange defined

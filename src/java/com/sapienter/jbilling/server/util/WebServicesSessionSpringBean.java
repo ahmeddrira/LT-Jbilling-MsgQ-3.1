@@ -1770,7 +1770,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         ItemTypeBL itemTypeBL = new ItemTypeBL();
 
         //Check if the category already exists to throw an error to the user.
-        if (itemTypeBL.exists(dto.getDescription())) {
+        if (itemTypeBL.exists(entityId, dto.getDescription())) {
             throw new SessionInternalError("The product category already exists with name " + dto.getDescription(),
                     new String[]{"ItemTypeWS,name,validation.error.category.already.exists"});
         }
@@ -1781,6 +1781,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public void updateItemCategory(ItemTypeWS itemType) throws SessionInternalError {
         UserBL bl = new UserBL(getCallerId());
+        Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
         Integer executorId = bl.getEntity().getUserId();
 
         ItemTypeBL itemTypeBL = new ItemTypeBL(itemType.getId());
@@ -1792,7 +1793,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         // make sure that item category names are unique. If the name was changed, then check
         // that the new name isn't a duplicate of an existing category.
         if (!itemTypeBL.getEntity().getDescription().equals(itemType.getDescription())
-            && itemTypeBL.exists(dto.getDescription())) {
+            && itemTypeBL.exists(entityId, dto.getDescription())) {
             throw new SessionInternalError("The product category already exists with name " + dto.getDescription(),
                     new String[]{"ItemTypeWS,name,validation.error.category.already.exists"});
         }
@@ -2182,7 +2183,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public ItemTypeWS[] getAllItemCategories() {
-        return new ItemTypeBL().getAllItemTypes();
+        return new ItemTypeBL().getAllItemTypesByEntity(getCallerCompanyId());
     }
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId,

@@ -42,11 +42,11 @@
                 </tr>
                 <tr>
                     <td><g:message code="mediation.label.start.time"/></td>
-                    <td class="value"><g:formatDate date="${selected.startDatetime}" formatName="date.timeSecs.format"/></td>
+                    <td class="value"><g:formatDate date="${selected.startDatetime}" formatName="date.timeSecsAMPM.format"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="mediation.label.end.time"/></td>
-                    <td class="value"><g:formatDate date="${selected.endDatetime}" formatName="date.timeSecs.format"/></td>
+                    <td class="value"><g:formatDate date="${selected.endDatetime}" formatName="date.timeSecsAMPM.format"/></td>
                 </tr>
                 <tr>
                     <td><g:message code="mediation.label.total.runtime"/></td>

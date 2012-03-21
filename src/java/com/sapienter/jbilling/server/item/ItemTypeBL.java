@@ -110,14 +110,14 @@ public class ItemTypeBL {
     public ItemTypeDTO getInternalPlansType(Integer entityId) {
         return itemTypeDas.getCreateInternalPlansType(entityId);
     }
-
+    
     /**
-     * Returns all item types, or an empty array if none found.
+     * Returns all item types by entity Id, or an empty array if none found.
      *
      * @return array of item types, empty if none found.
      */
-    public ItemTypeWS[] getAllItemTypes() {
-        List<ItemTypeDTO> results = new ItemTypeDAS().findAll();
+    public ItemTypeWS[] getAllItemTypesByEntity(Integer entityId) {
+        List<ItemTypeDTO> results = new ItemTypeDAS().findByEntityId(entityId);
         ItemTypeWS[] types = new ItemTypeWS[results.size()];
 
         int index = 0;

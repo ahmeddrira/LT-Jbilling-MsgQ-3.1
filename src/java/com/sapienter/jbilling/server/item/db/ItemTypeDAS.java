@@ -15,6 +15,8 @@
  */
 package com.sapienter.jbilling.server.item.db;
 
+import java.util.List;
+
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
@@ -84,4 +86,17 @@ public class ItemTypeDAS extends AbstractDAS<ItemTypeDTO> {
 
         return (ItemTypeDTO) criteria.uniqueResult();
     }
+
+    /**
+     * 	Find By entity
+     * 
+     * @param entityId
+     * @return returns all the categories per given entity
+     */
+	public List<ItemTypeDTO> findByEntityId(Integer entityId) {
+		
+        Criteria criteria = getSession().createCriteria(ItemTypeDTO.class)
+        		.add(Restrictions.eq("entity.id", entityId));
+        return criteria.list();
+	}
 }

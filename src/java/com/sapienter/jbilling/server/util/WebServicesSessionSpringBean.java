@@ -2183,7 +2183,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public ItemTypeWS[] getAllItemCategories() {
-        return new ItemTypeBL().getAllItemTypes();
+        return new ItemTypeBL().getAllItemTypesByEntity(getCallerCompanyId());
     }
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId,

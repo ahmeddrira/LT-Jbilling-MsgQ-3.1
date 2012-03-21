@@ -50,6 +50,8 @@ public class DateBetweenValidator implements ConstraintValidator<DateBetween, Da
 
             return startDate.before(date) && endDate.after(date);
 
+        } catch (NullPointerException e) {
+            LOG.debug("Date is null.");
         } catch (ClassCastException e) {
             LOG.debug("Property does not contain a java.util.Date object.");
         } catch (ParseException e) {

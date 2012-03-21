@@ -35,7 +35,7 @@ import java.io.StringReader;
 
 @Entity
 @DiscriminatorValue("json")
-public class JsonMetaFieldValue extends MetaFieldValue<JSONObject> {
+public class JsonMetaFieldValue extends MetaFieldValue<String> {
 
     private static final Logger LOG = Logger.getLogger(JsonMetaFieldValue.class);
 
@@ -49,16 +49,19 @@ public class JsonMetaFieldValue extends MetaFieldValue<JSONObject> {
     }
 
     @Column(name = "string_value", nullable = true)
-    public String getJson() {
+    public String getValue() {
         return json;
     }
 
-    public void setJson(String json) {
+    public void setValue(String json) {
         this.json = json;
     }
 
     @Transient
-    public JSONObject getValue() {
+    public JSONObject getJsonValue() {
+        if (json == null)
+            return null;
+
         try {
             return (JSONObject) new JSONParser(new StringReader(json)).parse();
         } catch (ParseException e) {
@@ -67,7 +70,7 @@ public class JsonMetaFieldValue extends MetaFieldValue<JSONObject> {
         }
     }
 
-    public void setValue(JSONObject value) {
+    public void setJsonValue(JSONObject value) {
         this.json = value != null ? value.toString() : null;
     }
 }

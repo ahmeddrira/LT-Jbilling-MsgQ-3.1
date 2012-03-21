@@ -66,9 +66,3 @@
         </tbody>
     </table>
 </div>
-
-<div class="btn-box">
-    <g:remoteLink action='edit' class="submit add" before="register(this);" onSuccess="render(data, next);">
-        <span><g:message code="button.create"/></span>
-    </g:remoteLink>
-</div>

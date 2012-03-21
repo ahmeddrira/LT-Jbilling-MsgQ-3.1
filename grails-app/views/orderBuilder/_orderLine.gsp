@@ -65,9 +65,14 @@
 
                 <sec:ifAllGranted roles="ORDER_26">
                     <g:applyLayout name="form/input">
-                        <content tag="label"><g:message code="order.label.line.price"/></content>
+                        <g:if test="${product?.percentage}">
+                            <content tag="label"><g:message code="order.label.line.price.percentage"/></content>
+                        </g:if>
+                        <g:else>
+                            <content tag="label"><g:message code="order.label.line.price"/></content>
+                        </g:else>
                         <content tag="label.for">line-${index}.priceAsDecimal</content>
-                        <g:textField name="line-${index}.priceAsDecimal" class="field price" value="${formatNumber(number: line.getPriceAsDecimal() ?: BigDecimal.ZERO, formatName: 'money.format')}" disabled="${line.useItem}"/>
+                        <g:textField name="line-${index}.priceAsDecimal" class="field price" value="${formatNumber(number: line.getPriceAsDecimal() ?: BigDecimal.ZERO, formatName: 'money.format', maxFractionDigits: 4)}" disabled="${line.useItem}"/>
                     </g:applyLayout>
                 </sec:ifAllGranted>
 

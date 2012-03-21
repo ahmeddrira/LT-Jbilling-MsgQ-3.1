@@ -1984,7 +1984,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         ItemTypeBL itemTypeBL = new ItemTypeBL();
 
         //Check if the category already exists to throw an error to the user.
-        if (itemTypeBL.exists(dto.getDescription())) {
+        if (itemTypeBL.exists(entityId, dto.getDescription())) {
             throw new SessionInternalError("The product category already exists with name " + dto.getDescription(),
                     new String[]{"ItemTypeWS,name,validation.error.category.already.exists"});
         }
@@ -1995,6 +1995,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public void updateItemCategory(ItemTypeWS itemType) throws SessionInternalError {
         UserBL bl = new UserBL(getCallerId());
+        Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
         Integer executorId = bl.getEntity().getUserId();
 
         ItemTypeBL itemTypeBL = new ItemTypeBL(itemType.getId());
@@ -2006,7 +2007,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         // make sure that item category names are unique. If the name was changed, then check
         // that the new name isn't a duplicate of an existing category.
         if (!itemTypeBL.getEntity().getDescription().equals(itemType.getDescription())
-            && itemTypeBL.exists(dto.getDescription())) {
+            && itemTypeBL.exists(entityId, dto.getDescription())) {
             throw new SessionInternalError("The product category already exists with name " + dto.getDescription(),
                     new String[]{"ItemTypeWS,name,validation.error.category.already.exists"});
         }
@@ -2401,7 +2402,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public ItemTypeWS[] getAllItemCategories() {
-        return new ItemTypeBL().getAllItemTypes();
+        return new ItemTypeBL().getAllItemTypesByEntity(getCallerCompanyId());
     }
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId,
@@ -2647,20 +2648,22 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
 
     public void triggerBillingAsync(final Date runDate) {
-    	Thread t =new Thread(new Runnable(){
-	   		IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-		    public void run()
-		    {
-		    	 processBean.trigger(runDate);
-		    }
-	    });
+	final Integer companyId = getCallerCompanyId();
+	Thread t = new Thread(new Runnable() {
+	    IBillingProcessSessionBean processBean = Context
+		    .getBean(Context.Name.BILLING_PROCESS_SESSION);
 
-	    t.start();
+	    public void run() {
+		processBean.trigger(runDate, companyId);
+	    }
+	});
+
+	t.start();
     }
 
     public boolean triggerBilling(Date runDate) {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        return processBean.trigger(runDate);
+        return processBean.trigger(runDate, getCallerCompanyId());
     }
 
     public boolean isBillingProcessRunning() {

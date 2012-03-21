@@ -623,149 +623,160 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
         }
     }
 
-    public boolean trigger(Date pToday) throws SessionInternalError {
+    public boolean trigger(Date pToday, Integer entityId) throws SessionInternalError {
 
      if (!running.compareAndSet(false, true)) {
          LOG.warn("Failed to trigger billing process at " + pToday.getTime()
                      + ", another process is already running.");
          return false;
      }
+     
+     LOG.debug("Billing trigger for " + pToday + " entity " + entityId);
 
         try {
             Date today = Util.truncateDate(pToday);
-            EventLogger eLogger = EventLogger.getInstance();
-            BillingProcessBL processBL = new BillingProcessBL();
-            GregorianCalendar cal = new GregorianCalendar();  
 
-            IBillingProcessSessionBean local
-                = (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
 
-            // loop over all the entities
-            EntityBL entityBL = new EntityBL();
-            Integer entityArray[] = entityBL.getAllIDs();
-            LOG.debug("Running trigger. Today = " + today + "[" + today.getTime() + "] entities = " + entityArray.length);
-
-            for (int entityIndex = 0; entityIndex < entityArray.length; entityIndex++) {
-                Integer entityId = entityArray[entityIndex];
-                LOG.debug("New entity row index " + entityIndex + " of " + entityArray.length);
-                LOG.debug("Processing (1) entity " + entityId + " total = " + entityArray.length);
-
-                // now process this entity
-                ConfigurationBL configEntity = new ConfigurationBL(entityId);
-                BillingProcessConfigurationDTO config = configEntity.getDTO();
-                if (!config.getNextRunDate().after(today)) {
-                    // there should be a run today 
-                    boolean doRun = true;
-                    LOG.debug("A process has to be done for entity " + entityId);
-                    // check that: the configuration requires a review
-                    // AND, there is no partial run already there (failed)
-                    if (config.getGenerateReport() == 1
-                        && new BillingProcessDAS().isPresent(entityId, 0, config.getNextRunDate()) == null) {
-
-                        // a review had to be done for the run to go ahead
-                        boolean reviewPresent = processBL.isReviewPresent(entityId); 
-                        if (!reviewPresent) {  // review wasn't generated
-                            LOG.warn("Review is required but not present for " + "entity " + entityId);
-                            eLogger.warning(entityId, null, config.getId(), 
-                                            EventLogger.MODULE_BILLING_PROCESS,
-                                            EventLogger.BILLING_REVIEW_NOT_GENERATED,
-                                            Constants.TABLE_BILLING_PROCESS_CONFIGURATION);
-                            
-                            generateReview(entityId,
-                                           config.getNextRunDate(),
-                                           config.getPeriodUnit().getId(),
-                                           config.getPeriodValue());
-
-                            doRun = false;
-
-                        } else if (new Integer(config.getReviewStatus()).equals(Constants.REVIEW_STATUS_GENERATED)) {
-                            // the review has to be reviewd yet
-                            GregorianCalendar now = new GregorianCalendar();
-                            LOG.warn("Review is required but is not approved. Entity " + entityId
-                                + " hour is " + now.get(GregorianCalendar.HOUR_OF_DAY));
-
-                            eLogger.warning(entityId, null, config.getId(), 
-                                            EventLogger.MODULE_BILLING_PROCESS,
-                                            EventLogger.BILLING_REVIEW_NOT_APPROVED,
-                                            Constants.TABLE_BILLING_PROCESS_CONFIGURATION);
-
-                            try {
-                                // only once per day please
-                                if (now.get(GregorianCalendar.HOUR_OF_DAY) < 1) {
-                                    String params[] = new String[1];
-                                    params[0] = entityId.toString();
-                                    NotificationBL.sendSapienterEmail(entityId, "process.review_waiting", null, params);
-                                }
-                            } catch (Exception e) {
-                                LOG.warn("Exception sending an entity email", e);
-                            }
-                            doRun = false;
-
-                        } else if (new Integer(config.getReviewStatus()).equals(Constants.REVIEW_STATUS_DISAPPROVED)) {
-                            // is has been disapproved, let's regenerate
-                            LOG.debug("The process should run, but the review has been disapproved");
-                            generateReview(entityId,
-                                           config.getNextRunDate(),
-                                           config.getPeriodUnit().getId(),
-                                           config.getPeriodValue());
-
-                            doRun = false;
-                        }
-                    }
-                    
-                    // do the run
-                    if (doRun) {
-                        local.processEntity(entityId,
-                                            config.getNextRunDate(), 
-                                            config.getPeriodUnit().getId(),
-                                            config.getPeriodValue(),
-                                            false);
-                    }
-
-                } else {
-                    // no run, may be then a review generation
-                    LOG.debug("No run scheduled. Next run on " + config.getNextRunDate().getTime());
-                    
-                    /*
-                     * Review generation
-                     */
-                    if (config.getGenerateReport() == 1) {
-                        cal.setTime(config.getNextRunDate());
-                        cal.add(GregorianCalendar.DAY_OF_MONTH, -config.getDaysForReport().intValue());
-                        if (!cal.getTime().after(today)) {
-                            boolean reviewPresent = processBL.isReviewPresent(entityId);
-                            if (reviewPresent && !Constants.REVIEW_STATUS_DISAPPROVED.equals(config.getReviewStatus())) {
-                                // there's already a review there, and it's been
-                                // either approved or not yet reviewed
-                            } else {
-                                LOG.debug("Review disapproved. Regeneratting.");
-                                generateReview(entityId,
-                                               config.getNextRunDate(),
-                                               config.getPeriodUnit().getId(),
-                                               config.getPeriodValue());
-                            }
-                        }
-                    }
-                } // else (no run)
-                
-                /*
-                 * Retries, only if automatic payment is set
-                 */
-                if (config.getAutoPayment() == 1) {
-                    // get the last process
-                    Integer[] processToRetry = processBL.getToRetry(entityId);
-                    for (Integer aProcessToRetry : processToRetry) {
-                        local.doRetry(aProcessToRetry, config.getDaysForRetry(), today);
-                    }
-                }
-
-            } // for all entities
+            if (entityId == null) {
+                // loop over all the entities
+                EntityBL entityBL = new EntityBL();
+                Integer entityArray[] = entityBL.getAllIDs();
+                LOG.debug("Running trigger. Today = " + today + "[" + today.getTime() + "] entities = " + entityArray.length);
+    
+                for (int entityIndex = 0; entityIndex < entityArray.length; entityIndex++) {
+                    Integer thisEntity = entityArray[entityIndex];
+                    LOG.debug("New entity row index " + entityIndex + " of " + entityArray.length);
+                    LOG.debug("Processing (1) entity " + entityId + " total = " + entityArray.length);
+    
+                    processEntity(thisEntity, today);
+    
+                } // for all entities
+            } else {
+        	processEntity(entityId, today);
+            }
         } catch (Exception e) {
             throw new SessionInternalError(e);
         } finally {
             running.set(false);
         }
         return true;
+    }
+    
+    private void processEntity(Integer entityId, Date today) throws Exception, SQLException {
+        IBillingProcessSessionBean local
+        	= (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        EventLogger eLogger = EventLogger.getInstance();
+        BillingProcessBL processBL = new BillingProcessBL();
+        GregorianCalendar cal = new GregorianCalendar();  
+
+	 // now process this entity
+        ConfigurationBL configEntity = new ConfigurationBL(entityId);
+        BillingProcessConfigurationDTO config = configEntity.getDTO();
+        if (!config.getNextRunDate().after(today)) {
+            // there should be a run today 
+            boolean doRun = true;
+            LOG.debug("A process has to be done for entity " + entityId);
+            // check that: the configuration requires a review
+            // AND, there is no partial run already there (failed)
+            if (config.getGenerateReport() == 1
+                && new BillingProcessDAS().isPresent(entityId, 0, config.getNextRunDate()) == null) {
+
+                // a review had to be done for the run to go ahead
+                boolean reviewPresent = processBL.isReviewPresent(entityId); 
+                if (!reviewPresent) {  // review wasn't generated
+                    LOG.warn("Review is required but not present for " + "entity " + entityId);
+                    eLogger.warning(entityId, null, config.getId(), 
+                                    EventLogger.MODULE_BILLING_PROCESS,
+                                    EventLogger.BILLING_REVIEW_NOT_GENERATED,
+                                    Constants.TABLE_BILLING_PROCESS_CONFIGURATION);
+                    
+                    generateReview(entityId,
+                                   config.getNextRunDate(),
+                                   config.getPeriodUnit().getId(),
+                                   config.getPeriodValue());
+
+                    doRun = false;
+
+                } else if (new Integer(config.getReviewStatus()).equals(Constants.REVIEW_STATUS_GENERATED)) {
+                    // the review has to be reviewd yet
+                    GregorianCalendar now = new GregorianCalendar();
+                    LOG.warn("Review is required but is not approved. Entity " + entityId
+                        + " hour is " + now.get(GregorianCalendar.HOUR_OF_DAY));
+
+                    eLogger.warning(entityId, null, config.getId(), 
+                                    EventLogger.MODULE_BILLING_PROCESS,
+                                    EventLogger.BILLING_REVIEW_NOT_APPROVED,
+                                    Constants.TABLE_BILLING_PROCESS_CONFIGURATION);
+
+                    try {
+                        // only once per day please
+                        if (now.get(GregorianCalendar.HOUR_OF_DAY) < 1) {
+                            String params[] = new String[1];
+                            params[0] = entityId.toString();
+                            NotificationBL.sendSapienterEmail(entityId, "process.review_waiting", null, params);
+                        }
+                    } catch (Exception e) {
+                        LOG.warn("Exception sending an entity email", e);
+                    }
+                    doRun = false;
+
+                } else if (new Integer(config.getReviewStatus()).equals(Constants.REVIEW_STATUS_DISAPPROVED)) {
+                    // is has been disapproved, let's regenerate
+                    LOG.debug("The process should run, but the review has been disapproved");
+                    generateReview(entityId,
+                                   config.getNextRunDate(),
+                                   config.getPeriodUnit().getId(),
+                                   config.getPeriodValue());
+
+                    doRun = false;
+                }
+            }
+            
+            // do the run
+            if (doRun) {
+                local.processEntity(entityId,
+                                    config.getNextRunDate(), 
+                                    config.getPeriodUnit().getId(),
+                                    config.getPeriodValue(),
+                                    false);
+            }
+
+        } else {
+            // no run, may be then a review generation
+            LOG.debug("No run scheduled. Next run on " + config.getNextRunDate().getTime());
+            
+            /*
+             * Review generation
+             */
+            if (config.getGenerateReport() == 1) {
+                cal.setTime(config.getNextRunDate());
+                cal.add(GregorianCalendar.DAY_OF_MONTH, -config.getDaysForReport().intValue());
+                if (!cal.getTime().after(today)) {
+                    boolean reviewPresent = processBL.isReviewPresent(entityId);
+                    if (reviewPresent && !Constants.REVIEW_STATUS_DISAPPROVED.equals(config.getReviewStatus())) {
+                        // there's already a review there, and it's been
+                        // either approved or not yet reviewed
+                    } else {
+                        LOG.debug("Review disapproved. Regeneratting.");
+                        generateReview(entityId,
+                                       config.getNextRunDate(),
+                                       config.getPeriodUnit().getId(),
+                                       config.getPeriodValue());
+                    }
+                }
+            }
+        } // else (no run)
+        
+        /*
+         * Retries, only if automatic payment is set
+         */
+        if (config.getAutoPayment() == 1) {
+            // get the last process
+            Integer[] processToRetry = processBL.getToRetry(entityId);
+            for (Integer aProcessToRetry : processToRetry) {
+                local.doRetry(aProcessToRetry, config.getDaysForRetry(), today);
+            }
+        }
     }
 
     /**

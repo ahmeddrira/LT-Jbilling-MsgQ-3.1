@@ -312,7 +312,7 @@ public class UserBL extends ResultList implements UserSQL {
             }
         } else {
             for (RoleDTO role: dto.getRoles()) {
-                roles.add(role.getId());
+                roles.add(role.getRoleTypeId());
             }
         }
 
@@ -433,7 +433,7 @@ public class UserBL extends ResultList implements UserSQL {
         user = das.save(newUser);
         HashSet<RoleDTO> rolesDTO = new HashSet<RoleDTO>();
         for (Integer roleId: roles) {
-            rolesDTO.add(new RoleDAS().find(roleId));
+            rolesDTO.add(new RoleDAS().findByRoleTypeIdAndCompanyId(roleId, entityId));
         }
         updateRoles(rolesDTO, null);
 
@@ -701,7 +701,7 @@ public class UserBL extends ResultList implements UserSQL {
         if (mainRole == null) {
             List roleIds = new LinkedList();
             for (RoleDTO nextRoleObject : user.getRoles()){
-                roleIds.add(nextRoleObject.getId());
+                roleIds.add(nextRoleObject.getRoleTypeId());
             }
             mainRole = selectMainRole(roleIds);
         }

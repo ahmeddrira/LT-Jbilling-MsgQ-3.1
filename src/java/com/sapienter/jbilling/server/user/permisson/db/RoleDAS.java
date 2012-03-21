@@ -15,8 +15,16 @@
  */
 package com.sapienter.jbilling.server.user.permisson.db;
 
+import org.hibernate.criterion.Restrictions;
+
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
 public class RoleDAS extends AbstractDAS<RoleDTO> {
-
+	
+	public RoleDTO findByRoleTypeIdAndCompanyId(int roleTypeId, int companyId) {
+		
+		return findFirst(getSession().createCriteria(getPersistentClass())
+                .add(Restrictions.eq("roleTypeId", roleTypeId))
+                .add(Restrictions.eq("company.id", companyId)));
+	}
 }

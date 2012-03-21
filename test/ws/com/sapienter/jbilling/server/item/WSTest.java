@@ -433,7 +433,7 @@ public class WSTest  extends TestCase {
         ItemTypeWS[] types = api.getAllItemCategories();
 
         // includes hidden "plans" categories
-        assertEquals("9 item types", 9, types.length);
+        assertEquals("7 item types", 7, types.length);
 
         assertEquals(1, types[0].getId().intValue());
         assertEquals("Drink passes", types[0].getDescription());

@@ -106,8 +106,8 @@ public class DTOFactory {
             // the main role is the smallest of them, so they have to be ordered
             // in the
             // db in ascending order (small = important);
-            if (role.getId() < mainRole) {
-                mainRole = role.getId();
+            if (role.getRoleTypeId() < mainRole) {
+                mainRole = role.getRoleTypeId();
                 roleStr = role.getTitle(user.getLanguageIdField());
             }
         }

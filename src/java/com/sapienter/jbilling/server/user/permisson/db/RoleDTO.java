@@ -17,13 +17,14 @@ package com.sapienter.jbilling.server.user.permisson.db;
 
 
 import com.sapienter.jbilling.client.authentication.InitializingGrantedAuthority;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
 import org.hibernate.annotations.OrderBy;
-import org.springframework.beans.factory.annotation.Required;
 
 import javax.persistence.*;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,6 +45,8 @@ public class RoleDTO extends AbstractDescription implements Serializable, Initia
     public static final Integer AUTHORITY_LANGUAGE_ID = 1; // authority values in english
 
     private int id;
+    private CompanyDTO company;
+    private Integer roleTypeId;
     private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
     private Set<PermissionDTO> permissions = new HashSet<PermissionDTO>(0);
 
@@ -56,8 +59,10 @@ public class RoleDTO extends AbstractDescription implements Serializable, Initia
         this.id = id;
     }
 
-    public RoleDTO(int id, Set<UserDTO> baseUsers, Set<PermissionDTO> permissions) {
+    public RoleDTO(int id, CompanyDTO company, int roleTypeId, Set<UserDTO> baseUsers, Set<PermissionDTO> permissions) {
         this.id = id;
+        this.company = company;
+        this.roleTypeId = roleTypeId;
         this.baseUsers = baseUsers;
         this.permissions = permissions;
     }
@@ -72,8 +77,27 @@ public class RoleDTO extends AbstractDescription implements Serializable, Initia
     public void setId(int id) {
         this.id = id;
     }
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entity_id")
+    public CompanyDTO getCompany() {
+		return company;
+	}
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	public void setCompany(CompanyDTO company) {
+		this.company = company;
+	}
+
+	@Column(name = "role_type_id", length = 10)
+	public Integer getRoleTypeId() {
+		return roleTypeId;
+	}
+	
+	public void setRoleTypeId(Integer roleTypeId) {
+		this.roleTypeId = roleTypeId;
+	}
+
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "user_role_map",
                joinColumns = {@JoinColumn(name = "role_id", updatable = false)},
                inverseJoinColumns = {@JoinColumn(name = "user_id", updatable = false)}

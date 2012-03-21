@@ -86,7 +86,7 @@
 <div class="pager-box">
     <div class="row">
         <div class="results">
-            <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], action: paginateAction, update: 'column2']"/>
+            <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], action: paginateAction, update: 'column2',id:selectedCategoryId]"/>
         </div>
         <div class="download">
             <sec:access url="/product/csv">
@@ -98,7 +98,7 @@
     </div>
 
     <div class="row">
-        <util:remotePaginate controller="product" action="${paginateAction}" id="${selectedCategoryId}" params="${sortableParams(params: [partial: true])}" total="${params.totalCount ?: 0}" update="column2"/>
+        <util:remotePaginate controller="product" action="${paginateAction}" id="${selectedCategoryId}" params="${sortableParams(params: [partial: true])}" total="${products?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
 

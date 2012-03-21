@@ -12,6 +12,7 @@ SET search_path = public, pg_catalog;
 
 ALTER TABLE ONLY public.user_role_map DROP CONSTRAINT user_role_map_fk_2;
 ALTER TABLE ONLY public.user_role_map DROP CONSTRAINT user_role_map_fk_1;
+ALTER TABLE ONLY public.role DROP CONSTRAINT role_entity_id_fk;
 ALTER TABLE ONLY public.entity_report_map DROP CONSTRAINT report_map_report_id_fk;
 ALTER TABLE ONLY public.entity_report_map DROP CONSTRAINT report_map_entity_id_fk;
 ALTER TABLE ONLY public.rate_card DROP CONSTRAINT rate_card_entity_id_fk;
@@ -2242,7 +2243,9 @@ ALTER TABLE public.report_type OWNER TO jbilling;
 --
 
 CREATE TABLE role (
-    id integer NOT NULL
+    id integer NOT NULL,
+    entity_id integer,
+    role_type_id integer
 );
 
 
@@ -13615,6 +13618,12 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 59	100	description	1	Show partner menu
 59	103	description	1	Delete partner
 59	104	description	1	View partner details
+60	6	description	1	A customer that will query his/her account
+60	6	title	1	Customer
+60	7	description	1	The super user of an entity
+60	7	title	1	Super user
+60	8	description	1	A billing clerk
+60	8	title	1	Clerk
 \.
 
 
@@ -13849,7 +13858,6 @@ event_log_module	1
 event_log_message	1
 preference_type	1
 notification_message_type	1
-role	1
 country	3
 permission	2
 currency_exchange	3
@@ -13918,6 +13926,7 @@ breadcrumb	20
 meta_field_name	1
 meta_field_value	20261
 rate_card	1
+role	1
 \.
 
 
@@ -18763,6 +18772,122 @@ COPY permission_role_map (permission_id, role_id) FROM stdin;
 91	4
 92	4
 93	4
+10	7
+11	7
+12	7
+20	7
+21	7
+22	7
+30	7
+31	7
+32	7
+33	7
+40	7
+41	7
+42	7
+50	7
+51	7
+52	7
+60	7
+61	7
+62	7
+70	7
+80	7
+90	7
+91	7
+92	7
+93	7
+94	7
+95	7
+96	7
+97	7
+98	7
+99	7
+120	7
+23	7
+71	7
+13	7
+14	7
+15	7
+16	7
+24	7
+25	7
+34	7
+35	7
+43	7
+44	7
+63	7
+72	7
+73	7
+10	8
+11	8
+12	8
+20	8
+21	8
+22	8
+30	8
+31	8
+32	8
+33	8
+40	8
+41	8
+42	8
+50	8
+51	8
+52	8
+60	8
+61	8
+62	8
+70	8
+23	8
+71	8
+13	8
+14	8
+15	8
+16	8
+24	8
+25	8
+34	8
+35	8
+43	8
+44	8
+63	8
+72	8
+73	8
+90	8
+91	8
+92	8
+93	8
+94	8
+95	8
+96	8
+97	8
+98	8
+15	7
+16	7
+24	7
+25	7
+34	7
+35	7
+43	7
+44	7
+63	7
+72	7
+73	7
+15	8
+24	8
+34	8
+43	8
+63	8
+72	8
+26	7
+27	7
+28	7
+36	7
+74	7
+28	8
+36	8
+74	8
 \.
 
 
@@ -20406,11 +20531,14 @@ COPY report_type (id, name, optlock) FROM stdin;
 -- Data for Name: role; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY role (id) FROM stdin;
-2
-3
-5
-4
+COPY role (id, entity_id, role_type_id) FROM stdin;
+2	1	2
+3	1	3
+4	1	4
+5	1	5
+6	2	5
+7	2	2
+8	2	3
 \.
 
 
@@ -21442,8 +21570,6 @@ COPY user_credit_card_map (user_id, credit_card_id) FROM stdin;
 COPY user_role_map (user_id, role_id) FROM stdin;
 1	2
 2	5
-12	2
-13	5
 23	5
 33	5
 43	5
@@ -22477,6 +22603,8 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 10741	4
 10742	4
 10800	4
+13	6
+12	7
 \.
 
 
@@ -24835,6 +24963,14 @@ ALTER TABLE ONLY entity_report_map
 
 ALTER TABLE ONLY entity_report_map
     ADD CONSTRAINT report_map_report_id_fk FOREIGN KEY (report_id) REFERENCES report(id);
+
+
+--
+-- Name: role_entity_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY role
+    ADD CONSTRAINT role_entity_id_fk FOREIGN KEY (entity_id) REFERENCES entity(id);
 
 
 --

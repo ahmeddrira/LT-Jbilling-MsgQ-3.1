@@ -110,14 +110,14 @@ public class ItemTypeBL {
     public ItemTypeDTO getInternalPlansType(Integer entityId) {
         return itemTypeDas.getCreateInternalPlansType(entityId);
     }
-
+    
     /**
-     * Returns all item types, or an empty array if none found.
+     * Returns all item types by entity Id, or an empty array if none found.
      *
      * @return array of item types, empty if none found.
      */
-    public ItemTypeWS[] getAllItemTypes() {
-        List<ItemTypeDTO> results = new ItemTypeDAS().findAll();
+    public ItemTypeWS[] getAllItemTypesByEntity(Integer entityId) {
+        List<ItemTypeDTO> results = new ItemTypeDAS().findByEntityId(entityId);
         ItemTypeWS[] types = new ItemTypeWS[results.size()];
 
         int index = 0;
@@ -132,12 +132,12 @@ public class ItemTypeBL {
      * @param description Description to use to find an existent category.
      * @return <b>true</b> if another category exists. <b>false</b> if no category with the same description exists.
      */
-    public boolean exists(String description) {
+    public boolean exists(Integer entityId, String description) {
         if (description == null) {
             LOG.error("exists is being call with a null description");
             return true;
         }
-        if (new ItemTypeDAS().findByDescription(description) == null) {
+        if (new ItemTypeDAS().findByDescription(entityId, description) == null) {
             return false;
         } else {
             return true;

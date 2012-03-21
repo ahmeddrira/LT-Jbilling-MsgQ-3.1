@@ -188,7 +188,13 @@
                                 <g:formatNumber number="${line.quantityAsDecimal ?: BigDecimal.ZERO}" formatName="decimal.format"/>
                             </td>
                             <td class="innerContent">
-                                <g:formatNumber number="${line.priceAsDecimal ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency.symbol}" maxFractionDigits="4"/>
+                                <g:set var="product" value="${ItemDTO.get(line.itemId)}"/>
+                                <g:if test="${product?.percentage}">
+                                    <g:formatNumber number="${line.priceAsDecimal ?: BigDecimal.ZERO}" type="currency" currencySymbol="%" maxFractionDigits="4"/>
+                                </g:if>
+                                <g:else>
+                                    <g:formatNumber number="${line.priceAsDecimal ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency.symbol}" maxFractionDigits="4"/>
+                                </g:else>
                             </td>
                             <td class="innerContent">
                                 <g:formatNumber number="${line.amountAsDecimal ?: BigDecimal.ZERO}" type="currency" currencySymbol="${currency.symbol}" maxFractionDigits="4"/>

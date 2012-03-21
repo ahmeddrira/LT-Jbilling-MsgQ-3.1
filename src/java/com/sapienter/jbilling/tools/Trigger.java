@@ -84,7 +84,7 @@ public class Trigger {
                 System.out.println("Running trigger for " + today);
                 System.out.println("Starting billing process at " + 
                         Calendar.getInstance().getTime());
-                remoteBillingProcess.trigger(today);
+                remoteBillingProcess.trigger(today, null);
                 System.out.println("Ended billing process at " + 
                         Calendar.getInstance().getTime());
             }

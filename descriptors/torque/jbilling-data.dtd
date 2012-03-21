@@ -901,6 +901,8 @@
 <!ELEMENT Role EMPTY>
 <!ATTLIST Role
     Id CDATA #REQUIRED
+    EntityId CDATA #IMPLIED
+    RoleTypeId CDATA #IMPLIED
 >
 
 <!ELEMENT UserCreditCardMap EMPTY>

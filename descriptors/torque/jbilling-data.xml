@@ -2112,10 +2112,10 @@
     <ReportParameter Id="20" ReportId="12" Dtype="string" Name="start_year"/>
     <ReportParameter Id="21" ReportId="12" Dtype="string" Name="end_year"/>
 
-    <Role Id="2"/>
-    <Role Id="3"/>
-    <Role Id="4"/>
-    <Role Id="5"/>
+    <Role Id="2" EntityId="1" RoleTypeId="2"/>
+    <Role Id="3" EntityId="1" RoleTypeId="3"/>
+    <Role Id="4" EntityId="1" RoleTypeId="4"/>
+    <Role Id="5" EntityId="1" RoleTypeId="5"/>
 
     <GenericStatusType Id="order_line_provisioning_status"/>
     <GenericStatusType Id="order_status"/>

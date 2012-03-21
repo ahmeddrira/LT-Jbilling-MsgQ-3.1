@@ -18,6 +18,7 @@
 import java.util.List;
 
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.user.db.UserStatusDTO;
 import com.sapienter.jbilling.server.user.db.SubscriberStatusDTO;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
@@ -49,10 +50,13 @@ class SelectionTagLib {
 		
 		List list= new ArrayList();
 		String[] sarr= null;
-		for (RoleDTO role: RoleDTO.list()) {
+		for (RoleDTO role: RoleDTO.createCriteria.list(){
+			eq('company', new CompanyDTO(session['company_id']))
+			order('roleTypeId', 'asc')
+		}) {
 			String title= role.getTitle(langId);
 			sarr=new String[2]
-			sarr[0]= role.getId()
+			sarr[0]= role.getRoleTypeId()
 			sarr[1]= title
 			list.add(sarr)
 		}

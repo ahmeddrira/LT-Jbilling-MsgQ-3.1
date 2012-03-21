@@ -73,6 +73,7 @@ public class RoleBL {
     public Integer create(RoleDTO role) {
         if (role != null) {
             this.role = roleDas.save(role);
+            roleDas.flush();
             return this.role.getId();
         }
 
@@ -127,6 +128,17 @@ public class RoleBL {
         } else {
             LOG.error("Cannot delete, RoleDTO not found or not set!");
         }
+    }
+    
+    public void updateRoleType(int roleTypeId) {
+    	
+    	if (role != null) {
+    		role.setRoleTypeId(roleTypeId);
+    		roleDas.save(role);
+    		 roleDas.flush();
+    	} else {
+    		LOG.error("Cannot delete, RoleDTO not found or not set!");
+    	}
     }
 
     public void setDescription(Integer languageId, String description) {

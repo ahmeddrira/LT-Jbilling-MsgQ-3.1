@@ -17,6 +17,7 @@
 package jbilling
 
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO
+import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.user.permisson.db.PermissionTypeDTO
 import com.sapienter.jbilling.server.user.RoleBL
 import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO
@@ -39,9 +40,11 @@ class RoleController {
     }
 
     def getList(GrailsParameterMap params) {
-        return RoleDTO.createCriteria().list() {
-            order('id', 'asc')
-        }
+
+		def types = RoleDTO.createCriteria().list() {
+			eq('company', new CompanyDTO(session['company_id']))
+			order('roleTypeId', 'asc')
+		}
     }
 
     def list = {
@@ -78,6 +81,7 @@ class RoleController {
 
     def save = {
         def role = new RoleDTO();
+		role.company = CompanyDTO.get(session['company_id'])
         bindData(role, params, 'role')
 
         if (params.role.title) {
@@ -94,6 +98,7 @@ class RoleController {
             if (!role.id || role.id == 0) {
                 log.debug("saving new role ${role}")
                 role.id = roleService.create(role)
+				roleService.updateRoleType(role.id)
 
                 flash.message = 'role.created'
                 flash.args = [role.id as String]

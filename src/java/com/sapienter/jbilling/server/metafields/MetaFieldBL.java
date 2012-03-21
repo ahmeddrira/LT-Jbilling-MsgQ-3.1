@@ -90,9 +90,13 @@ public class MetaFieldBL {
     }
 
     public static void validateMetaField(MetaField field, MetaFieldValue value) {
+        if (field.isDisabled())
+            return;
+
         if (value != null) {
             value.validate();
         }
+
         if (field.isMandatory() && value == null) {
             throw new SessionInternalError("Validation failed.", new String[]{"MetaFieldValue,value,value.cannot.be.null"});
         }

@@ -20,6 +20,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Fetch;
@@ -87,7 +89,10 @@ public class EnumerationDTO implements Serializable {
     public void setEntity(CompanyDTO entity) {
         this.entity = entity;
     }
-    
+
+    @Column(name = "name", nullable = false, length = 50)
+    @NotNull(message="validation.error.notnull")
+    @Size(min = 1, max = 50, message = "validation.error.size,1,50")
     public String getName() {
         return name;
     }

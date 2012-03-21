@@ -8,12 +8,14 @@ import com.sapienter.jbilling.server.util.EnumerationBL;
 import com.sapienter.jbilling.server.util.db.LanguageDTO
 import com.sapienter.jbilling.server.util.db.EnumerationDTO
 import com.sapienter.jbilling.server.util.db.EnumerationValueDTO
+import com.sapienter.jbilling.common.SessionInternalError
 
 class EnumerationsController {
 
     static pagination = [ max: 10, offset: 0 ]
 
     def webServicesSession
+    def webServicesValidationAdvice
     def viewUtils
     def recentItemService
     def breadcrumbService
@@ -90,6 +92,7 @@ class EnumerationsController {
            render view: 'edit', model: [enumeration: enumeration]
            return
        }
+
        if (!enumeration.id || enumeration.id == 0 ) {
            def var= EnumerationDTO.findByName(enumeration.name)
            if (var) {
@@ -101,8 +104,8 @@ class EnumerationsController {
        }
        
        log.debug "enumeration values.size = ${enumeration.values.size}"
-       def lst= enumeration.values
-       for (int i=0; i<lst.size;i++) {
+       def lst = enumeration.values
+       for (int i = 0; i < lst.size; i++) {
            def obj= lst.get(i)
            if (obj.id == 0 && obj.value == null )  {
                lst.remove(i);
@@ -125,7 +128,19 @@ class EnumerationsController {
        }
        
        enumeration.setEntity(new CompanyDTO(session['company_id']));
-       EnumerationBL enumerationService= new EnumerationBL();
+       EnumerationBL enumerationService = new EnumerationBL();
+
+       // validate
+       try {
+            webServicesValidationAdvice.validateObject(enumeration)
+
+       } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e)
+            render view: 'edit', model: [ enumeration: enumeration ]
+            return
+       }
+
+
        // save or update
        if (!enumeration.id || enumeration.id == 0) {
            log.debug("saving new enumeration ${enumeration}")

@@ -226,8 +226,10 @@
                                             %{--<g:hiddenField name="invoice-${invoice.id}-balance" value="${formatNumber(number: invoice.balance, formatName: 'money.format')}"/>--}%
                                         </td>
                                         <td class="innerContent">
-                                            ${payment.getPaymentNotes()}
-                                            %{--<g:formatDate date="${invoice.dueDate}"/>--}%
+                                           <div style="width:200px;margin:auto;white-space: pre;white-space: pre-wrap;white-space: pre-line;white-space: -pre-wrap;white-space: -o-pre-wrap;white-space: -moz-pre-wrap;white-space: -hp-pre-wrap;word-wrap: break-word;    ">
+                                           ${payment.getPaymentNotes()}
+                                           %{--<g:formatDate date="${invoice.dueDate}"/>--}%</div>
+
                                         </td>
                                         %{--<td class="innerContent">--}%
                                             %{--<g:link controller="invoice" action="list" id="${invoice.id}">--}%

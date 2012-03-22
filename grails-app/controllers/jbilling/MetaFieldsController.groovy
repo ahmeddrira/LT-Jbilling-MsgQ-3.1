@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.metafields.db.EntityType
 import com.sapienter.jbilling.server.metafields.db.MetaField
 import grails.plugins.springsecurity.Secured
+import com.sapienter.jbilling.common.SessionInternalError
 
 /**
  * @author Alexander Aksenov
@@ -33,7 +34,10 @@ import grails.plugins.springsecurity.Secured
 @Secured(['isAuthenticated()'])
 class MetaFieldsController {
 
+    def viewUtils
+    def webServicesValidationAdvice
     def breadcrumbService
+
 
     def index = {
         redirect(action: 'listCategories')
@@ -93,6 +97,17 @@ class MetaFieldsController {
             bindData(defaultValue, ['value': params.get("defaultValue")])
         };
         metaField.setDefaultValue(defaultValue)
+
+
+        // validate
+        try {
+            webServicesValidationAdvice.validateObject(metaField)
+
+        } catch (SessionInternalError e) {
+            viewUtils.resolveException(flash, session.locale, e)
+            render view: 'edit', model: [ metaField : metaField ]
+            return
+        }
 
 
         def metaFieldsService = new MetaFieldBL();

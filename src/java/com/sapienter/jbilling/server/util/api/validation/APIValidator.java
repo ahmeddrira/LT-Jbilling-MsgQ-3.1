@@ -69,6 +69,7 @@ public class APIValidator implements MethodBeforeAdvice {
                     Object[] array = (Object[]) arg;
                     if (array.length > 0) {
                         objectName = getObjectName(array[0]);
+                        LOG.debug("Object name: '" + objectName + "'");
                     }
             	}
 
@@ -108,9 +109,12 @@ public class APIValidator implements MethodBeforeAdvice {
     private List<String> getErrorMessages(Set<ConstraintViolation<Object>> constraintViolations, String objectName) {
         List<String> errors = new ArrayList<String>(constraintViolations.size());
 
-        if (!constraintViolations.isEmpty())
-            for (ConstraintViolation<Object> violation: constraintViolations)
-                errors.add(objectName + "," + violation.getPropertyPath().toString() + "," + violation.getMessage());
+        if (!constraintViolations.isEmpty()) {
+            for (ConstraintViolation<Object> violation: constraintViolations) {
+                String path = violation.getPropertyPath().toString().replaceAll("\\[\\d+\\]", ""); // strip array indices from path
+                errors.add(objectName + "," + path + "," + violation.getMessage());
+            }
+        }
 
         return errors;
     }

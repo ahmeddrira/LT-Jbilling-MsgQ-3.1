@@ -26,6 +26,7 @@ import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.ListUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -68,6 +69,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer orderLineTypeId = null;
     @NotEmpty(message = "validation.error.notnull")
     private List<InternationalDescriptionWS> descriptions = ListUtils.lazyList(new ArrayList<InternationalDescriptionWS>(), FactoryUtils.instantiateFactory(InternationalDescriptionWS.class));
+    @Valid
     private MetaFieldValueWS[] metaFields;
 
 

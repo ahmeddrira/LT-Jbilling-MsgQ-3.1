@@ -43,6 +43,6 @@ public interface EntitySQL {
         "  from base_user b, user_role_map m" +
         " where entity_id = ? " +
         "   and m.user_id = b.id " +
-        "   and m.role_id = 2 " +
+        "   and m.role_id = ? " +
         " order by 1";
 }

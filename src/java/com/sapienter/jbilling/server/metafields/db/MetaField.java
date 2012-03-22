@@ -43,6 +43,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -102,6 +105,8 @@ public class MetaField implements Serializable {
     }
 
     @Column(name = "name", nullable = false)
+    @NotNull(message="validation.error.notnull")
+    @Size(min = 1, max = 100, message = "validation.error.size,1,100")
     public String getName() {
         return name;
     }
@@ -157,6 +162,7 @@ public class MetaField implements Serializable {
         this.displayOrder = displayOrder;
     }
 
+    @Valid
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "default_value_id", nullable = true)
     public MetaFieldValue getDefaultValue() {

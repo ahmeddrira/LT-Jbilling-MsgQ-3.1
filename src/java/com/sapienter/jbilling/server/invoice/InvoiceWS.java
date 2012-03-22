@@ -20,6 +20,7 @@ import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
 import com.sapienter.jbilling.server.security.WSSecured;
 
+import javax.validation.Valid;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -56,6 +57,7 @@ public class InvoiceWS implements WSSecured, Serializable {
     private String customerNotes;
     private String number;
     private Integer overdueStep;
+    @Valid
     private MetaFieldValueWS[] metaFields;
 
     //additional fields for the new gui

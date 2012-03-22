@@ -26,6 +26,8 @@ import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @DiscriminatorValue("string")
@@ -41,6 +43,8 @@ public class StringMetaFieldValue extends MetaFieldValue<String> {
     }
 
     @Column(name = "string_value", nullable = true)
+    @NotNull(message="validation.error.notnull")
+    @Size(min = 1, max = 1000, message = "validation.error.size,1,1000")
     public String getValue() {
         return value;
     }

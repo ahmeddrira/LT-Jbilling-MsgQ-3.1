@@ -107,6 +107,7 @@ public class UserWS implements WSSecured, Serializable {
     private Integer dueDateValue;
     private Date nextInvoiceDate;
 
+    @Valid
     private MetaFieldValueWS[] metaFields;
     
     public UserWS() {

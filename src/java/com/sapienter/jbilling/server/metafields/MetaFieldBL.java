@@ -154,6 +154,7 @@ public class MetaFieldBL {
         metaField.setDisplayOrder(dto.getDisplayOrder());
         metaField.setMandatory(dto.isMandatory());
         metaField.setDisabled(dto.isDisabled());
+
         if (metaField.getDefaultValue() != null && dto.getDefaultValue() == null) {
             metaField.getDefaultValue().setValue(null);
         } else if (dto.getDefaultValue() != null && metaField.getDefaultValue() == null) {
@@ -163,6 +164,7 @@ public class MetaFieldBL {
         } else if (metaField.getDefaultValue() != null) {
             metaField.getDefaultValue().setValue(dto.getDefaultValue().getValue());
         }
+
         das.save(metaField);
     }
 

@@ -73,6 +73,7 @@ public class OrderWS implements WSSecured, Serializable {
     private OrderLineWS orderLines[] = null;
     private String pricingFields = null;
     private InvoiceWS[] generatedInvoices= null;
+    @Valid
     private MetaFieldValueWS[] metaFields;
 
     // balances

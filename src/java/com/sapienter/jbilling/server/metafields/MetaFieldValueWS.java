@@ -23,6 +23,9 @@ package com.sapienter.jbilling.server.metafields;
 import com.sapienter.jbilling.server.metafields.db.DataType;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -34,6 +37,9 @@ import java.util.*;
  */
 public class MetaFieldValueWS implements Serializable {
 
+
+    @NotNull(message="validation.error.notnull")
+    @Size(min = 1, max = 100, message = "validation.error.size,1,100")
     private String fieldName;
     private boolean disabled;
     private boolean mandatory;
@@ -43,9 +49,11 @@ public class MetaFieldValueWS implements Serializable {
 
     private Integer id;
 
+    @Size(min = 0, max = 1000, message = "validation.error.size,0,1000")
     private String stringValue;
     private Date dateValue;
     private Boolean booleanValue;
+    @Digits(integer = 22, fraction = 10, message="validation.error.not.a.number")
     private String decimalValue;
     private Integer integerValue;
 

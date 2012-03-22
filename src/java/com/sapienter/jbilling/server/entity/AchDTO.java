@@ -36,7 +36,7 @@ public class AchDTO implements Serializable {
     private boolean idHasBeenSet = false;
 
     @NotEmpty(message="validation.error.notnull")
-    @Digits(integer=16, fraction=0, message="validation.error.not.a.number")
+    @Digits(integer=10, fraction=0, message="validation.error.not.a.number")
     private java.lang.String abaRouting;
     private boolean abaRoutingHasBeenSet = false;
 

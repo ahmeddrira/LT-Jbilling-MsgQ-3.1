@@ -20,6 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -107,6 +108,7 @@ public class EnumerationDTO implements Serializable {
             )
     @Fetch (FetchMode.SUBSELECT)
     @OrderBy(clause="id")
+    @Valid
     public List<EnumerationValueDTO> getValues() {
         return this.values;
     }

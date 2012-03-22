@@ -16,6 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author Vikas Bodani
@@ -65,7 +67,9 @@ public class EnumerationValueDTO implements Serializable {
         this.id = id;
     }
 
-    @Column(name="value", length=50)
+    @Column(name="value", length = 50)
+    @NotNull(message="validation.error.notnull")
+    @Size(min = 1, max = 50, message = "validation.error.size,1,50")
     public String getValue() {
         return value;
     }

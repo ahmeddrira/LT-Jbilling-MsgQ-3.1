@@ -164,6 +164,9 @@ public class MetaField implements Serializable {
     }
 
     public void setDefaultValue(MetaFieldValue defaultValue) {
+        if (defaultValue != null)
+            defaultValue.setField(this);
+
         this.defaultValue = defaultValue;
     }
 

@@ -350,6 +350,7 @@ class PaymentController {
 
         def invoices = getUnpaidInvoices(user.userId)
         def paymentMethods = CompanyDTO.get(session['company_id']).getPaymentMethods()
+		List<PaymentDTO> refundablePayments = new PaymentDAS().getRefundablePayments(user.getUserId())
 
         // validate before showing the confirmation page
         try {
@@ -363,7 +364,7 @@ class PaymentController {
             }
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.local, e)
-            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), availableFields: availableMetaFields ]
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, refundablePayments: refundablePayments, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), availableFields: availableMetaFields ]
             return
         }
 

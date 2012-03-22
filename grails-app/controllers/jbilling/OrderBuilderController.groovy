@@ -293,6 +293,7 @@ class OrderBuilderController {
                 if (line.quantityAsDecimal == BigDecimal.ZERO) {
                     log.debug("zero quantity, marking line to be deleted.")
                     line.deleted = 1
+                    line.useItem = false
 
                     if (line.id != 0) {
                         // keep track of persisted lines so that we can make sure they're removed on save
@@ -310,6 +311,11 @@ class OrderBuilderController {
                     } catch (SessionInternalError e) {
                         viewUtils.resolveException(flow, session.locale, e)
                     }
+                }
+
+                // In case of a single order line having quantity set to zero, total of the order should be zero
+                if(order.orderLines.size()==1 && order.orderLines[0].quantity=='0'){
+                    order.total = BigDecimal.ZERO
                 }
 
                 // sort order lines

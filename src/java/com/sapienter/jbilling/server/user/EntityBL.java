@@ -30,6 +30,8 @@ import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.permisson.db.RoleDAS;
+import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
@@ -127,8 +129,10 @@ public class EntityBL extends ResultList
     
     public Integer getRootUser(Integer entityId) {
         try {
+        	RoleDTO rootRole = new RoleDAS().findByRoleTypeIdAndCompanyId(Constants.TYPE_ROOT, entityId);
             prepareStatement(EntitySQL.findRoot);
             cachedResults.setInt(1, entityId);
+            cachedResults.setInt(2, rootRole.getId());
 
             execute();
             conn.close();

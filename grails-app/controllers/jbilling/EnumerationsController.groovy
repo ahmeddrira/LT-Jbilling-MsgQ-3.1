@@ -81,29 +81,23 @@ class EnumerationsController {
    }
 
    def save = {
-       
        def enumeration = new EnumerationDTO(params);
-       log.debug "Enumeration: ${enumeration}"
-       log.debug "Enumeration Values: ${enumeration?.values}"
        
-       if (!enumeration.name) {
-           log.debug "Validation error: enumeration name is missing."
+       if (!enumeration.name?.trim()) {
            flash.error = 'enumeration.name.empty'
            render view: 'edit', model: [enumeration: enumeration]
            return
        }
 
        if (!enumeration.id || enumeration.id == 0 ) {
-           def var= EnumerationDTO.findByName(enumeration.name)
+           def var = EnumerationDTO.findByName(enumeration.name)
            if (var) {
-               log.debug "Validation error: enumeration name already exists."
                flash.error = 'enumeration.name.exists'
                render view: 'edit', model: [enumeration: enumeration]
                return
            }
        }
-       
-       log.debug "enumeration values.size = ${enumeration.values.size}"
+
        def lst = enumeration.values
        for (int i = 0; i < lst.size; i++) {
            def obj= lst.get(i)
@@ -113,13 +107,9 @@ class EnumerationsController {
                continue;
            }
        }
-       log.debug "enumeration values.size = ${enumeration.values.size}"
        
        for (def obj: enumeration.values) {
-           log.debug "ValueDTO: ${obj}"
-           
            if (!obj.value) {
-               log.debug "Validation error: missing Enumeration value."
                flash.error = 'enumeration.value.missing'
                render view: 'edit', model: [enumeration: enumeration]
                return

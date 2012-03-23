@@ -133,22 +133,16 @@ class MetaFieldsController {
     }
 
     def delete = {
-        EntityType type = null;
+        MetaField metaField = null
+
         if (params.id) {
-            type = MetaField.findById(params.int("id")).entityType
+            metaField = MetaField.findById(params.int("id"))
             new MetaFieldBL().delete(params.int('id'))
-            log.debug("Deleted meta field ${params.id}.")
         }
 
         flash.message = 'metaField.deleted'
         flash.args = [params.id]
 
-        if (type != null) {
-            params.template = true
-            params.id = type.name()
-            list()
-        } else {
-            listCategories();
-        }
+        redirect action: "list", id: metaField.entityType
     }
 }

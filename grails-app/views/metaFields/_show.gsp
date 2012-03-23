@@ -74,8 +74,7 @@
                       'controller': 'metaFields',
                       'action': 'delete',
                       'id': selected.id,
-                      'ajax': true,
-                      'update': 'column1',
+                      'ajax': false,
                       'onYes': 'closePanel(\'#column2\')'
                      ]"/>
 </div>

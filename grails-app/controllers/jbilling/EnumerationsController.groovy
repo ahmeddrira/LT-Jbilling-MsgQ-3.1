@@ -82,13 +82,16 @@ class EnumerationsController {
 
    def save = {
        def enumeration = new EnumerationDTO(params);
-       
+       enumeration.setEntity(new CompanyDTO(session['company_id']));
+
+       // validate blank name
        if (!enumeration.name?.trim()) {
            flash.error = 'enumeration.name.empty'
            render view: 'edit', model: [enumeration: enumeration]
            return
        }
 
+       // validate duplicate enum
        if (!enumeration.id || enumeration.id == 0 ) {
            def var = EnumerationDTO.findByName(enumeration.name)
            if (var) {
@@ -98,29 +101,31 @@ class EnumerationsController {
            }
        }
 
-       def lst = enumeration.values
-       for (int i = 0; i < lst.size; i++) {
-           def obj= lst.get(i)
-           if (obj.id == 0 && obj.value == null )  {
-               lst.remove(i);
-               --i;
-               continue;
-           }
-       }
-       
-       for (def obj: enumeration.values) {
-           if (!obj.value) {
+       // validate enumeration values
+       Set<String> values = new HashSet<String>()
+       for (EnumerationValueDTO value : enumeration.values) {
+           log.debug("value = ${value}")
+
+           // empty value
+           if (!value.value?.trim()) {
                flash.error = 'enumeration.value.missing'
                render view: 'edit', model: [enumeration: enumeration]
                return
            }
-           obj.enumeration=enumeration
-       }
-       
-       enumeration.setEntity(new CompanyDTO(session['company_id']));
-       EnumerationBL enumerationService = new EnumerationBL();
 
-       // validate
+           // duplicate
+           if (values.contains(value.value)) {
+               flash.error = 'enumeration.value.duplicated'
+               render view: 'edit', model: [enumeration: enumeration]
+               return
+           }
+
+           value.enumeration = enumeration
+           values.add(value.value)
+       }
+
+
+       // validate JSR-303 annotations
        try {
             webServicesValidationAdvice.validateObject(enumeration)
 
@@ -132,6 +137,8 @@ class EnumerationsController {
 
 
        // save or update
+       EnumerationBL enumerationService = new EnumerationBL();
+
        if (!enumeration.id || enumeration.id == 0) {
            log.debug("saving new enumeration ${enumeration}")
            enumeration.id = enumerationService.create(enumeration)

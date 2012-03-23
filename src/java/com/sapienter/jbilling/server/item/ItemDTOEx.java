@@ -56,7 +56,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     private Integer[] types = null;
     private String promoCode = null;
     private Integer currencyId = null;
-    @Digits(integer=30, fraction=10, message="validation.error.not.a.number")
+    @Digits(integer=22, fraction=10, message="validation.error.not.a.number")
     private String price = null;
     private Integer orderLineTypeId = null;
 

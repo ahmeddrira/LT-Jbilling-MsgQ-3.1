@@ -86,18 +86,25 @@ class MetaFieldsController {
 
     def save = {
         def metaField = new MetaField()
-        EntityType entityType = EntityType.valueOf(params.get('entityType').toString())
         bindData(metaField, params, 'metaField')
-        metaField.setEntityType(entityType)
+        metaField.setEntityType(EntityType.valueOf(params.entityType))
 		metaField.setEntity(new CompanyDTO(session['company_id']))
 
-        def defaultValue = null;
         if (params.defaultValue) {
-            defaultValue = metaField.createValue()
+            def defaultValue = metaField.createValue()
             bindData(defaultValue, ['value': params.get("defaultValue")])
-        };
-        metaField.setDefaultValue(defaultValue)
+            metaField.setDefaultValue(defaultValue)
+        }
 
+
+        // validate duplicate enum
+        if (!metaField.id || metaField.id == 0 ) {
+            if (MetaField.findByName(metaField.name)) {
+                flash.error = 'metaField.name.exists'
+                render view: 'edit', model: [ metaField: metaField ]
+                return
+            }
+        }
 
         // validate
         try {
@@ -110,9 +117,9 @@ class MetaFieldsController {
         }
 
 
-        def metaFieldsService = new MetaFieldBL();
-
         // save or update
+        MetaFieldBL metaFieldsService = new MetaFieldBL();
+
         if (!metaField.id || metaField.id == 0) {
             log.debug("saving new metaField ${metaField}")
             metaField.id = metaFieldsService.create(metaField).id
@@ -129,7 +136,7 @@ class MetaFieldsController {
             flash.args = [metaField.id]
         }
 
-        redirect(action: "list", id: entityType.name(), params: ["selectedId": metaField.id])
+        redirect(action: "list", id: metaField.entityType.name(), params: ["selectedId": metaField.id])
     }
 
     def delete = {

@@ -44,6 +44,7 @@ public class CreditCardDTO implements Serializable {
     private Integer deleted;
     private String securityCode;
     private String gatewayKey;
+    private boolean hasChanged;
 
     public CreditCardDTO() {
     }
@@ -133,6 +134,14 @@ public class CreditCardDTO implements Serializable {
 
     public void setGatewayKey(String gatewayKey) {
         this.gatewayKey = gatewayKey;
+    }
+
+    public Boolean getHasChanged() {
+        return hasChanged;
+    }
+
+    public void setHasChanged(Boolean hasChanged) {
+        this.hasChanged = hasChanged;
     }
 
     @Override

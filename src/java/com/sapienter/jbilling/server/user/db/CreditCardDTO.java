@@ -69,6 +69,7 @@ public class CreditCardDTO implements Serializable {
     private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
     private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
     private Integer versionNum;
+    private boolean hasChanged;
 
     public CreditCardDTO() {
     }
@@ -101,7 +102,8 @@ public class CreditCardDTO implements Serializable {
         this.ccType = oldCC.getType();
         this.deleted = oldCC.getDeleted() == null ? 0 : oldCC.getDeleted();
         this.gatewayKey = oldCC.getGatewayKey();
-                
+        this.hasChanged = oldCC.getHasChanged();
+
         setName(oldCC.getName());
         setNumber(oldCC.getNumber());
     }
@@ -348,5 +350,15 @@ public class CreditCardDTO implements Serializable {
         oldCC.setGatewayKey(this.getGatewayKey());
 
         return oldCC;
+    }
+
+    @Transient
+    public Boolean getHasChanged() {
+        return hasChanged;
+    }
+
+    @Transient
+    public void setHasChanged(Boolean hasChanged) {
+        this.hasChanged = hasChanged;
     }
 }

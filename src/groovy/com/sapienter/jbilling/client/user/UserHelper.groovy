@@ -73,8 +73,10 @@ class UserHelper {
                 if (creditCard.id) {
                     def existingCard =  new CreditCardBL(creditCard.id).getEntity()?.getOldDTO();
                     if (existingCard) {
-                        //TODO 2480 update cc.name and cc.expiry (bindExpiryDate) if changed
                         //if changed the cc.hasChanged =  true
+                        creditCard.hasChanged = true
+                        creditCard.name = existingCard.getName()
+                        creditCard.expiry = bindExpiryDate(existingCard,params)
                         creditCard.number = existingCard.getNumber()
                         user.setCreditCard(creditCard)
                     }

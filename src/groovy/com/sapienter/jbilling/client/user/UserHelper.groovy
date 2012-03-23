@@ -67,13 +67,14 @@ class UserHelper {
             if (!creditCard.number.startsWith('*')) {
                 // update credit card only if not obscured
                 user.setCreditCard(creditCard)
-
             } else {
                 // or only if we have an ID for the existing card
                 // in this case, pull the original number from the users existing card
                 if (creditCard.id) {
-                    def existingCard =  new CreditCardBL(creditCard.id).getEntity();
+                    def existingCard =  new CreditCardBL(creditCard.id).getEntity()?.getOldDTO();
                     if (existingCard) {
+                        //TODO 2480 update cc.name and cc.expiry (bindExpiryDate) if changed
+                        //if changed the cc.hasChanged =  true
                         creditCard.number = existingCard.getNumber()
                         user.setCreditCard(creditCard)
                     }

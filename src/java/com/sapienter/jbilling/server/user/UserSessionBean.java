@@ -420,6 +420,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             userBL.set(user);
 
             if (dto != null) {
+                //TODO 2480 - always create a new card here, if existing one changed, delete it first and then create
                 if (dto.getId() == 0) {
                     // create a new credit card
                     createCreditCard(user.getUserId(), dto);

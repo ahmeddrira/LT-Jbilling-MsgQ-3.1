@@ -733,10 +733,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         // and the credit card
         if (user.getCreditCard() != null) {
-            IUserSessionBean sess = (IUserSessionBean) Context.getBean(
-                    Context.Name.USER_SESSION);
-            sess.updateCreditCard(executorId, user.getUserId(),
-                    new CreditCardDTO(user.getCreditCard()));
+            updateCreditCard(user.getUserId(), user.getCreditCard());
         }
 
         //udpate customerdto here - notes, automaticPaymentMethod

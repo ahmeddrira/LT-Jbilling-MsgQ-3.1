@@ -66,10 +66,12 @@ public class MetaFieldBL {
     public static void validateMetaFields(Integer entityId, EntityType type, MetaFieldValueWS[] metaFields) {
         for (MetaField field : new MetaFieldDAS().getAvailableFields(entityId,type)) {
             MetaFieldValue value = field.createValue();
-            for (MetaFieldValueWS valueWS : metaFields) {
-                if (field.getName().equals(valueWS.getFieldName())) {
-                    value.setValue(valueWS.getValue());
-                    break;
+            if (metaFields != null) {
+                for (MetaFieldValueWS valueWS : metaFields) {
+                    if (field.getName().equals(valueWS.getFieldName())) {
+                        value.setValue(valueWS.getValue());
+                        break;
+                    }
                 }
             }
             validateMetaField(field, value);
@@ -93,12 +95,12 @@ public class MetaFieldBL {
         if (field.isDisabled())
             return;
 
-        if (value != null) {
-            value.validate();
-        }
-
         if (field.isMandatory() && value == null) {
             throw new SessionInternalError("Validation failed.", new String[]{"MetaFieldValue,value,value.cannot.be.null"});
+        }
+
+        if (value != null) {
+            value.validate();
         }
     }
 

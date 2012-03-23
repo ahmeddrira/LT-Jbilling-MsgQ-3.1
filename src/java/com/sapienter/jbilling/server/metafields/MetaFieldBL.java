@@ -96,7 +96,8 @@ public class MetaFieldBL {
             return;
 
         if (field.isMandatory() && value == null) {
-            throw new SessionInternalError("Validation failed.", new String[]{"MetaFieldValue,value,value.cannot.be.null"});
+            String error = "MetaFieldValue,value,value.cannot.be.null," + field.getName();
+            throw new SessionInternalError("Field value failed validation.", new String[]{ error });
         }
 
         if (value != null) {

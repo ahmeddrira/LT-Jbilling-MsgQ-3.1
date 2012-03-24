@@ -34,7 +34,7 @@
         <g:set var="fieldName" value="${StringUtils.abbreviate(message(code: field.name), 50).encodeAsHTML()}"/>
 
         <g:set var="fieldValue" value="${fieldValues?.find{ it.fieldName == field.name }?.getValue()}"/>
-        <g:if test="${!fieldValue && field.getDefaultValue()}">
+        <g:if test="${fieldValue == null && field.getDefaultValue()}">
             <g:set var="fieldValue" value="${field.getDefaultValue().getValue()}"/>
         </g:if>
 

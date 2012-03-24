@@ -1,3 +1,4 @@
+<%@ page import="org.apache.commons.lang.StringUtils" %>
 %{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -33,7 +34,7 @@
                 <tr id="metaField-${metaField.id}" class="${selected?.id == metaField.id ? 'active' : ''}">
                     <td>
                         <g:remoteLink class="cell double" action="show" id="${metaField.id}" before="register(this);" onSuccess="render(data, next);">
-                            <strong>${metaField.name}</strong>
+                            <strong>${StringUtils.abbreviate(metaField.name, 50).encodeAsHTML()}</strong>
                             <em><g:message code="table.id.format" args="[metaField.id]"/></em>
                         </g:remoteLink>
                     </td>

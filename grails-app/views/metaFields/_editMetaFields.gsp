@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.metafields.db.DataType; com.sapienter.jbilling.server.user.db.CompanyDTO; com.sapienter.jbilling.server.util.db.EnumerationDTO" %>
+<%@ page import="org.apache.commons.lang.StringUtils; com.sapienter.jbilling.server.metafields.db.DataType; com.sapienter.jbilling.server.user.db.CompanyDTO; com.sapienter.jbilling.server.util.db.EnumerationDTO" %>
 %{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -31,6 +31,8 @@
 <g:each var="field" in="${availableFields?.sort{ it.displayOrder }}">
     <g:if test="${!field.disabled}">
 
+        <g:set var="fieldName" value="${StringUtils.abbreviate(message(code: field.name), 50).encodeAsHTML()}"/>
+
         <g:set var="fieldValue" value="${fieldValues?.find{ it.fieldName == field.name }?.getValue()}"/>
         <g:if test="${!fieldValue && field.getDefaultValue()}">
             <g:set var="fieldValue" value="${field.getDefaultValue().getValue()}"/>
@@ -39,7 +41,7 @@
         <!-- string fields -->
         <g:if test="${field.getDataType() == DataType.STRING}">
             <g:applyLayout name="form/input">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label">${fieldName}</content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField name="metaField_${field.id}.value"
@@ -50,7 +52,7 @@
 
         <g:if test="${field.getDataType() == DataType.JSON_OBJECT}">
             <g:applyLayout name="form/input">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label">${fieldName}</content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField name="metaField_${field.id}.value"
@@ -62,7 +64,7 @@
         <!-- integer fields -->
         <g:if test="${field.getDataType() == DataType.INTEGER}">
             <g:applyLayout name="form/input">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label">${fieldName}</content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField name="metaField_${field.id}.value"
@@ -74,7 +76,7 @@
         <!-- decimal fields -->
         <g:if test="${field.getDataType() == DataType.DECIMAL}">
             <g:applyLayout name="form/input">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label">${fieldName}</content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField name="metaField_${field.id}.value"
@@ -86,7 +88,7 @@
         <!-- boolean fields -->
         <g:if test="${field.getDataType() ==  DataType.BOOLEAN}">
             <g:applyLayout name="form/checkbox">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label">${fieldName}</content>
                 <content tag="label.for">metaField_${field.id}.value</content>
                 <g:checkBox class="cb checkbox" name="metaField_${field.id}.value" checked="${fieldValue}"/>
             </g:applyLayout>
@@ -95,7 +97,7 @@
         <!-- date fields -->
         <g:if test="${field.getDataType() == DataType.DATE}">
             <g:applyLayout name="form/date">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label">${fieldName}</content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField class="field"
@@ -116,7 +118,7 @@
                 }
             %>
             <g:applyLayout name="form/select">
-                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label">${fieldName}</content>
                 <content tag="label.for">metaField_${field.id}.value</content>
                 <g:select
                         class="field ${validationRules}"

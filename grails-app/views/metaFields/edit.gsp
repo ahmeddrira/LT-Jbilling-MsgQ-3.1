@@ -1,4 +1,4 @@
-<%@ page import="com.sapienter.jbilling.server.metafields.db.DataType" %>
+<%@ page import="com.sapienter.jbilling.server.util.db.EnumerationDTO; com.sapienter.jbilling.server.user.db.CompanyDTO; com.sapienter.jbilling.server.metafields.db.DataType" %>
 %{--
   jBilling - The Enterprise Open Source Billing System
   Copyright (C) 2003-2011 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -22,6 +22,20 @@
 <html>
 <head>
     <meta name="layout" content="main" />
+
+    <script type="text/javascript">
+        $(function() {
+            $('#metaField\\.dataType').change(function() {
+                if ($(this).val() == '${DataType.ENUMERATION}') {
+                    $('#field-name').hide().find('input').attr('disabled', 'true');
+                    $('#field-enumeration').show().find('select').attr('disabled', '');
+                } else {
+                    $('#field-name').show().find('input').attr('disabled', '');
+                    $('#field-enumeration').hide().find('select').attr('disabled', 'true');
+                }
+            }).change();
+        });
+    </script>
 </head>
 <body>
 <div class="form-edit">
@@ -61,11 +75,24 @@
                             <g:hiddenField name="metaField.id" value="${metaField?.id}"/>
                         </g:applyLayout>
 
-                        <g:applyLayout name="form/input">
-                            <content tag="label"><g:message code="metaField.label.name"/></content>
-                            <content tag="label.for">metaField.name</content>
-                            <g:textField class="field" name="metaField.name" value="${metaField?.name}"/>
-                        </g:applyLayout>
+                        <div id="field-name">
+                            <g:applyLayout name="form/input">
+                                <content tag="label"><g:message code="metaField.label.name"/></content>
+                                <content tag="label.for">metaField.name</content>
+                                <g:textField class="field" name="metaField.name" value="${metaField?.name}"/>
+                            </g:applyLayout>
+                        </div>
+                        <div id="field-enumeration" style="display: none;">
+                            <g:applyLayout name="form/select">
+                                <content tag="label"><g:message code="metaField.label.name"/></content>
+                                <content tag="label.for">metaField.name</content>
+                                <g:select name="metaField.name" class="field"
+                                          from="${EnumerationDTO.findByEntity(new CompanyDTO(session['company_id']))}"
+                                          value="${metaField?.name}"
+                                          optionKey="name"
+                                          optionValue="name"/>
+                            </g:applyLayout>
+                        </div>
 
                         <g:applyLayout name="form/select">
                             <content tag="label"><g:message code="metaField.label.dataType"/></content>

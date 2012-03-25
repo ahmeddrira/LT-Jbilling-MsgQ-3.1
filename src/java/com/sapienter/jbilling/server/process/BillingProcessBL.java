@@ -151,6 +151,13 @@ public class BillingProcessBL extends ResultList
         return billingProcess.getId();
     }
 
+
+    public InvoiceDTO generateInvoice(Integer orderId, Integer invoiceId, Integer executorUserId)
+            throws PluggableTaskException, SessionInternalError, SQLException {
+
+        return generateInvoice(orderId, invoiceId, null, executorUserId);
+    }
+
     /**
      * Generates one single invoice for one single purchase order. This is
      * meant to be called outside the billing process.
@@ -159,8 +166,7 @@ public class BillingProcessBL extends ResultList
      * @throws PluggableTaskException
      * @throws SessionInternalError
      */
-    public InvoiceDTO generateInvoice(Integer orderId,
-            Integer invoiceId, Integer executorUserId)
+    public InvoiceDTO generateInvoice(Integer orderId, Integer invoiceId, NewInvoiceDTO template, Integer executorUserId)
             throws PluggableTaskException, SessionInternalError,
             SQLException {
         InvoiceDTO retValue = null;
@@ -176,6 +182,7 @@ public class BillingProcessBL extends ResultList
         Integer userId = findUserId(order.getEntity());
         Date processDate = Calendar.getInstance().getTime();
         processDate = Util.truncateDate(processDate);
+
         // create the my invoice
         NewInvoiceDTO newInvoice = new NewInvoiceDTO();
         newInvoice.setDate(processDate);
@@ -187,6 +194,12 @@ public class BillingProcessBL extends ResultList
         // overdue invoices
         newInvoice.setCarriedBalance(BigDecimal.ZERO);
         newInvoice.setInvoiceStatus(new InvoiceStatusDAS().find(Constants.INVOICE_STATUS_UNPAID));
+
+        // set meta fields
+        if (template != null) {
+            newInvoice.setMetaFields(template.getMetaFields());
+            LOG.debug("Set meta fields from template: " + newInvoice.getMetaFields());
+        }
 
         try {
             // put the order in the invoice using all the pluggable taks stuff
@@ -226,7 +239,11 @@ public class BillingProcessBL extends ResultList
                 // it is an order going into an existing invoice
                 InvoiceBL invoice = new InvoiceBL(invoiceId);
                 boolean isUnpaid = invoice.getEntity().getToProcess() == 1;
+
+                LOG.debug("Calling update with new invoice... meta fields = " + newInvoice.getMetaFields());
                 invoice.update(entityId, newInvoice);
+
+
                 retValue = invoice.getEntity();
                 createOrderProcess(newInvoice, retValue, null,
                         Constants.ORDER_PROCESS_ORIGIN_MANUAL);

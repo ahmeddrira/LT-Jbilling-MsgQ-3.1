@@ -50,4 +50,10 @@ public class ListMetaFieldValue extends MetaFieldValue<List<String>> {
     public void setValue (List<String> values) {
         this.value = values;
     }
+
+    @Override
+    @Transient
+    public boolean isEmpty() {
+        return value == null || value.isEmpty();
+    }
 }

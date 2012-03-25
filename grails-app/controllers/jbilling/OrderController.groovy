@@ -42,6 +42,11 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO
 import org.hibernate.Criteria
 import com.sapienter.jbilling.client.util.SortableCriteria
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import com.sapienter.jbilling.server.invoice.InvoiceWS
+import com.sapienter.jbilling.server.metafields.MetaFieldBL
+import com.sapienter.jbilling.server.metafields.db.EntityType
+import com.sapienter.jbilling.client.metafield.MetaFieldUtils
+import com.sapienter.jbilling.server.metafields.MetaFieldValueWS
 
 /**
  *
@@ -214,31 +219,40 @@ class OrderController {
 
     @Secured(["ORDER_23"])
     def apply = {
-        log.debug "apply: for order ${params.id}"
-        Integer invoiceID= params.int('invoiceId')
+        def order =  new OrderDAS().find(params.int('id'))
+        if (!order.getStatusId().equals(Constants.ORDER_STATUS_ACTIVE)) {
+            flash.error = 'order.error.status.not.active'
+        }
 
+        // invoice with meta fields
+        def invoiceTemplate = new InvoiceWS()
+        bindData(invoiceTemplate, params, 'invoice')
+
+        def invoiceMetaFields = getInvoiceMetaFields();
+        def fieldsArray = MetaFieldUtils.bindMetaFields(invoiceMetaFields, params);
+        invoiceTemplate.metaFields = fieldsArray.toArray(new MetaFieldValueWS[fieldsArray.size()])
+
+        // apply invoice to order.
         try {
-            OrderDTO order= new OrderDAS().find(params.int('id'))
-            if (!order.getStatusId().equals(
-                    Constants.ORDER_STATUS_ACTIVE)) {
-                throw new Exception('order.error.status.not.active')
-            } else if ( !invoiceID ) {
-                throw new Exception('order.error.invoice.is.null')
+            def invoice = webServicesSession.applyOrderToInvoice(order.getId(), invoiceTemplate)
+            if (!invoice) {
+                flash.error = 'order.error.apply.invoice'
+                render view: 'applyToInvoice', model: [ invoice: invoice, invoices: getApplicableInvoices(params.int('userId')), currencies:currencies, availableMetaFields: invoiceMetaFields ]
+                return
             }
 
-            def invoice= webServicesSession.createInvoiceFromOrder(order.getId(), invoiceID)
-            if ( !invoice ) {
-                throw new Exception('order.error.apply.invoice')
-            }
             flash.message = 'order.succcessfully.applied.to.invoice'
             flash.args = [params.id, invoice]
-        } catch (SessionInternalError e){
-            flash.error ='order.error.apply.invoice'
+
+        } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
-        } catch (Exception e) {
-            log.error e
-            flash.error= e.getMessage()
+
+            def invoice = webServicesSession.getInvoiceWS(params.int('invoice.id'))
+            def invoices = getApplicableInvoices(params.int('userId'))
+            render view: 'applyToInvoice', model: [ invoice: invoice, invoices: invoices, currencies:currencies, availableMetaFields: invoiceMetaFields ]
+            return
         }
+
         redirect action: 'list', params: [ id: params.id ]
     }
 
@@ -262,6 +276,11 @@ class OrderController {
         log.debug "Found ${invoices.size()} for user ${_userId}"
 
         invoices as List
+    }
+
+
+    def getInvoiceMetaFields() {
+        return MetaFieldBL.getAvailableFieldsList(session["company_id"], EntityType.INVOICE);
     }
 
     def getCurrencies() {

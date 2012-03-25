@@ -21,7 +21,13 @@
     <!--  Invoice Details snapshot -->
     <div class="form-columns">
         <div class="column">
-            <div class="row"><label><g:message code="invoice.label.id"/>:</label><span>${invoice.id}</span></div>
+            <div class="row">
+                <label><g:message code="invoice.label.id"/>:</label><span>${invoice.id}</span>
+
+                <g:hiddenField name="id" value="${session['applyToInvoiceOrderId']}"/>
+                <g:hiddenField name="userId" value="${invoice.userId}"/>
+                <g:hiddenField name="invoice.id" value="${invoice.id}"/>
+            </div>
             <div class="row"><label><g:message code="invoice.label.number"/>:</label><span>${invoice.number}</span></div>
             <div class="row"><label><g:message code="invoice.label.status"/>:</label><span>${invoice.statusDescr}</span></div>
             <div class="row"><label><g:message code="invoice.label.date"/>:</label>
@@ -34,6 +40,9 @@
                     <g:formatDate date="${invoice?.dueDate}" formatName="date.pretty.format"/>
                 </span>
             </div>
+
+            <!-- meta fields -->
+            <g:render template="/metaFields/editMetaFields" model="[ availableFields: availableMetaFields, fieldValues: invoice?.metaFields ]"/>
         </div>
     
         <div class="column">
@@ -44,19 +53,16 @@
             </div>
             <div class="row"><label><g:message code="invoice.label.amount"/>:</label>
                 <span>
-                    <g:formatNumber number="${new BigDecimal(invoice.total?: 0)}" 
-                        type="currency" currencySymbol="${currency?.symbol}"/>
+                    <g:formatNumber number="${new BigDecimal(invoice.total?: 0)}" type="currency" currencySymbol="${currency?.symbol}"/>
             </div>
             <div class="row"><label><g:message code="invoice.label.balance"/>:</label>
                 <span>
-                    <g:formatNumber number="${new BigDecimal(invoice.balance ?: 0)}" 
-                        type="currency" currencySymbol="${currency?.symbol}"/>
+                    <g:formatNumber number="${new BigDecimal(invoice.balance ?: 0)}" type="currency" currencySymbol="${currency?.symbol}"/>
                 </span>
             </div>
             <div class="row"><label><g:message code="invoice.label.carried.bal"/>:</label>
                 <span>
-                    <g:formatNumber number="${new BigDecimal(invoice.carriedBalance ?: 0)}" 
-                        type="currency" currencySymbol="${currency?.symbol}"/>
+                    <g:formatNumber number="${new BigDecimal(invoice.carriedBalance ?: 0)}" type="currency" currencySymbol="${currency?.symbol}"/>
                 </span>
             </div>
             
@@ -68,9 +74,10 @@
     </div>
     
     <div class="btn-row">
-        <a href="${createLink (controller: 'order', action: 'apply', params: [id: session['applyToInvoiceOrderId'], invoiceId: invoice.id])}" class="submit okay">
+        <a class="submit okay" onclick="$('#apply-form').submit()">
             <span><g:message code="order.button.apply"/></span></a>
         <a href="${createLink (controller: 'order', action: 'showListAndOrder', params: [id: session['applyToInvoiceOrderId']])}" class="submit cancel">
-            <span><g:message code="button.cancel"/></span></a>
+            <span><g:message code="button.cancel"/></span>
+        </a>
     </div>
 </div>

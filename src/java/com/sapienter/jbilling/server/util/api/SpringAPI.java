@@ -395,6 +395,10 @@ public class SpringAPI implements JbillingAPI {
         return session.createInvoiceFromOrder(orderId, invoiceId);
     }
 
+    public Integer applyOrderToInvoice(Integer orderId, InvoiceWS invoiceWs) {
+        return session.applyOrderToInvoice(orderId, invoiceWs);
+    }
+
     public String isUserSubscribedTo(Integer userId, Integer itemId) {
         return session.isUserSubscribedTo(userId, itemId);
     }

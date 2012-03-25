@@ -27,6 +27,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.*;
@@ -526,6 +527,40 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             invoiceIds.add(invoice.getId());
         }
         return invoiceIds.toArray(new Integer[invoiceIds.size()]);
+    }
+
+
+
+    public Integer applyOrderToInvoice(Integer orderId, InvoiceWS invoiceWs) {
+        if (orderId == null) throw new SessionInternalError("Order id cannot be null.");
+
+        // validate order to be processed
+        OrderDTO order = new OrderDAS().find(orderId);
+        if (order == null || !Constants.ORDER_STATUS_ACTIVE.equals(order.getStatusId())) {
+            LOG.debug("Order must exist and be active to generate an invoice.");
+            return null;
+        }
+
+        // create an invoice template that contains the meta field values
+        NewInvoiceDTO template = new NewInvoiceDTO();
+        MetaFieldBL.fillMetaFieldsFromWS(getCallerCompanyId(), template, invoiceWs.getMetaFields());
+
+        LOG.debug("Updating invoice with order: " + orderId);
+        LOG.debug("Invoice WS: " + invoiceWs);
+        LOG.debug("Invoice template fields: " + template.getMetaFields());
+
+        // update the invoice
+        try {
+            BillingProcessBL process = new BillingProcessBL();
+            InvoiceDTO invoice = process.generateInvoice(order.getId(), invoiceWs.getId(), template, getCallerId());
+            return invoice != null ? invoice.getId() : null;
+
+        } catch (SessionInternalError e) {
+            throw e;
+
+        } catch (Exception e) {
+            throw new SessionInternalError("Error while generating a new invoice", e);
+        }
     }
 
     /**

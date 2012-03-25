@@ -38,24 +38,25 @@ class MetaFieldUtils {
     static def List<MetaFieldValueWS> bindMetaFields(Collection<MetaField> metaFields, GrailsParameterMap params) {
         List<MetaFieldValueWS> fieldsArray = new LinkedList<MetaFieldValueWS>();
         metaFields.each{
-            def metaFieldWS = null;
-            if (params["metaField_${it.id}"].any { key, value -> value }) {
-                def fieldValue = it.createValue();
-                bindData(fieldValue, params, "metaField_${it.id}")
-                metaFieldWS = new MetaFieldValueWS(fieldValue)
-            }
+            def fieldValue = it.createValue();
+            bindData(fieldValue, params, "metaField_${it.id}")
+
+            def metaFieldWS = new MetaFieldValueWS(fieldValue);
+
             if (metaFieldWS == null && it.isMandatory() && it.getDataType().equals(DataType.BOOLEAN)) {
                 // FALSE for unselected checkbox
-                def fieldValue = it.createValue();
+                fieldValue = it.createValue();
                 fieldValue.setValue(false)
                 metaFieldWS = new MetaFieldValueWS(fieldValue)
             }
+
             if (metaFieldWS != null) {
                 fieldsArray << metaFieldWS;
             }
         };
         return fieldsArray;
     }
+
 
     private static def bindData(Object model, modelParams, String prefix) {
         def args = [ model, modelParams, [exclude:[], include:[]]]

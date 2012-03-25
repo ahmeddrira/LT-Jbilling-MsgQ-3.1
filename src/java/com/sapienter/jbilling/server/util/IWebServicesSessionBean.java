@@ -192,6 +192,7 @@ public interface IWebServicesSessionBean {
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring);
     public Integer[] createInvoiceWithDate(Integer userId, Date billingDate, Integer dueDatePeriodId, Integer dueDatePeriodValue, boolean onlyRecurring);
     public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws SessionInternalError;
+    public Integer applyOrderToInvoice(Integer orderId, InvoiceWS invoiceWs);
     public void deleteInvoice(Integer invoiceId);
 
     public InvoiceWS[] getAllInvoicesForUser(Integer userId);

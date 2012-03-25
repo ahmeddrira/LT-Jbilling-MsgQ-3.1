@@ -174,7 +174,9 @@ public class VelocityRulesGeneratorTaskTest extends TestCase {
                 "        OrderLineBL.addItem($order, 1, false); # A product for this plan\n" +
                 "        update($order);\n" +
                 "end\n";
-
+        
+        //added for crossplatform compatibility CR+LF --> LF for string comparasion
+        rules = rules.replaceAll(System.getProperty("line.separator"), "\n");
         assertEquals("Generated rules match expected rules.", expected, rules);
     }
 }

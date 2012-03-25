@@ -50,6 +50,7 @@ public class CurrencyExchangeTest extends TestCase {
         final BigDecimal rate = new BigDecimal("999999.0");
         audCurrency.setRate(rate);
         audCurrency.setFromDate(new Date());
+        audCurrency.setSysRateAsDecimal(audCurrency.getSysRateAsDecimal().setScale(4));
         // this should add new currency exchange record which current date
         api.updateCurrency(audCurrency);
 
@@ -62,6 +63,7 @@ public class CurrencyExchangeTest extends TestCase {
 
         currency1AfterRateUpdate.setFromDate(new Date());
         currency1AfterRateUpdate.setRate((String) null);
+        currency1AfterRateUpdate.setSysRateAsDecimal(currency1AfterRateUpdate.getSysRateAsDecimal().setScale(4));
         // this should remove currencyexchange record
         api.updateCurrency(currency1AfterRateUpdate);
 
@@ -92,6 +94,7 @@ public class CurrencyExchangeTest extends TestCase {
         try {
             audCurrency.setRate(firstDateExchangeRate);
             audCurrency.setFromDate(date1);
+            audCurrency.setSysRateAsDecimal(audCurrency.getSysRateAsDecimal().setScale(4));
             api.updateCurrency(audCurrency);
 
             audCurrency.setRate(secondDateExchangeRate);
@@ -194,6 +197,7 @@ public class CurrencyExchangeTest extends TestCase {
             // clear currency exchange records
             audCurrency.setRate((String) null);
             audCurrency.setFromDate(date1);
+            audCurrency.setSysRateAsDecimal(audCurrency.getSysRateAsDecimal().setScale(4));
             api.updateCurrency(audCurrency);
 
             audCurrency.setRate((String) null);

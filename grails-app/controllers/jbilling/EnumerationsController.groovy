@@ -144,7 +144,7 @@ class EnumerationsController {
            enumeration.id = enumerationService.create(enumeration)
 
            flash.message = 'enumeration.created'
-           flash.args = [ enumeration.name ]
+           flash.args = [ enumeration.id ]
 
        } else {
            log.debug("updating enumeration ${enumeration.id}")
@@ -153,7 +153,7 @@ class EnumerationsController {
            enumerationService.update(enumeration)
 
            flash.message = 'enumeration.updated'
-           flash.args = [ enumeration.name ]
+           flash.args = [ enumeration.id ]
        }
 
        chain action: 'list', params: [ id: enumeration.id ]

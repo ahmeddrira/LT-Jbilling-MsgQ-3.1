@@ -18,6 +18,7 @@ package com.sapienter.jbilling.server.user.partner.db;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -28,6 +29,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -36,6 +38,11 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.metafields.MetaFieldHelper;
+import com.sapienter.jbilling.server.metafields.db.CustomizedEntity;
+import com.sapienter.jbilling.server.metafields.db.EntityType;
+import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -43,6 +50,8 @@ import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 
 @SuppressWarnings("serial")
 @Entity
@@ -55,7 +64,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
         allocationSize = 10
 )
 @Table(name = "partner")
-public class Partner implements java.io.Serializable {
+public class Partner extends CustomizedEntity implements java.io.Serializable {
 
     private Set<PartnerRange> ranges = new HashSet<PartnerRange>(0);
 
@@ -308,6 +317,24 @@ public class Partner implements java.io.Serializable {
     public void setRanges(Set<PartnerRange> ranges) {
         this.ranges = ranges;
     }
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    @JoinTable(
+            name = "partner_meta_field_map",
+            joinColumns = @JoinColumn(name = "partner_id"),
+            inverseJoinColumns = @JoinColumn(name = "meta_field_value_id")
+    )
+    @Sort(type = SortType.COMPARATOR, comparator = MetaFieldHelper.MetaFieldValuesOrderComparator.class)
+    public List<MetaFieldValue> getMetaFields() {
+        return getMetaFieldsList();
+    }
+
+    @Transient
+    public EntityType getCustomizedEntityType() {
+        return EntityType.CUSTOMER;
+    }
+
 
     @Version
     @Column(name = "OPTLOCK")

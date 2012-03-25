@@ -246,10 +246,13 @@
                         
                     </div>
 
+
                     <!-- contact information column -->
+                    <g:set var="contactTypes" value="${company.contactTypes.asList()}"/>
+                    <g:set var="primaryContactType" value="${contactTypes.find{ it.isPrimary == 1 }}"/>
+                    <g:hiddenField name="primaryContactTypeId" value="${primaryContactType.id}"/>
 
                     <div class="column">
-                        <g:set var="contactTypes" value="${company.contactTypes.asList()}"/>
                         <g:if test="${contactTypes.size > 1}">
                             <g:applyLayout name="form/select">
                                 <content tag="label"><g:message code="prompt.contact.type"/></content>
@@ -257,7 +260,7 @@
                                           from="${contactTypes}"
                                           optionKey="id"
                                           optionValue="${{it.getDescription(session['language_id'])}}"
-                                          value="${contactTypes.find{ it.isPrimary > 0 }.id}"  />
+                                          value="${primaryContactType.id}"/>
                             </g:applyLayout>
                         </g:if>
                         <g:else>
@@ -267,19 +270,16 @@
                             </g:applyLayout>
                         </g:else>
 
-                        <!-- show the user's primary contact -->
-                        <g:set var="primaryContactType" value="${contactTypes.find{ it.isPrimary > 0 }}"/>
-                        <g:hiddenField name="primaryContactTypeId" value="${primaryContactType.id}"/>
-                        <g:render template="/customer/contact" model="[contactType: primaryContactType, contact: user?.contact]"/>
-
-                        <!-- other contact types as hidden blocks so that we can show/hide the selected type -->
+                        <!-- print a hidden block for each contact type, will be toggled by contact type dropdown -->
                         <g:each var="contactType" in="${contactTypes}">
-                            <g:if test="${contactType.isPrimary == 0}">
-                                <g:set var="contact" value="${contacts.find{ it.type == contactType.id }}"/>
-                                <g:render template="/customer/contact" model="[contactType: contactType, contact: contact]"/>
-                            </g:if>
+                            <g:set var="contact" value="${contacts.find{ it.type == contactType.id }}"/>
+                            <g:render template="/customer/contact" model="[contactType: contactType, contact: contact]"/>
                         </g:each>
-                        
+
+                        <br/>&nbsp;
+
+                        <!-- customer meta fields -->
+                        <g:render template="/metaFields/editMetaFields" model="[ availableFields: availableFields, fieldValues: user?.metaFields ]"/>
                     </div>
                 </div>
 

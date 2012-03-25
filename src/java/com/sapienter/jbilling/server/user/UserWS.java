@@ -172,6 +172,10 @@ public class UserWS implements WSSecured, Serializable {
             this.metaFields = MetaFieldBL.convertMetaFieldsToWS(entityId, dto.getCustomer());
         }
 
+        if (dto.getPartner() != null) {
+            this.metaFields = MetaFieldBL.convertMetaFieldsToWS(dto.getCompany().getId(), dto.getPartner());
+        }
+
         blacklistMatches = dto.getBlacklistMatches() != null ? dto.getBlacklistMatches().toArray(new String[dto.getBlacklistMatches().size()]) : null;
         userIdBlacklisted = dto.getUserIdBlacklisted();
 

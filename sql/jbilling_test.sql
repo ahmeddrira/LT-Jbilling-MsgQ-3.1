@@ -67,6 +67,8 @@ ALTER TABLE ONLY public.payment DROP CONSTRAINT payment_fk_2;
 ALTER TABLE ONLY public.payment DROP CONSTRAINT payment_fk_1;
 ALTER TABLE ONLY public.payment_authorization DROP CONSTRAINT payment_authorization_fk_1;
 ALTER TABLE ONLY public.partner_payout DROP CONSTRAINT partner_payout_fk_1;
+ALTER TABLE ONLY public.partner_meta_field_map DROP CONSTRAINT partner_meta_field_map_fk_2;
+ALTER TABLE ONLY public.partner_meta_field_map DROP CONSTRAINT partner_meta_field_map_fk_1;
 ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_4;
 ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_3;
 ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_2;
@@ -358,6 +360,7 @@ DROP TABLE public.payment_authorization;
 DROP TABLE public.payment;
 DROP TABLE public.partner_range;
 DROP TABLE public.partner_payout;
+DROP TABLE public.partner_meta_field_map;
 DROP TABLE public.partner;
 DROP TABLE public.paper_invoice_batch;
 DROP TABLE public.order_process;
@@ -1643,6 +1646,18 @@ CREATE TABLE partner (
 
 
 ALTER TABLE public.partner OWNER TO jbilling;
+
+--
+-- Name: partner_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE partner_meta_field_map (
+    partner_id integer NOT NULL,
+    meta_field_value_id integer NOT NULL
+);
+
+
+ALTER TABLE public.partner_meta_field_map OWNER TO jbilling;
 
 --
 -- Name: partner_payout; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -18430,6 +18445,14 @@ COPY partner (id, user_id, balance, total_payments, total_refunds, total_payouts
 
 
 --
+-- Data for Name: partner_meta_field_map; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY partner_meta_field_map (partner_id, meta_field_value_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: partner_payout; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -24546,6 +24569,22 @@ ALTER TABLE ONLY partner
 
 ALTER TABLE ONLY partner
     ADD CONSTRAINT partner_fk_4 FOREIGN KEY (user_id) REFERENCES base_user(id);
+
+
+--
+-- Name: partner_meta_field_map_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY partner_meta_field_map
+    ADD CONSTRAINT partner_meta_field_map_fk_1 FOREIGN KEY (partner_id) REFERENCES partner(id);
+
+
+--
+-- Name: partner_meta_field_map_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY partner_meta_field_map
+    ADD CONSTRAINT partner_meta_field_map_fk_2 FOREIGN KEY (meta_field_value_id) REFERENCES meta_field_value(id);
 
 
 --

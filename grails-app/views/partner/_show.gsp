@@ -110,6 +110,15 @@
                 <td><g:message code="user.last.login"/></td>
                 <td class="value"><g:formatDate date="${selected?.baseUser.lastLogin}" formatName="date.pretty.format"/></td>
             </tr>
+
+
+            <g:if test="${selected?.metaFields}">
+                <!-- empty spacer row -->
+                <tr>
+                    <td colspan="2"><br/></td>
+                </tr>
+                <g:render template="/metaFields/metaFields" model="[metaFields: selected?.metaFields]"/>
+            </g:if>
             </tbody>
         </table>
     </div>

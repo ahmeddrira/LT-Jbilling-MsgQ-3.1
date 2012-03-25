@@ -257,4 +257,14 @@ public class MetaFieldValueWS implements Serializable {
             return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return "MetaFieldValueWS{" +
+                "id=" + id +
+                ", fieldName='" + fieldName + '\'' +
+                ", dataType=" + dataType +
+                ", value=" + getValue() +
+                '}';
+    }
 }

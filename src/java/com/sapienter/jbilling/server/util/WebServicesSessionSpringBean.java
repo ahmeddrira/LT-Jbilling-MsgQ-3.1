@@ -931,12 +931,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throw new SessionInternalError("User already exists with username " + newUser.getUserName(),
                     new String[] { "UserWS,userName,validation.error.user.already.exists" });
         }
-        Partner partnerDto= partner.getPartnerDTO();
-        ContactBL cBl = new ContactBL();
+
+        Partner partnerDto = partner.getPartnerDTO();
+        MetaFieldBL.fillMetaFieldsFromWS(entityId, partnerDto, newUser.getMetaFields());
+
         UserDTOEx dto = new UserDTOEx(newUser, entityId);
         dto.setPartner(partnerDto);
+
         Integer userId = bl.create(dto, getCallerId());
 
+        ContactBL cBl = new ContactBL();
         if (newUser.getContact() != null) {
             newUser.getContact().setId(0);
             cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId, getCallerId());
@@ -957,6 +961,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         if (partner != null) {
             Partner partnerDto = partner.getPartnerDTO();
+
+            if (user != null) {
+                MetaFieldBL.fillMetaFieldsFromWS(entityId, partnerDto, user.getMetaFields());
+            }
+
             userSession.updatePartner(getCallerId(), partnerDto);
         }
     }

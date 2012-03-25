@@ -1553,6 +1553,16 @@
             <reference foreign="id" local="meta_field_value_id"/>
         </foreign-key>
     </table>
+    <table name="partner_meta_field_map">
+        <column name="partner_id" type="INTEGER" required="true"/>
+        <column name="meta_field_value_id" type="INTEGER" required="true"/>
+        <foreign-key foreignTable="partner">
+            <reference foreign="id" local="partner_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="meta_field_value">
+            <reference foreign="id" local="meta_field_value_id"/>
+        </foreign-key>
+    </table>
     <table name="order_meta_field_map">
         <column name="order_id" type="INTEGER" required="true"/>
         <column name="meta_field_value_id" type="INTEGER" required="true"/>
@@ -1598,13 +1608,6 @@
         <column name="list_value" size="255" type="VARCHAR"/>
         <foreign-key foreignTable="meta_field_value">
             <reference foreign="id" local="meta_field_value_id"/>
-        </foreign-key>
-    </table>
-    <table name="meta_field_organization_types">
-        <column name="meta_field_id" required="true" type="INTEGER"/>
-        <column name="organization_type" size="255" type="VARCHAR"/>
-        <foreign-key foreignTable="meta_field_name">
-            <reference foreign="id" local="meta_field_id"/>
         </foreign-key>
     </table>
 </database>

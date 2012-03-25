@@ -330,6 +330,10 @@ public class UserBL extends ResultList implements UserSQL {
             partner.getEntity().setId(partnerId);
             user.setPartner(partner.getEntity());
             partner.getEntity().setBaseUser(user);
+            user.getPartner().updateMetaFieldsWithValidation(dto.getEntityId(), dto.getPartner());
+
+
+
         } else if (dto.getCustomer() != null) {
             // link the partner
             PartnerBL partner = null;

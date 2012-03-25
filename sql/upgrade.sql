@@ -1929,3 +1929,20 @@ alter table list_meta_field_values
         add constraint list_meta_field_values_fk_1
         foreign key (meta_field_value_id)
         references meta_field_value;
+
+
+
+-- Date 25-March-2012
+-- Redmine Issue: #1827
+-- Description: meta fields for partners
+create table partner_meta_field_map (
+    partner_id integer NOT NULL,
+    meta_field_value_id integer NOT NULL,
+    CONSTRAINT partner_meta_field_map_fk_1 FOREIGN KEY (partner_id)
+      REFERENCES partner (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+    CONSTRAINT partner_meta_field_map_fk_2 FOREIGN KEY (meta_field_value_id)
+      REFERENCES meta_field_value (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+

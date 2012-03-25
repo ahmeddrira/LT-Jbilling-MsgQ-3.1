@@ -20,6 +20,8 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.payment.PaymentBL;
+import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.AchDTO;
@@ -50,6 +52,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -420,20 +423,37 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             userBL.set(user);
 
             if (dto != null) {
-                // credit card exists , so delete existing and create new
-                if (dto.getHasChanged()) {
-                    // credit card is set to null, delete existing customer card
-                    deleteCreditCard(executorId, user.getUserId());
-
-                    // create a new credit card
-                    createCreditCard(user.getUserId(), dto);
-                } else{
-                    // credit card does not exists, so create a new credit card
-                    createCreditCard(user.getUserId(), dto);
+                /* Redmine 2480 - updating an existing credit card error */
+                boolean createCC= true;
+                if (dto.getId() != 0) { 
+                    LOG.debug("This is an existing card that got updated");
+                    if (dto.getHasChanged()) {
+                        // remove any pre-authorization. Otherwise the next payment won't be
+                        // done with this new credit card
+                        Integer userId= user.getId();
+                        if (userId != null) {
+                            PaymentBL paymentBl = new PaymentBL();
+                            for (PaymentDTO auth : (Collection<PaymentDTO>) paymentBl.getHome().findPreauth(userId)) {
+                                LOG.debug("New credit card for user with pre-auths." + dto);
+                                paymentBl.set(auth);
+                                paymentBl.delete();
+                            }
+                        }
+                        LOG.debug("Done removing pre-auths");
+                        new CreditCardBL(dto.getId()).delete(executorId);
+                        LOG.debug("Deleted existing customer card. Recreate it now.");
+                    } else {
+                        //if it hasn't changed, why even create..
+                        createCC= false;
+                    }
                 }
-
+                if (createCC) {//create unless existin one didn't change at all
+                    // create a new credit card
+                    LOG.debug("Create credit card.");
+                    createCreditCard(user.getUserId(), dto);                        
+                }
             } else {
-                // credit card is set to null, delete existing customer card
+                LOG.debug("Credit card is set to null, delete existing customer card");
                 deleteCreditCard(executorId, user.getUserId());
             }
 

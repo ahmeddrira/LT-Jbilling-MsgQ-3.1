@@ -44,7 +44,7 @@ public class CreditCardDTO implements Serializable {
     private Integer deleted;
     private String securityCode;
     private String gatewayKey;
-    private boolean hasChanged;
+    private boolean hasChanged= false;
 
     public CreditCardDTO() {
     }

@@ -69,7 +69,7 @@ public class CreditCardDTO implements Serializable {
     private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
     private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
     private Integer versionNum;
-    private boolean hasChanged;
+    private boolean hasChanged= false;
 
     public CreditCardDTO() {
     }

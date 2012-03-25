@@ -2322,8 +2322,28 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         // card can be null, passing null will delete the user's card
         if (creditCard != null) {
-            if (creditCard.getName() == null || creditCard.getExpiry() == null)
+            
+            if (creditCard.getName() == null || creditCard.getExpiry() == null) {
                 throw new SessionInternalError("Missing credit card name or expiry date");
+            }
+            
+            //if existing card, retrieve from db
+            if (creditCard.getId() != null && creditCard.getId().intValue() !=0 ) {
+                creditCard.setHasChanged(true);
+                if (creditCard.getNumber() == null || creditCard.getNumber().contains("*")) {
+                    //number was not updated
+                    CreditCardDTO dbCard= new CreditCardDAS().find(creditCard.getId());
+                    if ( creditCard.getName().equals( dbCard.getName() ) 
+                            && creditCard.getExpiry().compareTo( dbCard.getExpiry() ) == 0 ) {
+                        LOG.debug("Nothing changed in this credit card.");
+                        creditCard.setHasChanged(false);
+                        //we can practically return from here.
+                    } else {
+                        creditCard.setNumber(dbCard.getNumber());
+                    }
+                    dbCard= null;
+                }
+            }
         }
 
         IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);

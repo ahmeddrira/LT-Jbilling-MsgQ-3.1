@@ -4,9 +4,10 @@
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
+SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
+SET escape_string_warning = off;
 
 SET search_path = public, pg_catalog;
 
@@ -380,6 +381,7 @@ DROP TABLE public.mediation_process;
 DROP TABLE public.mediation_order_map;
 DROP TABLE public.mediation_errors;
 DROP TABLE public.mediation_cfg;
+DROP TABLE public.list_meta_field_values;
 DROP TABLE public.language;
 DROP TABLE public.jbilling_table;
 DROP TABLE public.jbilling_seqs;
@@ -428,7 +430,6 @@ DROP TABLE public.billing_process;
 DROP TABLE public.base_user;
 DROP TABLE public.ageing_entity_step;
 DROP TABLE public.ach;
-DROP EXTENSION plpgsql;
 DROP SCHEMA public;
 --
 -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
@@ -444,20 +445,6 @@ ALTER SCHEMA public OWNER TO postgres;
 --
 
 COMMENT ON SCHEMA public IS 'standard public schema';
-
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 SET search_path = public, pg_catalog;
@@ -1262,6 +1249,18 @@ CREATE TABLE language (
 
 
 ALTER TABLE public.language OWNER TO jbilling;
+
+--
+-- Name: list_meta_field_values; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE list_meta_field_values (
+    meta_field_value_id integer NOT NULL,
+    list_value character varying(255)
+);
+
+
+ALTER TABLE public.list_meta_field_values OWNER TO jbilling;
 
 --
 -- Name: mediation_cfg; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -14039,6 +14038,14 @@ COPY jbilling_table (id, name) FROM stdin;
 COPY language (id, code, description) FROM stdin;
 1	en	English
 2	fr	French
+\.
+
+
+--
+-- Data for Name: list_meta_field_values; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY list_meta_field_values (meta_field_value_id, list_value) FROM stdin;
 \.
 
 

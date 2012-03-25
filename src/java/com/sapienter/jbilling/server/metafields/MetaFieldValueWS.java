@@ -56,6 +56,7 @@ public class MetaFieldValueWS implements Serializable {
     @Digits(integer = 22, fraction = 10, message="validation.error.not.a.number")
     private String decimalValue;
     private Integer integerValue;
+    private String[] listValue;
 
     public MetaFieldValueWS() {
     }
@@ -102,6 +103,8 @@ public class MetaFieldValueWS implements Serializable {
             return getDecimalValueAsDecimal();
         } else if (getIntegerValue() != null) {
             return getIntegerValue();
+        } else if (getListValue() != null) {
+            return getListValueAsList();
         }
 
         return null;
@@ -126,6 +129,11 @@ public class MetaFieldValueWS implements Serializable {
             setBigDecimalValue((BigDecimal) value);
         } else if (value instanceof Integer) {
             setIntegerValue((Integer) value);
+        } else if (value instanceof List) {
+            // store List<String> as String[] for WS-compatible mode, perform manual convertion
+            setListValue(((List<String>) value).toArray(new String[((List<String>) value).size()]));
+        } else if (value instanceof String[]) {
+            setListValue((String[]) value);
         }
     }
 
@@ -225,5 +233,28 @@ public class MetaFieldValueWS implements Serializable {
 
     public void setIntegerValue(Integer integerValue) {
         this.integerValue = integerValue;
+    }
+
+    public String[] getListValue() {
+        return listValue;
+    }
+
+    public void setListValue(String[] listValue) {
+        this.listValue = listValue;
+    }
+
+    /**
+     * Call this method instead of getValue() for metaField with type LIST, because
+     * storing data inside MetaFieldValueWS as String[] for WS-complaint mode.
+     *
+     * @return value as java.util.List for LIST meta field type. null otherwise.
+     */
+    @XmlTransient
+    public List getListValueAsList() {
+        if (listValue != null) {
+            return new LinkedList<String>(Arrays.asList(listValue));
+        } else {
+            return null;
+        }
     }
 }

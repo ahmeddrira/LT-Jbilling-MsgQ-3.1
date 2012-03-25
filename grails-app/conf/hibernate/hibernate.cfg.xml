@@ -23,6 +23,7 @@
         <mapping class="com.sapienter.jbilling.server.metafields.db.value.IntegerMetaFieldValue"/>
         <mapping class="com.sapienter.jbilling.server.metafields.db.value.StringMetaFieldValue"/>
         <mapping class="com.sapienter.jbilling.server.metafields.db.value.JsonMetaFieldValue"/>
+        <mapping class="com.sapienter.jbilling.server.metafields.db.value.ListMetaFieldValue"/>
         <mapping package="com.sapienter.jbilling.server.provisioning.db" />
         <mapping class="com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDTO" />
         <mapping package="com.sapienter.jbilling.server.report.db"/>

@@ -1653,10 +1653,10 @@ create table meta_field_value (
     decimal_value numeric(22,10),
     integer_value integer,
     string_value character varying(1000),
+    PRIMARY KEY (id),
     CONSTRAINT meta_field_value_fk_1 FOREIGN KEY (meta_field_name_id)
       REFERENCES meta_field_name (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-    UNIQUE(id)
+      ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 alter table meta_field_name add constraint meta_field_name_fk_1
       FOREIGN KEY (default_value_id)
@@ -1911,5 +1911,21 @@ drop table temp_role;
 
 
 -- Date: 24-March-2012
--- Bug #2257 - rename meta field type ITEM to PRODUCT
+-- Redmine Issue: #2257
+-- Description: rename meta field type ITEM to PRODUCT
 update meta_field_name set entity_type = 'PRODUCT' where entity_type = 'ITEM';
+
+
+
+-- Date 25-March-2012
+-- Redmine Issue: #1549
+-- Description: list data type for meta fields
+create table list_meta_field_values (
+    meta_field_value_id int4 not null,
+    list_value varchar(255)
+);
+
+alter table list_meta_field_values
+        add constraint list_meta_field_values_fk_1
+        foreign key (meta_field_value_id)
+        references meta_field_value;

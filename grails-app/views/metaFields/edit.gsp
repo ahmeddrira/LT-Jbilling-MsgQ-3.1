@@ -26,7 +26,7 @@
     <script type="text/javascript">
         $(function() {
             $('#metaField\\.dataType').change(function() {
-                if ($(this).val() == '${DataType.ENUMERATION}') {
+                if ($(this).val() == '${DataType.ENUMERATION}' || $(this).val() == '${DataType.LIST}') {
                     $('#field-name').hide().find('input').attr('disabled', 'true');
                     $('#field-enumeration').show().find('select').attr('disabled', '');
                 } else {

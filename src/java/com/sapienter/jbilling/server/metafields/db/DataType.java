@@ -30,6 +30,6 @@ package com.sapienter.jbilling.server.metafields.db;
  */
 public enum DataType {
 
-    STRING, INTEGER, DECIMAL, BOOLEAN, DATE, JSON_OBJECT, ENUMERATION
+    STRING, INTEGER, DECIMAL, BOOLEAN, DATE, JSON_OBJECT, ENUMERATION, LIST
 
 }

@@ -96,11 +96,16 @@ public abstract class MetaFieldValue<T> implements Serializable {
     @Transient
     abstract public T getValue();
     abstract public void setValue(T value);
+    @Transient
+    abstract public boolean isEmpty();
 
     @Transient
     public void validate() {
-        if (this.getField() != null && this.getField().isMandatory() && this.getValue() == null) {
-            String error = "MetaFieldValue,value,value.cannot.be.null," + (field != null ? field.getName() : "");
+        if (this.getField() != null
+                && this.getField().isMandatory()
+                && this.isEmpty()) {
+
+            String error = "MetaFieldValue,value,value.cannot.be.null," + field.getName();
             throw new SessionInternalError("Field value failed validation.", new String[]{ error });
         }
     }

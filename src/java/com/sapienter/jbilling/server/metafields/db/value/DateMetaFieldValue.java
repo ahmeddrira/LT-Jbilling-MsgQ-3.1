@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 import java.util.Date;
 
 @Entity
@@ -48,5 +49,11 @@ public class DateMetaFieldValue extends MetaFieldValue<Date> {
 
     public void setValue(Date value) {
         this.value = value;
+    }
+
+    @Override
+    @Transient
+    public boolean isEmpty() {
+        return value == null;
     }
 }

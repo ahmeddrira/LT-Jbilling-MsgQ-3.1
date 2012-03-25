@@ -28,6 +28,8 @@
   @since 26-Oct-2011
 --%>
 
+<g:set var="enumerations" value="${EnumerationDTO.findByEntity(new CompanyDTO(session['company_id']))}"/>
+
 <g:each var="field" in="${availableFields?.sort{ it.displayOrder }}">
     <g:if test="${!field.disabled}">
 
@@ -41,7 +43,7 @@
         <!-- string fields -->
         <g:if test="${field.getDataType() == DataType.STRING}">
             <g:applyLayout name="form/input">
-                <content tag="label">${fieldName}</content>
+                <content tag="label"><g:message code="${field.name}"/></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField name="metaField_${field.id}.value"
@@ -52,7 +54,7 @@
 
         <g:if test="${field.getDataType() == DataType.JSON_OBJECT}">
             <g:applyLayout name="form/input">
-                <content tag="label">${fieldName}</content>
+                <content tag="label"><g:message code="${field.name}"/></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField name="metaField_${field.id}.value"
@@ -64,7 +66,7 @@
         <!-- integer fields -->
         <g:if test="${field.getDataType() == DataType.INTEGER}">
             <g:applyLayout name="form/input">
-                <content tag="label">${fieldName}</content>
+                <content tag="label"><g:message code="${field.name}"/></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField name="metaField_${field.id}.value"
@@ -76,7 +78,7 @@
         <!-- decimal fields -->
         <g:if test="${field.getDataType() == DataType.DECIMAL}">
             <g:applyLayout name="form/input">
-                <content tag="label">${fieldName}</content>
+                <content tag="label"><g:message code="${field.name}"/></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField name="metaField_${field.id}.value"
@@ -88,7 +90,7 @@
         <!-- boolean fields -->
         <g:if test="${field.getDataType() ==  DataType.BOOLEAN}">
             <g:applyLayout name="form/checkbox">
-                <content tag="label">${fieldName}</content>
+                <content tag="label"><g:message code="${field.name}"/></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
                 <g:checkBox class="cb checkbox" name="metaField_${field.id}.value" checked="${fieldValue}"/>
             </g:applyLayout>
@@ -97,7 +99,7 @@
         <!-- date fields -->
         <g:if test="${field.getDataType() == DataType.DATE}">
             <g:applyLayout name="form/date">
-                <content tag="label">${fieldName}</content>
+                <content tag="label"><g:message code="${field.name}"/></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
 
                 <g:textField class="field"
@@ -110,7 +112,7 @@
         <g:if test="${field.getDataType() == DataType.ENUMERATION}">
             <g:set var="enumValues" value="${null}"/>
             <%
-                for (EnumerationDTO dto : EnumerationDTO.findByEntity(new CompanyDTO(session['company_id']))) {
+                for (EnumerationDTO dto : enumerations) {
                     if (dto.name == field.getName()) {
                         enumValues= []
                         enumValues.addAll(dto.values.collect {it.value})
@@ -118,7 +120,7 @@
                 }
             %>
             <g:applyLayout name="form/select">
-                <content tag="label">${fieldName}</content>
+                <content tag="label"><g:message code="${field.name}"/></content>
                 <content tag="label.for">metaField_${field.id}.value</content>
                 <g:select
                         class="field ${validationRules}"
@@ -127,6 +129,30 @@
                         optionKey=""
                         noSelection="['':'Please select a value']"
                         value="${fieldValue}" />
+            </g:applyLayout>
+        </g:if>
+
+        <!-- list fields -->
+        <g:if test="${field.getDataType() == DataType.LIST}">
+            <g:set var="enumValues" value="${null}"/>
+            <%
+                for (EnumerationDTO dto : enumerations) {
+                    if (dto.name == field.getName()) {
+                        enumValues= []
+                        enumValues.addAll(dto.values.collect {it.value})
+                    }
+                }
+            %>
+            <g:applyLayout name="form/select">
+                <content tag="label"><g:message code="${field.name}"/></content>
+                <content tag="label.for">metaField_${field.id}.value</content>
+                <g:select
+                        class="field ${validationRules}"
+                        name="metaField_${field.id}.value"
+                        from="${enumValues}"
+                        optionKey=""
+                        value="${fieldValue}"
+                        multiple="true"/>
             </g:applyLayout>
         </g:if>
 

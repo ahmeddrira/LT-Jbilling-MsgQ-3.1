@@ -20,8 +20,6 @@
 
 package jbilling
 
-import java.math.BigDecimal;
-
 import grails.plugins.springsecurity.Secured
 
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
@@ -39,11 +37,11 @@ import com.sapienter.jbilling.server.user.partner.PartnerWS
 import com.sapienter.jbilling.server.user.partner.db.Partner
 import com.sapienter.jbilling.server.user.db.UserDTO
 import com.sapienter.jbilling.server.user.db.UserStatusDTO
-import com.sapienter.jbilling.server.util.db.CurrencyDTO
 import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
-import com.sapienter.jbilling.server.user.partner.PartnerBL
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import com.sapienter.jbilling.server.metafields.MetaFieldBL
+import com.sapienter.jbilling.server.metafields.db.EntityType
 
 @Secured(["MENU_100"])
 class PartnerController {
@@ -153,7 +151,7 @@ class PartnerController {
             return
         }
 
-        [ partner: partner, user: user, contacts: contacts, company: company, currencies: currencies, clerks:clerks ]
+        [ partner: partner, user: user, contacts: contacts, company: company, currencies: currencies, clerks: clerks, availableFields: availableMetaFields ]
     }
 
     /**
@@ -166,7 +164,12 @@ class PartnerController {
 
         bindData(partner, params)
         UserHelper.bindUser(user, params)
-        
+
+        def availableMetaFields = getAvailableMetaFields()
+        UserHelper.bindMetaFields(user, availableMetaFields, params)
+
+        log.debug("bound fields: ${user.getMetaFields()}")
+
         def contacts = []
         UserHelper.bindContacts(user, contacts, company, params)
 
@@ -174,7 +177,7 @@ class PartnerController {
         UserHelper.bindPassword(user, oldUser, params, flash)
 
         if (flash.error) {
-            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: company, currencies: currencies, clerks:clerks ]
+            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: company, currencies: currencies, clerks:clerks, availableFields: availableMetaFields ]
             return
         }
 
@@ -212,14 +215,14 @@ class PartnerController {
 
             // save secondary contacts
             if (user.userId) {
-                contacts.each{
+                contacts.each {
                     webServicesSession.updateUserContact(user.userId, it.type, it);
                 }
             }
             
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e)
-            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: company, currencies: currencies, clerks:clerks ]
+            render view: 'edit', model: [ partner: partner, user: user, contacts: contacts, company: company, currencies: currencies, clerks: clerks, availableFields: availableMetaFields ]
             return
         }
 
@@ -266,5 +269,9 @@ class PartnerController {
     
     def getCompany() {
         CompanyDTO.get(session['company_id'])
+    }
+
+    def getAvailableMetaFields() {
+        return MetaFieldBL.getAvailableFieldsList(session["company_id"], EntityType.CUSTOMER);
     }
 }

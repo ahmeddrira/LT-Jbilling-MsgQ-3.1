@@ -4,9 +4,10 @@
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
+SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
+SET escape_string_warning = off;
 
 SET search_path = public, pg_catalog;
 
@@ -66,6 +67,8 @@ ALTER TABLE ONLY public.payment DROP CONSTRAINT payment_fk_2;
 ALTER TABLE ONLY public.payment DROP CONSTRAINT payment_fk_1;
 ALTER TABLE ONLY public.payment_authorization DROP CONSTRAINT payment_authorization_fk_1;
 ALTER TABLE ONLY public.partner_payout DROP CONSTRAINT partner_payout_fk_1;
+ALTER TABLE ONLY public.partner_meta_field_map DROP CONSTRAINT partner_meta_field_map_fk_2;
+ALTER TABLE ONLY public.partner_meta_field_map DROP CONSTRAINT partner_meta_field_map_fk_1;
 ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_4;
 ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_3;
 ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_2;
@@ -357,6 +360,7 @@ DROP TABLE public.payment_authorization;
 DROP TABLE public.payment;
 DROP TABLE public.partner_range;
 DROP TABLE public.partner_payout;
+DROP TABLE public.partner_meta_field_map;
 DROP TABLE public.partner;
 DROP TABLE public.paper_invoice_batch;
 DROP TABLE public.order_process;
@@ -380,6 +384,7 @@ DROP TABLE public.mediation_process;
 DROP TABLE public.mediation_order_map;
 DROP TABLE public.mediation_errors;
 DROP TABLE public.mediation_cfg;
+DROP TABLE public.list_meta_field_values;
 DROP TABLE public.language;
 DROP TABLE public.jbilling_table;
 DROP TABLE public.jbilling_seqs;
@@ -428,7 +433,6 @@ DROP TABLE public.billing_process;
 DROP TABLE public.base_user;
 DROP TABLE public.ageing_entity_step;
 DROP TABLE public.ach;
-DROP EXTENSION plpgsql;
 DROP SCHEMA public;
 --
 -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
@@ -444,20 +448,6 @@ ALTER SCHEMA public OWNER TO postgres;
 --
 
 COMMENT ON SCHEMA public IS 'standard public schema';
-
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 SET search_path = public, pg_catalog;
@@ -1264,6 +1254,18 @@ CREATE TABLE language (
 ALTER TABLE public.language OWNER TO jbilling;
 
 --
+-- Name: list_meta_field_values; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE list_meta_field_values (
+    meta_field_value_id integer NOT NULL,
+    list_value character varying(255)
+);
+
+
+ALTER TABLE public.list_meta_field_values OWNER TO jbilling;
+
+--
 -- Name: mediation_cfg; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -1644,6 +1646,18 @@ CREATE TABLE partner (
 
 
 ALTER TABLE public.partner OWNER TO jbilling;
+
+--
+-- Name: partner_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE partner_meta_field_map (
+    partner_id integer NOT NULL,
+    meta_field_value_id integer NOT NULL
+);
+
+
+ALTER TABLE public.partner_meta_field_map OWNER TO jbilling;
 
 --
 -- Name: partner_payout; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -14043,6 +14057,14 @@ COPY language (id, code, description) FROM stdin;
 
 
 --
+-- Data for Name: list_meta_field_values; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY list_meta_field_values (meta_field_value_id, list_value) FROM stdin;
+\.
+
+
+--
 -- Data for Name: mediation_cfg; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -18419,6 +18441,14 @@ COPY partner (id, user_id, balance, total_payments, total_refunds, total_payouts
 12	10742	0.0000000000	0.0000000000	0.0000000000	0.0000000000	10.0000000000	0.0000000000	1	0	3	10	2009-03-15	0.0000000000	1	1	1
 11	10741	0.0000000000	0.0000000000	0.0000000000	0.0000000000	0.0000000000	1.0000000000	1	1	1	1	2009-03-01	0.0000000000	0	1	2
 20	10800	0.0000000000	0.0000000000	0.0000000000	0.0000000000	5.0000000000	10.0000000000	1	0	1	1	2011-11-01	0.0000000000	0	12	1
+\.
+
+
+--
+-- Data for Name: partner_meta_field_map; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY partner_meta_field_map (partner_id, meta_field_value_id) FROM stdin;
 \.
 
 
@@ -24539,6 +24569,22 @@ ALTER TABLE ONLY partner
 
 ALTER TABLE ONLY partner
     ADD CONSTRAINT partner_fk_4 FOREIGN KEY (user_id) REFERENCES base_user(id);
+
+
+--
+-- Name: partner_meta_field_map_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY partner_meta_field_map
+    ADD CONSTRAINT partner_meta_field_map_fk_1 FOREIGN KEY (partner_id) REFERENCES partner(id);
+
+
+--
+-- Name: partner_meta_field_map_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY partner_meta_field_map
+    ADD CONSTRAINT partner_meta_field_map_fk_2 FOREIGN KEY (meta_field_value_id) REFERENCES meta_field_value(id);
 
 
 --

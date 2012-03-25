@@ -141,6 +141,10 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.createInvoiceFromOrder(orderId, invoiceId)
     }
 
+    public Integer applyOrderToInvoice(Integer orderId, InvoiceWS invoiceWs) {
+        return webServicesSession.applyOrderToInvoice(orderId, invoiceWs)
+    }
+
     public Integer createUser(UserWS newUser) {
         return webServicesSession.createUser(newUser)
     }

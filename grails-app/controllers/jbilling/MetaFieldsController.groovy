@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.metafields.db.EntityType
 import com.sapienter.jbilling.server.metafields.db.MetaField
 import grails.plugins.springsecurity.Secured
 import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.server.util.db.EnumerationDTO
 
 /**
  * @author Alexander Aksenov

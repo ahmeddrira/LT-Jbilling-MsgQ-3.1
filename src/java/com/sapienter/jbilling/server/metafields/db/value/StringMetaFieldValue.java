@@ -22,10 +22,12 @@ package com.sapienter.jbilling.server.metafields.db.value;
 
 import com.sapienter.jbilling.server.metafields.db.MetaField;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -51,5 +53,11 @@ public class StringMetaFieldValue extends MetaFieldValue<String> {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    @Transient
+    public boolean isEmpty() {
+        return StringUtils.isEmpty(value);
     }
 }

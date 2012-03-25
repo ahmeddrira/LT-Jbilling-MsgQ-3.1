@@ -34,7 +34,7 @@
             });
             $('#invoice-details').visibility='visible';
         }
-        
+
         $(document).ready(function() {
             //radio select or change
             $(':input[type=radio][name=invoiceId]').change(function() {
@@ -54,14 +54,14 @@
 
     <div class="heading">
         <strong>
-            <g:message code="order.label.apply.to.invoice" args="[orderId]"/>
+            <g:message code="order.label.apply.to.invoice" args="[params.id]"/>
         </strong>
     </div>
 
     <div class="form-hold">
         <g:form name="order-invoice-form" action="confirm">
             <fieldset>
-                <!-- invoices to pay -->
+            <!-- invoices to pay -->
                 <g:if test="${invoices}">
                     <div class="box-card-hold">
                         <table cellpadding="0" cellspacing="0" class="innerTable">
@@ -78,37 +78,37 @@
                             <tbody>
                             <g:each var="invoice" in="${invoices}">
                                 <g:if test="${!invoice.orders.find{ it == orderId as Integer}}">
-                                <g:set var="currency" value="${currencies.find { it.id == invoice.currencyId }}"/>
+                                    <g:set var="currency" value="${currencies.find { it.id == invoice.currencyId }}"/>
 
-                                <tr>
-                                    <td class="innerContent">
-                                        <g:applyLayout name="form/radio">
-                                            <g:radio id="invoice-${invoice.id}" name="invoiceId" value="${invoice.id}" checked="${invoice.id == invoiceId}"/>
-                                            <label for="invoice-${invoice.id}" class="rb">
-                                                <g:message code= "payment.link.invoice" args="[invoice.number]"/>
-                                            </label>
-                                        </g:applyLayout>
-                                    </td><%--
+                                    <tr>
+                                        <td class="innerContent">
+                                            <g:applyLayout name="form/radio">
+                                                <g:radio id="invoice-${invoice.id}" name="invoiceId" value="${invoice.id}" checked="${invoice.id == invoiceId || invoice.id == params.int('invoice.id')}"/>
+                                                <label for="invoice-${invoice.id}" class="rb">
+                                                    <g:message code= "payment.link.invoice" args="[invoice.number]"/>
+                                                </label>
+                                            </g:applyLayout>
+                                        </td><%--
                                     <td class="innerContent">
                                         ${invoice.paymentAttempts}
                                     </td> --%>
-                                    <td class="innerContent">
-                                        <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
-                                        <g:hiddenField name="invoice-${invoice.id}-amount" value="${formatNumber(number: invoice.total, formatName: 'money.format')}"/>
-                                    </td>
-                                    <td class="innerContent">
-                                        <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
-                                        <g:hiddenField name="invoice-${invoice.id}-balance" value="${formatNumber(number: invoice.balance, formatName: 'money.format')}"/>
-                                    </td>
-                                    <td class="innerContent">
-                                        <g:formatDate date="${invoice.dueDate}"/>
-                                    </td>
-                                    <td class="innerContent">
-                                        <g:link controller="invoice" action="list" id="${invoice.id}">
-                                            <g:message code= "payment.link.view.invoice" args="[invoice.number]"/>
-                                        </g:link>
-                                    </td>
-                                </tr>
+                                        <td class="innerContent">
+                                            <g:formatNumber number="${invoice.getTotalAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
+                                            <g:hiddenField name="invoice-${invoice.id}-amount" value="${formatNumber(number: invoice.total, formatName: 'money.format')}"/>
+                                        </td>
+                                        <td class="innerContent">
+                                            <g:formatNumber number="${invoice.getBalanceAsDecimal()}" type="currency" currencyCode="${currency.code}"/>
+                                            <g:hiddenField name="invoice-${invoice.id}-balance" value="${formatNumber(number: invoice.balance, formatName: 'money.format')}"/>
+                                        </td>
+                                        <td class="innerContent">
+                                            <g:formatDate date="${invoice.dueDate}"/>
+                                        </td>
+                                        <td class="innerContent">
+                                            <g:link controller="invoice" action="list" id="${invoice.id}">
+                                                <g:message code= "payment.link.view.invoice" args="[invoice.number]"/>
+                                            </g:link>
+                                        </td>
+                                    </tr>
                                 </g:if>
                             </g:each>
                             </tbody>
@@ -120,11 +120,18 @@
 
                     </div>
                 </g:if>
-
             </fieldset>
-                <div id="invoice-details" style="visibility:hidden;" class="box-card-hold">
-                </div>
         </g:form>
+
+        <g:form name="apply-form" controller="order" action="apply">
+            <!-- space for invoice details, populated with an ajax call -->
+            <div id="invoice-details" style="${!invoice ? 'visibility: hidden' : ''}" class="box-card-hold">
+                <g:if test="${invoice}">
+                    <g:render template="/invoice/snapshot" model="[invoice: invoice, currencies: currencies, availableMetaFields: availableMetaFields ]"/>
+                </g:if>
+            </div>
+        </g:form>
+
     </div>
 </div>
 

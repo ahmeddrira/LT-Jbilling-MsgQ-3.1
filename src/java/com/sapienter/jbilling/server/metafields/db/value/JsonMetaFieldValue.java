@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.metafields.db.value;
 
 import com.sapienter.jbilling.server.metafields.db.MetaField;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.grails.web.json.JSONObject;
 import org.codehaus.groovy.grails.web.json.parser.JSONParser;
@@ -72,5 +73,11 @@ public class JsonMetaFieldValue extends MetaFieldValue<String> {
 
     public void setJsonValue(JSONObject value) {
         this.json = value != null ? value.toString() : null;
+    }
+
+    @Override
+    @Transient
+    public boolean isEmpty() {
+        return StringUtils.isBlank(json);
     }
 }

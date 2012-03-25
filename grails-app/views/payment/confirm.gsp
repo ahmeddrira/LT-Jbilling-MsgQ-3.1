@@ -144,6 +144,13 @@
                                         <g:hiddenField class="field" name="metaField_${metaField.id}.value" value="${formatDate(date: fieldValue)}"/>
                                     </g:applyLayout>
                                 </g:if>
+                                <g:elseif test="${metaField.getDataType() == DataType.LIST}">
+                                    <g:applyLayout name="form/text">
+                                        <content tag="label">${metaField.name}</content>
+                                        <span>${fieldValue?.join(', ')}</span>
+                                        <g:hiddenField class="field" name="metaField_${metaField.id}.value" value="${fieldValue}"/>
+                                    </g:applyLayout>
+                                </g:elseif>
                                 <g:else>
                                     <g:applyLayout name="form/text">
                                         <content tag="label">${metaField.name}</content>

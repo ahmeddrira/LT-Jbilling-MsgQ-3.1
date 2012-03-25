@@ -16,8 +16,11 @@
 package com.sapienter.jbilling.server.payment.blacklist.db;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Criterion;
@@ -25,7 +28,10 @@ import org.hibernate.criterion.Restrictions;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
+
 public class BlacklistDAS extends AbstractDAS<BlacklistDTO> {
+
+    private static final Logger LOG = Logger.getLogger(BlacklistDAS.class);
     
     public List<BlacklistDTO> findByEntity(Integer entityId) {
         // I need to access an association, so I can't use the parent helper class
@@ -130,8 +136,13 @@ public class BlacklistDAS extends AbstractDAS<BlacklistDTO> {
         return criteria.list();
     }
 
-    public List<BlacklistDTO> filterByIpAddress(Integer entityId, 
-            String ipAddress, Integer ccfId) {
+    public List<BlacklistDTO> filterByIpAddress(Integer entityId, String ipAddress, Integer ccfId) {
+
+        // don't try and filter if there's no IP address to lookup
+        if (StringUtils.isBlank(ipAddress)) {
+            return Collections.emptyList();
+        }
+
         Criteria criteria = getSession().createCriteria(BlacklistDTO.class)
                 .createAlias("company", "c")
                     .add(Restrictions.eq("c.id", entityId))

@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.metafields.db.value.DateMetaFieldValue;
 import com.sapienter.jbilling.server.metafields.db.value.DecimalMetaFieldValue;
 import com.sapienter.jbilling.server.metafields.db.value.IntegerMetaFieldValue;
 import com.sapienter.jbilling.server.metafields.db.value.JsonMetaFieldValue;
+import com.sapienter.jbilling.server.metafields.db.value.ListMetaFieldValue;
 import com.sapienter.jbilling.server.metafields.db.value.StringMetaFieldValue;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
@@ -198,6 +199,9 @@ public class MetaField implements Serializable {
 
             case ENUMERATION:
                 return new StringMetaFieldValue(this);
+            
+            case LIST:
+                return new ListMetaFieldValue(this);
         }
 
         return null;

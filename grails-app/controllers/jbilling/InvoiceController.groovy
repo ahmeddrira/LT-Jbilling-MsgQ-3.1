@@ -33,9 +33,8 @@ import com.sapienter.jbilling.server.item.CurrencyBL
 import com.sapienter.jbilling.client.util.SortableCriteria;
 import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import com.sapienter.jbilling.server.user.db.CustomerDTO
-import com.sapienter.jbilling.server.user.db.UserDTO
-import com.sapienter.jbilling.server.customer.CustomerBL
+import com.sapienter.jbilling.server.metafields.MetaFieldBL
+import com.sapienter.jbilling.server.metafields.db.EntityType
 
 /**
  * BillingController
@@ -172,7 +171,7 @@ class InvoiceController {
         def invoiceId = params.int('id')
         if (invoiceId) {
             InvoiceWS invoice = webServicesSession.getInvoiceWS(invoiceId)
-            render template: 'snapshot', model: [ invoice: invoice, currencies: currencies ]
+            render template: 'snapshot', model: [ invoice: invoice, currencies: currencies, availableMetaFields: availableMetaFields ]
         }
     }
 
@@ -278,5 +277,10 @@ class InvoiceController {
     def getCurrencies() {
         def currencies = new CurrencyBL().getCurrencies(session['language_id'].toInteger(), session['company_id'].toInteger())
         return currencies.findAll { it.inUse }
+    }
+
+
+    def getAvailableMetaFields() {
+        return MetaFieldBL.getAvailableFieldsList(session["company_id"], EntityType.INVOICE);
     }
 }

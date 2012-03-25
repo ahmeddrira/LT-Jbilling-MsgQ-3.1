@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 @Entity
 @DiscriminatorValue("boolean")
@@ -47,5 +48,11 @@ public class BooleanMetaFieldValue extends MetaFieldValue<Boolean> {
 
     public void setValue(Boolean value) {
         this.value = value;
+    }
+
+    @Override
+    @Transient
+    public boolean isEmpty() {
+        return value == null;
     }
 }

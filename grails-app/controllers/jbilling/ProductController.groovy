@@ -33,7 +33,7 @@ import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.server.util.csv.Exporter
 import com.sapienter.jbilling.client.util.DownloadHelper
 import com.sapienter.jbilling.server.pricing.db.PriceModelStrategy
-import org.hibernate.Criteria
+
 import com.sapienter.jbilling.client.util.SortableCriteria
 
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
@@ -693,7 +693,7 @@ class ProductController {
     }
 
     def getAvailableMetaFields() {
-        return MetaFieldBL.getAvailableFieldsList(session['company_id'], EntityType.ITEM);
+        return MetaFieldBL.getAvailableFieldsList(session['company_id'], EntityType.PRODUCT);
     }
 
     def bindMetaFields(ItemDTOEx itemDto, GrailsParameterMap params) {

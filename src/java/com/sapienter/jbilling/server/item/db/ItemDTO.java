@@ -389,7 +389,7 @@ public class ItemDTO extends AbstractDescription implements MetaContent, Exporta
 
     @Transient
     public EntityType getCustomizedEntityType() {
-        return EntityType.ITEM;
+        return EntityType.PRODUCT;
     }
 
     @Transient

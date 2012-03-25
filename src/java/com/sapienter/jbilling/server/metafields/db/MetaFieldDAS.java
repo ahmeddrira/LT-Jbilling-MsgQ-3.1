@@ -63,7 +63,7 @@ public class MetaFieldDAS extends AbstractDAS<MetaField> {
            case CUSTOMER:
                deleteFromEntitiesSql += " customer_meta_field_map ";
                break;
-           case ITEM:
+           case PRODUCT:
                deleteFromEntitiesSql += " item_meta_field_map ";
                break;
            case ORDER:

@@ -1,4 +1,5 @@
---- this script will upgrade a database schema from the latest jbilling release to the code currently at the tip of the trunk.
+--- this script will upgrade a database schema from the latest jbilling release to the code currently at the tip of the trunk.
+
 -- It is tested on postgreSQL, but it is meant to be ANSI SQL
 --
 -- MySQL does not support many of the ANSI SQL statements used in this file to upgrade the
@@ -258,7 +259,7 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  32, 'title',1, 'Separator file reader');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  32, 'description',1, 'This is a reader for the mediation process. It reads records from a text file whose fields are separated by a character (or string).');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  33, 'title',1, 'Rules mediation processor');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  33, 'description',1, 'This is a rules-based plug-in (see chapter 7). It takes an event record from the mediation process and executes external rules to translate the record into billing meaningful data. This is at the core of the mediation component, see the “Telecom Guide” document for more information.');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  33, 'description',1, 'This is a rules-based plug-in (see chapter 7). It takes an event record from the mediation process and executes external rules to translate the record into billing meaningful data. This is at the core of the mediation component, see the ï¿½Telecom Guideï¿½ document for more information.');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  34, 'title',1, 'Fixed length file reader');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  34, 'description',1, 'This is a reader for the mediation process. It reads records from a text file whose fields have fixed positions,and the record has a fixed length.');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  35, 'title',1, 'Payment information without validation');
@@ -1884,11 +1885,31 @@ CREATE TEMPORARY TABLE temp_role
 --	  primary key (id)
 --); -- mysql
 
-insert into temp_role (select e.id as entity_id, r.id as role_type_id from entity e, role r where e.id > (select max(entity_id) from role) group by e.id, r.id);
-insert into role (select tr.id + (select max(id) from role), tr.entity_id, tr.role_type_id from temp_role tr order by tr.id);
-insert into permission_role_map (select p.permission_id, r.id from permission_role_map p, role r where p.role_id = r.role_type_id and r.entity_id >= (select min(entity_id) from temp_role));
-insert into international_description (select i.table_id, r.id, i.psudo_column, i.language_id, i.content from international_description i, role r  where i.table_id=60 and r.entity_id >= (select min(entity_id) from temp_role) and i.foreign_id=r.role_type_id); 
-insert into user_role_map (select u.user_id, r.id from user_role_map u, base_user b, role r where b.id=u.user_id and b.entity_id=r.entity_id and r.entity_id > (select min(id) from entity) and u.role_id=r.role_type_id);
-delete from user_role_map where exists (select * from base_user, rolewhere base_user.id = user_role_map.user_id and user_role_map.role_id = role.id and base_user.entity_id > (select min(id) from entity) and role.entity_id = (select min(id) from entity));
-update jbilling_seqs set next_id = coalesce((select round(max(id)/100)+1 from role), 1) where name = 'role';
+insert into temp_role (select e.id as entity_id, r.id as role_type_id 
+from entity e, role r where e.id > (select max(entity_id) from role) group by e.id, r.id);
+insert into role (select tr.id + (select max(id) from role), 
+tr.entity_id, tr.role_type_id from temp_role tr order by tr.id);
+
+insert into permission_role_map (select p.permission_id, r.id from permission_role_map p, role r 
+where p.role_id = r.role_type_id and r.entity_id >= (select min(entity_id) from temp_role));
+
+insert into international_description (select i.table_id, r.id, i.psudo_column, i.language_id, i.content from international_description i, role r 
+ where i.table_id=60 and r.entity_id >= (select min(entity_id) from temp_role) and i.foreign_id=r.role_type_id);
+ 
+insert into user_role_map 
+(select u.user_id, r.id from user_role_map u, base_user b, role r 
+where b.id=u.user_id and b.entity_id=r.entity_id 
+and r.entity_id > (select min(id) from entity) and u.role_id=r.role_type_id);
+
+delete from user_role_map where exists (select * from base_user, role
+where base_user.id = user_role_map.user_id and user_role_map.role_id = role.id 
+and base_user.entity_id > (select min(id) from entity) and role.entity_id = (select min(id) from entity));
+
+update jbilling_seqs set next_id = coalesce((select round(max(id)/100)+1 from role), 1) where name = 'role';
+
 drop table temp_role;
+
+
+-- Date: 24-March-2012
+-- Bug #2257 - rename meta field type ITEM to PRODUCT
+update meta_field_name set entity_type = 'PRODUCT' where entity_type = 'ITEM';

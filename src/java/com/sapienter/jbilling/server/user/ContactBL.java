@@ -101,7 +101,6 @@ public class ContactBL {
             entityId = invoice.getEntity().getBaseUser().getCompany().getId();
             retValue = true;
         }
-
         return retValue;
     }
 

@@ -31,6 +31,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.process.db.PaperInvoiceBatchDTO;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
+import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 
 /**
@@ -86,9 +87,15 @@ public class PaperInvoiceNotificationTask
             contact = new ContactBL();
             contact.setInvoice(invoice.getId());
             to = contact.getDTO();
+            if (to.getUserId() == null) {
+            	to.setUserId(invoice.getBaseUser().getUserId());
+            }
             entityId = user.getEntity().getId();
             contact.setEntity(entityId);
             from = contact.getDTO();
+            if (from.getUserId() == null) {
+            	from.setUserId(new EntityBL().getRootUser(entityId));
+            }
         } catch (Exception e) {
             throw new TaskException(e);
         }

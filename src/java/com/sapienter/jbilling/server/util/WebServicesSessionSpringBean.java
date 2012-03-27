@@ -1813,7 +1813,12 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throw new SessionInternalError("Exception occurred with plug-in when fetching payment instrument.", e);
         }
 
-        return instrument != null ? PaymentBL.getWS(new PaymentDTOEx(instrument)) : null;
+        if (instrument == null) {
+        	return null;
+        }
+        PaymentDTOEx paymentDTOEx = new PaymentDTOEx(instrument);
+        paymentDTOEx.setUserId(userId);
+        return PaymentBL.getWS(paymentDTOEx);
     }
 
     public BigDecimal getTotalRevenueByUser (Integer userId) throws SessionInternalError {

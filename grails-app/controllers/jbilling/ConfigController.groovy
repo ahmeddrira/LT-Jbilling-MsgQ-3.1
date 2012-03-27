@@ -219,7 +219,7 @@ class ConfigController {
 
     def saveCurrencies = {
         def defaultCurrencyId = params.int('defaultCurrencyId')
-        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+        def startDate = params.startDate ? new Date().parse(message(code: 'date.format'), params.startDate) : getLastTimePointDate()
 
         // build a list of currencies
         def currencies = []

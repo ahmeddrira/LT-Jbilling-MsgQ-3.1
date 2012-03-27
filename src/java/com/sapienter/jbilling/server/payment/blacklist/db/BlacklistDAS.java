@@ -22,7 +22,9 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
@@ -146,12 +148,13 @@ public class BlacklistDAS extends AbstractDAS<BlacklistDTO> {
         Criteria criteria = getSession().createCriteria(BlacklistDTO.class)
                 .createAlias("company", "c")
                     .add(Restrictions.eq("c.id", entityId))
-                .add(Restrictions.eq("type", BlacklistDTO.TYPE_IP_ADDRESS))
-                .createAlias("metaFieldValue", "fieldValue")
+                .add(Restrictions.eq("type", BlacklistDTO.TYPE_IP_ADDRESS));
+        
+         Criteria secondCriteria = criteria.createCriteria("metaFieldValue", "fieldValue", CriteriaSpecification.LEFT_JOIN)
                     .add(Restrictions.eq("fieldValue.field.id", ccfId))
-                    .add(Restrictions.eq("fieldValue.value", ipAddress));
+                    .add(Restrictions.sqlRestriction("{alias}.string_value = ?", ipAddress, Hibernate.STRING));
 
-        return criteria.list();
+        return secondCriteria.list();
     }
 
     /**

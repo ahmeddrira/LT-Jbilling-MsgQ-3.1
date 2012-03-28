@@ -106,13 +106,15 @@ public class QuantityAddonPricingStrategy extends AbstractPricingStrategy {
 
         // increment the "included" attribute of the next pricing model
         PriceModelDTO graduated = planPrice.getNext();
-        BigDecimal included = AttributeUtils.getDecimal(graduated.getAttributes(), "included");
+        if (graduated != null) {
+        	BigDecimal included = AttributeUtils.getDecimal(graduated.getAttributes(), "included");
 
-        if (included != null) {
-            included = included.add(total);
-            graduated.getAttributes().put("included", included.toString());
+        	if (included != null) {
+        		included = included.add(total);
+        		graduated.getAttributes().put("included", included.toString());
 
-            LOG.debug("Setting included quantity to " + included + " units");
+        		LOG.debug("Setting included quantity to " + included + " units");
+        	}
         }
     }
 

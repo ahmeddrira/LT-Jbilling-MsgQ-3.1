@@ -244,6 +244,7 @@ public class PriceModelDTO implements Serializable {
             // convert currency if necessary
             if (result.getUserId() != null
                 && result.getCurrencyId() != null
+                && result.getPrice() != null
                 && next.getCurrency() != null
                 && next.getCurrency().getId() != result.getCurrencyId()) {
 
@@ -255,6 +256,8 @@ public class PriceModelDTO implements Serializable {
                 final BigDecimal converted = new CurrencyBL().convert(next.getCurrency().getId(), result.getCurrencyId(),
                         result.getPrice(), pricingDate, entityId);
                 result.setPrice(converted);
+            } else {
+            	result.setPrice(BigDecimal.ZERO);
             }
         }
     }

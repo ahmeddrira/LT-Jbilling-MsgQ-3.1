@@ -22,6 +22,8 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 public class CompanyWS implements java.io.Serializable {
 
@@ -29,8 +31,9 @@ public class CompanyWS implements java.io.Serializable {
     private int id;
     private Integer currencyId;
     private Integer languageId;
+    @Size(min = 0, max = 100, message = "validation.error.size,0,100")
     private String description;
-
+    @Valid
     private ContactWS contact;
     
     public CompanyWS() {
@@ -59,7 +62,7 @@ public class CompanyWS implements java.io.Serializable {
                                          contact.getDeleted());
         }
     }
-    
+
     public CompanyDTO getDTO(){
         CompanyDTO dto = new CompanyDAS().find(new Integer(this.id));
         dto.setCurrency(new CurrencyDAS().find(this.currencyId));

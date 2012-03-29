@@ -70,7 +70,7 @@ public class ContactWS implements Serializable {
     private Integer faxCountryCode;
     private Integer faxAreaCode;
     private String faxNumber;
-    @NotEmpty(message = "validation.error.notnull")
+    @NotEmpty(message = "validation.error.notnull", groups = EntitySignupValidationGroup.class)
     @Pattern(regexp = "[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z\\.]+", message = "validation.error.email")
     private String email;
     private Date createDate;

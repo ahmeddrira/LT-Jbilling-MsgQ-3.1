@@ -258,6 +258,10 @@ public class PriceModelDTO implements Serializable {
                 result.setPrice(converted);
             }
         }
+        
+        if (result.getPrice() == null) {
+        	result.setPrice(BigDecimal.ZERO);
+        }
     }
 
     @Override

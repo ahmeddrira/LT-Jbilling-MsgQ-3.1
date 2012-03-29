@@ -326,7 +326,7 @@ public class ItemBL {
 
              if (priceModel != null) {
                  priceModel.applyTo(null, BigDecimal.ONE, result, fields, usage, false, date);
-                 return result.getPrice();
+                 return result.getPrice() == null ? BigDecimal.ZERO : result.getPrice();
              }
         }
         return BigDecimal.ZERO;

@@ -26,6 +26,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,27 +56,37 @@ public class MetaFieldDAS extends AbstractDAS<MetaField> {
 
     public void deleteMetaFieldValuesForEntity(EntityType entityType, int metaFieldId) {
         Session session = getSession();
-        String deleteFromEntitiesSql = "delete from ";
+        List<String> deleteEntitiesList = new ArrayList<String>();
+        
         switch (entityType) {
            case INVOICE:
-               deleteFromEntitiesSql += " invoice_meta_field_map ";
+        	   deleteEntitiesList.add(" invoice_meta_field_map ");
                break;
            case CUSTOMER:
-               deleteFromEntitiesSql += " customer_meta_field_map ";
+        	   deleteEntitiesList.add(" customer_meta_field_map ");
+        	   deleteEntitiesList.add(" partner_meta_field_map ");
                break;
            case PRODUCT:
-               deleteFromEntitiesSql += " item_meta_field_map ";
+        	   deleteEntitiesList.add(" item_meta_field_map ");
                break;
            case ORDER:
-               deleteFromEntitiesSql += " order_meta_field_map ";
+        	   deleteEntitiesList.add(" order_meta_field_map ");
                break;
            case PAYMENT:
-               deleteFromEntitiesSql += " payment_meta_field_map ";
+        	   deleteEntitiesList.add(" payment_meta_field_map ");
                break;
         }
-        deleteFromEntitiesSql += " where meta_field_value_id in " +
+        
+        String deleteFromSql = "delete from ";
+        String deleteWhereSql = " where meta_field_value_id in " +
                 "(select val.id from meta_field_value val where meta_field_name_id = " + metaFieldId + " )";
-        session.createSQLQuery(deleteFromEntitiesSql).executeUpdate();
+        
+        for (String deleteSingleEntity : deleteEntitiesList) {
+        	
+        	StringBuilder sqlBuilder = new StringBuilder();
+        	sqlBuilder.append(deleteFromSql).append(deleteSingleEntity).append(deleteWhereSql);
+        	session.createSQLQuery(sqlBuilder.toString()).executeUpdate();
+        }
 
         String deleteValuesHql = "delete from " + MetaFieldValue.class.getSimpleName() + " where field.id = ?";
         getHibernateTemplate().bulkUpdate(deleteValuesHql, metaFieldId);

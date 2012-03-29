@@ -87,7 +87,7 @@
                                 <content tag="label"><g:message code="metaField.label.name"/></content>
                                 <content tag="label.for">metaField.name</content>
                                 <g:select name="metaField.name" class="field"
-                                          from="${EnumerationDTO.findByEntity(new CompanyDTO(session['company_id']))}"
+                                          from="${EnumerationDTO.findAllByEntity(new CompanyDTO(session['company_id']))}"
                                           value="${metaField?.name}"
                                           optionKey="name"
                                           optionValue="name"/>

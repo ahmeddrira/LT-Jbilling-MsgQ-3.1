@@ -136,6 +136,9 @@ public class PartnerBL extends ResultList implements PartnerSQL {
                 EventLogger.ROW_UPDATED, null, null,
                 null);
         setRelatedClerk(partnerDAS.save(dto), dto.getRelatedClerkUserId());
+
+        // update meta fields and run validations
+        partner.updateMetaFieldsWithValidation(dto.getBaseUser().getCompany().getId(), dto);
     }
 
     private void setRelatedClerk(Partner dto, Integer id) {

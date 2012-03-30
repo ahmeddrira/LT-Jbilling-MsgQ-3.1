@@ -59,6 +59,15 @@ class ContactFieldConfigController {
     }
 	
 	def save = {
+      for(int i=0; i < new Integer(params.recCnt); i++){
+        if(params["obj[${i}].dataType"]) {
+          if(!params["obj[${i}].description"]){
+          flash.error = 'custom.fields.error.message'
+		  redirect action: 'list'
+          return
+          }
+        }
+      }
 		def cnt = params.recCnt.toInteger()
 		log.debug "Records Count: ${cnt}"
 		

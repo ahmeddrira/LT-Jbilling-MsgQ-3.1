@@ -369,7 +369,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
 
             // if after all the tasks, the processor in unavailable,
             // return that
-            if (processorUnavailable) {
+            if (processorUnavailable || info.getPaymentResult().getId() == Constants.RESULT_NULL) {
                 retValue = Constants.RESULT_UNAVAILABLE;
             } else {
                 retValue = info.getPaymentResult().getId();

@@ -405,8 +405,12 @@ class PaymentController {
                             flash.args = [ payment.id ]
 
                         } else {
+							def autorizationMessage = authorization.responseMessage;
+							if (autorizationMessage == null) {
+								autorizationMessage = "Payment processor unavailable"
+							}
                             flash.error = 'payment.failed'
-                            flash.args = [ payment.id, authorization.responseMessage ]
+                            flash.args = [ payment.id, autorizationMessage ]
                         }
 
                     } else {

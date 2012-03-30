@@ -1685,6 +1685,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         } else {
             auth = new PaymentAuthorizationDTOEx();
+            auth.setPaymentId(dto.getId());
             auth.setResult(result.equals(Constants.RESULT_FAIL));
         }
         return auth;

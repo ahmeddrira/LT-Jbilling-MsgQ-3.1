@@ -21,7 +21,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.util.api.validation.CreateValidationGroup;
+import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -34,6 +37,7 @@ public class OrderLineWS implements Serializable {
     private Integer orderId;
     private String amount; // use strings instead of BigDecimal for WS compatibility
     @NotNull(message = "validation.error.null.quantity")
+    @Digits(integer = 12, fraction = 10, message="validation.error.not.a.number", groups = {CreateValidationGroup.class, UpdateValidationGroup.class} )
     private String quantity;
     private String price;
     private Date createDatetime;

@@ -274,6 +274,8 @@ class OrderBuilderController {
          */
         updateOrderLine {
             action {
+				flash.errorMessages = null
+				flash.error = null
                 def order = conversation.order
 
                 // get existing line

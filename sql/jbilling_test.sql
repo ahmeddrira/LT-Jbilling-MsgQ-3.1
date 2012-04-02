@@ -6357,7 +6357,7 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 
 COPY contact_field_type (id, entity_id, prompt_key, data_type, customer_readonly, optlock) FROM stdin;
 1	1	partner.prompt.fee	string	1	0
-2	1	ccf.payment_processor	integer	1	0
+2	1	ccf.payment_processor	string	1	0
 3	1	ccf.ip_address	string	1	0
 \.
 

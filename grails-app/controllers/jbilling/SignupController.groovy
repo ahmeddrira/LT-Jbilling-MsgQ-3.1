@@ -182,7 +182,7 @@ class SignupController {
 	 */
 	def createDefaultRoles(language, company) {
 		
-		def defaultRoleList = [ Constants.TYPE_ROOT, Constants.TYPE_CLERK, Constants.TYPE_CUSTOMER ];
+		def defaultRoleList = [ Constants.TYPE_ROOT, Constants.TYPE_CLERK, Constants.TYPE_CUSTOMER, Constants.TYPE_PARTNER ];
 
 		def defaultCompanyId = CompanyDTO.createCriteria().get {
 			projections {

@@ -14824,7 +14824,6 @@ COPY pluggable_task_type_category (id, interface_name) FROM stdin;
 6	com.sapienter.jbilling.server.pluggableTask.PaymentTask
 7	com.sapienter.jbilling.server.pluggableTask.NotificationTask
 8	com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask
-9	com.sapienter.jbilling.server.pluggableTask.PenaltyTask
 10	com.sapienter.jbilling.server.pluggableTask.ProcessorAlarm
 11	com.sapienter.jbilling.server.user.tasks.ISubscriptionStatusManager
 12	com.sapienter.jbilling.server.payment.tasks.IAsyncPaymentParameters

@@ -160,16 +160,16 @@ insert into permission (id, type_id) values (111, 11);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 111, 'description', 1, 'Switch to any user');
 
 -- switch all for super users
-insert into permission_role_map (role_id, permission_id) values (2, 111);
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 111 as permission_id from role r where r.role_type_id=2 group by r.id;
 
 -- basic view permissions for customers
-insert into permission_role_map (role_id, permission_id) values (5, 24); -- view orders
-insert into permission_role_map (role_id, permission_id) values (5, 30); -- create payment
-insert into permission_role_map (role_id, permission_id) values (5, 34); -- view payments
-insert into permission_role_map (role_id, permission_id) values (5, 72); -- view invoices
-insert into permission_role_map (role_id, permission_id) values (5, 91); -- invoices menu
-insert into permission_role_map (role_id, permission_id) values (5, 92); -- order menu
-insert into permission_role_map (role_id, permission_id) values (5, 93); -- payments menu
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 24 as permission_id from role r where r.role_type_id=5 group by r.id; -- view orders
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 30 as permission_id from role r where r.role_type_id=5 group by r.id; -- create payment
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 34 as permission_id from role r where r.role_type_id=5 group by r.id; -- view payments
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 72 as permission_id from role r where r.role_type_id=5 group by r.id; -- view invoices
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 91 as permission_id from role r where r.role_type_id=5 group by r.id; -- invoices menu
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 92 as permission_id from role r where r.role_type_id=5 group by r.id; -- order menu
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 93 as permission_id from role r where r.role_type_id=5 group by r.id; -- payments menu
 
 -- Date: 27-Oct-2011
 -- Redmine Issue: #1444
@@ -196,16 +196,16 @@ insert into permission (id, type_id) values (75, 7);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59,75,'description', 1, 'View customer sub-accounts');
 
 -- super users and clerks can view all
-insert into permission_role_map (role_id, permission_id) values (2, 17);
-insert into permission_role_map (role_id, permission_id) values (3, 17);
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 17 as permission_id from role r where r.role_type_id=2 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 17 as permission_id from role r where r.role_type_id=3 group by r.id;
 
 -- customers can view sub-accounts
-insert into permission_role_map (role_id, permission_id) values (5, 90);
-insert into permission_role_map (role_id, permission_id) values (5, 15);
-insert into permission_role_map (role_id, permission_id) values (5, 18);
-insert into permission_role_map (role_id, permission_id) values (5, 29);
-insert into permission_role_map (role_id, permission_id) values (5, 37);
-insert into permission_role_map (role_id, permission_id) values (5, 75);
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 90 as permission_id from role r where r.role_type_id=5 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 15 as permission_id from role r where r.role_type_id=5 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 18 as permission_id from role r where r.role_type_id=5 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 29 as permission_id from role r where r.role_type_id=5 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 37 as permission_id from role r where r.role_type_id=5 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 75 as permission_id from role r where r.role_type_id=5 group by r.id;
 
 
 -- Date 21-Oct-2011
@@ -235,40 +235,40 @@ insert into permission (id, type_id) values (104, 10);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (59, 104, 'description', 1, 'View partner details');
 
 -- permissions for super users
-insert into permission_role_map (role_id, permission_id) values (2, 100);
-insert into permission_role_map (role_id, permission_id) values (2, 101);
-insert into permission_role_map (role_id, permission_id) values (2, 102);
-insert into permission_role_map (role_id, permission_id) values (2, 103);
-insert into permission_role_map (role_id, permission_id) values (2, 104);
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 100 as permission_id from role r where r.role_type_id=2 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 101 as permission_id from role r where r.role_type_id=2 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 102 as permission_id from role r where r.role_type_id=2 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 103 as permission_id from role r where r.role_type_id=2 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 104 as permission_id from role r where r.role_type_id=2 group by r.id;
 
 -- permissions for clerks
-insert into permission_role_map (role_id, permission_id) values (3, 100);
-insert into permission_role_map (role_id, permission_id) values (3, 101);
-insert into permission_role_map (role_id, permission_id) values (3, 102);
-insert into permission_role_map (role_id, permission_id) values (3, 103);
-insert into permission_role_map (role_id, permission_id) values (3, 104);
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 100 as permission_id from role r where r.role_type_id=3 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 101 as permission_id from role r where r.role_type_id=3 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 102 as permission_id from role r where r.role_type_id=3 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 103 as permission_id from role r where r.role_type_id=3 group by r.id;
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 104 as permission_id from role r where r.role_type_id=3 group by r.id;
 
 -- new role and basic permissions for partners
-insert into role(id, entity_id, role_type_id) values (4, 1, 4);
---insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (60, 4, 'title', 1, 'Partner');
---insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (60, 4, 'description', 1, 'A partner that will bring customers');
+insert into role (select distinct e.id + 100 as id, e.id as entity_id, 4 as role_type_id from entity e);
+insert into international_description (select 60 as table_id, r.id as foreign_id, 'title' as psudo_column, 1 as language_id, 'Partner' as content from role r where r.role_type_id=4);
+insert into international_description (select 60 as table_id, r.id as foreign_id, 'description' as psudo_column, 1 as language_id, 'A partner that will bring customers' as content from role r where r.role_type_id=4);
 
-insert into permission_role_map (role_id, permission_id) values (4, 15); -- view customers
-insert into permission_role_map (role_id, permission_id) values (4, 10); -- create customer
-insert into permission_role_map (role_id, permission_id) values (4, 11); -- edit customer
-insert into permission_role_map (role_id, permission_id) values (4, 24); -- view orders
-insert into permission_role_map (role_id, permission_id) values (4, 28); -- view all customer orders
-insert into permission_role_map (role_id, permission_id) values (4, 20); -- create orders
-insert into permission_role_map (role_id, permission_id) values (4, 21); -- edit orders
-insert into permission_role_map (role_id, permission_id) values (4, 34); -- view payments
-insert into permission_role_map (role_id, permission_id) values (4, 36); -- view all customer payments
-insert into permission_role_map (role_id, permission_id) values (4, 30); -- create payment
-insert into permission_role_map (role_id, permission_id) values (4, 72); -- view invoices
-insert into permission_role_map (role_id, permission_id) values (4, 74); -- view all customer invoices
-insert into permission_role_map (role_id, permission_id) values (4, 90); -- customers menu
-insert into permission_role_map (role_id, permission_id) values (4, 91); -- invoices menu
-insert into permission_role_map (role_id, permission_id) values (4, 92); -- order menu
-insert into permission_role_map (role_id, permission_id) values (4, 93); -- payments menu
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 15 as permission_id from role r where r.role_type_id=4 group by r.id; -- view customers
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 10 as permission_id from role r where r.role_type_id=4 group by r.id; -- create customer
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 11 as permission_id from role r where r.role_type_id=4 group by r.id; -- edit customer
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 24 as permission_id from role r where r.role_type_id=4 group by r.id; -- view orders
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 28 as permission_id from role r where r.role_type_id=4 group by r.id; -- view all customer orders
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 20 as permission_id from role r where r.role_type_id=4 group by r.id; -- create orders
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 21 as permission_id from role r where r.role_type_id=4 group by r.id; -- edit orders
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 34 as permission_id from role r where r.role_type_id=4 group by r.id; -- view payments
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 36 as permission_id from role r where r.role_type_id=4 group by r.id; -- view all customer payments
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 30 as permission_id from role r where r.role_type_id=4 group by r.id; -- create payment
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 72 as permission_id from role r where r.role_type_id=4 group by r.id; -- view invoices
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 74 as permission_id from role r where r.role_type_id=4 group by r.id; -- view all customer invoices
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 90 as permission_id from role r where r.role_type_id=4 group by r.id; -- customers menu
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 91 as permission_id from role r where r.role_type_id=4 group by r.id; -- invoices menu
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 92 as permission_id from role r where r.role_type_id=4 group by r.id; -- order menu
+insert into permission_role_map (role_id, permission_id) select r.id as role_id, 93 as permission_id from role r where r.role_type_id=4 group by r.id; -- payments menu
 
 
 -- 10-Jan-2011
@@ -291,7 +291,7 @@ insert into report(id, type_id, name, file_name, optlock) values (11, 4, 'total_
 insert into report_parameter(id, report_id, dtype, name) values(18, 11, 'date', 'start_date');
 insert into report_parameter(id, report_id, dtype, name) values(19, 11, 'date', 'end_date');
 insert into international_description(table_id, foreign_id, psudo_column, language_id, content) values(100, 11, 'description', 1, 'Total invoiced per customer grouped by product category.');
-insert into entity_report_map(report_id, entity_id) values(11, 1);
+insert into entity_report_map (select 11 as report_id, e.id as entity_id from entity e);
 
 -- 03-Feb-2012
 -- Redmine Issue: #2127
@@ -302,7 +302,7 @@ insert into report(id, type_id, name, file_name, optlock) values (12, 4, 'total_
 insert into report_parameter(id, report_id, dtype, name) values(20, 12, 'string', 'start_year');
 insert into report_parameter(id, report_id, dtype, name) values(21, 12, 'string', 'end_year');
 insert into international_description(table_id, foreign_id, psudo_column, language_id, content) values(100, 12, 'description', 1, 'Total invoiced per customer over years grouped by year.');
-insert into entity_report_map(report_id, entity_id) values(12, 1);
+insert into entity_report_map (select 12 as report_id, e.id as entity_id from entity e);
 
 
 
@@ -583,4 +583,6 @@ create table partner_meta_field_map (
       REFERENCES meta_field_value (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
+
+update jbilling_seqs set next_id = coalesce((select round(max(id)/100)+1 from role), 1) where name = 'role';
 

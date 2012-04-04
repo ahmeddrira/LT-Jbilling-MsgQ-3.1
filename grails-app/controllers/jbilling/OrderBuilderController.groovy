@@ -124,7 +124,7 @@ class OrderBuilderController {
                     order.currencyId    = (currencies.find{ it.id == user.currency.id} ?: company.currency).id
                     order.statusId      = Constants.ORDER_STATUS_ACTIVE
                     order.period        = Constants.ORDER_PERIOD_ONCE
-                    order.billingTypeId = Constants.ORDER_BILLING_POST_PAID
+                    order.billingTypeId = Constants.ORDER_BILLING_PRE_PAID
                     order.activeSince   = new Date()
                     order.isCurrent     = 0
                     order.orderLines    = []
@@ -393,9 +393,9 @@ class OrderBuilderController {
                     order.period = subscribedPlan.period.id
                 }
 
-                // one time orders are ALWAYS post-paid
+                // one time orders are ALWAYS pre-paid
                 if (order.period == Constants.ORDER_PERIOD_ONCE)
-                    order.billingTypeId = Constants.ORDER_BILLING_POST_PAID
+                    order.billingTypeId = Constants.ORDER_BILLING_PRE_PAID
 
                 // rate order
                 if (order.orderLines) {

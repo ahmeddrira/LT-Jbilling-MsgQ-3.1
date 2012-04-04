@@ -6357,7 +6357,7 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 
 COPY contact_field_type (id, entity_id, prompt_key, data_type, customer_readonly, optlock) FROM stdin;
 1	1	partner.prompt.fee	string	1	0
-2	1	ccf.payment_processor	integer	1	0
+2	1	ccf.payment_processor	string	1	0
 3	1	ccf.ip_address	string	1	0
 \.
 
@@ -14824,7 +14824,6 @@ COPY pluggable_task_type_category (id, interface_name) FROM stdin;
 6	com.sapienter.jbilling.server.pluggableTask.PaymentTask
 7	com.sapienter.jbilling.server.pluggableTask.NotificationTask
 8	com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask
-9	com.sapienter.jbilling.server.pluggableTask.PenaltyTask
 10	com.sapienter.jbilling.server.pluggableTask.ProcessorAlarm
 11	com.sapienter.jbilling.server.user.tasks.ISubscriptionStatusManager
 12	com.sapienter.jbilling.server.payment.tasks.IAsyncPaymentParameters

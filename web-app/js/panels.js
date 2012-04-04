@@ -158,6 +158,9 @@ function calculateColumnId() {
  */
 function closePanel(element) {
     register(element);
+    if(clicked == 1){
+        clicked = clicked + 1;
+    }
     $('#viewport .column:nth-child(' + clicked + ')').remove();
 }
 

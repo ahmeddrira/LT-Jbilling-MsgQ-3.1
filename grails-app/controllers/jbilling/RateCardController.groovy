@@ -17,12 +17,15 @@
 package jbilling
 
 import com.sapienter.jbilling.server.pricing.db.RateCardDTO
+import com.sapienter.jbilling.server.pricing.db.RateCardWS
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.pricing.RateCardBL
 import com.sapienter.jbilling.common.SessionInternalError
 import com.sapienter.jbilling.client.ViewUtils
 import grails.plugins.springsecurity.Secured
 import org.springframework.jdbc.core.JdbcTemplate
+
+import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.util.sql.JDBCUtils
 import org.springframework.jdbc.datasource.DataSourceUtils
 import javax.sql.DataSource
@@ -36,6 +39,7 @@ class RateCardController {
 
     static pagination = [ max: 10, offset: 0 ]
 
+	IWebServicesSessionBean webServicesSession
     ViewUtils viewUtils
     DataSource dataSource
 
@@ -73,7 +77,7 @@ class RateCardController {
 
     def delete = {
         if (params.id) {
-            new RateCardBL(params.int('id')).delete();
+			webServicesSession.deleteRateCard(params.int('id'))
 
             flash.message = 'rate.card.deleted'
             flash.args = [ params.id ]
@@ -81,7 +85,9 @@ class RateCardController {
         }
 
         // re-render the list of rate cards
-        redirect action: 'list', params: [ id: null, partial: true]
+        params.applyFilter = true
+		params.id = null
+        list()
     }
 
     def edit = {
@@ -157,42 +163,45 @@ class RateCardController {
     }
 
     def save = {
-        def rateCard = new RateCardDTO();
+        def rateCard = new RateCardWS();
         bindData(rateCard, params)
-        rateCard.company = new CompanyDTO(session['company_id'])
 
         // save uploaded file
         def rates = request.getFile("rates")
         def temp = null
 
-        if (!rates.empty) {
-            temp = File.createTempFile(rateCard.tableName, '.csv')
-            rates.transferTo(temp)
-            log.debug("rate card csv saved to: " + temp?.getAbsolutePath());
-        }
-
-        try {
-            // save or update
-            if (!rateCard.id) {
-                rateCard.id = new RateCardBL().create(rateCard, temp)
-
-                flash.message = 'rate.card.created'
-                flash.args = [rateCard.id as String]
-
-            } else {
-                new RateCardBL(rateCard.id).update(rateCard, temp);
-
-                flash.message = 'rate.card.updated'
-                flash.args = [rateCard.id as String]
-            }
-        } catch (SessionInternalError e) {
-            viewUtils.resolveException(flash, session.locale, e)
-            chain action: 'list', model: [ selected: rateCard ]
-            return
-
-        } finally {
-            temp?.delete()
-        }
+        if (params.rates?.getContentType().toString().contains('text/csv') || rateCard.id ) {
+			if (!rates.empty) {
+				def name = rateCard.tableName ?: 'rate'
+				temp = File.createTempFile(name, '.csv')
+				rates.transferTo(temp)
+				log.debug("rate card csv saved to: " + temp?.getAbsolutePath());
+			}
+	        try {
+	            // save or update
+	            if (!rateCard.id) {
+					rateCard.id = webServicesSession.createRateCard(rateCard, temp);
+	
+	                flash.message = 'rate.card.created'
+	                flash.args = [rateCard.id as String]
+	
+	            } else {
+					webServicesSession.updateRateCard(rateCard, temp)
+	
+	                flash.message = 'rate.card.updated'
+	                flash.args = [rateCard.id as String]
+	            }
+	        } catch (SessionInternalError e) {
+	            viewUtils.resolveException(flash, session.locale, e)
+	            chain action: 'list', model: [ selected: rateCard ]
+	
+	        } finally {
+	            temp?.delete()
+	        }
+		
+		} else {
+			flash.error = "csv.error.found"
+		}
 
         chain action: 'list', params: [ id: rateCard.id ]
     }

@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.util.sql.TableGenerator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.ScrollableResults;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -105,16 +106,15 @@ public class RateCardBL {
      * @param rates file handle of the CSV on disk containing the rates.
      * @return id of the saved rate card
      */
-    public Integer create(RateCardDTO rateCard, File rates) {
+    public Integer create(RateCardDTO rateCard, File ratesFile) {
         if (rateCard != null) {
             LOG.debug("Saving new rate card " + rateCard);
             this.rateCard = rateCardDas.save(rateCard);
             this.tableGenerator = new TableGenerator(this.rateCard.getTableName(), RateCardDTO.TABLE_COLUMNS);
-
             LOG.debug("Creating a new rate table & saving rating data");
-            if (rates != null) {
+            if (ratesFile != null) {
                 try {
-                    saveRates(rates);
+                    saveRates(ratesFile);
 
                 } catch (SessionInternalError e) {
                     dropRates();
@@ -143,15 +143,15 @@ public class RateCardBL {
      * @param rateCard rate card to create
      * @param rates file handle of the CSV on disk containing the rates.
      */
-    public void update(RateCardDTO rateCard, File rates) {
+    public void update(RateCardDTO rateCard, File ratesFile) {
         if (this.rateCard != null) {
             // re-create the rating table
             LOG.debug("Re-creating the rate table & saving updated rating data");
-            if (rates != null) {
+            if (ratesFile != null) {
                 dropRates();
 
                 try {
-                    saveRates(rates);
+                    saveRates(ratesFile);
 
                 } catch (IOException e) {
                     dropRates();
@@ -168,11 +168,16 @@ public class RateCardBL {
 
             if (!originalTableName.equals(rateCard.getTableName())) {
                 alterTableSql = this.tableGenerator.buildRenameTableSQL(rateCard.getTableName());
+                //remove and re-register spring beans
+                removeSpringBeans();
             }
 
             // do update
             this.rateCard.setName(rateCard.getName());
-            this.rateCard.setTableName(rateCard.getTableName());
+            if (!this.rateCard.getTableName().equals(rateCard.getTableName())) {
+                this.rateCard.setTableName(rateCard.getTableName());
+                registerSpringBeans();
+            }
 
             LOG.debug("Saving updates to rate card " + rateCard.getId());
             this.rateCard = rateCardDas.save(rateCard);
@@ -185,7 +190,7 @@ public class RateCardBL {
             }
 
             // re-register spring beans if rates were updated
-            if (rates != null) {
+            if (ratesFile != null) {
                 removeSpringBeans();
                 registerSpringBeans();
             }
@@ -230,8 +235,8 @@ public class RateCardBL {
      * @param rates file handle of the CSV on disk containing the rates.
      * @throws IOException if file does not exist or is not readable
      */
-    public void saveRates(File rates) throws IOException, SQLException {
-        CSVReader reader = new CSVReader(new FileReader(rates));
+    public void saveRates(File ratesFile) throws IOException, SQLException {
+        CSVReader reader = new CSVReader(new FileReader(ratesFile));
         String[] line = reader.readNext();
         validateCsvHeader(line);
 
@@ -407,13 +412,19 @@ public class RateCardBL {
         String readerBeanName = factory.getReaderBeanName();
         String loaderBeanName = factory.getLoaderBeanName();
         String finderBeanName = factory.getFinderBeanName();
+        
+        try {
 
-        LOG.debug("Removing beans: " + readerBeanName + ", " + loaderBeanName + ", " + finderBeanName);
+        	LOG.debug("Removing beans: " + readerBeanName + ", " + loaderBeanName + ", " + finderBeanName);
 
-        GenericApplicationContext ctx = (GenericApplicationContext) Context.getApplicationContext();
-        ctx.removeBeanDefinition(readerBeanName);
-        ctx.removeBeanDefinition(loaderBeanName);
-        ctx.removeBeanDefinition(finderBeanName);
+        	GenericApplicationContext ctx = (GenericApplicationContext) Context.getApplicationContext();
+        	ctx.removeBeanDefinition(readerBeanName);
+        	ctx.removeBeanDefinition(loaderBeanName);
+        	ctx.removeBeanDefinition(finderBeanName);
+
+        } catch (NoSuchBeanDefinitionException e) {
+        	LOG.warn("Beans not found");
+        }
     }
 
     /**

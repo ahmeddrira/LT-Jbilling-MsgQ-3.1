@@ -36,6 +36,7 @@ import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
+import com.sapienter.jbilling.server.pricing.db.RateCardWS;
 import com.sapienter.jbilling.server.process.AgeingWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessWS;
@@ -51,6 +52,9 @@ import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 
 import javax.jws.WebService;
+
+import java.io.File;
+import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -364,5 +368,13 @@ public interface IWebServicesSessionBean {
 
     public PlanItemWS[] getCustomerPrices(Integer userId);
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId);
+    
+    /*
+     *  Rate Card
+     */
+    
+    public Integer createRateCard(RateCardWS rateCard, File rateCardFile);
+    public void updateRateCard(RateCardWS rateCard, File rateCardFile);
+    public void deleteRateCard(Integer rateCardId);
 
 }

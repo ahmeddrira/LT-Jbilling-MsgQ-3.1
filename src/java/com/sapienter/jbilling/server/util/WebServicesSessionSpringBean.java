@@ -92,6 +92,9 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS;
+import com.sapienter.jbilling.server.pricing.RateCardBL;
+import com.sapienter.jbilling.server.pricing.db.RateCardDTO;
+import com.sapienter.jbilling.server.pricing.db.RateCardWS;
 import com.sapienter.jbilling.server.process.*;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
@@ -125,6 +128,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.naming.NamingException;
 import javax.sql.rowset.CachedRowSet;
+
+import java.io.File;
+import java.io.FileReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -3301,4 +3307,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         CustomerPriceBL bl = new CustomerPriceBL(userId);
         return PlanItemBL.getWS(bl.getPrice(itemId));
     }
+
+	public Integer createRateCard(RateCardWS rateCardWs, File rateCardFile) {
+		RateCardDTO rateCardDTO = rateCardWs.toRateCardDTO();
+		rateCardDTO.setCompany(getCompany().getDTO());
+		return new RateCardBL().create(rateCardDTO, rateCardFile);
+	}
+
+	public void updateRateCard(RateCardWS rateCardWs, File rateCardFile) {
+		RateCardDTO rateCardDTO = rateCardWs.toRateCardDTO();
+		rateCardDTO.setCompany(getCompany().getDTO());
+		new RateCardBL(rateCardDTO.getId()).update(rateCardDTO, rateCardFile);
+	}
+
+	public void deleteRateCard(Integer rateCardId) {
+		 new RateCardBL(rateCardId).delete();
+	}
 }

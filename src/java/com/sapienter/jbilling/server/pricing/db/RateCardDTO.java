@@ -17,6 +17,7 @@
 package com.sapienter.jbilling.server.pricing.db;
 
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.api.validation.CreateValidationGroup;
 import com.sapienter.jbilling.server.util.sql.JDBCUtils;
 import com.sapienter.jbilling.server.util.sql.TableGenerator;
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +32,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import javax.validation.constraints.NotNull;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;

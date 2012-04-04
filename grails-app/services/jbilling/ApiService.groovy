@@ -16,6 +16,8 @@
 
 package jbilling
 
+import java.io.File;
+
 import com.sapienter.jbilling.server.entity.AchDTO
 import com.sapienter.jbilling.server.entity.CreditCardDTO
 import com.sapienter.jbilling.server.invoice.InvoiceWS
@@ -36,6 +38,8 @@ import com.sapienter.jbilling.server.order.OrderWS
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx
 import com.sapienter.jbilling.server.payment.PaymentWS
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskWS
+import com.sapienter.jbilling.server.pricing.RateCardBL;
+import com.sapienter.jbilling.server.pricing.db.RateCardWS;
 import com.sapienter.jbilling.server.process.AgeingWS
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS
 import com.sapienter.jbilling.server.process.BillingProcessWS
@@ -780,4 +784,16 @@ class ApiService implements IWebServicesSessionBean {
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
         return webServicesSession.getCustomerPrice(userId, itemId);
     }
+	
+	public Integer createRateCard(RateCardWS rateCard, File rateCardFile) {
+		return webServicesSession.createRateCard(rateCard, rateCardFile);
+	}
+
+	public void updateRateCard(RateCardWS rateCard, File rateCardFile) {
+		webServicesSession.updateRateCard(rateCard, rateCardFile);
+	}
+
+	public void deleteRateCard(Integer rateCardId) {
+		 webServicesSession.deleteRateCard(rateCardId);
+	}
 }

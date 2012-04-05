@@ -54,6 +54,7 @@ public class OrderWS implements WSSecured, Serializable {
     @DateBetween(start = "01/01/1901", end = "12/31/9999")
     private Date activeSince;
     private Date activeUntil;
+    @DateBetween(start = "01/01/1901", end = "12/31/9999" , message = "validation.date.between")
     private Date cycleStarts;
     private Date nextBillableDay;
     private int deleted;

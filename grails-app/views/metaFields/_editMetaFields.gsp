@@ -28,7 +28,7 @@
   @since 26-Oct-2011
 --%>
 
-<g:set var="enumerations" value="${EnumerationDTO.findByEntity(new CompanyDTO(session['company_id']))}"/>
+<g:set var="enumerations" value="${EnumerationDTO.createCriteria().list(){eq('entity', new CompanyDTO(session['company_id']))}}"/>
 
 <g:each var="field" in="${availableFields?.sort{ it.displayOrder }}">
     <g:if test="${!field.disabled}">

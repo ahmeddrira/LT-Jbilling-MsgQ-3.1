@@ -170,7 +170,9 @@ class RateCardController {
         def rates = request.getFile("rates")
         def temp = null
 
-        if (params.rates?.getContentType().toString().contains('text/csv') || rateCard.id ) {
+        if (params.rates?.getContentType().toString().contains('text/csv') ||
+			params.rates?.getOriginalFilename().toString().endsWith('.csv')
+			|| (rateCard.id && rates.empty )) {
 			if (!rates.empty) {
 				def name = rateCard.tableName ?: 'rate'
 				temp = File.createTempFile(name, '.csv')

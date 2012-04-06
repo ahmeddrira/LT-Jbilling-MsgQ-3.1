@@ -121,10 +121,10 @@ public class RateCardBL {
                     throw e;
                 } catch (IOException e) {
                     dropRates();
-                    throw new SessionInternalError("Could not load rating table", e, new String[] { "RateCarDTO,rates,cannot.read.file" });
+                    throw new SessionInternalError("Could not load rating table", e, new String[] { "RateCardWS,rates,cannot.read.file" });
                 } catch (SQLException e) {
                     dropRates();
-                    throw new SessionInternalError("Exception saving rates to database", e, new String[] { "RateCarDTO,rates,cannot.save.rates.db.error" });
+                    throw new SessionInternalError("Exception saving rates to database", e, new String[] { "RateCardWS,rates,cannot.save.rates.db.error" });
                 }
 
                 registerSpringBeans();
@@ -155,10 +155,10 @@ public class RateCardBL {
 
                 } catch (IOException e) {
                     dropRates();
-                    throw new SessionInternalError("Could not load rating table", e, new String[] { "RateCarDTO,rates,cannot.read.file" });
+                    throw new SessionInternalError("Could not load rating table", e, new String[] { "RateCardWS,rates,cannot.read.file" });
                 } catch (SQLException e) {
                     dropRates();
-                    throw new SessionInternalError("Exception saving rates to database", e, new String[] { "RateCarDTO,rates,cannot.save.rates.db.error" });
+                    throw new SessionInternalError("Exception saving rates to database", e, new String[] { "RateCardWS,rates,cannot.save.rates.db.error" });
                 }
             }
 
@@ -236,6 +236,9 @@ public class RateCardBL {
      * @throws IOException if file does not exist or is not readable
      */
     public void saveRates(File ratesFile) throws IOException, SQLException {
+    	
+    	checkRateTableExistance();
+    	
         CSVReader reader = new CSVReader(new FileReader(ratesFile));
         String[] line = reader.readNext();
         validateCsvHeader(line);
@@ -274,7 +277,17 @@ public class RateCardBL {
         }
     }
 
-    /**
+    private void checkRateTableExistance() throws SQLException {
+    	
+        DataSource dataSource = jdbcTemplate.getDataSource();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+    	List<String> tableNames = JDBCUtils.getAllTableNames(connection);
+    	if (tableNames.contains(rateCard.getTableName())) {
+    		throw new SessionInternalError("Exception saving rates to database.", new String[] { "RateCardWS,rates,rate.card.db.exist," + rateCard.getTableName()});
+    	}
+	}
+
+	/**
      * Validates that the uploaded CSV file starts with the expected columns from {@link RateCardDTO#TABLE_COLUMNS}.
      * If the column names don't match or are in an incorrect order a SessionInternalError will be throw.
      *
@@ -290,7 +303,7 @@ public class RateCardBL {
             String expected = columns.get(i).getName();
 
             if (!expected.equalsIgnoreCase(columnName)) {
-                errors.add("RateCardDTO,rates,rate.card.unexpected.header.value," + expected + "," + columnName);
+                errors.add("RateCardWS,rates,rate.card.unexpected.header.value," + expected + "," + columnName);
             }
         }
 
@@ -352,7 +365,7 @@ public class RateCardBL {
             columns = JDBCUtils.getAllColumnNames(connection, rateCard.getTableName());
         } catch (SQLException e) {
             throw new SessionInternalError("Could not read columns from rate card table.", e,
-                                           new String[] { "RateCardDTO,rates,rate.card.cannot.read.rating.table" });
+                                           new String[] { "RateCardWS,rates,rate.card.cannot.read.rating.table" });
 
         } finally {
             DataSourceUtils.releaseConnection(connection, dataSource);

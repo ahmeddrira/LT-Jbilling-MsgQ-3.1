@@ -39,6 +39,7 @@ public class OrderLineWS implements Serializable {
     @NotNull(message = "validation.error.null.quantity")
     @Digits(integer = 12, fraction = 10, message="validation.error.not.a.number", groups = {CreateValidationGroup.class, UpdateValidationGroup.class} )
     private String quantity;
+    @Digits(integer = 12, fraction = 10, message="validation.error.not.a.number", groups = {CreateValidationGroup.class, UpdateValidationGroup.class} )
     private String price;
     private Date createDatetime;
     private int deleted;

@@ -173,7 +173,7 @@
                         <g:applyLayout name="form/input">
                             <content tag="label"><g:message code="prompt.partner.balance"/></content>
                             <content tag="label.for">balance</content>
-                            <g:textField class="field" name="balance" value="${formatNumber(number: partner?.balance ?: 0, formatName: 'money.format')}"/>
+                            <g:textField class="field" name="balanceAsDecimal" value="${formatNumber(number: partner?.balanceAsDecimal ?: 0, formatName: 'money.format')}"/>
                         </g:applyLayout>
                         
                         <g:applyLayout name="form/input">

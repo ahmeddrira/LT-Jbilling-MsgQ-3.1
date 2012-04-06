@@ -26,6 +26,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import com.sapienter.jbilling.server.order.validator.DateBetween;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.security.WSSecured;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
@@ -62,6 +63,7 @@ public class PartnerWS implements WSSecured, Serializable {
     private Boolean oneTime;
     private Integer periodValue;
     @NotNull(message="validation.error.notnull")
+    @DateBetween(start = "01/01/1901", end = "12/31/9999")
     private Date nextPayoutDate;
     private String duePayout;
     private Boolean automaticProcess;
@@ -156,6 +158,10 @@ public class PartnerWS implements WSSecured, Serializable {
 
     public BigDecimal getBalanceAsDecimal() {
         return balance != null ? new BigDecimal(balance) : null;
+    }
+    
+    public void setBalanceAsDecimal(BigDecimal balance) {
+        setBalance(balance);
     }
 
     public void setBalance(String balance) {

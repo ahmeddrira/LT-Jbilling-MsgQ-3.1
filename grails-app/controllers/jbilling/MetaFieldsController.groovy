@@ -21,6 +21,7 @@
 package jbilling
 
 import com.sapienter.jbilling.server.metafields.MetaFieldBL
+import com.sapienter.jbilling.server.metafields.db.MetaFieldDAS
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.metafields.db.EntityType
 import com.sapienter.jbilling.server.metafields.db.MetaField
@@ -97,15 +98,11 @@ class MetaFieldsController {
             metaField.setDefaultValue(defaultValue)
         }
 
-
-        // validate duplicate enum
-        if (!metaField.id || metaField.id == 0 ) {
-            if (MetaField.findByName(metaField.name)) {
-                flash.error = 'metaField.name.exists'
-                render view: 'edit', model: [ metaField: metaField ]
-                return
-            }
-        }
+		if (new MetaFieldDAS().getFieldByName(session['company_id'], metaField.entityType, metaField.name)) {
+			flash.error = 'metaField.name.exists'
+			render view: 'edit', model: [ metaField: metaField ]
+			return
+		}
 
         // validate
         try {

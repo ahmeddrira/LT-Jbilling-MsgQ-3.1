@@ -19,10 +19,12 @@ package com.sapienter.jbilling.server.pricing.db;
 import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
 import com.sapienter.jbilling.server.util.sql.JDBCUtils;
 
 /**
@@ -37,6 +39,7 @@ public class RateCardWS implements Serializable {
     @NotNull(message="validation.error.notnull")
     @Size(min = 1, max = 50, message = "validation.error.size,1,50")
 	private String name;
+    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "validation.error.field.format", groups={UpdateValidationGroup.class})
 	private String tableName;
 	
 	public RateCardWS() {

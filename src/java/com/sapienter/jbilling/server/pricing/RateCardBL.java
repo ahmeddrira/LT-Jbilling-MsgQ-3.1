@@ -115,6 +115,8 @@ public class RateCardBL {
             LOG.debug("Creating a new rate table & saving rating data");
             if (ratesFile != null) {
                 try {
+                	
+                	checkRateTableExistance(this.rateCard.getTableName());
                     saveRates(ratesFile);
 
                 } catch (SessionInternalError e) {
@@ -153,7 +155,7 @@ public class RateCardBL {
 
                 try {
                     saveRates(ratesFile);
-
+                    
                 } catch (IOException e) {
                     dropRates();
                     throw new SessionInternalError("Could not load rating table", e, new String[] { "RateCardWS,rates,cannot.read.file" });
@@ -168,6 +170,13 @@ public class RateCardBL {
             String alterTableSql = null;
 
             if (!originalTableName.equals(rateCard.getTableName())) {
+            	try {
+            		checkRateTableExistance(rateCard.getTableName());
+            	} catch (SQLException e) {
+                    dropRates();
+                    throw new SessionInternalError("Exception saving rates to database", e, 
+                    		new String[] { "RateCardWS,rates,cannot.save.rates.db.error" });
+                }
                 alterTableSql = this.tableGenerator.buildRenameTableSQL(rateCard.getTableName());
                 //remove and re-register spring beans
                 removeSpringBeans();
@@ -209,7 +218,8 @@ public class RateCardBL {
         if (rateCard != null) {
         	
         	if (!new PriceModelDAS().findRateCardPriceModels(rateCard.getId()).isEmpty()) {
-        		throw new SessionInternalError("Exception deleting rates from database", new String[] { "RateCardWS,rates,cannot.delete.rates.db.constraint" });
+        		throw new SessionInternalError("Exception deleting rates from database", 
+        				new String[] { "RateCardWS,rates,cannot.delete.rates.db.constraint" });
         	}
         	
             rateCardDas.delete(rateCard);
@@ -243,8 +253,6 @@ public class RateCardBL {
      * @throws IOException if file does not exist or is not readable
      */
     public void saveRates(File ratesFile) throws IOException, SQLException {
-    	
-    	checkRateTableExistance();
     	
         CSVReader reader = new CSVReader(new FileReader(ratesFile));
         String[] line = reader.readNext();
@@ -284,13 +292,14 @@ public class RateCardBL {
         }
     }
 
-    private void checkRateTableExistance() throws SQLException {
+    private void checkRateTableExistance(String tableName) throws SQLException {
     	
         DataSource dataSource = jdbcTemplate.getDataSource();
         Connection connection = DataSourceUtils.getConnection(dataSource);
     	List<String> tableNames = JDBCUtils.getAllTableNames(connection);
-    	if (tableNames.contains(rateCard.getTableName())) {
-    		throw new SessionInternalError("Exception saving rates to database.", new String[] { "RateCardWS,rates,rate.card.db.exist," + rateCard.getTableName()});
+    	if (tableNames.contains(tableName.toLowerCase())) {
+    		throw new SessionInternalError("Exception saving rates to database.", 
+    				new String[] { "RateCardWS,rates,rate.card.db.exist," + tableName});
     	}
 	}
 

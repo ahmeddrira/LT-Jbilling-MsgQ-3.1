@@ -15,13 +15,12 @@
  */
 package com.sapienter.jbilling.server.entity;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlType;
-
 import com.sapienter.jbilling.server.user.validator.CreditCardNumber;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -39,6 +38,7 @@ public class CreditCardDTO implements Serializable {
     @NotNull(message="validation.error.notnull")
     private Date expiry;
     @NotEmpty(message="validation.error.notnull")
+    @Size(min = 0, max = 150, message = "validation.error.size,0,150")
     private String name;
     private Integer type;
     private Integer deleted;

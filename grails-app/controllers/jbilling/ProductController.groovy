@@ -446,7 +446,7 @@ class ProductController {
     def updateStrategy = {
         def product = params."product.id" ? webServicesSession.getItem(params.int('product.id'), session['user_id'], null) : null
         def priceModel = PlanHelper.bindPriceModel(params)
-        def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+		def startDate = params.startDate ? new Date().parse(message(code: 'date.format'), params.startDate) : null;
 
         render template: '/priceModel/model', model: [ model: priceModel, startDate: startDate, models: product?.defaultPrices, currencies: currencies ]
     }
@@ -678,12 +678,14 @@ class ProductController {
         // has been created by using AJAX calls ("+ Add Date", "Save Changes", "Delete" buttons in UI).
         if (!product.percentage) {
             def price = PlanHelper.bindPriceModel(params)
-            def startDate = new Date().parse(message(code: 'date.format'), params.startDate)
+            def startDate = params.startDate ? new Date().parse(message(code: 'date.format'), params.startDate) : null;
 
             if (oldProduct) {
                 product.defaultPrices = oldProduct.defaultPrices
             }
-            product.defaultPrices.put(startDate, price)
+			if (startDate) {
+				product.defaultPrices.put(startDate, price)
+			}
         }
     }
 

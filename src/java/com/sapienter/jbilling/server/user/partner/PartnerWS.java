@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -54,6 +55,7 @@ public class PartnerWS implements WSSecured, Serializable {
     @NotNull(message="validation.error.notnull")
     private Integer feeCurrencyId;
     @NotNull(message="validation.error.notnull")
+    @Digits(integer = 12, fraction = 10, message="validation.error.not.a.number", groups = {CreateValidationGroup.class, UpdateValidationGroup.class} )
     private String balance;
     private String totalPayments;
     private String totalRefunds;

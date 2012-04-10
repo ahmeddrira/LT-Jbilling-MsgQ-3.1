@@ -19,6 +19,7 @@ package com.sapienter.jbilling.server.pluggableTask.admin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.iterators.ArrayListIterator;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -92,13 +93,23 @@ public class PluggableTaskBL<T> {
             throw new SessionInternalError("task to update can't be null");
         }
         validate(dto);
+
+        List<PluggableTaskParameterDTO> parameterDTOList = dasParameter.findAllByTask(dto);
         for (PluggableTaskParameterDTO param: dto.getParameters()) {
+            parameterDTOList.remove(dasParameter.find(param.getId()));
             param.expandValue();
         }
+
+        for (PluggableTaskParameterDTO param: parameterDTOList){
+            dasParameter.delete(param);
+        }
+
         LOG.debug("updating " + dto);
         pluggableTask = das.save(dto);
         
-        eLogger.audit(executorId, null, Constants.TABLE_PLUGGABLE_TASK, 
+        eLogger.audit(executorId, null
+
+                , Constants.TABLE_PLUGGABLE_TASK,
                 dto.getId(), EventLogger.MODULE_TASK_MAINTENANCE,
                 EventLogger.ROW_UPDATED, null, null, null);
         // clear the rules cache (just in case this plug-in was ruled based)

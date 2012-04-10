@@ -98,7 +98,9 @@ class MetaFieldsController {
             metaField.setDefaultValue(defaultValue)
         }
 
-		if (new MetaFieldDAS().getFieldByName(session['company_id'], metaField.entityType, metaField.name)) {
+		def existingMetaField = new MetaFieldDAS().getFieldByName(session['company_id'], metaField.entityType, metaField.name);
+		
+		if (existingMetaField != null && existingMetaField.id != metaField.id) {
 			flash.error = 'metaField.name.exists'
 			render view: 'edit', model: [ metaField: metaField ]
 			return

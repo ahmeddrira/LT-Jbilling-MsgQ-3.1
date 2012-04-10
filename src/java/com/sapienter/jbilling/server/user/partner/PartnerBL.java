@@ -34,6 +34,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.PartnerRangeComparator;
 import com.sapienter.jbilling.server.user.PartnerSQL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
@@ -670,8 +671,15 @@ public class PartnerBL extends ResultList implements PartnerSQL {
         partner.setBaseUser(null);
 
         userBl.delete(executorId);
+        
+        for (CustomerDTO customer : partner.getCustomers()) {
+        	customer.setPartner(null);
+        }
+        
+        partner.getCustomers().clear();
+        
         partnerDAS.delete(partner);
-
+        
         if (executorId != null) {
             eLogger.audit(executorId, userId, Constants.TABLE_BASE_USER,
                     partnerId, EventLogger.MODULE_USER_MAINTENANCE,

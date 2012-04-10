@@ -77,15 +77,19 @@ class RateCardController {
 
     def delete = {
         if (params.id) {
-			webServicesSession.deleteRateCard(params.int('id'))
-
-            flash.message = 'rate.card.deleted'
-            flash.args = [ params.id ]
-            log.debug("Deleted rate card ${params.id}.")
+			try {
+				webServicesSession.deleteRateCard(params.int('id'))
+				flash.message = 'rate.card.deleted'
+				flash.args = [ params.id ]
+				log.debug("Deleted rate card ${params.id}.")
+			} catch (SessionInternalError e) {
+				viewUtils.resolveException(flash, session.locale, e)
+			}
         }
 
         // re-render the list of rate cards
         params.applyFilter = true
+		params.partial = false
 		params.id = null
         list()
     }
@@ -196,6 +200,7 @@ class RateCardController {
 	        } catch (SessionInternalError e) {
 	            viewUtils.resolveException(flash, session.locale, e)
 	            chain action: 'list', model: [ selected: rateCard ]
+				return
 	
 	        } finally {
 	            temp?.delete()
@@ -205,6 +210,6 @@ class RateCardController {
 			flash.error = "csv.error.found"
 		}
 
-        chain action: 'list', params: [ id: rateCard.id ]
+        chain action: 'list', params: [ id: rateCard?.id ]
     }
 }

@@ -16,6 +16,10 @@
 
 package com.sapienter.jbilling.server.pricing.db;
 
+import java.util.List;
+
+import org.hibernate.Query;
+
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
 /**
@@ -25,5 +29,15 @@ import com.sapienter.jbilling.server.util.db.AbstractDAS;
  * @since 09/02/11
  */
 public class PriceModelDAS extends AbstractDAS<PriceModelDTO> {
+
+	@SuppressWarnings("unchecked")
+	public List<PriceModelDTO> findRateCardPriceModels(Integer rateCardId) {
+
+		String hql = "select distinct pm from PriceModelDTO pm " +
+				"where pm.attributes['rate_card_id'] = :rateCardId";
+		Query query = getSession().createQuery(hql);
+		query.setString("rateCardId", rateCardId.toString());
+		return query.list();
+	}
 
 }

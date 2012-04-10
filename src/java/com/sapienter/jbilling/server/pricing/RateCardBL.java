@@ -18,6 +18,7 @@ package com.sapienter.jbilling.server.pricing;
 
 import au.com.bytecode.opencsv.CSVReader;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.pricing.db.PriceModelDAS;
 import com.sapienter.jbilling.server.pricing.db.RateCardDAS;
 import com.sapienter.jbilling.server.pricing.db.RateCardDTO;
 import com.sapienter.jbilling.server.util.Context;
@@ -204,7 +205,13 @@ public class RateCardBL {
      * Deletes the current rate card managed by this class.
      */
     public void delete() {
+    	
         if (rateCard != null) {
+        	
+        	if (!new PriceModelDAS().findRateCardPriceModels(rateCard.getId()).isEmpty()) {
+        		throw new SessionInternalError("Exception deleting rates from database", new String[] { "RateCardWS,rates,cannot.delete.rates.db.constraint" });
+        	}
+        	
             rateCardDas.delete(rateCard);
             dropRates();
 

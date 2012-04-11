@@ -3149,6 +3149,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         return currency.getId();
     }
+    
+    public boolean deleteCurrency(Integer currencyId) throws SessionInternalError {
+    	
+        try {
+        	CurrencyBL currencyBl = new CurrencyBL(currencyId);
+        	return currencyBl.delete();
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
 
     public CompanyWS getCompany() {
         CompanyDTO company= new CompanyDAS().find(getCallerCompanyId());

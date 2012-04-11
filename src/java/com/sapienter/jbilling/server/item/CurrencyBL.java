@@ -136,6 +136,18 @@ public class CurrencyBL {
             LOG.error("Cannot update, CurrencyDTO not found or not set!");
         }
     }
+    
+    public boolean delete() {
+        if (currency != null && currency.isDeletable()) {
+        	currency.getEntities_1().clear();
+        	currencyDas.delete(currency);
+        	return true;
+        } else {
+            LOG.error("Cannot delete, CurrencyDTO not found or not deletable!");
+        }
+        
+        return false;
+    }
 
     public CurrencyExchangeDTO setOrUpdateExchangeRate(BigDecimal amount, Integer entityId, Date dateFrom) {
         final Date truncatedToDay = com.sapienter.jbilling.common.Util.truncateDate(dateFrom);

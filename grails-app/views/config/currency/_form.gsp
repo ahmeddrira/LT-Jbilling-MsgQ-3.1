@@ -165,9 +165,20 @@
                                 <td class="innerContent" style="text-align: left;">
                                     <g:if test="${currency.id != 1}">
                                     %{-- editable rate --}%
-                                        <div class="inp-bg inp4">
+                                        <div class="inp-bg inp4" style="width: 100px;">
                                             <g:textField name="currencies.${currency.id}.sysRate" class="field" value="${formatNumber(number: currency.sysRate, formatName: 'exchange.format')}"/>
-                                        </div>
+                                            <a onclick="showConfirm('deleteCurrency-${currency.id}');">
+            									<img src="${resource(dir:'images', file:'cross.png')}" alt="remove"/>
+        									</a>
+									    <g:render template="/confirm"
+									              model="['message': 'currency.delete.confirm',
+									                      'controller': 'config',
+									                      'action': 'deleteCurrency',
+									                      'id': currency.id,
+									                      'formParams': ['code': currency.code],
+									                     ]"/>
+		                                        </div>
+                                        
                                     </g:if>
                                     <g:else>
                                     %{-- USD always has a rate of 1.00 --}%
@@ -205,4 +216,5 @@
                     code="button.cancel"/></span></g:link>
         </div>
     </div>
+    
 </div>

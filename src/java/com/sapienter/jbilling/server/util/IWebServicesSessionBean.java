@@ -324,6 +324,7 @@ public interface IWebServicesSessionBean {
     public void updateCurrencies(CurrencyWS[] currencies);
     public void updateCurrency(CurrencyWS currency);
     public Integer createCurrency(CurrencyWS currency);
+    public boolean deleteCurrency(Integer currencyId);
 
     public CompanyWS getCompany();
     public void updateCompany(CompanyWS companyWS);

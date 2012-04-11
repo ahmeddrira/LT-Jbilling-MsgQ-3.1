@@ -244,6 +244,31 @@ class ConfigController {
 
         redirect action: 'currency'
     }
+	
+	def deleteCurrency = {
+		log.debug 'delete currency called on ' + params.id
+		try {
+			boolean retVal = webServicesSession.deleteCurrency(params.int('id'));
+			
+			if (retVal) {
+				flash.message = 'currency.deleted'
+				flash.args = [ params.code  ]
+				log.debug("Deleted currency ${params.code}.")
+			} else {
+				flash.info = 'currency.delete.failure'
+				flash.args = [ params.code  ]
+			}
+
+		} catch (SessionInternalError e) {
+			viewUtils.resolveException(flash, session.locale, e)
+		} catch (Exception e) {
+         	log.error e.getMessage()
+            flash.error = 'currency.delete.error'
+			flash.args = [ params.code  ]
+        }
+		
+		redirect action: 'currency'
+	}
 
     def addDatePoint = {
         def startDate = com.sapienter.jbilling.common.Util.truncateDate(new Date())

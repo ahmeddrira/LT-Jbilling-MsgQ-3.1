@@ -681,6 +681,10 @@ class ApiService implements IWebServicesSessionBean {
     public Integer createCurrency(CurrencyWS currency) {
         webServicesSession.createCurrency(currency)
     }
+	
+	public boolean deleteCurrency(Integer currencyId) {
+		return webServicesSession.deleteCurrency(currencyId);
+	}
 
     public CompanyWS getCompany() {
         webServicesSession.getCompany();

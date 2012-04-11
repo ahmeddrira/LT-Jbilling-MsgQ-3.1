@@ -19,6 +19,7 @@ package com.sapienter.jbilling.server.util.db;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
+import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.process.db.ProcessRunTotalDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
@@ -46,7 +47,7 @@ import java.util.Set;
         allocationSize = 10
 )
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class CurrencyDTO extends AbstractDescription implements java.io.Serializable {
+public class CurrencyDTO extends AbstractDescription implements java.io.Serializable, IDeletable {
 
     private int id;
     private String symbol;
@@ -60,6 +61,7 @@ public class CurrencyDTO extends AbstractDescription implements java.io.Serializ
     private Set<CurrencyExchangeDTO> currencyExchanges = new HashSet<CurrencyExchangeDTO>(0);
     private Set<CompanyDTO> entities_1 = new HashSet<CompanyDTO>(0);
     private Set<InvoiceDTO> invoices = new HashSet<InvoiceDTO>(0);
+    private Set<PriceModelDTO> priceModels = new HashSet<PriceModelDTO>();
     private Set<ProcessRunTotalDTO> processRunTotals = new HashSet<ProcessRunTotalDTO>(0);
     private Integer versionNum;
 
@@ -236,8 +238,17 @@ public class CurrencyDTO extends AbstractDescription implements java.io.Serializ
     public void setInvoices(Set<InvoiceDTO> invoices) {
         this.invoices = invoices;
     }
-
+    
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "currency")
+    public Set<PriceModelDTO> getPriceModels() {
+		return priceModels;
+	}
+
+	public void setPriceModels(Set<PriceModelDTO> priceModels) {
+		this.priceModels = priceModels;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "currency")
     public Set<ProcessRunTotalDTO> getProcessRunTotals() {
         return this.processRunTotals;
     }
@@ -294,6 +305,14 @@ public class CurrencyDTO extends AbstractDescription implements java.io.Serializ
 
     public void setSysRate(BigDecimal sysRate) {
         this.sysRate = sysRate;
+    }
+    
+    @Transient
+    public boolean isDeletable() {
+    	return (getEntities().isEmpty() && getBaseUsers().isEmpty() 
+    			&& getPurchaseOrders().isEmpty() && getPartners().isEmpty() 
+    			&& getPayments().isEmpty() && getInvoices().isEmpty() 
+    			&& getPriceModels().isEmpty() && getProcessRunTotals().isEmpty() );
     }
 }
 

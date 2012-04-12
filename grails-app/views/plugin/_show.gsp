@@ -26,23 +26,23 @@
 
     <!-- the plug-in details -->
     <div class="heading">
-        <strong>${plugin.type.getDescription(session['language_id'], "title")}</strong>
+        <strong>${plugin?.type?.getDescription(session['language_id'], "title")}</strong>
     </div>
     <div class="box">
         <strong><g:message code="plugins.plugin.description"/></strong>
-        <p>${plugin.type.getDescription(session['language_id'])}</p>
+        <p>${plugin?.type?.getDescription(session['language_id'])}</p>
         <br/>
         
         <table class="dataTable">
            <tr>
             <td><g:message code="plugins.plugin.id-long"/></td>
-            <td class="value">${plugin.getId()}</td>
+            <td class="value">${plugin?.getId()}</td>
            </tr>
            <tr>
             <td><g:message code="plugins.plugin.notes"/></td>
             <td class="value">
-                <g:if test="${plugin.getNotes() != null}">
-                    ${plugin.getNotes()}
+                <g:if test="${plugin?.getNotes() != null}">
+                    ${plugin?.getNotes()}
                 </g:if>
                 <g:else>
                     <g:message code="plugins.plugin.noNotes"/>
@@ -51,9 +51,9 @@
            </tr>
            <tr>
             <td><g:message code="plugins.plugin.order"/></td>
-            <td class="value">${plugin.getProcessingOrder()}</td>
+            <td class="value">${plugin?.getProcessingOrder()}</td>
            </tr>
-           <g:if test="${plugin.parameters.size() == 0}">
+           <g:if test="${plugin?.parameters.size() == 0}">
            <tr>
             <td><g:message code="plugins.plugin.noParamaters"/></td>
             <td class="value"><g:message code="plugins.plugin.noParamatersTxt"/></td>
@@ -61,7 +61,7 @@
            </g:if>
         </table>
         
-        <g:if test="${plugin.parameters}">
+        <g:if test="${plugin?.parameters}">
         <table class="innerTable">
              <thead class="innerHeader">
              <tr>
@@ -70,7 +70,7 @@
              </tr>
              </thead>
              <tbody>
-             <g:each in="${plugin.parameters}">
+             <g:each in="${plugin?.parameters}">
              <tr>
                 <td class="innerContent">${it.name}</td>
                 <td class="innerContent">${it.value}</td>
@@ -82,13 +82,13 @@
     </div>
 
     <g:render template="/confirm" 
-              model="['message':'plugins.delete.confirm','controller':'plugin','action':'delete','id':plugin.getId()]"/>
+              model="['message':'plugins.delete.confirm','controller':'plugin','action':'delete','id':plugin?.getId()]"/>
 
     <div class="btn-box">
-        <a href="${createLink(controller:'plugin', action:'edit', id:plugin.getId()) }" class="submit">
+        <a href="${createLink(controller:'plugin', action:'edit', id:plugin?.getId()) }" class="submit">
             <span><g:message code="plugins.plugin.edit"/></span>
         </a>
-        <a onclick="$('#confirm-dialog-delete-${plugin.id}').dialog('open');" class="submit delete">
+        <a onclick="$('#confirm-dialog-delete-${plugin?.id}').dialog('open');" class="submit delete">
             <span><g:message code="plugins.plugin.delete"/></span>
         </a>
     </div>

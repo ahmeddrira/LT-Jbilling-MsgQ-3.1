@@ -142,9 +142,10 @@ public class DTOFactory {
             dto.setCreditCard(user.getCreditCards().iterator().next());
         }
 
-        if (!user.getAchs().isEmpty()) {
-            AchBL ach = new AchBL(((AchDTO)user.getAchs().toArray()[0]).getId());
-            dto.setAch(ach.getDTO());
+        AchDTO achDTO = user.getAchWithoutPayment();
+        if (achDTO != null) {
+    		AchBL ach = new AchBL(achDTO.getId());
+    		dto.setAch(ach.getDTO());
         }
 
         // if this is a customer, add its dto

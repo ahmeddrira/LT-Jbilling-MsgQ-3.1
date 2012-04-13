@@ -43,6 +43,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
+import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
@@ -577,6 +578,17 @@ public class UserDTO implements Serializable, Exportable {
                + "id=" + id
                + ", userName='" + userName + '\''
                + '}';
+    }
+    
+    @Transient
+    public AchDTO getAchWithoutPayment() {
+    	for (AchDTO achDTO : this.achs) {
+    		if (!achDTO.getPayments().isEmpty()) {
+    			continue;
+    		}
+    		return achDTO;
+    	}
+    	return null;
     }
 
     public void touch() {

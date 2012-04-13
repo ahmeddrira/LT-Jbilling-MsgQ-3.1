@@ -515,9 +515,8 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
             throws SessionInternalError {
         try {
             UserBL user = new UserBL(userId);
-            Set<AchDTO> ach = user.getEntity().getAchs();
-            if (ach.size() > 0) {
-                AchDTO _achDTO= (AchDTO)ach.toArray()[0];
+            AchDTO _achDTO = user.getEntity().getAchWithoutPayment();
+            if (_achDTO != null) {
                 AchBL bl = new AchBL((_achDTO).getId());
                 bl.delete(executorId);
             }

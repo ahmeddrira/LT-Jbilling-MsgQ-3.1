@@ -844,11 +844,12 @@ public class UserBL extends ResultList implements UserSQL {
         }
         // let's see if this guy already has an ach record
         Set<AchDTO> rows = user.getAchs();
-        if (rows.size() == 0) {
+        AchDTO achDTORecord = user.getAchWithoutPayment();
+        if (achDTORecord == null) {
             bl.create(ach);
             rows.add(new AchDAS().find(bl.getEntity().getId()));
         } else { // its an update
-                bl.set(((AchDTO)rows.toArray()[0]).getId());
+                bl.set(achDTORecord.getId());
                 bl.update(executorId, ach);
         }
     }

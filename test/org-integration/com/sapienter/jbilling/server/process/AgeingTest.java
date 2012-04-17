@@ -136,7 +136,7 @@ public class AgeingTest extends TestCase {
         calendar.add(Calendar.DATE, 5); // + 5 days, equal to grace period
         System.out.println("Last day of grace period: " + calendar.getTime());
 
-        AgeingStatusChecker statusChecker = new AgeingStatusChecker();
+        AgeingStatusChecker statusChecker = new AgeingStatusChecker(api);
         Thread statusCheckingThread = new Thread(statusChecker);
         statusCheckingThread.start();
 
@@ -227,14 +227,8 @@ public class AgeingTest extends TestCase {
         public void stopChecking() {
             active.set(false);
         }
-        public AgeingStatusChecker() {
-            try {
-                this.api = JbillingAPIFactory.getAPI();
-            } catch (JbillingAPIException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        public AgeingStatusChecker(JbillingAPI api) {
+            this.api = api;
         }
         @Override
         public void run() {

@@ -72,7 +72,15 @@ public abstract class AbstractResolverMediationTask extends PluggableTask implem
 
             // resolve mediation pricing fields
             result.setRecordKey(record.getKey());
-            resolve(result, record.getFields());
+            
+            if (record.getErrors().isEmpty()) {
+            	resolve(result, record.getFields());
+            } else {
+            	LOG.debug("This Record " + record.getKey() + " has a format error in length or field values.");
+            	result.setDone(true);
+            	result.addError("ERR: " + record.getErrors().get(0));
+            }
+            
             results.add(result);
 
             // done!

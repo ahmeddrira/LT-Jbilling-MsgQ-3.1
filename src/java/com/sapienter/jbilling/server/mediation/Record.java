@@ -24,6 +24,9 @@ public class Record {
     private StringBuffer key = new StringBuffer();
     private int position = 1;
     private List<PricingField> fields = new ArrayList<PricingField>();
+    
+    // Record format errors go here
+    private List<String> errors = new ArrayList<String>(1);
 
     public Record() {
     }
@@ -58,6 +61,14 @@ public class Record {
         return key.toString();
     }
 
+    public List<String> getErrors() {
+        return errors;
+    }
+
+    public void addError(String error) {
+        errors.add(error);
+    }
+    
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();

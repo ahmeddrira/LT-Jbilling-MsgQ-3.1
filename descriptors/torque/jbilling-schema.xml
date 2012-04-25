@@ -727,7 +727,7 @@
             <index-column name="item_id"/>
         </index>
     </table>
-    <table name="item_price_timeline">
+    <table name="plan_item_price_timeline">
         <column name="plan_item_id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="start_date" primaryKey="true" required="true" type="TIMESTAMP"/>
         <column name="price_model_id" required="true" type="INTEGER"/>
@@ -761,13 +761,14 @@
         </foreign-key>
     </table>
     <table name="rate_card">
-        <column name="id" primaryKey="true" requred="true" type="INTEGER"/>
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="name" required="true" size="255" type="VARCHAR"/>
-        <column name="table_name" required="true" unique="true" size="255" type="VARCHAR"/>
+        <column name="table_name" required="true" size="255" type="VARCHAR"/>
         <column name="entity_id" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="company">
+        <foreign-key foreignTable="entity">
             <reference foreign="id" local="entity_id"/>
         </foreign-key>
+        <unique><unique-column name="table_name"/></unique>
     </table>
     <table name="jbilling_table">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
@@ -1534,7 +1535,7 @@
         <column name="id" primaryKey="true" type="INTEGER" required="true"/>
         <column name="meta_field_name_id" type="INTEGER" required="true"/>
         <column name="dtype" type="VARCHAR" size="10" required="true"/>
-        <column name="boolean_value" type="BOOLEAN"/>
+        <column name="boolean_value" type="BIT"/>
         <column name="date_value" type="TIMESTAMP"/>
         <column name="decimal_value" type="NUMERIC" size="22" scale="10"/>
         <column name="integer_value" type="INTEGER"/>

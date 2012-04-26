@@ -23,13 +23,12 @@ import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
-import com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.ParameterDescription;
 import com.sapienter.jbilling.server.process.PeriodOfTime;
+import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
-import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import org.apache.log4j.Logger;
 
@@ -49,13 +48,16 @@ import java.util.Set;
  *      item_exempt_category_id     (optional) The id of an item category that, if the item belongs to, it is
  *                                  exempt from taxes
  *
- * @author Alexander Aksenov
+ * @author Alexander Aksenov, Vikas Bodani
  * @since 30.04.11
  */
 public class SimpleTaxCompositionTask extends AbstractChargeTask {
 
     private static final Logger LOG = Logger.getLogger(SimpleTaxCompositionTask.class);
 
+    protected Integer exemptItemCategoryID = null;
+    protected Integer exemptCustomerAttributeID = null;
+    
     // plug-in parameters
     
     // optional, may be empty
@@ -72,8 +74,7 @@ public class SimpleTaxCompositionTask extends AbstractChargeTask {
     @Override
     public void apply(NewInvoiceDTO invoice, Integer userId) throws TaskException {
         ItemDTO taxItem;
-        Integer itemExemptCategoryId = null;
-        Integer customContactFieldId = null;
+        
         try {
             String paramValue = getParameter(PARAM_TAX_ITEM_ID.getName(), "");
             if (paramValue == null || "".equals(paramValue.trim())) {
@@ -85,18 +86,18 @@ public class SimpleTaxCompositionTask extends AbstractChargeTask {
             }
             paramValue = getParameter(PARAM_ITEM_EXEMPT_CATEGORY_ID.getName(), "");
             if (paramValue != null && !"".equals(paramValue.trim())) {
-                itemExemptCategoryId = new Integer(paramValue);
+                exemptItemCategoryID = new Integer(paramValue);
             }
             paramValue = getParameter(PARAM_CUSTOM_CONTACT_FIELD_ID.getName(), "");
             if (paramValue != null && !"".equals(paramValue.trim())) {
-                customContactFieldId = new Integer(paramValue);
+                exemptCustomerAttributeID = new Integer(paramValue);
             }
         } catch (NumberFormatException e) {
             LOG.error("Incorrect plugin configuration", e);
             throw new TaskException(e);
         }
 
-        if (!isTaxCalculationNeeded(userId, customContactFieldId)) {
+        if (!isTaxCalculationNeeded(invoice, userId)) {
             return;
         }
 
@@ -113,8 +114,8 @@ public class SimpleTaxCompositionTask extends AbstractChargeTask {
                 invoiceAmountSum = invoiceAmountSum.subtract(invoice.getCarriedBalance());
             }
 
-            LOG.debug("Exempt Category " + itemExemptCategoryId);
-            if (itemExemptCategoryId != null) {
+            LOG.debug("Exempt Category " + exemptItemCategoryID);
+            if (exemptItemCategoryID != null) {
                 // find exemp items and subtract price
                 for (int i = 0; i < invoice.getResultLines().size(); i++) {
                     InvoiceLineDTO invoiceLine = (InvoiceLineDTO) invoice.getResultLines().get(i);
@@ -123,7 +124,7 @@ public class SimpleTaxCompositionTask extends AbstractChargeTask {
                     if (item != null) {
                         Set<ItemTypeDTO> itemTypes = new ItemDAS().find(item.getId()).getItemTypes();
                         for (ItemTypeDTO itemType : itemTypes) {
-                            if (itemType.getId() == itemExemptCategoryId) {
+                            if (itemType.getId() == exemptItemCategoryID) {
                                 LOG.debug("Item " + item.getDescription() + " is Exempt. Category " + itemType.getId());
                                 invoiceAmountSum = invoiceAmountSum.subtract(invoiceLine.getAmount());
                                 break;
@@ -159,22 +160,27 @@ public class SimpleTaxCompositionTask extends AbstractChargeTask {
         }
     }
 
-    private boolean isTaxCalculationNeeded(Integer userId, Integer customFieldId) {
-        if (customFieldId == null) {
-            return true;
-        }
-        CustomerDTO customer = new UserDAS().find(userId).getCustomer();
-        if (customer == null) {
-            return true;
-        }
-
-        MetaFieldValue customField = customer.getMetaField(customFieldId);
-        String value = (String) customField.getValue();
-        if ("yes".equalsIgnoreCase(value) || "true".equalsIgnoreCase(value)) {
-            return false;
-        }
-
-        return true;
+    public boolean isTaxCalculationNeeded(NewInvoiceDTO invoice, Integer userId) {
+    	LOG.debug("isTaxCalculationNeeded for user " + userId + " having exemptProperty " + exemptCustomerAttributeID );
+    	//default true
+    	boolean retVal= true;
+    	if ( null != exemptCustomerAttributeID ) { 
+	    	UserDTO user= UserBL.getUserEntity(userId);
+	        CustomerDTO customer = user.getCustomer();
+	        if (null != customer) {
+	        	LOG.debug ("User and Customer resolved. ");
+		        MetaFieldValue customField = customer.getMetaField(exemptCustomerAttributeID);
+		        if ( null != customField) {
+		        	LOG.debug("Exempt field value " + customField.getValue());
+			        String value = (String) customField.getValue();
+			        if ("yes".equalsIgnoreCase(value) || "true".equalsIgnoreCase(value)) {
+			            retVal= false;
+			        }
+		        }
+	        }
+	        
+    	}
+        return retVal;
     }
 
     @Override

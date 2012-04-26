@@ -52,16 +52,12 @@ import java.util.Set;
  * @author Alexander Aksenov
  * @since 30.04.11
  */
-public class SimpleTaxCompositionTask extends PluggableTask
-        implements InvoiceCompositionTask {
+public class SimpleTaxCompositionTask extends AbstractChargeTask {
 
     private static final Logger LOG = Logger.getLogger(SimpleTaxCompositionTask.class);
 
     // plug-in parameters
-    //mandatory
-    public static final ParameterDescription PARAM_TAX_ITEM_ID =
-        new ParameterDescription("tax_item_id", true, ParameterDescription.Type.STR);
-
+    
     // optional, may be empty
     public static final ParameterDescription PARAM_CUSTOM_CONTACT_FIELD_ID =
         new ParameterDescription("custom_contact_field_id", false, ParameterDescription.Type.STR);
@@ -69,7 +65,6 @@ public class SimpleTaxCompositionTask extends PluggableTask
 
     //initializer for pluggable params
     {
-        descriptions.add(PARAM_TAX_ITEM_ID);
         descriptions.add(PARAM_CUSTOM_CONTACT_FIELD_ID);
         descriptions.add(PARAM_ITEM_EXEMPT_CATEGORY_ID);
     }

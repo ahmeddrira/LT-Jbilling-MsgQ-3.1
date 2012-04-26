@@ -47,12 +47,6 @@ alter table contact_field alter column content drop not null; -- postgresql
 -- alter table contact_field modify (content null); -- oracle
 -- alter table customer modify content varchar(100) null default null; -- mysql
 
-
--- remove obsolete TieredPriceModelPricingTask plug-in, functionality moved into PriceModelPricingTask
-update pluggable_task set type_id = 79 where type_id = 80;
-delete from pluggable_task_type where id = 80;
-
-
 -- Date: 09-Aug-2011
 -- Redmine Issue: #1233
 -- Description: Enumerations
@@ -92,10 +86,12 @@ ALTER TABLE contact_field_type ALTER COLUMN data_type TYPE VARCHAR(50);
 -- Date: 14-Aug-2011
 -- Description: Add Simple Tax plug-in to DB
 -- insert new tax plugin to the database
-insert into pluggable_task_type (id, category_id, class_name, min_parameters) values 
-(92, 4, 'com.sapienter.jbilling.server.process.task.SimpleTaxCompositionTask', 4);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  92, 'title',1, 'Simple Tax Invoice Composition Task');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  92, 'description', 1, 'A pluggable task to automatically add taxes to invoices, with the option of exluding some customers and some items (excemptions).');
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) 
+	values (92, 4, 'com.sapienter.jbilling.server.process.task.SimpleTaxCompositionTask', 1);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) 
+	values (24,  92, 'title',1, 'Simple Tax Invoice Composition Task');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) 
+	values (24,  92, 'description', 1, 'A pluggable task to automatically add taxes to invoices, with the option of exluding some customers and some items (excemptions).');
 
 
 -- Date: 15-Aug-2011

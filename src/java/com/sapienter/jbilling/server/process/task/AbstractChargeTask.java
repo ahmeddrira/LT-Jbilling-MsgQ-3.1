@@ -110,12 +110,17 @@ public abstract class AbstractChargeTask extends PluggableTask implements Invoic
             ItemBL itemBL = new ItemBL(taxItem);
             taxOrPenaltyValue = itemBL.getPriceByCurrency(invoice.getCreateDatetime(), taxItem, userId, invoice.getCurrency().getId());
         }
-        LOG.debug("Adding Tax Or Penalty as additional Invoice Line");
-        String itemDescription = taxItem.getDescription();
-        InvoiceLineDTO invoiceLine = new InvoiceLineDTO(null, itemDescription,
-                taxOrPenaltyValue, taxOrPenaltyValue, BigDecimal.ONE, INVOICE_LINE_TYPE, 0,
-                taxItem.getId(), userId, null);
-        invoice.addResultLine(invoiceLine);
+        
+        if (taxOrPenaltyValue.compareTo(BigDecimal.ZERO) != 0 ) {
+	        LOG.debug("Adding Tax Or Penalty as additional Invoice Line");
+	        String itemDescription = taxItem.getDescription();
+	        InvoiceLineDTO invoiceLine = new InvoiceLineDTO(null, itemDescription,
+	                taxOrPenaltyValue, taxOrPenaltyValue, BigDecimal.ONE, INVOICE_LINE_TYPE, 0,
+	                taxItem.getId(), userId, null);
+	        invoice.addResultLine(invoiceLine);
+        } else {
+        	LOG.debug("Tax or penalty amount = 0, adding no line.");
+        }
     }
 
     /**

@@ -42,7 +42,7 @@ import java.util.Set;
  *
  *      tax_item_id                 (required) The item that will be added to an invoice with the taxes
  *
- *      custom_contact_field_id     (optional) The id of CCF that if its value is 'true' or 'yes' for a customer,
+ *      customer_exempt_field_id     (optional) The id of CCF that if its value is 'true' or 'yes' for a customer,
  *                                  then the customer is considered exempt. Exempt customers do not get the tax
  *                                  added to their invoices.
  *      item_exempt_category_id     (optional) The id of an item category that, if the item belongs to, it is
@@ -62,8 +62,9 @@ public class SimpleTaxCompositionTask extends AbstractChargeTask {
     
     // optional, may be empty
     public static final ParameterDescription PARAM_CUSTOM_CONTACT_FIELD_ID =
-        new ParameterDescription("custom_contact_field_id", false, ParameterDescription.Type.STR);
-    public static final ParameterDescription PARAM_ITEM_EXEMPT_CATEGORY_ID = new ParameterDescription("item_exempt_category_id", false, ParameterDescription.Type.STR);
+        new ParameterDescription("customer_exempt_field_id", false, ParameterDescription.Type.STR);
+    public static final ParameterDescription PARAM_ITEM_EXEMPT_CATEGORY_ID = 
+		new ParameterDescription("item_exempt_category_id", false, ParameterDescription.Type.STR);
 
     //initializer for pluggable params
     {
@@ -71,20 +72,14 @@ public class SimpleTaxCompositionTask extends AbstractChargeTask {
         descriptions.add(PARAM_ITEM_EXEMPT_CATEGORY_ID);
     }
 
-    @Override
-    public void apply(NewInvoiceDTO invoice, Integer userId) throws TaskException {
-        ItemDTO taxItem;
-        
+    /**
+     * Set the current set of plugin params
+     */
+    protected void setPluginParameters()  throws TaskException {
+        LOG.debug("setPluginParameters()");
+        super.setPluginParameters();
         try {
-            String paramValue = getParameter(PARAM_TAX_ITEM_ID.getName(), "");
-            if (paramValue == null || "".equals(paramValue.trim())) {
-                throw new TaskException("Tax item id is not defined!");
-            }
-            taxItem = new ItemDAS().find(new Integer(paramValue));
-            if (taxItem == null) {
-                throw new TaskException("Tax item not found!");
-            }
-            paramValue = getParameter(PARAM_ITEM_EXEMPT_CATEGORY_ID.getName(), "");
+            String paramValue = getParameter(PARAM_ITEM_EXEMPT_CATEGORY_ID.getName(), "");
             if (paramValue != null && !"".equals(paramValue.trim())) {
                 exemptItemCategoryID = new Integer(paramValue);
             }
@@ -95,68 +90,6 @@ public class SimpleTaxCompositionTask extends AbstractChargeTask {
         } catch (NumberFormatException e) {
             LOG.error("Incorrect plugin configuration", e);
             throw new TaskException(e);
-        }
-
-        if (!isTaxCalculationNeeded(invoice, userId)) {
-            return;
-        }
-
-        if (taxItem.getPercentage() != null) {
-            // tax calculation as percentage of full cost
-            //calculate total to include result lines
-            invoice.calculateTotal();
-            BigDecimal invoiceAmountSum = invoice.getTotal();
-
-            //remove carried balance from tax calculation
-            //to avoid double taxation
-            LOG.debug("Percentage Price. Carried balance is " + invoice.getCarriedBalance());
-            if ( null != invoice.getCarriedBalance() ){
-                invoiceAmountSum = invoiceAmountSum.subtract(invoice.getCarriedBalance());
-            }
-
-            LOG.debug("Exempt Category " + exemptItemCategoryID);
-            if (exemptItemCategoryID != null) {
-                // find exemp items and subtract price
-                for (int i = 0; i < invoice.getResultLines().size(); i++) {
-                    InvoiceLineDTO invoiceLine = (InvoiceLineDTO) invoice.getResultLines().get(i);
-                    ItemDTO item = invoiceLine.getItem();
-
-                    if (item != null) {
-                        Set<ItemTypeDTO> itemTypes = new ItemDAS().find(item.getId()).getItemTypes();
-                        for (ItemTypeDTO itemType : itemTypes) {
-                            if (itemType.getId() == exemptItemCategoryID) {
-                                LOG.debug("Item " + item.getDescription() + " is Exempt. Category " + itemType.getId());
-                                invoiceAmountSum = invoiceAmountSum.subtract(invoiceLine.getAmount());
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            LOG.debug("Calculating tax on = " + invoiceAmountSum);
-
-            BigDecimal taxValue = invoiceAmountSum.multiply(taxItem.getPercentage()).divide(
-                    BigDecimal.valueOf(100L), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND
-            );
-            //if (taxValue.compareTo(BigDecimal.ZERO) > 0) {
-            InvoiceLineDTO invoiceLine = new InvoiceLineDTO(null, "Tax line for percentage tax item " + taxItem.getId(),
-                    taxValue, taxValue, BigDecimal.ONE, Constants.INVOICE_LINE_TYPE_TAX, 0,
-                    taxItem.getId(), userId, null);
-            invoice.addResultLine(invoiceLine);
-            //}
-        } else {
-            LOG.debug("Flat Price.");
-            ItemBL itemBL = new ItemBL(taxItem);
-            BigDecimal price = itemBL.getPriceByCurrency(invoice.getCreateDatetime(), taxItem, userId, invoice.getCurrency().getId());
-
-            if (price != null && price.compareTo(BigDecimal.ZERO) != 0) {
-                // tax as additional invoiceLine
-                InvoiceLineDTO invoiceLine = new InvoiceLineDTO(null, "Tax line with flat price for tax item " + taxItem.getId(),
-                        price, price, BigDecimal.ONE, Constants.INVOICE_LINE_TYPE_TAX, 0,
-                        taxItem.getId(), userId, null);
-                invoice.addResultLine(invoiceLine);
-            }
         }
     }
 
@@ -183,6 +116,40 @@ public class SimpleTaxCompositionTask extends AbstractChargeTask {
         return retVal;
     }
 
+    /**
+    * Used to set primarily the line type id for tax item or any other customization
+    */
+    protected BigDecimal calculateAndApplyTax(NewInvoiceDTO invoice, Integer userId) { 
+        
+        LOG.debug("calculateAndApplyTax");
+        
+        BigDecimal invoiceAmountSum= super.calculateAndApplyTax(invoice, userId);
+        
+        LOG.debug("Exempt Category " + exemptItemCategoryID);
+        if (exemptItemCategoryID != null) {
+            // find exemp items and subtract price
+            for (int i = 0; i < invoice.getResultLines().size(); i++) {
+                InvoiceLineDTO invoiceLine = (InvoiceLineDTO) invoice.getResultLines().get(i);
+                ItemDTO item = invoiceLine.getItem();
+
+                if (item != null) {
+                    Set<ItemTypeDTO> itemTypes = new ItemDAS().find(item.getId()).getItemTypes();
+                    for (ItemTypeDTO itemType : itemTypes) {
+                        if (itemType.getId() == exemptItemCategoryID) {
+                            LOG.debug("Item " + item.getDescription() + " is Exempt. Category " + itemType.getId());
+                            invoiceAmountSum = invoiceAmountSum.subtract(invoiceLine.getAmount());
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        this.invoiceLineTypeId= Constants.INVOICE_LINE_TYPE_TAX;
+        
+        return invoiceAmountSum;
+    }
+    
     @Override
     public BigDecimal calculatePeriodAmount(BigDecimal fullPrice, PeriodOfTime period) {
         throw new UnsupportedOperationException("Can't call this method");

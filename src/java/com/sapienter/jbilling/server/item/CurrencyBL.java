@@ -188,7 +188,7 @@ public class CurrencyBL {
             currency.setName(this.currency.getDescription(languageId));
 
             // find system rate
-            if (currency.getId() == SYSTEM_CURRENCY_ID) {
+            if (currency.getId() == SYSTEM_CURRENCY_ID.intValue()) {
                 currency.setSysRate(SYSTEM_CURRENCY_RATE_DEFAULT);
             } else {
                 final CurrencyExchangeDTO exchangeRateForDate = findExchange(SYSTEM_RATE_ENTITY_ID, currency.getId(), to);
@@ -282,19 +282,34 @@ public class CurrencyBL {
     public BigDecimal convert(Integer fromCurrencyId, Integer toCurrencyId, BigDecimal amount, Date toDate, Integer entityId)
             throws SessionInternalError {
 
-        LOG.debug("Converting " + fromCurrencyId + " to " + toCurrencyId + " am " + amount + " en " + entityId);
+        LOG.debug("Converting " + fromCurrencyId + " to " + toCurrencyId + " ,amount " + amount + " ,entity " + entityId);
         if (fromCurrencyId.equals(toCurrencyId)) {
             return amount; // mmm.. no conversion needed
+        }
+        
+        if (amount.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;	// mmm.. conversion doth not make sense
         }
 
         // make the conversions
         final BigDecimal pivotAmount = convertToPivot(fromCurrencyId, amount, toDate, entityId);
+        LOG.debug("Pivot Amount " + pivotAmount);
         return convertPivotToCurrency(toCurrencyId, pivotAmount, toDate, entityId);
     }
 
+    /**
+     * Converts all currencies to Pivot currency i.e. 1
+     * @param currencyId
+     * @param amount
+     * @param toDate
+     * @param entityId
+     * @return
+     * @throws SessionInternalError
+     */
     private BigDecimal convertToPivot(Integer currencyId, BigDecimal amount, Date toDate, Integer entityId) throws SessionInternalError {
         if (currencyId.equals(SYSTEM_CURRENCY_ID)) {
-            return amount; // this is already in the pivot
+        	LOG.debug("this currency is already in the pivot");
+            return amount; 
         }
 
         // make the conversion itself
@@ -320,9 +335,10 @@ public class CurrencyBL {
     private CurrencyExchangeDTO findExchange(Integer entityId, Integer currencyId, Date toDate) throws SessionInternalError {
     	
         // check for system currency exchange
-        if (currencyId == SYSTEM_CURRENCY_ID) {
+        if (SYSTEM_CURRENCY_ID.equals(currencyId)) {
         	return new CurrencyExchangeDTO(0, currency, entityId, SYSTEM_CURRENCY_RATE_DEFAULT, new Date());
         }
+        LOG.debug("Get exchange rate for " + currencyId + " for entity " + entityId + " for date " + toDate);
     	
         CurrencyExchangeDTO exchange = exchangeDas.getExchangeRateForDate(entityId, currencyId, toDate);
         if (exchange == null) {
@@ -333,7 +349,7 @@ public class CurrencyBL {
                 throw new SessionInternalError("Currency " + currencyId + " doesn't have a default exchange");
             }
         }
-
+        LOG.debug("Exchange found " + exchange.getId());
         return exchange;
     }
 

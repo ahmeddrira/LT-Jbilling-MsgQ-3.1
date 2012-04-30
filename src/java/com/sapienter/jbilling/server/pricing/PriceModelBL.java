@@ -217,23 +217,33 @@ public class PriceModelBL {
      */
     public static PriceModelDTO getPriceForDate(SortedMap<Date, PriceModelDTO> prices, Date date) {
         if (prices == null || prices.isEmpty()) {
+        	LOG.debug("prices null or empty.");
             return null;
         }
 
         if (date == null) {
+        	LOG.debug("returning first price from the prices list");
             return prices.get(prices.firstKey());
         }
 
         // list of prices in ordered by start date, earliest first
         // return the model with the closest start date
         Date forDate = CommonConstants.EPOCH_DATE;
+        if (prices.firstKey().before(CommonConstants.EPOCH_DATE) ) {
+        	//Additionall, Epoch Date is irrelavent in the this case
+        	forDate= prices.firstKey();
+        } 
+        LOG.debug("First key " + prices.firstKey() + ", Price required for " + forDate);
+        
         for (Date start : prices.keySet()) {
-            if (start != null && start.after(date))
+            if (start != null && start.after(date)) {
+            	LOG.debug(start + " is after expected price date of " + date);
                 break;
+            }
 
             forDate = start;
         }
-
+        LOG.debug("For date is set to " + forDate + ", returning: " + (forDate != null ? prices.get(forDate) : prices.get(prices.firstKey())) );
         return forDate != null ? prices.get(forDate) : prices.get(prices.firstKey());
     }
 

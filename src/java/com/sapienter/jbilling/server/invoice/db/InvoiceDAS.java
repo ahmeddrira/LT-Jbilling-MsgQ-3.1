@@ -322,9 +322,6 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         criteria.add(Restrictions.eq("isReview", 0));
         criteria.add(Restrictions.eq("deleted", 0));
         
-        criteria.createAlias("invoiceStatus", "s")
-            .add(Restrictions.ne("s.id", Constants.INVOICE_STATUS_PAID));
-        
         criteria.setProjection(Projections.sum("balance")); 
         criteria.setComment("InvoiceDAS.findTotalBalanceByUser");
 

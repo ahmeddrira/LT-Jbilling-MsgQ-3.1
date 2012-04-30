@@ -271,7 +271,7 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
 
             } else {
                 // use order active since date, or created date if no active since
-                return pricingOrder.getActiveSince() != null ? pricingOrder.getActiveSince() : pricingOrder.getCreateDate();
+                return pricingOrder.getPricingDate();
             }
 
         } else {

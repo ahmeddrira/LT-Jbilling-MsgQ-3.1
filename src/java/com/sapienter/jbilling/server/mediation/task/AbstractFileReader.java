@@ -379,7 +379,11 @@ public abstract class AbstractFileReader extends AbstractReader {
 			}
             //to handle format errors in the records
             if ( null != lineErrorString ) {
-            	record.getErrors().set(0, lineErrorString);
+            	if (record.getErrors().size()== 0 ) {
+            		record.getErrors().add(lineErrorString);
+            	} else {            		
+            		record.getErrors().set(0, lineErrorString);
+            	}
             }
             record.setPosition(counter);
             return record;

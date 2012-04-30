@@ -51,7 +51,7 @@ public class SimpleTaxCompositionTaskTest extends TestCase {
 
     private static final Integer SIMPLE_TAX_PLUGIN_TYPE_ID = 86;
 
-    private final static String PLUGIN_PARAM_TAX_ITEM_ID= "tax_item_id";
+    private final static String PLUGIN_PARAM_TAX_ITEM_ID= "charge_carrying_item_id";
     private final static String PLUGIN_PARAM_EXEMPT_ITEM_CATEGORY_ID= "item_exempt_category_id";
 
     private static final Integer TAX_EXEMPT_ITEM_TYPE_ID = 2200;

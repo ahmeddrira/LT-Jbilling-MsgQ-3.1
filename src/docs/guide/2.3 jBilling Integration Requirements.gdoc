@@ -28,7 +28,7 @@ what specific SOAP support it provides, and how to make use of it (specifically,
 and how to pass parameters and decode the returned values).
 
 It is also recommended that you have a basic understanding of *j*Billing's functionality and usage. 
-You can find this information in other documents available from *[jBilling User Guide|guide:userGuide]* and *[Getting Started|http://www.jbilling.com/documentation/getting-started-with-jbilling]*.
+You can find this information in other documents available from *[guide:userGuide|jBilling User Guide]* and *[Getting Started|http://www.jbilling.com/documentation/getting-started-with-jbilling]*.
 Knowing how the program works is of course necessary to understand the scope and usage of each service call. Last but not least, 
 you will need a running copy of *j*Billing in order to execute the examples contained in this document. 
 Following the *Trend* tutorial on the *[Getting Started|http://www.jbilling.com/documentation/getting-started-with-jbilling]* document is also necessary to generate some of the data required for the

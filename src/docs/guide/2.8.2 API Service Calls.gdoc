@@ -12,7 +12,8 @@ introspection tool (such as SoapUI). All the SOAP methods, however, share the sa
 name, parameters and functionality as their API counterparts.
 {note}
 
-All service calls provided by the API are covered in the Web Services API Reference docs. 
+All service calls provided by the API are covered in the Web Services API Reference docs.
 
-Please refer to the client/Web Services API from here: [WebServices|API Reference].
+Please refer to the client/Web Services API from here: [API Reference|Web Services].
+
 

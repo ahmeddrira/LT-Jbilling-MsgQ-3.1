@@ -165,7 +165,7 @@ item created under this category. In the example, we assume the Item ID code is 
 item types to choose from, or you would otherwise need to determine what the Item ID is from the *j*Billing user interface.
 
 We also assume the periodicity code for the order is '2', which maps to monthly payments. This however depends on the setup of the specific 
-instance of *j*Billing, you can determine what specific code each period has by consulting the *[jBilling User Guide|guide:userGuide]* under *Orders -> Periods*.
+instance of *j*Billing, you can determine what specific code each period has by consulting the *[guide:userGuide|jBilling User Guide]* under *Orders -> Periods*.
 
 {note}
 The item we're creating an order for is, according to the Getting Started Guide, the fee for displaying a banner in Trend's front-page. 
@@ -410,7 +410,7 @@ status for a user that has been deleted (for example, in the login page), you'll
 h4. The user's _main_ order
 
 *j*Billing introduces the concept of a main order for each user. This simply tells *j*Billing which order should be the target when executing automated 
-operations such as recurring charges. *[jBilling User Guide|guide:userGuide]* covers this concept in greater detail, here we're mainly interested 
+operations such as recurring charges. *[guide:userGuide|jBilling User Guide]* covers this concept in greater detail, here we're mainly interested 
 in how the user's main order can be specified or modified by means of API calls.
 
 The main order of a user can be found on the [UserWS|api:com.sapienter.jbilling.server.user.UserWS] structure (returned by @getUserWS()@), in field _mainOrderId_ (which contains the unique identifier of the order

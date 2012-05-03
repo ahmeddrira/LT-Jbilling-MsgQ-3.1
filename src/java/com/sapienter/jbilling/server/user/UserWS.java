@@ -24,8 +24,6 @@ import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.metafields.MetaFieldBL;
 import com.sapienter.jbilling.server.metafields.MetaFieldValueWS;
-import com.sapienter.jbilling.server.metafields.db.MetaField;
-import com.sapienter.jbilling.server.metafields.db.MetaFieldValue;
 import com.sapienter.jbilling.server.security.WSSecured;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.util.api.validation.CreateValidationGroup;
@@ -41,9 +39,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /** @author Emil */
 public class UserWS implements WSSecured, Serializable {
@@ -160,6 +155,7 @@ public class UserWS implements WSSecured, Serializable {
             setNotes(dto.getCustomer().getNotes());
             setAutomaticPaymentType(dto.getCustomer().getAutoPaymentType());
 
+            invoiceDeliveryMethodId = dto.getCustomer().getInvoiceDeliveryMethod() == null ? null : dto.getCustomer().getInvoiceDeliveryMethod().getId();
             dueDateUnitId = dto.getCustomer().getDueDateUnitId();
             dueDateValue = dto.getCustomer().getDueDateValue();
 

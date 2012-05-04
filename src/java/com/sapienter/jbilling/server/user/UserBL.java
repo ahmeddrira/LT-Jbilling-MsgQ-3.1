@@ -381,7 +381,9 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setDynamicBalance(dto.getCustomer().getDynamicBalance());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
-
+            
+            user.getCustomer().setInvoiceDeliveryMethod(dto.getCustomer().getInvoiceDeliveryMethod());
+            
             //additional customer fields
             user.getCustomer().setNotes(dto.getCustomer().getNotes());
             user.getCustomer().setAutoPaymentType(dto.getCustomer().getAutoPaymentType());

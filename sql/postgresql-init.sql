@@ -4833,6 +4833,7 @@ COPY report_type (id, name, optlock) FROM stdin;
 COPY role (id, entity_id, role_type_id) FROM stdin;
 2	\N	2
 3	\N	3
+4	\N	4
 5	\N	5
 \.
 

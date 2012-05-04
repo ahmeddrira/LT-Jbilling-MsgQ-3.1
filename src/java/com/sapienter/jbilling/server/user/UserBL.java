@@ -357,8 +357,13 @@ public class UserBL extends ResultList implements UserSQL {
                     dto.getStatusId(), dto.getSubscriptionStatusId(), executorUserId);
 
             user.setCustomer(new CustomerDAS().create());
+            
             user.getCustomer().setBaseUser(user);
             user.getCustomer().setReferralFeePaid(dto.getCustomer().getReferralFeePaid());
+            
+            if (dto.getCustomer().getInvoiceDeliveryMethod() != null) {
+            	user.getCustomer().setInvoiceDeliveryMethod(dto.getCustomer().getInvoiceDeliveryMethod());
+            }
 
             if (partner != null) {
                 user.getCustomer().setPartner(partner.getEntity());
@@ -381,8 +386,6 @@ public class UserBL extends ResultList implements UserSQL {
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setDynamicBalance(dto.getCustomer().getDynamicBalance());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
-            
-            user.getCustomer().setInvoiceDeliveryMethod(dto.getCustomer().getInvoiceDeliveryMethod());
             
             //additional customer fields
             user.getCustomer().setNotes(dto.getCustomer().getNotes());

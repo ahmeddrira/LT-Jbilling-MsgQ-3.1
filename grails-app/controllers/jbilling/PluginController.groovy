@@ -182,10 +182,11 @@ class PluginController {
     }
     
     private void showListAndPlugin(Integer pluginId) {
-        PluggableTaskDTO dto = new PluggableTaskDAS().find(pluginId);
+        
+        PluggableTaskDTO dto = pluginId ? new PluggableTaskDAS().find(pluginId) : null;
         render (view: "showListAndPlugin", model:
             [plugin: dto,
-             plugins: pluggableTaskDAS.findByEntityCategory(session.company_id, dto.getType().getCategory().getId())]);
+             plugins: pluggableTaskDAS.findByEntityCategory(session.company_id, dto?.getType().getCategory().getId())]);
     }
     
     def cancel = {
@@ -231,6 +232,9 @@ class PluginController {
     
     // the next method is to support the 'Recent Items'
     def list = {
-        showListAndPlugin(params.id as Integer);
+        if (params.id)
+            showListAndPlugin(params.id as Integer);
+        else 
+            listCategories()
     }
 }

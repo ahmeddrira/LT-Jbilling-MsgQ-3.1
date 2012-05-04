@@ -72,7 +72,15 @@ public abstract class AbstractResolverMediationTask extends PluggableTask implem
 
             // resolve mediation pricing fields
             result.setRecordKey(record.getKey());
-            resolve(result, record.getFields());
+            
+            if (record.getErrors().isEmpty()) {
+            	resolve(result, record.getFields());
+            } else {
+            	LOG.debug("This Record " + record.getKey() + " has a format error in length or field values.");
+            	result.setDone(true);
+            	result.addError("ERR: " + record.getErrors().get(0));
+            }
+            
             results.add(result);
 
             // done!
@@ -89,10 +97,14 @@ public abstract class AbstractResolverMediationTask extends PluggableTask implem
      * @param fields pricing fields of the mediation record being processed
      */
     protected void resolve(MediationResult result, List<PricingField> fields) {
-        // resolve target user & event date
-        resolveUser(result, fields);
-        resolveDate(result, fields);
+        // resolve target user, currency & event date
+        resolveUserCurrencyAndDate(result, fields);
 
+        //check if the result is set to done
+        if (result.isDone()) {
+            return;
+        }
+        
         // complete the mediation action for this event
         if (isActionable(result, fields)) {
             doEventAction(result, fields);
@@ -209,8 +221,7 @@ public abstract class AbstractResolverMediationTask extends PluggableTask implem
         Abstract methods to be implemented to do the actual mediation work.
      */
 
-    public abstract void resolveDate(MediationResult result, List<PricingField> fields);
-    public abstract void resolveUser(MediationResult result, List<PricingField> fields);
+    public abstract void resolveUserCurrencyAndDate(MediationResult result, List<PricingField> fields);
     public abstract boolean isActionable(MediationResult result, List<PricingField> fields);
     public abstract void doEventAction(MediationResult result, List<PricingField> fields);
 

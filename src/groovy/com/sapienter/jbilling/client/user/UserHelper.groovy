@@ -67,21 +67,7 @@ class UserHelper {
             bindData(creditCard, params, 'creditCard')
             bindExpiryDate(creditCard, params)
 
-            if (!creditCard.number.startsWith('*')) {
-                // update credit card only if not obscured
-                user.setCreditCard(creditCard)
-
-            } else {
-                // or only if we have an ID for the existing card
-                // in this case, pull the original number from the users existing card
-                if (creditCard.id) {
-                    def existingCard =  new CreditCardBL(creditCard.id).getEntity();
-                    if (existingCard) {
-                        creditCard.number = existingCard.getNumber()
-                        user.setCreditCard(creditCard)
-                    }
-                }
-            }
+            user.setCreditCard(creditCard)
 
             log.debug("Credit card ${creditCard}")
         }

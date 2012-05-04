@@ -28,10 +28,16 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import com.sapienter.jbilling.server.util.csv.Exporter
 import com.sapienter.jbilling.server.util.csv.CsvExporter
 import com.sapienter.jbilling.client.util.DownloadHelper
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import com.sapienter.jbilling.server.item.CurrencyBL
-import com.sapienter.jbilling.client.util.SortableCriteria;
+import com.sapienter.jbilling.client.util.SortableCriteria
+import com.sapienter.jbilling.common.SessionInternalError
+import com.sapienter.jbilling.server.invoice.InvoiceWS
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO
 import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS
+import com.sapienter.jbilling.server.item.CurrencyBL
+import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.util.csv.CsvExporter
+import com.sapienter.jbilling.server.util.csv.Exporter
+import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import com.sapienter.jbilling.server.metafields.MetaFieldBL
 import com.sapienter.jbilling.server.metafields.db.EntityType
@@ -67,9 +73,9 @@ class InvoiceController {
         breadcrumbService.addBreadcrumb(controllerName, 'list', null, params.int('id'))
 
         if (params.applyFilter || params.partial) {
-            render template: 'invoices', model: [ invoices: invoices, filters: filters, selected: selected, currencies: currencies ]
+            render template: 'invoices', model: [invoices: invoices, filters: filters, selected: selected, currencies: currencies]
         } else {
-            [ invoices: invoices, filters: filters, selected: selected, currencies: currencies ]
+            [invoices: invoices, filters: filters, selected: selected, currencies: currencies]
         }
     }
 
@@ -80,7 +86,7 @@ class InvoiceController {
         params.order = params?.order ?: pagination.order
 
         // hide review invoices by default
-        def reviewFilter = filters.find{ it.field == 'isReview' }
+        def reviewFilter = filters.find { it.field == 'isReview' }
         if (reviewFilter && reviewFilter.value == null) reviewFilter.integerValue = Integer.valueOf(0)
 
         // get list
@@ -94,7 +100,7 @@ class InvoiceController {
                         //handle invoiceStatus
                         if (filter.field == 'invoiceStatus') {
                             def statuses = new InvoiceStatusDAS().findAll()
-                            eq("invoiceStatus", statuses.find{ it.id?.equals(filter.integerValue) })
+                            eq("invoiceStatus", statuses.find { it.primaryKey?.equals(filter.integerValue) })
                         } else {
                             addToCriteria(filter.getRestrictions());
                         }
@@ -184,15 +190,15 @@ class InvoiceController {
             try {
                 webServicesSession.deleteInvoice(invoiceId)
                 flash.message = 'invoice.delete.success'
-                flash.args = [ invoiceId ]
+                flash.args = [invoiceId]
 
             } catch (SessionInternalError e) {
                 viewUtils.resolveException(flash, session.locale, e);
             } catch (Exception e) {
                 log.error("Exception deleting invoice.", e)
                 flash.error = 'error.invoice.delete'
-                flash.args = [ params.id ]
-                redirect action: 'list', params: [ id: userId ]
+                flash.args = [params.id]
+                redirect action: 'list', params: [id: userId]
                 return
             }
         }
@@ -208,10 +214,10 @@ class InvoiceController {
 
                 if (sent) {
                     flash.message = 'invoice.prompt.success.email.invoice'
-                    flash.args =  [ params.id ]
+                    flash.args = [params.id]
                 } else {
                     flash.error = 'invoice.prompt.failure.email.invoice'
-                    flash.args = [ params.id ]
+                    flash.args = [params.id]
                 }
 
             } catch (Exception e) {
@@ -221,7 +227,7 @@ class InvoiceController {
             }
         }
 
-        redirect action: 'list', params: [ id: params.id ]
+        redirect action: 'list', params: [id: params.id]
     }
 
     def downloadPdf = {
@@ -235,7 +241,7 @@ class InvoiceController {
         } catch (Exception e) {
             log.error("Exception fetching PDF invoice data.", e)
             flash.error = 'invoice.prompt.failure.downloadPdf'
-            redirect action: 'list', params: [ id: invoiceId ]
+            redirect action: 'list', params: [id: invoiceId]
         }
     }
 
@@ -253,12 +259,12 @@ class InvoiceController {
             flash.error = "error.invoice.unlink.payment"
         }
 
-        redirect action: 'list', params: [ id: params.id ]
+        redirect action: 'list', params: [id: params.id]
     }
-    
+
     def byProcess = {
         if (!params.id) {
-            flash.error  =  'error.invoice.byprocess.missing.id'
+            flash.error = 'error.invoice.byprocess.missing.id'
             redirect action: 'list'
             return
         }

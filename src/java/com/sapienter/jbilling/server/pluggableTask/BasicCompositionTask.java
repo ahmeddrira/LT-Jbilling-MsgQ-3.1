@@ -1,4 +1,3 @@
-
 /*
  * JBILLING CONFIDENTIAL
  * _____________________
@@ -128,6 +127,7 @@ public class BasicCompositionTask extends PluggableTask implements InvoiceCompos
                         invoiceLine.setOrderId(order.getId());
                         orderContribution = orderContribution.add(periodAmount);
 
+                        invoiceDTO.addResultLine(invoiceLine);
                     } else if (orderLine.getOrderLineType().getId() == Constants.ORDER_LINE_TYPE_TAX) {
                         // tax items
                         int taxLineIndex = getTaxLineIndex(invoiceDTO.getResultLines(), orderLine.getDescription());
@@ -153,6 +153,8 @@ public class BasicCompositionTask extends PluggableTask implements InvoiceCompos
                                                              null);
 
                             orderContribution = orderContribution.add(periodAmount);
+
+                            invoiceDTO.addResultLine(invoiceLine);
                         }
 
 
@@ -171,11 +173,9 @@ public class BasicCompositionTask extends PluggableTask implements InvoiceCompos
                                                          null);
 
                         orderContribution = orderContribution.add(periodAmount);
-                    }
 
-                    // for the invoice to make sense when it is displayed,
-                    // each line has to be rounded to the decimals shown
-                    invoiceDTO.addResultLine(invoiceLine);
+                        invoiceDTO.addResultLine(invoiceLine);
+                    }
                 }
             }
 

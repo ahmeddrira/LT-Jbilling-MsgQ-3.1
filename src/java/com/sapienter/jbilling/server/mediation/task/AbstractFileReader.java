@@ -290,12 +290,15 @@ public abstract class AbstractFileReader extends AbstractReader {
         }
 
         private Record convertLineToRecord(String line) {
+        	
+        	String lineErrorString=null;
             // get the raw fields from the line
             String tokens[] = splitFields(line);
             if (tokens.length != format.getFields().size() && !autoID) {
-                throw new SessionInternalError("Mismatch of number of fields between " +
+            	lineErrorString="Mismatch of number of fields between " +
                         "the format and the file for line " + line + " Expected " +
-                        format.getFields().size() + " found " + tokens.length);
+                        format.getFields().size() + " found " + tokens.length;
+                LOG.warn(lineErrorString);
 
             }
             // remove quotes if needed
@@ -315,60 +318,73 @@ public abstract class AbstractFileReader extends AbstractReader {
             // create the record
             Record record = new Record();
             int tkIdx = 0;
-            for (FormatField field:format.getFields()) {
+            
+            try {
+				for (FormatField field:format.getFields()) {
 
-                if (autoID && field.getIsKey()) {
-                    record.addField(new PricingField(field.getName(),
-                                files[fileIndex].getName() + "-" + counter ), field.getIsKey());
-                    tkIdx++;
-                    continue;
-                }
+				    if (autoID && field.getIsKey()) {
+				        record.addField(new PricingField(field.getName(),
+				                    files[fileIndex].getName() + "-" + counter ), field.getIsKey());
+				        tkIdx++;
+				        continue;
+				    }
 
-                switch (PricingField.mapType(field.getType())) {
-                    case STRING:
-                        record.addField(new PricingField(field.getName(),
-                                tokens[tkIdx++]), field.getIsKey());
-                        break;
-                    case INTEGER:
-                        String intStr = tokens[tkIdx++].trim();
-                        if (field.getDurationFormat() != null && field.getDurationFormat().length() > 0) {
-                            // requires hour/minute conversion
-                            record.addField(new PricingField(field.getName(), intStr.length() > 0 ?
-                                    convertDuration(intStr, field.getDurationFormat()) : null),
-                                        field.getIsKey());
-                        } else {
-                            try {
-                                record.addField(new PricingField(field.getName(), intStr.length() > 0 ?
-                                        Integer.valueOf(intStr.trim()) : null), field.getIsKey());
-                            } catch (NumberFormatException e) {
-                                throw new SessionInternalError("Converting to integer " + field +
-                                        " line " + line, AbstractFileReader.class, e);
-                            }
-                        }
-                        break;
-                    case DATE:
-                        try {
-                            String dateStr = tokens[tkIdx++];
-                            record.addField(new PricingField(field.getName(), dateStr.length() > 0 ?
-                                    dateFormat.parse(dateStr) : null), field.getIsKey());
-                        } catch (ParseException e) {
-                            throw new SessionInternalError("Using format: " + dateFormat + "[" +
-                                    parameters.get(PARAMETER_DATE_FORMAT.getName()) + "]",
-                                    AbstractFileReader.class,e);
-                        }
-                        break;
-                    case DECIMAL:
-                        String floatStr = tokens[tkIdx++].trim();
-                        record.addField(new PricingField(field.getName(), floatStr.length() > 0 ?
-                                new BigDecimal(floatStr) : null), field.getIsKey());
-                        break;
-                    case BOOLEAN:
-                        boolean value = "true".equalsIgnoreCase(tokens[tkIdx++].trim());
-                        record.addField(new PricingField(field.getName(), value), field.getIsKey());
-                        break;
-                }
+				    switch (PricingField.mapType(field.getType())) {
+				        case STRING:
+				            record.addField(new PricingField(field.getName(),
+				                    tokens[tkIdx++]), field.getIsKey());
+				            break;
+				        case INTEGER:
+				            String intStr = tokens[tkIdx++].trim();
+				            if (field.getDurationFormat() != null && field.getDurationFormat().length() > 0) {
+				                // requires hour/minute conversion
+				                record.addField(new PricingField(field.getName(), intStr.length() > 0 ?
+				                        convertDuration(intStr, field.getDurationFormat()) : null),
+				                            field.getIsKey());
+				            } else {
+				                try {
+				                    record.addField(new PricingField(field.getName(), intStr.length() > 0 ?
+				                            Integer.valueOf(intStr.trim()) : null), field.getIsKey());
+				                } catch (NumberFormatException e) {
+				                    throw new SessionInternalError("Converting to integer " + field +
+				                            " line " + line, AbstractFileReader.class, e);
+				                }
+				            }
+				            break;
+				        case DATE:
+				            try {
+				                String dateStr = tokens[tkIdx++];
+				                record.addField(new PricingField(field.getName(), dateStr.length() > 0 ?
+				                        dateFormat.parse(dateStr) : null), field.getIsKey());
+				            } catch (ParseException e) {
+				                throw new SessionInternalError("Using format: " + dateFormat + "[" +
+				                        parameters.get(PARAMETER_DATE_FORMAT.getName()) + "]",
+				                        AbstractFileReader.class,e);
+				            }
+				            break;
+				        case DECIMAL:
+				            String floatStr = tokens[tkIdx++].trim();
+				            record.addField(new PricingField(field.getName(), floatStr.length() > 0 ?
+				                    new BigDecimal(floatStr) : null), field.getIsKey());
+				            break;
+				        case BOOLEAN:
+				            boolean value = "true".equalsIgnoreCase(tokens[tkIdx++].trim());
+				            record.addField(new PricingField(field.getName(), value), field.getIsKey());
+				            break;
+				    }
+				}
+			} catch (RuntimeException e) {
+				//any format error in the Record creation will make this record trappable by the mediation processor
+				record.getErrors().add(e.getMessage());
+			}
+            //to handle format errors in the records
+            if ( null != lineErrorString ) {
+            	if (record.getErrors().size()== 0 ) {
+            		record.getErrors().add(lineErrorString);
+            	} else {            		
+            		record.getErrors().set(0, lineErrorString);
+            	}
             }
-
             record.setPosition(counter);
             return record;
         }

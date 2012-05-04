@@ -28,6 +28,8 @@ public class RoleDAS extends AbstractDAS<RoleDTO> {
                             .add(Restrictions.eq("roleTypeId", roleTypeId));
         if (null != companyId) {
             criteria.add(Restrictions.eq("company.id", companyId));
+        } else {
+        	criteria.add(Restrictions.isNull("company"));
         }
         return findFirst(criteria);
 	}

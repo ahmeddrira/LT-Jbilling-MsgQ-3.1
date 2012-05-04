@@ -181,21 +181,31 @@ class SignupController {
 	 * @return
 	 */
 	def createDefaultRoles(language, company) {
-		
+
 		def defaultRoleList = [ Constants.TYPE_ROOT, Constants.TYPE_CLERK, Constants.TYPE_CUSTOMER, Constants.TYPE_PARTNER ];
 
-		def defaultCompanyId = CompanyDTO.createCriteria().get {
-			projections {
-				min("id")
-			}
-		}
-		
 		def roleService = new RoleBL();
-		
+
 		defaultRoleList.each() {
 
 			def role = new RoleDAS().findByRoleTypeIdAndCompanyId(
-					it, defaultCompanyId)
+					it, null)
+
+			// check the initial role ( companyId = null )
+			if (!role) {
+				// if not initial role set use the latest company role settings available
+				def defaultCompanyId = CompanyDTO.createCriteria().get {
+					projections {
+						min("id")
+					}
+				}
+				role = new RoleDAS().findByRoleTypeIdAndCompanyId(
+						it, defaultCompanyId)
+			}
+			
+			if (!role) {
+				return;
+			}
 
 			def newRole = new RoleDTO();
 			newRole.permissions.addAll(role.permissions);
@@ -208,6 +218,7 @@ class SignupController {
 
 		}
 	}
+	
 
     /**
      * Create the companies primary contact type.

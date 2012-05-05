@@ -70,7 +70,7 @@ public class SimpleTaxCompositionTaskTest extends TestCase {
         item.setPercentage((BigDecimal) null);     // not a percentage
         item.setPrice(new BigDecimal("10.00"));    // $10 flat fee
         item.setHasDecimals(1);
-        item.setDescription("Tax");
+        item.setDescription("Tax line with flat price for tax item.");
         item.setEntityId(1);
         item.setNumber("TAX");
         item.setTypes(new Integer[] { FEE_ITEM_TYPE_ID });
@@ -142,7 +142,7 @@ public class SimpleTaxCompositionTaskTest extends TestCase {
 
             // tax is a flat fee, not affected by the price of the invoice
             if (invoiceLine.getItemId().equals(item.getId())) {
-                assertEquals("tax item", "Tax line with flat price for tax item " + item.getId(), invoiceLine.getDescription());
+                assertEquals("tax item", "Tax line with flat price for tax item.", invoiceLine.getDescription());
                 assertEquals("tax $10", new BigDecimal("10"), invoiceLine.getAmountAsDecimal());
                 foundTaxItem = true;
             }
@@ -257,7 +257,7 @@ public class SimpleTaxCompositionTaskTest extends TestCase {
             // tax, %10 of taxable item total ($35 x 0.10 = $3.5)
             // excludes $50 from the tax exempt line
             if (invoiceLine.getItemId().equals(item.getId())) {
-                assertEquals("tax item", "Tax line for percentage tax item " + item.getId(), invoiceLine.getDescription());
+                assertEquals("tax item", "Tax", invoiceLine.getDescription());
                 assertEquals("tax $3.5", new BigDecimal("3.5"), invoiceLine.getAmountAsDecimal());
                 foundTaxItem = true;
             }
@@ -342,7 +342,7 @@ public class SimpleTaxCompositionTaskTest extends TestCase {
         InvoiceWS invoice = api.getInvoiceWS(invoiceId);
 
         assertNotNull("invoice generated", invoice);
-        assertEquals("tow lines in invoice including tax line, tax should be $0", 2, invoice.getInvoiceLines().length);
+        assertEquals("There should have been only one Invoice Line, tax was $0", 1, invoice.getInvoiceLines().length);
 
         boolean foundTaxItem = false;
         boolean foundExemptItem = false;
@@ -359,13 +359,11 @@ public class SimpleTaxCompositionTaskTest extends TestCase {
             // tax, but no taxable items on order
             // value of tax should be $0
             if (invoiceLine.getItemId().equals(item.getId())) {
-                assertEquals("tax item", "Tax line for percentage tax item " + item.getId(), invoiceLine.getDescription());
-                assertEquals("tax $0", new BigDecimal("0"), invoiceLine.getAmountAsDecimal());
                 foundTaxItem = true;
             }
         }
 
-        assertTrue("found and validated tax", foundTaxItem);
+        assertFalse("Should not find tax item when tax is zero.", foundTaxItem);
         assertTrue("found and validated exempt item", foundExemptItem);
 
 

@@ -102,8 +102,10 @@
                                 </thead>
                                 <tbody>
                                 <g:set var="selectedInvoiceCurrencyId" value=""/>
+                                <g:set var="currencyInvoice" value=""/>
                                 <g:each var="invoice" in="${invoices}">
                                     <g:set var="currency" value="${currencies.find { it.id == invoice.currencyId }}"/>
+                                    <g:set var="currencyInvoice" value="${currencies.find { it.id == invoice.currencyId }}"/>
                                     <g:if test="${invoice.id == invoiceId}">
                                         <g:set var="selectedInvoiceCurrencyId" value="${invoice.currencyId}"/>
                                     </g:if>
@@ -183,7 +185,7 @@
                                 <content tag="label"><g:message code="prompt.user.currency"/></content>
                                 <content tag="label.for">payment.currencyId</content>
                                 <g:select name="payment.currencyId"
-                                          from="${currencies}" 
+                                          from="${currencyInvoice}"
                                           value="${selectedInvoiceCurrencyId}" 
                                           optionKey="id"
                                           optionValue="${{it.getDescription(session['language_id'])}}"/>

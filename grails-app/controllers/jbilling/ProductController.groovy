@@ -658,6 +658,16 @@ class ProductController {
 
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.locale, e);
+
+            //check if the product's percentage is not a number
+            if(product.percentage){
+                try{
+                    Double.parseDouble(product.percentage)
+                }
+                catch(NumberFormatException ex){
+                    product.percentage = null
+                }
+            }
             render view: 'editProduct', model: [ product: product, categories: getProductCategories(), currencies: currencies, availableFields: availableMetaFields ]
             return
         }
@@ -669,6 +679,11 @@ class ProductController {
         bindData(product, params, 'product')
 
         bindMetaFields(product, params);
+
+        // if a non-numeric value is entered for product's percentage
+        if(params?.product?.percentageAsDecimal && !product?.percentage){
+           product.percentage = params?.product?.percentageAsDecimal
+        }
 
         // bind parameters with odd types (integer booleans, string integers  etc.)
         product.hasDecimals = params.product.hasDecimals ? 1 : 0

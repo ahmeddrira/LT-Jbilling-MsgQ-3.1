@@ -29,6 +29,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -50,6 +51,7 @@ public class ItemDTOEx implements WSSecured, Serializable {
     @Size (min=0,max=50, message="validation.error.size,1,50")
     private String glCode;
     @Digits(integer=3, fraction=4, message="validation.error.invalid.number.or.fraction")
+    @Pattern(regexp = "^[0-9]{1,3}(\\.[0-9]{1,4})?$", message="validation.message.error.invalid.pattern" )
     private String percentage;
     private Integer[] excludedTypes = null;
     private Integer hasDecimals;

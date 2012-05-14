@@ -97,7 +97,7 @@
         </div>
     </div>
 
-    <div class="row">
+    <div id="paginate" class="row">
         <util:remotePaginate controller="product" action="${paginateAction}" id="${selectedCategoryId}" params="${sortableParams(params: [partial: true])}" total="${products?.totalCount ?: 0}" update="column1"/>
     </div>
 </div>
@@ -128,3 +128,10 @@
                   'ajax':true,
                   'update':'column1',
                  ]"/>
+<script type="text/javascript">
+$(function(){
+    $('div#paginate a').click(function(){
+        $('#column2').html('');
+    });
+});
+</script>

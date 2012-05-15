@@ -26,7 +26,6 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
-import com.sun.tools.xjc.reader.xmlschema.bindinfo.BIGlobalBinding;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;

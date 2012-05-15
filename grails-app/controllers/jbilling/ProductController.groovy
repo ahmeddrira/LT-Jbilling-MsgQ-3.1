@@ -273,6 +273,24 @@ class ProductController {
      */
     @Secured(["PRODUCT_CATEGORY_52"])
     def deleteCategory = {
+    def category = params.id ? ItemTypeDTO.get(params.id) : null
+
+        if (params.id && !category) {
+            flash.error = 'product.category.not.found'
+            flash.args = [ params.id  as String]
+
+            render template: 'categories', model: [ categories: getProductCategories() ]
+            return
+        }
+        
+        if (!params.id && !params.boolean('add')) {
+            flash.error = 'product.category.not.selected'
+            flash.args = [ params.id  as String]
+
+            render template: 'categories', model: [ categories: getProductCategories() ]
+            return
+        }
+        
         if (params.id) {
             try {
                 webServicesSession.deleteItemCategory(params.int('id'))

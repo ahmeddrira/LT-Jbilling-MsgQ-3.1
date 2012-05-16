@@ -16,6 +16,7 @@
 
 package com.sapienter.jbilling.server.pricing.strategy;
 
+import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
@@ -68,7 +69,7 @@ public class PercentageStrategy extends AbstractPricingStrategy {
 
         if (result.getPrice() != null) {
             BigDecimal percentage = AttributeUtils.getDecimal(planPrice.getAttributes(), "percentage");
-            result.setPrice((result.getPrice().multiply(percentage)).add(result.getPrice()));
+            result.setPrice((result.getPrice().multiply(percentage)).add(result.getPrice()).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
         }
     }
 }

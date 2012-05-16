@@ -307,8 +307,8 @@ class ProductController {
             }
         }
 
-        //render template: 'categories', model: [ categories: getProductCategories() ]
-        render template: 'products', model: [ products: products ]
+        render template: 'categories', model: [ categories: getProductCategories() ]
+        //render template: 'products', model: [ products: products ]
     }
 
     /**

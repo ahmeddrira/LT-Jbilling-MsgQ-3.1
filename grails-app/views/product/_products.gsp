@@ -129,5 +129,5 @@
                   'id':selectedCategoryId,
                   'ajax':true,
                   'update':'column1',
-                 
+                 'onYes': 'closePanel(\'#column2\')'
                  ]"/>

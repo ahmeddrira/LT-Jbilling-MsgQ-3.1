@@ -115,7 +115,7 @@ class ProductController {
 
             breadcrumbService.addBreadcrumb(controllerName, 'list', null, category.id, category?.description)
 
-            render template: 'products', model: [ products: products, selectedCategoryId: category.id ]
+            render template: 'products', model: [ products: products, selectedCategoryId: category?.id ]
         }
     }
 
@@ -278,8 +278,8 @@ class ProductController {
         if (params.id && !category) {
             flash.error = 'product.category.not.found'
             flash.args = [ params.id  as String]
-
-            render template: 'categories', model: [ categories: getProductCategories() ]
+            render template: 'products', model: [ products: products ]
+           // render view: 'categories', model: [ categories: getProductCategories() ]
             return
         }
         
@@ -287,7 +287,8 @@ class ProductController {
             flash.error = 'product.category.not.selected'
             flash.args = [ params.id  as String]
 
-            render template: 'categories', model: [ categories: getProductCategories() ]
+            //render view: 'categories', model: [ categories: getProductCategories() ]
+            render template: 'products', model: [ products: products ]
             return
         }
         
@@ -306,7 +307,8 @@ class ProductController {
             }
         }
 
-        render template: 'categories', model: [ categories: getProductCategories() ]
+        //render template: 'categories', model: [ categories: getProductCategories() ]
+        render template: 'products', model: [ products: products ]
     }
 
     /**

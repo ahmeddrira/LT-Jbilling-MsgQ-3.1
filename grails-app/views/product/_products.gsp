@@ -114,7 +114,9 @@
             </sec:ifAllGranted>
         </g:if>
     </g:if>
-
+<g:else>
+            <em><g:message code="product.category.not.selected.message"/></em>
+        </g:else>
     <sec:access url="/product/allProducts">
         <g:remoteLink action="allProducts" update="column2" class="submit show" onSuccess="\$('.submit.show').hide();" ><span><g:message code="button.show.all"/></span></g:remoteLink>
     </sec:access>
@@ -127,4 +129,5 @@
                   'id':selectedCategoryId,
                   'ajax':true,
                   'update':'column1',
+                 
                  ]"/>

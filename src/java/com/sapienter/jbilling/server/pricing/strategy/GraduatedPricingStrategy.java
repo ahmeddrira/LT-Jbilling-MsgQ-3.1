@@ -109,7 +109,7 @@ public class GraduatedPricingStrategy extends AbstractPricingStrategy {
 
             BigDecimal rated = total.subtract(included);
             BigDecimal percent = rated.divide(quantity, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
-            result.setPrice(percent.multiply(planPrice.getRate()));
+            result.setPrice(percent.multiply(planPrice.getRate()).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
 
             LOG.debug("Purchased quantity + existing usage exceeds included quantity, applying a partial rate of " + result.getPrice());
 

@@ -16,6 +16,7 @@
 
 package com.sapienter.jbilling.server.pricing.strategy;
 
+import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.Usage;
@@ -87,7 +88,7 @@ public class TimeOfDayPercentageStrategy extends TimeOfDayPricingStrategy {
             }
 
             if (percentage != null) {
-                result.setPrice(result.getPrice().multiply(percentage));
+                result.setPrice(result.getPrice().multiply(percentage).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
                 LOG.debug("Price for " + now + ": " + result.getPrice());
             }
         }

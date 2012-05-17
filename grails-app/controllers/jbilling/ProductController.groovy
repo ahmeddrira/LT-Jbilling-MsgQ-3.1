@@ -274,6 +274,7 @@ class ProductController {
     @Secured(["PRODUCT_CATEGORY_52"])
     def deleteCategory = {
 <<<<<<< HEAD
+<<<<<<< HEAD
     def category = params.id ? ItemTypeDTO.get(params.id) : null
 
         if (params.id && !category) {
@@ -293,6 +294,8 @@ class ProductController {
             return
         }
         
+=======
+>>>>>>> parent of f690400...  a better error msg after secod delete of already deleted category
 =======
 >>>>>>> parent of f690400...  a better error msg after secod delete of already deleted category
         if (params.id) {

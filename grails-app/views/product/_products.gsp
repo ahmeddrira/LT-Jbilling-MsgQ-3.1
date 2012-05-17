@@ -86,7 +86,7 @@
 <div class="pager-box">
     <div class="row">
         <div class="results">
-            <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], action: paginateAction, update: 'column2',id:selectedCategoryId]"/>
+            <g:render template="/layouts/includes/pagerShowResults" model="[steps: [10, 20, 50], action: paginateAction, update: 'column1',id:selectedCategoryId]"/>
         </div>
         <div class="download">
             <sec:access url="/product/csv">
@@ -116,7 +116,7 @@
     </g:if>
 
     <sec:access url="/product/allProducts">
-        <g:remoteLink action="allProducts" update="column2" class="submit show" onSuccess="\$('.submit.show').hide();" ><span><g:message code="button.show.all"/></span></g:remoteLink>
+        <g:remoteLink action="allProducts" update="column1" class="submit show" onSuccess="\$('.submit.show').hide();\$('#column2').html('');" ><span><g:message code="button.show.all"/></span></g:remoteLink>
     </sec:access>
 </div>
 

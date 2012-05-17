@@ -451,14 +451,14 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -471,7 +471,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: ach; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ach; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE ach (
@@ -490,7 +490,7 @@ CREATE TABLE ach (
 ALTER TABLE public.ach OWNER TO jbilling;
 
 --
--- Name: ageing_entity_step; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ageing_entity_step; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE ageing_entity_step (
@@ -505,7 +505,7 @@ CREATE TABLE ageing_entity_step (
 ALTER TABLE public.ageing_entity_step OWNER TO jbilling;
 
 --
--- Name: base_user; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: base_user; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE base_user (
@@ -529,7 +529,7 @@ CREATE TABLE base_user (
 ALTER TABLE public.base_user OWNER TO jbilling;
 
 --
--- Name: billing_process; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: billing_process; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE billing_process (
@@ -548,7 +548,7 @@ CREATE TABLE billing_process (
 ALTER TABLE public.billing_process OWNER TO jbilling;
 
 --
--- Name: billing_process_configuration; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: billing_process_configuration; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE billing_process_configuration (
@@ -577,7 +577,7 @@ CREATE TABLE billing_process_configuration (
 ALTER TABLE public.billing_process_configuration OWNER TO jbilling;
 
 --
--- Name: blacklist; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: blacklist; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE blacklist (
@@ -598,7 +598,7 @@ CREATE TABLE blacklist (
 ALTER TABLE public.blacklist OWNER TO jbilling;
 
 --
--- Name: breadcrumb; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: breadcrumb; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE breadcrumb (
@@ -616,7 +616,7 @@ CREATE TABLE breadcrumb (
 ALTER TABLE public.breadcrumb OWNER TO jbilling;
 
 --
--- Name: cdrentries; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: cdrentries; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE cdrentries (
@@ -645,7 +645,7 @@ CREATE TABLE cdrentries (
 ALTER TABLE public.cdrentries OWNER TO jbilling;
 
 --
--- Name: contact; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: contact; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE contact (
@@ -679,7 +679,7 @@ CREATE TABLE contact (
 ALTER TABLE public.contact OWNER TO jbilling;
 
 --
--- Name: contact_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: contact_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE contact_map (
@@ -695,7 +695,7 @@ CREATE TABLE contact_map (
 ALTER TABLE public.contact_map OWNER TO jbilling;
 
 --
--- Name: contact_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: contact_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE contact_type (
@@ -709,7 +709,7 @@ CREATE TABLE contact_type (
 ALTER TABLE public.contact_type OWNER TO jbilling;
 
 --
--- Name: country; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: country; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE country (
@@ -721,7 +721,7 @@ CREATE TABLE country (
 ALTER TABLE public.country OWNER TO jbilling;
 
 --
--- Name: credit_card; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: credit_card; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE credit_card (
@@ -740,7 +740,7 @@ CREATE TABLE credit_card (
 ALTER TABLE public.credit_card OWNER TO jbilling;
 
 --
--- Name: currency; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: currency; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE currency (
@@ -755,7 +755,7 @@ CREATE TABLE currency (
 ALTER TABLE public.currency OWNER TO jbilling;
 
 --
--- Name: currency_entity_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: currency_entity_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE currency_entity_map (
@@ -767,7 +767,7 @@ CREATE TABLE currency_entity_map (
 ALTER TABLE public.currency_entity_map OWNER TO jbilling;
 
 --
--- Name: currency_exchange; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: currency_exchange; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE currency_exchange (
@@ -784,7 +784,7 @@ CREATE TABLE currency_exchange (
 ALTER TABLE public.currency_exchange OWNER TO jbilling;
 
 --
--- Name: customer; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: customer; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE customer (
@@ -815,7 +815,7 @@ CREATE TABLE customer (
 ALTER TABLE public.customer OWNER TO jbilling;
 
 --
--- Name: customer_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: customer_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE customer_meta_field_map (
@@ -827,7 +827,7 @@ CREATE TABLE customer_meta_field_map (
 ALTER TABLE public.customer_meta_field_map OWNER TO jbilling;
 
 --
--- Name: customer_price; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: customer_price; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE customer_price (
@@ -840,7 +840,7 @@ CREATE TABLE customer_price (
 ALTER TABLE public.customer_price OWNER TO jbilling;
 
 --
--- Name: entity; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: entity; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE entity (
@@ -857,7 +857,7 @@ CREATE TABLE entity (
 ALTER TABLE public.entity OWNER TO jbilling;
 
 --
--- Name: entity_delivery_method_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: entity_delivery_method_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE entity_delivery_method_map (
@@ -869,7 +869,7 @@ CREATE TABLE entity_delivery_method_map (
 ALTER TABLE public.entity_delivery_method_map OWNER TO jbilling;
 
 --
--- Name: entity_payment_method_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: entity_payment_method_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE entity_payment_method_map (
@@ -881,7 +881,7 @@ CREATE TABLE entity_payment_method_map (
 ALTER TABLE public.entity_payment_method_map OWNER TO jbilling;
 
 --
--- Name: entity_report_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: entity_report_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE entity_report_map (
@@ -893,7 +893,7 @@ CREATE TABLE entity_report_map (
 ALTER TABLE public.entity_report_map OWNER TO jbilling;
 
 --
--- Name: enumeration; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: enumeration; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE enumeration (
@@ -907,7 +907,7 @@ CREATE TABLE enumeration (
 ALTER TABLE public.enumeration OWNER TO jbilling;
 
 --
--- Name: enumeration_values; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: enumeration_values; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE enumeration_values (
@@ -921,7 +921,7 @@ CREATE TABLE enumeration_values (
 ALTER TABLE public.enumeration_values OWNER TO jbilling;
 
 --
--- Name: event_log; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: event_log; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE event_log (
@@ -945,7 +945,7 @@ CREATE TABLE event_log (
 ALTER TABLE public.event_log OWNER TO jbilling;
 
 --
--- Name: event_log_message; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: event_log_message; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE event_log_message (
@@ -956,7 +956,7 @@ CREATE TABLE event_log_message (
 ALTER TABLE public.event_log_message OWNER TO jbilling;
 
 --
--- Name: event_log_module; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: event_log_module; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE event_log_module (
@@ -967,7 +967,7 @@ CREATE TABLE event_log_module (
 ALTER TABLE public.event_log_module OWNER TO jbilling;
 
 --
--- Name: filter; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: filter; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE filter (
@@ -992,7 +992,7 @@ CREATE TABLE filter (
 ALTER TABLE public.filter OWNER TO jbilling;
 
 --
--- Name: filter_set; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: filter_set; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE filter_set (
@@ -1006,7 +1006,7 @@ CREATE TABLE filter_set (
 ALTER TABLE public.filter_set OWNER TO jbilling;
 
 --
--- Name: filter_set_filter; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: filter_set_filter; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE filter_set_filter (
@@ -1018,7 +1018,7 @@ CREATE TABLE filter_set_filter (
 ALTER TABLE public.filter_set_filter OWNER TO jbilling;
 
 --
--- Name: generic_status; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: generic_status; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE generic_status (
@@ -1032,7 +1032,7 @@ CREATE TABLE generic_status (
 ALTER TABLE public.generic_status OWNER TO jbilling;
 
 --
--- Name: generic_status_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: generic_status_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE generic_status_type (
@@ -1043,7 +1043,7 @@ CREATE TABLE generic_status_type (
 ALTER TABLE public.generic_status_type OWNER TO jbilling;
 
 --
--- Name: international_description; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: international_description; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE international_description (
@@ -1058,7 +1058,7 @@ CREATE TABLE international_description (
 ALTER TABLE public.international_description OWNER TO jbilling;
 
 --
--- Name: invoice; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: invoice; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE invoice (
@@ -1090,7 +1090,7 @@ CREATE TABLE invoice (
 ALTER TABLE public.invoice OWNER TO jbilling;
 
 --
--- Name: invoice_delivery_method; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: invoice_delivery_method; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE invoice_delivery_method (
@@ -1101,7 +1101,7 @@ CREATE TABLE invoice_delivery_method (
 ALTER TABLE public.invoice_delivery_method OWNER TO jbilling;
 
 --
--- Name: invoice_line; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: invoice_line; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE invoice_line (
@@ -1123,7 +1123,7 @@ CREATE TABLE invoice_line (
 ALTER TABLE public.invoice_line OWNER TO jbilling;
 
 --
--- Name: invoice_line_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: invoice_line_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE invoice_line_type (
@@ -1136,7 +1136,7 @@ CREATE TABLE invoice_line_type (
 ALTER TABLE public.invoice_line_type OWNER TO jbilling;
 
 --
--- Name: invoice_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: invoice_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE invoice_meta_field_map (
@@ -1148,7 +1148,7 @@ CREATE TABLE invoice_meta_field_map (
 ALTER TABLE public.invoice_meta_field_map OWNER TO jbilling;
 
 --
--- Name: item; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: item; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE item (
@@ -1166,7 +1166,7 @@ CREATE TABLE item (
 ALTER TABLE public.item OWNER TO jbilling;
 
 --
--- Name: item_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: item_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE item_meta_field_map (
@@ -1178,7 +1178,7 @@ CREATE TABLE item_meta_field_map (
 ALTER TABLE public.item_meta_field_map OWNER TO jbilling;
 
 --
--- Name: item_price_timeline; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: item_price_timeline; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE item_price_timeline (
@@ -1191,7 +1191,7 @@ CREATE TABLE item_price_timeline (
 ALTER TABLE public.item_price_timeline OWNER TO jbilling;
 
 --
--- Name: item_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: item_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE item_type (
@@ -1207,7 +1207,7 @@ CREATE TABLE item_type (
 ALTER TABLE public.item_type OWNER TO jbilling;
 
 --
--- Name: item_type_exclude_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: item_type_exclude_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE item_type_exclude_map (
@@ -1219,7 +1219,7 @@ CREATE TABLE item_type_exclude_map (
 ALTER TABLE public.item_type_exclude_map OWNER TO jbilling;
 
 --
--- Name: item_type_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: item_type_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE item_type_map (
@@ -1231,7 +1231,7 @@ CREATE TABLE item_type_map (
 ALTER TABLE public.item_type_map OWNER TO jbilling;
 
 --
--- Name: jbilling_seqs; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: jbilling_seqs; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE jbilling_seqs (
@@ -1243,7 +1243,7 @@ CREATE TABLE jbilling_seqs (
 ALTER TABLE public.jbilling_seqs OWNER TO jbilling;
 
 --
--- Name: jbilling_table; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: jbilling_table; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE jbilling_table (
@@ -1255,7 +1255,7 @@ CREATE TABLE jbilling_table (
 ALTER TABLE public.jbilling_table OWNER TO jbilling;
 
 --
--- Name: language; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: language; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE language (
@@ -1268,7 +1268,7 @@ CREATE TABLE language (
 ALTER TABLE public.language OWNER TO jbilling;
 
 --
--- Name: list_meta_field_values; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: list_meta_field_values; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE list_meta_field_values (
@@ -1280,7 +1280,7 @@ CREATE TABLE list_meta_field_values (
 ALTER TABLE public.list_meta_field_values OWNER TO jbilling;
 
 --
--- Name: mediation_cfg; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: mediation_cfg; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE mediation_cfg (
@@ -1297,7 +1297,7 @@ CREATE TABLE mediation_cfg (
 ALTER TABLE public.mediation_cfg OWNER TO jbilling;
 
 --
--- Name: mediation_errors; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: mediation_errors; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE mediation_errors (
@@ -1326,7 +1326,7 @@ CREATE TABLE mediation_errors (
 ALTER TABLE public.mediation_errors OWNER TO jbilling;
 
 --
--- Name: mediation_order_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: mediation_order_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE mediation_order_map (
@@ -1338,7 +1338,7 @@ CREATE TABLE mediation_order_map (
 ALTER TABLE public.mediation_order_map OWNER TO jbilling;
 
 --
--- Name: mediation_process; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: mediation_process; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE mediation_process (
@@ -1354,7 +1354,7 @@ CREATE TABLE mediation_process (
 ALTER TABLE public.mediation_process OWNER TO jbilling;
 
 --
--- Name: mediation_record; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: mediation_record; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE mediation_record (
@@ -1370,7 +1370,7 @@ CREATE TABLE mediation_record (
 ALTER TABLE public.mediation_record OWNER TO jbilling;
 
 --
--- Name: mediation_record_line; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: mediation_record_line; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE mediation_record_line (
@@ -1388,7 +1388,7 @@ CREATE TABLE mediation_record_line (
 ALTER TABLE public.mediation_record_line OWNER TO jbilling;
 
 --
--- Name: meta_field_name; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: meta_field_name; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE meta_field_name (
@@ -1408,7 +1408,7 @@ CREATE TABLE meta_field_name (
 ALTER TABLE public.meta_field_name OWNER TO jbilling;
 
 --
--- Name: meta_field_value; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: meta_field_value; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE meta_field_value (
@@ -1426,7 +1426,7 @@ CREATE TABLE meta_field_value (
 ALTER TABLE public.meta_field_value OWNER TO jbilling;
 
 --
--- Name: notification_category; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_category; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE notification_category (
@@ -1437,7 +1437,7 @@ CREATE TABLE notification_category (
 ALTER TABLE public.notification_category OWNER TO jbilling;
 
 --
--- Name: notification_message; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_message; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE notification_message (
@@ -1453,7 +1453,7 @@ CREATE TABLE notification_message (
 ALTER TABLE public.notification_message OWNER TO jbilling;
 
 --
--- Name: notification_message_arch; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_message_arch; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE notification_message_arch (
@@ -1469,7 +1469,7 @@ CREATE TABLE notification_message_arch (
 ALTER TABLE public.notification_message_arch OWNER TO jbilling;
 
 --
--- Name: notification_message_arch_line; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_message_arch_line; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE notification_message_arch_line (
@@ -1484,7 +1484,7 @@ CREATE TABLE notification_message_arch_line (
 ALTER TABLE public.notification_message_arch_line OWNER TO jbilling;
 
 --
--- Name: notification_message_line; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_message_line; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE notification_message_line (
@@ -1498,7 +1498,7 @@ CREATE TABLE notification_message_line (
 ALTER TABLE public.notification_message_line OWNER TO jbilling;
 
 --
--- Name: notification_message_section; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_message_section; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE notification_message_section (
@@ -1512,7 +1512,7 @@ CREATE TABLE notification_message_section (
 ALTER TABLE public.notification_message_section OWNER TO jbilling;
 
 --
--- Name: notification_message_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_message_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE notification_message_type (
@@ -1525,7 +1525,7 @@ CREATE TABLE notification_message_type (
 ALTER TABLE public.notification_message_type OWNER TO jbilling;
 
 --
--- Name: order_billing_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: order_billing_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE order_billing_type (
@@ -1536,7 +1536,7 @@ CREATE TABLE order_billing_type (
 ALTER TABLE public.order_billing_type OWNER TO jbilling;
 
 --
--- Name: order_line; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: order_line; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE order_line (
@@ -1561,7 +1561,7 @@ CREATE TABLE order_line (
 ALTER TABLE public.order_line OWNER TO jbilling;
 
 --
--- Name: order_line_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: order_line_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE order_line_type (
@@ -1573,7 +1573,7 @@ CREATE TABLE order_line_type (
 ALTER TABLE public.order_line_type OWNER TO jbilling;
 
 --
--- Name: order_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: order_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE order_meta_field_map (
@@ -1585,7 +1585,7 @@ CREATE TABLE order_meta_field_map (
 ALTER TABLE public.order_meta_field_map OWNER TO jbilling;
 
 --
--- Name: order_period; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: order_period; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE order_period (
@@ -1600,7 +1600,7 @@ CREATE TABLE order_period (
 ALTER TABLE public.order_period OWNER TO jbilling;
 
 --
--- Name: order_process; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: order_process; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE order_process (
@@ -1620,7 +1620,7 @@ CREATE TABLE order_process (
 ALTER TABLE public.order_process OWNER TO jbilling;
 
 --
--- Name: paper_invoice_batch; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: paper_invoice_batch; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE paper_invoice_batch (
@@ -1635,7 +1635,7 @@ CREATE TABLE paper_invoice_batch (
 ALTER TABLE public.paper_invoice_batch OWNER TO jbilling;
 
 --
--- Name: partner; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: partner; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE partner (
@@ -1662,7 +1662,7 @@ CREATE TABLE partner (
 ALTER TABLE public.partner OWNER TO jbilling;
 
 --
--- Name: partner_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: partner_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE partner_meta_field_map (
@@ -1674,7 +1674,7 @@ CREATE TABLE partner_meta_field_map (
 ALTER TABLE public.partner_meta_field_map OWNER TO jbilling;
 
 --
--- Name: partner_payout; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: partner_payout; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE partner_payout (
@@ -1693,7 +1693,7 @@ CREATE TABLE partner_payout (
 ALTER TABLE public.partner_payout OWNER TO jbilling;
 
 --
--- Name: partner_range; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: partner_range; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE partner_range (
@@ -1710,7 +1710,7 @@ CREATE TABLE partner_range (
 ALTER TABLE public.partner_range OWNER TO jbilling;
 
 --
--- Name: payment; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE payment (
@@ -1741,7 +1741,7 @@ CREATE TABLE payment (
 ALTER TABLE public.payment OWNER TO jbilling;
 
 --
--- Name: payment_authorization; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_authorization; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE payment_authorization (
@@ -1765,7 +1765,7 @@ CREATE TABLE payment_authorization (
 ALTER TABLE public.payment_authorization OWNER TO jbilling;
 
 --
--- Name: payment_info_cheque; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_info_cheque; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE payment_info_cheque (
@@ -1781,7 +1781,7 @@ CREATE TABLE payment_info_cheque (
 ALTER TABLE public.payment_info_cheque OWNER TO jbilling;
 
 --
--- Name: payment_invoice; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_invoice; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE payment_invoice (
@@ -1797,7 +1797,7 @@ CREATE TABLE payment_invoice (
 ALTER TABLE public.payment_invoice OWNER TO jbilling;
 
 --
--- Name: payment_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_meta_field_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE payment_meta_field_map (
@@ -1809,7 +1809,7 @@ CREATE TABLE payment_meta_field_map (
 ALTER TABLE public.payment_meta_field_map OWNER TO jbilling;
 
 --
--- Name: payment_method; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_method; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE payment_method (
@@ -1820,7 +1820,7 @@ CREATE TABLE payment_method (
 ALTER TABLE public.payment_method OWNER TO jbilling;
 
 --
--- Name: payment_result; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_result; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE payment_result (
@@ -1831,7 +1831,7 @@ CREATE TABLE payment_result (
 ALTER TABLE public.payment_result OWNER TO jbilling;
 
 --
--- Name: period_unit; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: period_unit; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE period_unit (
@@ -1842,7 +1842,7 @@ CREATE TABLE period_unit (
 ALTER TABLE public.period_unit OWNER TO jbilling;
 
 --
--- Name: permission; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: permission; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE permission (
@@ -1855,7 +1855,7 @@ CREATE TABLE permission (
 ALTER TABLE public.permission OWNER TO jbilling;
 
 --
--- Name: permission_role_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: permission_role_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE permission_role_map (
@@ -1867,7 +1867,7 @@ CREATE TABLE permission_role_map (
 ALTER TABLE public.permission_role_map OWNER TO jbilling;
 
 --
--- Name: permission_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: permission_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE permission_type (
@@ -1879,7 +1879,7 @@ CREATE TABLE permission_type (
 ALTER TABLE public.permission_type OWNER TO jbilling;
 
 --
--- Name: permission_user; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: permission_user; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE permission_user (
@@ -1893,7 +1893,7 @@ CREATE TABLE permission_user (
 ALTER TABLE public.permission_user OWNER TO jbilling;
 
 --
--- Name: plan; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: plan; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE plan (
@@ -1907,7 +1907,7 @@ CREATE TABLE plan (
 ALTER TABLE public.plan OWNER TO jbilling;
 
 --
--- Name: plan_item; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: plan_item; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE plan_item (
@@ -1922,7 +1922,7 @@ CREATE TABLE plan_item (
 ALTER TABLE public.plan_item OWNER TO jbilling;
 
 --
--- Name: plan_item_bundle; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: plan_item_bundle; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE plan_item_bundle (
@@ -1937,7 +1937,7 @@ CREATE TABLE plan_item_bundle (
 ALTER TABLE public.plan_item_bundle OWNER TO jbilling;
 
 --
--- Name: plan_item_price_timeline; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: plan_item_price_timeline; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE plan_item_price_timeline (
@@ -1950,7 +1950,7 @@ CREATE TABLE plan_item_price_timeline (
 ALTER TABLE public.plan_item_price_timeline OWNER TO jbilling;
 
 --
--- Name: pluggable_task; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: pluggable_task; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE pluggable_task (
@@ -1966,7 +1966,7 @@ CREATE TABLE pluggable_task (
 ALTER TABLE public.pluggable_task OWNER TO jbilling;
 
 --
--- Name: pluggable_task_parameter; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: pluggable_task_parameter; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE pluggable_task_parameter (
@@ -1983,7 +1983,7 @@ CREATE TABLE pluggable_task_parameter (
 ALTER TABLE public.pluggable_task_parameter OWNER TO jbilling;
 
 --
--- Name: pluggable_task_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: pluggable_task_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE pluggable_task_type (
@@ -1997,7 +1997,7 @@ CREATE TABLE pluggable_task_type (
 ALTER TABLE public.pluggable_task_type OWNER TO jbilling;
 
 --
--- Name: pluggable_task_type_category; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: pluggable_task_type_category; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE pluggable_task_type_category (
@@ -2009,7 +2009,7 @@ CREATE TABLE pluggable_task_type_category (
 ALTER TABLE public.pluggable_task_type_category OWNER TO jbilling;
 
 --
--- Name: preference; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: preference; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE preference (
@@ -2024,7 +2024,7 @@ CREATE TABLE preference (
 ALTER TABLE public.preference OWNER TO jbilling;
 
 --
--- Name: preference_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: preference_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE preference_type (
@@ -2036,7 +2036,7 @@ CREATE TABLE preference_type (
 ALTER TABLE public.preference_type OWNER TO jbilling;
 
 --
--- Name: price_model; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: price_model; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE price_model (
@@ -2052,7 +2052,7 @@ CREATE TABLE price_model (
 ALTER TABLE public.price_model OWNER TO jbilling;
 
 --
--- Name: price_model_attribute; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: price_model_attribute; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE price_model_attribute (
@@ -2065,7 +2065,7 @@ CREATE TABLE price_model_attribute (
 ALTER TABLE public.price_model_attribute OWNER TO jbilling;
 
 --
--- Name: process_run; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: process_run; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE process_run (
@@ -2084,7 +2084,7 @@ CREATE TABLE process_run (
 ALTER TABLE public.process_run OWNER TO jbilling;
 
 --
--- Name: process_run_total; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: process_run_total; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE process_run_total (
@@ -2101,7 +2101,7 @@ CREATE TABLE process_run_total (
 ALTER TABLE public.process_run_total OWNER TO jbilling;
 
 --
--- Name: process_run_total_pm; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: process_run_total_pm; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE process_run_total_pm (
@@ -2116,7 +2116,7 @@ CREATE TABLE process_run_total_pm (
 ALTER TABLE public.process_run_total_pm OWNER TO jbilling;
 
 --
--- Name: process_run_user; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: process_run_user; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE process_run_user (
@@ -2132,7 +2132,7 @@ CREATE TABLE process_run_user (
 ALTER TABLE public.process_run_user OWNER TO jbilling;
 
 --
--- Name: promotion; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: promotion; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE promotion (
@@ -2149,7 +2149,7 @@ CREATE TABLE promotion (
 ALTER TABLE public.promotion OWNER TO jbilling;
 
 --
--- Name: promotion_user_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: promotion_user_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE promotion_user_map (
@@ -2161,7 +2161,7 @@ CREATE TABLE promotion_user_map (
 ALTER TABLE public.promotion_user_map OWNER TO jbilling;
 
 --
--- Name: purchase_order; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: purchase_order; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE purchase_order (
@@ -2196,7 +2196,7 @@ CREATE TABLE purchase_order (
 ALTER TABLE public.purchase_order OWNER TO jbilling;
 
 --
--- Name: rate_card; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: rate_card; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE rate_card (
@@ -2210,7 +2210,7 @@ CREATE TABLE rate_card (
 ALTER TABLE public.rate_card OWNER TO jbilling;
 
 --
--- Name: recent_item; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: recent_item; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE recent_item (
@@ -2225,7 +2225,7 @@ CREATE TABLE recent_item (
 ALTER TABLE public.recent_item OWNER TO jbilling;
 
 --
--- Name: report; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: report; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE report (
@@ -2240,7 +2240,7 @@ CREATE TABLE report (
 ALTER TABLE public.report OWNER TO jbilling;
 
 --
--- Name: report_parameter; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: report_parameter; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE report_parameter (
@@ -2254,7 +2254,7 @@ CREATE TABLE report_parameter (
 ALTER TABLE public.report_parameter OWNER TO jbilling;
 
 --
--- Name: report_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: report_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE report_type (
@@ -2267,7 +2267,7 @@ CREATE TABLE report_type (
 ALTER TABLE public.report_type OWNER TO jbilling;
 
 --
--- Name: role; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: role; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE role (
@@ -2280,7 +2280,7 @@ CREATE TABLE role (
 ALTER TABLE public.role OWNER TO jbilling;
 
 --
--- Name: shortcut; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: shortcut; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE shortcut (
@@ -2297,7 +2297,7 @@ CREATE TABLE shortcut (
 ALTER TABLE public.shortcut OWNER TO jbilling;
 
 --
--- Name: user_credit_card_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: user_credit_card_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE user_credit_card_map (
@@ -2309,7 +2309,7 @@ CREATE TABLE user_credit_card_map (
 ALTER TABLE public.user_credit_card_map OWNER TO jbilling;
 
 --
--- Name: user_role_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: user_role_map; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE user_role_map (
@@ -3427,6 +3427,7 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 --
 
 COPY breadcrumb (id, user_id, controller, action, name, object_id, version, description) FROM stdin;
+8	1	customer	edit	create	\N	0	\N
 9	1	customer	list	\N	10790	0	ageing-test-01
 10	1	config	index	\N	\N	0	\N
 11	1	plugin	listCategories	\N	\N	0	\N
@@ -3438,7 +3439,6 @@ COPY breadcrumb (id, user_id, controller, action, name, object_id, version, desc
 17	12	config	index	\N	\N	0	\N
 18	12	user	list	\N	\N	0	\N
 19	12	partner	list	\N	\N	0	\N
-20	1	customer	list	\N	\N	0	\N
 \.
 
 
@@ -12962,7 +12962,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 50	8	description	1	Partner period unit payout
 50	9	description	1	Partner period value payout
 50	10	description	1	Partner automatic payout
-50	11	description	1	User in charge of partners
+50	11	description	1	User in charge of partners 
 50	12	description	1	Partner fee currency
 50	13	description	1	Self delivery of paper invoices
 50	14	description	1	Include customer notes in invoice
@@ -13280,7 +13280,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 14	1	description	2	French Lemonade
 14	2600	description	1	Lemonade - Generic
 14	2601	description	1	Lemonade - Included in plan
-14	2602	description	1	Lemonade
+14	2602	description	1	Lemonade 
 14	2702	description	1	Long Distance Plan - 1000 min included
 14	2701	description	1	Long Distance Plan B - fixed rate
 14	2700	description	1	Long Distance Plan A - fixed rate
@@ -13396,7 +13396,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	42	title	1	Blacklist filter payment processor.
 24	42	description	1	Used for blocking payments from reaching real payment processors. Typically configured as first payment processor in the processing chain.
 24	43	title	1	Blacklist user when their status becomes suspended or higher.
-24	43	description	1	Causes users and their associated details (e.g., credit card number, phone number, etc.) to be blacklisted when their status becomes suspended or higher.
+24	43	description	1	Causes users and their associated details (e.g., credit card number, phone number, etc.) to be blacklisted when their status becomes suspended or higher. 
 24	44	title	1	JDBC Mediation Reader.
 24	44	description	1	This is a reader for the mediation process. It reads records from a JDBC database source.
 24	45	title	1	MySQL Mediation Reader.
@@ -13653,7 +13653,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 60	8	description	1	A billing clerk
 60	8	title	1	Clerk
 24	95	title	1	Alternative Payment Info Task
-24	95	description	1	A pluggable task of the type Payment Info Task that first checks the preferred payment method than searches for the alternative payment methods
+24	95	description	1	A pluggable task of the type Payment Info Task that first checks the preferred payment method than if there is no data for the preferred method it searches for alternative payment methods
 \.
 
 
@@ -13939,6 +13939,7 @@ report_parameter	1
 pluggable_task	607
 customer	1071
 contact_field	2027
+recent_item	2
 pluggable_task_parameter	8314
 permission_user	10
 permission_user	1
@@ -13951,12 +13952,11 @@ event_log	471
 partner	3
 contact_map	7912
 contact	1133
+breadcrumb	20
 meta_field_name	1
 meta_field_value	20261
 rate_card	1
 role	1
-recent_item	3
-breadcrumb	21
 \.
 
 
@@ -14164,7 +14164,7 @@ COPY meta_field_value (id, meta_field_name_id, dtype, boolean_value, date_value,
 24	1	string	\N	\N	\N	\N	serial-from-ws
 25	2	string	\N	\N	\N	\N	FAKE_2
 26	1	string	\N	\N	\N	\N	serial-from-ws
-202102	1	string	\N	\N	\N	\N
+202102	1	string	\N	\N	\N	\N	
 27	2	string	\N	\N	\N	\N	FAKE_2
 28	1	string	\N	\N	\N	\N	serial-from-ws
 29	2	string	\N	\N	\N	\N	FAKE_2
@@ -16159,19 +16159,19 @@ COPY meta_field_value (id, meta_field_name_id, dtype, boolean_value, date_value,
 202101	2	string	\N	\N	\N	\N	CURRENCY_ROUTER
 202103	3	string	\N	\N	\N	\N	255.255.255.4
 202104	2	string	\N	\N	\N	\N	CURRENCY_ROUTER
-202105	1	string	\N	\N	\N	\N
-202500	3	string	\N	\N	\N	\N
-202501	2	string	\N	\N	\N	\N
-202502	1	string	\N	\N	\N	\N
-202503	3	string	\N	\N	\N	\N
-202504	2	string	\N	\N	\N	\N
-202505	1	string	\N	\N	\N	\N
-202506	3	string	\N	\N	\N	\N
-202507	2	string	\N	\N	\N	\N
-202508	1	string	\N	\N	\N	\N
-202600	3	string	\N	\N	\N	\N
-202601	2	string	\N	\N	\N	\N
-202602	1	string	\N	\N	\N	\N
+202105	1	string	\N	\N	\N	\N	
+202500	3	string	\N	\N	\N	\N	
+202501	2	string	\N	\N	\N	\N	
+202502	1	string	\N	\N	\N	\N	
+202503	3	string	\N	\N	\N	\N	
+202504	2	string	\N	\N	\N	\N	
+202505	1	string	\N	\N	\N	\N	
+202506	3	string	\N	\N	\N	\N	
+202507	2	string	\N	\N	\N	\N	
+202508	1	string	\N	\N	\N	\N	
+202600	3	string	\N	\N	\N	\N	
+202601	2	string	\N	\N	\N	\N	
+202602	1	string	\N	\N	\N	\N	
 \.
 
 
@@ -19058,9 +19058,9 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock, notes) F
 6030	1	81	1	1	\N
 6040	1	78	1	4	\N
 6050	1	82	2	7	\N
-6060	1	87	1	1
-6061	1	88	3	1
-530	1	50	3	2
+6060	1	87	1	1	
+6061	1	88	3	1	
+530	1	50	3	2	
 \.
 
 
@@ -20509,7 +20509,6 @@ COPY rate_card (id, name, table_name, entity_id) FROM stdin;
 
 COPY recent_item (id, type, object_id, user_id, version) FROM stdin;
 1	PLUGIN	530	1	0
-2	PLUGIN	530	1	0
 \.
 
 
@@ -22657,7 +22656,7 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 
 
 --
--- Name: ach_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ach_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY ach
@@ -22665,7 +22664,7 @@ ALTER TABLE ONLY ach
 
 
 --
--- Name: ageing_entity_step_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ageing_entity_step_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY ageing_entity_step
@@ -22673,7 +22672,7 @@ ALTER TABLE ONLY ageing_entity_step
 
 
 --
--- Name: base_user_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: base_user_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY base_user
@@ -22681,7 +22680,7 @@ ALTER TABLE ONLY base_user
 
 
 --
--- Name: billing_process_configuration_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: billing_process_configuration_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY billing_process_configuration
@@ -22689,7 +22688,7 @@ ALTER TABLE ONLY billing_process_configuration
 
 
 --
--- Name: billing_process_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: billing_process_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY billing_process
@@ -22697,7 +22696,7 @@ ALTER TABLE ONLY billing_process
 
 
 --
--- Name: blacklist_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: blacklist_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY blacklist
@@ -22705,7 +22704,7 @@ ALTER TABLE ONLY blacklist
 
 
 --
--- Name: breadcrumb_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: breadcrumb_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY breadcrumb
@@ -22713,7 +22712,7 @@ ALTER TABLE ONLY breadcrumb
 
 
 --
--- Name: cdrentries_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: cdrentries_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY cdrentries
@@ -22721,7 +22720,7 @@ ALTER TABLE ONLY cdrentries
 
 
 --
--- Name: contact_map_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: contact_map_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY contact_map
@@ -22729,7 +22728,7 @@ ALTER TABLE ONLY contact_map
 
 
 --
--- Name: contact_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: contact_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY contact
@@ -22737,7 +22736,7 @@ ALTER TABLE ONLY contact
 
 
 --
--- Name: contact_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: contact_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY contact_type
@@ -22745,7 +22744,7 @@ ALTER TABLE ONLY contact_type
 
 
 --
--- Name: country_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: country_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY country
@@ -22753,7 +22752,7 @@ ALTER TABLE ONLY country
 
 
 --
--- Name: credit_card_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: credit_card_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY credit_card
@@ -22761,7 +22760,7 @@ ALTER TABLE ONLY credit_card
 
 
 --
--- Name: currency_exchange_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: currency_exchange_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY currency_exchange
@@ -22769,7 +22768,7 @@ ALTER TABLE ONLY currency_exchange
 
 
 --
--- Name: currency_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: currency_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY currency
@@ -22777,7 +22776,7 @@ ALTER TABLE ONLY currency
 
 
 --
--- Name: customer_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: customer_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY customer
@@ -22785,7 +22784,7 @@ ALTER TABLE ONLY customer
 
 
 --
--- Name: customer_price_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: customer_price_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY customer_price
@@ -22793,7 +22792,7 @@ ALTER TABLE ONLY customer_price
 
 
 --
--- Name: entity_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: entity_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY entity
@@ -22801,7 +22800,7 @@ ALTER TABLE ONLY entity
 
 
 --
--- Name: enumeration_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: enumeration_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY enumeration
@@ -22809,7 +22808,7 @@ ALTER TABLE ONLY enumeration
 
 
 --
--- Name: enumeration_values_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: enumeration_values_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY enumeration_values
@@ -22817,7 +22816,7 @@ ALTER TABLE ONLY enumeration_values
 
 
 --
--- Name: event_log_message_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: event_log_message_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY event_log_message
@@ -22825,7 +22824,7 @@ ALTER TABLE ONLY event_log_message
 
 
 --
--- Name: event_log_module_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: event_log_module_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY event_log_module
@@ -22833,7 +22832,7 @@ ALTER TABLE ONLY event_log_module
 
 
 --
--- Name: event_log_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: event_log_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY event_log
@@ -22841,7 +22840,7 @@ ALTER TABLE ONLY event_log
 
 
 --
--- Name: filter_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: filter_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY filter
@@ -22849,7 +22848,7 @@ ALTER TABLE ONLY filter
 
 
 --
--- Name: filter_set_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: filter_set_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY filter_set
@@ -22857,7 +22856,7 @@ ALTER TABLE ONLY filter_set
 
 
 --
--- Name: generic_status_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: generic_status_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY generic_status
@@ -22865,7 +22864,7 @@ ALTER TABLE ONLY generic_status
 
 
 --
--- Name: generic_status_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: generic_status_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY generic_status_type
@@ -22873,7 +22872,7 @@ ALTER TABLE ONLY generic_status_type
 
 
 --
--- Name: international_description_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: international_description_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY international_description
@@ -22881,7 +22880,7 @@ ALTER TABLE ONLY international_description
 
 
 --
--- Name: invoice_delivery_method_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: invoice_delivery_method_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY invoice_delivery_method
@@ -22889,7 +22888,7 @@ ALTER TABLE ONLY invoice_delivery_method
 
 
 --
--- Name: invoice_line_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: invoice_line_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY invoice_line
@@ -22897,7 +22896,7 @@ ALTER TABLE ONLY invoice_line
 
 
 --
--- Name: invoice_line_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: invoice_line_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY invoice_line_type
@@ -22905,7 +22904,7 @@ ALTER TABLE ONLY invoice_line_type
 
 
 --
--- Name: invoice_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: invoice_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY invoice
@@ -22913,7 +22912,7 @@ ALTER TABLE ONLY invoice
 
 
 --
--- Name: item_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: item_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY item
@@ -22921,7 +22920,7 @@ ALTER TABLE ONLY item
 
 
 --
--- Name: item_price_timeline_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: item_price_timeline_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY item_price_timeline
@@ -22929,7 +22928,7 @@ ALTER TABLE ONLY item_price_timeline
 
 
 --
--- Name: item_price_timeline_price_model_id_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: item_price_timeline_price_model_id_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY item_price_timeline
@@ -22937,7 +22936,7 @@ ALTER TABLE ONLY item_price_timeline
 
 
 --
--- Name: item_type_exclude_map_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: item_type_exclude_map_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY item_type_exclude_map
@@ -22945,7 +22944,7 @@ ALTER TABLE ONLY item_type_exclude_map
 
 
 --
--- Name: item_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: item_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY item_type
@@ -22953,7 +22952,7 @@ ALTER TABLE ONLY item_type
 
 
 --
--- Name: jbilling_table_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: jbilling_table_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY jbilling_table
@@ -22961,7 +22960,7 @@ ALTER TABLE ONLY jbilling_table
 
 
 --
--- Name: language_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: language_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY language
@@ -22969,7 +22968,7 @@ ALTER TABLE ONLY language
 
 
 --
--- Name: mediation_cfg_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: mediation_cfg_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY mediation_cfg
@@ -22977,7 +22976,7 @@ ALTER TABLE ONLY mediation_cfg
 
 
 --
--- Name: mediation_errors_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: mediation_errors_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY mediation_errors
@@ -22985,7 +22984,7 @@ ALTER TABLE ONLY mediation_errors
 
 
 --
--- Name: mediation_process_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: mediation_process_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY mediation_process
@@ -22993,7 +22992,7 @@ ALTER TABLE ONLY mediation_process
 
 
 --
--- Name: mediation_record_line_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: mediation_record_line_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY mediation_record_line
@@ -23001,7 +23000,7 @@ ALTER TABLE ONLY mediation_record_line
 
 
 --
--- Name: mediation_record_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: mediation_record_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY mediation_record
@@ -23009,7 +23008,7 @@ ALTER TABLE ONLY mediation_record
 
 
 --
--- Name: meta_field_name_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: meta_field_name_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY meta_field_name
@@ -23017,7 +23016,7 @@ ALTER TABLE ONLY meta_field_name
 
 
 --
--- Name: meta_field_value_id_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: meta_field_value_id_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY meta_field_value
@@ -23025,7 +23024,7 @@ ALTER TABLE ONLY meta_field_value
 
 
 --
--- Name: notification_category_pk; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_category_pk; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY notification_category
@@ -23033,7 +23032,7 @@ ALTER TABLE ONLY notification_category
 
 
 --
--- Name: notification_message_arch_line_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_message_arch_line_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY notification_message_arch_line
@@ -23041,7 +23040,7 @@ ALTER TABLE ONLY notification_message_arch_line
 
 
 --
--- Name: notification_message_arch_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_message_arch_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY notification_message_arch
@@ -23049,7 +23048,7 @@ ALTER TABLE ONLY notification_message_arch
 
 
 --
--- Name: notification_message_line_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_message_line_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY notification_message_line
@@ -23057,7 +23056,7 @@ ALTER TABLE ONLY notification_message_line
 
 
 --
--- Name: notification_message_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_message_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY notification_message
@@ -23065,7 +23064,7 @@ ALTER TABLE ONLY notification_message
 
 
 --
--- Name: notification_message_section_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_message_section_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY notification_message_section
@@ -23073,7 +23072,7 @@ ALTER TABLE ONLY notification_message_section
 
 
 --
--- Name: notification_message_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: notification_message_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY notification_message_type
@@ -23081,7 +23080,7 @@ ALTER TABLE ONLY notification_message_type
 
 
 --
--- Name: order_billing_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: order_billing_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY order_billing_type
@@ -23089,7 +23088,7 @@ ALTER TABLE ONLY order_billing_type
 
 
 --
--- Name: order_line_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: order_line_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY order_line
@@ -23097,7 +23096,7 @@ ALTER TABLE ONLY order_line
 
 
 --
--- Name: order_line_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: order_line_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY order_line_type
@@ -23105,7 +23104,7 @@ ALTER TABLE ONLY order_line_type
 
 
 --
--- Name: order_period_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: order_period_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY order_period
@@ -23113,7 +23112,7 @@ ALTER TABLE ONLY order_period
 
 
 --
--- Name: order_process_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: order_process_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY order_process
@@ -23121,7 +23120,7 @@ ALTER TABLE ONLY order_process
 
 
 --
--- Name: paper_invoice_batch_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: paper_invoice_batch_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY paper_invoice_batch
@@ -23129,7 +23128,7 @@ ALTER TABLE ONLY paper_invoice_batch
 
 
 --
--- Name: partner_payout_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: partner_payout_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY partner_payout
@@ -23137,7 +23136,7 @@ ALTER TABLE ONLY partner_payout
 
 
 --
--- Name: partner_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: partner_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY partner
@@ -23145,7 +23144,7 @@ ALTER TABLE ONLY partner
 
 
 --
--- Name: partner_range_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: partner_range_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY partner_range
@@ -23153,7 +23152,7 @@ ALTER TABLE ONLY partner_range
 
 
 --
--- Name: payment_authorization_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_authorization_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY payment_authorization
@@ -23161,7 +23160,7 @@ ALTER TABLE ONLY payment_authorization
 
 
 --
--- Name: payment_info_cheque_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_info_cheque_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY payment_info_cheque
@@ -23169,7 +23168,7 @@ ALTER TABLE ONLY payment_info_cheque
 
 
 --
--- Name: payment_invoice_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_invoice_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY payment_invoice
@@ -23177,7 +23176,7 @@ ALTER TABLE ONLY payment_invoice
 
 
 --
--- Name: payment_method_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_method_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY payment_method
@@ -23185,7 +23184,7 @@ ALTER TABLE ONLY payment_method
 
 
 --
--- Name: payment_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY payment
@@ -23193,7 +23192,7 @@ ALTER TABLE ONLY payment
 
 
 --
--- Name: payment_result_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_result_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY payment_result
@@ -23201,7 +23200,7 @@ ALTER TABLE ONLY payment_result
 
 
 --
--- Name: period_unit_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: period_unit_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY period_unit
@@ -23209,7 +23208,7 @@ ALTER TABLE ONLY period_unit
 
 
 --
--- Name: permission_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: permission_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY permission
@@ -23217,7 +23216,7 @@ ALTER TABLE ONLY permission
 
 
 --
--- Name: permission_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: permission_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY permission_type
@@ -23225,7 +23224,7 @@ ALTER TABLE ONLY permission_type
 
 
 --
--- Name: permission_user_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: permission_user_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY permission_user
@@ -23233,7 +23232,7 @@ ALTER TABLE ONLY permission_user
 
 
 --
--- Name: plan_item_bundle_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: plan_item_bundle_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY plan_item_bundle
@@ -23241,7 +23240,7 @@ ALTER TABLE ONLY plan_item_bundle
 
 
 --
--- Name: plan_item_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: plan_item_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY plan_item
@@ -23249,7 +23248,7 @@ ALTER TABLE ONLY plan_item
 
 
 --
--- Name: plan_item_price_timeline_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: plan_item_price_timeline_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY plan_item_price_timeline
@@ -23257,7 +23256,7 @@ ALTER TABLE ONLY plan_item_price_timeline
 
 
 --
--- Name: plan_item_price_timeline_price_model_id_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: plan_item_price_timeline_price_model_id_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY plan_item_price_timeline
@@ -23265,7 +23264,7 @@ ALTER TABLE ONLY plan_item_price_timeline
 
 
 --
--- Name: plan_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: plan_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY plan
@@ -23273,7 +23272,7 @@ ALTER TABLE ONLY plan
 
 
 --
--- Name: pluggable_task_parameter_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: pluggable_task_parameter_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY pluggable_task_parameter
@@ -23281,7 +23280,7 @@ ALTER TABLE ONLY pluggable_task_parameter
 
 
 --
--- Name: pluggable_task_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: pluggable_task_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY pluggable_task
@@ -23289,7 +23288,7 @@ ALTER TABLE ONLY pluggable_task
 
 
 --
--- Name: pluggable_task_type_category_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: pluggable_task_type_category_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY pluggable_task_type_category
@@ -23297,7 +23296,7 @@ ALTER TABLE ONLY pluggable_task_type_category
 
 
 --
--- Name: pluggable_task_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: pluggable_task_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY pluggable_task_type
@@ -23305,7 +23304,7 @@ ALTER TABLE ONLY pluggable_task_type
 
 
 --
--- Name: preference_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: preference_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY preference
@@ -23313,7 +23312,7 @@ ALTER TABLE ONLY preference
 
 
 --
--- Name: preference_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: preference_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY preference_type
@@ -23321,7 +23320,7 @@ ALTER TABLE ONLY preference_type
 
 
 --
--- Name: price_model_attribute_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: price_model_attribute_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY price_model_attribute
@@ -23329,7 +23328,7 @@ ALTER TABLE ONLY price_model_attribute
 
 
 --
--- Name: price_model_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: price_model_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY price_model
@@ -23337,7 +23336,7 @@ ALTER TABLE ONLY price_model
 
 
 --
--- Name: process_run_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: process_run_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY process_run
@@ -23345,7 +23344,7 @@ ALTER TABLE ONLY process_run
 
 
 --
--- Name: process_run_total_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: process_run_total_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY process_run_total
@@ -23353,7 +23352,7 @@ ALTER TABLE ONLY process_run_total
 
 
 --
--- Name: process_run_total_pm_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: process_run_total_pm_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY process_run_total_pm
@@ -23361,7 +23360,7 @@ ALTER TABLE ONLY process_run_total_pm
 
 
 --
--- Name: process_run_user_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: process_run_user_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY process_run_user
@@ -23369,7 +23368,7 @@ ALTER TABLE ONLY process_run_user
 
 
 --
--- Name: promotion_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: promotion_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY promotion
@@ -23377,7 +23376,7 @@ ALTER TABLE ONLY promotion
 
 
 --
--- Name: purchase_order_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: purchase_order_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY purchase_order
@@ -23385,7 +23384,7 @@ ALTER TABLE ONLY purchase_order
 
 
 --
--- Name: rate_card_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: rate_card_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY rate_card
@@ -23393,7 +23392,7 @@ ALTER TABLE ONLY rate_card
 
 
 --
--- Name: rate_card_table_name_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: rate_card_table_name_key; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY rate_card
@@ -23401,7 +23400,7 @@ ALTER TABLE ONLY rate_card
 
 
 --
--- Name: recent_item_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: recent_item_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY recent_item
@@ -23409,7 +23408,7 @@ ALTER TABLE ONLY recent_item
 
 
 --
--- Name: report_parameter_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: report_parameter_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY report_parameter
@@ -23417,7 +23416,7 @@ ALTER TABLE ONLY report_parameter
 
 
 --
--- Name: report_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: report_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY report
@@ -23425,7 +23424,7 @@ ALTER TABLE ONLY report
 
 
 --
--- Name: report_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: report_type_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY report_type
@@ -23433,7 +23432,7 @@ ALTER TABLE ONLY report_type
 
 
 --
--- Name: role_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: role_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY role
@@ -23441,7 +23440,7 @@ ALTER TABLE ONLY role
 
 
 --
--- Name: shortcut_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: shortcut_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY shortcut
@@ -23449,413 +23448,413 @@ ALTER TABLE ONLY shortcut
 
 
 --
--- Name: ach_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ach_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ach_i_2 ON ach USING btree (user_id);
 
 
 --
--- Name: bp_pm_index_total; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: bp_pm_index_total; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX bp_pm_index_total ON process_run_total_pm USING btree (process_run_total_id);
 
 
 --
--- Name: bp_run_process_ix; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: bp_run_process_ix; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX bp_run_process_ix ON process_run USING btree (process_id);
 
 
 --
--- Name: bp_run_total_run_ix; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: bp_run_total_run_ix; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX bp_run_total_run_ix ON process_run_total USING btree (process_run_id);
 
 
 --
--- Name: contact_i_del; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: contact_i_del; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX contact_i_del ON contact USING btree (deleted);
 
 
 --
--- Name: contact_map_i_1; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: contact_map_i_1; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX contact_map_i_1 ON contact_map USING btree (contact_id);
 
 
 --
--- Name: contact_map_i_3; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: contact_map_i_3; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX contact_map_i_3 ON contact_map USING btree (table_id, foreign_id, type_id);
 
 
 --
--- Name: create_datetime; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: create_datetime; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX create_datetime ON payment_authorization USING btree (create_datetime);
 
 
 --
--- Name: currency_entity_map_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: currency_entity_map_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX currency_entity_map_i_2 ON currency_entity_map USING btree (currency_id, entity_id);
 
 
 --
--- Name: customer_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: customer_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX customer_i_2 ON customer USING btree (user_id);
 
 
 --
--- Name: int_description_i_lan; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: int_description_i_lan; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX int_description_i_lan ON international_description USING btree (language_id);
 
 
 --
--- Name: international_description_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: international_description_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX international_description_i_2 ON international_description USING btree (table_id, foreign_id, language_id);
 
 
 --
--- Name: ix_base_user_un; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_base_user_un; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_base_user_un ON base_user USING btree (entity_id, user_name);
 
 
 --
--- Name: ix_blacklist_entity_type; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_blacklist_entity_type; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_blacklist_entity_type ON blacklist USING btree (entity_id, type);
 
 
 --
--- Name: ix_blacklist_user_type; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_blacklist_user_type; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_blacklist_user_type ON blacklist USING btree (user_id, type);
 
 
 --
--- Name: ix_cc_number; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_cc_number; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_cc_number ON credit_card USING btree (cc_number_plain);
 
 
 --
--- Name: ix_cc_number_encrypted; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_cc_number_encrypted; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_cc_number_encrypted ON credit_card USING btree (cc_number);
 
 
 --
--- Name: ix_contact_address; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_contact_address; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_contact_address ON contact USING btree (street_addres1, city, postal_code, street_addres2, state_province, country_code);
 
 
 --
--- Name: ix_contact_fname; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_contact_fname; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_contact_fname ON contact USING btree (first_name);
 
 
 --
--- Name: ix_contact_fname_lname; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_contact_fname_lname; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_contact_fname_lname ON contact USING btree (first_name, last_name);
 
 
 --
--- Name: ix_contact_lname; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_contact_lname; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_contact_lname ON contact USING btree (last_name);
 
 
 --
--- Name: ix_contact_orgname; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_contact_orgname; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_contact_orgname ON contact USING btree (organization_name);
 
 
 --
--- Name: ix_contact_phone; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_contact_phone; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_contact_phone ON contact USING btree (phone_phone_number, phone_area_code, phone_country_code);
 
 
 --
--- Name: ix_el_main; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_el_main; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_el_main ON event_log USING btree (module_id, message_id, create_datetime);
 
 
 --
--- Name: ix_invoice_date; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_invoice_date; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_invoice_date ON invoice USING btree (create_datetime);
 
 
 --
--- Name: ix_invoice_due_date; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_invoice_due_date; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_invoice_due_date ON invoice USING btree (user_id, due_date);
 
 
 --
--- Name: ix_invoice_line_invoice_id; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_invoice_line_invoice_id; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_invoice_line_invoice_id ON invoice_line USING btree (invoice_id);
 
 
 --
--- Name: ix_invoice_number; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_invoice_number; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_invoice_number ON invoice USING btree (user_id, public_number);
 
 
 --
--- Name: ix_invoice_process; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_invoice_process; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_invoice_process ON invoice USING btree (billing_process_id);
 
 
 --
--- Name: ix_invoice_ts; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_invoice_ts; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_invoice_ts ON invoice USING btree (create_timestamp, user_id);
 
 
 --
--- Name: ix_invoice_user_id; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_invoice_user_id; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_invoice_user_id ON invoice USING btree (user_id, deleted);
 
 
 --
--- Name: ix_item_ent; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_item_ent; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_item_ent ON item USING btree (entity_id, internal_number);
 
 
 --
--- Name: ix_mrl_order_line; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_mrl_order_line; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_mrl_order_line ON mediation_record_line USING btree (order_line_id);
 
 
 --
--- Name: ix_order_line_item_id; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_order_line_item_id; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_order_line_item_id ON order_line USING btree (item_id);
 
 
 --
--- Name: ix_order_line_order_id; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_order_line_order_id; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_order_line_order_id ON order_line USING btree (order_id);
 
 
 --
--- Name: ix_order_process_in; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_order_process_in; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_order_process_in ON order_process USING btree (invoice_id);
 
 
 --
--- Name: ix_pa_payment; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_pa_payment; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_pa_payment ON payment_authorization USING btree (payment_id);
 
 
 --
--- Name: ix_promotion_code; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_promotion_code; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_promotion_code ON promotion USING btree (code);
 
 
 --
--- Name: ix_purchase_order_date; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_purchase_order_date; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_purchase_order_date ON purchase_order USING btree (user_id, create_datetime);
 
 
 --
--- Name: ix_uq_order_process_or_bp; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_uq_order_process_or_bp; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_uq_order_process_or_bp ON order_process USING btree (order_id, billing_process_id);
 
 
 --
--- Name: ix_uq_order_process_or_in; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_uq_order_process_or_in; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_uq_order_process_or_in ON order_process USING btree (order_id, invoice_id);
 
 
 --
--- Name: ix_uq_payment_inv_map_pa_in; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: ix_uq_payment_inv_map_pa_in; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX ix_uq_payment_inv_map_pa_in ON payment_invoice USING btree (payment_id, invoice_id);
 
 
 --
--- Name: mediation_record_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: mediation_record_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX mediation_record_i ON mediation_record USING btree (id_key, status_id);
 
 
 --
--- Name: partner_i_3; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: partner_i_3; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX partner_i_3 ON partner USING btree (user_id);
 
 
 --
--- Name: partner_payout_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: partner_payout_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX partner_payout_i_2 ON partner_payout USING btree (partner_id);
 
 
 --
--- Name: partner_range_p; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: partner_range_p; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX partner_range_p ON partner_range USING btree (partner_id);
 
 
 --
--- Name: payment_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX payment_i_2 ON payment USING btree (user_id, create_datetime);
 
 
 --
--- Name: payment_i_3; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: payment_i_3; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX payment_i_3 ON payment USING btree (user_id, balance);
 
 
 --
--- Name: permission_role_map_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: permission_role_map_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX permission_role_map_i_2 ON permission_role_map USING btree (permission_id, role_id);
 
 
 --
--- Name: permission_user_map_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: permission_user_map_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX permission_user_map_i_2 ON permission_user USING btree (permission_id, user_id);
 
 
 --
--- Name: plan_item_item_id_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: plan_item_item_id_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX plan_item_item_id_i ON plan_item USING btree (precedence);
 
 
 --
--- Name: plan_item_precedence_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: plan_item_precedence_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX plan_item_precedence_i ON plan_item USING btree (item_id);
 
 
 --
--- Name: promotion_user_map_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: promotion_user_map_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX promotion_user_map_i_2 ON promotion_user_map USING btree (user_id, promotion_id);
 
 
 --
--- Name: purchase_order_i_notif; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: purchase_order_i_notif; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX purchase_order_i_notif ON purchase_order USING btree (active_until, notification_step);
 
 
 --
--- Name: purchase_order_i_user; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: purchase_order_i_user; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX purchase_order_i_user ON purchase_order USING btree (user_id, deleted);
 
 
 --
--- Name: transaction_id; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: transaction_id; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX transaction_id ON payment_authorization USING btree (transaction_id);
 
 
 --
--- Name: user_credit_card_map_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: user_credit_card_map_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX user_credit_card_map_i_2 ON user_credit_card_map USING btree (user_id, credit_card_id);
 
 
 --
--- Name: user_role_map_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: user_role_map_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX user_role_map_i_2 ON user_role_map USING btree (user_id, role_id);
 
 
 --
--- Name: user_role_map_i_role; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
+-- Name: user_role_map_i_role; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE INDEX user_role_map_i_role ON user_role_map USING btree (role_id);
@@ -25066,3 +25065,4 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
+

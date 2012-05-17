@@ -614,4 +614,4 @@ update jbilling_seqs set next_id = coalesce((select round(max(id)/100)+1 from ro
 -- Description: Unable to pay invoice (add new payment info task plugin)
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (95, 8, 'com.sapienter.jbilling.server.pluggableTask.AlternativePaymentInfoTask', 0);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  95, 'title',1, 'Alternative Payment Info Task');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  95, 'description', 1, 'A pluggable task of the type Payment Info Task that first checks the preferred payment method than if ther eis no data for the preferred method it searches for alternative payment methods');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  95, 'description', 1, 'A pluggable task of the type Payment Info Task that first checks the preferred payment method than if there is no data for the preferred method it searches for alternative payment methods');

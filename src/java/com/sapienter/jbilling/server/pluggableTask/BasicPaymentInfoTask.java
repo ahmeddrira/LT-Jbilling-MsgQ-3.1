@@ -102,6 +102,7 @@ public class BasicPaymentInfoTask
                     return retValue;
                 }
             }
+
         }
 
         return null;
@@ -118,8 +119,13 @@ public class BasicPaymentInfoTask
 
         AchDTO ach =  null;
         if (userBL.getEntity().getAchs().size() > 0) {
-            AchBL bl = new AchBL(((AchDTO)userBL.getEntity().getAchs().toArray()[0]).getId());
-            ach = bl.getEntity();
+            // take the default customer ACH record
+            // if not exist take the ACH info from the last payment
+            ach = userBL.getEntity().getAchWithoutPayment();
+            if (ach == null) {
+                AchBL bl = new AchBL(((AchDTO)userBL.getEntity().getAchs().toArray()[0]).getId());
+                ach = bl.getEntity();
+            }
         }
         if (ach == null) {
             // no info available

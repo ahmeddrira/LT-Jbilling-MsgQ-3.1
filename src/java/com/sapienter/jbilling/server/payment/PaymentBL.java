@@ -740,8 +740,10 @@ public class PaymentBL extends ResultList implements PaymentSQL {
      * Given an invoice, the system will look for any payment with a balance
      * and get the invoice paid with this payment.
      */
-    public void automaticPaymentApplication(InvoiceDTO invoice)
+    public boolean automaticPaymentApplication(InvoiceDTO invoice)
             throws SQLException {
+        boolean appliedAtAll= false;
+        
         List payments = getPaymentsWithBalance(invoice.getBaseUser().getUserId());
 
         for (int f = 0; f < payments.size() && invoice.getBalance().compareTo(BigDecimal.ZERO) > 0; f++) {
@@ -749,17 +751,22 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             if (new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_FAIL) || new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_UNAVAILABLE)) {
                 continue;
             }
-            applyPaymentToInvoice(invoice);
+            if ( applyPaymentToInvoice(invoice) ) {
+                appliedAtAll= true;
+            }
         }
+        
+        return appliedAtAll;
     }
 
     /**
      * Give an payment (already set in this object), it will look for any
      * invoices with a balance and get them paid, starting wiht the oldest.
      */
-    public void automaticPaymentApplication() throws SQLException {
+    public boolean automaticPaymentApplication() throws SQLException {
+        boolean appliedAtAll= false;
         if (BigDecimal.ZERO.compareTo(payment.getBalance()) >= 0) {
-            return; // negative payment, skip
+            return false; // negative payment, skip
         }
 
         Collection<InvoiceDTO> invoiceCollection = new InvoiceDAS().findWithBalanceByUser(payment.getBaseUser());
@@ -774,14 +781,19 @@ public class PaymentBL extends ResultList implements PaymentSQL {
                 continue;
             }
 
-            applyPaymentToInvoice(invoice);
+            //apply and set
+            if ( applyPaymentToInvoice(invoice) ) {
+                appliedAtAll= true;
+            }
+            
             if (BigDecimal.ZERO.compareTo(payment.getBalance()) >= 0) {
                 break; // no payment balance remaining
             }
         }
+        return appliedAtAll;
     }
 
-    private void applyPaymentToInvoice(InvoiceDTO invoice) throws SQLException {
+    private boolean applyPaymentToInvoice(InvoiceDTO invoice) throws SQLException {
         // this is not actually getting de Ex, so it is faster
         PaymentDTOEx dto = new PaymentDTOEx(getDTO());
 
@@ -799,17 +811,23 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         // entered
         // it has to show as ok
         dto.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
-        sendNotification(dto, payment.getBaseUser().getEntity().getId());
+        //sendNotification(dto, payment.getBaseUser().getEntity().getId());
+
+        return true;
     }
 
     /**
      * sends an notification with a payment
      */
     public void sendNotification(PaymentDTOEx info, Integer entityId) {
+        sendNotification(info, entityId, 
+                new Integer(info.getPaymentResult().getId()).equals(Constants.RESULT_OK));
+    }
+
+    public void sendNotification(PaymentDTOEx info, Integer entityId, boolean success) {
         try {
             NotificationBL notif = new NotificationBL();
-            MessageDTO message = notif.getPaymentMessage(entityId, info,
-                    new Integer(info.getPaymentResult().getId()).equals(Constants.RESULT_OK));
+            MessageDTO message = notif.getPaymentMessage(entityId, info, success);
 
             INotificationSessionBean notificationSess =
                     (INotificationSessionBean) Context.getBean(
@@ -823,7 +841,9 @@ public class PaymentBL extends ResultList implements PaymentSQL {
                     "entity = " + entityId);
         }
     }
-
+    
+    
+    
     /*
      * The payment doesn't have to be set. It adjusts the balances of both the
      * payment and the invoice and deletes the map row.

@@ -453,6 +453,9 @@ public class PaymentSessionBean implements IPaymentSessionBean {
             // this is necessary for the caller to get the Id of the
             // payment just created
             payment.setId(paymentBl.getEntity().getId());
+            
+            boolean wasPaymentApplied= false;
+            
             if (payment.getIsRefund() == 0) { // normal payment
                 if (invoiceId != null) {
                     // find the invoice
@@ -463,10 +466,13 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                     BigDecimal paid = applyPayment(payment, invoiceBl.getEntity(), true);
                     // link it with the invoice
                     paymentBl.createMap(invoiceBl.getEntity(), paid);
+                    
+                    //payment was applied successfully
+                    wasPaymentApplied= true;
                 } else {
                     // this payment was done without an explicit invoice
                     // We'll try to link it to invoices with balances then
-                    paymentBl.automaticPaymentApplication();
+                    wasPaymentApplied= paymentBl.automaticPaymentApplication();
                 }
                 // let know about this payment with an event
                 PaymentSuccessfulEvent event = new PaymentSuccessfulEvent(
@@ -479,10 +485,21 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                     // is linked to at least one invoice.
                     InvoiceBL invoiceBL = new InvoiceBL((Integer) payment.
                             getPayment().getInvoiceIds().get(0));
-                    applyPayment(payment, invoiceBL.getEntity(), true);
+                    BigDecimal amountApplied= applyPayment(payment, invoiceBL.getEntity(), true);
+                    
+                    if ( null != amountApplied && BigDecimal.ZERO.compareTo(amountApplied) < 0 )  {
+                        wasPaymentApplied= true;
+                    }
+                    
                 }
             }
             
+            //should we notify the customer of this payment
+            if (wasPaymentApplied) {
+                //this notification prevents multiple notifications sent for each application of the payment to an Invoice
+                LOG.debug("Invoking Payment notification for the Payment Entered since it was applied to atleast 1 Invoice.");
+                paymentBl.sendNotification(payment, new UserDAS().find(payment.getUserId()).getCompany().getId(), true);
+            }
             return paymentBl.getEntity().getId();
         } catch (Exception e) {
             throw new SessionInternalError(e);

@@ -292,7 +292,7 @@ class ProductController {
             render template: 'products', model: [ products: products ]
             return
         }
-        
+
         if (params.id) {
             try {
                 webServicesSession.deleteItemCategory(params.int('id'))

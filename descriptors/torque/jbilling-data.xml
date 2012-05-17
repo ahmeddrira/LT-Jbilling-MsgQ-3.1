@@ -257,16 +257,16 @@
     <Currency Id="10" Symbol="M$" Code="MYR" CountryCode="MY" Optlock="0"/>
     <Currency Id="11" Symbol="$" Code="AUD" CountryCode="AU" Optlock="0"/>
 
-    <CurrencyExchange Id="1" EntityId="0" CurrencyId="2" Rate="1.325" CreateDatetime="2004-03-09 00:00:00" ValidSince="1970-01-01 00:00:00" Optlock="1"/>
-    <CurrencyExchange Id="2" EntityId="0" CurrencyId="3" Rate="0.8118" CreateDatetime="2004-03-09 00:00:00" ValidSince="1970-01-01 00:00:00" Optlock="1"/>
-    <CurrencyExchange Id="3" EntityId="0" CurrencyId="4" Rate="111.4" CreateDatetime="2004-03-09 00:00:00" ValidSince="1970-01-01 00:00:00" Optlock="1"/>
-    <CurrencyExchange Id="4" EntityId="0" CurrencyId="5" Rate="0.5479" CreateDatetime="2004-03-09 00:00:00" ValidSince="1970-01-01 00:00:00" Optlock="1"/>
-    <CurrencyExchange Id="5" EntityId="0" CurrencyId="6" Rate="1171" CreateDatetime="2004-03-09 00:00:00" ValidSince="1970-01-01 00:00:00" Optlock="1"/>
-    <CurrencyExchange Id="6" EntityId="0" CurrencyId="7" Rate="1.23" CreateDatetime="2004-07-06 00:00:00" ValidSince="1970-01-01 00:00:00" Optlock="1"/>
-    <CurrencyExchange Id="7" EntityId="0" CurrencyId="8" Rate="7.47" CreateDatetime="2004-07-06 00:00:00" ValidSince="1970-01-01 00:00:00" Optlock="1"/>
-    <CurrencyExchange Id="10" EntityId="0" CurrencyId="9" Rate="1.68" CreateDatetime="2004-10-12 00:00:00" ValidSince="1970-01-01 00:00:00" Optlock="1"/>
-    <CurrencyExchange Id="11" EntityId="0" CurrencyId="10" Rate="3.8" CreateDatetime="2004-10-12 00:00:00" ValidSince="1970-01-01 00:00:00" Optlock="1"/>
-    <CurrencyExchange Id="12" EntityId="0" CurrencyId="11" Rate="1.288" CreateDatetime="2007-01-25 00:00:00" ValidSince="1970-01-01 00:00:00" Optlock="1"/>
+    <CurrencyExchange Id="1" EntityId="0" CurrencyId="2" Rate="1.325" CreateDatetime="2004-03-09 00:00:00" ValidSince="1970-01-01 00:00:01" Optlock="1"/>
+    <CurrencyExchange Id="2" EntityId="0" CurrencyId="3" Rate="0.8118" CreateDatetime="2004-03-09 00:00:00" ValidSince="1970-01-01 00:00:01" Optlock="1"/>
+    <CurrencyExchange Id="3" EntityId="0" CurrencyId="4" Rate="111.4" CreateDatetime="2004-03-09 00:00:00" ValidSince="1970-01-01 00:00:01" Optlock="1"/>
+    <CurrencyExchange Id="4" EntityId="0" CurrencyId="5" Rate="0.5479" CreateDatetime="2004-03-09 00:00:00" ValidSince="1970-01-01 00:00:01" Optlock="1"/>
+    <CurrencyExchange Id="5" EntityId="0" CurrencyId="6" Rate="1171" CreateDatetime="2004-03-09 00:00:00" ValidSince="1970-01-01 00:00:01" Optlock="1"/>
+    <CurrencyExchange Id="6" EntityId="0" CurrencyId="7" Rate="1.23" CreateDatetime="2004-07-06 00:00:00" ValidSince="1970-01-01 00:00:01" Optlock="1"/>
+    <CurrencyExchange Id="7" EntityId="0" CurrencyId="8" Rate="7.47" CreateDatetime="2004-07-06 00:00:00" ValidSince="1970-01-01 00:00:01" Optlock="1"/>
+    <CurrencyExchange Id="10" EntityId="0" CurrencyId="9" Rate="1.68" CreateDatetime="2004-10-12 00:00:00" ValidSince="1970-01-01 00:00:01" Optlock="1"/>
+    <CurrencyExchange Id="11" EntityId="0" CurrencyId="10" Rate="3.8" CreateDatetime="2004-10-12 00:00:00" ValidSince="1970-01-01 00:00:01" Optlock="1"/>
+    <CurrencyExchange Id="12" EntityId="0" CurrencyId="11" Rate="1.288" CreateDatetime="2007-01-25 00:00:00" ValidSince="1970-01-01 00:00:01" Optlock="1"/>
 
     <EventLogMessage Id="1"/>
     <EventLogMessage Id="2"/>

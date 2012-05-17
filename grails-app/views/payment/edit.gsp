@@ -185,7 +185,7 @@
                                 <content tag="label"><g:message code="prompt.user.currency"/></content>
                                 <content tag="label.for">payment.currencyId</content>
                                 <g:select name="payment.currencyId"
-                                          from="${currencyInvoice}"
+                                          from="${currencyInvoice ? currencyInvoice : currencies.find { it.id == user?.currencyId }}"
                                           value="${selectedInvoiceCurrencyId}" 
                                           optionKey="id"
                                           optionValue="${{it.getDescription(session['language_id'])}}"/>

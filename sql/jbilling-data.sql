@@ -1004,43 +1004,43 @@ INSERT INTO currency (id,symbol,code,country_code,OPTLOCK)
 
 
 INSERT INTO currency_exchange (id,entity_id,currency_id,rate,create_datetime,valid_since,OPTLOCK)
-    VALUES (1,0,2,1.325,'2004-03-09 00:00:00','1970-01-01 00:00:00',1);
+    VALUES (1,0,2,1.325,'2004-03-09 00:00:00','1970-01-01 00:00:01',1);
 
 
 INSERT INTO currency_exchange (id,entity_id,currency_id,rate,create_datetime,valid_since,OPTLOCK)
-    VALUES (2,0,3,0.8118,'2004-03-09 00:00:00','1970-01-01 00:00:00',1);
+    VALUES (2,0,3,0.8118,'2004-03-09 00:00:00','1970-01-01 00:00:01',1);
 
 
 INSERT INTO currency_exchange (id,entity_id,currency_id,rate,create_datetime,valid_since,OPTLOCK)
-    VALUES (3,0,4,111.4,'2004-03-09 00:00:00','1970-01-01 00:00:00',1);
+    VALUES (3,0,4,111.4,'2004-03-09 00:00:00','1970-01-01 00:00:01',1);
 
 
 INSERT INTO currency_exchange (id,entity_id,currency_id,rate,create_datetime,valid_since,OPTLOCK)
-    VALUES (4,0,5,0.5479,'2004-03-09 00:00:00','1970-01-01 00:00:00',1);
+    VALUES (4,0,5,0.5479,'2004-03-09 00:00:00','1970-01-01 00:00:01',1);
 
 
 INSERT INTO currency_exchange (id,entity_id,currency_id,rate,create_datetime,valid_since,OPTLOCK)
-    VALUES (5,0,6,1171,'2004-03-09 00:00:00','1970-01-01 00:00:00',1);
+    VALUES (5,0,6,1171,'2004-03-09 00:00:00','1970-01-01 00:00:01',1);
 
 
 INSERT INTO currency_exchange (id,entity_id,currency_id,rate,create_datetime,valid_since,OPTLOCK)
-    VALUES (6,0,7,1.23,'2004-07-06 00:00:00','1970-01-01 00:00:00',1);
+    VALUES (6,0,7,1.23,'2004-07-06 00:00:00','1970-01-01 00:00:01',1);
 
 
 INSERT INTO currency_exchange (id,entity_id,currency_id,rate,create_datetime,valid_since,OPTLOCK)
-    VALUES (7,0,8,7.47,'2004-07-06 00:00:00','1970-01-01 00:00:00',1);
+    VALUES (7,0,8,7.47,'2004-07-06 00:00:00','1970-01-01 00:00:01',1);
 
 
 INSERT INTO currency_exchange (id,entity_id,currency_id,rate,create_datetime,valid_since,OPTLOCK)
-    VALUES (10,0,9,1.68,'2004-10-12 00:00:00','1970-01-01 00:00:00',1);
+    VALUES (10,0,9,1.68,'2004-10-12 00:00:00','1970-01-01 00:00:01',1);
 
 
 INSERT INTO currency_exchange (id,entity_id,currency_id,rate,create_datetime,valid_since,OPTLOCK)
-    VALUES (11,0,10,3.8,'2004-10-12 00:00:00','1970-01-01 00:00:00',1);
+    VALUES (11,0,10,3.8,'2004-10-12 00:00:00','1970-01-01 00:00:01',1);
 
 
 INSERT INTO currency_exchange (id,entity_id,currency_id,rate,create_datetime,valid_since,OPTLOCK)
-    VALUES (12,0,11,1.288,'2007-01-25 00:00:00','1970-01-01 00:00:00',1);
+    VALUES (12,0,11,1.288,'2007-01-25 00:00:00','1970-01-01 00:00:01',1);
 
 
 INSERT INTO event_log_message (id)

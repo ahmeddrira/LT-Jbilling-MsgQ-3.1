@@ -615,3 +615,9 @@ update jbilling_seqs set next_id = coalesce((select round(max(id)/100)+1 from ro
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (95, 8, 'com.sapienter.jbilling.server.pluggableTask.AlternativePaymentInfoTask', 0);
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  95, 'title',1, 'Alternative Payment Info Task');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  95, 'description', 1, 'A pluggable task of the type Payment Info Task that first checks the preferred payment method than if there is no data for the preferred method it searches for alternative payment methods');
+
+-- Date 18-May-2012
+-- Replace timestamp columns with date for timelines
+alter table currency_exchange alter valid_since type date;
+alter table item_price_timeline alter start_date type date;
+alter table plan_item_price_timeline alter start_date type date;

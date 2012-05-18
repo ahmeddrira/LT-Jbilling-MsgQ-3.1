@@ -777,7 +777,7 @@ CREATE TABLE currency_exchange (
     rate numeric(22,10) NOT NULL,
     create_datetime timestamp without time zone NOT NULL,
     optlock integer NOT NULL,
-    valid_since timestamp without time zone DEFAULT '1970-01-01'::date NOT NULL
+    valid_since date DEFAULT '1970-01-01'::date NOT NULL
 );
 
 
@@ -1184,7 +1184,7 @@ ALTER TABLE public.item_meta_field_map OWNER TO jbilling;
 CREATE TABLE item_price_timeline (
     item_id integer NOT NULL,
     price_model_id integer NOT NULL,
-    start_date timestamp without time zone NOT NULL
+    start_date date NOT NULL
 );
 
 
@@ -1943,7 +1943,7 @@ ALTER TABLE public.plan_item_bundle OWNER TO jbilling;
 CREATE TABLE plan_item_price_timeline (
     plan_item_id integer NOT NULL,
     price_model_id integer NOT NULL,
-    start_date timestamp without time zone NOT NULL
+    start_date date NOT NULL
 );
 
 
@@ -13777,25 +13777,25 @@ COPY item_meta_field_map (item_id, meta_field_value_id) FROM stdin;
 --
 
 COPY item_price_timeline (item_id, price_model_id, start_date) FROM stdin;
-1	1	1970-01-01 00:00:00
-2	2	1970-01-01 00:00:00
-3	3	1970-01-01 00:00:00
-4	4	1970-01-01 00:00:00
-24	14	1970-01-01 00:00:00
-250	150	1970-01-01 00:00:00
-251	151	1970-01-01 00:00:00
-270	152	1970-01-01 00:00:00
-2600	1600	1970-01-01 00:00:00
-2601	1601	1970-01-01 00:00:00
-2602	1602	1970-01-01 00:00:00
-2700	1701	1970-01-01 00:00:00
-2701	1703	1970-01-01 00:00:00
-2702	1705	1970-01-01 00:00:00
-2800	1801	1970-01-01 00:00:00
-2801	1803	1970-01-01 00:00:00
-2900	1900	1970-01-01 00:00:00
-3000	2001	1970-01-01 00:00:00
-240	2003	1970-01-01 00:00:00
+1	1	1970-01-01
+2	2	1970-01-01
+3	3	1970-01-01
+4	4	1970-01-01
+24	14	1970-01-01
+250	150	1970-01-01
+251	151	1970-01-01
+270	152	1970-01-01
+2600	1600	1970-01-01
+2601	1601	1970-01-01
+2602	1602	1970-01-01
+2700	1701	1970-01-01
+2701	1703	1970-01-01
+2702	1705	1970-01-01
+2800	1801	1970-01-01
+2801	1803	1970-01-01
+2900	1900	1970-01-01
+3000	2001	1970-01-01
+240	2003	1970-01-01
 \.
 
 
@@ -18997,7 +18997,7 @@ COPY plan_item_bundle (id, quantity, period_id, target_customer, add_if_exists) 
 --
 
 COPY plan_item_price_timeline (plan_item_id, price_model_id, start_date) FROM stdin;
-1	2004	1970-01-01 00:00:00
+1	2004	1970-01-01
 \.
 
 

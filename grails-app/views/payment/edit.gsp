@@ -81,6 +81,12 @@
             validator.hideErrors();
         });
         </g:if>
+        <g:if test="${isCheque}">
+        $(document).ready(function() {
+            // disable the cheque box of process now
+            $('#processNow').attr({disabled:true});
+        });
+        </g:if>
     </script>
 </head>
 <body>

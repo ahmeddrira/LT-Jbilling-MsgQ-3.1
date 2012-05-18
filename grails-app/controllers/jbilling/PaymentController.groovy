@@ -311,7 +311,7 @@ class PaymentController {
         List<PaymentDTO> refundablePayments = new PaymentDAS().getRefundablePayments(user.getUserId())
         log.debug "invoices are ${invoices}"
         log.debug "payments are ${refundablePayments}"
-        
+
         [ payment: payment, user: user, invoices: invoices, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), refundablePayments: refundablePayments, refundPaymentId: params.int('payment?.paymentId'), availableFields: availableMetaFields ]
     }
 
@@ -364,7 +364,11 @@ class PaymentController {
             }
         } catch (SessionInternalError e) {
             viewUtils.resolveException(flash, session.local, e)
-            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, refundablePayments: refundablePayments, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), availableFields: availableMetaFields ]
+            boolean isCheque = false
+            if (payment.methodId == Constants.PAYMENT_METHOD_CHEQUE) {
+                 isCheque = true
+            }
+            render view: 'edit', model: [ payment: payment, user: user, invoices: invoices, refundablePayments: refundablePayments, currencies: currencies, paymentMethods: paymentMethods, invoiceId: params.int('invoiceId'), availableFields: availableMetaFields, isCheque: isCheque ]
             return
         }
 

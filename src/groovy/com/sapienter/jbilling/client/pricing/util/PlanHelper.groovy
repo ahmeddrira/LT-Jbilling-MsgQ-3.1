@@ -66,7 +66,12 @@ class PlanHelper {
                 for (AttributeDefinition attribute : oldType.strategy.attributeDefinitions) {
                     model.attributes.remove(attribute.name)
                 }
+            } else {
+                if (params?.startDate != params?.originalStartDate) {
+                    model.id = null
+                }
             }
+
         }
 
         return root;

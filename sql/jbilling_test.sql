@@ -763,7 +763,7 @@ CREATE TABLE currency_exchange (
     rate numeric(22,10) NOT NULL,
     create_datetime timestamp without time zone NOT NULL,
     optlock integer NOT NULL,
-    valid_since timestamp without time zone DEFAULT '1970-01-01'::date NOT NULL
+    valid_since date DEFAULT '1970-01-01'::date NOT NULL
 );
 
 
@@ -1170,7 +1170,7 @@ ALTER TABLE public.item_meta_field_map OWNER TO jbilling;
 CREATE TABLE item_price_timeline (
     item_id integer NOT NULL,
     price_model_id integer NOT NULL,
-    start_date timestamp without time zone NOT NULL
+    start_date date NOT NULL
 );
 
 
@@ -1929,7 +1929,7 @@ ALTER TABLE public.plan_item_bundle OWNER TO jbilling;
 CREATE TABLE plan_item_price_timeline (
     plan_item_id integer NOT NULL,
     price_model_id integer NOT NULL,
-    start_date timestamp without time zone NOT NULL
+    start_date date NOT NULL
 );
 
 
@@ -6858,17 +6858,17 @@ COPY currency_entity_map (currency_id, entity_id) FROM stdin;
 --
 
 COPY currency_exchange (id, entity_id, currency_id, rate, create_datetime, optlock, valid_since) FROM stdin;
-1	0	2	1.3250000000	2004-03-09 00:00:00	1	1970-01-01 00:00:01
-2	0	3	0.8118000000	2004-03-09 00:00:00	1	1970-01-01 00:00:01
-3	0	4	111.4000000000	2004-03-09 00:00:00	1	1970-01-01 00:00:01
-4	0	5	0.5479000000	2004-03-09 00:00:00	1	1970-01-01 00:00:01
-5	0	6	1171.0000000000	2004-03-09 00:00:00	1	1970-01-01 00:00:01
-6	0	7	1.2300000000	2004-07-06 00:00:00	1	1970-01-01 00:00:01
-7	0	8	7.4700000000	2004-07-06 00:00:00	1	1970-01-01 00:00:01
-10	0	9	1.6800000000	2004-10-12 00:00:00	1	1970-01-01 00:00:01
-11	0	10	3.8000000000	2004-10-12 00:00:00	1	1970-01-01 00:00:01
-25	0	11	1.2880000000	2007-01-25 00:00:00	1	1970-01-01 00:00:01
-250	1	11	1.5000000000	2008-11-28 14:32:16.652	0	1970-01-01 00:00:01
+1	0	2	1.3250000000	2004-03-09 00:00:00	1	1970-01-01
+2	0	3	0.8118000000	2004-03-09 00:00:00	1	1970-01-01
+3	0	4	111.4000000000	2004-03-09 00:00:00	1	1970-01-01
+4	0	5	0.5479000000	2004-03-09 00:00:00	1	1970-01-01
+5	0	6	1171.0000000000	2004-03-09 00:00:00	1	1970-01-01
+6	0	7	1.2300000000	2004-07-06 00:00:00	1	1970-01-01
+7	0	8	7.4700000000	2004-07-06 00:00:00	1	1970-01-01
+10	0	9	1.6800000000	2004-10-12 00:00:00	1	1970-01-01
+11	0	10	3.8000000000	2004-10-12 00:00:00	1	1970-01-01
+25	0	11	1.2880000000	2007-01-25 00:00:00	1	1970-01-01
+250	1	11	1.5000000000	2008-11-28 14:32:16.652	0	1970-01-01
 \.
 
 
@@ -13638,6 +13638,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 60	7	title	1	Super user
 60	8	description	1	A billing clerk
 60	8	title	1	Clerk
+24	95	title	1	Alternative Payment Info Task
+24	95	description	1	A pluggable task of the type Payment Info Task that first checks the preferred payment method than if there is no data for the preferred method it searches for alternative payment methods
 \.
 
 
@@ -13761,25 +13763,25 @@ COPY item_meta_field_map (item_id, meta_field_value_id) FROM stdin;
 --
 
 COPY item_price_timeline (item_id, price_model_id, start_date) FROM stdin;
-1	1	1970-01-01 00:00:01
-2	2	1970-01-01 00:00:01
-3	3	1970-01-01 00:00:01
-4	4	1970-01-01 00:00:01
-24	14	1970-01-01 00:00:01
-250	150	1970-01-01 00:00:01
-251	151	1970-01-01 00:00:01
-270	152	1970-01-01 00:00:01
-2600	1600	1970-01-01 00:00:01
-2601	1601	1970-01-01 00:00:01
-2602	1602	1970-01-01 00:00:01
-2700	1701	1970-01-01 00:00:01
-2701	1703	1970-01-01 00:00:01
-2702	1705	1970-01-01 00:00:01
-2800	1801	1970-01-01 00:00:01
-2801	1803	1970-01-01 00:00:01
-2900	1900	1970-01-01 00:00:01
-3000	2001	1970-01-01 00:00:01
-240	2003	1970-01-01 00:00:01
+1	1	1970-01-01
+2	2	1970-01-01
+3	3	1970-01-01
+4	4	1970-01-01
+24	14	1970-01-01
+250	150	1970-01-01
+251	151	1970-01-01
+270	152	1970-01-01
+2600	1600	1970-01-01
+2601	1601	1970-01-01
+2602	1602	1970-01-01
+2700	1701	1970-01-01
+2701	1703	1970-01-01
+2702	1705	1970-01-01
+2800	1801	1970-01-01
+2801	1803	1970-01-01
+2900	1900	1970-01-01
+3000	2001	1970-01-01
+240	2003	1970-01-01
 \.
 
 
@@ -18981,7 +18983,7 @@ COPY plan_item_bundle (id, quantity, period_id, target_customer, add_if_exists) 
 --
 
 COPY plan_item_price_timeline (plan_item_id, price_model_id, start_date) FROM stdin;
-1	2004	1970-01-01 00:00:01
+1	2004	1970-01-01
 \.
 
 
@@ -19227,6 +19229,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 89	24	com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask	0
 90	4	com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask	2
 91	4	com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask	2
+95	8	com.sapienter.jbilling.server.pluggableTask.AlternativePaymentInfoTask	0
 \.
 
 

@@ -86,11 +86,11 @@ ALTER TABLE contact_field_type ALTER COLUMN data_type TYPE VARCHAR(50);
 -- Date: 14-Aug-2011
 -- Description: Add Simple Tax plug-in to DB
 -- insert new tax plugin to the database
-insert into pluggable_task_type (id, category_id, class_name, min_parameters) 
+insert into pluggable_task_type (id, category_id, class_name, min_parameters)
 	values (92, 4, 'com.sapienter.jbilling.server.process.task.SimpleTaxCompositionTask', 1);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
 	values (24,  92, 'title',1, 'Simple Tax Invoice Composition Task');
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) 
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)
 	values (24,  92, 'description', 1, 'A pluggable task to automatically add taxes to invoices, with the option of exluding some customers and some items (excemptions).');
 
 
@@ -142,7 +142,7 @@ insert into report_parameter (id, report_id, dtype, name) values (15, 10, 'integ
 insert into report_parameter (id, report_id, dtype, name) values (16, 10, 'string', 'plan_code');
 insert into report_parameter (id, report_id, dtype, name) values (17, 10, 'string', 'plan_description');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (100, 10, 'description', 1, 'Plan pricing history for all plan products and start dates.');
-insert into entity_report_map (report_id, entity_id) values (10, 1);
+insert into entity_report_map (select 10 as report_id, e.id as entity_id from entity e);
 
 -- Date: 13-Oct-2011
 -- Redmine Issue: #1445
@@ -561,15 +561,15 @@ insert into international_description(table_id, foreign_id, psudo_column, langua
     values(24, 94, 'title', 1, 'Fees for early cancellation of a subscription');
 insert into international_description(table_id, foreign_id, psudo_column, language_id, content)
     values(24, 94, 'description', 1, 'This plug-in will create a new order with a fee if a recurring order is cancelled too early');
-	
+
 -- Date 19-Mar-2012
--- Set correct meta field values next_id value 
+-- Set correct meta field values next_id value
 update jbilling_seqs set next_id = coalesce((select round(max(id)/10)+1 from meta_field_value), 1) where name = 'meta_field_value';
 
 -- Date 20-Mar-2012
 -- Bugs #2418 Metafields should be company wide instead of system wide
 alter table meta_field_name add entity_id integer default 1;
-alter table meta_field_name add constraint meta_field_entity_id_FK foreign key (entity_id) references entity (id); 
+alter table meta_field_name add constraint meta_field_entity_id_FK foreign key (entity_id) references entity (id);
 
 -- Date: 24-March-2012
 -- Redmine Issue: #2257
@@ -609,3 +609,15 @@ create table partner_meta_field_map (
 
 update jbilling_seqs set next_id = coalesce((select round(max(id)/100)+1 from role), 1) where name = 'role';
 
+-- Date: 17-May-2012
+-- Redmine Issue: #2747
+-- Description: Unable to pay invoice (add new payment info task plugin)
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (95, 8, 'com.sapienter.jbilling.server.pluggableTask.AlternativePaymentInfoTask', 0);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  95, 'title',1, 'Alternative Payment Info Task');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (24,  95, 'description', 1, 'A pluggable task of the type Payment Info Task that first checks the preferred payment method than if there is no data for the preferred method it searches for alternative payment methods');
+
+-- Date 18-May-2012
+-- Replace timestamp columns with date for timelines
+alter table currency_exchange alter valid_since type date;
+alter table item_price_timeline alter start_date type date;
+alter table plan_item_price_timeline alter start_date type date;

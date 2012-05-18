@@ -343,7 +343,7 @@ CREATE TABLE currency_exchange
     currency_id INTEGER,
     rate DECIMAL(22,10) NOT NULL,
     create_datetime TIMESTAMP NOT NULL,
-    valid_since TIMESTAMP NOT NULL,
+    valid_since DATETIME NOT NULL,
     OPTLOCK INTEGER NOT NULL,
     PRIMARY KEY(id));
 
@@ -634,7 +634,7 @@ drop table if exists item_price_timeline;
 CREATE TABLE item_price_timeline
 (
     item_id INTEGER NOT NULL,
-    start_date TIMESTAMP NOT NULL,
+    start_date DATETIME NOT NULL,
     price_model_id INTEGER NOT NULL,
     PRIMARY KEY(item_id,start_date),
     UNIQUE (price_model_id));
@@ -745,7 +745,7 @@ drop table if exists plan_item_price_timeline;
 CREATE TABLE plan_item_price_timeline
 (
     plan_item_id INTEGER NOT NULL,
-    start_date TIMESTAMP NOT NULL,
+    start_date DATETIME NOT NULL,
     price_model_id INTEGER NOT NULL,
     PRIMARY KEY(plan_item_id,start_date),
     UNIQUE (price_model_id));

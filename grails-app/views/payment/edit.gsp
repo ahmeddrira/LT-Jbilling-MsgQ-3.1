@@ -386,7 +386,7 @@
                     }
                 }%
 
-                <g:if test="${(creditCardAllowed && isNew) || payment?.creditCard}">
+                <g:if test="${(creditCardAllowed && isNew) || (creditCardAllowed && payment?.creditCard)}">
                     <g:set var="creditCard" value="${payment?.creditCard}"/>
 
                     <div id="creditCard" class="box-cards ${creditCard ? 'box-cards-open' : ''} payment-type" onOpen="togglePaymentType('#creditCard');">
@@ -460,7 +460,7 @@
                     def achAllowed = paymentMethods.find { it.id == Constants.PAYMENT_METHOD_ACH }
                 }%
 
-                <g:if test="${(achAllowed && isNew) || payment?.ach}">
+                <g:if test="${(achAllowed && isNew) || (achAllowed && payment?.ach)}">
                     <g:set var="ach" value="${payment?.ach}"/>
 
                     <div id="ach" class="box-cards ${ach ? 'box-cards-open' : ''} payment-type" onOpen="togglePaymentType('#ach');">

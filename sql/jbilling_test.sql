@@ -4,10 +4,9 @@
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
-SET standard_conforming_strings = off;
+SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-SET escape_string_warning = off;
 
 SET search_path = public, pg_catalog;
 
@@ -433,6 +432,7 @@ DROP TABLE public.billing_process;
 DROP TABLE public.base_user;
 DROP TABLE public.ageing_entity_step;
 DROP TABLE public.ach;
+DROP EXTENSION plpgsql;
 DROP SCHEMA public;
 --
 -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
@@ -448,6 +448,20 @@ ALTER SCHEMA public OWNER TO postgres;
 --
 
 COMMENT ON SCHEMA public IS 'standard public schema';
+
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 SET search_path = public, pg_catalog;
@@ -12959,6 +12973,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 50	19	description	1	Next invoice number
 50	20	description	1	Manual invoice deletion
 50	21	description	1	Use invoice reminders
+64	89	description	1	Guatemala
 50	22	description	1	Number of days after the invoice generation for the first reminder
 50	23	description	1	Number of days for next reminder
 50	24	description	1	Data Fattura Fine Mese
@@ -13080,7 +13095,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 64	86	description	1	Grenada
 64	87	description	1	Guadeloupe
 64	88	description	1	Guam
-64	89	description	1	Guatemala
 64	90	description	1	Guinea
 64	91	description	1	Guinea-Bissau
 64	92	description	1	Guyana
@@ -13357,6 +13371,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	30	title	1	Rules Line Total
 24	30	description	1	This is a rules-based plug-in. It calculates the total for an order line (typically this is the price multiplied by the quantity), allowing for the execution of external rules.
 24	31	title	1	Rules Pricing
+24	61	title	1	Rules Pricing 2
 24	31	description	1	This is a rules-based plug-in. It gives a price to an item by executing external rules. You can then add logic externally for pricing. It is also integrated with the mediation process by having access to the mediation pricing data.
 24	32	title	1	Separator file reader
 24	32	description	1	This is a reader for the mediation process. It reads records from a text file whose fields are separated by a character (or string).
@@ -13416,7 +13431,6 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 24	59	description	1	This is a rules-based plug-in compatible with the mediation module of jBilling 2.2.x. It will do what the basic item manager does (actually calling it), but then it will execute external rules as well. These external rules have full control on changing the order that is getting new items.
 24	60	title	1	Rules Line Total - 2
 24	60	description	1	This is a rules-based plug-in, compatible with the mediation process of jBilling 2.2.x and later. It calculates the total for an order line (typically this is the price multiplied by the quantity), allowing for the execution of external rules.
-24	61	title	1	Rules Pricing 2
 24	61	description	1	This is a rules-based plug-in compatible with the mediation module of jBilling 2.2.x. It gives a price to an item by executing external rules. You can then add logic externally for pricing. It is also integrated with the mediation process by having access to the mediation pricing data.
 24	63	title	1	Test payment processor for external storage.
 24	63	description	1	A fake plug-in to test payments that would be stored externally.
@@ -13638,6 +13652,8 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 60	7	title	1	Super user
 60	8	description	1	A billing clerk
 60	8	title	1	Clerk
+24	95	title	1	Alternative Payment Info Task
+24	95	description	1	A pluggable task of the type Payment Info Task that first checks the preferred payment method than if there is no data for the preferred method it searches for alternative payment methods
 \.
 
 
@@ -19227,6 +19243,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 89	24	com.sapienter.jbilling.server.process.task.BusinessDayAgeingTask	0
 90	4	com.sapienter.jbilling.server.process.task.CountryTaxCompositionTask	2
 91	4	com.sapienter.jbilling.server.process.task.PaymentTermPenaltyTask	2
+95	8	com.sapienter.jbilling.server.pluggableTask.AlternativePaymentInfoTask	0
 \.
 
 

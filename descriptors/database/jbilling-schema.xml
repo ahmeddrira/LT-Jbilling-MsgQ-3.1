@@ -588,7 +588,7 @@
             <column name="version" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="java.sql.Types.BOOLEANean_value" type="java.sql.Types.BOOLEAN"/>
+            <column name="boolean_value" type="java.sql.Types.BOOLEAN"/>
             <column name="decimal_value" type="java.sql.Types.NUMERIC(22,10)"/>
             <column name="decimal_high_value" type="java.sql.Types.NUMERIC(22,10)"/>
         </createTable>
@@ -1038,7 +1038,7 @@
             <column name="dtype" type="java.sql.Types.VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="java.sql.Types.BOOLEANean_value" type="java.sql.Types.BOOLEAN"/>
+            <column name="boolean_value" type="java.sql.Types.BOOLEAN"/>
             <column name="date_value" type="java.sql.Types.TIMESTAMP"/>
             <column name="decimal_value" type="java.sql.Types.NUMERIC(22,10)"/>
             <column name="integer_value" type="java.sql.Types.INTEGER"/>

@@ -8,1952 +8,1952 @@
 
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-1">
         <createTable tableName="ach">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="ach_pkey"/>
             </column>
-            <column name="user_id" type="int4"/>
-            <column name="aba_routing" type="VARCHAR(40)">
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="aba_routing" type="java.sql.Types.VARCHAR(40)">
                 <constraints nullable="false"/>
             </column>
-            <column name="bank_account" type="VARCHAR(60)">
+            <column name="bank_account" type="java.sql.Types.VARCHAR(60)">
                 <constraints nullable="false"/>
             </column>
-            <column name="account_type" type="int4">
+            <column name="account_type" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="bank_name" type="VARCHAR(50)">
+            <column name="bank_name" type="java.sql.Types.VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="account_name" type="VARCHAR(100)">
+            <column name="account_name" type="java.sql.Types.VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="gateway_key" type="VARCHAR(100)"/>
+            <column name="gateway_key" type="java.sql.Types.VARCHAR(100)"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-2">
         <createTable tableName="ageing_entity_step">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="ageing_entity_step_pkey"/>
             </column>
-            <column name="entity_id" type="int4"/>
-            <column name="status_id" type="int4"/>
-            <column name="days" type="int4">
+            <column name="entity_id" type="java.sql.Types.INTEGER"/>
+            <column name="status_id" type="java.sql.Types.INTEGER"/>
+            <column name="days" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-3">
         <createTable tableName="base_user">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="base_user_pkey"/>
             </column>
-            <column name="entity_id" type="int4"/>
-            <column name="password" type="VARCHAR(40)"/>
-            <column defaultValueNumeric="0" name="deleted" type="int2">
+            <column name="entity_id" type="java.sql.Types.INTEGER"/>
+            <column name="password" type="java.sql.Types.VARCHAR(40)"/>
+            <column defaultValueNumeric="0" name="deleted" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="language_id" type="int4"/>
-            <column name="status_id" type="int4"/>
-            <column defaultValueNumeric="1" name="subscriber_status" type="int4"/>
-            <column name="currency_id" type="int4"/>
-            <column name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="language_id" type="java.sql.Types.INTEGER"/>
+            <column name="status_id" type="java.sql.Types.INTEGER"/>
+            <column defaultValueNumeric="1" name="subscriber_status" type="java.sql.Types.INTEGER"/>
+            <column name="currency_id" type="java.sql.Types.INTEGER"/>
+            <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="last_status_change" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="last_login" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="user_name" type="VARCHAR(50)"/>
-            <column defaultValueNumeric="0" name="failed_attempts" type="int4">
+            <column name="last_status_change" type="java.sql.Types.TIMESTAMP"/>
+            <column name="last_login" type="java.sql.Types.TIMESTAMP"/>
+            <column name="user_name" type="java.sql.Types.VARCHAR(50)"/>
+            <column defaultValueNumeric="0" name="failed_attempts" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-4">
         <createTable tableName="billing_process">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="billing_process_pkey"/>
             </column>
-            <column name="entity_id" type="int4">
+            <column name="entity_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="billing_date" type="DATE">
+            <column name="billing_date" type="java.sql.Types.DATE">
                 <constraints nullable="false"/>
             </column>
-            <column name="period_unit_id" type="int4">
+            <column name="period_unit_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="period_value" type="int4">
+            <column name="period_value" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="is_review" type="int4">
+            <column name="is_review" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="paper_invoice_batch_id" type="int4"/>
-            <column defaultValueNumeric="0" name="retries_to_do" type="int4">
+            <column name="paper_invoice_batch_id" type="java.sql.Types.INTEGER"/>
+            <column defaultValueNumeric="0" name="retries_to_do" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-5">
         <createTable tableName="billing_process_configuration">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="billing_process_configuration_pkey"/>
             </column>
-            <column name="entity_id" type="int4"/>
-            <column name="next_run_date" type="DATE">
+            <column name="entity_id" type="java.sql.Types.INTEGER"/>
+            <column name="next_run_date" type="java.sql.Types.DATE">
                 <constraints nullable="false"/>
             </column>
-            <column name="generate_report" type="int2">
+            <column name="generate_report" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="retries" type="int4"/>
-            <column name="days_for_retry" type="int4"/>
-            <column name="days_for_report" type="int4"/>
-            <column name="review_status" type="int4">
+            <column name="retries" type="java.sql.Types.INTEGER"/>
+            <column name="days_for_retry" type="java.sql.Types.INTEGER"/>
+            <column name="days_for_report" type="java.sql.Types.INTEGER"/>
+            <column name="review_status" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="period_unit_id" type="int4">
+            <column name="period_unit_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="period_value" type="int4">
+            <column name="period_value" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="due_date_unit_id" type="int4">
+            <column name="due_date_unit_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="due_date_value" type="int4">
+            <column name="due_date_value" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="df_fm" type="int2"/>
-            <column defaultValueNumeric="1" name="only_recurring" type="int2">
+            <column name="df_fm" type="java.sql.Types.INTEGER"/>
+            <column defaultValueNumeric="1" name="only_recurring" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="invoice_date_process" type="int2">
+            <column name="invoice_date_process" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="auto_payment" type="int2">
+            <column defaultValueNumeric="0" name="auto_payment" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="1" name="maximum_periods" type="int4">
+            <column defaultValueNumeric="1" name="maximum_periods" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="auto_payment_application" type="int4">
+            <column defaultValueNumeric="0" name="auto_payment_application" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-6">
         <createTable tableName="blacklist">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="blacklist_pkey"/>
             </column>
-            <column name="entity_id" type="int4">
+            <column name="entity_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="type" type="int4">
+            <column name="type" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="source" type="int4">
+            <column name="source" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="credit_card" type="int4"/>
-            <column name="credit_card_id" type="int4"/>
-            <column name="contact_id" type="int4"/>
-            <column name="user_id" type="int4"/>
-            <column name="optlock" type="int4">
+            <column name="credit_card" type="java.sql.Types.INTEGER"/>
+            <column name="credit_card_id" type="java.sql.Types.INTEGER"/>
+            <column name="contact_id" type="java.sql.Types.INTEGER"/>
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="meta_field_value_id" type="int4"/>
+            <column name="meta_field_value_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-7">
         <createTable tableName="breadcrumb">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="breadcrumb_pkey"/>
             </column>
-            <column name="user_id" type="int4">
+            <column name="user_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="controller" type="VARCHAR(255)">
+            <column name="controller" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="action" type="VARCHAR(255)"/>
-            <column name="name" type="VARCHAR(255)"/>
-            <column name="object_id" type="int4"/>
-            <column name="version" type="int4">
+            <column name="action" type="java.sql.Types.VARCHAR(255)"/>
+            <column name="name" type="java.sql.Types.VARCHAR(255)"/>
+            <column name="object_id" type="java.sql.Types.INTEGER"/>
+            <column name="version" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="description" type="VARCHAR(255)"/>
+            <column name="description" type="java.sql.Types.VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-8">
         <createTable tableName="cdrentries">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="cdrentries_pkey"/>
             </column>
-            <column name="accountcode" type="VARCHAR(20)"/>
-            <column name="src" type="VARCHAR(20)"/>
-            <column name="dst" type="VARCHAR(20)"/>
-            <column name="dcontext" type="VARCHAR(20)"/>
-            <column name="clid" type="VARCHAR(20)"/>
-            <column name="channel" type="VARCHAR(20)"/>
-            <column name="dstchannel" type="VARCHAR(20)"/>
-            <column name="lastapp" type="VARCHAR(20)"/>
-            <column name="lastdatat" type="VARCHAR(20)"/>
-            <column name="start" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="answer" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="end_time" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="duration" type="int4"/>
-            <column name="billsec" type="int4"/>
-            <column name="disposition" type="VARCHAR(20)"/>
-            <column name="amaflags" type="VARCHAR(20)"/>
-            <column name="userfield" type="VARCHAR(100)"/>
-            <column name="ts" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="accountcode" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="src" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="dst" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="dcontext" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="clid" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="channel" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="dstchannel" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="lastapp" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="lastdatat" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="start" type="java.sql.Types.TIMESTAMP"/>
+            <column name="answer" type="java.sql.Types.TIMESTAMP"/>
+            <column name="end_time" type="java.sql.Types.TIMESTAMP"/>
+            <column name="duration" type="java.sql.Types.INTEGER"/>
+            <column name="billsec" type="java.sql.Types.INTEGER"/>
+            <column name="disposition" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="amaflags" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="userfield" type="java.sql.Types.VARCHAR(100)"/>
+            <column name="ts" type="java.sql.Types.TIMESTAMP"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-9">
         <createTable tableName="contact">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="contact_pkey"/>
             </column>
-            <column name="organization_name" type="VARCHAR(200)"/>
-            <column name="street_addres1" type="VARCHAR(100)"/>
-            <column name="street_addres2" type="VARCHAR(100)"/>
-            <column name="city" type="VARCHAR(50)"/>
-            <column name="state_province" type="VARCHAR(30)"/>
-            <column name="postal_code" type="VARCHAR(15)"/>
-            <column name="country_code" type="VARCHAR(2)"/>
-            <column name="last_name" type="VARCHAR(30)"/>
-            <column name="first_name" type="VARCHAR(30)"/>
-            <column name="person_initial" type="VARCHAR(5)"/>
-            <column name="person_title" type="VARCHAR(40)"/>
-            <column name="phone_country_code" type="int4"/>
-            <column name="phone_area_code" type="int4"/>
-            <column name="phone_phone_number" type="VARCHAR(20)"/>
-            <column name="fax_country_code" type="int4"/>
-            <column name="fax_area_code" type="int4"/>
-            <column name="fax_phone_number" type="VARCHAR(20)"/>
-            <column name="email" type="VARCHAR(200)"/>
-            <column name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="organization_name" type="java.sql.Types.VARCHAR(200)"/>
+            <column name="street_addres1" type="java.sql.Types.VARCHAR(100)"/>
+            <column name="street_addres2" type="java.sql.Types.VARCHAR(100)"/>
+            <column name="city" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="state_province" type="java.sql.Types.VARCHAR(30)"/>
+            <column name="postal_code" type="java.sql.Types.VARCHAR(15)"/>
+            <column name="country_code" type="java.sql.Types.VARCHAR(2)"/>
+            <column name="last_name" type="java.sql.Types.VARCHAR(30)"/>
+            <column name="first_name" type="java.sql.Types.VARCHAR(30)"/>
+            <column name="person_initial" type="java.sql.Types.VARCHAR(5)"/>
+            <column name="person_title" type="java.sql.Types.VARCHAR(40)"/>
+            <column name="phone_country_code" type="java.sql.Types.INTEGER"/>
+            <column name="phone_area_code" type="java.sql.Types.INTEGER"/>
+            <column name="phone_phone_number" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="fax_country_code" type="java.sql.Types.INTEGER"/>
+            <column name="fax_area_code" type="java.sql.Types.INTEGER"/>
+            <column name="fax_phone_number" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="email" type="java.sql.Types.VARCHAR(200)"/>
+            <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="deleted" type="int2">
+            <column defaultValueNumeric="0" name="deleted" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="1" name="notification_include" type="int2"/>
-            <column name="user_id" type="int4"/>
-            <column name="optlock" type="int4">
+            <column defaultValueNumeric="1" name="notification_include" type="java.sql.Types.INTEGER"/>
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-10">
         <createTable tableName="contact_map">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="contact_map_pkey"/>
             </column>
-            <column name="contact_id" type="int4"/>
-            <column name="type_id" type="int4">
+            <column name="contact_id" type="java.sql.Types.INTEGER"/>
+            <column name="type_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="table_id" type="int4">
+            <column name="table_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="foreign_id" type="int4">
+            <column name="foreign_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-11">
         <createTable tableName="contact_type">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="contact_type_pkey"/>
             </column>
-            <column name="entity_id" type="int4"/>
-            <column name="is_primary" type="int2"/>
-            <column name="optlock" type="int4">
+            <column name="entity_id" type="java.sql.Types.INTEGER"/>
+            <column name="is_primary" type="java.sql.Types.INTEGER"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-12">
         <createTable tableName="country">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="country_pkey"/>
             </column>
-            <column name="code" type="VARCHAR(2)">
+            <column name="code" type="java.sql.Types.VARCHAR(2)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-13">
         <createTable tableName="credit_card">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="credit_card_pkey"/>
             </column>
-            <column name="cc_number" type="VARCHAR(100)">
+            <column name="cc_number" type="java.sql.Types.VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="cc_number_plain" type="VARCHAR(20)"/>
-            <column name="cc_expiry" type="DATE">
+            <column name="cc_number_plain" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="cc_expiry" type="java.sql.Types.DATE">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(150)"/>
-            <column name="cc_type" type="int4">
+            <column name="name" type="java.sql.Types.VARCHAR(150)"/>
+            <column name="cc_type" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="deleted" type="int2">
+            <column defaultValueNumeric="0" name="deleted" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="gateway_key" type="VARCHAR(100)"/>
-            <column name="optlock" type="int4">
+            <column name="gateway_key" type="java.sql.Types.VARCHAR(100)"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-14">
         <createTable tableName="currency">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="currency_pkey"/>
             </column>
-            <column name="symbol" type="VARCHAR(10)">
+            <column name="symbol" type="java.sql.Types.VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="code" type="VARCHAR(3)">
+            <column name="code" type="java.sql.Types.VARCHAR(3)">
                 <constraints nullable="false"/>
             </column>
-            <column name="country_code" type="VARCHAR(2)">
+            <column name="country_code" type="java.sql.Types.VARCHAR(2)">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4"/>
+            <column name="optlock" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-15">
         <createTable tableName="currency_entity_map">
-            <column name="currency_id" type="int4"/>
-            <column name="entity_id" type="int4"/>
+            <column name="currency_id" type="java.sql.Types.INTEGER"/>
+            <column name="entity_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-16">
         <createTable tableName="currency_exchange">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="currency_exchange_pkey"/>
             </column>
-            <column name="entity_id" type="int4"/>
-            <column name="currency_id" type="int4"/>
-            <column name="rate" type="NUMERIC(22,10)">
+            <column name="entity_id" type="java.sql.Types.INTEGER"/>
+            <column name="currency_id" type="java.sql.Types.INTEGER"/>
+            <column name="rate" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueDate="1970-01-01" name="valid_since" type="DATE">
+            <column defaultValueDate="1970-01-01" name="valid_since" type="java.sql.Types.DATE">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-17">
         <createTable tableName="customer">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="customer_pkey"/>
             </column>
-            <column name="user_id" type="int4"/>
-            <column name="partner_id" type="int4"/>
-            <column name="referral_fee_paid" type="int2"/>
-            <column name="invoice_delivery_method_id" type="int4">
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="partner_id" type="java.sql.Types.INTEGER"/>
+            <column name="referral_fee_paid" type="java.sql.Types.INTEGER"/>
+            <column name="invoice_delivery_method_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="notes" type="VARCHAR(1000)"/>
-            <column name="auto_payment_type" type="int4"/>
-            <column name="due_date_unit_id" type="int4"/>
-            <column name="due_date_value" type="int4"/>
-            <column name="df_fm" type="int2"/>
-            <column name="parent_id" type="int4"/>
-            <column name="is_parent" type="int2"/>
-            <column defaultValueNumeric="0" name="exclude_aging" type="int2">
+            <column name="notes" type="java.sql.Types.VARCHAR(1000)"/>
+            <column name="auto_payment_type" type="java.sql.Types.INTEGER"/>
+            <column name="due_date_unit_id" type="java.sql.Types.INTEGER"/>
+            <column name="due_date_value" type="java.sql.Types.INTEGER"/>
+            <column name="df_fm" type="java.sql.Types.INTEGER"/>
+            <column name="parent_id" type="java.sql.Types.INTEGER"/>
+            <column name="is_parent" type="java.sql.Types.INTEGER"/>
+            <column defaultValueNumeric="0" name="exclude_aging" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="invoice_child" type="int2"/>
-            <column name="current_order_id" type="int4"/>
-            <column name="optlock" type="int4">
+            <column name="invoice_child" type="java.sql.Types.INTEGER"/>
+            <column name="current_order_id" type="java.sql.Types.INTEGER"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="balance_type" type="int4">
+            <column name="balance_type" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="dynamic_balance" type="NUMERIC(22,10)"/>
-            <column name="credit_limit" type="NUMERIC(22,10)"/>
-            <column name="auto_recharge" type="NUMERIC(22,10)"/>
-            <column name="use_parent_pricing" type="bool">
+            <column name="dynamic_balance" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="credit_limit" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="auto_recharge" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="use_parent_pricing" type="java.sql.Types.BOOLEAN">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-18">
         <createTable tableName="customer_meta_field_map">
-            <column name="customer_id" type="int4">
+            <column name="customer_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="meta_field_value_id" type="int4">
+            <column name="meta_field_value_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-19">
         <createTable tableName="customer_price">
-            <column name="plan_item_id" type="int4">
+            <column name="plan_item_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_id" type="int4">
+            <column name="user_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueComputed="now()" name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column defaultValueComputed="now()" name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-20">
         <createTable tableName="entity">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="entity_pkey"/>
             </column>
-            <column name="external_id" type="VARCHAR(20)"/>
-            <column name="description" type="VARCHAR(100)">
+            <column name="external_id" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="description" type="java.sql.Types.VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="language_id" type="int4">
+            <column name="language_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="currency_id" type="int4">
+            <column name="currency_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-21">
         <createTable tableName="entity_delivery_method_map">
-            <column name="method_id" type="int4"/>
-            <column name="entity_id" type="int4"/>
+            <column name="method_id" type="java.sql.Types.INTEGER"/>
+            <column name="entity_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-22">
         <createTable tableName="entity_payment_method_map">
-            <column name="entity_id" type="int4"/>
-            <column name="payment_method_id" type="int4"/>
+            <column name="entity_id" type="java.sql.Types.INTEGER"/>
+            <column name="payment_method_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-23">
         <createTable tableName="entity_report_map">
-            <column name="report_id" type="int4">
+            <column name="report_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="entity_id" type="int4">
+            <column name="entity_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-24">
         <createTable tableName="enumeration">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="enumeration_pkey"/>
             </column>
-            <column name="entity_id" type="int4">
+            <column name="entity_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(50)">
+            <column name="name" type="java.sql.Types.VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-25">
         <createTable tableName="enumeration_values">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="enumeration_values_pkey"/>
             </column>
-            <column name="enumeration_id" type="int4">
+            <column name="enumeration_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="value" type="VARCHAR(50)">
+            <column name="value" type="java.sql.Types.VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-26">
         <createTable tableName="event_log">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="event_log_pkey"/>
             </column>
-            <column name="entity_id" type="int4"/>
-            <column name="user_id" type="int4"/>
-            <column name="table_id" type="int4"/>
-            <column name="foreign_id" type="int4">
+            <column name="entity_id" type="java.sql.Types.INTEGER"/>
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="table_id" type="java.sql.Types.INTEGER"/>
+            <column name="foreign_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="level_field" type="int4">
+            <column name="level_field" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="module_id" type="int4">
+            <column name="module_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="message_id" type="int4">
+            <column name="message_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="old_num" type="int4"/>
-            <column name="old_str" type="VARCHAR(1000)"/>
-            <column name="old_date" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="optlock" type="int4">
+            <column name="old_num" type="java.sql.Types.INTEGER"/>
+            <column name="old_str" type="java.sql.Types.VARCHAR(1000)"/>
+            <column name="old_date" type="java.sql.Types.TIMESTAMP"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="affected_user_id" type="int4"/>
+            <column name="affected_user_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-27">
         <createTable tableName="event_log_message">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="event_log_message_pkey"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-28">
         <createTable tableName="event_log_module">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="event_log_module_pkey"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-29">
         <createTable tableName="filter">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="filter_pkey"/>
             </column>
-            <column name="filter_set_id" type="int4">
+            <column name="filter_set_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="type" type="VARCHAR(255)">
+            <column name="type" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="constraint_type" type="VARCHAR(255)">
+            <column name="constraint_type" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="field" type="VARCHAR(255)">
+            <column name="field" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="template" type="VARCHAR(255)">
+            <column name="template" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="visible" type="bool">
+            <column name="visible" type="java.sql.Types.BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="integer_value" type="int4"/>
-            <column name="string_value" type="VARCHAR(255)"/>
-            <column name="start_date_value" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="end_date_value" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="version" type="int4">
+            <column name="integer_value" type="java.sql.Types.INTEGER"/>
+            <column name="string_value" type="java.sql.Types.VARCHAR(255)"/>
+            <column name="start_date_value" type="java.sql.Types.TIMESTAMP"/>
+            <column name="end_date_value" type="java.sql.Types.TIMESTAMP"/>
+            <column name="version" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="boolean_value" type="bool"/>
-            <column name="decimal_value" type="NUMERIC(22,10)"/>
-            <column name="decimal_high_value" type="NUMERIC(22,10)"/>
+            <column name="java.sql.Types.BOOLEANean_value" type="java.sql.Types.BOOLEAN"/>
+            <column name="decimal_value" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="decimal_high_value" type="java.sql.Types.NUMERIC(22,10)"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-30">
         <createTable tableName="filter_set">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="filter_set_pkey"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="name" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_id" type="int4">
+            <column name="user_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="version" type="int4">
+            <column name="version" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-31">
         <createTable tableName="filter_set_filter">
-            <column name="filter_set_filters_id" type="int4"/>
-            <column name="filter_id" type="int4"/>
+            <column name="filter_set_filters_id" type="java.sql.Types.INTEGER"/>
+            <column name="filter_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-32">
         <createTable tableName="generic_status">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="generic_status_pkey"/>
             </column>
-            <column name="dtype" type="VARCHAR(50)">
+            <column name="dtype" type="java.sql.Types.VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="status_value" type="int4">
+            <column name="status_value" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="can_login" type="int2"/>
+            <column name="can_login" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-33">
         <createTable tableName="generic_status_type">
-            <column name="id" type="VARCHAR(50)">
+            <column name="id" type="java.sql.Types.VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="generic_status_type_pkey"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-34">
         <createTable tableName="international_description">
-            <column name="table_id" type="int4">
+            <column name="table_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="foreign_id" type="int4">
+            <column name="foreign_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="psudo_column" type="VARCHAR(20)">
+            <column name="psudo_column" type="java.sql.Types.VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="language_id" type="int4">
+            <column name="language_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="content" type="VARCHAR(4000)">
+            <column name="content" type="java.sql.Types.VARCHAR(4000)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-35">
         <createTable tableName="invoice">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="invoice_pkey"/>
             </column>
-            <column name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="billing_process_id" type="int4"/>
-            <column name="user_id" type="int4"/>
-            <column name="delegated_invoice_id" type="int4"/>
-            <column name="due_date" type="DATE">
+            <column name="billing_process_id" type="java.sql.Types.INTEGER"/>
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="delegated_invoice_id" type="java.sql.Types.INTEGER"/>
+            <column name="due_date" type="java.sql.Types.DATE">
                 <constraints nullable="false"/>
             </column>
-            <column name="total" type="NUMERIC(22,10)">
+            <column name="total" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="payment_attempts" type="int4">
+            <column defaultValueNumeric="0" name="payment_attempts" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="1" name="status_id" type="int2">
+            <column defaultValueNumeric="1" name="status_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="balance" type="NUMERIC(22,10)"/>
-            <column name="carried_balance" type="NUMERIC(22,10)">
+            <column name="balance" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="carried_balance" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="1" name="in_process_payment" type="int2">
+            <column defaultValueNumeric="1" name="in_process_payment" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="is_review" type="int4">
+            <column name="is_review" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="currency_id" type="int4">
+            <column name="currency_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="deleted" type="int2">
+            <column defaultValueNumeric="0" name="deleted" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="paper_invoice_batch_id" type="int4"/>
-            <column name="customer_notes" type="VARCHAR(1000)"/>
-            <column name="public_number" type="VARCHAR(40)"/>
-            <column name="last_reminder" type="DATE"/>
-            <column name="overdue_step" type="int4"/>
-            <column name="create_timestamp" type="TIMESTAMP WITH TIME ZONE">
+            <column name="paper_invoice_batch_id" type="java.sql.Types.INTEGER"/>
+            <column name="customer_notes" type="java.sql.Types.VARCHAR(1000)"/>
+            <column name="public_number" type="java.sql.Types.VARCHAR(40)"/>
+            <column name="last_reminder" type="java.sql.Types.DATE"/>
+            <column name="overdue_step" type="java.sql.Types.INTEGER"/>
+            <column name="create_timestamp" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-36">
         <createTable tableName="invoice_delivery_method">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="invoice_delivery_method_pkey"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-37">
         <createTable tableName="invoice_line">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="invoice_line_pkey"/>
             </column>
-            <column name="invoice_id" type="int4"/>
-            <column name="type_id" type="int4"/>
-            <column name="amount" type="NUMERIC(22,10)">
+            <column name="invoice_id" type="java.sql.Types.INTEGER"/>
+            <column name="type_id" type="java.sql.Types.INTEGER"/>
+            <column name="amount" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="quantity" type="NUMERIC(22,10)"/>
-            <column name="price" type="NUMERIC(22,10)"/>
-            <column defaultValueNumeric="0" name="deleted" type="int2">
+            <column name="quantity" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="price" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column defaultValueNumeric="0" name="deleted" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="item_id" type="int4"/>
-            <column name="description" type="VARCHAR(1000)"/>
-            <column name="source_user_id" type="int4"/>
-            <column defaultValueNumeric="0" name="is_percentage" type="int2">
+            <column name="item_id" type="java.sql.Types.INTEGER"/>
+            <column name="description" type="java.sql.Types.VARCHAR(1000)"/>
+            <column name="source_user_id" type="java.sql.Types.INTEGER"/>
+            <column defaultValueNumeric="0" name="is_percentage" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-38">
         <createTable tableName="invoice_line_type">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="invoice_line_type_pkey"/>
             </column>
-            <column name="description" type="VARCHAR(50)">
+            <column name="description" type="java.sql.Types.VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="order_position" type="int4">
+            <column name="order_position" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-39">
         <createTable tableName="invoice_meta_field_map">
-            <column name="invoice_id" type="int4">
+            <column name="invoice_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="meta_field_value_id" type="int4">
+            <column name="meta_field_value_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-40">
         <createTable tableName="item">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="item_pkey"/>
             </column>
-            <column name="internal_number" type="VARCHAR(50)"/>
-            <column name="entity_id" type="int4"/>
-            <column name="percentage" type="NUMERIC(22,10)"/>
-            <column defaultValueNumeric="0" name="deleted" type="int2">
+            <column name="internal_number" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="entity_id" type="java.sql.Types.INTEGER"/>
+            <column name="percentage" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column defaultValueNumeric="0" name="deleted" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="has_decimals" type="int2">
+            <column defaultValueNumeric="0" name="has_decimals" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="gl_code" type="VARCHAR(50)"/>
+            <column name="gl_code" type="java.sql.Types.VARCHAR(50)"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-41">
         <createTable tableName="item_meta_field_map">
-            <column name="item_id" type="int4">
+            <column name="item_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="meta_field_value_id" type="int4">
+            <column name="meta_field_value_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-42">
         <createTable tableName="item_price_timeline">
-            <column name="item_id" type="int4">
+            <column name="item_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="price_model_id" type="int4">
+            <column name="price_model_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="start_date" type="DATE">
+            <column name="start_date" type="java.sql.Types.DATE">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-43">
         <createTable tableName="item_type">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="item_type_pkey"/>
             </column>
-            <column name="entity_id" type="int4">
+            <column name="entity_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="description" type="VARCHAR(100)"/>
-            <column name="order_line_type_id" type="int4">
+            <column name="description" type="java.sql.Types.VARCHAR(100)"/>
+            <column name="order_line_type_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="internal" type="bool">
+            <column name="internal" type="java.sql.Types.BOOLEAN">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-44">
         <createTable tableName="item_type_exclude_map">
-            <column name="item_id" type="int4">
+            <column name="item_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="type_id" type="int4">
+            <column name="type_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-45">
         <createTable tableName="item_type_map">
-            <column name="item_id" type="int4"/>
-            <column name="type_id" type="int4"/>
+            <column name="item_id" type="java.sql.Types.INTEGER"/>
+            <column name="type_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-46">
         <createTable tableName="jbilling_seqs">
-            <column name="name" type="VARCHAR(255)"/>
-            <column name="next_id" type="int4"/>
+            <column name="name" type="java.sql.Types.VARCHAR(255)"/>
+            <column name="next_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-47">
         <createTable tableName="jbilling_table">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="jbilling_table_pkey"/>
             </column>
-            <column name="name" type="VARCHAR(50)">
+            <column name="name" type="java.sql.Types.VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-48">
         <createTable tableName="language">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="language_pkey"/>
             </column>
-            <column name="code" type="VARCHAR(2)">
+            <column name="code" type="java.sql.Types.VARCHAR(2)">
                 <constraints nullable="false"/>
             </column>
-            <column name="description" type="VARCHAR(50)">
+            <column name="description" type="java.sql.Types.VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-49">
         <createTable tableName="list_meta_field_values">
-            <column name="meta_field_value_id" type="int4">
+            <column name="meta_field_value_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="list_value" type="VARCHAR(255)"/>
+            <column name="list_value" type="java.sql.Types.VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-50">
         <createTable tableName="mediation_cfg">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="mediation_cfg_pkey"/>
             </column>
-            <column name="entity_id" type="int4">
+            <column name="entity_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(50)">
+            <column name="name" type="java.sql.Types.VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="order_value" type="int4">
+            <column name="order_value" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="pluggable_task_id" type="int4">
+            <column name="pluggable_task_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-51">
         <createTable tableName="mediation_errors">
-            <column name="accountcode" type="VARCHAR(50)">
+            <column name="accountcode" type="java.sql.Types.VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="mediation_errors_pkey"/>
             </column>
-            <column name="src" type="VARCHAR(50)"/>
-            <column name="dst" type="VARCHAR(50)"/>
-            <column name="dcontext" type="VARCHAR(50)"/>
-            <column name="clid" type="VARCHAR(50)"/>
-            <column name="channel" type="VARCHAR(50)"/>
-            <column name="dstchannel" type="VARCHAR(50)"/>
-            <column name="lastapp" type="VARCHAR(50)"/>
-            <column name="lastdata" type="VARCHAR(50)"/>
-            <column name="start" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="answer" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="end_time" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="duration" type="int4"/>
-            <column name="billsec" type="int4"/>
-            <column name="disposition" type="VARCHAR(50)"/>
-            <column name="amaflags" type="VARCHAR(50)"/>
-            <column name="userfield" type="VARCHAR(50)"/>
-            <column name="error_message" type="VARCHAR(200)"/>
-            <column name="should_retry" type="bool"/>
+            <column name="src" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="dst" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="dcontext" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="clid" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="channel" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="dstchannel" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="lastapp" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="lastdata" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="start" type="java.sql.Types.TIMESTAMP"/>
+            <column name="answer" type="java.sql.Types.TIMESTAMP"/>
+            <column name="end_time" type="java.sql.Types.TIMESTAMP"/>
+            <column name="duration" type="java.sql.Types.INTEGER"/>
+            <column name="billsec" type="java.sql.Types.INTEGER"/>
+            <column name="disposition" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="amaflags" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="userfield" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="error_message" type="java.sql.Types.VARCHAR(200)"/>
+            <column name="should_retry" type="java.sql.Types.BOOLEAN"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-52">
         <createTable tableName="mediation_order_map">
-            <column name="mediation_process_id" type="int4">
+            <column name="mediation_process_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="order_id" type="int4">
+            <column name="order_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-53">
         <createTable tableName="mediation_process">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="mediation_process_pkey"/>
             </column>
-            <column name="configuration_id" type="int4">
+            <column name="configuration_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="start_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="start_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="end_datetime" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="orders_affected" type="int4">
+            <column name="end_datetime" type="java.sql.Types.TIMESTAMP"/>
+            <column name="orders_affected" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-54">
         <createTable tableName="mediation_record">
-            <column name="id_key" type="VARCHAR(100)">
+            <column name="id_key" type="java.sql.Types.VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="start_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="start_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="mediation_process_id" type="int4"/>
-            <column name="optlock" type="int4">
+            <column name="mediation_process_id" type="java.sql.Types.INTEGER"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="status_id" type="int4">
+            <column name="status_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="mediation_record_pkey"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-55">
         <createTable tableName="mediation_record_line">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="mediation_record_line_pkey"/>
             </column>
-            <column name="order_line_id" type="int4">
+            <column name="order_line_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="event_date" type="TIMESTAMP WITH TIME ZONE">
+            <column name="event_date" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="amount" type="NUMERIC(22,10)">
+            <column name="amount" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="quantity" type="NUMERIC(22,10)">
+            <column name="quantity" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="description" type="VARCHAR(200)"/>
-            <column name="optlock" type="int4">
+            <column name="description" type="java.sql.Types.VARCHAR(200)"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="mediation_record_id" type="int4">
+            <column name="mediation_record_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-56">
         <createTable tableName="meta_field_name">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="meta_field_name_pkey"/>
             </column>
-            <column name="name" type="VARCHAR(100)"/>
-            <column name="entity_type" type="VARCHAR(25)">
+            <column name="name" type="java.sql.Types.VARCHAR(100)"/>
+            <column name="entity_type" type="java.sql.Types.VARCHAR(25)">
                 <constraints nullable="false"/>
             </column>
-            <column name="data_type" type="VARCHAR(25)">
+            <column name="data_type" type="java.sql.Types.VARCHAR(25)">
                 <constraints nullable="false"/>
             </column>
-            <column name="is_disabled" type="bool"/>
-            <column name="is_mandatory" type="bool"/>
-            <column name="display_order" type="int4"/>
-            <column name="default_value_id" type="int4"/>
-            <column name="optlock" type="int4">
+            <column name="is_disabled" type="java.sql.Types.BOOLEAN"/>
+            <column name="is_mandatory" type="java.sql.Types.BOOLEAN"/>
+            <column name="display_order" type="java.sql.Types.INTEGER"/>
+            <column name="default_value_id" type="java.sql.Types.INTEGER"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="1" name="entity_id" type="int4"/>
+            <column defaultValueNumeric="1" name="entity_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-57">
         <createTable tableName="meta_field_value">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="meta_field_name_id" type="int4">
+            <column name="meta_field_name_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="dtype" type="VARCHAR(10)">
+            <column name="dtype" type="java.sql.Types.VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="boolean_value" type="bool"/>
-            <column name="date_value" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="decimal_value" type="NUMERIC(22,10)"/>
-            <column name="integer_value" type="int4"/>
-            <column name="string_value" type="VARCHAR(1000)"/>
+            <column name="java.sql.Types.BOOLEANean_value" type="java.sql.Types.BOOLEAN"/>
+            <column name="date_value" type="java.sql.Types.TIMESTAMP"/>
+            <column name="decimal_value" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="integer_value" type="java.sql.Types.INTEGER"/>
+            <column name="string_value" type="java.sql.Types.VARCHAR(1000)"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-58">
         <createTable tableName="notification_category">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="notification_category_pk"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-59">
         <createTable tableName="notification_message">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="notification_message_pkey"/>
             </column>
-            <column name="type_id" type="int4"/>
-            <column name="entity_id" type="int4">
+            <column name="type_id" type="java.sql.Types.INTEGER"/>
+            <column name="entity_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="language_id" type="int4">
+            <column name="language_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="1" name="use_flag" type="int2">
+            <column defaultValueNumeric="1" name="use_flag" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-60">
         <createTable tableName="notification_message_arch">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="notification_message_arch_pkey"/>
             </column>
-            <column name="type_id" type="int4"/>
-            <column name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="type_id" type="java.sql.Types.INTEGER"/>
+            <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_id" type="int4"/>
-            <column name="result_message" type="VARCHAR(200)"/>
-            <column name="optlock" type="int4">
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="result_message" type="java.sql.Types.VARCHAR(200)"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-61">
         <createTable tableName="notification_message_arch_line">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="notification_message_arch_line_pkey"/>
             </column>
-            <column name="message_archive_id" type="int4"/>
-            <column name="section" type="int4">
+            <column name="message_archive_id" type="java.sql.Types.INTEGER"/>
+            <column name="section" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="content" type="VARCHAR(1000)">
+            <column name="content" type="java.sql.Types.VARCHAR(1000)">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-62">
         <createTable tableName="notification_message_line">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="notification_message_line_pkey"/>
             </column>
-            <column name="message_section_id" type="int4"/>
-            <column name="content" type="VARCHAR(1000)">
+            <column name="message_section_id" type="java.sql.Types.INTEGER"/>
+            <column name="content" type="java.sql.Types.VARCHAR(1000)">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-63">
         <createTable tableName="notification_message_section">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="notification_message_section_pkey"/>
             </column>
-            <column name="message_id" type="int4"/>
-            <column name="section" type="int4"/>
-            <column name="optlock" type="int4">
+            <column name="message_id" type="java.sql.Types.INTEGER"/>
+            <column name="section" type="java.sql.Types.INTEGER"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-64">
         <createTable tableName="notification_message_type">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="notification_message_type_pkey"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="category_id" type="int4"/>
+            <column name="category_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-65">
         <createTable tableName="order_billing_type">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="order_billing_type_pkey"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-66">
         <createTable tableName="order_line">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="order_line_pkey"/>
             </column>
-            <column name="order_id" type="int4"/>
-            <column name="item_id" type="int4"/>
-            <column name="type_id" type="int4"/>
-            <column name="amount" type="NUMERIC(22,10)">
+            <column name="order_id" type="java.sql.Types.INTEGER"/>
+            <column name="item_id" type="java.sql.Types.INTEGER"/>
+            <column name="type_id" type="java.sql.Types.INTEGER"/>
+            <column name="amount" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="quantity" type="NUMERIC(22,10)"/>
-            <column name="price" type="NUMERIC(22,10)"/>
-            <column name="item_price" type="int2"/>
-            <column name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="quantity" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="price" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="item_price" type="java.sql.Types.INTEGER"/>
+            <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="deleted" type="int2">
+            <column defaultValueNumeric="0" name="deleted" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="description" type="VARCHAR(1000)"/>
-            <column name="provisioning_status" type="int4"/>
-            <column name="provisioning_request_id" type="VARCHAR(50)"/>
-            <column name="optlock" type="int4">
+            <column name="description" type="java.sql.Types.VARCHAR(1000)"/>
+            <column name="provisioning_status" type="java.sql.Types.INTEGER"/>
+            <column name="provisioning_request_id" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="use_item" type="bool">
+            <column name="use_item" type="java.sql.Types.BOOLEAN">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-67">
         <createTable tableName="order_line_type">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="order_line_type_pkey"/>
             </column>
-            <column name="editable" type="int2">
+            <column name="editable" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-68">
         <createTable tableName="order_meta_field_map">
-            <column name="order_id" type="int4">
+            <column name="order_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="meta_field_value_id" type="int4">
+            <column name="meta_field_value_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-69">
         <createTable tableName="order_period">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="order_period_pkey"/>
             </column>
-            <column name="entity_id" type="int4"/>
-            <column name="value" type="int4"/>
-            <column name="unit_id" type="int4"/>
-            <column name="optlock" type="int4">
+            <column name="entity_id" type="java.sql.Types.INTEGER"/>
+            <column name="value" type="java.sql.Types.INTEGER"/>
+            <column name="unit_id" type="java.sql.Types.INTEGER"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-70">
         <createTable tableName="order_process">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="order_process_pkey"/>
             </column>
-            <column name="order_id" type="int4"/>
-            <column name="invoice_id" type="int4"/>
-            <column name="billing_process_id" type="int4"/>
-            <column name="periods_included" type="int4"/>
-            <column name="period_start" type="DATE"/>
-            <column name="period_end" type="DATE"/>
-            <column name="is_review" type="int4">
+            <column name="order_id" type="java.sql.Types.INTEGER"/>
+            <column name="invoice_id" type="java.sql.Types.INTEGER"/>
+            <column name="billing_process_id" type="java.sql.Types.INTEGER"/>
+            <column name="periods_included" type="java.sql.Types.INTEGER"/>
+            <column name="period_start" type="java.sql.Types.DATE"/>
+            <column name="period_end" type="java.sql.Types.DATE"/>
+            <column name="is_review" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="origin" type="int4"/>
-            <column name="optlock" type="int4">
+            <column name="origin" type="java.sql.Types.INTEGER"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-71">
         <createTable tableName="paper_invoice_batch">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="paper_invoice_batch_pkey"/>
             </column>
-            <column name="total_invoices" type="int4">
+            <column name="total_invoices" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="delivery_date" type="DATE"/>
-            <column name="is_self_managed" type="int2">
+            <column name="delivery_date" type="java.sql.Types.DATE"/>
+            <column name="is_self_managed" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-72">
         <createTable tableName="partner">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="partner_pkey"/>
             </column>
-            <column name="user_id" type="int4"/>
-            <column name="balance" type="NUMERIC(22,10)">
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="balance" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="total_payments" type="NUMERIC(22,10)">
+            <column name="total_payments" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="total_refunds" type="NUMERIC(22,10)">
+            <column name="total_refunds" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="total_payouts" type="NUMERIC(22,10)">
+            <column name="total_payouts" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="percentage_rate" type="NUMERIC(22,10)"/>
-            <column name="referral_fee" type="NUMERIC(22,10)"/>
-            <column name="fee_currency_id" type="int4"/>
-            <column name="one_time" type="int2">
+            <column name="percentage_rate" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="referral_fee" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="fee_currency_id" type="java.sql.Types.INTEGER"/>
+            <column name="one_time" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="period_unit_id" type="int4">
+            <column name="period_unit_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="period_value" type="int4">
+            <column name="period_value" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="next_payout_date" type="DATE">
+            <column name="next_payout_date" type="java.sql.Types.DATE">
                 <constraints nullable="false"/>
             </column>
-            <column name="due_payout" type="NUMERIC(22,10)"/>
-            <column name="automatic_process" type="int2">
+            <column name="due_payout" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="automatic_process" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="related_clerk" type="int4"/>
-            <column name="optlock" type="int4">
+            <column name="related_clerk" type="java.sql.Types.INTEGER"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-73">
         <createTable tableName="partner_meta_field_map">
-            <column name="partner_id" type="int4">
+            <column name="partner_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="meta_field_value_id" type="int4">
+            <column name="meta_field_value_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-74">
         <createTable tableName="partner_payout">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="partner_payout_pkey"/>
             </column>
-            <column name="starting_date" type="DATE">
+            <column name="starting_date" type="java.sql.Types.DATE">
                 <constraints nullable="false"/>
             </column>
-            <column name="ending_date" type="DATE">
+            <column name="ending_date" type="java.sql.Types.DATE">
                 <constraints nullable="false"/>
             </column>
-            <column name="payments_amount" type="NUMERIC(22,10)">
+            <column name="payments_amount" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="refunds_amount" type="NUMERIC(22,10)">
+            <column name="refunds_amount" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="balance_left" type="NUMERIC(22,10)">
+            <column name="balance_left" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="payment_id" type="int4"/>
-            <column name="partner_id" type="int4"/>
-            <column name="optlock" type="int4">
+            <column name="payment_id" type="java.sql.Types.INTEGER"/>
+            <column name="partner_id" type="java.sql.Types.INTEGER"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-75">
         <createTable tableName="partner_range">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="partner_range_pkey"/>
             </column>
-            <column name="partner_id" type="int4"/>
-            <column name="percentage_rate" type="NUMERIC(22,10)"/>
-            <column name="referral_fee" type="NUMERIC(22,10)"/>
-            <column name="range_from" type="int4">
+            <column name="partner_id" type="java.sql.Types.INTEGER"/>
+            <column name="percentage_rate" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="referral_fee" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="range_from" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="range_to" type="int4">
+            <column name="range_to" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-76">
         <createTable tableName="payment">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="payment_pkey"/>
             </column>
-            <column name="user_id" type="int4"/>
-            <column name="attempt" type="int4"/>
-            <column name="result_id" type="int4"/>
-            <column name="amount" type="NUMERIC(22,10)">
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="attempt" type="java.sql.Types.INTEGER"/>
+            <column name="result_id" type="java.sql.Types.INTEGER"/>
+            <column name="amount" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="update_datetime" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="payment_date" type="DATE"/>
-            <column name="method_id" type="int4">
+            <column name="update_datetime" type="java.sql.Types.TIMESTAMP"/>
+            <column name="payment_date" type="java.sql.Types.DATE"/>
+            <column name="method_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="credit_card_id" type="int4"/>
-            <column defaultValueNumeric="0" name="deleted" type="int2">
+            <column name="credit_card_id" type="java.sql.Types.INTEGER"/>
+            <column defaultValueNumeric="0" name="deleted" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="is_refund" type="int2">
+            <column defaultValueNumeric="0" name="is_refund" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="is_preauth" type="int2">
+            <column defaultValueNumeric="0" name="is_preauth" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="payment_id" type="int4"/>
-            <column name="currency_id" type="int4">
+            <column name="payment_id" type="java.sql.Types.INTEGER"/>
+            <column name="currency_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="payout_id" type="int4"/>
-            <column name="ach_id" type="int4"/>
-            <column name="balance" type="NUMERIC(22,10)"/>
-            <column name="optlock" type="int4">
+            <column name="payout_id" type="java.sql.Types.INTEGER"/>
+            <column name="ach_id" type="java.sql.Types.INTEGER"/>
+            <column name="balance" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="payment_period" type="int4"/>
-            <column name="payment_notes" type="VARCHAR(500)"/>
+            <column name="payment_period" type="java.sql.Types.INTEGER"/>
+            <column name="payment_notes" type="java.sql.Types.VARCHAR(500)"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-77">
         <createTable tableName="payment_authorization">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="payment_authorization_pkey"/>
             </column>
-            <column name="payment_id" type="int4"/>
-            <column name="processor" type="VARCHAR(40)">
+            <column name="payment_id" type="java.sql.Types.INTEGER"/>
+            <column name="processor" type="java.sql.Types.VARCHAR(40)">
                 <constraints nullable="false"/>
             </column>
-            <column name="code1" type="VARCHAR(40)">
+            <column name="code1" type="java.sql.Types.VARCHAR(40)">
                 <constraints nullable="false"/>
             </column>
-            <column name="code2" type="VARCHAR(40)"/>
-            <column name="code3" type="VARCHAR(40)"/>
-            <column name="approval_code" type="VARCHAR(20)"/>
-            <column name="avs" type="VARCHAR(20)"/>
-            <column name="transaction_id" type="VARCHAR(40)"/>
-            <column name="md5" type="VARCHAR(100)"/>
-            <column name="card_code" type="VARCHAR(100)"/>
-            <column name="create_datetime" type="DATE">
+            <column name="code2" type="java.sql.Types.VARCHAR(40)"/>
+            <column name="code3" type="java.sql.Types.VARCHAR(40)"/>
+            <column name="approval_code" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="avs" type="java.sql.Types.VARCHAR(20)"/>
+            <column name="transaction_id" type="java.sql.Types.VARCHAR(40)"/>
+            <column name="md5" type="java.sql.Types.VARCHAR(100)"/>
+            <column name="card_code" type="java.sql.Types.VARCHAR(100)"/>
+            <column name="create_datetime" type="java.sql.Types.DATE">
                 <constraints nullable="false"/>
             </column>
-            <column name="response_message" type="VARCHAR(200)"/>
-            <column name="optlock" type="int4">
+            <column name="response_message" type="java.sql.Types.VARCHAR(200)"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-78">
         <createTable tableName="payment_info_cheque">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="payment_info_cheque_pkey"/>
             </column>
-            <column name="payment_id" type="int4"/>
-            <column name="bank" type="VARCHAR(50)"/>
-            <column name="cheque_number" type="VARCHAR(50)"/>
-            <column name="cheque_date" type="DATE"/>
-            <column name="optlock" type="int4">
+            <column name="payment_id" type="java.sql.Types.INTEGER"/>
+            <column name="bank" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="cheque_number" type="java.sql.Types.VARCHAR(50)"/>
+            <column name="cheque_date" type="java.sql.Types.DATE"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-79">
         <createTable tableName="payment_invoice">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="payment_invoice_pkey"/>
             </column>
-            <column name="payment_id" type="int4"/>
-            <column name="invoice_id" type="int4"/>
-            <column name="amount" type="NUMERIC(22,10)"/>
-            <column name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="payment_id" type="java.sql.Types.INTEGER"/>
+            <column name="invoice_id" type="java.sql.Types.INTEGER"/>
+            <column name="amount" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-80">
         <createTable tableName="payment_meta_field_map">
-            <column name="payment_id" type="int4">
+            <column name="payment_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="meta_field_value_id" type="int4">
+            <column name="meta_field_value_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-81">
         <createTable tableName="payment_method">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="payment_method_pkey"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-82">
         <createTable tableName="payment_result">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="payment_result_pkey"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-83">
         <createTable tableName="period_unit">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="period_unit_pkey"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-84">
         <createTable tableName="permission">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="permission_pkey"/>
             </column>
-            <column name="type_id" type="int4">
+            <column name="type_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="foreign_id" type="int4"/>
+            <column name="foreign_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-85">
         <createTable tableName="permission_role_map">
-            <column name="permission_id" type="int4"/>
-            <column name="role_id" type="int4"/>
+            <column name="permission_id" type="java.sql.Types.INTEGER"/>
+            <column name="role_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-86">
         <createTable tableName="permission_type">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="permission_type_pkey"/>
             </column>
-            <column name="description" type="VARCHAR(30)">
+            <column name="description" type="java.sql.Types.VARCHAR(30)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-87">
         <createTable tableName="permission_user">
-            <column name="permission_id" type="int4"/>
-            <column name="user_id" type="int4"/>
-            <column name="is_grant" type="int2">
+            <column name="permission_id" type="java.sql.Types.INTEGER"/>
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="is_grant" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="permission_user_pkey"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-88">
         <createTable tableName="plan">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="plan_pkey"/>
             </column>
-            <column name="item_id" type="int4">
+            <column name="item_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="description" type="VARCHAR(255)"/>
-            <column name="period_id" type="int4">
+            <column name="description" type="java.sql.Types.VARCHAR(255)"/>
+            <column name="period_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-89">
         <createTable tableName="plan_item">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="plan_item_pkey"/>
             </column>
-            <column name="plan_id" type="int4"/>
-            <column name="item_id" type="int4">
+            <column name="plan_id" type="java.sql.Types.INTEGER"/>
+            <column name="item_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="precedence" type="int4">
+            <column name="precedence" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="plan_item_bundle_id" type="int4"/>
+            <column name="plan_item_bundle_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-90">
         <createTable tableName="plan_item_bundle">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="plan_item_bundle_pkey"/>
             </column>
-            <column name="quantity" type="NUMERIC(22,10)">
+            <column name="quantity" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="period_id" type="int4">
+            <column name="period_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="target_customer" type="VARCHAR(20)">
+            <column name="target_customer" type="java.sql.Types.VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="add_if_exists" type="bool">
+            <column name="add_if_exists" type="java.sql.Types.BOOLEAN">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-91">
         <createTable tableName="plan_item_price_timeline">
-            <column name="plan_item_id" type="int4">
+            <column name="plan_item_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="price_model_id" type="int4">
+            <column name="price_model_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="start_date" type="DATE">
+            <column name="start_date" type="java.sql.Types.DATE">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-92">
         <createTable tableName="pluggable_task">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pluggable_task_pkey"/>
             </column>
-            <column name="entity_id" type="int4">
+            <column name="entity_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="type_id" type="int4"/>
-            <column name="processing_order" type="int4">
+            <column name="type_id" type="java.sql.Types.INTEGER"/>
+            <column name="processing_order" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="notes" type="VARCHAR(1000)"/>
+            <column name="notes" type="java.sql.Types.VARCHAR(1000)"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-93">
         <createTable tableName="pluggable_task_parameter">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pluggable_task_parameter_pkey"/>
             </column>
-            <column name="task_id" type="int4"/>
-            <column name="name" type="VARCHAR(50)">
+            <column name="task_id" type="java.sql.Types.INTEGER"/>
+            <column name="name" type="java.sql.Types.VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="int_value" type="int4"/>
-            <column name="str_value" type="VARCHAR(500)"/>
-            <column name="float_value" type="NUMERIC(22,10)"/>
-            <column name="optlock" type="int4">
+            <column name="int_value" type="java.sql.Types.INTEGER"/>
+            <column name="str_value" type="java.sql.Types.VARCHAR(500)"/>
+            <column name="float_value" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-94">
         <createTable tableName="pluggable_task_type">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pluggable_task_type_pkey"/>
             </column>
-            <column name="category_id" type="int4">
+            <column name="category_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="class_name" type="VARCHAR(200)">
+            <column name="class_name" type="java.sql.Types.VARCHAR(200)">
                 <constraints nullable="false"/>
             </column>
-            <column name="min_parameters" type="int4">
+            <column name="min_parameters" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-95">
         <createTable tableName="pluggable_task_type_category">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pluggable_task_type_category_pkey"/>
             </column>
-            <column name="interface_name" type="VARCHAR(200)">
+            <column name="interface_name" type="java.sql.Types.VARCHAR(200)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-96">
         <createTable tableName="preference">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="preference_pkey"/>
             </column>
-            <column name="type_id" type="int4"/>
-            <column name="table_id" type="int4">
+            <column name="type_id" type="java.sql.Types.INTEGER"/>
+            <column name="table_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="foreign_id" type="int4">
+            <column name="foreign_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="value" type="VARCHAR(200)"/>
+            <column name="value" type="java.sql.Types.VARCHAR(200)"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-97">
         <createTable tableName="preference_type">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="preference_type_pkey"/>
             </column>
-            <column name="def_value" type="VARCHAR(200)"/>
+            <column name="def_value" type="java.sql.Types.VARCHAR(200)"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-98">
         <createTable tableName="price_model">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="price_model_pkey"/>
             </column>
-            <column name="strategy_type" type="VARCHAR(40)">
+            <column name="strategy_type" type="java.sql.Types.VARCHAR(40)">
                 <constraints nullable="false"/>
             </column>
-            <column name="rate" type="NUMERIC(22,10)"/>
-            <column name="included_quantity" type="int4"/>
-            <column name="currency_id" type="int4"/>
-            <column name="next_model_id" type="int4"/>
+            <column name="rate" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="included_quantity" type="java.sql.Types.INTEGER"/>
+            <column name="currency_id" type="java.sql.Types.INTEGER"/>
+            <column name="next_model_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-99">
         <createTable tableName="price_model_attribute">
-            <column name="price_model_id" type="int4">
+            <column name="price_model_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="attribute_name" type="VARCHAR(255)">
+            <column name="attribute_name" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="attribute_value" type="VARCHAR(255)"/>
+            <column name="attribute_value" type="java.sql.Types.VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-100">
         <createTable tableName="process_run">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="process_run_pkey"/>
             </column>
-            <column name="process_id" type="int4"/>
-            <column name="run_date" type="DATE">
+            <column name="process_id" type="java.sql.Types.INTEGER"/>
+            <column name="run_date" type="java.sql.Types.DATE">
                 <constraints nullable="false"/>
             </column>
-            <column name="started" type="TIMESTAMP WITH TIME ZONE">
+            <column name="started" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="finished" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="payment_finished" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="invoices_generated" type="int4"/>
-            <column name="optlock" type="int4">
+            <column name="finished" type="java.sql.Types.TIMESTAMP"/>
+            <column name="payment_finished" type="java.sql.Types.TIMESTAMP"/>
+            <column name="invoices_generated" type="java.sql.Types.INTEGER"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="status_id" type="int4">
+            <column name="status_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-101">
         <createTable tableName="process_run_total">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="process_run_total_pkey"/>
             </column>
-            <column name="process_run_id" type="int4"/>
-            <column name="currency_id" type="int4">
+            <column name="process_run_id" type="java.sql.Types.INTEGER"/>
+            <column name="currency_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="total_invoiced" type="NUMERIC(22,10)"/>
-            <column name="total_paid" type="NUMERIC(22,10)"/>
-            <column name="total_not_paid" type="NUMERIC(22,10)"/>
-            <column name="optlock" type="int4">
+            <column name="total_invoiced" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="total_paid" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="total_not_paid" type="java.sql.Types.NUMERIC(22,10)"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-102">
         <createTable tableName="process_run_total_pm">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="process_run_total_pm_pkey"/>
             </column>
-            <column name="process_run_total_id" type="int4"/>
-            <column name="payment_method_id" type="int4"/>
-            <column name="total" type="NUMERIC(22,10)">
+            <column name="process_run_total_id" type="java.sql.Types.INTEGER"/>
+            <column name="payment_method_id" type="java.sql.Types.INTEGER"/>
+            <column name="total" type="java.sql.Types.NUMERIC(22,10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-103">
         <createTable tableName="process_run_user">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="process_run_user_pkey"/>
             </column>
-            <column name="process_run_id" type="int4">
+            <column name="process_run_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_id" type="int4">
+            <column name="user_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="status" type="int4">
+            <column name="status" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueComputed="now()" name="created" type="TIMESTAMP WITH TIME ZONE">
+            <column defaultValueComputed="now()" name="created" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-104">
         <createTable tableName="promotion">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="promotion_pkey"/>
             </column>
-            <column name="item_id" type="int4"/>
-            <column name="code" type="VARCHAR(50)">
+            <column name="item_id" type="java.sql.Types.INTEGER"/>
+            <column name="code" type="java.sql.Types.VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="notes" type="VARCHAR(200)"/>
-            <column name="once" type="int2">
+            <column name="notes" type="java.sql.Types.VARCHAR(200)"/>
+            <column name="once" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="since" type="DATE"/>
-            <column name="until" type="DATE"/>
+            <column name="since" type="java.sql.Types.DATE"/>
+            <column name="until" type="java.sql.Types.DATE"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-105">
         <createTable tableName="promotion_user_map">
-            <column name="user_id" type="int4"/>
-            <column name="promotion_id" type="int4"/>
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="promotion_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-106">
         <createTable tableName="purchase_order">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="purchase_order_pkey"/>
             </column>
-            <column name="user_id" type="int4"/>
-            <column name="period_id" type="int4"/>
-            <column name="billing_type_id" type="int4">
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="period_id" type="java.sql.Types.INTEGER"/>
+            <column name="billing_type_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="active_since" type="DATE"/>
-            <column name="active_until" type="DATE"/>
-            <column name="cycle_start" type="DATE"/>
-            <column name="create_datetime" type="TIMESTAMP WITH TIME ZONE">
+            <column name="active_since" type="java.sql.Types.DATE"/>
+            <column name="active_until" type="java.sql.Types.DATE"/>
+            <column name="cycle_start" type="java.sql.Types.DATE"/>
+            <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="next_billable_day" type="DATE"/>
-            <column name="created_by" type="int4"/>
-            <column name="status_id" type="int4">
+            <column name="next_billable_day" type="java.sql.Types.DATE"/>
+            <column name="created_by" type="java.sql.Types.INTEGER"/>
+            <column name="status_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="currency_id" type="int4">
+            <column name="currency_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValueNumeric="0" name="deleted" type="int2">
+            <column defaultValueNumeric="0" name="deleted" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="notify" type="int2"/>
-            <column name="last_notified" type="TIMESTAMP WITH TIME ZONE"/>
-            <column name="notification_step" type="int4"/>
-            <column name="due_date_unit_id" type="int4"/>
-            <column name="due_date_value" type="int4"/>
-            <column name="df_fm" type="int2"/>
-            <column name="anticipate_periods" type="int4"/>
-            <column name="own_invoice" type="int2"/>
-            <column name="notes" type="VARCHAR(200)"/>
-            <column name="notes_in_invoice" type="int2"/>
-            <column name="is_current" type="int2"/>
-            <column name="optlock" type="int4">
+            <column name="notify" type="java.sql.Types.INTEGER"/>
+            <column name="last_notified" type="java.sql.Types.TIMESTAMP"/>
+            <column name="notification_step" type="java.sql.Types.INTEGER"/>
+            <column name="due_date_unit_id" type="java.sql.Types.INTEGER"/>
+            <column name="due_date_value" type="java.sql.Types.INTEGER"/>
+            <column name="df_fm" type="java.sql.Types.INTEGER"/>
+            <column name="anticipate_periods" type="java.sql.Types.INTEGER"/>
+            <column name="own_invoice" type="java.sql.Types.INTEGER"/>
+            <column name="notes" type="java.sql.Types.VARCHAR(200)"/>
+            <column name="notes_in_invoice" type="java.sql.Types.INTEGER"/>
+            <column name="is_current" type="java.sql.Types.INTEGER"/>
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-107">
         <createTable tableName="rate_card">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="rate_card_pkey"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="name" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="table_name" type="VARCHAR(255)">
+            <column name="table_name" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="entity_id" type="int4">
+            <column name="entity_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-108">
         <createTable tableName="recent_item">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="recent_item_pkey"/>
             </column>
-            <column name="type" type="VARCHAR(255)">
+            <column name="type" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="object_id" type="int4">
+            <column name="object_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_id" type="int4">
+            <column name="user_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="version" type="int4">
+            <column name="version" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-109">
         <createTable tableName="report">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="report_pkey"/>
             </column>
-            <column name="type_id" type="int4">
+            <column name="type_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="name" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="file_name" type="VARCHAR(500)">
+            <column name="file_name" type="java.sql.Types.VARCHAR(500)">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-110">
         <createTable tableName="report_parameter">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="report_parameter_pkey"/>
             </column>
-            <column name="report_id" type="int4">
+            <column name="report_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="dtype" type="VARCHAR(10)">
+            <column name="dtype" type="java.sql.Types.VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="name" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-111">
         <createTable tableName="report_type">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="report_type_pkey"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="name" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="optlock" type="int4">
+            <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-112">
         <createTable tableName="role">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="role_pkey"/>
             </column>
-            <column name="entity_id" type="int4"/>
-            <column name="role_type_id" type="int4"/>
+            <column name="entity_id" type="java.sql.Types.INTEGER"/>
+            <column name="role_type_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-113">
         <createTable tableName="shortcut">
-            <column name="id" type="int4">
+            <column name="id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="shortcut_pkey"/>
             </column>
-            <column name="user_id" type="int4">
+            <column name="user_id" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="controller" type="VARCHAR(255)">
+            <column name="controller" type="java.sql.Types.VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="action" type="VARCHAR(255)"/>
-            <column name="name" type="VARCHAR(255)"/>
-            <column name="object_id" type="int4"/>
-            <column name="version" type="int4">
+            <column name="action" type="java.sql.Types.VARCHAR(255)"/>
+            <column name="name" type="java.sql.Types.VARCHAR(255)"/>
+            <column name="object_id" type="java.sql.Types.INTEGER"/>
+            <column name="version" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-114">
         <createTable tableName="user_credit_card_map">
-            <column name="user_id" type="int4"/>
-            <column name="credit_card_id" type="int4"/>
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="credit_card_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-115">
         <createTable tableName="user_role_map">
-            <column name="user_id" type="int4"/>
-            <column name="role_id" type="int4"/>
+            <column name="user_id" type="java.sql.Types.INTEGER"/>
+            <column name="role_id" type="java.sql.Types.INTEGER"/>
         </createTable>
     </changeSet>
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-116">
@@ -2684,6 +2684,22 @@
             <column name="user_id"/>
             <column name="role_id"/>
         </createIndex>
+    </changeSet>
+
+    <changeSet author="Emiliano Conde" context="base" id="1337623084753-318">
+        <createTable tableName="my_test">
+            <column name="id" type="java.sql.Types.INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="my_test_pkey"/>
+            </column>
+            <column name="entity_id" type="java.sql.Types.INTEGER"/>
+            <column name="status_id" type="java.sql.Types.INTEGER"/>
+            <column name="days" type="java.sql.Types.INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="optlock" type="java.sql.Types.INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
  
 </databaseChangeLog>

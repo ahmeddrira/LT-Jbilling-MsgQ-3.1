@@ -21,6 +21,18 @@
     <g:javascript library="panels"/>
 
     <script type="text/javascript">
+            $(document).ready(function() {
+
+
+            $(document).keypress(function(e) {
+                    if(e.which == 13) {
+
+                        $(this).blur();
+                        submitApply ();
+                    }
+                });
+
+        });
         function renderRecentItems() {
             $.ajax({
                 url: "${resource(dir:'')}/recentItem",

@@ -1236,12 +1236,13 @@ ul#review-lines {
 }
 #review-lines span.qty-price, #review-lines span.strategy {
     display: block;
-    width: 120px;
+    width: auto;
     float: right;
+    margin-right: 15px;
 }
 #review-lines span.sub-total, #review-lines span.rate {
     display: block;
-    width: 100px;
+    width: auto;
     float: right;
     text-align: right;
 }

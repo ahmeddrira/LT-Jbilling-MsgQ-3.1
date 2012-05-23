@@ -108,7 +108,7 @@
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-5">
         <createTable tableName="billing_process_configuration">
             <column name="id" type="java.sql.Types.INTEGER">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="billing_process_configuration_pkey"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="billing_process_config_pkey"/>
             </column>
             <column name="entity_id" type="java.sql.Types.INTEGER"/>
             <column name="next_run_date" type="java.sql.Types.DATE">
@@ -1055,7 +1055,7 @@
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-59">
         <createTable tableName="notification_message">
             <column name="id" type="java.sql.Types.INTEGER">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="notification_message_pkey"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="notifictn_msg_pkey"/>
             </column>
             <column name="type_id" type="java.sql.Types.INTEGER"/>
             <column name="entity_id" type="java.sql.Types.INTEGER">
@@ -1075,7 +1075,7 @@
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-60">
         <createTable tableName="notification_message_arch">
             <column name="id" type="java.sql.Types.INTEGER">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="notification_message_arch_pkey"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="notifictn_msg_arch_pkey"/>
             </column>
             <column name="type_id" type="java.sql.Types.INTEGER"/>
             <column name="create_datetime" type="java.sql.Types.TIMESTAMP">
@@ -1091,7 +1091,7 @@
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-61">
         <createTable tableName="notification_message_arch_line">
             <column name="id" type="java.sql.Types.INTEGER">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="notification_message_arch_line_pkey"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="notifictn_msg_arch_line_pkey"/>
             </column>
             <column name="message_archive_id" type="java.sql.Types.INTEGER"/>
             <column name="section" type="java.sql.Types.INTEGER">
@@ -1108,7 +1108,7 @@
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-62">
         <createTable tableName="notification_message_line">
             <column name="id" type="java.sql.Types.INTEGER">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="notification_message_line_pkey"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="notifictn_msg_line_pkey"/>
             </column>
             <column name="message_section_id" type="java.sql.Types.INTEGER"/>
             <column name="content" type="java.sql.Types.VARCHAR(1000)">
@@ -1122,7 +1122,7 @@
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-63">
         <createTable tableName="notification_message_section">
             <column name="id" type="java.sql.Types.INTEGER">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="notification_message_section_pkey"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="notifictn_msg_section_pkey"/>
             </column>
             <column name="message_id" type="java.sql.Types.INTEGER"/>
             <column name="section" type="java.sql.Types.INTEGER"/>
@@ -1134,7 +1134,7 @@
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-64">
         <createTable tableName="notification_message_type">
             <column name="id" type="java.sql.Types.INTEGER">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="notification_message_type_pkey"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="notifictn_msg_type_pkey"/>
             </column>
             <column name="optlock" type="java.sql.Types.INTEGER">
                 <constraints nullable="false"/>
@@ -1635,7 +1635,7 @@
     <changeSet author="Emiliano Conde" context="base" id="1337623084753-95">
         <createTable tableName="pluggable_task_type_category">
             <column name="id" type="java.sql.Types.INTEGER">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pluggable_task_type_category_pkey"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pluggable_task_type_cat_pkey"/>
             </column>
             <column name="interface_name" type="java.sql.Types.VARCHAR(200)">
                 <constraints nullable="false"/>

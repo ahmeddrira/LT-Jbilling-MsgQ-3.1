@@ -150,9 +150,13 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
             }
 
             for (PricingField field : fields) {
-        	// the word 'end' is a reserved word in many databases so it can't be used. 
+        	// the word 'end' or 'start' is a reserved word in many databases so it can't be used. 
         	// Change it to 'end_time'
-                columnNames.add(escapedKeywordsColumnName(field.getName().equals("end") ? "end_time" : field.getName()));
+        	String fieldName = field.getName();
+        	if (fieldName.equals("end") || fieldName.equals("start")) {
+        	    fieldName = fieldName + "_time";
+        	}
+                columnNames.add(escapedKeywordsColumnName(fieldName));
             }
 
             columnNames.add(errorColumn);

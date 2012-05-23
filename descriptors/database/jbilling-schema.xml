@@ -217,7 +217,7 @@
             <column name="dstchannel" type="java.sql.Types.VARCHAR(20)"/>
             <column name="lastapp" type="java.sql.Types.VARCHAR(20)"/>
             <column name="lastdatat" type="java.sql.Types.VARCHAR(20)"/>
-            <column name="start_datetime" type="java.sql.Types.TIMESTAMP"/>
+            <column name="start_time" type="java.sql.Types.TIMESTAMP"/>
             <column name="answer" type="java.sql.Types.TIMESTAMP"/>
             <column name="end_time" type="java.sql.Types.TIMESTAMP"/>
             <column name="duration" type="java.sql.Types.INTEGER"/>
@@ -917,7 +917,7 @@
             <column name="dstchannel" type="java.sql.Types.VARCHAR(50)"/>
             <column name="lastapp" type="java.sql.Types.VARCHAR(50)"/>
             <column name="lastdata" type="java.sql.Types.VARCHAR(50)"/>
-            <column name="start_datetime" type="java.sql.Types.TIMESTAMP"/>
+            <column name="start_time" type="java.sql.Types.TIMESTAMP"/>
             <column name="answer" type="java.sql.Types.TIMESTAMP"/>
             <column name="end_time" type="java.sql.Types.TIMESTAMP"/>
             <column name="duration" type="java.sql.Types.INTEGER"/>

@@ -225,6 +225,7 @@ class CustomerController {
             customer {
                 parent {
                     eq('baseUser.id', params.int('id'))
+                    order("id","desc")
                 }
             }
         }
